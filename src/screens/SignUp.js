@@ -2,19 +2,19 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
-  Picker,
   ImageBackground,
   StyleSheet,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import StepIndicator from 'react-native-step-indicator';
 import Inputfield from '../components/Inputfield';
 import Button from '../components/Button';
 import SplashScreen from 'react-native-splash-screen';
 import CheckBox from '../components/CheckBox';
+import {Icons, Colors} from '../constants';
 
 const image = require('../../assets/images/Splash.png');
 
@@ -25,21 +25,17 @@ const customStyles = {
   currentStepStrokeWidth: 2,
   stepStrokeCurrentColor: 'transparent',
   stepStrokeWidth: 2,
-  stepStrokeFinishedColor: '#f27478',
+  stepStrokeFinishedColor: Colors.primary,
   stepStrokeUnFinishedColor: 'transparent',
-  separatorFinishedColor: '#f27478',
+  separatorFinishedColor: Colors.primary,
   separatorUnFinishedColor: '#aaaaaa',
-  stepIndicatorFinishedColor: '#f27478',
-  stepIndicatorUnFinishedColor: '#ffffff',
-  stepIndicatorCurrentColor: '#f27478',
-  // stepIndicatorLabelFontSize: 13,
-  // currentStepIndicatorLabelFontSize: 13,
-  stepIndicatorLabelCurrentColor: '#ffffff',
-  stepIndicatorLabelFinishedColor: '#ffffff',
+  stepIndicatorFinishedColor: Colors.primary,
+  stepIndicatorUnFinishedColor: Colors.white,
+  stepIndicatorCurrentColor: Colors.primary,
+  stepIndicatorLabelCurrentColor: Colors.white,
+  stepIndicatorLabelFinishedColor: Colors.white,
   stepIndicatorLabelUnFinishedColor: '#aaaaaa',
-  // labelColor: '#999999',
-  // labelSize: 13,
-  currentStepLabelColor: '#f27478',
+  currentStepLabelColor: Colors.primary,
 };
 
 export default class SignUp extends Component {
@@ -47,12 +43,31 @@ export default class SignUp extends Component {
     super(props);
     this.state = {
       currentPosition: 0,
+      countryCode: '+91',
       isAgreeWithTerms: false,
+      isCheckLanguages: false,
+
+      //Page 1
+      phone: '',
+      verifycode: '',
+      //Page 2
+      email: '',
+      emailconfirm: '',
+      //Page 3
+      username: '',
+      password: '',
     };
+
+    this.focusNextField = this.focusNextField.bind(this);
+    this.inputs = {};
   }
 
   componentDidMount() {
     SplashScreen.hide();
+  }
+
+  focusNextField(id) {
+    this.inputs[id].focus();
   }
 
   onPageChange(position) {
@@ -73,6 +88,14 @@ export default class SignUp extends Component {
     });
   }
 
+  onLanguageSelectPress() {
+    this.setState((prevState) => {
+      return {
+        isCheckLanguages: !prevState.isCheckLanguages,
+      };
+    });
+  }
+
   renderPage(page) {
     switch (page) {
       case 0:
@@ -85,11 +108,32 @@ export default class SignUp extends Component {
             </Text>
             <View style={{marginTop: '30%'}}>
               <Inputfield
+                onRef={(ref) => {
+                  this.inputs['phone'] = ref;
+                }}
+                value={this.state.phone}
                 isRightSideBtn={true}
                 rightBtnText={'SMS'}
                 isLeftSideBtn={true}
+                placeholder={this.state.countryCode}
+                returnKeyType={'next'}
+                keyboardType={'number-pad'}
+                onChangeText={(phone) => this.setState({phone})}
+                onSubmitEditing={() => {
+                  this.focusNextField('verifycode');
+                }}
               />
-              <Inputfield placeholder={'SMS verification code'} />
+              <Inputfield
+                onRef={(ref) => {
+                  this.inputs['verifycode'] = ref;
+                }}
+                value={this.state.verifycode}
+                placeholder={'SMS verification code'}
+                returnKeyType={'done'}
+                keyboardType={'number-pad'}
+                onChangeText={(verifycode) => this.setState({verifycode})}
+                onSubmitEditing={() => {}}
+              />
               <Button
                 type={'primary'}
                 title={'Next'}
@@ -103,8 +147,31 @@ export default class SignUp extends Component {
           <View>
             <Text style={styles.text}>{'Enter your email address.'}</Text>
             <View style={{marginTop: '30%'}}>
-              <Inputfield placeholder={'Email (example@gmail.com)'} />
-              <Inputfield placeholder={'Email confirmation'} />
+              <Inputfield
+                onRef={(ref) => {
+                  this.inputs['email'] = ref;
+                }}
+                value={this.state.email}
+                placeholder={'Email (example@gmail.com)'}
+                returnKeyType={'next'}
+                keyboardType={'email-address'}
+                onChangeText={(email) => this.setState({email})}
+                onSubmitEditing={() => {
+                  this.focusNextField('emailconfirm');
+                }}
+              />
+              <Inputfield
+                onRef={(ref) => {
+                  this.inputs['emailconfirm'] = ref;
+                }}
+                value={this.state.emailconfirm}
+                placeholder={'Email confirmation'}
+                returnKeyType={'done'}
+                keyboardType={'email-address'}
+                onChangeText={(emailconfirm) => this.setState({emailconfirm})}
+                onSubmitEditing={() => {}}
+              />
+
               <Button
                 type={'primary'}
                 title={'Next'}
@@ -122,8 +189,25 @@ export default class SignUp extends Component {
               }
             </Text>
             <View style={{marginTop: '30%'}}>
-              <Inputfield placeholder={'Username'} />
-              <Inputfield placeholder={'Login Password'} />
+              <Inputfield
+                value={this.state.username}
+                placeholder={'Username'}
+                returnKeyType={'done'}
+                onChangeText={(username) => this.setState({username})}
+                onSubmitEditing={() => {
+                  this.focusNextField('password');
+                }}
+              />
+              <Inputfield
+                onRef={(ref) => {
+                  this.inputs['password'] = ref;
+                }}
+                value={this.state.password}
+                placeholder={'Login Password'}
+                returnKeyType={'done'}
+                onChangeText={(password) => this.setState({password})}
+                onSubmitEditing={() => {}}
+              />
               <Inputfield placeholder={'Re-enter log in password'} />
               <Button
                 type={'primary'}
@@ -146,11 +230,16 @@ export default class SignUp extends Component {
   }
 
   render() {
-    const {currentPosition} = this.state;
+    const {currentPosition, isCheckLanguages} = this.state;
     return (
       <ImageBackground source={image} style={styles.container}>
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1, paddingVertical: 20}}>
           <ScrollView>
+            <Header
+              onBackPress={() => this.props.navigation.goBack()}
+              isChecked={isCheckLanguages}
+              onLanguageSelectPress={() => this.onLanguageSelectPress()}
+            />
             <View style={{paddingHorizontal: 100}}>
               <StepIndicator
                 stepCount={3}
@@ -165,6 +254,82 @@ export default class SignUp extends Component {
     );
   }
 }
+
+export const Header = (props) => {
+  const {isChecked, onBackPress, onLanguageSelectPress} = props;
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+      <TouchableOpacity onPress={onBackPress}>
+        <Image source={Icons.icon_back} style={styles.backIcon} />
+      </TouchableOpacity>
+      <LanguageSelector isChecked={isChecked} onPress={onLanguageSelectPress} />
+    </View>
+  );
+};
+
+const LanguageSelector = (props) => {
+  const {isChecked, onPress} = props;
+  if (isChecked) {
+    return (
+      <View
+        style={{
+          padding: 5,
+          borderWidth: 1,
+          borderColor: Colors.primary,
+          borderRadius: 15,
+          backgroundColor: 'rgba(0,0,0,0.4)',
+          zIndex: 100,
+        }}>
+        <TouchableOpacity
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            borderWidth: 2,
+            borderColor: Colors.primary,
+          }}
+          onPress={onPress}>
+          <Image
+            source={Icons.icon_language_select}
+            style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: 20,
+              resizeMode: 'contain',
+            }}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  return (
+    <TouchableOpacity
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: Colors.primary,
+        margin: 6,
+      }}
+      onPress={onPress}>
+      <Image
+        source={Icons.icon_language_select}
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: 20,
+          resizeMode: 'contain',
+        }}
+      />
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -187,9 +352,14 @@ const styles = StyleSheet.create({
   },
   termsContainer: {
     flexDirection: 'row',
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    margin: 10,
+  },
+  backIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
 });

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
+import {Colors} from '../constants';
 
 export default class InputText extends Component {
   static propTypes = {
@@ -22,19 +23,19 @@ export default class InputText extends Component {
     maxLength: PropTypes.number,
     editable: PropTypes.bool,
     secureTextEntry: PropTypes.bool,
-    isError: PropTypes.any,
     isRightSideBtn: PropTypes.any,
     isLeftSideBtn: PropTypes.any,
     isIconRight: PropTypes.bool,
     iconRightUrl: PropTypes.any,
+    onSubmitEditing: PropTypes.func,
   };
 
   static defaultProps = {
     onChangeText: () => null,
     onClearValue: () => null,
+    onSubmitEditing: () => null,
     placeholder: 'Placeholder',
     returnKeyType: 'next',
-    isError: false,
     isRightSideBtn: false,
     isLeftSideBtn: false,
     isIconRight: false,
@@ -44,7 +45,6 @@ export default class InputText extends Component {
     super(props);
     this.state = {
       isFocus: false,
-      typeState: 'enabled',
     };
   }
 
@@ -62,34 +62,20 @@ export default class InputText extends Component {
     this.textInput.focus();
   }
 
-  onFocus() {
-    this.setState({typeState: 'active', isFocus: true});
-  }
+  onFocus() {}
 
   onBlur() {
-    this.setState({typeState: 'enabled', isFocus: false});
+    this.setState({isFocus: false});
   }
 
-  getBorderColor(typeState) {
-    switch (typeState) {
-      case 'enabled':
-        if (this.props.isError) {
-          return '#ccc';
-        } else {
-          return '#ccc';
-        }
-
-      case 'active':
-        if (this.props.isError) {
-          return '#ccc';
-        } else {
-          return '#ccc';
-        }
-
-      default:
-        return '#ccc';
+  onChangeText = (text) => {
+    this.props.onChangeText(text);
+    if (text.length > 0) {
+      this.setState({isFocus: true});
+    } else {
+      this.setState({isFocus: false});
     }
-  }
+  };
 
   render() {
     const {
@@ -102,7 +88,6 @@ export default class InputText extends Component {
       maxLength,
       secureTextEntry,
       onClearValue,
-      isError,
       placeholderStyle,
       isRightSideBtn,
       isLeftSideBtn,
@@ -111,71 +96,67 @@ export default class InputText extends Component {
       ...rest
     } = this.props;
 
-    const {isFocus, typeState} = this.state;
+    const {isFocus} = this.state;
     return (
-      <View>
-        {/* <Text style={styles.titleTxt}>{placeholder}</Text> */}
-        <View
-          style={[
-            styles.container,
-            // {borderColor: this.getBorderColor(typeState)},
-          ]}>
-          {isLeftSideBtn ? (
-            <View>
-              <Picker
-                selectedValue={selectedValue}
-                style={{width: 100}}
-                mode="dropdown"
-                onValueChange={onPickerValueChange}>
-                <Picker.Item label="Java" value="india" />
-                <Picker.Item label="JavaScript" value="canada" />
-              </Picker>
-            </View>
-          ) : null}
-          <TextInput
-            {...rest}
-            editable={editable}
-            // style={styles.inputStyle}
-            style={
-              !value
-                ? [styles.inputStyle, styles.placeholderStyle]
-                : styles.inputStyle
-            }
-            placeholderTextColor="#ffffff"
-            placeholder={placeholder}
-            onChangeText={onChangeText}
-            value={value}
-            ref={(input) => (this.textInput = input)}
-            onSubmitEditing={this.onSubmitEditing.bind(this)}
-            returnKeyType={returnKeyType}
-            keyboardType={keyboardType}
-            maxLength={maxLength}
-            secureTextEntry={secureTextEntry}
-            onFocus={() => this.onFocus()}
-            onBlur={() => this.onBlur()}
-          />
-          {isRightSideBtn ? (
+      <View
+        style={[
+          styles.container,
+          {
+            borderColor: isFocus ? Colors.gradient_2 : 'transparent',
+            borderWidth: isFocus ? 1 : 0,
+          },
+        ]}>
+        {isLeftSideBtn ? (
+          <View>
+            <Picker
+              selectedValue={selectedValue}
+              style={{width: 100}}
+              // mode="dropdown"
+              onValueChange={onPickerValueChange}>
+              <Picker.Item label="India" value="india" />
+              <Picker.Item label="Canada" value="canada" />
+            </Picker>
+          </View>
+        ) : null}
+        <TextInput
+          {...rest}
+          editable={editable}
+          style={
+            !value
+              ? [styles.inputStyle, styles.placeholderStyle]
+              : styles.inputStyle
+          }
+          placeholderTextColor="#eeeeee"
+          placeholder={placeholder}
+          onChangeText={this.onChangeText.bind(this)}
+          value={value}
+          ref={(input) => (this.textInput = input)}
+          onSubmitEditing={this.onSubmitEditing.bind(this)}
+          returnKeyType={returnKeyType}
+          keyboardType={keyboardType}
+          maxLength={maxLength}
+          secureTextEntry={secureTextEntry}
+          onFocus={() => this.onFocus()}
+          onBlur={() => this.onBlur()}
+        />
+        {isRightSideBtn ? (
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={styles.rightBtnContainer}>
             <LinearGradient
               start={{x: 0.1, y: 0.7}}
               end={{x: 0.5, y: 0.8}}
               locations={[0.1, 0.6, 1]}
-              colors={['#f68b6b', '#f27478', '#ef4f8f']}
-              style={{
-                borderTopRightRadius: 21,
-                borderBottomRightRadius: 21,
-                backgroundColor: '#fff',
-                height: 42,
-                flex: 0.3,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
+              colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
+              style={styles.rightBtnSubContainer}>
               <Text style={{color: 'white', fontSize: 12}}>
                 {this.props.rightBtnText}
               </Text>
             </LinearGradient>
-          ) : null}
+          </TouchableOpacity>
+        ) : null}
 
-          {/* <View>
+        {/* <View>
               {isFocus ? (
                 <TouchableOpacity activeOpacity={0.8} onPress={onClearValue}>
                   <Image
@@ -185,7 +166,6 @@ export default class InputText extends Component {
                 </TouchableOpacity>
               ) : null}
             </View> */}
-        </View>
       </View>
     );
   }
@@ -193,7 +173,6 @@ export default class InputText extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     flexDirection: 'row',
     height: 45,
     width: '100%',
@@ -201,17 +180,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 21,
     backgroundColor: 'rgba(0,0,0,0.3)',
-    // borderWidth: 1,
-    // borderColor: '#ccc',
-    // paddingHorizontal: 15,
     paddingLeft: 15,
     marginBottom: 15,
   },
   inputStyle: {
-    flex: 0.8,
-    color: '#ffffff',
-    fontSize: 18,
-    // fontFamily: Fonts.regular,
+    flex: 1,
+    color: Colors.white,
+    fontSize: 16,
   },
   iconStyle: {
     width: 24,
@@ -219,12 +194,26 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 12,
-    // fontFamily: Fonts.regular,
   },
   titleTxt: {
     fontSize: 16,
-    // fontFamily: Fonts.bold,
     color: '#ccc',
     margin: 5,
+  },
+  rightBtnContainer: {
+    borderTopRightRadius: 45 / 2,
+    borderBottomRightRadius: 45 / 2,
+    backgroundColor: Colors.white,
+    height: 45,
+    flex: 0.3,
+  },
+  rightBtnSubContainer: {
+    borderTopRightRadius: 45 / 2,
+    borderBottomRightRadius: 45 / 2,
+    backgroundColor: Colors.white,
+    height: 45,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
