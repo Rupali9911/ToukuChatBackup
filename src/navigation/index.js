@@ -5,6 +5,7 @@ import Authentication from '../screens/Authentication';
 import LoginSignUp from '../screens/LoginSignUp';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
+import ForgotPassword from '../screens/ForgotPassword';
 import Home from '../screens/Home';
 
 const AppStack = createStackNavigator({
@@ -21,6 +22,7 @@ const AuthStack = createStackNavigator(
     LoginSignUp: LoginSignUp,
     Login: Login,
     SignUp: SignUp,
+    ForgotPassword: ForgotPassword,
   },
   {
     initialRouteName: 'LoginSignUp',

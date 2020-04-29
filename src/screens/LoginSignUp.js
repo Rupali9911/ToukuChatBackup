@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  TextInput,
+  Image,
   TouchableOpacity,
   ScrollView,
   Picker,
@@ -55,12 +55,40 @@ export default class LoginSignUp extends Component {
             <View style={{marginTop: 25}}>
               <Text style={styles.text}>{'Or login with'}</Text>
             </View>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginTop: 20,
+              }}>
+              <SocialLogin
+                IconSrc={require('../../assets/icons/line.png')}
+                onPress={() => alert('line clicked')}
+              />
+              <SocialLogin
+                IconSrc={require('../../assets/icons/googleplus.png')}
+                onPress={() => alert('google plus clicked')}
+              />
+              <SocialLogin
+                IconSrc={require('../../assets/icons/twitter.png')}
+                onPress={() => alert('twitter clicked')}
+              />
+            </View>
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>
     );
   }
 }
+
+const SocialLogin = (props) => {
+  return (
+    <TouchableOpacity onPress={props.onPress} activeOpacity={0.6}>
+      <Image source={props.IconSrc} style={styles.iconStyle} />
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -72,5 +100,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     textAlign: 'center',
     color: 'white',
+  },
+  iconStyle: {
+    height: 22,
+    width: 22,
+    marginHorizontal: 10,
   },
 });
