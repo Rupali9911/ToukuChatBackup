@@ -12,36 +12,50 @@ import {
 } from 'react-native';
 import Inputfield from '../components/Inputfield';
 import Button from '../components/Button';
+import {Header} from './SignUp';
 
 const imagebg = require('../../assets/images/Splash.png');
 
 export default class ForgotPassword extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isCheckLanguages: false,
+    };
+  }
+
+  onLanguageSelectPress() {
+    this.setState((prevState) => {
+      return {
+        isCheckLanguages: !prevState.isCheckLanguages,
+      };
+    });
   }
 
   render() {
+    const {isCheckLanguages} = this.state;
     return (
       <ImageBackground source={imagebg} style={styles.container}>
         <SafeAreaView style={styles.container}>
-          <ScrollView
-            contentContainerStyle={{
-              flex: 1,
-              paddingHorizontal: 20,
-              justifyContent: 'center',
-            }}>
+          <ScrollView>
+            <Header
+              onBackPress={() => this.props.navigation.goBack()}
+              isChecked={isCheckLanguages}
+              onLanguageSelectPress={() => this.onLanguageSelectPress()}
+            />
             <Text
               style={{
                 textAlign: 'center',
                 color: 'white',
-                fontSize: 30,
+                fontSize: 24,
+                marginTop: '30%',
               }}>
               {'ForgotPassword'}
             </Text>
             <View>
               <Inputfield
                 isRightSideBtn={true}
+                rightBtnText={'SMS'}
                 placeholder={'Enter username'}
               />
               <Inputfield placeholder={'Enter your authentication code'} />
@@ -59,7 +73,7 @@ export default class ForgotPassword extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0, 0.1)',
+    padding: 20,
   },
   image: {
     flex: 1,

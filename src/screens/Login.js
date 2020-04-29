@@ -13,6 +13,8 @@ import {
 import Button from '../components/Button';
 import Inputfield from '../components/Inputfield';
 import CheckBox from '../components/CheckBox';
+import {Colors} from '../constants';
+import {Header} from './SignUp';
 
 const imagebg = require('../../assets/images/Splash.png');
 
@@ -21,7 +23,16 @@ export default class Login extends Component {
     super(props);
     this.state = {
       isRememberChecked: false,
+      isCheckLanguages: false,
+      username: '',
+      password: '',
     };
+    this.focusNextField = this.focusNextField.bind(this);
+    this.inputs = {};
+  }
+
+  focusNextField(id) {
+    this.inputs[id].focus();
   }
 
   onLoginPress() {}
@@ -34,19 +45,46 @@ export default class Login extends Component {
     });
   }
 
+  onLanguageSelectPress() {
+    this.setState((prevState) => {
+      return {
+        isCheckLanguages: !prevState.isCheckLanguages,
+      };
+    });
+  }
+
   render() {
-    const {isRememberChecked} = this.state;
+    const {isRememberChecked, isCheckLanguages} = this.state;
     return (
       <ImageBackground source={imagebg} style={styles.container}>
-        <SafeAreaView style={styles.container}>
-          <ScrollView
-            contentContainerStyle={{
-              flex: 1,
-              paddingHorizontal: 20,
-              justifyContent: 'center',
-            }}>
-            <Inputfield placeholder={'Username'} />
-            <Inputfield placeholder={'Login Password'} />
+        <SafeAreaView style={styles.safeAreaView}>
+          <ScrollView contentContainerStyle={styles.scrollView}>
+            <Header
+              onBackPress={() => this.props.navigation.goBack()}
+              isChecked={isCheckLanguages}
+              onLanguageSelectPress={() => this.onLanguageSelectPress()}
+            />
+            <View style={{marginTop: '40%'}}>
+              <Inputfield
+                value={this.state.username}
+                placeholder={'Username'}
+                returnKeyType={'next'}
+                onChangeText={(username) => this.setState({username})}
+                onSubmitEditing={() => {
+                  this.focusNextField('password');
+                }}
+              />
+              <Inputfield
+                onRef={(ref) => {
+                  this.inputs['password'] = ref;
+                }}
+                value={this.state.password}
+                placeholder={'Login Password'}
+                returnKeyType={'done'}
+                onChangeText={(password) => this.setState({password})}
+                onSubmitEditing={() => {}}
+              />
+            </View>
 
             <View style={styles.rememberContainer}>
               <CheckBox
@@ -68,7 +106,13 @@ export default class Login extends Component {
               }}>
               <Text style={styles.underlineTxt}>{'Username '}</Text>
               <Text style={styles.text}>{'OR '}</Text>
-              <Text style={styles.underlineTxt}>{'Password '}</Text>
+              <Text
+                style={styles.underlineTxt}
+                onPress={() =>
+                  this.props.navigation.navigate('ForgotPassword')
+                }>
+                {'Password '}
+              </Text>
               <Text style={styles.text}>{'Forgot ?'}</Text>
             </View>
           </ScrollView>
@@ -83,17 +127,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0, 0.1)',
   },
+  safeAreaView: {
+    flex: 1,
+  },
+  scrollView: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+  },
   text: {
     fontSize: 14,
     paddingVertical: 5,
     textAlign: 'center',
-    color: 'white',
+    color: Colors.white,
   },
   underlineTxt: {
     fontSize: 14,
     paddingVertical: 5,
     textAlign: 'center',
-    color: 'white',
+    color: Colors.white,
     textDecorationLine: 'underline',
   },
   rememberContainer: {

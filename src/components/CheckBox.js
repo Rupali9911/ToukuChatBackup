@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {Colors} from '../constants';
 
 export default class CheckBox extends Component {
   constructor(props) {
@@ -10,9 +11,9 @@ export default class CheckBox extends Component {
 
   getGradientColors() {
     if (this.props.isChecked) {
-      return ['#f68b6b', '#f27478', '#ef4f8f'];
+      return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
     } else {
-      return ['#ffffff', '#ffffff', '#ffffff'];
+      return [Colors.white, Colors.white, Colors.white];
     }
   }
 

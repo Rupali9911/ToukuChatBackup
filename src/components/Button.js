@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
+import {Colors} from '../constants';
 
 export default class Button extends Component {
   constructor(props) {
@@ -12,11 +13,11 @@ export default class Button extends Component {
   getGradientColors() {
     switch (this.props.type) {
       case 'primary':
-        return ['#f68b6b', '#f27478', '#ef4f8f'];
+        return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
       case 'transparent':
         return ['rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)'];
       default:
-        return ['#f68b6b', '#f27478', '#ef4f8f'];
+        return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
     }
   }
 
@@ -25,7 +26,7 @@ export default class Button extends Component {
       case 'primary':
         return 'transparent';
       case 'transparent':
-        return '#ef4f8f';
+        return Colors.primary;
       default:
         return 'transparent';
     }
@@ -68,7 +69,7 @@ Button.propTypes = {
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
 
-  type: PropTypes.oneOf(['primary', 'positive', 'negative', 'transparent']),
+  type: PropTypes.oneOf(['primary', 'transparent']),
 
   /**
    * StyleSheet props
