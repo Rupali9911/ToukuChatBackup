@@ -39,7 +39,7 @@ export default class ForgotPassword extends Component {
           <Inputfield placeholder={'Enter your authentication code'} />
           <Inputfield placeholder={'Login Password'} />
           <Inputfield placeholder={'New log in Password'} />
-          <Button btnText={'Reset Password'} />
+          <Button title={'Reset Password'} />
         </View>
       </ScrollView>
     );

@@ -11,8 +11,6 @@ import {
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 
-// import {Colors, Fonts, Icons} from '../../constants';
-
 export default class InputText extends Component {
   static propTypes = {
     value: PropTypes.any,
@@ -40,7 +38,6 @@ export default class InputText extends Component {
     isRightSideBtn: false,
     isLeftSideBtn: false,
     isIconRight: false,
-    // iconRightUrl: Icons.icon_calendar,
   };
 
   constructor(props) {
@@ -144,7 +141,7 @@ export default class InputText extends Component {
                 ? [styles.inputStyle, styles.placeholderStyle]
                 : styles.inputStyle
             }
-            placeholderTextColor="#ccc"
+            placeholderTextColor="#ffffff"
             placeholder={placeholder}
             onChangeText={onChangeText}
             value={value}
@@ -168,7 +165,7 @@ export default class InputText extends Component {
                 borderBottomRightRadius: 21,
                 backgroundColor: '#fff',
                 height: 42,
-                flex: 0.2,
+                flex: 0.3,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
@@ -177,10 +174,8 @@ export default class InputText extends Component {
               </Text>
             </LinearGradient>
           ) : null}
-          {isError ? (
-            <Image source={Icons.icon_circle_error} style={styles.iconStyle} />
-          ) : (
-            <View>
+
+          {/* <View>
               {isFocus ? (
                 <TouchableOpacity activeOpacity={0.8} onPress={onClearValue}>
                   <Image
@@ -189,8 +184,7 @@ export default class InputText extends Component {
                   />
                 </TouchableOpacity>
               ) : null}
-            </View>
-          )}
+            </View> */}
         </View>
       </View>
     );
@@ -199,9 +193,10 @@ export default class InputText extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
-    height: 42,
+    height: 45,
+    width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 21,
@@ -214,7 +209,7 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     flex: 0.8,
-    color: '#ccc',
+    color: '#ffffff',
     fontSize: 18,
     // fontFamily: Fonts.regular,
   },
