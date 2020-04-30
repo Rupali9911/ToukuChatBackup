@@ -5,19 +5,20 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Picker,
   ImageBackground,
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
 import Button from '../components/Button';
 
-const imagebg = require('../../assets/images/Splash.png');
+import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import auth from '@react-native-firebase/auth';
+import {Images} from '../constants';
 
 export default class LoginSignUp extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {pushData: [], loggedIn: false};
   }
 
   onSignUpPress() {
@@ -28,9 +29,94 @@ export default class LoginSignUp extends Component {
     this.props.navigation.navigate('Login');
   }
 
+  componentDidMount() {
+    GoogleSignin.configure({
+      webClientId:
+        '27210262657-us76b4j4k9ilmmlhmqk3lvfr0iutd2v2.apps.googleusercontent.com',
+      offlineAccess: true,
+      hostedDomain: '',
+      loginHint: '',
+      forceConsentPrompt: true,
+      accountName: '',
+    });
+  }
+
+  firebaseGoogleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      this.setState({userInfo: userInfo, loggedIn: true});
+      alert(userInfo);
+      const credential = auth.GoogleAuthProvider.credential(
+        userInfo.idToken,
+        userInfo.accessToken,
+      );
+      const firebaseUserCredential = await auth().signInWithCredential(
+        credential,
+      );
+
+      console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
+    } catch (error) {
+      alert(error);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        alert('user cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        alert('operation (f.e. sign in) is in progress already');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        alert('play services not available or outdated');
+      } else {
+        alert('some other error happened');
+      }
+    }
+  };
+
+  _signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      this.setState({userInfo: userInfo, loggedIn: true});
+      alert(userInfo);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        alert('user cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        alert('operation (f.e. sign in) is in progress already');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        alert('play services not available or outdated');
+      } else {
+        alert('some other error happened');
+      }
+    }
+  };
+
+  getCurrentUserInfo = async () => {
+    try {
+      const userInfo = await GoogleSignin.signInSilently();
+      this.setState({userInfo});
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        alert('user has not signed in yet');
+        this.setState({loggedIn: false});
+      } else {
+        alert('some other error happened');
+        this.setState({loggedIn: false});
+      }
+    }
+  };
+
+  signOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      this.setState({user: null, loggedIn: false});
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   render() {
     return (
-      <ImageBackground source={imagebg} style={styles.container}>
+      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
         <SafeAreaView style={styles.container}>
           <ScrollView
             contentContainerStyle={{
@@ -68,12 +154,24 @@ export default class LoginSignUp extends Component {
               />
               <SocialLogin
                 IconSrc={require('../../assets/icons/googleplus.png')}
-                onPress={() => alert('google plus clicked')}
+                onPress={() => this.firebaseGoogleLogin()}
               />
               <SocialLogin
                 IconSrc={require('../../assets/icons/twitter.png')}
                 onPress={() => alert('twitter clicked')}
               />
+            </View>
+            <View style={styles.buttonContainer}>
+              {!this.state.loggedIn && (
+                <Text>You are currently logged out</Text>
+              )}
+              {this.state.loggedIn && (
+                <Button
+                  type={'primary'}
+                  title={'Signout'}
+                  onPress={() => this.signOut()}
+                />
+              )}
             </View>
           </ScrollView>
         </SafeAreaView>
