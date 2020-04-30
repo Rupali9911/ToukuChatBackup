@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "27210262657",
+    "firebase_url": "https://touku-4663d.firebaseio.com",
+    "project_id": "touku-4663d",
+    "storage_bucket": "touku-4663d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27210262657:android:a8ae03fe3cbdbd56964580",
+        "android_client_info": {
+          "package_name": "com.touku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27210262657-g7rscl500jb3p5doogfu6a2jfvks5rsj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAH0MdDvsz1ahxtNSrXiMUKS8M0QnAlDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27210262657-g7rscl500jb3p5doogfu6a2jfvks5rsj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
