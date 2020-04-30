@@ -10,11 +10,10 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
-import Inputfield from '../components/Inputfield';
+import Inputfield from '../components/InputField';
 import Button from '../components/Button';
 import {Header} from './SignUp';
-
-const imagebg = require('../../assets/images/Splash.png');
+import {Images} from '../constants';
 
 export default class ForgotPassword extends Component {
   constructor(props) {
@@ -35,7 +34,7 @@ export default class ForgotPassword extends Component {
   render() {
     const {isCheckLanguages} = this.state;
     return (
-      <ImageBackground source={imagebg} style={styles.container}>
+      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
         <SafeAreaView style={styles.container}>
           <ScrollView>
             <Header

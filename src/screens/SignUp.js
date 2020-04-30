@@ -10,13 +10,12 @@ import {
   Image,
 } from 'react-native';
 import StepIndicator from 'react-native-step-indicator';
-import Inputfield from '../components/Inputfield';
-import Button from '../components/Button';
 import SplashScreen from 'react-native-splash-screen';
+import Inputfield from '../components/InputField';
+import Button from '../components/Button';
 import CheckBox from '../components/CheckBox';
-import {Icons, Colors} from '../constants';
-
-const image = require('../../assets/images/Splash.png');
+import {Icons, Colors, Images} from '../constants';
+import LanguageSelector from '../components/LanguageSelector';
 
 const customStyles = {
   stepIndicatorSize: 26,
@@ -232,7 +231,7 @@ export default class SignUp extends Component {
   render() {
     const {currentPosition, isCheckLanguages} = this.state;
     return (
-      <ImageBackground source={image} style={styles.container}>
+      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
         <SafeAreaView style={{flex: 1, paddingVertical: 20}}>
           <ScrollView>
             <Header
@@ -263,71 +262,13 @@ export const Header = (props) => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: 20,
       }}>
       <TouchableOpacity onPress={onBackPress}>
         <Image source={Icons.icon_back} style={styles.backIcon} />
       </TouchableOpacity>
       <LanguageSelector isChecked={isChecked} onPress={onLanguageSelectPress} />
     </View>
-  );
-};
-
-const LanguageSelector = (props) => {
-  const {isChecked, onPress} = props;
-  if (isChecked) {
-    return (
-      <View
-        style={{
-          padding: 5,
-          borderWidth: 1,
-          borderColor: Colors.primary,
-          borderRadius: 15,
-          backgroundColor: 'rgba(0,0,0,0.4)',
-          zIndex: 100,
-        }}>
-        <TouchableOpacity
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            borderWidth: 2,
-            borderColor: Colors.primary,
-          }}
-          onPress={onPress}>
-          <Image
-            source={Icons.icon_language_select}
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: 20,
-              resizeMode: 'contain',
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  }
-  return (
-    <TouchableOpacity
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        borderWidth: 2,
-        borderColor: Colors.primary,
-        margin: 6,
-      }}
-      onPress={onPress}>
-      <Image
-        source={Icons.icon_language_select}
-        style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: 20,
-          resizeMode: 'contain',
-        }}
-      />
-    </TouchableOpacity>
   );
 };
 

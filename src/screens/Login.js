@@ -11,12 +11,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Button from '../components/Button';
-import Inputfield from '../components/Inputfield';
+import Inputfield from '../components/InputField';
 import CheckBox from '../components/CheckBox';
-import {Colors} from '../constants';
+import {Colors, Images} from '../constants';
 import {Header} from './SignUp';
-
-const imagebg = require('../../assets/images/Splash.png');
 
 export default class Login extends Component {
   constructor(props) {
@@ -56,7 +54,7 @@ export default class Login extends Component {
   render() {
     const {isRememberChecked, isCheckLanguages} = this.state;
     return (
-      <ImageBackground source={imagebg} style={styles.container}>
+      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
         <SafeAreaView style={styles.safeAreaView}>
           <ScrollView contentContainerStyle={styles.scrollView}>
             <Header

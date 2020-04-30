@@ -6,41 +6,12 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Picker,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
-import {Colors} from '../constants';
+import {Colors, Icons} from '../constants';
 
-export default class InputText extends Component {
-  static propTypes = {
-    value: PropTypes.any,
-    onChangeText: PropTypes.func,
-    onClearValue: PropTypes.func,
-    placeholder: PropTypes.string,
-    returnKeyType: PropTypes.string,
-    keyboardType: PropTypes.string,
-    maxLength: PropTypes.number,
-    editable: PropTypes.bool,
-    secureTextEntry: PropTypes.bool,
-    isRightSideBtn: PropTypes.any,
-    isLeftSideBtn: PropTypes.any,
-    isIconRight: PropTypes.bool,
-    iconRightUrl: PropTypes.any,
-    onSubmitEditing: PropTypes.func,
-  };
-
-  static defaultProps = {
-    onChangeText: () => null,
-    onClearValue: () => null,
-    onSubmitEditing: () => null,
-    placeholder: 'Placeholder',
-    returnKeyType: 'next',
-    isRightSideBtn: false,
-    isLeftSideBtn: false,
-    isIconRight: false,
-  };
-
+export default class InputField extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -107,16 +78,17 @@ export default class InputText extends Component {
           },
         ]}>
         {isLeftSideBtn ? (
-          <View>
-            <Picker
-              selectedValue={selectedValue}
-              style={{width: 100}}
-              // mode="dropdown"
-              onValueChange={onPickerValueChange}>
-              <Picker.Item label="India" value="india" />
-              <Picker.Item label="Canada" value="canada" />
-            </Picker>
-          </View>
+          <TouchableOpacity
+            style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Image
+              source={Icons.icon_language_select}
+              style={styles.iconStyle}
+            />
+            <Image
+              source={Icons.icon_triangle_down}
+              style={styles.iconTriangle}
+            />
+          </TouchableOpacity>
         ) : null}
         <TextInput
           {...rest}
@@ -149,7 +121,7 @@ export default class InputText extends Component {
               locations={[0.1, 0.6, 1]}
               colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
               style={styles.rightBtnSubContainer}>
-              <Text style={{color: 'white', fontSize: 12}}>
+              <Text style={{color: Colors.white, fontSize: 12}}>
                 {this.props.rightBtnText}
               </Text>
             </LinearGradient>
@@ -192,6 +164,12 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  iconTriangle: {
+    width: 10,
+    height: 10,
+    resizeMode: 'contain',
+    marginHorizontal: 5,
+  },
   placeholderStyle: {
     fontSize: 12,
   },
@@ -217,3 +195,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+InputField.propTypes = {
+  value: PropTypes.any,
+  placeholder: PropTypes.string,
+  returnKeyType: PropTypes.string,
+  keyboardType: PropTypes.string,
+  maxLength: PropTypes.number,
+  editable: PropTypes.bool,
+  secureTextEntry: PropTypes.bool,
+  isRightSideBtn: PropTypes.any,
+  isLeftSideBtn: PropTypes.any,
+  isIconRight: PropTypes.bool,
+  iconRightUrl: PropTypes.any,
+  /**
+   * Callbacks
+   */
+  onSubmitEditing: PropTypes.func,
+  onChangeText: PropTypes.func,
+  onClearValue: PropTypes.func,
+};
+
+InputField.defaultProps = {
+  onChangeText: () => null,
+  onClearValue: () => null,
+  onSubmitEditing: () => null,
+  placeholder: '',
+  returnKeyType: 'next',
+  isRightSideBtn: false,
+  isLeftSideBtn: false,
+  isIconRight: false,
+};
