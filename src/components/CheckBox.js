@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import PropTypes from 'prop-types';
 import {Colors} from '../constants';
 
 export default class CheckBox extends Component {
@@ -18,7 +19,7 @@ export default class CheckBox extends Component {
   }
 
   render() {
-    const {onCheck, isChecked} = this.props;
+    const {onCheck} = this.props;
     return (
       <TouchableOpacity
         style={{
@@ -39,3 +40,16 @@ export default class CheckBox extends Component {
     );
   }
 }
+
+CheckBox.propTypes = {
+  isChecked: PropTypes.bool,
+  /**
+   * Callbacks
+   */
+  onCheck: PropTypes.func,
+};
+
+CheckBox.defaultProps = {
+  isChecked: false,
+  onCheck: null,
+};
