@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>27210262657-8gn092v3qom5rv4b5m4bq4mev8q1nkiu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.27210262657-8gn092v3qom5rv4b5m4bq4mev8q1nkiu</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>27210262657-us76b4j4k9ilmmlhmqk3lvfr0iutd2v2.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyArGCmq9jPMASM1-lYpjM_JiK-XfkOD7S8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>27210262657</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.Touku</string>
+	<key>PROJECT_ID</key>
+	<string>touku-4663d</string>
+	<key>STORAGE_BUCKET</key>
+	<string>touku-4663d.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:27210262657:ios:f525bfba5d58464c964580</string>
+	<key>DATABASE_URL</key>
+	<string>https://touku-4663d.firebaseio.com</string>
+</dict>
+</plist>

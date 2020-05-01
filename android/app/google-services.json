@@ -1,34 +1,42 @@
 {
   "project_info": {
-    "project_number": "27210262657",
-    "firebase_url": "https://touku-4663d.firebaseio.com",
-    "project_id": "touku-4663d",
-    "storage_bucket": "touku-4663d.appspot.com"
+    "project_number": "587597919962",
+    "firebase_url": "https://toukunative.firebaseio.com",
+    "project_id": "toukunative",
+    "storage_bucket": "toukunative.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:27210262657:android:a8ae03fe3cbdbd56964580",
+        "mobilesdk_app_id": "1:587597919962:android:dd4ed5b15c02d2f106d7e3",
         "android_client_info": {
           "package_name": "com.touku"
         }
       },
       "oauth_client": [
         {
-          "client_id": "27210262657-g7rscl500jb3p5doogfu6a2jfvks5rsj.apps.googleusercontent.com",
+          "client_id": "587597919962-n1223jit5bi5dv4tl20m49lro18v6jul.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.touku",
+            "certificate_hash": "dd207d8ec30d9436af812d25942bd2ffdf1eac66"
+          }
+        },
+        {
+          "client_id": "587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCAH0MdDvsz1ahxtNSrXiMUKS8M0QnAlDE"
+          "current_key": "AIzaSyDqm4kLQ_Q_0_8awlX0l7auK5ccVdEr0WA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "27210262657-g7rscl500jb3p5doogfu6a2jfvks5rsj.apps.googleusercontent.com",
+              "client_id": "587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
