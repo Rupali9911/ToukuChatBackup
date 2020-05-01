@@ -46,6 +46,8 @@ end
 
 target 'Touku' do
   # Pods for Touku
+  # add pods for desired Firebase products
+  # https://firebase.google.com/docs/ios/setup#available-pods
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"

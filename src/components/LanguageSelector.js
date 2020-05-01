@@ -10,7 +10,7 @@ export default class LanguageSelector extends Component {
   }
 
   render() {
-    const {isChecked, onPress} = this.props;
+    const {isChecked, onPress, onOtherLanguagePress} = this.props;
     if (isChecked) {
       return (
         <View style={styles.container}>
@@ -24,7 +24,7 @@ export default class LanguageSelector extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.checkedIconContainer}
-            onPress={onPress}>
+            onPress={onOtherLanguagePress}>
             <Image
               source={Icons.icon_language_select}
               style={styles.iconStyle}
@@ -86,9 +86,11 @@ LanguageSelector.propTypes = {
    * Callbacks
    */
   onPress: PropTypes.func,
+  onOtherLanguagePress: PropTypes.func,
 };
 
 LanguageSelector.defaultProps = {
   isChecked: false,
   onPress: null,
+  onOtherLanguagePress: null,
 };

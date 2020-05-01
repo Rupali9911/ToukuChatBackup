@@ -14,10 +14,14 @@ import Button from '../components/Button';
 import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
 import auth from '@react-native-firebase/auth';
 import {Images} from '../constants';
+import * as RNLocalize from 'react-native-localize';
+import {setI18nConfig, translate} from '../utils';
+import Header from '../components/Header';
 
 export default class LoginSignUp extends Component {
   constructor(props) {
     super(props);
+    setI18nConfig();
     this.state = {pushData: [], loggedIn: false};
   }
 
@@ -32,146 +36,208 @@ export default class LoginSignUp extends Component {
   componentDidMount() {
     GoogleSignin.configure({
       webClientId:
-        '27210262657-us76b4j4k9ilmmlhmqk3lvfr0iutd2v2.apps.googleusercontent.com',
-      offlineAccess: true,
-      hostedDomain: '',
-      loginHint: '',
-      forceConsentPrompt: true,
-      accountName: '',
+        '587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com',
+    });
+    RNLocalize.addEventListener('change', this.handleLocalizationChange);
+  }
+
+  HandleGo() {
+    console.log('GO tapped');
+    this.onGoogleButtonPress().then((result) =>
+      alert('Signed in with Google!', result),
+    );
+  }
+
+  async onGoogleButtonPress() {
+    // Get the users ID token
+    const {idToken} = await GoogleSignin.signIn();
+    console.log('idToken', idToken);
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    console.log('googleCredential', googleCredential);
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
+
+  componentWillUnmount() {
+    RNLocalize.removeEventListener('change', this.handleLocalizationChange);
+  }
+
+  handleLocalizationChange = () => {
+    setI18nConfig()
+      .then(() => this.forceUpdate())
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  onLanguageSelectPress() {
+    if (this.state.isCheckLanguages) {
+      setI18nConfig('ja');
+    } else {
+      setI18nConfig('en');
+    }
+    this.setState((prevState) => {
+      return {
+        isCheckLanguages: !prevState.isCheckLanguages,
+      };
     });
   }
 
-  firebaseGoogleLogin = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      this.setState({userInfo: userInfo, loggedIn: true});
-      alert(userInfo);
-      const credential = auth.GoogleAuthProvider.credential(
-        userInfo.idToken,
-        userInfo.accessToken,
-      );
-      const firebaseUserCredential = await auth().signInWithCredential(
-        credential,
-      );
+  // componentDidMount() {
+  //   GoogleSignin.configure({
+  //     webClientId:
+  //       '587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com', //For Android
+  //     // '27210262657-g7rscl500jb3p5doogfu6a2jfvks5rsj.apps.googleusercontent.com', //For iOS
+  //     offlineAccess: true,
+  //     hostedDomain: '',
+  //     loginHint: '',
+  //     forceConsentPrompt: true,
+  //     accountName: '',
+  //   });
+  //   RNLocalize.addEventListener('change', this.handleLocalizationChange);
+  // }
 
-      console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
-    } catch (error) {
-      alert(error);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('user cancelled the login flow');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('operation (f.e. sign in) is in progress already');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        alert('play services not available or outdated');
-      } else {
-        alert('some other error happened');
-      }
-    }
-  };
+  // firebaseGoogleLogin = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     this.setState({userInfo: userInfo, loggedIn: true});
+  //     alert(userInfo);
+  //     const credential = auth.GoogleAuthProvider.credential(
+  //       userInfo.idToken,
+  //       userInfo.accessToken,
+  //     );
+  //     const firebaseUserCredential = await auth().signInWithCredential(
+  //       credential,
+  //     );
 
-  _signIn = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      this.setState({userInfo: userInfo, loggedIn: true});
-      alert(userInfo);
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('user cancelled the login flow');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('operation (f.e. sign in) is in progress already');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        alert('play services not available or outdated');
-      } else {
-        alert('some other error happened');
-      }
-    }
-  };
+  //     console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
+  //   } catch (error) {
+  //     alert(error);
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       alert('user cancelled the login flow');
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       alert('operation (f.e. sign in) is in progress already');
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       alert('play services not available or outdated');
+  //     } else {
+  //       alert('some other error happened');
+  //     }
+  //   }
+  // };
 
-  getCurrentUserInfo = async () => {
-    try {
-      const userInfo = await GoogleSignin.signInSilently();
-      this.setState({userInfo});
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        alert('user has not signed in yet');
-        this.setState({loggedIn: false});
-      } else {
-        alert('some other error happened');
-        this.setState({loggedIn: false});
-      }
-    }
-  };
+  // _signIn = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     this.setState({userInfo: userInfo, loggedIn: true});
+  //     alert(userInfo);
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       alert('user cancelled the login flow');
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       alert('operation (f.e. sign in) is in progress already');
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       alert('play services not available or outdated');
+  //     } else {
+  //       alert('some other error happened');
+  //     }
+  //   }
+  // };
 
-  signOut = async () => {
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      this.setState({user: null, loggedIn: false});
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // getCurrentUserInfo = async () => {
+  //   try {
+  //     const userInfo = await GoogleSignin.signInSilently();
+  //     this.setState({userInfo});
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+  //       alert('user has not signed in yet');
+  //       this.setState({loggedIn: false});
+  //     } else {
+  //       alert('some other error happened');
+  //       this.setState({loggedIn: false});
+  //     }
+  //   }
+  // };
+
+  // signOut = async () => {
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //     this.setState({user: null, loggedIn: false});
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   render() {
+    const {isCheckLanguages} = this.state;
     return (
       <ImageBackground source={Images.image_touku_bg} style={styles.container}>
-        <SafeAreaView style={styles.container}>
-          <ScrollView
-            contentContainerStyle={{
-              flex: 1,
-              padding: 20,
-              justifyContent: 'center',
-            }}>
-            <View style={{marginBottom: 25}}>
-              <Text style={styles.text}>{'The world is connected'}</Text>
-              <Text style={styles.text}>{'connect with TOUKU'}</Text>
-            </View>
-            <Button
-              type={'transparent'}
-              title={'Login'}
-              onPress={() => this.onLoginPress()}
+        <SafeAreaView style={styles.safeAreaView}>
+          <ScrollView contentContainerStyle={{flex: 1}}>
+            <Header
+              isChecked={isCheckLanguages}
+              isIconLeft={false}
+              onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
-            <Button
-              type={'primary'}
-              title={'Sign up'}
-              onPress={() => this.onSignUpPress()}
-            />
-            <View style={{marginTop: 25}}>
-              <Text style={styles.text}>{'Or login with'}</Text>
-            </View>
+            <View style={{flex: 1, justifyContent: 'center'}}>
+              <View style={{marginBottom: 25}}>
+                <Text style={styles.text}>
+                  {translate('pages.welcome.theWorldIsConnected')}
+                </Text>
+                <Text style={styles.text}>
+                  {translate('pages.welcome.connectedByTouku')}
+                </Text>
+              </View>
+              <Button
+                type={'transparent'}
+                title={translate('common.login')}
+                onPress={() => this.onLoginPress()}
+              />
+              <Button
+                type={'primary'}
+                title={translate('pages.welcome.signUp')}
+                onPress={() => this.onSignUpPress()}
+              />
+              <View style={{marginTop: 25}}>
+                <Text style={styles.text}>
+                  {translate('pages.welcome.OrLoginWith')}
+                </Text>
+              </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                marginTop: 20,
-              }}>
-              <SocialLogin
-                IconSrc={require('../../assets/icons/line.png')}
-                onPress={() => alert('line clicked')}
-              />
-              <SocialLogin
-                IconSrc={require('../../assets/icons/googleplus.png')}
-                onPress={() => this.firebaseGoogleLogin()}
-              />
-              <SocialLogin
-                IconSrc={require('../../assets/icons/twitter.png')}
-                onPress={() => alert('twitter clicked')}
-              />
-            </View>
-            <View style={styles.buttonContainer}>
-              {!this.state.loggedIn && (
-                <Text>You are currently logged out</Text>
-              )}
-              {this.state.loggedIn && (
-                <Button
-                  type={'primary'}
-                  title={'Signout'}
-                  onPress={() => this.signOut()}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  marginTop: 20,
+                }}>
+                <SocialLogin
+                  IconSrc={require('../../assets/icons/line.png')}
+                  onPress={() => alert('line clicked')}
                 />
-              )}
+                <SocialLogin
+                  IconSrc={require('../../assets/icons/googleplus.png')}
+                  onPress={() => this.HandleGo()}
+                />
+                <SocialLogin
+                  IconSrc={require('../../assets/icons/twitter.png')}
+                  onPress={() => alert('twitter clicked')}
+                />
+              </View>
+              <View style={styles.buttonContainer}>
+                {/* {!this.state.loggedIn && (
+                <Text>You are currently logged out</Text>
+              )} */}
+                {this.state.loggedIn && (
+                  <Button
+                    type={'primary'}
+                    title={'Signout'}
+                    onPress={() => this.signOut()}
+                  />
+                )}
+              </View>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -191,7 +257,12 @@ const SocialLogin = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: 'rgba(0,0,0, 0.1)',
+  },
+  safeAreaView: {
+    flex: 1,
+    paddingVertical: 20,
   },
   text: {
     fontSize: 14,

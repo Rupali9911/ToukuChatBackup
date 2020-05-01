@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   ImageBackground,
   StyleSheet,
@@ -15,7 +14,7 @@ import Inputfield from '../components/InputField';
 import Button from '../components/Button';
 import CheckBox from '../components/CheckBox';
 import {Icons, Colors, Images} from '../constants';
-import LanguageSelector from '../components/LanguageSelector';
+import Header from '../components/Header';
 
 const customStyles = {
   stepIndicatorSize: 26,
@@ -254,24 +253,6 @@ export default class SignUp extends Component {
   }
 }
 
-export const Header = (props) => {
-  const {isChecked, onBackPress, onLanguageSelectPress} = props;
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 20,
-      }}>
-      <TouchableOpacity onPress={onBackPress}>
-        <Image source={Icons.icon_back} style={styles.backIcon} />
-      </TouchableOpacity>
-      <LanguageSelector isChecked={isChecked} onPress={onLanguageSelectPress} />
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -297,10 +278,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 10,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
   },
 });

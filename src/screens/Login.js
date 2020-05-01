@@ -14,11 +14,14 @@ import Button from '../components/Button';
 import Inputfield from '../components/InputField';
 import CheckBox from '../components/CheckBox';
 import {Colors, Images} from '../constants';
-import {Header} from './SignUp';
+import * as RNLocalize from 'react-native-localize';
+import {setI18nConfig} from '../utils';
+import Header from '../components/Header';
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
+    setI18nConfig();
     this.state = {
       isRememberChecked: false,
       isCheckLanguages: false,
@@ -28,6 +31,22 @@ export default class Login extends Component {
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
   }
+
+  componentDidMount() {
+    RNLocalize.addEventListener('change', this.handleLocalizationChange);
+  }
+
+  componentWillUnmount() {
+    RNLocalize.removeEventListener('change', this.handleLocalizationChange);
+  }
+
+  handleLocalizationChange = () => {
+    setI18nConfig()
+      .then(() => this.forceUpdate())
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   focusNextField(id) {
     this.inputs[id].focus();
@@ -124,12 +143,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0, 0.1)',
+    padding: 20,
   },
   safeAreaView: {
     flex: 1,
   },
   scrollView: {
-    paddingHorizontal: 20,
     justifyContent: 'center',
   },
   text: {
