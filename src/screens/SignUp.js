@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
+import {connect} from 'react-redux';
 import StepIndicator from 'react-native-step-indicator';
 import SplashScreen from 'react-native-splash-screen';
 import Inputfield from '../components/InputField';
@@ -15,6 +16,7 @@ import Button from '../components/Button';
 import CheckBox from '../components/CheckBox';
 import {Icons, Colors, Images} from '../constants';
 import Header from '../components/Header';
+import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
 
 const customStyles = {
   stepIndicatorSize: 26,
@@ -36,9 +38,10 @@ const customStyles = {
   currentStepLabelColor: Colors.primary,
 };
 
-export default class SignUp extends Component {
+class SignUp extends Component {
   constructor(props) {
     super(props);
+    setI18nConfig(this.props.selectedLanguage);
     this.state = {
       currentPosition: 0,
       countryCode: '+91',
@@ -100,9 +103,7 @@ export default class SignUp extends Component {
         return (
           <View>
             <Text style={styles.text}>
-              {
-                'Enter mobile number, click on SMS button and enter the verification code you received.'
-              }
+              {translate('common.registerStepOne')}
             </Text>
             <View style={{marginTop: '30%'}}>
               <Inputfield
@@ -111,7 +112,7 @@ export default class SignUp extends Component {
                 }}
                 value={this.state.phone}
                 isRightSideBtn={true}
-                rightBtnText={'SMS'}
+                rightBtnText={translate('common.sms')}
                 isLeftSideBtn={true}
                 placeholder={this.state.countryCode}
                 returnKeyType={'next'}
@@ -126,7 +127,7 @@ export default class SignUp extends Component {
                   this.inputs['verifycode'] = ref;
                 }}
                 value={this.state.verifycode}
-                placeholder={'SMS verification code'}
+                placeholder={translate('common.smsVerificationCode')}
                 returnKeyType={'done'}
                 keyboardType={'number-pad'}
                 onChangeText={(verifycode) => this.setState({verifycode})}
@@ -134,7 +135,7 @@ export default class SignUp extends Component {
               />
               <Button
                 type={'primary'}
-                title={'Next'}
+                title={translate('common.next')}
                 onPress={() => this.onPageChange(1)}
               />
             </View>
@@ -143,14 +144,16 @@ export default class SignUp extends Component {
       case 1:
         return (
           <View>
-            <Text style={styles.text}>{'Enter your email address.'}</Text>
+            <Text style={styles.text}>
+              {translate('common.registerStepTwo')}
+            </Text>
             <View style={{marginTop: '30%'}}>
               <Inputfield
                 onRef={(ref) => {
                   this.inputs['email'] = ref;
                 }}
                 value={this.state.email}
-                placeholder={'Email (example@gmail.com)'}
+                placeholder={translate('common.email')}
                 returnKeyType={'next'}
                 keyboardType={'email-address'}
                 onChangeText={(email) => this.setState({email})}
@@ -163,7 +166,7 @@ export default class SignUp extends Component {
                   this.inputs['emailconfirm'] = ref;
                 }}
                 value={this.state.emailconfirm}
-                placeholder={'Email confirmation'}
+                placeholder={translate('common.emailConfirmation')}
                 returnKeyType={'done'}
                 keyboardType={'email-address'}
                 onChangeText={(emailconfirm) => this.setState({emailconfirm})}
@@ -172,7 +175,7 @@ export default class SignUp extends Component {
 
               <Button
                 type={'primary'}
-                title={'Next'}
+                title={translate('common.next')}
                 onPress={() => this.onPageChange(2)}
               />
             </View>
@@ -182,14 +185,12 @@ export default class SignUp extends Component {
         return (
           <View>
             <Text style={styles.text}>
-              {
-                'Enter your favorite username and password to complete registration'
-              }
+              {translate('common.registerStepThree')}
             </Text>
             <View style={{marginTop: '30%'}}>
               <Inputfield
                 value={this.state.username}
-                placeholder={'Username'}
+                placeholder={translate('common.username')}
                 returnKeyType={'done'}
                 onChangeText={(username) => this.setState({username})}
                 onSubmitEditing={() => {
@@ -201,15 +202,17 @@ export default class SignUp extends Component {
                   this.inputs['password'] = ref;
                 }}
                 value={this.state.password}
-                placeholder={'Login Password'}
+                placeholder={translate('pages.register.loginPassword')}
                 returnKeyType={'done'}
                 onChangeText={(password) => this.setState({password})}
                 onSubmitEditing={() => {}}
               />
-              <Inputfield placeholder={'Re-enter log in password'} />
+              <Inputfield
+                placeholder={translate('pages.register.reEnterLoginPassword')}
+              />
               <Button
                 type={'primary'}
-                title={'Signup'}
+                title={translate('common.signUp')}
                 onPress={() => this.onSignUpPress()}
               />
               <View style={styles.termsContainer}>
@@ -218,7 +221,7 @@ export default class SignUp extends Component {
                   isChecked={this.state.isAgreeWithTerms}
                 />
                 <Text style={styles.underlineTxt}>
-                  {'I agree to the terms and conditions'}
+                  {translate('pages.register.iAgreeToTheTerms&Conditions')}
                 </Text>
               </View>
             </View>
@@ -238,7 +241,7 @@ export default class SignUp extends Component {
               isChecked={isCheckLanguages}
               onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
-            <View style={{paddingHorizontal: 100}}>
+            <View style={{paddingHorizontal: 100, paddingVertical: 10}}>
               <StepIndicator
                 stepCount={3}
                 customStyles={customStyles}
@@ -280,3 +283,13 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.languageReducer.selectedLanguage,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

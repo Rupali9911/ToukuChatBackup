@@ -10,18 +10,19 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import {connect} from 'react-redux';
 import Button from '../components/Button';
 import Inputfield from '../components/InputField';
 import CheckBox from '../components/CheckBox';
 import {Colors, Images} from '../constants';
 import * as RNLocalize from 'react-native-localize';
-import {setI18nConfig} from '../utils';
+import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
 import Header from '../components/Header';
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
-    setI18nConfig();
+    setI18nConfig(this.props.selectedLanguage);
     this.state = {
       isRememberChecked: false,
       isCheckLanguages: false,
@@ -84,7 +85,7 @@ export default class Login extends Component {
             <View style={{marginTop: '40%'}}>
               <Inputfield
                 value={this.state.username}
-                placeholder={'Username'}
+                placeholder={translate('common.username')}
                 returnKeyType={'next'}
                 onChangeText={(username) => this.setState({username})}
                 onSubmitEditing={() => {
@@ -96,7 +97,7 @@ export default class Login extends Component {
                   this.inputs['password'] = ref;
                 }}
                 value={this.state.password}
-                placeholder={'Login Password'}
+                placeholder={translate('pages.register.loginPassword')}
                 returnKeyType={'done'}
                 onChangeText={(password) => this.setState({password})}
                 onSubmitEditing={() => {}}
@@ -108,11 +109,13 @@ export default class Login extends Component {
                 onCheck={() => this.onCheckRememberMe()}
                 isChecked={isRememberChecked}
               />
-              <Text style={styles.text}>{'Remember me'}</Text>
+              <Text style={styles.text}>
+                {translate('pages.login.rememberMe')}
+              </Text>
             </View>
             <Button
               type={'primary'}
-              title={'Login'}
+              title={translate('common.login')}
               onPress={() => this.onLoginPress()}
             />
             <View
@@ -121,16 +124,20 @@ export default class Login extends Component {
                 alignSelf: 'center',
                 marginTop: 15,
               }}>
-              <Text style={styles.underlineTxt}>{'Username '}</Text>
+              <Text style={styles.underlineTxt}>
+                {translate('common.username')}
+              </Text>
               <Text style={styles.text}>{'OR '}</Text>
               <Text
                 style={styles.underlineTxt}
                 onPress={() =>
                   this.props.navigation.navigate('ForgotPassword')
                 }>
-                {'Password '}
+                {translate('common.password')}
               </Text>
-              <Text style={styles.text}>{'Forgot ?'}</Text>
+              <Text style={styles.text}>
+                {' ' + translate('common.forgot')}
+              </Text>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -172,3 +179,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.languageReducer.selectedLanguage,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -9,19 +9,19 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
-import Button from '../components/Button';
-
+import {connect} from 'react-redux';
 import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
 import auth from '@react-native-firebase/auth';
-import {Images} from '../constants';
 import * as RNLocalize from 'react-native-localize';
-import {setI18nConfig, translate} from '../utils';
+import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
 import Header from '../components/Header';
+import Button from '../components/Button';
+import {Images} from '../constants';
 
-export default class LoginSignUp extends Component {
+class LoginSignUp extends Component {
   constructor(props) {
     super(props);
-    setI18nConfig();
+    setI18nConfig(this.props.selectedLanguage);
     this.state = {pushData: [], loggedIn: false};
   }
 
@@ -72,11 +72,11 @@ export default class LoginSignUp extends Component {
   };
 
   onLanguageSelectPress() {
-    if (this.state.isCheckLanguages) {
-      setI18nConfig('ja');
-    } else {
-      setI18nConfig('en');
-    }
+    // if (this.state.isCheckLanguages) {
+    //   setI18nConfig('ja');
+    // } else {
+    //   setI18nConfig('en');
+    // }
     this.setState((prevState) => {
       return {
         isCheckLanguages: !prevState.isCheckLanguages,
@@ -174,7 +174,10 @@ export default class LoginSignUp extends Component {
   render() {
     const {isCheckLanguages} = this.state;
     return (
-      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
+      <ImageBackground
+        source={Images.image_touku_bg}
+        style={styles.container}
+        resizeMode={'cover'}>
         <SafeAreaView style={styles.safeAreaView}>
           <ScrollView contentContainerStyle={{flex: 1}}>
             <Header
@@ -276,3 +279,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.languageReducer.selectedLanguage,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginSignUp);
