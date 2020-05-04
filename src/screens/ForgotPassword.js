@@ -14,6 +14,7 @@ import Inputfield from '../components/InputField';
 import Button from '../components/Button';
 import {Images} from '../constants';
 import Header from '../components/Header';
+import {translate} from '../redux/reducers/languageReducer';
 
 export default class ForgotPassword extends Component {
   constructor(props) {
@@ -45,22 +46,26 @@ export default class ForgotPassword extends Component {
             <Text
               style={{
                 textAlign: 'center',
-                color: 'white',
-                fontSize: 24,
-                marginTop: '30%',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: 28,
+                marginVertical: 70,
               }}>
-              {'ForgotPassword'}
+              {translate('pages.resetPassword.resetPassword')}
             </Text>
             <View>
               <Inputfield
                 isRightSideBtn={true}
-                rightBtnText={'SMS'}
-                placeholder={'Enter username'}
+                rightBtnText={translate('common.sms')}
+                placeholder={translate('common.enterUsername')}
               />
-              <Inputfield placeholder={'Enter your authentication code'} />
-              <Inputfield placeholder={'Login Password'} />
-              <Inputfield placeholder={'New log in Password'} />
-              <Button title={'Reset Password'} />
+              <Inputfield
+                placeholder={translate('common.enterYourAuthenticationCode')}
+              />
+              <Inputfield placeholder={translate('common.loginPassword')} />
+              <Inputfield
+                placeholder={translate('pages.resetPassword.newLogInPassword')}
+              />
+              <Button title={translate('pages.resetPassword.resetPassword')} />
             </View>
           </ScrollView>
         </SafeAreaView>

@@ -1,23 +1,48 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+
 import LanguageSelector from './LanguageSelector';
 import {Icons, Colors} from '../constants';
+import * as RNLocalize from 'react-native-localize';
+import {setI18nConfig, setAppLanguage} from '../redux/reducers/languageReducer';
 
-export default class Header extends Component {
+class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
+  componentDidMount() {
+    RNLocalize.addEventListener('change', this.handleLocalizationChange);
+  }
+
+  componentWillUnmount() {
+    RNLocalize.removeEventListener('change', this.handleLocalizationChange);
+  }
+
+  handleLocalizationChange = () => {
+    setI18nConfig()
+      .then(() => this.forceUpdate())
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  onLanguageSelectPress = () => {
+    if (this.props.isChecked) {
+      this.props.setAppLanguage('ja');
+      setI18nConfig('ja');
+    } else {
+      this.props.setAppLanguage('en');
+      setI18nConfig('en');
+    }
+    this.props.onLanguageSelectPress();
+  };
+
   render() {
-    const {
-      isChecked,
-      isIconLeft,
-      title,
-      onBackPress,
-      onLanguageSelectPress,
-    } = this.props;
+    const {isChecked, isIconLeft, title, onBackPress} = this.props;
     return (
       <View style={styles.container}>
         {isIconLeft ? (
@@ -32,7 +57,7 @@ export default class Header extends Component {
         </View>
         <LanguageSelector
           isChecked={isChecked}
-          onPress={onLanguageSelectPress}
+          onPress={this.onLanguageSelectPress.bind(this)}
         />
       </View>
     );
@@ -76,3 +101,15 @@ Header.defaultProps = {
   onBackPress: null,
   onLanguageSelectPress: null,
 };
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.languageReducer.selectedLanguage,
+  };
+};
+
+const mapDispatchToProps = {
+  setAppLanguage,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
