@@ -6,7 +6,7 @@ export const Icons = {
 };
 
 export const Images = {
-  image_touku_bg: require('../../assets/images/touku_bg.png'),
+  image_touku_bg: require('../../assets/images/newbg.png'),
 };
 
 export const Colors = {

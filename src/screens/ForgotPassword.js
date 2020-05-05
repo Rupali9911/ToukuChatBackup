@@ -10,6 +10,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import Orientation from 'react-native-orientation';
 import Inputfield from '../components/InputField';
 import Button from '../components/Button';
 import {Images} from '../constants';
@@ -20,9 +21,27 @@ export default class ForgotPassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      orientation: 'PORTRAIT',
       isCheckLanguages: false,
     };
   }
+
+  componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
+  }
+
+  componentDidMount() {
+    Orientation.addOrientationListener(this._orientationDidChange);
+  }
+
+  componentWillUnmount() {
+    Orientation.removeOrientationListener(this._orientationDidChange);
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
 
   onLanguageSelectPress() {
     this.setState((prevState) => {
@@ -33,39 +52,51 @@ export default class ForgotPassword extends Component {
   }
 
   render() {
-    const {isCheckLanguages} = this.state;
+    const {isCheckLanguages, orientation} = this.state;
     return (
       <ImageBackground source={Images.image_touku_bg} style={styles.container}>
         <SafeAreaView style={styles.container}>
-          <ScrollView>
+          <ScrollView
+            contentContainerStyle={{padding: 20}}
+            showsVerticalScrollIndicator={false}>
             <Header
               onBackPress={() => this.props.navigation.goBack()}
               isChecked={isCheckLanguages}
               onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
-            <Text
+            <View
               style={{
-                textAlign: 'center',
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: 28,
-                marginVertical: 70,
+                flex: 1,
+                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
               }}>
-              {translate('pages.resetPassword.resetPassword')}
-            </Text>
-            <View>
-              <Inputfield
-                isRightSideBtn={true}
-                rightBtnText={translate('common.sms')}
-                placeholder={translate('common.enterUsername')}
-              />
-              <Inputfield
-                placeholder={translate('common.enterYourAuthenticationCode')}
-              />
-              <Inputfield placeholder={translate('common.loginPassword')} />
-              <Inputfield
-                placeholder={translate('pages.resetPassword.newLogInPassword')}
-              />
-              <Button title={translate('pages.resetPassword.resetPassword')} />
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: 28,
+                  marginVertical: 50,
+                }}>
+                {translate('pages.resetPassword.resetPassword')}
+              </Text>
+              <View>
+                <Inputfield
+                  isRightSideBtn={true}
+                  rightBtnText={translate('common.sms')}
+                  placeholder={translate('common.enterUsername')}
+                />
+                <Inputfield
+                  placeholder={translate('common.enterYourAuthenticationCode')}
+                />
+                <Inputfield placeholder={translate('common.loginPassword')} />
+                <Inputfield
+                  placeholder={translate(
+                    'pages.resetPassword.newLogInPassword',
+                  )}
+                />
+                <Button
+                  title={translate('pages.resetPassword.resetPassword')}
+                />
+              </View>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -77,7 +108,6 @@ export default class ForgotPassword extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   image: {
     flex: 1,
