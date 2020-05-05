@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
+import Orientation from 'react-native-orientation';
 import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
 import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
@@ -22,7 +23,11 @@ class LoginSignUp extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguage);
-    this.state = {pushData: [], loggedIn: false};
+    this.state = {
+      orientation: 'PORTRAIT',
+      pushData: [],
+      loggedIn: false,
+    };
   }
 
   onSignUpPress() {
@@ -33,13 +38,23 @@ class LoginSignUp extends Component {
     this.props.navigation.navigate('Login');
   }
 
+  componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
+  }
+
   componentDidMount() {
     GoogleSignin.configure({
       webClientId:
         '587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com',
     });
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
+    Orientation.addOrientationListener(this._orientationDidChange);
   }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
 
   HandleGo() {
     console.log('GO tapped');
@@ -61,6 +76,11 @@ class LoginSignUp extends Component {
 
   componentWillUnmount() {
     RNLocalize.removeEventListener('change', this.handleLocalizationChange);
+    Orientation.getOrientation((err, orientation) => {
+      console.log(`Current Device Orientation: ${orientation}`);
+    });
+
+    Orientation.removeOrientationListener(this._orientationDidChange);
   }
 
   handleLocalizationChange = () => {
@@ -172,20 +192,29 @@ class LoginSignUp extends Component {
   // };
 
   render() {
-    const {isCheckLanguages} = this.state;
+    const {isCheckLanguages, orientation} = this.state;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
         style={styles.container}
         resizeMode={'cover'}>
         <SafeAreaView style={styles.safeAreaView}>
-          <ScrollView contentContainerStyle={{flex: 1}}>
+          <ScrollView
+            contentContainerStyle={{
+              flex: 1,
+              padding: 20,
+            }}>
             <Header
               isChecked={isCheckLanguages}
               isIconLeft={false}
               onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
-            <View style={{flex: 1, justifyContent: 'center'}}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
+              }}>
               <View style={{marginBottom: 25}}>
                 <Text style={styles.text}>
                   {translate('pages.welcome.theWorldIsConnected')}
@@ -260,12 +289,10 @@ const SocialLogin = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'rgba(0,0,0, 0.1)',
   },
   safeAreaView: {
     flex: 1,
-    paddingVertical: 20,
   },
   text: {
     fontSize: 14,

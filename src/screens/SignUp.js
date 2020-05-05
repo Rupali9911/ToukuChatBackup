@@ -9,8 +9,8 @@ import {
   Image,
 } from 'react-native';
 import {connect} from 'react-redux';
+import Orientation from 'react-native-orientation';
 import StepIndicator from 'react-native-step-indicator';
-import SplashScreen from 'react-native-splash-screen';
 import Inputfield from '../components/InputField';
 import Button from '../components/Button';
 import CheckBox from '../components/CheckBox';
@@ -43,6 +43,7 @@ class SignUp extends Component {
     super(props);
     setI18nConfig(this.props.selectedLanguage);
     this.state = {
+      orientation: 'PORTRAIT',
       currentPosition: 0,
       countryCode: '+91',
       isAgreeWithTerms: false,
@@ -63,9 +64,22 @@ class SignUp extends Component {
     this.inputs = {};
   }
 
-  componentDidMount() {
-    SplashScreen.hide();
+  componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
   }
+
+  componentDidMount() {
+    Orientation.addOrientationListener(this._orientationDidChange);
+  }
+
+  componentWillUnmount() {
+    Orientation.removeOrientationListener(this._orientationDidChange);
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
 
   focusNextField(id) {
     this.inputs[id].focus();
@@ -105,7 +119,7 @@ class SignUp extends Component {
             <Text style={styles.text}>
               {translate('common.registerStepOne')}
             </Text>
-            <View style={{marginTop: '30%'}}>
+            <View style={{marginTop: 50}}>
               <Inputfield
                 onRef={(ref) => {
                   this.inputs['phone'] = ref;
@@ -147,7 +161,7 @@ class SignUp extends Component {
             <Text style={styles.text}>
               {translate('common.registerStepTwo')}
             </Text>
-            <View style={{marginTop: '30%'}}>
+            <View style={{marginTop: 50}}>
               <Inputfield
                 onRef={(ref) => {
                   this.inputs['email'] = ref;
@@ -187,7 +201,7 @@ class SignUp extends Component {
             <Text style={styles.text}>
               {translate('common.registerStepThree')}
             </Text>
-            <View style={{marginTop: '30%'}}>
+            <View style={{marginTop: 50}}>
               <Inputfield
                 value={this.state.username}
                 placeholder={translate('common.username')}
@@ -231,24 +245,35 @@ class SignUp extends Component {
   }
 
   render() {
-    const {currentPosition, isCheckLanguages} = this.state;
+    const {currentPosition, isCheckLanguages, orientation} = this.state;
     return (
       <ImageBackground source={Images.image_touku_bg} style={styles.container}>
-        <SafeAreaView style={{flex: 1, paddingVertical: 20}}>
-          <ScrollView>
+        <SafeAreaView style={{flex: 1}}>
+          <ScrollView
+            contentContainerStyle={{padding: 20}}
+            showsVerticalScrollIndicator={false}>
             <Header
               onBackPress={() => this.props.navigation.goBack()}
               isChecked={isCheckLanguages}
               onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
-            <View style={{paddingHorizontal: 100, paddingVertical: 10}}>
+            <View
+              style={{
+                paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,
+              }}>
               <StepIndicator
                 stepCount={3}
                 customStyles={customStyles}
                 currentPosition={currentPosition}
               />
             </View>
-            {this.renderPage(currentPosition)}
+            <View
+              style={{
+                flex: 1,
+                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
+              }}>
+              {this.renderPage(currentPosition)}
+            </View>
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>
@@ -259,7 +284,6 @@ class SignUp extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'rgba(0,0,0, 0.1)',
   },
   text: {

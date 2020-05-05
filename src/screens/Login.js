@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
+import Orientation from 'react-native-orientation';
 import Button from '../components/Button';
 import Inputfield from '../components/InputField';
 import CheckBox from '../components/CheckBox';
@@ -24,6 +25,7 @@ class Login extends Component {
     super(props);
     setI18nConfig(this.props.selectedLanguage);
     this.state = {
+      orientation: 'PORTRAIT',
       isRememberChecked: false,
       isCheckLanguages: false,
       username: '',
@@ -33,13 +35,24 @@ class Login extends Component {
     this.inputs = {};
   }
 
+  componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
+  }
+
   componentDidMount() {
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
+    Orientation.addOrientationListener(this._orientationDidChange);
   }
 
   componentWillUnmount() {
     RNLocalize.removeEventListener('change', this.handleLocalizationChange);
+    Orientation.removeOrientationListener(this._orientationDidChange);
   }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
 
   handleLocalizationChange = () => {
     setI18nConfig()
@@ -72,17 +85,22 @@ class Login extends Component {
   }
 
   render() {
-    const {isRememberChecked, isCheckLanguages} = this.state;
+    const {isRememberChecked, isCheckLanguages, orientation} = this.state;
     return (
       <ImageBackground source={Images.image_touku_bg} style={styles.container}>
         <SafeAreaView style={styles.safeAreaView}>
-          <ScrollView contentContainerStyle={styles.scrollView}>
+          <ScrollView contentContainerStyle={[styles.scrollView]}>
             <Header
               onBackPress={() => this.props.navigation.goBack()}
               isChecked={isCheckLanguages}
               onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
-            <View style={{marginTop: '40%'}}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
+              }}>
               <Inputfield
                 value={this.state.username}
                 placeholder={translate('common.username')}
@@ -102,42 +120,41 @@ class Login extends Component {
                 onChangeText={(password) => this.setState({password})}
                 onSubmitEditing={() => {}}
               />
-            </View>
-
-            <View style={styles.rememberContainer}>
-              <CheckBox
-                onCheck={() => this.onCheckRememberMe()}
-                isChecked={isRememberChecked}
+              <View style={styles.rememberContainer}>
+                <CheckBox
+                  onCheck={() => this.onCheckRememberMe()}
+                  isChecked={isRememberChecked}
+                />
+                <Text style={styles.text}>
+                  {translate('pages.login.rememberMe')}
+                </Text>
+              </View>
+              <Button
+                type={'primary'}
+                title={translate('common.login')}
+                onPress={() => this.onLoginPress()}
               />
-              <Text style={styles.text}>
-                {translate('pages.login.rememberMe')}
-              </Text>
-            </View>
-            <Button
-              type={'primary'}
-              title={translate('common.login')}
-              onPress={() => this.onLoginPress()}
-            />
-            <View
-              style={{
-                flexDirection: 'row',
-                alignSelf: 'center',
-                marginTop: 15,
-              }}>
-              <Text style={styles.underlineTxt}>
-                {translate('common.username')}
-              </Text>
-              <Text style={styles.text}>{'OR '}</Text>
-              <Text
-                style={styles.underlineTxt}
-                onPress={() =>
-                  this.props.navigation.navigate('ForgotPassword')
-                }>
-                {translate('common.password')}
-              </Text>
-              <Text style={styles.text}>
-                {' ' + translate('common.forgot')}
-              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'center',
+                  marginTop: 15,
+                }}>
+                <Text style={styles.underlineTxt}>
+                  {translate('common.username')}
+                </Text>
+                <Text style={styles.text}>{'OR '}</Text>
+                <Text
+                  style={styles.underlineTxt}
+                  onPress={() =>
+                    this.props.navigation.navigate('ForgotPassword')
+                  }>
+                  {translate('common.password')}
+                </Text>
+                <Text style={styles.text}>
+                  {' ' + translate('common.forgot')}
+                </Text>
+              </View>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -150,13 +167,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0, 0.1)',
-    padding: 20,
   },
   safeAreaView: {
     flex: 1,
   },
   scrollView: {
-    justifyContent: 'center',
+    flex: 1,
+    padding: 20,
   },
   text: {
     fontSize: 14,
