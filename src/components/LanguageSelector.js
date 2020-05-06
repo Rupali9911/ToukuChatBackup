@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {View, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Colors, Icons} from '../constants';
@@ -30,13 +36,13 @@ class LanguageSelector extends Component {
 
   componentDidMount() {
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
-    this.state.languages.map((item) => {
-      if (item.selected == true) {
-        this.setState({selectedLanguage: item.language_name});
-        this.props.setAppLanguage(item.language_name);
-        setI18nConfig(item.language_name);
-      }
-    });
+    // this.state.languages.map((item) => {
+    //   if (item.selected == true) {
+    //     this.setState({selectedLanguage: item.language_name});
+    //     this.props.setAppLanguage(item.language_name);
+    //     setI18nConfig(item.language_name);
+    //   }
+    // });
   }
 
   componentWillUnmount() {
@@ -113,7 +119,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
     position: 'absolute',
     right: 10,
-    top: 10,
+    top: Platform.OS === 'ios' ? 10 : 40,
     overflow: 'hidden',
     display: 'flex',
   },
@@ -134,7 +140,7 @@ const styles = StyleSheet.create({
     margin: 6,
     position: 'absolute',
     right: 10,
-    top: 10,
+    top: Platform.OS === 'ios' ? 10 : 40,
     backgroundColor: 'red',
   },
   iconStyle: {
