@@ -3,6 +3,10 @@ export const Icons = {
   icon_back: require('../../assets/icons/back_icon.png'),
   icon_tick: require('../../assets/icons/tick.png'),
   icon_triangle_down: require('../../assets/icons/triangle_down.png'),
+  icon_facebook: require('../../assets/icons/facebook.png'),
+  icon_line: require('../../assets/icons/line.png'),
+  icon_google: require('../../assets/icons/googleplus.png'),
+  icon_twitter: require('../../assets/icons/twitter.png'),
 };
 
 export const Images = {
