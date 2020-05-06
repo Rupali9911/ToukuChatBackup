@@ -19,7 +19,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* ToukuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ToukuTests.m */; };
 		5C37A8B07F72A83D1766254C /* libPods-Touku-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B58F96ED9C54394A9F21E7BA /* libPods-Touku-tvOSTests.a */; };
 		A3656588EA1C4F7322AEDF0B /* libPods-Touku.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 560E5E70813AFD57170F2176 /* libPods-Touku.a */; };
-		C8070AB1245BE904007CDFF6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C8070AB0245BE903007CDFF6 /* GoogleService-Info.plist */; };
+		C89164772462D7D800949FC2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C89164762462D7D800949FC2 /* GoogleService-Info.plist */; };
 		DD3311E83F583CDF3872389E /* libPods-Touku-ToukuTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20EA1689435A9FE90FC5A863 /* libPods-Touku-ToukuTests.a */; };
 /* End PBXBuildFile section */
 
@@ -64,7 +64,7 @@
 		B519D9B6A1CC968CAE3FDB61 /* Pods-Touku-ToukuTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-ToukuTests.debug.xcconfig"; path = "Target Support Files/Pods-Touku-ToukuTests/Pods-Touku-ToukuTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B58F96ED9C54394A9F21E7BA /* libPods-Touku-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Touku-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7190D1174A1566D3415CCCB /* Pods-Touku.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.release.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.release.xcconfig"; sourceTree = "<group>"; };
-		C8070AB0245BE903007CDFF6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C89164762462D7D800949FC2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E969FC6F9D2BF594E8326DB8 /* Pods-Touku-ToukuTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-ToukuTests.release.xcconfig"; path = "Target Support Files/Pods-Touku-ToukuTests/Pods-Touku-ToukuTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -127,7 +127,6 @@
 		13B07FAE1A68108700A75B9A /* Touku */ = {
 			isa = PBXGroup;
 			children = (
-				C8070AB0245BE903007CDFF6 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -162,6 +161,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				C89164762462D7D800949FC2 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Touku */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ToukuTests */,
@@ -345,7 +345,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				C8070AB1245BE904007CDFF6 /* GoogleService-Info.plist in Resources */,
+				C89164772462D7D800949FC2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

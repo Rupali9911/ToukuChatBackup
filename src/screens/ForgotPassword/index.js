@@ -2,27 +2,25 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
-  Picker,
   ImageBackground,
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import Inputfield from '../components/InputField';
-import Button from '../components/Button';
-import {Images} from '../constants';
-import Header from '../components/Header';
-import {translate} from '../redux/reducers/languageReducer';
+import Inputfield from '../../components/InputField';
+import Button from '../../components/Button';
+import {Images} from '../../constants';
+import Header from '../../components/Header';
+import {translate} from '../../redux/reducers/languageReducer';
+import {forgotStyles} from './styles';
+import LanguageSelector from '../../components/LanguageSelector';
 
 export default class ForgotPassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
       orientation: 'PORTRAIT',
-      isCheckLanguages: false,
     };
   }
 
@@ -43,27 +41,17 @@ export default class ForgotPassword extends Component {
     this.setState({orientation});
   };
 
-  onLanguageSelectPress() {
-    this.setState((prevState) => {
-      return {
-        isCheckLanguages: !prevState.isCheckLanguages,
-      };
-    });
-  }
-
   render() {
-    const {isCheckLanguages, orientation} = this.state;
+    const {orientation} = this.state;
     return (
-      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
-        <SafeAreaView style={styles.container}>
+      <ImageBackground
+        source={Images.image_touku_bg}
+        style={forgotStyles.container}>
+        <SafeAreaView style={forgotStyles.container}>
           <ScrollView
             contentContainerStyle={{padding: 20}}
             showsVerticalScrollIndicator={false}>
-            <Header
-              onBackPress={() => this.props.navigation.goBack()}
-              isChecked={isCheckLanguages}
-              onLanguageSelectPress={() => this.onLanguageSelectPress()}
-            />
+            <Header onBackPress={() => this.props.navigation.goBack()} />
             <View
               style={{
                 flex: 1,
@@ -98,6 +86,7 @@ export default class ForgotPassword extends Component {
                 />
               </View>
             </View>
+            <LanguageSelector />
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>
@@ -105,18 +94,18 @@ export default class ForgotPassword extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  image: {
-    flex: 1,
-    padding: 10,
-  },
-  text: {
-    fontSize: 12,
-    padding: 15,
-    textAlign: 'center',
-    color: 'white',
-  },
-});
+// const forgotStyles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
+//   image: {
+//     flex: 1,
+//     padding: 10,
+//   },
+//   text: {
+//     fontSize: 12,
+//     padding: 15,
+//     textAlign: 'center',
+//     color: 'white',
+//   },
+// });

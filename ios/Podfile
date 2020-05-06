@@ -46,7 +46,10 @@ end
 
 target 'Touku' do
   # Pods for Touku
-  # add pods for desired Firebase products
+  # add the Firebase pod for Google Analytics
+  pod 'Firebase/Analytics'
+  pod 'GoogleSignIn'
+  # add pods for any other desired Firebase products
   # https://firebase.google.com/docs/ios/setup#available-pods
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"

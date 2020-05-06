@@ -2,23 +2,22 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
-  Picker,
   ImageBackground,
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
-import Button from '../components/Button';
-import Inputfield from '../components/InputField';
-import CheckBox from '../components/CheckBox';
-import {Colors, Images} from '../constants';
+import Button from '../../components/Button';
+import Inputfield from '../../components/InputField';
+import CheckBox from '../../components/CheckBox';
+import {Colors, Images} from '../../constants';
 import * as RNLocalize from 'react-native-localize';
-import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
-import Header from '../components/Header';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import Header from '../../components/Header';
+import {loginStyles} from './styles';
+import LanguageSelector from '../../components/LanguageSelector';
 
 class Login extends Component {
   constructor(props) {
@@ -87,9 +86,11 @@ class Login extends Component {
   render() {
     const {isRememberChecked, isCheckLanguages, orientation} = this.state;
     return (
-      <ImageBackground source={Images.image_touku_bg} style={styles.container}>
-        <SafeAreaView style={styles.safeAreaView}>
-          <ScrollView contentContainerStyle={[styles.scrollView]}>
+      <ImageBackground
+        source={Images.image_touku_bg}
+        style={loginStyles.container}>
+        <SafeAreaView style={loginStyles.safeAreaView}>
+          <ScrollView contentContainerStyle={loginStyles.scrollView}>
             <Header
               onBackPress={() => this.props.navigation.goBack()}
               isChecked={isCheckLanguages}
@@ -120,12 +121,12 @@ class Login extends Component {
                 onChangeText={(password) => this.setState({password})}
                 onSubmitEditing={() => {}}
               />
-              <View style={styles.rememberContainer}>
+              <View style={loginStyles.rememberContainer}>
                 <CheckBox
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={isRememberChecked}
                 />
-                <Text style={styles.text}>
+                <Text style={loginStyles.text}>
                   {translate('pages.login.rememberMe')}
                 </Text>
               </View>
@@ -140,62 +141,29 @@ class Login extends Component {
                   alignSelf: 'center',
                   marginTop: 15,
                 }}>
-                <Text style={styles.underlineTxt}>
+                <Text style={loginStyles.underlineTxt}>
                   {translate('common.username')}
                 </Text>
-                <Text style={styles.text}>{'OR '}</Text>
+                <Text style={loginStyles.text}>{'OR '}</Text>
                 <Text
-                  style={styles.underlineTxt}
+                  style={loginStyles.underlineTxt}
                   onPress={() =>
                     this.props.navigation.navigate('ForgotPassword')
                   }>
                   {translate('common.password')}
                 </Text>
-                <Text style={styles.text}>
+                <Text style={loginStyles.text}>
                   {' ' + translate('common.forgot')}
                 </Text>
               </View>
             </View>
+            <LanguageSelector />
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0, 0.1)',
-  },
-  safeAreaView: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    padding: 20,
-  },
-  text: {
-    fontSize: 14,
-    paddingVertical: 5,
-    textAlign: 'center',
-    color: Colors.white,
-  },
-  underlineTxt: {
-    fontSize: 14,
-    paddingVertical: 5,
-    textAlign: 'center',
-    color: Colors.white,
-    textDecorationLine: 'underline',
-  },
-  rememberContainer: {
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-});
 
 const mapStateToProps = (state) => {
   return {

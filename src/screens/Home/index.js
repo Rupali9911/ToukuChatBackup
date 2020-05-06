@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
+import {View, Button} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import {homeStyles} from './styles';
 
 export default class Home extends Component {
   constructor(props) {
@@ -15,17 +16,9 @@ export default class Home extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={homeStyles.container}>
         <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

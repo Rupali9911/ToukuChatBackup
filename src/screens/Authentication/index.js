@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import SplashScreen from 'react-native-splash-screen';
+import {authenticationStyles} from './styles';
+import {Colors} from '../../constants';
 
 export default class Authentication extends Component {
   constructor() {
@@ -27,20 +29,12 @@ export default class Authentication extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={authenticationStyles.container}>
         <SafeAreaView>
-          <ActivityIndicator />
+          <ActivityIndicator color={Colors.primary} />
           <StatusBar barStyle="light-content" />
         </SafeAreaView>
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

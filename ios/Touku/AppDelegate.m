@@ -6,6 +6,7 @@
 #import "RNSplashScreen.h"
 @import Firebase;
 @import UIKit;
+@import GoogleSignIn;
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>

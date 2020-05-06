@@ -1,22 +1,76 @@
 import React, {Component} from 'react';
 import {View, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Colors, Icons} from '../constants';
+import * as RNLocalize from 'react-native-localize';
+import {setI18nConfig, setAppLanguage} from '../redux/reducers/languageReducer';
 
-export default class LanguageSelector extends Component {
+class LanguageSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isChecked: false,
+      selectedLanguage: this.props.selectedLanguage,
+      languages: [
+        {
+          language_id: 1,
+          language_name: 'en',
+          selected: true,
+        },
+
+        {
+          language_id: 2,
+          language_name: 'ja',
+          selected: false,
+        },
+      ],
+    };
   }
 
+  componentDidMount() {
+    RNLocalize.addEventListener('change', this.handleLocalizationChange);
+    this.state.languages.map((item) => {
+      if (item.selected == true) {
+        this.setState({selectedLanguage: item.language_name});
+        this.props.setAppLanguage(item.language_name);
+        setI18nConfig(item.language_name);
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    RNLocalize.removeEventListener('change', this.handleLocalizationChange);
+  }
+
+  handleLocalizationChange = () => {
+    setI18nConfig()
+      .then(() => this.forceUpdate())
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  onLanguageSelectPress = (language) => {
+    this.setState({selectedLanguage: language}, () => {
+      this.props.setAppLanguage(language);
+    });
+    setI18nConfig(language);
+    this.setState((prevState) => {
+      return {
+        isChecked: !prevState.isChecked,
+      };
+    });
+  };
+
   render() {
-    const {isChecked, onPress, onOtherLanguagePress} = this.props;
+    const {isChecked, selectedLanguage} = this.state;
     if (isChecked) {
       return (
         <View style={styles.container}>
           <TouchableOpacity
             style={styles.checkedIconContainer}
-            onPress={onPress}>
+            onPress={() => this.onLanguageSelectPress(selectedLanguage)}>
             <Image
               source={Icons.icon_language_select}
               style={styles.iconStyle}
@@ -24,7 +78,15 @@ export default class LanguageSelector extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.checkedIconContainer}
-            onPress={onOtherLanguagePress}>
+            onPress={() => this.onLanguageSelectPress('en')}>
+            <Image
+              source={Icons.icon_language_select}
+              style={styles.iconStyle}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.checkedIconContainer}
+            onPress={() => this.onLanguageSelectPress('ja')}>
             <Image
               source={Icons.icon_language_select}
               style={styles.iconStyle}
@@ -34,7 +96,9 @@ export default class LanguageSelector extends Component {
       );
     }
     return (
-      <TouchableOpacity style={styles.uncheckedIconContainer} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.uncheckedIconContainer}
+        onPress={() => this.onLanguageSelectPress(selectedLanguage)}>
         <Image source={Icons.icon_language_select} style={styles.iconStyle} />
       </TouchableOpacity>
     );
@@ -47,10 +111,9 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     borderRadius: 15,
     backgroundColor: 'rgba(0,0,0,0.4)',
-    zIndex: 10,
     position: 'absolute',
-    right: 0,
-    top: -13,
+    right: 10,
+    top: 10,
     overflow: 'hidden',
     display: 'flex',
   },
@@ -70,12 +133,14 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     margin: 6,
     position: 'absolute',
-    right: 0,
+    right: 10,
+    top: 10,
+    backgroundColor: 'red',
   },
   iconStyle: {
     width: '100%',
     height: '100%',
-    borderRadius: 20,
+    borderRadius: 18,
     resizeMode: 'contain',
   },
 });
@@ -94,3 +159,15 @@ LanguageSelector.defaultProps = {
   onPress: null,
   onOtherLanguagePress: null,
 };
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguage: state.languageReducer.selectedLanguage,
+  };
+};
+
+const mapDispatchToProps = {
+  setAppLanguage,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LanguageSelector);
