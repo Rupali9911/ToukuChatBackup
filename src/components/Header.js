@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import {Icons, Colors} from '../constants';
 
@@ -35,6 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
+    marginTop: Platform.OS === 'ios' ? 0 : 30,
   },
   backIcon: {
     width: 24,
