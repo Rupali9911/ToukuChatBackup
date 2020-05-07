@@ -17,18 +17,55 @@ class LanguageSelector extends Component {
     super(props);
     this.state = {
       isChecked: false,
-      selectedLanguage: this.props.selectedLanguage,
       languages: [
         {
           language_id: 1,
           language_name: 'en',
-          selected: true,
+          icon: Icons.icon_flag_america,
+          selected:
+            this.props.selectedLanguageItem.language_name === 'en'
+              ? true
+              : false,
         },
 
         {
           language_id: 2,
           language_name: 'ja',
-          selected: false,
+          icon: Icons.icon_flag_japan,
+          selected:
+            this.props.selectedLanguageItem.language_name === 'ja'
+              ? true
+              : false,
+        },
+
+        {
+          language_id: 3,
+          language_name: 'ch',
+          icon: Icons.icon_flag_china,
+          selected:
+            this.props.selectedLanguageItem.language_name === 'ch'
+              ? true
+              : false,
+        },
+
+        {
+          language_id: 4,
+          language_name: 'tw',
+          icon: Icons.icon_flag_taiwan,
+          selected:
+            this.props.selectedLanguageItem.language_name === 'tw'
+              ? true
+              : false,
+        },
+
+        {
+          language_id: 5,
+          language_name: 'ko',
+          icon: Icons.icon_flag_korea,
+          selected:
+            this.props.selectedLanguageItem.language_name === 'ko'
+              ? true
+              : false,
         },
       ],
     };
@@ -36,13 +73,12 @@ class LanguageSelector extends Component {
 
   componentDidMount() {
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
-    // this.state.languages.map((item) => {
-    //   if (item.selected == true) {
-    //     this.setState({selectedLanguage: item.language_name});
-    //     this.props.setAppLanguage(item.language_name);
-    //     setI18nConfig(item.language_name);
-    //   }
-    // });
+    this.state.languages.map((item) => {
+      if (item.selected == true) {
+        this.props.setAppLanguage(item);
+        setI18nConfig(item.language_name);
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -57,11 +93,9 @@ class LanguageSelector extends Component {
       });
   };
 
-  onLanguageSelectPress = (language) => {
-    this.setState({selectedLanguage: language}, () => {
-      this.props.setAppLanguage(language);
-    });
-    setI18nConfig(language);
+  onLanguageSelectPress = (item) => {
+    this.props.setAppLanguage(item);
+    setI18nConfig(item.language_name);
     this.setState((prevState) => {
       return {
         isChecked: !prevState.isChecked,
@@ -70,42 +104,40 @@ class LanguageSelector extends Component {
   };
 
   render() {
-    const {isChecked, selectedLanguage} = this.state;
+    const {isChecked, languages} = this.state;
+    const {selectedLanguageItem} = this.props;
     if (isChecked) {
       return (
         <View style={styles.container}>
           <TouchableOpacity
             style={styles.checkedIconContainer}
-            onPress={() => this.onLanguageSelectPress(selectedLanguage)}>
+            onPress={() => this.onLanguageSelectPress(selectedLanguageItem)}>
             <Image
-              source={Icons.icon_language_select}
+              source={selectedLanguageItem.icon}
               style={styles.iconStyle}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.checkedIconContainer}
-            onPress={() => this.onLanguageSelectPress('en')}>
-            <Image
-              source={Icons.icon_language_select}
-              style={styles.iconStyle}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.checkedIconContainer}
-            onPress={() => this.onLanguageSelectPress('ja')}>
-            <Image
-              source={Icons.icon_language_select}
-              style={styles.iconStyle}
-            />
-          </TouchableOpacity>
+
+          {languages.map((item, key) => (
+            <View>
+              {selectedLanguageItem.language_name ===
+              item.language_name ? null : (
+                <TouchableOpacity
+                  style={styles.checkedIconContainer}
+                  onPress={() => this.onLanguageSelectPress(item)}>
+                  <Image source={item.icon} style={styles.iconStyle} />
+                </TouchableOpacity>
+              )}
+            </View>
+          ))}
         </View>
       );
     }
     return (
       <TouchableOpacity
         style={styles.uncheckedIconContainer}
-        onPress={() => this.onLanguageSelectPress(selectedLanguage)}>
-        <Image source={Icons.icon_language_select} style={styles.iconStyle} />
+        onPress={() => this.onLanguageSelectPress(selectedLanguageItem)}>
+        <Image source={selectedLanguageItem.icon} style={styles.iconStyle} />
       </TouchableOpacity>
     );
   }
@@ -135,13 +167,12 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    borderWidth: 0,
+    borderWidth: 1,
     borderColor: Colors.primary,
     margin: 6,
     position: 'absolute',
     right: 10,
     top: Platform.OS === 'ios' ? 10 : 40,
-    backgroundColor: 'red',
   },
   iconStyle: {
     width: '100%',
@@ -168,7 +199,7 @@ LanguageSelector.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-    selectedLanguage: state.languageReducer.selectedLanguage,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
 };
 

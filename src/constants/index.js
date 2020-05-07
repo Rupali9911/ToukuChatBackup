@@ -7,6 +7,11 @@ export const Icons = {
   icon_line: require('../../assets/icons/line.png'),
   icon_google: require('../../assets/icons/googleplus.png'),
   icon_twitter: require('../../assets/icons/twitter.png'),
+  icon_flag_america: require('../../assets/icons/flag_america.png'),
+  icon_flag_china: require('../../assets/icons/flag_china.png'),
+  icon_flag_korea: require('../../assets/icons/flag_korea.png'),
+  icon_flag_japan: require('../../assets/icons/flag_japan.png'),
+  icon_flag_taiwan: require('../../assets/icons/flag_taiwan.png'),
 };
 
 export const Images = {
