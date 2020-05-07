@@ -7,18 +7,20 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import {Images} from '../../constants';
 import Header from '../../components/Header';
-import {translate} from '../../redux/reducers/languageReducer';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 
-export default class ForgotPassword extends Component {
+class ForgotPassword extends Component {
   constructor(props) {
     super(props);
+    setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
     };
@@ -94,18 +96,12 @@ export default class ForgotPassword extends Component {
   }
 }
 
-// const forgotStyles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   image: {
-//     flex: 1,
-//     padding: 10,
-//   },
-//   text: {
-//     fontSize: 12,
-//     padding: 15,
-//     textAlign: 'center',
-//     color: 'white',
-//   },
-// });
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);

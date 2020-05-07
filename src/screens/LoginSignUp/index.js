@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ImageBackground,
-  StyleSheet,
   SafeAreaView,
+  NativeModules,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -16,16 +16,21 @@ import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
-import Header from '../../components/Header';
 import Button from '../../components/Button';
 import {Images, Icons} from '../../constants';
 import {loginSignUpStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 
+const {RNTwitterSignIn} = NativeModules;
+const TwitterKeys = {
+  TWITTER_CONSUMER_KEY: 'jswnBuBVPVSlItRYpNnzldDaM',
+  TWITTER_CONSUMER_SECRET: 'vjYIzkKQR3DCRG1DNdAppfj3zbn48k2VECDVDRU8mKFn9Gfk5n',
+};
+
 class LoginSignUp extends Component {
   constructor(props) {
     super(props);
-    setI18nConfig(this.props.selectedLanguage);
+    setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
       pushData: [],
@@ -149,6 +154,47 @@ class LoginSignUp extends Component {
     return auth().signInWithCredential(facebookCredential);
   }
 
+  firebaseTwitterLogin() {
+    console.log('twitter tapped');
+    this.onTwitterButtonPress().then((result) =>
+      console.log('Signed in with twitter!', JSON.stringify(result)),
+    );
+  }
+
+  async onTwitterButtonPress() {
+    RNTwitterSignIn.init(
+      TwitterKeys.TWITTER_CONSUMER_KEY,
+      TwitterKeys.TWITTER_CONSUMER_SECRET,
+    ).then(() => console.log('Twitter SDK initialized'));
+
+    // Perform the login request
+    const {authToken, authTokenSecret} = await RNTwitterSignIn.logIn();
+
+    // Create a Twitter credential with the tokens
+    const twitterCredential = auth.TwitterAuthProvider.credential(
+      authToken,
+      authTokenSecret,
+    );
+
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(twitterCredential);
+    // RNTwitterSignIn.init(
+    //   TwitterKeys.TWITTER_CONSUMER_KEY,
+    //   TwitterKeys.TWITTER_CONSUMER_SECRET,
+    // );
+    // RNTwitterSignIn.logIn()
+    //   .then(function (loginData) {
+    //     var accessToken = auth.TwitterAuthProvider.credential(
+    //       loginData.authToken,
+    //       loginData.authTokenSecret,
+    //     );
+    //     handleFirebaseLogin(accessToken);
+    //   })
+    //   .catch(function (error) {
+    //     alert(error);
+    //   });
+  }
+
   render() {
     const {orientation} = this.state;
     return (
@@ -212,7 +258,7 @@ class LoginSignUp extends Component {
                 />
                 <SocialLogin
                   IconSrc={Icons.icon_twitter}
-                  onPress={() => alert('twitter clicked')}
+                  onPress={() => this.firebaseTwitterLogin()}
                 />
               </View>
               <View style={loginSignUpStyles.buttonContainer}>
@@ -246,7 +292,7 @@ const SocialLogin = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    selectedLanguage: state.languageReducer.selectedLanguage,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
 };
 

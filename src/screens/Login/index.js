@@ -22,7 +22,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 class Login extends Component {
   constructor(props) {
     super(props);
-    setI18nConfig(this.props.selectedLanguage);
+    setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
       isRememberChecked: false,
@@ -167,7 +167,7 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    selectedLanguage: state.languageReducer.selectedLanguage,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
 };
 

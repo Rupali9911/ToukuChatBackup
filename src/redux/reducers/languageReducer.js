@@ -2,10 +2,14 @@
 import * as RNLocalize from 'react-native-localize';
 import i18n from 'i18n-js';
 import memoize from 'lodash.memoize';
+import {Icons} from '../../constants/index.js';
 
 export const translationGetters = {
   en: () => require('../../translations/en.json'),
   ja: () => require('../../translations/ja.json'),
+  ko: () => require('../../translations/ko.json'),
+  ch: () => require('../../translations/ch.json'),
+  tw: () => require('../../translations/tw.json'),
 };
 
 export const translate = memoize(
@@ -33,7 +37,12 @@ export const SET_LANGUAGE_SELECTED = 'SET_LANGUAGE_SELECTED';
 
 const initialState = {
   loading: false,
-  selectedLanguage: 'ja',
+  selectedLanguageItem: {
+    language_id: 1,
+    language_name: 'en',
+    icon: Icons.icon_flag_america,
+    selected: true,
+  },
   en: [],
 };
 
@@ -60,7 +69,7 @@ export default function (state = initialState, action) {
     case SET_LANGUAGE_SELECTED:
       return {
         ...state,
-        selectedLanguage: action.payload,
+        selectedLanguageItem: action.payload.data,
       };
 
     default:
@@ -84,10 +93,12 @@ const getLanguagesFailure = () => ({
 });
 
 //Set Selevted Language
-export const setAppLanguage = (language) => (dispatch) =>
-  dispatch(setSelectedLanguage(language));
+export const setAppLanguage = (data) => (dispatch) =>
+  dispatch(setSelectedLanguage(data));
 
-const setSelectedLanguage = (language) => ({
+const setSelectedLanguage = (data) => ({
   type: SET_LANGUAGE_SELECTED,
-  payload: language,
+  payload: {
+    data: data,
+  },
 });
