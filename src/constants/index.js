@@ -1,3 +1,5 @@
+import {Platform} from 'react-native';
+
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
   icon_back: require('../../assets/icons/back_icon.png'),
@@ -15,7 +17,7 @@ export const Icons = {
 };
 
 export const Images = {
-  image_touku_bg: require('../../assets/images/newbg.png'),
+  image_touku_bg: require('../../assets/images/touku_bg_new.png'),
 };
 
 export const Colors = {
@@ -25,4 +27,17 @@ export const Colors = {
   gradient_1: '#ef4f8f',
   gradient_2: '#f27478',
   gradient_3: '#f68b6b',
+};
+
+export const Fonts = {
+  regular: 'Poppins-Regular',
+  medium: 'Poppins-Medium',
+  thin: 'Poppins-Thin',
+  light: 'Poppins-Light',
+  semibold: 'Poppins-SemiBold',
+  bold: 'Poppins-Bold',
+  black: 'Poppins-Black',
+  extralight: 'Poppins-ExtraLight',
+  extrabold: 'Poppins-ExtraBold',
+  absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
 };

@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
-import {Colors, Icons} from '../constants';
+import {Colors, Icons, Fonts} from '../constants';
+import {globalStyles} from '../styles';
 
 export default class InputField extends Component {
   constructor(props) {
@@ -33,7 +34,9 @@ export default class InputField extends Component {
     this.textInput.focus();
   }
 
-  onFocus() {}
+  onFocus() {
+    this.setState({isFocus: true});
+  }
 
   onBlur() {
     this.setState({isFocus: false});
@@ -82,7 +85,7 @@ export default class InputField extends Component {
             style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image
               source={Icons.icon_language_select}
-              style={styles.iconStyle}
+              style={globalStyles.iconStyle}
             />
             <Image
               source={Icons.icon_triangle_down}
@@ -121,7 +124,7 @@ export default class InputField extends Component {
               locations={[0.1, 0.6, 1]}
               colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
               style={styles.rightBtnSubContainer}>
-              <Text style={{color: Colors.white, fontSize: 12}}>
+              <Text style={globalStyles.smallRegularText}>
                 {this.props.rightBtnText}
               </Text>
             </LinearGradient>
@@ -133,7 +136,7 @@ export default class InputField extends Component {
                 <TouchableOpacity activeOpacity={0.8} onPress={onClearValue}>
                   <Image
                     source={Icons.icon_circle_cross}
-                    style={styles.iconStyle}
+                    style={globalStyles.iconStyle}
                   />
                 </TouchableOpacity>
               ) : null}
@@ -158,11 +161,9 @@ const styles = StyleSheet.create({
   inputStyle: {
     flex: 1,
     color: Colors.white,
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 24,
-    height: 24,
+    fontSize: 13,
+    fontFamily: Fonts.light,
+    marginHorizontal: 5,
   },
   iconTriangle: {
     width: 10,
@@ -172,11 +173,6 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 12,
-  },
-  titleTxt: {
-    fontSize: 16,
-    color: '#ccc',
-    margin: 5,
   },
   rightBtnContainer: {
     borderTopRightRadius: 45 / 2,

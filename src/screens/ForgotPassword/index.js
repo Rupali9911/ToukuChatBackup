@@ -16,6 +16,7 @@ import Header from '../../components/Header';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
+import {globalStyles} from '../../styles';
 
 class ForgotPassword extends Component {
   constructor(props) {
@@ -48,8 +49,8 @@ class ForgotPassword extends Component {
     return (
       <ImageBackground
         source={Images.image_touku_bg}
-        style={forgotStyles.container}>
-        <SafeAreaView style={forgotStyles.container}>
+        style={globalStyles.container}>
+        <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
             contentContainerStyle={{padding: 20}}
             showsVerticalScrollIndicator={false}>
@@ -60,12 +61,13 @@ class ForgotPassword extends Component {
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
               }}>
               <Text
-                style={{
-                  textAlign: 'center',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: 28,
-                  marginVertical: 50,
-                }}>
+                style={[
+                  globalStyles.bigSemiBoldText,
+                  {
+                    marginVertical: 50,
+                    opacity: 0.8,
+                  },
+                ]}>
                 {translate('pages.resetPassword.resetPassword')}
               </Text>
               <View>
