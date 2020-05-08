@@ -19,6 +19,7 @@ import Header from '../../components/Header';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
+import {globalStyles} from '../../styles';
 
 class SignUp extends Component {
   constructor(props) {
@@ -89,7 +90,7 @@ class SignUp extends Component {
       case 0:
         return (
           <View>
-            <Text style={signUpStyles.text}>
+            <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepOne')}
             </Text>
             <View style={{marginTop: 50}}>
@@ -131,7 +132,7 @@ class SignUp extends Component {
       case 1:
         return (
           <View>
-            <Text style={signUpStyles.text}>
+            <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepTwo')}
             </Text>
             <View style={{marginTop: 50}}>
@@ -171,7 +172,7 @@ class SignUp extends Component {
       case 2:
         return (
           <View>
-            <Text style={signUpStyles.text}>
+            <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepThree')}
             </Text>
             <View style={{marginTop: 50}}>
@@ -207,7 +208,11 @@ class SignUp extends Component {
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={this.state.isAgreeWithTerms}
                 />
-                <Text style={signUpStyles.underlineTxt}>
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {textDecorationLine: 'underline'},
+                  ]}>
                   {translate('pages.register.iAgreeToTheTerms&Conditions')}
                 </Text>
               </View>
@@ -222,8 +227,8 @@ class SignUp extends Component {
     return (
       <ImageBackground
         source={Images.image_touku_bg}
-        style={signUpStyles.container}>
-        <SafeAreaView style={{flex: 1}}>
+        style={globalStyles.container}>
+        <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
             contentContainerStyle={{padding: 20}}
             showsVerticalScrollIndicator={false}>
@@ -242,6 +247,7 @@ class SignUp extends Component {
               style={{
                 flex: 1,
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
+                marginTop: 20,
               }}>
               {this.renderPage(currentPosition)}
             </View>

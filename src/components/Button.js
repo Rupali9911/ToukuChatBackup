@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
-import {Colors} from '../constants';
+import {Colors, Fonts} from '../constants';
+import {globalStyles} from '../styles';
 
 export default class Button extends Component {
   constructor(props) {
@@ -42,7 +43,7 @@ export default class Button extends Component {
           locations={[0.1, 0.6, 1]}
           colors={this.getGradientColors()}
           style={[styles.linearGradient, {borderColor: this.getBorderColor()}]}>
-          <Text style={styles.btnTitle}>{title}</Text>
+          <Text style={globalStyles.normalLightText}>{title}</Text>
         </LinearGradient>
       </TouchableOpacity>
     );
@@ -56,11 +57,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 5,
-  },
-  btnTitle: {
-    color: 'white',
-    fontSize: 14,
+    marginVertical: 5,
   },
 });
 

@@ -20,6 +20,7 @@ import Button from '../../components/Button';
 import {Images, Icons} from '../../constants';
 import {loginSignUpStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
+import {globalStyles} from '../../styles';
 
 const {RNTwitterSignIn} = NativeModules;
 const TwitterKeys = {
@@ -197,28 +198,41 @@ class LoginSignUp extends Component {
 
   render() {
     const {orientation} = this.state;
+    const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
-        style={loginSignUpStyles.container}
+        style={globalStyles.container}
         resizeMode={'cover'}>
-        <SafeAreaView style={loginSignUpStyles.safeAreaView}>
+        <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
             contentContainerStyle={{
-              flex: 1,
               padding: 20,
-            }}>
+              paddingTop: orientation != 'PORTRAIT' ? 20 : 120,
+            }}
+            showsVerticalScrollIndicator={false}>
             <View
               style={{
                 flex: 1,
-                justifyContent: 'center',
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
               }}>
-              <View style={{marginBottom: 25}}>
-                <Text style={loginSignUpStyles.text}>
+              <Text style={globalStyles.logoText}>
+                {translate('header.logoTitle')}
+              </Text>
+              <View
+                style={{
+                  flexDirection:
+                    selectedLanguageItem.language_name != 'en'
+                      ? 'row'
+                      : 'column',
+                  justifyContent: 'center',
+                  marginBottom: 25,
+                  marginTop: orientation != 'PORTRAIT' ? 0 : 50,
+                }}>
+                <Text style={[globalStyles.smallLightText, {marginEnd: 10}]}>
                   {translate('pages.welcome.theWorldIsConnected')}
                 </Text>
-                <Text style={loginSignUpStyles.text}>
+                <Text style={globalStyles.smallLightText}>
                   {translate('pages.welcome.connectedByTouku')}
                 </Text>
               </View>
@@ -232,8 +246,8 @@ class LoginSignUp extends Component {
                 title={translate('pages.welcome.signUp')}
                 onPress={() => this.onSignUpPress()}
               />
-              <View style={{marginTop: 25}}>
-                <Text style={loginSignUpStyles.text}>
+              <View style={{marginTop: 30, marginBottom: 10}}>
+                <Text style={globalStyles.smallLightText}>
                   {translate('pages.welcome.OrLoginWith')}
                 </Text>
               </View>
@@ -242,7 +256,7 @@ class LoginSignUp extends Component {
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
-                  marginTop: 20,
+                  marginTop: 10,
                 }}>
                 <SocialLogin
                   IconSrc={Icons.icon_facebook}
@@ -261,7 +275,7 @@ class LoginSignUp extends Component {
                   onPress={() => this.firebaseTwitterLogin()}
                 />
               </View>
-              <View style={loginSignUpStyles.buttonContainer}>
+              <View>
                 {/* {!this.state.loggedIn && (
                   <Text>You are currently logged out</Text>
                 )} */}
@@ -282,10 +296,13 @@ class LoginSignUp extends Component {
   }
 }
 
-const SocialLogin = (props) => {
+export const SocialLogin = (props) => {
   return (
     <TouchableOpacity onPress={props.onPress} activeOpacity={0.6}>
-      <Image source={props.IconSrc} style={loginSignUpStyles.iconStyle} />
+      <Image
+        source={props.IconSrc}
+        style={[globalStyles.iconStyle, {marginHorizontal: 10}]}
+      />
     </TouchableOpacity>
   );
 };

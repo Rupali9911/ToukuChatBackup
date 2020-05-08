@@ -6,19 +6,6 @@ export const signUpStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0, 0.1)',
   },
-  text: {
-    fontSize: 12,
-    padding: 15,
-    textAlign: 'center',
-    color: 'white',
-  },
-  underlineTxt: {
-    fontSize: 14,
-    paddingVertical: 5,
-    textAlign: 'center',
-    color: 'white',
-    textDecorationLine: 'underline',
-  },
   termsContainer: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
