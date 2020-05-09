@@ -4,6 +4,7 @@ export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
   icon_back: require('../../assets/icons/back_icon.png'),
   icon_tick: require('../../assets/icons/tick.png'),
+  icon_close: require('../../assets/icons/close.png'),
   icon_triangle_down: require('../../assets/icons/triangle_down.png'),
   icon_facebook: require('../../assets/icons/facebook.png'),
   icon_line: require('../../assets/icons/line.png'),

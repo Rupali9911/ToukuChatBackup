@@ -51,6 +51,25 @@ export default class InputField extends Component {
     }
   };
 
+  renderInputStatus() {
+    switch (this.props.status) {
+      case 'normal':
+        return <View />;
+      case 'wrong':
+        return (
+          <View style={{paddingEnd: 18}}>
+            <Image source={Icons.icon_close} style={globalStyles.iconStyle} />
+          </View>
+        );
+      case 'right':
+        return (
+          <View style={{paddingEnd: 18}}>
+            <Image source={Icons.icon_tick} style={globalStyles.iconStyle} />
+          </View>
+        );
+    }
+  }
+
   render() {
     const {
       placeholder,
@@ -67,6 +86,7 @@ export default class InputField extends Component {
       isLeftSideBtn,
       selectedValue,
       onPickerValueChange,
+      status,
       ...rest
     } = this.props;
 
@@ -129,7 +149,9 @@ export default class InputField extends Component {
               </Text>
             </LinearGradient>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <View>{this.renderInputStatus()}</View>
+        )}
 
         {/* <View>
               {isFocus ? (
@@ -203,6 +225,7 @@ InputField.propTypes = {
   isRightSideBtn: PropTypes.any,
   isLeftSideBtn: PropTypes.any,
   isIconRight: PropTypes.bool,
+  status: PropTypes.oneOf(['normal', 'wrong', 'right']),
   iconRightUrl: PropTypes.any,
   /**
    * Callbacks
@@ -221,4 +244,5 @@ InputField.defaultProps = {
   isRightSideBtn: false,
   isLeftSideBtn: false,
   isIconRight: false,
+  status: 'normal',
 };
