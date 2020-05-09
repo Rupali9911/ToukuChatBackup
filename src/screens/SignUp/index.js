@@ -20,6 +20,7 @@ import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
+import CountryPhoneInput from '../../components/CountryPhoneInput';
 
 class SignUp extends Component {
   constructor(props) {
@@ -32,6 +33,7 @@ class SignUp extends Component {
       isAgreeWithTerms: false,
 
       //Page 1
+      countryCode: '',
       phone: '',
       verifycode: '',
       //Page 2
@@ -40,6 +42,12 @@ class SignUp extends Component {
       //Page 3
       username: '',
       password: '',
+      passwordConfirm: '',
+
+      emailStatus: 'normal',
+      emailConfirmStatus: 'normal',
+      passwordStatus: 'normal',
+      passwordConfirmStatus: 'normal',
     };
 
     this.focusNextField = this.focusNextField.bind(this);
@@ -85,6 +93,69 @@ class SignUp extends Component {
     });
   }
 
+  onChangePhoneNumber(phone, code) {
+    this.setState({phone, countryCode: code});
+  }
+
+  handleEmail = (email) => {
+    this.setState({email});
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    let isValid = true;
+
+    if (email.length <= 0) {
+      isValid = false;
+      this.setState({emailStatus: 'wrong'});
+    } else if (reg.test(email) === false) {
+      isValid = false;
+      this.setState({emailStatus: 'wrong'});
+    }
+    if (isValid) {
+      this.setState({emailStatus: 'right'});
+    }
+  };
+
+  handleConfirmEmail = (emailconfirm) => {
+    this.setState({emailconfirm});
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    let isValid = true;
+
+    if (emailconfirm.length <= 0) {
+      isValid = false;
+      this.setState({emailConfirmStatus: 'wrong'});
+    } else if (reg.test(emailconfirm) === false) {
+      isValid = false;
+      this.setState({emailConfirmStatus: 'wrong'});
+    } else if (this.state.email != emailconfirm) {
+      isValid = false;
+      this.setState({emailConfirmStatus: 'wrong'});
+    }
+    if (isValid) {
+      this.setState({emailConfirmStatus: 'right'});
+    }
+  };
+
+  handlePassword = (password) => {
+    this.setState({password});
+    if (password.length < 6) {
+      this.setState({passwordStatus: 'wrong'});
+    } else {
+      this.setState({passwordStatus: 'right'});
+    }
+  };
+
+  handleConfirmPassword = (passwordConfirm) => {
+    this.setState({passwordConfirm});
+    if (passwordConfirm.length < 6) {
+      this.setState({passwordConfirmStatus: 'wrong'});
+    } else if (this.state.password != this.state.passwordConfirm) {
+      this.setState({passwordConfirmStatus: 'wrong'});
+    } else {
+      this.setState({passwordConfirmStatus: 'right'});
+    }
+  };
+
   renderPage(page) {
     switch (page) {
       case 0:
@@ -94,7 +165,15 @@ class SignUp extends Component {
               {translate('common.registerStepOne')}
             </Text>
             <View style={{marginTop: 50}}>
-              <Inputfield
+              <CountryPhoneInput
+                rightBtnText={'SMS'}
+                // onPressConfirm={() => alert(123)}
+                onChangePhoneNumber={(phone, code) =>
+                  this.onChangePhoneNumber(phone, code)
+                }
+                value={this.state.phone}
+              />
+              {/* <Inputfield
                 onRef={(ref) => {
                   this.inputs['phone'] = ref;
                 }}
@@ -109,7 +188,7 @@ class SignUp extends Component {
                 onSubmitEditing={() => {
                   this.focusNextField('verifycode');
                 }}
-              />
+              /> */}
               <Inputfield
                 onRef={(ref) => {
                   this.inputs['verifycode'] = ref;
@@ -120,6 +199,7 @@ class SignUp extends Component {
                 keyboardType={'number-pad'}
                 onChangeText={(verifycode) => this.setState({verifycode})}
                 onSubmitEditing={() => {}}
+                maxLength={6}
               />
               <Button
                 type={'primary'}
@@ -144,10 +224,11 @@ class SignUp extends Component {
                 placeholder={translate('common.email')}
                 returnKeyType={'next'}
                 keyboardType={'email-address'}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(email) => this.handleEmail(email)}
                 onSubmitEditing={() => {
                   this.focusNextField('emailconfirm');
                 }}
+                status={this.state.emailStatus}
               />
               <Inputfield
                 onRef={(ref) => {
@@ -157,8 +238,11 @@ class SignUp extends Component {
                 placeholder={translate('common.emailConfirmation')}
                 returnKeyType={'done'}
                 keyboardType={'email-address'}
-                onChangeText={(emailconfirm) => this.setState({emailconfirm})}
+                onChangeText={(emailconfirm) =>
+                  this.handleConfirmEmail(emailconfirm)
+                }
                 onSubmitEditing={() => {}}
+                status={this.state.emailConfirmStatus}
               />
 
               <Button
@@ -191,12 +275,21 @@ class SignUp extends Component {
                 }}
                 value={this.state.password}
                 placeholder={translate('pages.register.loginPassword')}
-                returnKeyType={'done'}
-                onChangeText={(password) => this.setState({password})}
+                returnKeyType={'next'}
+                onChangeText={(password) => this.handlePassword(password)}
                 onSubmitEditing={() => {}}
+                secureTextEntry={true}
+                status={this.state.passwordStatus}
               />
               <Inputfield
+                value={this.state.passwordConfirm}
                 placeholder={translate('pages.register.reEnterLoginPassword')}
+                returnKeyType={'done'}
+                onChangeText={(passwordConfirm) =>
+                  this.handleConfirmPassword(passwordConfirm)
+                }
+                secureTextEntry={true}
+                status={this.state.passwordConfirmStatus}
               />
               <Button
                 type={'primary'}
@@ -262,6 +355,7 @@ class SignUp extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    englishLanguage: state.languageReducer.en,
   };
 };
 

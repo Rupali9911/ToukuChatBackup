@@ -18,12 +18,13 @@ import Button from '../../components/Button';
 import Inputfield from '../../components/InputField';
 import CheckBox from '../../components/CheckBox';
 import {Colors, Images, Icons} from '../../constants';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import Header from '../../components/Header';
 import {loginStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {SocialLogin} from '../LoginSignUp';
 import {globalStyles} from '../../styles';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {userLogin} from '../../redux/reducers/userReducer';
 
 class Login extends Component {
   constructor(props) {
@@ -35,6 +36,9 @@ class Login extends Component {
       isCheckLanguages: false,
       username: '',
       password: '',
+      authError: '',
+      userNameStatus: 'normal',
+      passwordStatus: 'normal',
     };
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -48,6 +52,22 @@ class Login extends Component {
   componentDidMount() {
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
     Orientation.addOrientationListener(this._orientationDidChange);
+
+    // fetch('https://touku.angelium.net/api/jwt/api-token-auth-xana/', {
+    //   method: 'POST',
+    //   headers: {
+    //     Accept: 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     dev_id: '',
+    //     email: 'new.register@angelium.net',
+    //     password: 'Test@123',
+    //     rememberMe: false,
+    //   }),
+    // })
+    //   .then((response) => alert(JSON.stringify(response)))
+    //   .catch((err) => alert(JSON.stringify(err)));
   }
 
   componentWillUnmount() {
@@ -70,8 +90,6 @@ class Login extends Component {
   focusNextField(id) {
     this.inputs[id].focus();
   }
-
-  onLoginPress() {}
 
   onCheckRememberMe() {
     this.setState((prevState) => {
@@ -203,8 +221,84 @@ class Login extends Component {
     //   });
   }
 
+  handleUserName = (username) => {
+    this.setState({username});
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    let isValid = true;
+
+    if (username.length <= 0) {
+      isValid = false;
+      this.setState({userNameStatus: 'wrong'});
+    } else if (reg.test(username) === false) {
+      isValid = false;
+      this.setState({userNameStatus: 'wrong'});
+    }
+    if (isValid) {
+      this.setState({userNameStatus: 'right'});
+    }
+  };
+
+  handlePassword = (password) => {
+    this.setState({password});
+    if (password.length < 6) {
+      this.setState({passwordStatus: 'wrong'});
+    } else {
+      this.setState({passwordStatus: 'right'});
+    }
+  };
+
+  onLoginPress() {
+    const {username, password, isRememberChecked} = this.state;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    let isValid = true;
+
+    if (username.length <= 0) {
+      isValid = false;
+      this.setState({userNameStatus: 'wrong'});
+    } else if (reg.test(username) === false) {
+      isValid = false;
+      this.setState({userNameStatus: 'wrong'});
+    } else {
+      this.setState({userNameStatus: 'right'});
+    }
+
+    if (password.length < 6) {
+      isValid = false;
+      this.setState({passwordStatus: 'wrong'});
+    } else {
+      this.setState({passwordStatus: 'right'});
+    }
+
+    if (isValid) {
+      let loginData = {
+        dev_id: '',
+        email: username,
+        password: password,
+        rememberMe: isRememberChecked,
+      };
+      this.props.userLogin(loginData);
+    }
+
+    let loginData = {
+      dev_id: '',
+      email: 'new.register@angelium.net',
+      password: 'Test@123',
+      rememberMe: false,
+    };
+    this.props.userLogin(loginData);
+  }
+
   render() {
-    const {isRememberChecked, isCheckLanguages, orientation} = this.state;
+    const {
+      isRememberChecked,
+      isCheckLanguages,
+      orientation,
+      authError,
+      userNameStatus,
+      passwordStatus,
+    } = this.state;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
@@ -233,10 +327,11 @@ class Login extends Component {
                   value={this.state.username}
                   placeholder={translate('common.username')}
                   returnKeyType={'next'}
-                  onChangeText={(username) => this.setState({username})}
+                  onChangeText={(username) => this.handleUserName(username)}
                   onSubmitEditing={() => {
                     this.focusNextField('password');
                   }}
+                  status={userNameStatus}
                 />
                 <Inputfield
                   onRef={(ref) => {
@@ -245,9 +340,26 @@ class Login extends Component {
                   value={this.state.password}
                   placeholder={translate('pages.register.loginPassword')}
                   returnKeyType={'done'}
-                  onChangeText={(password) => this.setState({password})}
+                  secureTextEntry={true}
+                  onChangeText={(password) => this.handlePassword(password)}
                   onSubmitEditing={() => {}}
+                  status={passwordStatus}
                 />
+
+                {authError != '' ? (
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        textAlign: 'left',
+                        marginTop: -10,
+                        marginStart: 10,
+                        marginBottom: 5,
+                      },
+                    ]}>
+                    {authError}
+                  </Text>
+                ) : null}
               </View>
               <View style={loginStyles.rememberContainer}>
                 <CheckBox
@@ -337,6 +449,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  userLogin,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -7,12 +7,14 @@ import {
   StatusBar,
   StyleSheet,
 } from 'react-native';
+import {connect} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import SplashScreen from 'react-native-splash-screen';
 import {authenticationStyles} from './styles';
 import {Colors} from '../../constants';
+import {getAllLanguages} from '../../redux/reducers/languageReducer';
 
-export default class Authentication extends Component {
+class Authentication extends Component {
   constructor() {
     super();
     this.authenticateUser();
@@ -24,6 +26,7 @@ export default class Authentication extends Component {
   };
 
   componentDidMount() {
+    this.props.getAllLanguages();
     SplashScreen.hide();
   }
 
@@ -38,3 +41,15 @@ export default class Authentication extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+  };
+};
+
+const mapDispatchToProps = {
+  getAllLanguages,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Authentication);
