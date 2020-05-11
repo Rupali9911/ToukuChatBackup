@@ -1,5 +1,10 @@
 import React, {Component} from 'react';
-import {Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import {Colors, Fonts} from '../constants';
@@ -33,8 +38,19 @@ export default class Button extends Component {
     }
   }
 
+  getIndicatorColor() {
+    switch (this.props.type) {
+      case 'primary':
+        return Colors.white;
+      case 'transparent':
+        return Colors.primary;
+      default:
+        return Colors.white;
+    }
+  }
+
   render() {
-    const {title, onPress} = this.props;
+    const {title, onPress, loading} = this.props;
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
         <LinearGradient
@@ -43,7 +59,14 @@ export default class Button extends Component {
           locations={[0.1, 0.6, 1]}
           colors={this.getGradientColors()}
           style={[styles.linearGradient, {borderColor: this.getBorderColor()}]}>
-          <Text style={globalStyles.normalLightText}>{title}</Text>
+          {loading ? (
+            <ActivityIndicator
+              size={'small'}
+              color={this.getIndicatorColor()}
+            />
+          ) : (
+            <Text style={globalStyles.normalLightText}>{title}</Text>
+          )}
         </LinearGradient>
       </TouchableOpacity>
     );

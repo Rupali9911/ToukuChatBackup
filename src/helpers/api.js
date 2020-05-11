@@ -14,8 +14,9 @@ export const client = axios.create({
   baseURL: apiRoot,
   timeout: 30000,
   headers: {
-    Accept: 'application/json',
     'Content-Type': 'application/json',
+    'User-Agent':
+      'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1',
   },
 });
 
@@ -24,15 +25,10 @@ client.interceptors.request.use(
   async function (config) {
     // Do something before request is sent
     // let basicAuth = store.getState().home.accessToken;
-    // var basicAuth = await AsyncStorage.getItem('userToken');
-    var basicAuth =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU4OTExMDMzMiwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.YkaHIGljyVV9fIqHtlKZ7FL1SvqrYM-Am_ctdlvEEVg';
-
+    var basicAuth = await AsyncStorage.getItem('userToken');
     if (basicAuth && basicAuth != null) {
       config.headers.Authorization = `JWT ${basicAuth}`;
       //console.log("Token", config.headers.Authorization);
-    } else {
-      // NavigatorService.navigate("SignIn");
     }
     return config;
   },
@@ -44,13 +40,21 @@ client.interceptors.request.use(
 // Add a response interceptor
 client.interceptors.response.use(
   function (response) {
-    if (response.data && response.data.status) return response.data;
-    else {
+    if (response.data) {
+      return response.data;
+    } else {
       var message = 'We had trouble connecting to the server';
       if (response.data.message) message = response.data.message;
 
       return Promise.reject(response);
     }
+    // if (response.data && response.data.status) return response.data;
+    // else {
+    //   var message = 'We had trouble connecting to the server';
+    //   if (response.data.message) message = response.data.message;
+
+    //   return Promise.reject(response);
+    // }
   },
   function (error) {
     return Promise.reject(error);
