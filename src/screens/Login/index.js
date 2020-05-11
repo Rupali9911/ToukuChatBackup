@@ -6,6 +6,7 @@ import {
   ImageBackground,
   StyleSheet,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -249,6 +250,7 @@ class Login extends Component {
   };
 
   onLoginPress() {
+    this.setState({authError: ''});
     const {username, password, isRememberChecked} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -278,16 +280,15 @@ class Login extends Component {
         password: password,
         rememberMe: isRememberChecked,
       };
-      this.props.userLogin(loginData);
+      this.props.userLogin(loginData).then((res) => {
+        if (res.token) {
+          this.props.navigation.navigate('Home');
+        }
+        if (res.user) {
+          this.setState({authError: res.user});
+        }
+      });
     }
-
-    let loginData = {
-      dev_id: '',
-      email: 'new.register@angelium.net',
-      password: 'Test@123',
-      rememberMe: false,
-    };
-    this.props.userLogin(loginData);
   }
 
   render() {
@@ -316,13 +317,13 @@ class Login extends Component {
               style={{
                 flex: 1,
                 justifyContent: 'center',
-                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-                paddingTop: orientation != 'PORTRAIT' ? 0 : 60,
+                paddingHorizontal: orientation !== 'PORTRAIT' ? 50 : 0,
+                paddingTop: orientation !== 'PORTRAIT' ? 0 : 60,
               }}>
               <Text style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
-              <View style={{paddingTop: orientation != 'PORTRAIT' ? 0 : 40}}>
+              <View style={{paddingTop: orientation !== 'PORTRAIT' ? 0 : 40}}>
                 <Inputfield
                   value={this.state.username}
                   placeholder={translate('common.username')}
@@ -346,7 +347,7 @@ class Login extends Component {
                   status={passwordStatus}
                 />
 
-                {authError != '' ? (
+                {authError !== '' ? (
                   <Text
                     style={[
                       globalStyles.smallLightText,
@@ -361,7 +362,10 @@ class Login extends Component {
                   </Text>
                 ) : null}
               </View>
-              <View style={loginStyles.rememberContainer}>
+              <TouchableOpacity
+                style={loginStyles.rememberContainer}
+                activeOpacity={1}
+                onPress={() => this.onCheckRememberMe()}>
                 <CheckBox
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={isRememberChecked}
@@ -369,7 +373,7 @@ class Login extends Component {
                 <Text style={globalStyles.smallLightText}>
                   {translate('pages.login.rememberMe')}
                 </Text>
-              </View>
+              </TouchableOpacity>
               <Button
                 type={'primary'}
                 title={translate('common.login')}
@@ -378,33 +382,52 @@ class Login extends Component {
               <View
                 style={{
                   flexDirection: 'row',
-                  alignSelf: 'center',
+                  // alignSelf: 'center',
                   marginTop: 15,
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 10,
                 }}>
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {textDecorationLine: 'underline'},
-                  ]}>
-                  {translate('common.username')}
-                </Text>
-                <Text
-                  style={[globalStyles.smallLightText, {marginHorizontal: 5}]}>
-                  {'OR '}
-                </Text>
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {textDecorationLine: 'underline'},
-                  ]}
-                  onPress={() =>
-                    this.props.navigation.navigate('ForgotPassword')
-                  }>
-                  {translate('common.password')}
-                </Text>
-                <Text style={globalStyles.smallLightText}>
-                  {' ' + translate('common.forgot')}
-                </Text>
+                <View>
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {textDecorationLine: 'underline'},
+                    ]}>
+                    {'Need Support?'}
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {textDecorationLine: 'underline'},
+                    ]}
+                    onPress={() =>
+                      this.props.navigation.navigate('ForgotUsername')
+                    }>
+                    {translate('common.username')}
+                  </Text>
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {marginHorizontal: 5},
+                    ]}>
+                    {translate('pages.setting.or')}
+                  </Text>
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {textDecorationLine: 'underline'},
+                    ]}
+                    onPress={() =>
+                      this.props.navigation.navigate('ForgotPassword')
+                    }>
+                    {translate('common.password')}
+                  </Text>
+                  <Text style={globalStyles.smallLightText}>
+                    {' ' + translate('common.forgot')}
+                  </Text>
+                </View>
               </View>
               <View style={{marginTop: 25}}>
                 <Text style={globalStyles.smallLightText}>
