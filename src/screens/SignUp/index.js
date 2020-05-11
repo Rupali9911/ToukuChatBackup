@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -22,7 +23,12 @@ import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
 import CountryPhoneInput from '../../components/CountryPhoneInput';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
-import {userSignUp} from '../../redux/reducers/userReducer';
+import {
+  userSendOTP,
+  userVerifyOTP,
+  userEmailCheck,
+  userNameCheck,
+} from '../../redux/reducers/userReducer';
 
 class SignUp extends Component {
   constructor(props) {
@@ -77,15 +83,63 @@ class SignUp extends Component {
     this.inputs[id].focus();
   }
 
-  onPageChange(position) {
-    this.setState({
-      currentPosition: position,
+  sendOTP() {
+    const {phone, countryCode} = this.state;
+    let signUpData = {
+      phone: '+' + countryCode + phone,
+      user_type: 'user',
+    };
+    this.props.userSendOTP(signUpData).then((res) => {
+      if (res) {
+        alert('IF section' + JSON.stringify(res));
+      }
     });
+  }
+
+  onPageChange(position) {
+    const {phone, countryCode, verifycode, email, emailconfirm} = this.state;
+    switch (position) {
+      case 1:
+        if (phone !== '' && phone.length <= 10) {
+          let verifyData = {
+            code: verifycode,
+            phone: '+' + countryCode + phone,
+          };
+          this.props.userVerifyOTP(verifyData).then((res) => {
+            if (res) {
+              this.setState({
+                currentPosition: position,
+              });
+            }
+          });
+        } else {
+          alert('please enter mobile number to proceed further');
+        }
+
+        break;
+
+      case 2: {
+        this.props.userEmailCheck(emailconfirm).then((res) => {
+          if (res.status) {
+            alert('Email already exists! ');
+          } else {
+            this.setState({
+              currentPosition: position,
+            });
+          }
+        });
+
+        break;
+      }
+    }
   }
 
   onSignUpPress() {
     // alert('completed');
-    this.props.userSignUp();
+    const {username} = this.state;
+    this.props.userNameCheck(username).then((res) => {
+      alert(res);
+    });
   }
 
   onCheckRememberMe() {
@@ -170,7 +224,7 @@ class SignUp extends Component {
             <View style={{marginTop: 50}}>
               <CountryPhoneInput
                 rightBtnText={'SMS'}
-                // onPressConfirm={() => alert(123)}
+                onPressConfirm={() => this.sendOTP()}
                 onChangePhoneNumber={(phone, code) =>
                   this.onChangePhoneNumber(phone, code)
                 }
@@ -299,7 +353,10 @@ class SignUp extends Component {
                 title={translate('common.signUp')}
                 onPress={() => this.onSignUpPress()}
               />
-              <View style={signUpStyles.termsContainer}>
+              <TouchableOpacity
+                style={signUpStyles.termsContainer}
+                activeOpacity={1}
+                onPress={() => this.onCheckRememberMe()}>
                 <CheckBox
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={this.state.isAgreeWithTerms}
@@ -311,7 +368,7 @@ class SignUp extends Component {
                   ]}>
                   {translate('pages.register.iAgreeToTheTerms&Conditions')}
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         );
@@ -363,7 +420,10 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  userSignUp,
+  userSendOTP,
+  userVerifyOTP,
+  userEmailCheck,
+  userNameCheck,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

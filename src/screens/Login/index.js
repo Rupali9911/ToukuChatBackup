@@ -205,21 +205,6 @@ class Login extends Component {
 
     // Sign-in the user with the credential
     return auth().signInWithCredential(twitterCredential);
-    // RNTwitterSignIn.init(
-    //   TwitterKeys.TWITTER_CONSUMER_KEY,
-    //   TwitterKeys.TWITTER_CONSUMER_SECRET,
-    // );
-    // RNTwitterSignIn.logIn()
-    //   .then(function (loginData) {
-    //     var accessToken = auth.TwitterAuthProvider.credential(
-    //       loginData.authToken,
-    //       loginData.authTokenSecret,
-    //     );
-    //     handleFirebaseLogin(accessToken);
-    //   })
-    //   .catch(function (error) {
-    //     alert(error);
-    //   });
   }
 
   handleUserName = (username) => {
