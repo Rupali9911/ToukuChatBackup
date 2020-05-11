@@ -15,6 +15,10 @@ export const Icons = {
   icon_flag_korea: require('../../assets/icons/flag_korea.png'),
   icon_flag_japan: require('../../assets/icons/flag_japan.png'),
   icon_flag_taiwan: require('../../assets/icons/flag_taiwan.png'),
+  icon_menu: require('../../assets/icons/menu.png'),
+  icon_home_active: require('../../assets/icons/home_color.png'),
+  icon_chat: require('../../assets/icons/chat.png'),
+  icon_more: require('../../assets/icons/more.png'),
 };
 
 export const Images = {

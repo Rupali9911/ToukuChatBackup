@@ -7,16 +7,19 @@ import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import ForgotPassword from '../screens/ForgotPassword';
 import ForgotUsername from '../screens/ForgotUsername';
-import Home from '../screens/Home';
+import Drawer from './DrawerNavigation';
 
-const AppStack = createStackNavigator({
-  Home: {
-    screen: Home,
-    navigationOptions: {
-      title: 'Home',
+const AppStack = createStackNavigator(
+  {
+    Drawer: Drawer,
+  },
+  {
+    initialRouteName: 'Drawer',
+    defaultNavigationOptions: {
+      header: null,
     },
   },
-});
+);
 
 const AuthStack = createStackNavigator(
   {

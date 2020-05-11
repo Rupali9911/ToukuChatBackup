@@ -5,6 +5,7 @@ import {
   ImageBackground,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -77,42 +78,54 @@ class ForgotUserName extends Component {
       <ImageBackground
         source={Images.image_touku_bg}
         style={globalStyles.container}>
-        <SafeAreaView style={[globalStyles.safeAreaView, {padding: 20}]}>
-          <Header onBackPress={() => this.props.navigation.goBack()} />
-          <View
-            style={{
+        <SafeAreaView style={globalStyles.safeAreaView}>
+          <ScrollView
+            contentContainerStyle={{
               flex: 1,
-              paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-            }}>
-            <Text
-              style={[
-                globalStyles.bigSemiBoldText,
-                {
-                  marginVertical: 50,
-                  opacity: 0.8,
-                },
-              ]}>
-              {translate('pages.xchat.recoverUsername')}
-            </Text>
-            <View style={{flex: 1, justifyContent: 'center'}}>
-              <Inputfield
-                value={this.state.email}
-                placeholder={translate('common.email')}
-                returnKeyType={'done'}
-                onChangeText={(email) => this.setState({email})}
-                // onSubmitEditing={() => {
-                //   this.onSubmitPress();
-                // }}
-              />
+              padding: 20,
+            }}
+            showsVerticalScrollIndicator={false}>
+            <Header onBackPress={() => this.props.navigation.goBack()} />
+            <View
+              style={{
+                flex: 1,
+                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
+              }}>
+              <Text
+                style={[
+                  globalStyles.bigSemiBoldText,
+                  {
+                    marginVertical: 50,
+                    opacity: 0.8,
+                  },
+                ]}>
+                {translate('pages.xchat.recoverUsername')}
+              </Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  marginTop: orientation != 'PORTRAIT' ? 0 : -100,
+                }}>
+                <Inputfield
+                  value={this.state.email}
+                  placeholder={translate('common.email')}
+                  returnKeyType={'done'}
+                  onChangeText={(email) => this.setState({email})}
+                  // onSubmitEditing={() => {
+                  //   this.onSubmitPress();
+                  // }}
+                />
 
-              <Button
-                type={'primary'}
-                title={translate('common.submit')}
-                onPress={() => this.onSubmitPress()}
-              />
+                <Button
+                  type={'primary'}
+                  title={translate('common.submit')}
+                  onPress={() => this.onSubmitPress()}
+                />
+              </View>
             </View>
-          </View>
-          <LanguageSelector />
+            <LanguageSelector />
+          </ScrollView>
         </SafeAreaView>
       </ImageBackground>
     );
