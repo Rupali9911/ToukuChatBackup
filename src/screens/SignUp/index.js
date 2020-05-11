@@ -11,16 +11,18 @@ import {
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import StepIndicator from 'react-native-step-indicator';
+
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
 import {Icons, Colors, Images} from '../../constants';
 import Header from '../../components/Header';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
 import CountryPhoneInput from '../../components/CountryPhoneInput';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {userSignUp} from '../../redux/reducers/userReducer';
 
 class SignUp extends Component {
   constructor(props) {
@@ -82,7 +84,8 @@ class SignUp extends Component {
   }
 
   onSignUpPress() {
-    alert('completed');
+    // alert('completed');
+    this.props.userSignUp();
   }
 
   onCheckRememberMe() {
@@ -359,6 +362,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  userSignUp,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
