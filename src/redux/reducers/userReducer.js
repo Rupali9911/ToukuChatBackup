@@ -93,23 +93,54 @@ export const userLogin = (user) => (dispatch) =>
 // });
 
 //SignUp User
-export const userSignUp = (user) => (dispatch) =>
+export const userSendOTP = (signUpData) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    fetch('https://touku.angelium.net/api/send-otp/', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        phone: '+917383234757',
-        user_type: 'user',
-      }),
-    })
-      .then((response) => {
-        alert(JSON.stringify(response));
+    client
+      .post(`/send-otp/`, signUpData)
+      .then((res) => {
+        resolve(res);
       })
-      .catch((error) => {
-        // alert(error);
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const userVerifyOTP = (verifyData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/verify-otp/`, verifyData)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const userEmailCheck = (email) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/check-user-exist/?email=` + email)
+      .then((res) => {
+        console.log('USER EMAIL CHECK RESPONSE=>', JSON.stringify(res));
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('USER EMAIL CHECK ERROR=>', JSON.stringify(err));
+        reject(err);
+      });
+  });
+
+export const userNameCheck = (userName) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/check-user-exist/?username=` + userName)
+      .then((res) => {
+        console.log('USER NAME CHECK RESPONSE=>', JSON.stringify(res));
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('USER NAME CHECK ERROR=>', JSON.stringify(err));
+        reject(err);
       });
   });

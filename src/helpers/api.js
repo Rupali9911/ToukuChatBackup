@@ -4,9 +4,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 /* switch this for testing on staging or production */
 export const staging = true;
 
-// export const apiRootStaging = 'https://touku.angelium.net/api';
+export const apiRootStaging = 'https://touku.angelium.net/api';
 // export const apiRootStaging = 'https://wallet.angelium.net';
-export const apiRootStaging = 'https://api-touku.angelium.net/api';
+// export const apiRootStaging = 'https://api-touku.angelium.net/api';
 
 export const apiRoot = apiRootStaging;
 
