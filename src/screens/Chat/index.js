@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
-import {View, Button, ImageBackground, SafeAreaView, Text} from 'react-native';
+import {View} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import {globalStyles} from '../../styles';
-import {Images} from '../../constants';
-import HamburgerIcon from '../../components/HamburgerIcon';
+import HomeHeader from '../../components/HomeHeader';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 
-export default class Chat extends Component {
+class Chat extends Component {
   constructor(props) {
     super(props);
+    setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
     };
@@ -17,7 +18,6 @@ export default class Chat extends Component {
 
   static navigationOptions = () => {
     return {
-      // headerLeft: <HamburgerIcon />,
       header: null,
     };
   };
@@ -34,33 +34,26 @@ export default class Chat extends Component {
     this.setState({orientation});
   };
 
-  _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate('Auth');
-  };
-
   render() {
     const {orientation} = this.state;
     return (
-      <ImageBackground
-        source={Images.image_touku_bg}
-        style={globalStyles.container}>
-        <SafeAreaView style={globalStyles.safeAreaView}>
-          <View
-            style={{
-              flexDirection: 'row',
-              padding: orientation != 'PORTRAIT' ? 20 : 10,
-            }}>
-            <View style={globalStyles.container}>
-              <HamburgerIcon />
-            </View>
-            <View style={globalStyles.container}>
-              <Text style={globalStyles.smallRegularText}>{'Chat'}</Text>
-            </View>
-            <View style={globalStyles.container} />
-          </View>
-        </SafeAreaView>
-      </ImageBackground>
+      // <ImageBackground
+      //   source={Images.image_touku_bg}
+      //   style={globalStyles.container}>
+      <View style={globalStyles.container}>
+        <HomeHeader title={translate('pages.xchat.chat')} />
+      </View>
+      // </ImageBackground>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);

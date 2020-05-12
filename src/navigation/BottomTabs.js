@@ -9,17 +9,18 @@ import {Image} from 'react-native';
 import {Icons, Colors, Fonts} from '../constants';
 import {globalStyles} from '../styles';
 import {isIphoneX} from '../utils';
+import MoreScreen from '../screens/More';
 
 const HomeTab = createStackNavigator({
-  HomeScreen: HomeScreen,
+  HomeTab: HomeScreen,
 });
 
 const ChatTab = createStackNavigator({
-  ChatScreen: ChatScreen,
+  ChatTab: ChatScreen,
 });
 
 const MoreTab = createStackNavigator({
-  ChatScreen: ChatScreen,
+  MoreTab: MoreScreen,
 });
 
 const Tabs = createBottomTabNavigator(
@@ -39,6 +40,7 @@ const Tabs = createBottomTabNavigator(
       activeTintColor: Colors.primary,
       inactiveTintColor: Colors.white,
       safeAreaInset: {right: 'never', left: 'never', bottom: 'always'},
+      labelStyle: {marginVertical: 5},
     },
     defaultNavigationOptions: ({navigation}) => ({
       tabBarIcon: ({focused, horizontal, tintColor}) => {
@@ -46,22 +48,31 @@ const Tabs = createBottomTabNavigator(
         if (routeName === 'Home') {
           return (
             <Image
-              source={focused ? Icons.icon_home_active : Icons.icon_home_active}
-              style={globalStyles.iconStyle}
+              source={Icons.icon_home_active}
+              style={[
+                globalStyles.iconStyle,
+                {tintColor: focused ? Colors.primary : Colors.white},
+              ]}
             />
           );
         } else if (routeName === 'Chat') {
           return (
             <Image
-              source={focused ? Icons.icon_chat : Icons.icon_chat}
-              style={globalStyles.iconStyle}
+              source={Icons.icon_chat}
+              style={[
+                globalStyles.iconStyle,
+                {tintColor: focused ? Colors.primary : Colors.white},
+              ]}
             />
           );
         } else if (routeName === 'More') {
           return (
             <Image
-              source={focused ? Icons.icon_more : Icons.icon_more}
-              style={globalStyles.iconStyle}
+              source={Icons.icon_more}
+              style={[
+                globalStyles.iconStyle,
+                {tintColor: focused ? Colors.primary : Colors.white},
+              ]}
             />
           );
         }

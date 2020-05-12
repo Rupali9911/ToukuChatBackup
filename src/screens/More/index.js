@@ -3,12 +3,11 @@ import {View} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
-import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 
-class Home extends Component {
+class More extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
@@ -19,7 +18,6 @@ class Home extends Component {
 
   static navigationOptions = () => {
     return {
-      // headerLeft: <HamburgerIcon />,
       header: null,
     };
   };
@@ -43,7 +41,7 @@ class Home extends Component {
       //   source={Images.image_touku_bg}
       //   style={globalStyles.container}>
       <View style={globalStyles.container}>
-        <HomeHeader title={translate('pages.xchat.home')} />
+        <HomeHeader title={translate('common.settings')} />
       </View>
       // </ImageBackground>
     );
@@ -58,4 +56,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(More);

@@ -9,11 +9,7 @@ class HamburgerIcon extends Component {
   render() {
     return (
       <TouchableOpacity
-        style={{
-          width: 44,
-          height: 44,
-          marginLeft: 20,
-        }}
+        style={globalStyles.iconStyle}
         onPress={() => {
           this.props.navigation.toggleDrawer();
         }}>

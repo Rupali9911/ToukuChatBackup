@@ -12,7 +12,7 @@ import Orientation from 'react-native-orientation';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import {Images} from '../../constants';
-import Header from '../../components/Header';
+import BackHeader from '../../components/BackHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -92,7 +92,7 @@ class ForgotPassword extends Component {
           <ScrollView
             contentContainerStyle={{padding: 20}}
             showsVerticalScrollIndicator={false}>
-            <Header onBackPress={() => this.props.navigation.goBack()} />
+            <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
               style={{
                 flex: 1,
