@@ -29,6 +29,7 @@ import {
   userVerifyOTP,
   userEmailCheck,
   userNameCheck,
+  userRegister,
 } from '../../redux/reducers/userReducer';
 
 class SignUp extends Component {
@@ -108,14 +109,10 @@ class SignUp extends Component {
             code: verifycode,
             phone: '+' + countryCode + phone,
           };
-          const tempDataObj = {
-            phone: '+' + countryCode + phone,
-            otp_code: verifycode,
-          };
 
           this.props.userVerifyOTP(verifyData).then((res) => {
             if (res) {
-              AsyncStorage.setItem('phoneData', JSON.stringify(tempDataObj));
+              AsyncStorage.setItem('phoneData', JSON.stringify(verifyData));
               this.setState({
                 currentPosition: position,
               });
@@ -147,7 +144,7 @@ class SignUp extends Component {
   checkUserName(username) {
     this.props.userNameCheck(username).then((res) => {
       if (res.status === false) {
-        AsyncStorage.setItem(username, username);
+        AsyncStorage.setItem('username', username);
       } else {
         alert('Email already exists!');
       }
@@ -157,7 +154,34 @@ class SignUp extends Component {
   async onSignUpPress() {
     const {passwordConfirm, password, isAgreeWithTerms} = this.state;
     let userPhoneData = await AsyncStorage.getItem('phoneData');
-    // alert('completed');
+    let parsedData = JSON.parse(userPhoneData);
+    let username = await AsyncStorage.getItem('username');
+    let email = await AsyncStorage.getItem('email');
+    let keys = ['phoneData', 'username', 'email'];
+    let registerData = {
+      channel_invitation_code: '',
+      confirm_password: passwordConfirm,
+      email: email,
+      first_name: '',
+      invitation_code: '',
+      isAgree: isAgreeWithTerms,
+      last_name: '',
+      otp_code: parsedData.code,
+      password: password,
+      phone: parsedData.phone,
+      site_from: 'touku',
+      user_language: 1,
+      username: username,
+    };
+    this.props.userRegister(registerData).then((res) => {
+      if (res.token) {
+        AsyncStorage.multiRemove(keys);
+        this.props.navigation.navigate('Home');
+      }
+      if (res.user) {
+        this.setState({authError: res.user});
+      }
+    });
   }
 
   onCheckRememberMe() {
@@ -444,6 +468,7 @@ const mapDispatchToProps = {
   userVerifyOTP,
   userEmailCheck,
   userNameCheck,
+  userRegister,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
