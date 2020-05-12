@@ -12,6 +12,7 @@ import {
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import StepIndicator from 'react-native-step-indicator';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
@@ -36,7 +37,7 @@ class SignUp extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
-      currentPosition: 0,
+      currentPosition: 2,
       countryCode: '+91',
       isAgreeWithTerms: false,
 
@@ -92,6 +93,8 @@ class SignUp extends Component {
     this.props.userSendOTP(signUpData).then((res) => {
       if (res) {
         alert('IF section' + JSON.stringify(res));
+      } else {
+        alert(res);
       }
     });
   }
@@ -105,8 +108,14 @@ class SignUp extends Component {
             code: verifycode,
             phone: '+' + countryCode + phone,
           };
+          const tempDataObj = {
+            phone: '+' + countryCode + phone,
+            otp_code: verifycode,
+          };
+
           this.props.userVerifyOTP(verifyData).then((res) => {
             if (res) {
+              AsyncStorage.setItem('phoneData', JSON.stringify(tempDataObj));
               this.setState({
                 currentPosition: position,
               });
@@ -120,12 +129,13 @@ class SignUp extends Component {
 
       case 2: {
         this.props.userEmailCheck(emailconfirm).then((res) => {
-          if (res.status) {
-            alert('Email already exists! ');
-          } else {
+          if (res.status === false) {
+            AsyncStorage.setItem('email', email);
             this.setState({
               currentPosition: position,
             });
+          } else {
+            alert('Email already exists!');
           }
         });
 
@@ -134,12 +144,20 @@ class SignUp extends Component {
     }
   }
 
-  onSignUpPress() {
-    // alert('completed');
-    const {username} = this.state;
+  checkUserName(username) {
     this.props.userNameCheck(username).then((res) => {
-      alert(res);
+      if (res.status === false) {
+        AsyncStorage.setItem(username, username);
+      } else {
+        alert('Email already exists!');
+      }
     });
+  }
+
+  async onSignUpPress() {
+    const {passwordConfirm, password, isAgreeWithTerms} = this.state;
+    let userPhoneData = await AsyncStorage.getItem('phoneData');
+    // alert('completed');
   }
 
   onCheckRememberMe() {
@@ -204,9 +222,9 @@ class SignUp extends Component {
 
   handleConfirmPassword = (passwordConfirm) => {
     this.setState({passwordConfirm});
-    if (passwordConfirm.length < 6) {
+    if (this.state.password != this.state.passwordConfirm) {
       this.setState({passwordConfirmStatus: 'wrong'});
-    } else if (this.state.password != this.state.passwordConfirm) {
+    } else if (passwordConfirm.length < 6) {
       this.setState({passwordConfirmStatus: 'wrong'});
     } else {
       this.setState({passwordConfirmStatus: 'right'});
@@ -321,9 +339,11 @@ class SignUp extends Component {
                 value={this.state.username}
                 placeholder={translate('common.username')}
                 returnKeyType={'done'}
+                // onChangeText={(username) => this.checkUserName(username)}
                 onChangeText={(username) => this.setState({username})}
                 onSubmitEditing={() => {
                   this.focusNextField('password');
+                  this.checkUserName(this.state.username);
                 }}
               />
               <Inputfield
