@@ -35,7 +35,6 @@ class Authentication extends Component {
       <View style={authenticationStyles.container}>
         <SafeAreaView>
           <ActivityIndicator color={Colors.primary} />
-          <StatusBar barStyle="light-content" />
         </SafeAreaView>
       </View>
     );

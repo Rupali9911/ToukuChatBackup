@@ -10,7 +10,7 @@ import {
 import PropTypes from 'prop-types';
 import {Icons, Colors} from '../constants';
 
-export default class Header extends Component {
+export default class BackHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
 });
 
-Header.propTypes = {
+BackHeader.propTypes = {
   isIconLeft: PropTypes.bool,
   title: PropTypes.string,
 
@@ -65,7 +65,7 @@ Header.propTypes = {
   onBackPress: PropTypes.func,
 };
 
-Header.defaultProps = {
+BackHeader.defaultProps = {
   title: '',
   isIconLeft: true,
   onBackPress: null,

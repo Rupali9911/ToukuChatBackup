@@ -19,7 +19,7 @@ import Button from '../../components/Button';
 import Inputfield from '../../components/InputField';
 import CheckBox from '../../components/CheckBox';
 import {Colors, Images, Icons} from '../../constants';
-import Header from '../../components/Header';
+import BackHeader from '../../components/BackHeader';
 import {loginStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {SocialLogin} from '../LoginSignUp';
@@ -293,7 +293,7 @@ class Login extends Component {
           <ScrollView
             contentContainerStyle={loginStyles.scrollView}
             showsVerticalScrollIndicator={false}>
-            <Header
+            <BackHeader
               onBackPress={() => this.props.navigation.goBack()}
               isChecked={isCheckLanguages}
               onLanguageSelectPress={() => this.onLanguageSelectPress()}

@@ -18,7 +18,7 @@ import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
 import {Icons, Colors, Images} from '../../constants';
-import Header from '../../components/Header';
+import BackHeader from '../../components/BackHeader';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
@@ -405,7 +405,7 @@ class SignUp extends Component {
           <ScrollView
             contentContainerStyle={{padding: 20}}
             showsVerticalScrollIndicator={false}>
-            <Header onBackPress={() => this.props.navigation.goBack()} />
+            <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
               style={{
                 paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,

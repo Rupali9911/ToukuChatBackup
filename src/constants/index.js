@@ -19,10 +19,13 @@ export const Icons = {
   icon_home_active: require('../../assets/icons/home_color.png'),
   icon_chat: require('../../assets/icons/chat.png'),
   icon_more: require('../../assets/icons/more.png'),
+  icon_timeline: require('../../assets/icons/timeline.png'),
+  icon_channel: require('../../assets/icons/channel.png'),
 };
 
 export const Images = {
   image_touku_bg: require('../../assets/images/touku_bg_new.png'),
+  image_default_profile: require('../../assets/images/default_profile.png'),
 };
 
 export const Colors = {
@@ -32,6 +35,7 @@ export const Colors = {
   gradient_1: '#ef4f8f',
   gradient_2: '#f27478',
   gradient_3: '#f68b6b',
+  orange: '#fd7e14',
 };
 
 export const Fonts = {

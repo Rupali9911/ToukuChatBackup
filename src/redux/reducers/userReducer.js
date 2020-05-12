@@ -120,7 +120,7 @@ export const userNameCheck = (userName) => (dispatch) =>
       });
   });
 
-export const userSendOTP = (registerData) => (dispatch) =>
+export const userRegister = (registerData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xana-register/`, registerData)
