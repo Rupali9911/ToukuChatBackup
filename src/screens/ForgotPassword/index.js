@@ -17,6 +17,10 @@ import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
+import {
+  forgotPassword,
+  forgotUserName,
+} from '../../redux/reducers/forgotPassReducer';
 
 class ForgotPassword extends Component {
   constructor(props) {
@@ -24,7 +28,13 @@ class ForgotPassword extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
+      userName: '',
+      authCode: '',
+      password: '',
+      newPassword: '',
     };
+    this.focusNextField = this.focusNextField.bind(this);
+    this.inputs = {};
   }
 
   componentWillMount() {
@@ -43,6 +53,34 @@ class ForgotPassword extends Component {
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
+
+  focusNextField(id) {
+    this.inputs[id].focus();
+  }
+
+  sendOTP() {
+    const {userName} = this.state;
+    let userNameData = {
+      username: userName,
+    };
+    this.props.forgotUserName(userNameData).then((res) => {
+      alert(JSON.stringify(res) + ' JSON DATA FROM API');
+    });
+  }
+
+  onSubmitPress() {
+    const {userName, authCode, password, newPassword} = this.state;
+
+    let forgotData = {
+      code: authCode,
+      confirm_password: newPassword,
+      password: password,
+      username: userName,
+    };
+    this.props.forgotPassword(forgotData).then((res) => {
+      alert(JSON.stringify(res) + ' JSON DATA FROM API');
+    });
+  }
 
   render() {
     const {orientation} = this.state;
@@ -75,18 +113,53 @@ class ForgotPassword extends Component {
                   isRightSideBtn={true}
                   rightBtnText={translate('common.sms')}
                   placeholder={translate('common.enterUsername')}
+                  value={this.state.userName}
+                  onChangeText={(userName) => this.setState({userName})}
+                  onPressConfirm={() => this.sendOTP()}
+                  returnKeyType={'next'}
+                  onSubmitEditing={() => {
+                    this.focusNextField('authCode');
+                  }}
                 />
                 <Inputfield
+                  onRef={(ref) => {
+                    this.inputs['authCode'] = ref;
+                  }}
                   placeholder={translate('common.enterYourAuthenticationCode')}
+                  value={this.state.authCode}
+                  onChangeText={(authCode) => this.setState({authCode})}
+                  returnKeyType={'next'}
+                  onSubmitEditing={() => {
+                    this.focusNextField('password');
+                  }}
                 />
-                <Inputfield placeholder={translate('common.loginPassword')} />
                 <Inputfield
+                  onRef={(ref) => {
+                    this.inputs['password'] = ref;
+                  }}
+                  placeholder={translate('common.loginPassword')}
+                  value={this.state.password}
+                  onChangeText={(password) => this.setState({password})}
+                  returnKeyType={'next'}
+                  onSubmitEditing={() => {
+                    this.focusNextField('newPassword');
+                  }}
+                />
+                <Inputfield
+                  onRef={(ref) => {
+                    this.inputs['newPassword'] = ref;
+                  }}
                   placeholder={translate(
                     'pages.resetPassword.newLogInPassword',
                   )}
+                  value={this.state.newPassword}
+                  onChangeText={(newPassword) => this.setState({newPassword})}
+                  returnKeyType={'done'}
                 />
                 <Button
+                  type={'primary'}
                   title={translate('pages.resetPassword.resetPassword')}
+                  onPress={() => this.onSubmitPress()}
                 />
               </View>
             </View>
@@ -104,6 +177,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  forgotPassword,
+  forgotUserName,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);

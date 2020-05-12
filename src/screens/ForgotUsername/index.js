@@ -17,6 +17,7 @@ import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotUserNameStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
+import {forgotUserName} from '../../redux/reducers/forgotPassReducer';
 
 class ForgotUserName extends Component {
   constructor(props) {
@@ -24,7 +25,7 @@ class ForgotUserName extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
-      email: '',
+      userName: '',
     };
   }
 
@@ -46,29 +47,14 @@ class ForgotUserName extends Component {
   };
 
   onSubmitPress() {
-    const {email} = this.state;
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const {userName} = this.state;
 
-    let isValid = true;
-
-    if (email.length <= 0) {
-      isValid = false;
-      //   this.setState({userNameStatus: 'wrong'});
-    } else if (reg.test(email) === false) {
-      isValid = false;
-      //   this.setState({userNameStatus: 'wrong'});
-    } else {
-      //   this.setState({userNameStatus: 'right'});
-    }
-
-    if (isValid) {
-      let userEmailData = {
-        email: email,
-      };
-      alert(JSON.stringify(userEmailData));
-    } else {
-      alert('Something went wrong!');
-    }
+    let userNameData = {
+      username: userName,
+    };
+    this.props.forgotUserName(userNameData).then((res) => {
+      alert(JSON.stringify(res) + ' JSON DATA FROM API');
+    });
   }
 
   render() {
@@ -108,10 +94,10 @@ class ForgotUserName extends Component {
                   marginTop: orientation != 'PORTRAIT' ? 0 : -100,
                 }}>
                 <Inputfield
-                  value={this.state.email}
+                  value={this.state.userName}
                   placeholder={translate('common.email')}
                   returnKeyType={'done'}
-                  onChangeText={(email) => this.setState({email})}
+                  onChangeText={(userName) => this.setState({userName})}
                   // onSubmitEditing={() => {
                   //   this.onSubmitPress();
                   // }}
@@ -138,6 +124,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  forgotUserName,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ForgotUserName);

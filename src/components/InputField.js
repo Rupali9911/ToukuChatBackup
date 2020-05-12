@@ -137,7 +137,8 @@ export default class InputField extends Component {
         {isRightSideBtn ? (
           <TouchableOpacity
             activeOpacity={0.6}
-            style={styles.rightBtnContainer}>
+            style={styles.rightBtnContainer}
+            onPress={this.props.onPressConfirm}>
             <LinearGradient
               start={{x: 0.1, y: 0.7}}
               end={{x: 0.5, y: 0.8}}
