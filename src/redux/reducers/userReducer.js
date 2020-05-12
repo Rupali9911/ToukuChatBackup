@@ -1,4 +1,5 @@
 import {client} from '../../helpers/api';
+import AsyncStorage from '@react-native-community/async-storage';
 export const GET_LOGIN_REQUEST = 'GET_LOGIN_REQUEST';
 export const GET_LOGIN_SUCCESS = 'GET_LOGIN_SUCCESS';
 export const GET_LOGIN_FAIL = 'GET_LOGIN_FAIL';
@@ -125,6 +126,10 @@ export const userRegister = (registerData) => (dispatch) =>
     client
       .post(`/xana-register/`, registerData)
       .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
         resolve(res);
       })
       .catch((err) => {
