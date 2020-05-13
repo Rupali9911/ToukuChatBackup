@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Image} from 'react-native';
+import {View, Image, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
 import {Images} from '../constants';
 
@@ -10,14 +10,23 @@ export default class RoundedImage extends Component {
   }
 
   render() {
-    const {source, size} = this.props;
+    const {source, size, clickable, onClick, color, isRounded} = this.props;
     return (
-      <View style={{width: size, height: size, borderRadius: size / 2}}>
+      <TouchableOpacity
+        activeOpacity={0.6}
+        disabled={!clickable}
+        onPress={onClick}
+        style={{width: size, height: size, borderRadius: size / 2}}>
         <Image
           source={source}
-          style={{width: size, height: size, borderRadius: size / 2}}
+          style={{
+            width: size,
+            height: size,
+            borderRadius: isRounded ? size / 2 : 0,
+            tintColor: color,
+          }}
         />
-      </View>
+      </TouchableOpacity>
     );
   }
 }
@@ -25,9 +34,17 @@ export default class RoundedImage extends Component {
 RoundedImage.propTypes = {
   source: PropTypes.any,
   size: PropTypes.number,
+  clickable: PropTypes.bool,
+  isRounded: PropTypes.bool,
+  onClick: PropTypes.func,
+  color: PropTypes.any,
 };
 
 RoundedImage.defaultProps = {
   source: Images.image_default_profile,
   size: 73,
+  clickable: false,
+  isRounded: true,
+  onClick: null,
+  color: null,
 };

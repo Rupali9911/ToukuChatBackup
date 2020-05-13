@@ -20,6 +20,8 @@ export default class Button extends Component {
     switch (this.props.type) {
       case 'primary':
         return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
+      case 'secondary':
+        return [Colors.gray, Colors.gray, Colors.gray];
       case 'transparent':
         return ['rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)'];
       default:
@@ -30,6 +32,8 @@ export default class Button extends Component {
   getBorderColor() {
     switch (this.props.type) {
       case 'primary':
+        return 'transparent';
+      case 'secondary':
         return 'transparent';
       case 'transparent':
         return Colors.primary;
@@ -49,8 +53,21 @@ export default class Button extends Component {
     }
   }
 
+  getTitleColor() {
+    switch (this.props.type) {
+      case 'primary':
+        return Colors.white;
+      case 'secondary':
+        return Colors.black;
+      case 'transparent':
+        return Colors.white;
+      default:
+        return Colors.white;
+    }
+  }
+
   render() {
-    const {title, onPress, loading} = this.props;
+    const {title, onPress, loading, isRounded} = this.props;
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
         <LinearGradient
@@ -58,14 +75,26 @@ export default class Button extends Component {
           end={{x: 0.5, y: 0.8}}
           locations={[0.1, 0.6, 1]}
           colors={this.getGradientColors()}
-          style={[styles.linearGradient, {borderColor: this.getBorderColor()}]}>
+          style={[
+            styles.linearGradient,
+            {
+              borderRadius: isRounded ? 45 / 2 : 4,
+              borderColor: this.getBorderColor(),
+            },
+          ]}>
           {loading ? (
             <ActivityIndicator
               size={'small'}
               color={this.getIndicatorColor()}
             />
           ) : (
-            <Text style={globalStyles.normalLightText}>{title}</Text>
+            <Text
+              style={[
+                globalStyles.normalLightText,
+                {color: this.getTitleColor()},
+              ]}>
+              {title}
+            </Text>
           )}
         </LinearGradient>
       </TouchableOpacity>
@@ -76,7 +105,6 @@ export default class Button extends Component {
 const styles = StyleSheet.create({
   linearGradient: {
     height: 45,
-    borderRadius: 45 / 2,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -88,8 +116,9 @@ Button.propTypes = {
   title: PropTypes.string,
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
+  isRounded: PropTypes.bool,
 
-  type: PropTypes.oneOf(['primary', 'transparent']),
+  type: PropTypes.oneOf(['primary', 'secondary', 'transparent']),
 
   /**
    * StyleSheet props
@@ -107,5 +136,6 @@ Button.defaultProps = {
   title: 'Submit',
   disabled: false,
   loading: false,
+  isRounded: true,
   onPress: null,
 };
