@@ -136,3 +136,49 @@ export const userRegister = (registerData) => (dispatch) =>
         reject(err);
       });
   });
+
+export const facebookRegister = (socialLoginData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/facebook-login-auth/`, socialLoginData)
+      .then((res) => {
+        if (res.token) {
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const googleRegister = (socialLoginData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/google-login-auth/`, socialLoginData)
+      .then((res) => {
+        console.log(res);
+        if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const twitterRegister = (socialLoginData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/twitter-login-auth/`, socialLoginData)
+      .then((res) => {
+        if (res.token) {
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

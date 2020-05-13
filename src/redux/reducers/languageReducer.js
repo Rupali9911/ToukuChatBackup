@@ -126,7 +126,20 @@ export const getAllLanguages = () => (dispatch) =>
       dispatch(setEnglishLanguage(languages[0]));
     });
 
-//Set Selevted Language
+export const userLanguage = () => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/languages/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('languages ERROR=>', JSON.stringify(err));
+        reject(err);
+      });
+  });
+
+//Set Selected Language
 export const setAppLanguage = (data) => (dispatch) =>
   dispatch(setSelectedLanguage(data));
 
