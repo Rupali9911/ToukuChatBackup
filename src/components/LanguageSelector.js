@@ -10,7 +10,11 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Colors, Icons} from '../constants';
 import * as RNLocalize from 'react-native-localize';
-import {setI18nConfig, setAppLanguage} from '../redux/reducers/languageReducer';
+import {
+  setI18nConfig,
+  setAppLanguage,
+  userLanguage,
+} from '../redux/reducers/languageReducer';
 
 class LanguageSelector extends Component {
   constructor(props) {
@@ -69,6 +73,9 @@ class LanguageSelector extends Component {
         },
       ],
     };
+    this.props.userLanguage().then((res) => {
+      console.log(JSON.stringify(res));
+    });
   }
 
   componentDidMount() {
@@ -205,6 +212,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   setAppLanguage,
+  userLanguage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LanguageSelector);
