@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {View, ImageBackground} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
@@ -7,6 +7,8 @@ import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
+import {Images} from '../../constants';
 
 class Home extends Component {
   constructor(props) {
@@ -19,7 +21,6 @@ class Home extends Component {
 
   static navigationOptions = () => {
     return {
-      // headerLeft: <HamburgerIcon />,
       header: null,
     };
   };
@@ -30,6 +31,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    this.props.getUserProfile();
     Orientation.addOrientationListener(this._orientationDidChange);
   }
   _orientationDidChange = (orientation) => {
@@ -39,13 +41,13 @@ class Home extends Component {
   render() {
     const {orientation} = this.state;
     return (
-      // <ImageBackground
-      //   source={Images.image_touku_bg}
-      //   style={globalStyles.container}>
-      <View style={globalStyles.container}>
-        <HomeHeader title={translate('pages.xchat.home')} />
-      </View>
-      // </ImageBackground>
+      <ImageBackground
+        source={Images.image_home_bg}
+        style={globalStyles.container}>
+        <View style={globalStyles.container}>
+          <HomeHeader title={translate('pages.xchat.home')} />
+        </View>
+      </ImageBackground>
     );
   }
 }
@@ -56,6 +58,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getUserProfile,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,12 +1,28 @@
 import React, {Component} from 'react';
-import {View, Text, SafeAreaView, ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  Image,
+  Platform,
+} from 'react-native';
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
+import {
+  AccordionList,
+  Collapse,
+  CollapseHeader,
+  CollapseBody,
+} from 'accordion-collapse-react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {Colors, Icons} from '../constants';
 import HamburgerIcon from './HamburgerIcon';
 import RoundedImage from './RoundedImage';
 import {globalStyles} from '../styles';
 import DrawerItem from './DrawerItem';
+import {ProfileModal} from './Modals';
 import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
 
 class DrawerContent extends Component {
@@ -14,6 +30,21 @@ class DrawerContent extends Component {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
+      isProfileModalVisible: false,
+      isAdminCollapsed: false,
+      isGeneralCollapsed: true,
+      list: [
+        {
+          title: 'Messages',
+          icon: Icons.icon_message,
+          data: [{name: 'Message List'}, {name: 'Compose Message'}],
+        },
+        {
+          title: 'Scenario',
+          icon: Icons.icon_scenario,
+          data: [{name: 'Scenario List'}, {name: 'Compose Scenario'}],
+        },
+      ],
       drawerTabs: [
         {
           tab_id: 1,
@@ -57,6 +88,44 @@ class DrawerContent extends Component {
     };
   }
 
+  _head(item) {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginVertical: 5,
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image
+            source={item.icon}
+            style={[globalStyles.iconStyle, {marginEnd: 5}]}
+          />
+          <Text style={globalStyles.smallLightText}>{item.title}</Text>
+        </View>
+        <Image
+          source={Icons.icon_arrow_right}
+          style={{width: 10, height: 10}}
+        />
+      </View>
+    );
+  }
+
+  _body(item) {
+    return (
+      <View style={{paddingStart: 30}}>
+        {item.data.map((item) => (
+          <View>
+            <Text style={[globalStyles.smallLightText, {textAlign: 'left'}]}>
+              {item.name}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
+  }
+
   changeActiveTab = async (item, index) => {
     let tabs = this.state.drawerTabs;
     tabs.map((item) => {
@@ -85,8 +154,23 @@ class DrawerContent extends Component {
     }
   };
 
+  onViewProfile() {
+    this.setState({isProfileModalVisible: true});
+  }
+
+  onLogoutUser() {
+    AsyncStorage.clear();
+    this.props.navigation.navigate('Auth');
+  }
+
   render() {
-    const {drawerTabs} = this.state;
+    const {
+      drawerTabs,
+      isAdminCollapsed,
+      isGeneralCollapsed,
+      isProfileModalVisible,
+    } = this.state;
+    const {userData} = this.props;
     return (
       <LinearGradient
         start={{x: 0.1, y: 0.7}}
@@ -100,7 +184,7 @@ class DrawerContent extends Component {
           <ScrollView
             contentContainerStyle={{
               paddingHorizontal: 20,
-              paddingVertical: 10,
+              paddingVertical: Platform.OS === 'ios' ? 10 : 50,
             }}>
             <View>
               <HamburgerIcon />
@@ -111,19 +195,101 @@ class DrawerContent extends Component {
                 alignItems: 'center',
                 marginBottom: 30,
               }}>
-              <RoundedImage />
+              <RoundedImage
+                source={{uri: userData.avatar}}
+                clickable={true}
+                onClick={() => this.onViewProfile()}
+              />
               <Text style={[globalStyles.normalLightText, {marginTop: 10}]}>
-                {'UserName'}
+                {userData.username}
               </Text>
             </View>
+            {/* 
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isAdminCollapsed: isColl,
+                  isGeneralCollapsed: !isGeneralCollapsed,
+                })
+              }
+              isCollapsed={isAdminCollapsed}>
+              <CollapseHeader>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    borderBottomWidth: 1,
+                    borderColor: Colors.white,
+                  }}>
+                  <Text style={globalStyles.smallLightText}>{'Admin'}</Text>
+                  <Image
+                    source={
+                      isAdminCollapsed
+                        ? Icons.icon_triangle_down
+                        : Icons.icon_triangle_up
+                    }
+                    style={{width: 10, height: 10}}
+                  />
+                </View>
+              </CollapseHeader>
+              <CollapseBody>
+                <AccordionList
+                  list={this.state.list}
+                  header={this._head}
+                  body={this._body}
+                />
+              </CollapseBody>
+            </Collapse> */}
 
-            {drawerTabs.map((item, key) => (
-              <DrawerItem
-                item={item}
-                onPress={() => this.changeActiveTab(item, key)}
-              />
-            ))}
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isGeneralCollapsed: isColl,
+                  isAdminCollapsed: !isAdminCollapsed,
+                })
+              }
+              isCollapsed={isGeneralCollapsed}>
+              <CollapseHeader>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    borderBottomWidth: 1,
+                    borderColor: Colors.white,
+                    marginTop: 15,
+                  }}>
+                  <Text style={globalStyles.smallLightText}>{'General'}</Text>
+                  <Image
+                    source={
+                      isGeneralCollapsed
+                        ? Icons.icon_triangle_down
+                        : Icons.icon_triangle_up
+                    }
+                    style={{width: 10, height: 10}}
+                  />
+                </View>
+              </CollapseHeader>
+              <CollapseBody>
+                {drawerTabs.map((item, key) => (
+                  <DrawerItem
+                    title={item.tab_name}
+                    icon={item.tab_icon}
+                    item={item}
+                    onPress={() => this.changeActiveTab(item, key)}
+                  />
+                ))}
+                <DrawerItem
+                  title={'Logout'}
+                  icon={Icons.icon_back}
+                  onPress={() => this.onLogoutUser()}
+                />
+              </CollapseBody>
+            </Collapse>
           </ScrollView>
+          <ProfileModal
+            visible={isProfileModalVisible}
+            onRequestClose={() => this.setState({isProfileModalVisible: false})}
+          />
         </SafeAreaView>
       </LinearGradient>
     );
@@ -133,6 +299,7 @@ class DrawerContent extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    userData: state.userReducer.userData,
   };
 };
 

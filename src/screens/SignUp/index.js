@@ -38,7 +38,7 @@ class SignUp extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
-      currentPosition: 2,
+      currentPosition: 0,
       countryCode: '+91',
       isAgreeWithTerms: false,
 

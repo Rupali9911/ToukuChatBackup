@@ -48,8 +48,10 @@ export default class HomeHeader extends Component {
                   ? isIphoneX()
                     ? 50
                     : 30
-                  : 30
-                : 20,
+                  : 40
+                : Platform.OS === 'ios'
+                ? 20
+                : 40,
           },
         ]}>
         <View style={{flex: 1}}>

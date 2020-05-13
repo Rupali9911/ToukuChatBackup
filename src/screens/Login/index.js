@@ -25,7 +25,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 import {SocialLogin} from '../LoginSignUp';
 import {globalStyles} from '../../styles';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
-import {userLogin} from '../../redux/reducers/userReducer';
+import {userLogin, getUserProfile} from '../../redux/reducers/userReducer';
 
 class Login extends Component {
   constructor(props) {
@@ -267,7 +267,11 @@ class Login extends Component {
       };
       this.props.userLogin(loginData).then((res) => {
         if (res.token) {
-          this.props.navigation.navigate('Home');
+          this.props.getUserProfile().then((res) => {
+            if (res.id) {
+              this.props.navigation.navigate('Home');
+            }
+          });
         }
         if (res.user) {
           this.setState({authError: res.user});
@@ -317,7 +321,7 @@ class Login extends Component {
                   onSubmitEditing={() => {
                     this.focusNextField('password');
                   }}
-                  status={userNameStatus}
+                  status={'normal'}
                 />
                 <Inputfield
                   onRef={(ref) => {
@@ -329,7 +333,7 @@ class Login extends Component {
                   secureTextEntry={true}
                   onChangeText={(password) => this.handlePassword(password)}
                   onSubmitEditing={() => {}}
-                  status={passwordStatus}
+                  status={'normal'}
                 />
 
                 {authError !== '' ? (
@@ -459,6 +463,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   userLogin,
+  getUserProfile,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

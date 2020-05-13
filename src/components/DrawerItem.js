@@ -11,7 +11,7 @@ export default class DrawerItem extends Component {
   }
 
   render() {
-    const {onPress, disabled, item} = this.props;
+    const {onPress, disabled, item, title, icon} = this.props;
     return (
       <TouchableOpacity
         disabled={item.disabled}
@@ -23,7 +23,7 @@ export default class DrawerItem extends Component {
         }}>
         <View>
           <Image
-            source={item.tab_icon}
+            source={icon}
             style={[
               globalStyles.iconStyle,
               {tintColor: item.selected ? Colors.primary : Colors.white},
@@ -35,11 +35,15 @@ export default class DrawerItem extends Component {
             style={[
               globalStyles.smallLightText,
               {
-                color: item.selected ? Colors.primary : Colors.white,
+                color: item.disabled
+                  ? '#ccc'
+                  : item.selected
+                  ? Colors.primary
+                  : Colors.white,
                 marginStart: 10,
               },
             ]}>
-            {item.tab_name}
+            {title}
           </Text>
         </View>
       </TouchableOpacity>
@@ -48,6 +52,8 @@ export default class DrawerItem extends Component {
 }
 
 DrawerItem.propTypes = {
+  title: PropTypes.string,
+  icon: PropTypes.any,
   item: PropTypes.any,
   disabled: PropTypes.bool,
   /**
@@ -57,11 +63,14 @@ DrawerItem.propTypes = {
 };
 
 DrawerItem.defaultProps = {
+  title: 'Tab Name',
+  icon: Icons.icon_home_active,
   item: {
     tab_id: 1,
     tab_name: 'Tab Name',
     tab_icon: Icons.icon_home_active,
     selected: false,
+    disabled: false,
   },
   disabled: false,
   onPress: null,

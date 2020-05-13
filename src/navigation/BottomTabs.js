@@ -33,14 +33,14 @@ const Tabs = createBottomTabNavigator(
     tabBarOptions: {
       tabStyle: {
         backgroundColor: Colors.gradient_2,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 56,
+        // paddingTop: 10,
+        // paddingBottom: 10,
+        // height: 56,
       },
       activeTintColor: Colors.primary,
       inactiveTintColor: Colors.white,
-      safeAreaInset: {right: 'never', left: 'never', bottom: 'always'},
-      labelStyle: {marginVertical: 5},
+      safeAreaInset: {right: 'never', left: 'never', bottom: 'never'},
+      // labelStyle: {marginVertical: 5},
     },
     defaultNavigationOptions: ({navigation}) => ({
       tabBarIcon: ({focused, horizontal, tintColor}) => {
