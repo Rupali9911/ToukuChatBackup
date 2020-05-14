@@ -26,7 +26,6 @@ import {
   googleRegister,
   twitterRegister,
 } from '../../redux/reducers/userReducer';
-
 const {RNTwitterSignIn} = NativeModules;
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'jswnBuBVPVSlItRYpNnzldDaM',
@@ -60,7 +59,7 @@ class LoginSignUp extends Component {
   componentDidMount() {
     GoogleSignin.configure({
       webClientId:
-        '587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com',
+        '185609886814-thaiii1sd6f6rj03bj3mctq6bjgp8m5b.apps.googleusercontent.com',
     });
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -96,17 +95,15 @@ class LoginSignUp extends Component {
       const firebaseUserCredential = await auth().signInWithCredential(
         credential,
       );
+      console.log(JSON.stringify(userInfo));
 
       const socialLoginData = {
         code: userInfo.idToken,
         // access_token_secret: userInfo.idToken,
         // username: firebaseUserCredential.additionalUserInfo.profile.email,
         site_from: 'touku',
-        // dev_id: "",
+        dev_id: '',
       };
-
-      console.log(JSON.stringify(userInfo.idToken));
-
       this.props.googleRegister(socialLoginData).then((res) => {
         if (res.token) {
           this.props.navigation.navigate('Home');
@@ -116,15 +113,15 @@ class LoginSignUp extends Component {
         }
       });
     } catch (error) {
-      // alert(error);
+      alert(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // alert('user cancelled the login flow');
+        alert('user cancelled the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        // alert('operation (f.e. sign in) is in progress already');
+        alert('operation (f.e. sign in) is in progress already');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // alert('play services not available or outdated');
+        alert('play services not available or outdated');
       } else {
-        // alert('some other error happened');
+        alert('some other error happened');
       }
     }
   };
@@ -146,7 +143,8 @@ class LoginSignUp extends Component {
     );
   }
 
-  async onFacebookButtonPress() {
+  async firebaseFacebookLogin() {
+    console.log('facebook tapped');
     // Attempt login with permissions
     const result = await LoginManager.logInWithPermissions([
       'public_profile',
@@ -169,22 +167,27 @@ class LoginSignUp extends Component {
       data.accessToken,
     );
 
-    // const data = {
-    //   access_token: data.accessToken,
-    //   code: data.accessToken,
-    //   access_token_secret: '',
-    //   // username: result.additionalUserInfo.username,
-    //   site_from: 'touku',
-    //   dev_id: '',
-    // };
-
-    // this.props.facebookRegister(socialLoginData).then((res) => {
-    //   alert(JSON.stringify(res));
-    //   console.log('JWT TOKEN=> ', JSON.stringify(res));
-    // });
-
-    // Sign-in the user with the credential
-    return auth().signInWithCredential(facebookCredential);
+    auth()
+      .signInWithCredential(facebookCredential)
+      .then((res) => {
+        const socialLoginData = {
+          access_token: data.accessToken,
+          code: data.accessToken,
+          // access_token_secret: data.accessToken,
+          // username: result.additionalUserInfo.username,
+          site_from: 'touku',
+          dev_id: '',
+        };
+        this.props.facebookRegister(socialLoginData).then((res) => {
+          console.log('JWT TOKEN=> ', JSON.stringify(res));
+          if (res.token) {
+            this.props.navigation.navigate('Home');
+          }
+          if (res.user) {
+            alert('something went wrong!');
+          }
+        });
+      });
   }
 
   firebaseTwitterLogin() {
@@ -293,9 +296,6 @@ class LoginSignUp extends Component {
                 />
               </View>
               <View>
-                {/* {!this.state.loggedIn && (
-                  <Text>You are currently logged out</Text>
-                )} */}
                 {this.state.loggedIn && (
                   <Button
                     type={'primary'}
