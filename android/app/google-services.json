@@ -1,43 +1,42 @@
 {
   "project_info": {
-    "project_number": "587597919962",
-    "firebase_url": "https://toukunative.firebaseio.com",
-    "project_id": "toukunative",
-    "storage_bucket": "toukunative.appspot.com"
+    "project_number": "185609886814",
+    "firebase_url": "https://angelium-71cf5.firebaseio.com",
+    "project_id": "angelium-71cf5",
+    "storage_bucket": "angelium-71cf5.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:587597919962:android:5d556d743405c60106d7e3",
+        "mobilesdk_app_id": "1:185609886814:android:20e2fe887f90779fa1a8cf",
         "android_client_info": {
           "package_name": "com.touku"
         }
       },
       "oauth_client": [
         {
-          "client_id": "587597919962-n1223jit5bi5dv4tl20m49lro18v6jul.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.touku",
-            "certificate_hash": "dd207d8ec30d9436af812d25942bd2ffdf1eac66"
-          }
-        },
-        {
-          "client_id": "587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com",
+          "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDqm4kLQ_Q_0_8awlX0l7auK5ccVdEr0WA"
+          "current_key": "AIzaSyBayzPHi0VII8KPvLbG3ZSj_SIjzrD4Ack"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "587597919962-0vgp633fs9es1sfu0ufnff8flv2291jl.apps.googleusercontent.com",
+              "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "185609886814-eh72sfl2cb0em7opkh052bek3qrs651d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.angelium.touku.app"
+              }
             }
           ]
         }
