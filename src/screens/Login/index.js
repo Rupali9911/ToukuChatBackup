@@ -26,6 +26,7 @@ import {SocialLogin} from '../LoginSignUp';
 import {globalStyles} from '../../styles';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {userLogin, getUserProfile} from '../../redux/reducers/userReducer';
+import Toast from '../../components/Toast';
 
 class Login extends Component {
   constructor(props) {
@@ -244,18 +245,29 @@ class Login extends Component {
     if (username.length <= 0) {
       isValid = false;
       this.setState({userNameStatus: 'wrong'});
+      Toast.show({
+        title: 'Login Failed',
+        text: 'Please Enter User Name',
+        icon: Icons.icon_message,
+      });
     } else if (reg.test(username) === false) {
       isValid = false;
       this.setState({userNameStatus: 'wrong'});
-    } else {
-      this.setState({userNameStatus: 'right'});
-    }
-
-    if (password.length < 6) {
+      Toast.show({
+        title: 'Login Failed',
+        text: 'User Name Not Valid',
+        icon: Icons.icon_message,
+      });
+    } else if (password.length < 6) {
       isValid = false;
       this.setState({passwordStatus: 'wrong'});
+      Toast.show({
+        title: 'Login Failed',
+        text: 'Password shoud be atleast 6 characters',
+        icon: Icons.icon_message,
+      });
     } else {
-      this.setState({passwordStatus: 'right'});
+      this.setState({passwordStatus: 'right', userNameStatus: 'right'});
     }
 
     if (isValid) {
@@ -265,18 +277,32 @@ class Login extends Component {
         password: password,
         rememberMe: isRememberChecked,
       };
-      this.props.userLogin(loginData).then((res) => {
-        if (res.token) {
-          this.props.getUserProfile().then((res) => {
-            if (res.id) {
-              this.props.navigation.navigate('Home');
-            }
+      this.props
+        .userLogin(loginData)
+        .then((res) => {
+          if (res.token) {
+            this.props.getUserProfile().then((res) => {
+              if (res.id) {
+                this.props.navigation.navigate('Home');
+              }
+            });
+          }
+          if (res.user) {
+            Toast.show({
+              title: 'Login Failed',
+              text: 'User Not Exist or Incorrect Password',
+              icon: Icons.icon_message,
+            });
+            this.setState({authError: res.user});
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Login Failed',
+            text: 'Something Went Wrong',
+            icon: Icons.icon_message,
           });
-        }
-        if (res.user) {
-          this.setState({authError: res.user});
-        }
-      });
+        });
     }
   }
 
@@ -336,7 +362,7 @@ class Login extends Component {
                   status={'normal'}
                 />
 
-                {authError !== '' ? (
+                {/* {authError !== '' ? (
                   <Text
                     style={[
                       globalStyles.smallLightText,
@@ -349,7 +375,7 @@ class Login extends Component {
                     ]}>
                     {authError}
                   </Text>
-                ) : null}
+                ) : null} */}
               </View>
               <TouchableOpacity
                 style={loginStyles.rememberContainer}

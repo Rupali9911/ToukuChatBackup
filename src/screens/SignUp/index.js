@@ -30,7 +30,9 @@ import {
   userEmailCheck,
   userNameCheck,
   userRegister,
+  getUserProfile,
 } from '../../redux/reducers/userReducer';
+import Toast from '../../components/Toast';
 
 class SignUp extends Component {
   constructor(props) {
@@ -91,13 +93,24 @@ class SignUp extends Component {
       phone: '+' + countryCode + phone,
       user_type: 'user',
     };
-    this.props.userSendOTP(signUpData).then((res) => {
-      if (res) {
-        alert('IF section' + JSON.stringify(res));
-      } else {
-        alert(res);
-      }
-    });
+    this.props
+      .userSendOTP(signUpData)
+      .then((res) => {
+        if (res) {
+          Toast.show({
+            title: 'Send SMS',
+            text: 'We have sent OTP code to your phone number',
+            icon: Icons.icon_message,
+          });
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Send SMS',
+          text: 'Please Enter Valid Phone Number',
+          icon: Icons.icon_message,
+        });
+      });
   }
 
   onPageChange(position) {
@@ -119,23 +132,65 @@ class SignUp extends Component {
             }
           });
         } else {
-          alert('please enter mobile number to proceed further');
+          Toast.show({
+            title: 'Send OTP',
+            text: 'Please Enter Phone Number',
+            icon: Icons.icon_message,
+          });
         }
 
         break;
 
       case 2: {
-        this.props.userEmailCheck(emailconfirm).then((res) => {
-          if (res.status === false) {
-            AsyncStorage.setItem('email', email);
-            this.setState({
-              currentPosition: position,
-            });
-          } else {
-            alert('Email already exists!');
-          }
-        });
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
+        let isValid = true;
+
+        if (email.length <= 0) {
+          isValid = false;
+          this.setState({emailStatus: 'wrong'});
+          Toast.show({
+            title: 'Check Email',
+            text: 'Please Enter Email Address',
+            icon: Icons.icon_message,
+          });
+        } else if (reg.test(email) === false) {
+          isValid = false;
+          this.setState({emailStatus: 'wrong'});
+          Toast.show({
+            title: 'Check Email',
+            text: 'Please Enter Valid Email Address',
+            icon: Icons.icon_message,
+          });
+        } else if (this.state.email != this.state.emailconfirm) {
+          isValid = false;
+          this.setState({emailConfirmStatus: 'wrong'});
+          Toast.show({
+            title: 'Check Email',
+            text: 'Email Address Not Matched',
+            icon: Icons.icon_message,
+          });
+        }
+        if (isValid) {
+          this.props
+            .userEmailCheck(emailconfirm)
+            .then((res) => {
+              if (res.status === false) {
+                AsyncStorage.setItem('email', email);
+                this.setState({
+                  currentPosition: position,
+                });
+              } else {
+                Toast.show({
+                  title: 'SignUp Failed',
+                  text: 'User Already Exist',
+                  icon: Icons.icon_message,
+                });
+              }
+            })
+            .catch((err) => {});
+          this.setState({emailStatus: 'right'});
+        }
         break;
       }
     }
@@ -152,36 +207,90 @@ class SignUp extends Component {
   }
 
   async onSignUpPress() {
-    const {passwordConfirm, password, isAgreeWithTerms} = this.state;
-    let userPhoneData = await AsyncStorage.getItem('phoneData');
-    let parsedData = JSON.parse(userPhoneData);
-    let username = await AsyncStorage.getItem('username');
-    let email = await AsyncStorage.getItem('email');
-    let keys = ['phoneData', 'username', 'email'];
-    let registerData = {
-      channel_invitation_code: '',
-      confirm_password: passwordConfirm,
-      email: email,
-      first_name: '',
-      invitation_code: '',
-      isAgree: isAgreeWithTerms,
-      last_name: '',
-      otp_code: parsedData.code,
-      password: password,
-      phone: parsedData.phone,
-      site_from: 'touku',
-      user_language: 1,
-      username: username,
-    };
-    this.props.userRegister(registerData).then((res) => {
-      if (res.token) {
-        AsyncStorage.multiRemove(keys);
-        this.props.navigation.navigate('Home');
+    const {username, password, passwordConfirm, isAgreeWithTerms} = this.state;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    let isValid = true;
+
+    if (username.length <= 0) {
+      isValid = false;
+      Toast.show({
+        title: 'SignUp Failed',
+        text: 'Please Enter Username',
+        icon: Icons.icon_message,
+      });
+    } else if (password.length < 6) {
+      isValid = false;
+      Toast.show({
+        title: 'SignUp Failed',
+        text: 'Please Enter Atleast 6 Characters Password',
+        icon: Icons.icon_message,
+      });
+    } else if (password != passwordConfirm) {
+      isValid = false;
+      Toast.show({
+        title: 'SignUp Failed',
+        text: 'Password Not Matched',
+        icon: Icons.icon_message,
+      });
+    }
+    if (isValid) {
+      if (isAgreeWithTerms) {
+        const {passwordConfirm, password, isAgreeWithTerms} = this.state;
+        let userPhoneData = await AsyncStorage.getItem('phoneData');
+        let parsedData = JSON.parse(userPhoneData);
+        let username = await AsyncStorage.getItem('username');
+        let email = await AsyncStorage.getItem('email');
+        let keys = ['phoneData', 'username', 'email'];
+        let registerData = {
+          channel_invitation_code: '',
+          confirm_password: passwordConfirm,
+          email: email,
+          first_name: '',
+          invitation_code: '',
+          isAgree: isAgreeWithTerms,
+          last_name: '',
+          otp_code: parsedData.code,
+          password: password,
+          phone: parsedData.phone,
+          site_from: 'touku',
+          user_language: 1,
+          username: username,
+        };
+        this.props
+          .userRegister(registerData)
+          .then((res) => {
+            alert(JSON.stringify(res));
+            if (res.token) {
+              AsyncStorage.multiRemove(keys);
+              this.props.getUserProfile().then((res) => {
+                if (res.id) {
+                  this.props.navigation.navigate('Home');
+                }
+              });
+            }
+            if (res.user) {
+              Toast.show({
+                title: 'SignUp Failed',
+                text: 'User Already Registered',
+                icon: Icons.icon_message,
+              });
+            }
+          })
+          .catch((err) => {
+            Toast.show({
+              title: 'SignUp Failed',
+              text: 'Something Went Wrong',
+              icon: Icons.icon_message,
+            });
+          });
+      } else {
+        Toast.show({
+          title: 'Terms and Conditions',
+          text: 'Please Select Our Terms & Conditions ',
+          icon: Icons.icon_message,
+        });
       }
-      if (res.user) {
-        this.setState({authError: res.user});
-      }
-    });
+    }
   }
 
   onCheckRememberMe() {
@@ -246,9 +355,7 @@ class SignUp extends Component {
 
   handleConfirmPassword = (passwordConfirm) => {
     this.setState({passwordConfirm});
-    if (this.state.password != this.state.passwordConfirm) {
-      this.setState({passwordConfirmStatus: 'wrong'});
-    } else if (passwordConfirm.length < 6) {
+    if (this.state.password != passwordConfirm) {
       this.setState({passwordConfirmStatus: 'wrong'});
     } else {
       this.setState({passwordConfirmStatus: 'right'});
@@ -272,22 +379,6 @@ class SignUp extends Component {
                 }
                 value={this.state.phone}
               />
-              {/* <Inputfield
-                onRef={(ref) => {
-                  this.inputs['phone'] = ref;
-                }}
-                value={this.state.phone}
-                isRightSideBtn={true}
-                rightBtnText={translate('common.sms')}
-                isLeftSideBtn={true}
-                placeholder={this.state.countryCode}
-                returnKeyType={'next'}
-                keyboardType={'number-pad'}
-                onChangeText={(phone) => this.setState({phone})}
-                onSubmitEditing={() => {
-                  this.focusNextField('verifycode');
-                }}
-              /> */}
               <Inputfield
                 onRef={(ref) => {
                   this.inputs['verifycode'] = ref;
@@ -316,22 +407,19 @@ class SignUp extends Component {
             </Text>
             <View style={{marginTop: 50}}>
               <Inputfield
-                onRef={(ref) => {
-                  this.inputs['email'] = ref;
-                }}
                 value={this.state.email}
                 placeholder={translate('common.email')}
                 returnKeyType={'next'}
                 keyboardType={'email-address'}
                 onChangeText={(email) => this.handleEmail(email)}
                 onSubmitEditing={() => {
-                  this.focusNextField('emailconfirm');
+                  this.emailconfirm.focus();
                 }}
                 status={this.state.emailStatus}
               />
               <Inputfield
-                onRef={(ref) => {
-                  this.inputs['emailconfirm'] = ref;
+                ref={(input) => {
+                  this.emailconfirm = input;
                 }}
                 value={this.state.emailconfirm}
                 placeholder={translate('common.emailConfirmation')}
@@ -366,23 +454,28 @@ class SignUp extends Component {
                 // onChangeText={(username) => this.checkUserName(username)}
                 onChangeText={(username) => this.setState({username})}
                 onSubmitEditing={() => {
-                  this.focusNextField('password');
+                  this.password.focus();
                   this.checkUserName(this.state.username);
                 }}
               />
               <Inputfield
-                onRef={(ref) => {
-                  this.inputs['password'] = ref;
+                ref={(input) => {
+                  this.password = input;
                 }}
                 value={this.state.password}
                 placeholder={translate('pages.register.loginPassword')}
                 returnKeyType={'next'}
                 onChangeText={(password) => this.handlePassword(password)}
-                onSubmitEditing={() => {}}
+                onSubmitEditing={() => {
+                  this.passwordConfirm.focus();
+                }}
                 secureTextEntry={true}
                 status={this.state.passwordStatus}
               />
               <Inputfield
+                ref={(input) => {
+                  this.passwordConfirm = input;
+                }}
                 value={this.state.passwordConfirm}
                 placeholder={translate('pages.register.reEnterLoginPassword')}
                 returnKeyType={'done'}
@@ -469,6 +562,7 @@ const mapDispatchToProps = {
   userEmailCheck,
   userNameCheck,
   userRegister,
+  getUserProfile,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

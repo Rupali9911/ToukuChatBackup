@@ -89,7 +89,7 @@ export default class CountryPhoneInput extends Component {
             placeholderTextColor: 'white',
             opacity: 0.8,
           }}
-          onPressConfirm={this.props.onPressConfirm}
+          // onPressConfirm={onPressConfirm}
         />
         <TouchableOpacity
           activeOpacity={0.6}
