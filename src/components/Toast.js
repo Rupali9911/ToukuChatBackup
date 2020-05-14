@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {isIphoneX} from '../utils';
 import {Icons, Colors, Fonts} from '../constants';
 
 const {height, width} = Dimensions.get('window');
@@ -36,7 +38,12 @@ class Toast extends Component {
     });
 
     Animated.spring(this.state.toast, {
-      toValue: width - 350,
+      toValue:
+        Platform.OS === 'ios'
+          ? isIphoneX()
+            ? width - 350
+            : width - 380
+          : width - 380,
       bounciness: 5,
       useNativeDriver: true,
     }).start();
