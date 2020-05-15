@@ -201,7 +201,11 @@ class SignUp extends Component {
       if (res.status === false) {
         AsyncStorage.setItem('username', username);
       } else {
-        alert('Email already exists!');
+        Toast.show({
+          title: 'SignUp Failed',
+          text: 'User Name Already Exist',
+          icon: Icons.icon_message,
+        });
       }
     });
   }
@@ -259,7 +263,6 @@ class SignUp extends Component {
         this.props
           .userRegister(registerData)
           .then((res) => {
-            alert(JSON.stringify(res));
             if (res.token) {
               AsyncStorage.multiRemove(keys);
               this.props.getUserProfile().then((res) => {

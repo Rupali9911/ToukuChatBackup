@@ -5,6 +5,7 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/es/integration/react';
 import {store, persistor} from './src/redux/store';
 import Root from './src/screens/Root';
+import InternetInfo from './src/components/InternetInfo';
 
 export default class App extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class App extends Component {
           <Root>
             <View style={{flex: 1}}>
               <StatusBar barStyle="light-content" translucent />
+              <InternetInfo />
               <Routes />
             </View>
           </Root>

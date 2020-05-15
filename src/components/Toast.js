@@ -38,12 +38,7 @@ class Toast extends Component {
     });
 
     Animated.spring(this.state.toast, {
-      toValue:
-        Platform.OS === 'ios'
-          ? isIphoneX()
-            ? width - 350
-            : width - 380
-          : width - 380,
+      toValue: width - 380,
       bounciness: 5,
       useNativeDriver: true,
     }).start();
@@ -57,7 +52,7 @@ class Toast extends Component {
 
   hideToast() {
     Animated.timing(this.state.toast, {
-      toValue: width + 500,
+      toValue: width + 1000,
       duration: 300,
       useNativeDriver: true,
     }).start();

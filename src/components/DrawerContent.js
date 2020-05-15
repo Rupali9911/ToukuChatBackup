@@ -17,13 +17,14 @@ import {
 } from 'accordion-collapse-react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import {Colors, Icons} from '../constants';
+import {Colors, Icons, Images} from '../constants';
 import HamburgerIcon from './HamburgerIcon';
 import RoundedImage from './RoundedImage';
 import {globalStyles} from '../styles';
 import DrawerItem from './DrawerItem';
 import {ProfileModal} from './Modals';
 import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
+import {getAvatar} from '../utils';
 
 class DrawerContent extends Component {
   constructor(props) {
@@ -196,7 +197,7 @@ class DrawerContent extends Component {
                 marginBottom: 30,
               }}>
               <RoundedImage
-                source={{uri: userData.avatar}}
+                source={getAvatar(userData.avatar)}
                 clickable={true}
                 onClick={() => this.onViewProfile()}
               />

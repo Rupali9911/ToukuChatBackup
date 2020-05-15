@@ -16,6 +16,7 @@ import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
+import {getAvatar} from '../../utils';
 
 class ProfileModal extends Component {
   constructor(props) {
@@ -98,7 +99,7 @@ class ProfileModal extends Component {
             <View style={{alignSelf: 'center', marginTop: -40}}>
               <RoundedImage
                 size={80}
-                source={{uri: userData.avatar}}
+                source={getAvatar(userData.avatar)}
                 clickable={true}
               />
               <View style={styles.centerBottomView}>
