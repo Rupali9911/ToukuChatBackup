@@ -11,13 +11,14 @@ import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
-import {Images} from '../../constants';
+import {Images, Icons} from '../../constants';
 import BackHeader from '../../components/BackHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotUserNameStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
 import {forgotUserName} from '../../redux/reducers/forgotPassReducer';
+import Toast from '../../components/Toast';
 
 class ForgotUserName extends Component {
   constructor(props) {
@@ -48,13 +49,33 @@ class ForgotUserName extends Component {
 
   onSubmitPress() {
     const {userName} = this.state;
-
-    let userNameData = {
-      username: userName,
-    };
-    this.props.forgotUserName(userNameData).then((res) => {
-      alert(JSON.stringify(res) + ' JSON DATA FROM API');
-    });
+    if (userName !== '') {
+      let userNameData = {
+        username: userName,
+      };
+      this.props
+        .forgotUserName(userNameData)
+        .then((res) => {
+          Toast.show({
+            title: 'Send SMS',
+            text: 'We have sent OTP code to your phone number',
+            icon: Icons.icon_message,
+          });
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Invalid Username',
+            text: 'Something Went Wrong',
+            icon: Icons.icon_message,
+          });
+        });
+    } else {
+      Toast.show({
+        title: 'Enter Username',
+        text: 'Please Enter User Name',
+        icon: Icons.icon_message,
+      });
+    }
   }
 
   render() {
@@ -95,7 +116,7 @@ class ForgotUserName extends Component {
                 }}>
                 <Inputfield
                   value={this.state.userName}
-                  placeholder={translate('common.email')}
+                  placeholder={translate('common.username')}
                   returnKeyType={'done'}
                   onChangeText={(userName) => this.setState({userName})}
                   // onSubmitEditing={() => {

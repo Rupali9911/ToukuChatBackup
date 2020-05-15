@@ -27,9 +27,10 @@ import {
   twitterRegister,
 } from '../../redux/reducers/userReducer';
 const {RNTwitterSignIn} = NativeModules;
+
 const TwitterKeys = {
-  TWITTER_CONSUMER_KEY: 'jswnBuBVPVSlItRYpNnzldDaM',
-  TWITTER_CONSUMER_SECRET: 'vjYIzkKQR3DCRG1DNdAppfj3zbn48k2VECDVDRU8mKFn9Gfk5n',
+  TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
+  TWITTER_CONSUMER_SECRET: '2R6vK7nCsWIYneFgmlvBQUSbajD1djiYMIFLwwElZMYaa3r6Q8',
 };
 
 class LoginSignUp extends Component {
@@ -59,7 +60,7 @@ class LoginSignUp extends Component {
   componentDidMount() {
     GoogleSignin.configure({
       webClientId:
-        '185609886814-thaiii1sd6f6rj03bj3mctq6bjgp8m5b.apps.googleusercontent.com',
+        '185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com',
     });
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -91,20 +92,20 @@ class LoginSignUp extends Component {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       this.setState({userInfo: userInfo, loggedIn: true});
-      const credential = auth.GoogleAuthProvider.credential(userInfo.idToken);
-      const firebaseUserCredential = await auth().signInWithCredential(
-        credential,
-      );
-      console.log(JSON.stringify(userInfo));
+      // const credential = auth.GoogleAuthProvider.credential(userInfo.idToken);
+      // const firebaseUserCredential = await auth().signInWithCredential(
+      //   credential,
+      // );
+      // console.log(JSON.stringify(userInfo));
 
-      const socialLoginData = {
+      const googleLoginData = {
         code: userInfo.idToken,
-        // access_token_secret: userInfo.idToken,
+        access_token_secret: userInfo.idToken,
         // username: firebaseUserCredential.additionalUserInfo.profile.email,
         site_from: 'touku',
         dev_id: '',
       };
-      this.props.googleRegister(socialLoginData).then((res) => {
+      this.props.googleRegister(googleLoginData).then((res) => {
         if (res.token) {
           this.props.navigation.navigate('Home');
         }
@@ -113,7 +114,7 @@ class LoginSignUp extends Component {
         }
       });
     } catch (error) {
-      alert(error);
+      // alert(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         alert('user cancelled the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -125,23 +126,6 @@ class LoginSignUp extends Component {
       }
     }
   };
-
-  signOut = async () => {
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      this.setState({user: null, loggedIn: false});
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  firebaseFacebookLogin() {
-    console.log('facebook tapped');
-    this.onFacebookButtonPress().then((result) =>
-      console.log('Signed in with facebook!', JSON.stringify(result)),
-    );
-  }
 
   async firebaseFacebookLogin() {
     console.log('facebook tapped');
@@ -170,15 +154,16 @@ class LoginSignUp extends Component {
     auth()
       .signInWithCredential(facebookCredential)
       .then((res) => {
-        const socialLoginData = {
+        console.log('Facebook response', JSON.stringify(res));
+        const facebookLoginData = {
           access_token: data.accessToken,
           code: data.accessToken,
-          // access_token_secret: data.accessToken,
+          access_token_secret: data.accessToken,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
           dev_id: '',
         };
-        this.props.facebookRegister(socialLoginData).then((res) => {
+        this.props.facebookRegister(facebookLoginData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             this.props.navigation.navigate('Home');
@@ -190,14 +175,7 @@ class LoginSignUp extends Component {
       });
   }
 
-  firebaseTwitterLogin() {
-    console.log('twitter tapped');
-    this.onTwitterButtonPress().then((result) =>
-      console.log('Signed in with twitter!', JSON.stringify(result)),
-    );
-  }
-
-  async onTwitterButtonPress() {
+  async firebaseTwitterLogin() {
     RNTwitterSignIn.init(
       TwitterKeys.TWITTER_CONSUMER_KEY,
       TwitterKeys.TWITTER_CONSUMER_SECRET,
@@ -212,8 +190,30 @@ class LoginSignUp extends Component {
       authTokenSecret,
     );
 
+    console.log('TWITTER TOKEN:-- ', authToken);
+
     // Sign-in the user with the credential
-    return auth().signInWithCredential(twitterCredential);
+    auth()
+      .signInWithCredential(twitterCredential)
+      .then((res) => {
+        console.log('twitter response data==> ', JSON.stringify(res));
+        const twitterLoginData = {
+          access_token: authToken,
+          access_token_secret: authToken,
+          // username: result.additionalUserInfo.username,
+          site_from: 'touku',
+          dev_id: '',
+        };
+        this.props.twitterRegister(twitterLoginData).then((res) => {
+          console.log('JWT TOKEN=> ', JSON.stringify(res));
+          if (res.token) {
+            this.props.navigation.navigate('Home');
+          }
+          if (res.user) {
+            alert('something went wrong!');
+          }
+        });
+      });
   }
 
   render() {
@@ -294,15 +294,6 @@ class LoginSignUp extends Component {
                   IconSrc={Icons.icon_twitter}
                   onPress={() => this.firebaseTwitterLogin()}
                 />
-              </View>
-              <View>
-                {this.state.loggedIn && (
-                  <Button
-                    type={'primary'}
-                    title={'Signout'}
-                    onPress={() => this.signOut()}
-                  />
-                )}
               </View>
             </View>
             <LanguageSelector />

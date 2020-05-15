@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "185609886814-llnm1e2m9u578s1hp7ta6eb7hj26tomt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.touku",
+            "certificate_hash": "dd207d8ec30d9436af812d25942bd2ffdf1eac66"
+          }
+        },
+        {
           "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -32,10 +40,118 @@
               "client_type": 3
             },
             {
-              "client_id": "185609886814-eh72sfl2cb0em7opkh052bek3qrs651d.apps.googleusercontent.com",
+              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.angelium.touku.app"
+                "bundle_id": "com.xcall"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185609886814:android:a6c47675a3df9a63a1a8cf",
+        "android_client_info": {
+          "package_name": "com.touku.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBayzPHi0VII8KPvLbG3ZSj_SIjzrD4Ack"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xcall"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185609886814:android:562ab86c495c739da1a8cf",
+        "android_client_info": {
+          "package_name": "com.xana"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBayzPHi0VII8KPvLbG3ZSj_SIjzrD4Ack"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xcall"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185609886814:android:fef7aa045f0ea651a1a8cf",
+        "android_client_info": {
+          "package_name": "com.xcall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBayzPHi0VII8KPvLbG3ZSj_SIjzrD4Ack"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xcall"
               }
             }
           ]

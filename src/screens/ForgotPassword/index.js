@@ -11,12 +11,13 @@ import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
-import {Images} from '../../constants';
+import {Images, Icons} from '../../constants';
 import BackHeader from '../../components/BackHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
+import Toast from '../../components/Toast';
 import {
   forgotPassword,
   forgotUserName,
@@ -32,6 +33,9 @@ class ForgotPassword extends Component {
       authCode: '',
       password: '',
       newPassword: '',
+
+      passwordStatus: 'normal',
+      newPasswordConfirmStatus: 'normal',
     };
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -58,28 +62,92 @@ class ForgotPassword extends Component {
     this.inputs[id].focus();
   }
 
+  handlePassword = (password) => {
+    this.setState({password});
+    if (password.length < 6) {
+      this.setState({passwordStatus: 'wrong'});
+    } else {
+      this.setState({passwordStatus: 'right'});
+    }
+  };
+
+  handleConfirmPassword = (newPassword) => {
+    this.setState({newPassword});
+    if (this.state.password != newPassword) {
+      this.setState({newPasswordConfirmStatus: 'wrong'});
+    } else {
+      this.setState({newPasswordConfirmStatus: 'right'});
+    }
+  };
+
   sendOTP() {
     const {userName} = this.state;
-    let userNameData = {
-      username: userName,
-    };
-    this.props.forgotUserName(userNameData).then((res) => {
-      alert(JSON.stringify(res) + ' JSON DATA FROM API');
-    });
+    if (userName !== '') {
+      let userNameData = {
+        username: userName,
+      };
+      this.props
+        .forgotUserName(userNameData)
+        .then((res) => {
+          Toast.show({
+            title: 'Send SMS',
+            text: 'We have sent OTP code to your phone number',
+            icon: Icons.icon_message,
+          });
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Invalid Username',
+            text: 'Something Went Wrong',
+            icon: Icons.icon_message,
+          });
+        });
+    } else {
+      Toast.show({
+        title: 'Enter Username',
+        text: 'Please Enter User Name',
+        icon: Icons.icon_message,
+      });
+    }
   }
 
   onSubmitPress() {
     const {userName, authCode, password, newPassword} = this.state;
-
-    let forgotData = {
-      code: authCode,
-      confirm_password: newPassword,
-      password: password,
-      username: userName,
-    };
-    this.props.forgotPassword(forgotData).then((res) => {
-      alert(JSON.stringify(res) + ' JSON DATA FROM API');
-    });
+    if (
+      userName !== '' &&
+      authCode !== '' &&
+      password !== '' &&
+      newPassword !== ''
+    ) {
+      let forgotData = {
+        code: authCode,
+        confirm_password: newPassword,
+        password: password,
+        username: userName,
+      };
+      this.props
+        .forgotPassword(forgotData)
+        .then((res) => {
+          Toast.show({
+            title: 'Successfull',
+            text: 'Password has been changed successfully!',
+            icon: Icons.icon_message,
+          });
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Invalid Username',
+            text: 'Something Went Wrong',
+            icon: Icons.icon_message,
+          });
+        });
+    } else {
+      Toast.show({
+        title: 'Enter Valid Details',
+        text: 'Please Enter all valid details',
+        icon: Icons.icon_message,
+      });
+    }
   }
 
   render() {
@@ -139,8 +207,10 @@ class ForgotPassword extends Component {
                   }}
                   placeholder={translate('common.loginPassword')}
                   value={this.state.password}
-                  onChangeText={(password) => this.setState({password})}
+                  secureTextEntry={true}
+                  onChangeText={(password) => this.handlePassword(password)}
                   returnKeyType={'next'}
+                  status={this.state.passwordStatus}
                   onSubmitEditing={() => {
                     this.focusNextField('newPassword');
                   }}
@@ -153,7 +223,11 @@ class ForgotPassword extends Component {
                     'pages.resetPassword.newLogInPassword',
                   )}
                   value={this.state.newPassword}
-                  onChangeText={(newPassword) => this.setState({newPassword})}
+                  secureTextEntry={true}
+                  onChangeText={(newPassword) =>
+                    this.handleConfirmPassword(newPassword)
+                  }
+                  status={this.state.newPasswordConfirmStatus}
                   returnKeyType={'done'}
                 />
                 <Button
