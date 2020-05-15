@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -25,7 +26,8 @@ import LanguageSelector from '../../components/LanguageSelector';
 import {SocialLogin} from '../LoginSignUp';
 import {globalStyles} from '../../styles';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
-import {userLogin, getUserProfile} from '../../redux/reducers/userReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
+import {userLogin} from '../../redux/reducers/loginReducer';
 import Toast from '../../components/Toast';
 
 class Login extends Component {
@@ -39,6 +41,8 @@ class Login extends Component {
       username: '',
       password: '',
       authError: '',
+      userNameErr: null,
+      passwordErr: null,
       userNameStatus: 'normal',
       passwordStatus: 'normal',
     };
@@ -114,7 +118,7 @@ class Login extends Component {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       this.setState({userInfo: userInfo, loggedIn: true});
-      alert(JSON.stringify(userInfo));
+      // alert(JSON.stringify(userInfo));
       const credential = auth.GoogleAuthProvider.credential(
         userInfo.idToken,
         userInfo.accessToken,
@@ -125,15 +129,15 @@ class Login extends Component {
 
       console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
     } catch (error) {
-      alert(error);
+      // alert(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('user cancelled the login flow');
+        // alert('user cancelled the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('operation (f.e. sign in) is in progress already');
+        // alert('operation (f.e. sign in) is in progress already');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        alert('play services not available or outdated');
+        // alert('play services not available or outdated');
       } else {
-        alert('some other error happened');
+        // alert('some other error happened');
       }
     }
   };
@@ -216,27 +220,30 @@ class Login extends Component {
 
     if (username.length <= 0) {
       isValid = false;
-      this.setState({userNameStatus: 'wrong'});
-    } else if (reg.test(username) === false) {
-      isValid = false;
-      this.setState({userNameStatus: 'wrong'});
+      this.setState({
+        userNameStatus: 'wrong',
+        userNameErr: 'messages.required',
+      });
     }
     if (isValid) {
-      this.setState({userNameStatus: 'right'});
+      this.setState({userNameStatus: 'right', userNameErr: null});
     }
   };
 
   handlePassword = (password) => {
     this.setState({password});
-    if (password.length < 6) {
-      this.setState({passwordStatus: 'wrong'});
+    if (password.length <= 0) {
+      this.setState({
+        passwordStatus: 'wrong',
+        passwordErr: 'messages.required',
+      });
     } else {
-      this.setState({passwordStatus: 'right'});
+      this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
   onLoginPress() {
-    this.setState({authError: ''});
+    this.setState({userNameErr: null, passwordErr: null});
     const {username, password, isRememberChecked} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -244,30 +251,17 @@ class Login extends Component {
 
     if (username.length <= 0) {
       isValid = false;
-      this.setState({userNameStatus: 'wrong'});
-      Toast.show({
-        title: 'Login Failed',
-        text: 'Please Enter User Name',
-        icon: Icons.icon_message,
+      this.setState({
+        userNameStatus: 'wrong',
+        userNameErr: 'messages.required',
       });
-    } else if (reg.test(username) === false) {
+    }
+    if (password.length <= 0) {
       isValid = false;
-      this.setState({userNameStatus: 'wrong'});
-      Toast.show({
-        title: 'Login Failed',
-        text: 'User Name Not Valid',
-        icon: Icons.icon_message,
+      this.setState({
+        passwordStatus: 'wrong',
+        passwordErr: 'messages.required',
       });
-    } else if (password.length < 6) {
-      isValid = false;
-      this.setState({passwordStatus: 'wrong'});
-      Toast.show({
-        title: 'Login Failed',
-        text: 'Password shoud be atleast 6 characters',
-        icon: Icons.icon_message,
-      });
-    } else {
-      this.setState({passwordStatus: 'right', userNameStatus: 'right'});
     }
 
     if (isValid) {
@@ -299,7 +293,7 @@ class Login extends Component {
         .catch((err) => {
           Toast.show({
             title: 'Login Failed',
-            text: 'Something Went Wrong',
+            text: 'User Not Exist',
             icon: Icons.icon_message,
           });
         });
@@ -311,9 +305,10 @@ class Login extends Component {
       isRememberChecked,
       isCheckLanguages,
       orientation,
-      authError,
       userNameStatus,
       passwordStatus,
+      userNameErr,
+      passwordErr,
     } = this.state;
     return (
       <ImageBackground
@@ -349,6 +344,23 @@ class Login extends Component {
                   }}
                   status={'normal'}
                 />
+                {userNameErr !== null ? (
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        textAlign: 'left',
+                        marginTop: -10,
+                        marginStart: 10,
+                        marginBottom: 5,
+                      },
+                    ]}>
+                    {translate(userNameErr).replace(
+                      '[missing {{field}} value]',
+                      translate('common.usernameEmail'),
+                    )}
+                  </Text>
+                ) : null}
                 <Inputfield
                   onRef={(ref) => {
                     this.inputs['password'] = ref;
@@ -361,8 +373,7 @@ class Login extends Component {
                   onSubmitEditing={() => {}}
                   status={'normal'}
                 />
-
-                {/* {authError !== '' ? (
+                {passwordErr !== null ? (
                   <Text
                     style={[
                       globalStyles.smallLightText,
@@ -373,10 +384,14 @@ class Login extends Component {
                         marginBottom: 5,
                       },
                     ]}>
-                    {authError}
+                    {translate(passwordErr).replace(
+                      '[missing {{field}} value]',
+                      translate('common.password'),
+                    )}
                   </Text>
-                ) : null} */}
+                ) : null}
               </View>
+
               <TouchableOpacity
                 style={loginStyles.rememberContainer}
                 activeOpacity={1}
@@ -393,6 +408,7 @@ class Login extends Component {
                 type={'primary'}
                 title={translate('common.login')}
                 onPress={() => this.onLoginPress()}
+                loading={this.props.loading}
               />
               <View
                 style={{
@@ -408,7 +424,7 @@ class Login extends Component {
                       globalStyles.smallLightText,
                       {textDecorationLine: 'underline'},
                     ]}>
-                    {'Need Support?'}
+                    {translate('pages.xchat.needSupport')}
                   </Text>
                 </View>
                 <View style={{flexDirection: 'row'}}>
@@ -484,6 +500,7 @@ class Login extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    loading: state.loginReducer.loading,
   };
 };
 

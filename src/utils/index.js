@@ -1,4 +1,5 @@
 import {Dimensions, Platform} from 'react-native';
+import {Images} from '../constants';
 
 export function isPortrait() {
   const dim = Dimensions.get('screen');
@@ -20,4 +21,18 @@ export function isIphoneX() {
       dimen.height === 896 ||
       dimen.width === 896)
   );
+}
+
+export function wait(timeout) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
+export function getAvatar(source) {
+  if (source === null || typeof source === null) {
+    return Images.image_default_profile;
+  } else {
+    return {uri: source};
+  }
 }

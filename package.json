@@ -13,6 +13,7 @@
     "@react-native-community/async-storage": "^1.9.0",
     "@react-native-community/google-signin": "^4.0.0",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/netinfo": "^5.8.1",
     "@react-native-firebase/app": "^6.7.1",
     "@react-native-firebase/auth": "^6.7.1",
     "accordion-collapse-react-native": "^0.2.10",

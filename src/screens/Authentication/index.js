@@ -6,13 +6,17 @@ import {
   ActivityIndicator,
   StatusBar,
   StyleSheet,
+  Image,
+  ImageBackground,
 } from 'react-native';
 import {connect} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import SplashScreen from 'react-native-splash-screen';
 import {authenticationStyles} from './styles';
-import {Colors} from '../../constants';
+import {Colors, Images} from '../../constants';
 import {getAllLanguages} from '../../redux/reducers/languageReducer';
+import {wait} from '../../utils';
+import {globalStyles} from '../../styles';
 
 class Authentication extends Component {
   constructor() {
@@ -22,8 +26,9 @@ class Authentication extends Component {
 
   authenticateUser = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
-    console.log(userToken);
-    this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+    wait(1000).then(() => {
+      this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+    });
   };
 
   componentDidMount() {
@@ -33,11 +38,17 @@ class Authentication extends Component {
 
   render() {
     return (
-      <View style={authenticationStyles.container}>
-        <SafeAreaView>
-          <ActivityIndicator color={Colors.primary} />
-        </SafeAreaView>
-      </View>
+      // <ImageBackground
+      //   source={Images.image_touku_bg}
+      //   style={globalStyles.container}>
+      <SafeAreaView style={authenticationStyles.container}>
+        {/* <ActivityIndicator color={Colors.primary} /> */}
+        <Image
+          source={Images.image_loading}
+          style={{width: 100, height: 100, resizeMode: 'contain'}}
+        />
+      </SafeAreaView>
+      // </ImageBackground>
     );
   }
 }

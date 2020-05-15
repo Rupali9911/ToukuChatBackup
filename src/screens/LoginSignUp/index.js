@@ -116,13 +116,13 @@ class LoginSignUp extends Component {
     } catch (error) {
       // alert(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('user cancelled the login flow');
+        // alert('user cancelled the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('operation (f.e. sign in) is in progress already');
+        // alert('operation (f.e. sign in) is in progress already');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        alert('play services not available or outdated');
+        // alert('play services not available or outdated');
       } else {
-        alert('some other error happened');
+        // alert('some other error happened');
       }
     }
   };
@@ -169,7 +169,7 @@ class LoginSignUp extends Component {
             this.props.navigation.navigate('Home');
           }
           if (res.user) {
-            alert('something went wrong!');
+            // alert('something went wrong!');
           }
         });
       });
@@ -210,7 +210,7 @@ class LoginSignUp extends Component {
             this.props.navigation.navigate('Home');
           }
           if (res.user) {
-            alert('something went wrong!');
+            // alert('something went wrong!');
           }
         });
       });
