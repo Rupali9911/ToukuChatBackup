@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
@@ -106,6 +106,7 @@ export const facebookRegister = (socialLoginData) => (dispatch) =>
       .post(`/xchat/facebook-login-auth/`, socialLoginData)
       .then((res) => {
         if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
           // dispatch(getLoginSuccess(res.token))
         }
         resolve(res);
@@ -138,6 +139,8 @@ export const twitterRegister = (socialLoginData) => (dispatch) =>
       .post(`/xchat/twitter-login-auth/`, socialLoginData)
       .then((res) => {
         if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
         }
         resolve(res);
       })

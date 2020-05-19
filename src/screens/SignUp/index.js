@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import StepIndicator from 'react-native-step-indicator';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -17,13 +17,13 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
-import {Icons, Colors, Images} from '../../constants';
+import { Icons, Colors, Images } from '../../constants';
 import BackHeader from '../../components/BackHeader';
-import {signUpStyles, stepIndicatorStyle} from './styles';
+import { signUpStyles, stepIndicatorStyle } from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
-import {globalStyles} from '../../styles';
+import { globalStyles } from '../../styles';
 import CountryPhoneInput from '../../components/CountryPhoneInput';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
 import {
   userSendOTP,
   userVerifyOTP,
@@ -68,7 +68,7 @@ class SignUp extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -80,7 +80,7 @@ class SignUp extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   focusNextField(id) {
@@ -88,11 +88,11 @@ class SignUp extends Component {
   }
 
   sendOTP() {
-    const {phone, countryCode} = this.state;
-    let signUpData = {
+    const { phone, countryCode } = this.state;
+    let signUpData = JSON.stringify({
       phone: '+' + countryCode + phone,
       user_type: 'user',
-    };
+    });
     this.props
       .userSendOTP(signUpData)
       .then((res) => {
@@ -114,7 +114,7 @@ class SignUp extends Component {
   }
 
   onPageChange(position) {
-    const {phone, countryCode, verifycode, email, emailconfirm} = this.state;
+    const { phone, countryCode, verifycode, email, emailconfirm } = this.state;
     switch (position) {
       case 1:
         if (phone !== '' && phone.length <= 10) {
@@ -148,7 +148,7 @@ class SignUp extends Component {
 
         if (email.length <= 0) {
           isValid = false;
-          this.setState({emailStatus: 'wrong'});
+          this.setState({ emailStatus: 'wrong' });
           Toast.show({
             title: 'Check Email',
             text: 'Please Enter Email Address',
@@ -156,7 +156,7 @@ class SignUp extends Component {
           });
         } else if (reg.test(email) === false) {
           isValid = false;
-          this.setState({emailStatus: 'wrong'});
+          this.setState({ emailStatus: 'wrong' });
           Toast.show({
             title: 'Check Email',
             text: 'Please Enter Valid Email Address',
@@ -164,7 +164,7 @@ class SignUp extends Component {
           });
         } else if (this.state.email != this.state.emailconfirm) {
           isValid = false;
-          this.setState({emailConfirmStatus: 'wrong'});
+          this.setState({ emailConfirmStatus: 'wrong' });
           Toast.show({
             title: 'Check Email',
             text: 'Email Address Not Matched',
@@ -189,7 +189,7 @@ class SignUp extends Component {
               }
             })
             .catch((err) => {});
-          this.setState({emailStatus: 'right'});
+          this.setState({ emailStatus: 'right' });
         }
         break;
       }
@@ -211,7 +211,12 @@ class SignUp extends Component {
   }
 
   async onSignUpPress() {
-    const {username, password, passwordConfirm, isAgreeWithTerms} = this.state;
+    const {
+      username,
+      password,
+      passwordConfirm,
+      isAgreeWithTerms,
+    } = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     let isValid = true;
 
@@ -239,10 +244,14 @@ class SignUp extends Component {
     }
     if (isValid) {
       if (isAgreeWithTerms) {
-        const {passwordConfirm, password, isAgreeWithTerms} = this.state;
+        const {
+          username,
+          passwordConfirm,
+          password,
+          isAgreeWithTerms,
+        } = this.state;
         let userPhoneData = await AsyncStorage.getItem('phoneData');
         let parsedData = JSON.parse(userPhoneData);
-        let username = await AsyncStorage.getItem('username');
         let email = await AsyncStorage.getItem('email');
         let keys = ['phoneData', 'username', 'email'];
         let registerData = {
@@ -305,63 +314,63 @@ class SignUp extends Component {
   }
 
   onChangePhoneNumber(phone, code) {
-    this.setState({phone, countryCode: code});
+    this.setState({ phone, countryCode: code });
   }
 
   handleEmail = (email) => {
-    this.setState({email});
+    this.setState({ email });
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
     if (email.length <= 0) {
       isValid = false;
-      this.setState({emailStatus: 'wrong'});
+      this.setState({ emailStatus: 'wrong' });
     } else if (reg.test(email) === false) {
       isValid = false;
-      this.setState({emailStatus: 'wrong'});
+      this.setState({ emailStatus: 'wrong' });
     }
     if (isValid) {
-      this.setState({emailStatus: 'right'});
+      this.setState({ emailStatus: 'right' });
     }
   };
 
   handleConfirmEmail = (emailconfirm) => {
-    this.setState({emailconfirm});
+    this.setState({ emailconfirm });
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
     if (emailconfirm.length <= 0) {
       isValid = false;
-      this.setState({emailConfirmStatus: 'wrong'});
+      this.setState({ emailConfirmStatus: 'wrong' });
     } else if (reg.test(emailconfirm) === false) {
       isValid = false;
-      this.setState({emailConfirmStatus: 'wrong'});
+      this.setState({ emailConfirmStatus: 'wrong' });
     } else if (this.state.email != emailconfirm) {
       isValid = false;
-      this.setState({emailConfirmStatus: 'wrong'});
+      this.setState({ emailConfirmStatus: 'wrong' });
     }
     if (isValid) {
-      this.setState({emailConfirmStatus: 'right'});
+      this.setState({ emailConfirmStatus: 'right' });
     }
   };
 
   handlePassword = (password) => {
-    this.setState({password});
+    this.setState({ password });
     if (password.length < 6) {
-      this.setState({passwordStatus: 'wrong'});
+      this.setState({ passwordStatus: 'wrong' });
     } else {
-      this.setState({passwordStatus: 'right'});
+      this.setState({ passwordStatus: 'right' });
     }
   };
 
   handleConfirmPassword = (passwordConfirm) => {
-    this.setState({passwordConfirm});
+    this.setState({ passwordConfirm });
     if (this.state.password != passwordConfirm) {
-      this.setState({passwordConfirmStatus: 'wrong'});
+      this.setState({ passwordConfirmStatus: 'wrong' });
     } else {
-      this.setState({passwordConfirmStatus: 'right'});
+      this.setState({ passwordConfirmStatus: 'right' });
     }
   };
 
@@ -373,7 +382,7 @@ class SignUp extends Component {
             <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepOne')}
             </Text>
-            <View style={{marginTop: 50}}>
+            <View style={{ marginTop: 50 }}>
               <CountryPhoneInput
                 rightBtnText={'SMS'}
                 onPressConfirm={() => this.sendOTP()}
@@ -390,7 +399,7 @@ class SignUp extends Component {
                 placeholder={translate('common.smsVerificationCode')}
                 returnKeyType={'done'}
                 keyboardType={'number-pad'}
-                onChangeText={(verifycode) => this.setState({verifycode})}
+                onChangeText={(verifycode) => this.setState({ verifycode })}
                 onSubmitEditing={() => {}}
                 maxLength={6}
               />
@@ -408,7 +417,7 @@ class SignUp extends Component {
             <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepTwo')}
             </Text>
-            <View style={{marginTop: 50}}>
+            <View style={{ marginTop: 50 }}>
               <Inputfield
                 value={this.state.email}
                 placeholder={translate('common.email')}
@@ -449,13 +458,13 @@ class SignUp extends Component {
             <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepThree')}
             </Text>
-            <View style={{marginTop: 50}}>
+            <View style={{ marginTop: 50 }}>
               <Inputfield
                 value={this.state.username}
                 placeholder={translate('common.username')}
                 returnKeyType={'done'}
                 // onChangeText={(username) => this.checkUserName(username)}
-                onChangeText={(username) => this.setState({username})}
+                onChangeText={(username) => this.setState({ username })}
                 onSubmitEditing={() => {
                   this.password.focus();
                   this.checkUserName(this.state.username);
@@ -496,7 +505,8 @@ class SignUp extends Component {
               <TouchableOpacity
                 style={signUpStyles.termsContainer}
                 activeOpacity={1}
-                onPress={() => this.onCheckRememberMe()}>
+                onPress={() => this.onCheckRememberMe()}
+              >
                 <CheckBox
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={this.state.isAgreeWithTerms}
@@ -504,8 +514,9 @@ class SignUp extends Component {
                 <Text
                   style={[
                     globalStyles.smallLightText,
-                    {textDecorationLine: 'underline'},
-                  ]}>
+                    { textDecorationLine: 'underline' },
+                  ]}
+                >
                   {translate('pages.register.iAgreeToTheTerms&Conditions')}
                 </Text>
               </TouchableOpacity>
@@ -516,20 +527,23 @@ class SignUp extends Component {
   }
 
   render() {
-    const {currentPosition, orientation} = this.state;
+    const { currentPosition, orientation } = this.state;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
-            contentContainerStyle={{padding: 20}}
-            showsVerticalScrollIndicator={false}>
+            contentContainerStyle={{ padding: 20 }}
+            showsVerticalScrollIndicator={false}
+          >
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
               style={{
                 paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,
-              }}>
+              }}
+            >
               <StepIndicator
                 stepCount={3}
                 customStyles={stepIndicatorStyle}
@@ -541,7 +555,8 @@ class SignUp extends Component {
                 flex: 1,
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
                 marginTop: 20,
-              }}>
+              }}
+            >
               {this.renderPage(currentPosition)}
             </View>
             <LanguageSelector />

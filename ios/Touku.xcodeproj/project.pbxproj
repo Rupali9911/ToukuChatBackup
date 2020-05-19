@@ -25,11 +25,11 @@
 		3593266C0E1E4761B807B4F2 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B03D9ACDE154749AC55000F /* Poppins-Light.ttf */; };
 		36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */; };
 		5C37A8B07F72A83D1766254C /* libPods-Touku-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B58F96ED9C54394A9F21E7BA /* libPods-Touku-tvOSTests.a */; };
+		8890C7A12472929B007645F4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8890C7A02472929B007645F4 /* GoogleService-Info.plist */; };
 		913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 47C8CE34CF284AE3AEA97A75 /* Poppins-Thin.ttf */; };
 		A3656588EA1C4F7322AEDF0B /* libPods-Touku.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 560E5E70813AFD57170F2176 /* libPods-Touku.a */; };
 		B29F713048FF4A5A9A86E624 /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C76BD82576B411094635396 /* Poppins-ExtraBold.ttf */; };
 		BF0CD4C80D6E444F839D783C /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DCF55CB9C0CA47078A374CC9 /* Poppins-ExtraLight.ttf */; };
-		C89164772462D7D800949FC2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C89164762462D7D800949FC2 /* GoogleService-Info.plist */; };
 		DD3311E83F583CDF3872389E /* libPods-Touku-ToukuTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20EA1689435A9FE90FC5A863 /* libPods-Touku-ToukuTests.a */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +76,7 @@
 		560E5E70813AFD57170F2176 /* libPods-Touku.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Touku.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8854EA517CBB5B0EBCFCA096 /* libPods-Touku-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Touku-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		888829CABEAF4D12992F8D7B /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		8890C7A02472929B007645F4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Touku/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8FAEAD34437D4E383FFDA962 /* Pods-Touku-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Touku-tvOSTests/Pods-Touku-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "The-Absolute.otf"; path = "../assets/fonts/The-Absolute.otf"; sourceTree = "<group>"; };
 		9A659E7CBBD5E5A2243FE749 /* Pods-Touku.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.debug.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.debug.xcconfig"; sourceTree = "<group>"; };
@@ -83,7 +84,6 @@
 		B519D9B6A1CC968CAE3FDB61 /* Pods-Touku-ToukuTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-ToukuTests.debug.xcconfig"; path = "Target Support Files/Pods-Touku-ToukuTests/Pods-Touku-ToukuTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B58F96ED9C54394A9F21E7BA /* libPods-Touku-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Touku-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7190D1174A1566D3415CCCB /* Pods-Touku.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.release.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.release.xcconfig"; sourceTree = "<group>"; };
-		C89164762462D7D800949FC2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DCF55CB9C0CA47078A374CC9 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
 		E969FC6F9D2BF594E8326DB8 /* Pods-Touku-ToukuTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-ToukuTests.release.xcconfig"; path = "Target Support Files/Pods-Touku-ToukuTests/Pods-Touku-ToukuTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -147,6 +147,7 @@
 		13B07FAE1A68108700A75B9A /* Touku */ = {
 			isa = PBXGroup;
 			children = (
+				8890C7A02472929B007645F4 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -181,7 +182,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				C89164762462D7D800949FC2 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Touku */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ToukuTests */,
@@ -391,7 +391,6 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				C89164772462D7D800949FC2 /* GoogleService-Info.plist in Resources */,
 				149717F605C84A72897C900E /* Poppins-Black.ttf in Resources */,
 				0212AA3FD7954544BA5DE26D /* Poppins-Bold.ttf in Resources */,
 				B29F713048FF4A5A9A86E624 /* Poppins-ExtraBold.ttf in Resources */,
@@ -402,6 +401,7 @@
 				2BF9154176944AB6AE627EA4 /* Poppins-SemiBold.ttf in Resources */,
 				913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */,
 				36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */,
+				8890C7A12472929B007645F4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
