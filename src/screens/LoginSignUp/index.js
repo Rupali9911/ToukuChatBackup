@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -9,27 +9,24 @@ import {
   SafeAreaView,
   NativeModules,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-community/google-signin';
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
-import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import Button from '../../components/Button';
-import { Images, Icons } from '../../constants';
-import { loginSignUpStyles } from './styles';
+import {Images, Icons} from '../../constants';
+import {loginSignUpStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
-import { globalStyles } from '../../styles';
+import {globalStyles} from '../../styles';
 import {
   facebookRegister,
   googleRegister,
   twitterRegister,
 } from '../../redux/reducers/userReducer';
-const { RNTwitterSignIn } = NativeModules;
+const {RNTwitterSignIn} = NativeModules;
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -57,7 +54,7 @@ class LoginSignUp extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -70,7 +67,7 @@ class LoginSignUp extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   componentWillUnmount() {
@@ -94,7 +91,7 @@ class LoginSignUp extends Component {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      this.setState({ userInfo: userInfo, loggedIn: true });
+      this.setState({userInfo: userInfo, loggedIn: true});
       // const credential = auth.GoogleAuthProvider.credential(userInfo.idToken);
       // const firebaseUserCredential = await auth().signInWithCredential(
       //   credential,
@@ -151,7 +148,7 @@ class LoginSignUp extends Component {
     console.log('data.accessToken===========', data);
     // Create a Firebase credential with the AccessToken
     const facebookCredential = auth.FacebookAuthProvider.credential(
-      data.accessToken
+      data.accessToken,
     );
 
     auth()
@@ -182,7 +179,7 @@ class LoginSignUp extends Component {
   async firebaseTwitterLogin() {
     RNTwitterSignIn.init(
       TwitterKeys.TWITTER_CONSUMER_KEY,
-      TwitterKeys.TWITTER_CONSUMER_SECRET
+      TwitterKeys.TWITTER_CONSUMER_SECRET,
     ).then(() => console.log('Twitter SDK initialized'));
 
     // Perform the login request
@@ -195,7 +192,7 @@ class LoginSignUp extends Component {
     // Create a Twitter credential with the tokens
     const twitterCredential = auth.TwitterAuthProvider.credential(
       authToken,
-      authTokenSecret
+      authTokenSecret,
     );
 
     console.log('TWITTER TOKEN:-- ', authToken);
@@ -227,43 +224,36 @@ class LoginSignUp extends Component {
   }
 
   render() {
-    const { orientation } = this.state;
-    const { selectedLanguageItem } = this.props;
+    const {orientation} = this.state;
+    const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
         style={globalStyles.container}
-        resizeMode={'cover'}
-      >
+        resizeMode={'cover'}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
             contentContainerStyle={{
               padding: 20,
               paddingTop: orientation != 'PORTRAIT' ? 20 : 120,
             }}
-            showsVerticalScrollIndicator={false}
-          >
+            showsVerticalScrollIndicator={false}>
             <View
               style={{
                 flex: 1,
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-              }}
-            >
+              }}>
               <Text style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
               <View
                 style={{
-                  flexDirection:
-                    selectedLanguageItem.language_name != 'en'
-                      ? 'row'
-                      : 'column',
+                  flexDirection: 'row',
                   justifyContent: 'center',
                   marginBottom: 25,
                   marginTop: orientation != 'PORTRAIT' ? 0 : 50,
-                }}
-              >
-                <Text style={[globalStyles.smallLightText, { marginEnd: 10 }]}>
+                }}>
+                <Text style={[globalStyles.smallLightText, {marginEnd: 10}]}>
                   {translate('pages.welcome.theWorldIsConnected')}
                 </Text>
                 <Text style={globalStyles.smallLightText}>
@@ -280,7 +270,7 @@ class LoginSignUp extends Component {
                 title={translate('pages.welcome.signUp')}
                 onPress={() => this.onSignUpPress()}
               />
-              <View style={{ marginTop: 30, marginBottom: 10 }}>
+              <View style={{marginTop: 30, marginBottom: 10}}>
                 <Text style={globalStyles.smallLightText}>
                   {translate('pages.welcome.OrLoginWith')}
                 </Text>
@@ -291,8 +281,7 @@ class LoginSignUp extends Component {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   marginTop: 10,
-                }}
-              >
+                }}>
                 <SocialLogin
                   IconSrc={Icons.icon_facebook}
                   onPress={() => this.firebaseFacebookLogin()}
@@ -324,7 +313,7 @@ export const SocialLogin = (props) => {
     <TouchableOpacity onPress={props.onPress} activeOpacity={0.6}>
       <Image
         source={props.IconSrc}
-        style={[globalStyles.iconStyle, { marginHorizontal: 10 }]}
+        style={[globalStyles.iconStyle, {marginHorizontal: 10}]}
       />
     </TouchableOpacity>
   );

@@ -17,6 +17,15 @@ import {Colors, Images} from '../../constants';
 import {getAllLanguages} from '../../redux/reducers/languageReducer';
 import {wait} from '../../utils';
 import {globalStyles} from '../../styles';
+import {store} from '../../redux/store';
+
+export const translationGetters = {
+  en: () => store.getState().languageReducer.en,
+  ja: () => store.getState().languageReducer.ja,
+  ko: () => store.getState().languageReducer.ko,
+  ch: () => store.getState().languageReducer.ch,
+  tw: () => store.getState().languageReducer.tw,
+};
 
 class Authentication extends Component {
   constructor() {
@@ -26,14 +35,15 @@ class Authentication extends Component {
 
   authenticateUser = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
-    wait(1000).then(() => {
-      this.props.navigation.navigate(userToken ? 'App' : 'Auth');
-    });
+    // wait(1000).then(() => {
+    this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+    // });
   };
 
   componentDidMount() {
-    this.props.getAllLanguages();
-    SplashScreen.hide();
+    this.props.getAllLanguages().then((res) => {
+      SplashScreen.hide();
+    });
   }
 
   render() {
@@ -43,10 +53,10 @@ class Authentication extends Component {
       //   style={globalStyles.container}>
       <SafeAreaView style={authenticationStyles.container}>
         {/* <ActivityIndicator color={Colors.primary} /> */}
-        <Image
+        {/* <Image
           source={Images.image_loading}
           style={{width: 100, height: 100, resizeMode: 'contain'}}
-        />
+        /> */}
       </SafeAreaView>
       // </ImageBackground>
     );

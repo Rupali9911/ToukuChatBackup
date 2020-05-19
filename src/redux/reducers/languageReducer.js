@@ -3,24 +3,27 @@ import i18n from 'i18n-js';
 import memoize from 'lodash.memoize';
 import {Icons} from '../../constants/index.js';
 import {client} from '../../helpers/api.js';
+import {translationGetters} from '../../screens/Authentication/index.js';
 
 let languages = [
   'en.json?t=1588152637880',
   'ja.json?t=1588841551420',
   'ko.json?t=1588841533708',
+  'zh-hans.json?t=1588841569475',
+  'zh-hant.json?t=1588841585244',
 ];
 
 let languageRequests = languages.map((name) =>
   fetch(`https://wallet.angelium.net/languages/touku/${name}`),
 );
 
-export const translationGetters = {
-  en: () => require('../../translations/en.json'),
-  ja: () => require('../../translations/ja.json'),
-  ko: () => require('../../translations/ko.json'),
-  ch: () => require('../../translations/ch.json'),
-  tw: () => require('../../translations/tw.json'),
-};
+// export const translationGetters = {
+//   en: () => require('../../translations/en.json'),
+//   ja: () => require('../../translations/ja.json'),
+//   ko: () => require('../../translations/ko.json'),
+//   ch: () => require('../../translations/ch.json'),
+//   tw: () => require('../../translations/tw.json'),
+// };
 
 export const translate = memoize(
   (key, config) => i18n.t(key, config),
@@ -45,6 +48,10 @@ export const GET_EN_LANGUAGE_FAIL = 'GET_EN_LANGUAGE_FAIL';
 
 export const SET_LANGUAGE_SELECTED = 'SET_LANGUAGE_SELECTED';
 export const SET_ENGLISH_LANGUAGE = 'SET_ENGLISH_LANGUAGE';
+export const SET_JAPAN_LANGUAGE = 'SET_JAPAN_LANGUAGE';
+export const SET_KOREA_LANGUAGE = 'SET_KOREA_LANGUAGE';
+export const SET_CHINA_LANGUAGE = 'SET_CHINA_LANGUAGE';
+export const SET_TAIWAN_LANGUAGE = 'SET_TAIWAN_LANGUAGE';
 
 const initialState = {
   loading: false,
@@ -54,7 +61,11 @@ const initialState = {
     icon: Icons.icon_flag_america,
     selected: true,
   },
-  en: [],
+  en: require('../../translations/en.json'),
+  ja: require('../../translations/ja.json'),
+  ko: require('../../translations/ko.json'),
+  ch: require('../../translations/ch.json'),
+  tw: require('../../translations/tw.json'),
 };
 
 export default function (state = initialState, action) {
@@ -87,6 +98,30 @@ export default function (state = initialState, action) {
       return {
         ...state,
         en: action.payload.data,
+      };
+
+    case SET_JAPAN_LANGUAGE:
+      return {
+        ...state,
+        ja: action.payload.data,
+      };
+
+    case SET_KOREA_LANGUAGE:
+      return {
+        ...state,
+        ko: action.payload.data,
+      };
+
+    case SET_CHINA_LANGUAGE:
+      return {
+        ...state,
+        ch: action.payload.data,
+      };
+
+    case SET_TAIWAN_LANGUAGE:
+      return {
+        ...state,
+        tw: action.payload.data,
       };
 
     default:
@@ -124,6 +159,10 @@ export const getAllLanguages = () => (dispatch) =>
         });
       }
       dispatch(setEnglishLanguage(languages[0]));
+      dispatch(setJapanLanguage(languages[1]));
+      dispatch(setKoreaLanguage(languages[2]));
+      dispatch(setChinaLanguage(languages[3]));
+      dispatch(setTaiwanLanguage(languages[4]));
     });
 
 export const userLanguage = () => (dispatch) =>
@@ -152,6 +191,34 @@ const setSelectedLanguage = (data) => ({
 
 const setEnglishLanguage = (data) => ({
   type: SET_ENGLISH_LANGUAGE,
+  payload: {
+    data: data,
+  },
+});
+
+const setJapanLanguage = (data) => ({
+  type: SET_JAPAN_LANGUAGE,
+  payload: {
+    data: data,
+  },
+});
+
+const setKoreaLanguage = (data) => ({
+  type: SET_KOREA_LANGUAGE,
+  payload: {
+    data: data,
+  },
+});
+
+const setChinaLanguage = (data) => ({
+  type: SET_CHINA_LANGUAGE,
+  payload: {
+    data: data,
+  },
+});
+
+const setTaiwanLanguage = (data) => ({
+  type: SET_TAIWAN_LANGUAGE,
   payload: {
     data: data,
   },
