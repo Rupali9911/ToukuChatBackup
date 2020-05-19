@@ -7,6 +7,7 @@ import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import ForgotPassword from '../screens/ForgotPassword';
 import ForgotUsername from '../screens/ForgotUsername';
+import NeedSupport from '../screens/NeedSupport';
 import Drawer from './DrawerNavigation';
 
 const AppStack = createStackNavigator(
@@ -28,6 +29,7 @@ const AuthStack = createStackNavigator(
     SignUp: SignUp,
     ForgotPassword: ForgotPassword,
     ForgotUsername: ForgotUsername,
+    NeedSupport: NeedSupport,
   },
   {
     initialRouteName: 'LoginSignUp',

@@ -9,12 +9,22 @@ import {
   Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Orientation from 'react-native-orientation';
+
 import {isIphoneX} from '../utils';
 import {Icons, Colors, Fonts} from '../constants';
 
 const {height, width} = Dimensions.get('window');
 
 class Toast extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      orientation: 'PORTRAIT',
+      toast: new Animated.Value(width),
+    };
+  }
+
   static toastInstance;
 
   static show({...config}) {
@@ -25,9 +35,9 @@ class Toast extends Component {
     this.toastInstance.hideToast();
   }
 
-  state = {
-    toast: new Animated.Value(width),
-  };
+  // state = {
+  //   toast: new Animated.Value(width),
+  // };
 
   start({...config}) {
     this.setState({
@@ -58,15 +68,35 @@ class Toast extends Component {
     }).start();
   }
 
+  componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
+  }
+
+  componentDidMount() {
+    Orientation.addOrientationListener(this._orientationDidChange);
+  }
+
+  componentWillUnmount() {
+    Orientation.removeOrientationListener(this._orientationDidChange);
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
+
   render() {
-    const {title, text, icon} = this.state;
+    const {title, text, icon, orientation} = this.state;
     return (
       <Animated.View
         ref={(c) => (this._root = c)}
         style={[
           styles.toast,
           {
-            transform: [{translateX: this.state.toast}, {translateY: 100}],
+            transform: [
+              {translateX: this.state.toast},
+              {translateY: orientation != 'PORTRAIT' ? 60 : 100},
+            ],
           },
         ]}>
         <LinearGradient
@@ -143,7 +173,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
-    tintColor: Colors.primary,
+    tintColor: Colors.danger,
   },
 });
 

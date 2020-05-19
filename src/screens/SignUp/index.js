@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import StepIndicator from 'react-native-step-indicator';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -17,21 +17,21 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
-import { Icons, Colors, Images } from '../../constants';
+import {Icons, Colors, Images} from '../../constants';
 import BackHeader from '../../components/BackHeader';
-import { signUpStyles, stepIndicatorStyle } from './styles';
+import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
-import { globalStyles } from '../../styles';
+import {globalStyles} from '../../styles';
 import CountryPhoneInput from '../../components/CountryPhoneInput';
-import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
 import {
   userSendOTP,
   userVerifyOTP,
   userEmailCheck,
   userNameCheck,
   userRegister,
-  getUserProfile,
-} from '../../redux/reducers/userReducer';
+} from '../../redux/reducers/signupReducer';
 import Toast from '../../components/Toast';
 
 class SignUp extends Component {
@@ -41,11 +41,10 @@ class SignUp extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       currentPosition: 0,
-      countryCode: '+91',
       isAgreeWithTerms: false,
 
       //Page 1
-      countryCode: '',
+      countryCode: '+1',
       phone: '',
       verifycode: '',
       //Page 2
@@ -68,7 +67,7 @@ class SignUp extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -80,7 +79,7 @@ class SignUp extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   focusNextField(id) {
@@ -88,46 +87,79 @@ class SignUp extends Component {
   }
 
   sendOTP() {
-    const { phone, countryCode } = this.state;
-    let signUpData = JSON.stringify({
-      phone: '+' + countryCode + phone,
-      user_type: 'user',
-    });
-    this.props
-      .userSendOTP(signUpData)
-      .then((res) => {
-        if (res) {
+    const {phone, countryCode} = this.state;
+
+    if (phone.length <= 0) {
+      Toast.show({
+        title: 'Send SMS',
+        text: 'Please enter your phone number',
+        icon: Icons.icon_message,
+      });
+    } else if (phone.length > 0 && phone.length < 6) {
+      Toast.show({
+        title: 'Send SMS',
+        text: 'Phone number is invalid',
+        icon: Icons.icon_message,
+      });
+    } else {
+      let signUpData = {
+        phone: phone,
+        user_type: 'user',
+      };
+      this.props
+        .userSendOTP(signUpData)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Send SMS',
+              text: 'We have sent OTP code to your phone number',
+              icon: Icons.icon_message,
+            });
+          } else if (res.status === false && res.data.phone != '') {
+            Toast.show({
+              title: 'Send SMS',
+              text: 'The phone number is already registered',
+              icon: Icons.icon_message,
+            });
+          } else {
+            Toast.show({
+              title: 'Send SMS',
+              text: 'Phone number is invalid',
+              icon: Icons.icon_message,
+            });
+          }
+        })
+        .catch((err) => {
           Toast.show({
             title: 'Send SMS',
-            text: 'We have sent OTP code to your phone number',
+            text: 'The phone number is already registered',
             icon: Icons.icon_message,
           });
-        }
-      })
-      .catch((err) => {
-        Toast.show({
-          title: 'Send SMS',
-          text: 'Please Enter Valid Phone Number',
-          icon: Icons.icon_message,
         });
-      });
+    }
   }
 
   onPageChange(position) {
-    const { phone, countryCode, verifycode, email, emailconfirm } = this.state;
+    const {phone, countryCode, verifycode, email, emailconfirm} = this.state;
     switch (position) {
       case 1:
-        if (phone !== '' && phone.length <= 10) {
+        if (phone !== '' && verifycode != '') {
           let verifyData = {
             code: verifycode,
-            phone: '+' + countryCode + phone,
+            phone: phone,
           };
 
           this.props.userVerifyOTP(verifyData).then((res) => {
-            if (res) {
+            if (res.status === true) {
               AsyncStorage.setItem('phoneData', JSON.stringify(verifyData));
               this.setState({
                 currentPosition: position,
+              });
+            } else {
+              Toast.show({
+                title: 'Verify OTP',
+                text: 'Please Enter Valid OTP',
+                icon: Icons.icon_message,
               });
             }
           });
@@ -148,7 +180,7 @@ class SignUp extends Component {
 
         if (email.length <= 0) {
           isValid = false;
-          this.setState({ emailStatus: 'wrong' });
+          this.setState({emailStatus: 'wrong'});
           Toast.show({
             title: 'Check Email',
             text: 'Please Enter Email Address',
@@ -156,7 +188,7 @@ class SignUp extends Component {
           });
         } else if (reg.test(email) === false) {
           isValid = false;
-          this.setState({ emailStatus: 'wrong' });
+          this.setState({emailStatus: 'wrong'});
           Toast.show({
             title: 'Check Email',
             text: 'Please Enter Valid Email Address',
@@ -164,7 +196,7 @@ class SignUp extends Component {
           });
         } else if (this.state.email != this.state.emailconfirm) {
           isValid = false;
-          this.setState({ emailConfirmStatus: 'wrong' });
+          this.setState({emailConfirmStatus: 'wrong'});
           Toast.show({
             title: 'Check Email',
             text: 'Email Address Not Matched',
@@ -189,7 +221,7 @@ class SignUp extends Component {
               }
             })
             .catch((err) => {});
-          this.setState({ emailStatus: 'right' });
+          this.setState({emailStatus: 'right'});
         }
         break;
       }
@@ -211,12 +243,7 @@ class SignUp extends Component {
   }
 
   async onSignUpPress() {
-    const {
-      username,
-      password,
-      passwordConfirm,
-      isAgreeWithTerms,
-    } = this.state;
+    const {username, password, passwordConfirm, isAgreeWithTerms} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     let isValid = true;
 
@@ -244,57 +271,64 @@ class SignUp extends Component {
     }
     if (isValid) {
       if (isAgreeWithTerms) {
-        const {
-          username,
-          passwordConfirm,
-          password,
-          isAgreeWithTerms,
-        } = this.state;
         let userPhoneData = await AsyncStorage.getItem('phoneData');
         let parsedData = JSON.parse(userPhoneData);
+        // let username = await AsyncStorage.getItem('username');
         let email = await AsyncStorage.getItem('email');
-        let keys = ['phoneData', 'username', 'email'];
-        let registerData = {
-          channel_invitation_code: '',
-          confirm_password: passwordConfirm,
-          email: email,
-          first_name: '',
-          invitation_code: '',
-          isAgree: isAgreeWithTerms,
-          last_name: '',
-          otp_code: parsedData.code,
-          password: password,
-          phone: parsedData.phone,
-          site_from: 'touku',
-          user_language: 1,
-          username: username,
-        };
-        this.props
-          .userRegister(registerData)
-          .then((res) => {
-            if (res.token) {
-              AsyncStorage.multiRemove(keys);
-              this.props.getUserProfile().then((res) => {
-                if (res.id) {
-                  this.props.navigation.navigate('Home');
+        let keys = ['phoneData', 'email'];
+        this.props.userNameCheck(username).then((res) => {
+          if (res.status === false) {
+            // AsyncStorage.setItem('username', username);
+
+            let registerData = {
+              channel_invitation_code: '',
+              confirm_password: passwordConfirm,
+              email: email,
+              first_name: '',
+              invitation_code: '',
+              isAgree: isAgreeWithTerms,
+              last_name: '',
+              otp_code: parsedData.code,
+              password: password,
+              phone: parsedData.phone,
+              site_from: 'touku',
+              user_language: 1,
+              username: username,
+            };
+            this.props
+              .userRegister(registerData)
+              .then((res) => {
+                if (res.token) {
+                  AsyncStorage.multiRemove(keys);
+                  this.props.getUserProfile().then((res) => {
+                    if (res.id) {
+                      this.props.navigation.navigate('Home');
+                    }
+                  });
                 }
+                if (res.user) {
+                  Toast.show({
+                    title: 'SignUp Failed',
+                    text: 'User Already Registered',
+                    icon: Icons.icon_message,
+                  });
+                }
+              })
+              .catch((err) => {
+                Toast.show({
+                  title: 'SignUp Failed',
+                  text: 'Something Went Wrong',
+                  icon: Icons.icon_message,
+                });
               });
-            }
-            if (res.user) {
-              Toast.show({
-                title: 'SignUp Failed',
-                text: 'User Already Registered',
-                icon: Icons.icon_message,
-              });
-            }
-          })
-          .catch((err) => {
+          } else {
             Toast.show({
               title: 'SignUp Failed',
-              text: 'Something Went Wrong',
+              text: 'User Name Already Exist',
               icon: Icons.icon_message,
             });
-          });
+          }
+        });
       } else {
         Toast.show({
           title: 'Terms and Conditions',
@@ -314,63 +348,63 @@ class SignUp extends Component {
   }
 
   onChangePhoneNumber(phone, code) {
-    this.setState({ phone, countryCode: code });
+    this.setState({phone, countryCode: code});
   }
 
   handleEmail = (email) => {
-    this.setState({ email });
+    this.setState({email});
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
     if (email.length <= 0) {
       isValid = false;
-      this.setState({ emailStatus: 'wrong' });
+      this.setState({emailStatus: 'wrong'});
     } else if (reg.test(email) === false) {
       isValid = false;
-      this.setState({ emailStatus: 'wrong' });
+      this.setState({emailStatus: 'wrong'});
     }
     if (isValid) {
-      this.setState({ emailStatus: 'right' });
+      this.setState({emailStatus: 'right'});
     }
   };
 
   handleConfirmEmail = (emailconfirm) => {
-    this.setState({ emailconfirm });
+    this.setState({emailconfirm});
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
     if (emailconfirm.length <= 0) {
       isValid = false;
-      this.setState({ emailConfirmStatus: 'wrong' });
+      this.setState({emailConfirmStatus: 'wrong'});
     } else if (reg.test(emailconfirm) === false) {
       isValid = false;
-      this.setState({ emailConfirmStatus: 'wrong' });
+      this.setState({emailConfirmStatus: 'wrong'});
     } else if (this.state.email != emailconfirm) {
       isValid = false;
-      this.setState({ emailConfirmStatus: 'wrong' });
+      this.setState({emailConfirmStatus: 'wrong'});
     }
     if (isValid) {
-      this.setState({ emailConfirmStatus: 'right' });
+      this.setState({emailConfirmStatus: 'right'});
     }
   };
 
   handlePassword = (password) => {
-    this.setState({ password });
+    this.setState({password});
     if (password.length < 6) {
-      this.setState({ passwordStatus: 'wrong' });
+      this.setState({passwordStatus: 'wrong'});
     } else {
-      this.setState({ passwordStatus: 'right' });
+      this.setState({passwordStatus: 'right'});
     }
   };
 
   handleConfirmPassword = (passwordConfirm) => {
-    this.setState({ passwordConfirm });
+    this.setState({passwordConfirm});
     if (this.state.password != passwordConfirm) {
-      this.setState({ passwordConfirmStatus: 'wrong' });
+      this.setState({passwordConfirmStatus: 'wrong'});
     } else {
-      this.setState({ passwordConfirmStatus: 'right' });
+      this.setState({passwordConfirmStatus: 'right'});
     }
   };
 
@@ -382,14 +416,15 @@ class SignUp extends Component {
             <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepOne')}
             </Text>
-            <View style={{ marginTop: 50 }}>
+            <View style={{marginTop: 50}}>
               <CountryPhoneInput
                 rightBtnText={'SMS'}
-                onPressConfirm={() => this.sendOTP()}
+                onClickSMS={() => this.sendOTP()}
                 onChangePhoneNumber={(phone, code) =>
                   this.onChangePhoneNumber(phone, code)
                 }
-                value={this.state.phone}
+                // value={this.state.phone}
+                loading={this.props.loadingSMS}
               />
               <Inputfield
                 onRef={(ref) => {
@@ -399,7 +434,7 @@ class SignUp extends Component {
                 placeholder={translate('common.smsVerificationCode')}
                 returnKeyType={'done'}
                 keyboardType={'number-pad'}
-                onChangeText={(verifycode) => this.setState({ verifycode })}
+                onChangeText={(verifycode) => this.setState({verifycode})}
                 onSubmitEditing={() => {}}
                 maxLength={6}
               />
@@ -407,6 +442,7 @@ class SignUp extends Component {
                 type={'primary'}
                 title={translate('common.next')}
                 onPress={() => this.onPageChange(1)}
+                loading={this.props.loading}
               />
             </View>
           </View>
@@ -417,7 +453,7 @@ class SignUp extends Component {
             <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepTwo')}
             </Text>
-            <View style={{ marginTop: 50 }}>
+            <View style={{marginTop: 50}}>
               <Inputfield
                 value={this.state.email}
                 placeholder={translate('common.email')}
@@ -448,6 +484,7 @@ class SignUp extends Component {
                 type={'primary'}
                 title={translate('common.next')}
                 onPress={() => this.onPageChange(2)}
+                loading={this.props.loading}
               />
             </View>
           </View>
@@ -458,16 +495,16 @@ class SignUp extends Component {
             <Text style={globalStyles.smallLightText}>
               {translate('common.registerStepThree')}
             </Text>
-            <View style={{ marginTop: 50 }}>
+            <View style={{marginTop: 50}}>
               <Inputfield
                 value={this.state.username}
                 placeholder={translate('common.username')}
                 returnKeyType={'done'}
                 // onChangeText={(username) => this.checkUserName(username)}
-                onChangeText={(username) => this.setState({ username })}
+                onChangeText={(username) => this.setState({username})}
                 onSubmitEditing={() => {
                   this.password.focus();
-                  this.checkUserName(this.state.username);
+                  // this.checkUserName(this.state.username);
                 }}
               />
               <Inputfield
@@ -501,12 +538,12 @@ class SignUp extends Component {
                 type={'primary'}
                 title={translate('common.signUp')}
                 onPress={() => this.onSignUpPress()}
+                loading={this.props.loading}
               />
               <TouchableOpacity
                 style={signUpStyles.termsContainer}
                 activeOpacity={1}
-                onPress={() => this.onCheckRememberMe()}
-              >
+                onPress={() => this.onCheckRememberMe()}>
                 <CheckBox
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={this.state.isAgreeWithTerms}
@@ -514,9 +551,8 @@ class SignUp extends Component {
                 <Text
                   style={[
                     globalStyles.smallLightText,
-                    { textDecorationLine: 'underline' },
-                  ]}
-                >
+                    {textDecorationLine: 'underline'},
+                  ]}>
                   {translate('pages.register.iAgreeToTheTerms&Conditions')}
                 </Text>
               </TouchableOpacity>
@@ -527,23 +563,24 @@ class SignUp extends Component {
   }
 
   render() {
-    const { currentPosition, orientation } = this.state;
+    const {currentPosition, orientation} = this.state;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
-        style={globalStyles.container}
-      >
-        <SafeAreaView style={globalStyles.safeAreaView}>
+        style={globalStyles.container}>
+        <SafeAreaView
+          pointerEvents={
+            this.props.loading || this.props.loadingSMS ? 'none' : 'auto'
+          }
+          style={globalStyles.safeAreaView}>
           <ScrollView
-            contentContainerStyle={{ padding: 20 }}
-            showsVerticalScrollIndicator={false}
-          >
+            contentContainerStyle={{padding: 20}}
+            showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
               style={{
                 paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,
-              }}
-            >
+              }}>
               <StepIndicator
                 stepCount={3}
                 customStyles={stepIndicatorStyle}
@@ -555,8 +592,7 @@ class SignUp extends Component {
                 flex: 1,
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
                 marginTop: 20,
-              }}
-            >
+              }}>
               {this.renderPage(currentPosition)}
             </View>
             <LanguageSelector />
@@ -571,6 +607,8 @@ const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     englishLanguage: state.languageReducer.en,
+    loadingSMS: state.signupReducer.loadingSMS,
+    loading: state.signupReducer.loading,
   };
 };
 

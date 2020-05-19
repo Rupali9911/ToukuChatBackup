@@ -87,6 +87,8 @@ export default class InputField extends Component {
       selectedValue,
       onPickerValueChange,
       status,
+      height,
+      numberOfLines,
       ...rest
     } = this.props;
 
@@ -96,6 +98,7 @@ export default class InputField extends Component {
         style={[
           styles.container,
           {
+            height: height,
             borderColor: isFocus ? Colors.gradient_2 : 'transparent',
             borderWidth: isFocus ? 1 : 0,
           },
@@ -133,6 +136,7 @@ export default class InputField extends Component {
           secureTextEntry={secureTextEntry}
           onFocus={() => this.onFocus()}
           onBlur={() => this.onBlur()}
+          numberOfLines={numberOfLines}
         />
         {isRightSideBtn ? (
           <TouchableOpacity
@@ -172,7 +176,6 @@ export default class InputField extends Component {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: 45,
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -216,6 +219,8 @@ const styles = StyleSheet.create({
 });
 
 InputField.propTypes = {
+  height: PropTypes.number,
+  numberOfLines: PropTypes.number,
   value: PropTypes.any,
   placeholder: PropTypes.string,
   returnKeyType: PropTypes.string,
@@ -237,6 +242,8 @@ InputField.propTypes = {
 };
 
 InputField.defaultProps = {
+  height: 45,
+  numberOfLines: 1,
   onChangeText: () => null,
   onClearValue: () => null,
   onSubmitEditing: () => null,

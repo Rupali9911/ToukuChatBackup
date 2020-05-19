@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import PhoneInput from 'react-native-phone-input';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,7 +24,7 @@ export default class CountryPhoneInput extends Component {
       this.props.onRef(this);
     }
     this.setState({
-      countryCode: this.phone.getCountryCode(),
+      countryCode: '+' + this.phone.getCountryCode(),
     });
   }
   onSubmitEditing() {
@@ -52,13 +58,17 @@ export default class CountryPhoneInput extends Component {
 
   onSelectCountry(tag) {
     this.setState({
-      countryCode: this.phone.getCountryCode(),
+      countryCode: '+' + this.phone.getCountryCode(),
     });
   }
 
+  onPressConfirm = () => {
+    // this.props.onPressConfirm();
+  };
+
   render() {
     const {isFocus, countryCode} = this.state;
-    const {value} = this.props;
+    const {value, onPressConfirm, loading} = this.props;
     return (
       <View
         style={[
@@ -77,33 +87,37 @@ export default class CountryPhoneInput extends Component {
           }
           initialCountry={'us'}
           onSelectCountry={(tag) => this.onSelectCountry(tag)}
-          value={value}
+          value={countryCode}
           style={{flex: 1}}
           flagStyle={{height: 30, width: 30, borderRadius: 15}}
           textStyle={{color: 'white'}}
           autoFormat={true}
           offset={0}
           textProps={{
-            placeholder: '+' + countryCode,
+            placeholder: countryCode,
             maxLength: 13,
             placeholderTextColor: 'white',
             opacity: 0.8,
           }}
-          // onPressConfirm={onPressConfirm}
+          onPressConfirm={this.onPressConfirm.bind(this)}
         />
         <TouchableOpacity
           activeOpacity={0.6}
           style={styles.rightBtnContainer}
-          onPress={this.props.onPressConfirm}>
+          onPress={this.props.onClickSMS}>
           <LinearGradient
             start={{x: 0.1, y: 0.7}}
             end={{x: 0.5, y: 0.8}}
             locations={[0.1, 0.6, 1]}
             colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
             style={styles.rightBtnSubContainer}>
-            <Text style={globalStyles.smallRegularText}>
-              {this.props.rightBtnText}
-            </Text>
+            {loading ? (
+              <ActivityIndicator color={Colors.white} />
+            ) : (
+              <Text style={globalStyles.smallRegularText}>
+                {this.props.rightBtnText}
+              </Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -156,6 +170,7 @@ const styles = StyleSheet.create({
   },
 });
 CountryPhoneInput.propTypes = {
+  loading: PropTypes.bool,
   value: PropTypes.any,
   placeholder: PropTypes.string,
   returnKeyType: PropTypes.string,
@@ -173,14 +188,17 @@ CountryPhoneInput.propTypes = {
   onSubmitEditing: PropTypes.func,
   onClearValue: PropTypes.func,
   onChangePhoneNumber: PropTypes.func,
+  onClickSMS: PropTypes.func,
 };
 CountryPhoneInput.defaultProps = {
   onClearValue: () => null,
   onSubmitEditing: () => null,
   onChangePhoneNumber: () => null,
+  onClickSMS: () => null,
   placeholder: '',
   returnKeyType: 'next',
   isRightSideBtn: false,
   isLeftSideBtn: false,
   isIconRight: false,
+  loading: false,
 };

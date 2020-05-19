@@ -27,6 +27,7 @@ export const Icons = {
   icon_scenario: require('../../assets/icons/scenario.png'),
   icon_camera: require('../../assets/icons/camera.png'),
   icon_edit_pen: require('../../assets/icons/pencil.png'),
+  icon_alert: require('../../assets/icons/alert.png'),
 };
 
 export const Images = {
@@ -45,6 +46,7 @@ export const Colors = {
   gradient_3: '#f68b6b',
   orange: '#fd7e14',
   gray: '#dcdcdc',
+  danger: '#DC3545',
 };
 
 export const Fonts = {

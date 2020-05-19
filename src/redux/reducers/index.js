@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import userReducer from './userReducer';
 import loginReducer from './loginReducer';
+import signupReducer from './signupReducer';
 import languageReducer from './languageReducer';
 import forgotPassReducer from './forgotPassReducer';
 
@@ -11,6 +12,7 @@ export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 const allReducers = combineReducers({
   userReducer: userReducer,
   loginReducer: loginReducer,
+  signupReducer: signupReducer,
   languageReducer: languageReducer,
   forgotPassReducer: forgotPassReducer,
 });
