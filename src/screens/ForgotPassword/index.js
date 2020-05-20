@@ -91,19 +91,12 @@ class ForgotPassword extends Component {
       this.props
         .forgotUserName(userNameData)
         .then((res) => {
-          if (res.status) {
-            Toast.show({
-              title: 'Send SMS',
-              text: 'We have sent OTP code to your phone number',
-              icon: Icons.icon_message,
-            });
-          } else {
-            Toast.show({
-              title: 'Send SMS',
-              text: 'Username Not Exist',
-              icon: Icons.icon_message,
-            });
-          }
+          Toast.show({
+            title: 'Send SMS',
+            text: 'We have sent OTP code to your phone number',
+            icon: Icons.icon_message,
+            type: 'positive',
+          });
         })
         .catch((err) => {
           Toast.show({
@@ -142,6 +135,7 @@ class ForgotPassword extends Component {
             title: 'Successfull',
             text: 'Password has been changed successfully!',
             icon: Icons.icon_message,
+            type: 'positive',
           });
         })
         .catch((err) => {

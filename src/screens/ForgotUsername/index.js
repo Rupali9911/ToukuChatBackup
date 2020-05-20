@@ -65,6 +65,7 @@ class ForgotUserName extends Component {
             title: 'Send Email',
             text: 'We have sent an email to your registered email id',
             icon: Icons.icon_message,
+            type: 'positive',
           });
         })
         .catch((err) => {
