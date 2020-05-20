@@ -8,6 +8,7 @@ import {
   ImageBackground,
   SafeAreaView,
   NativeModules,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -235,7 +236,12 @@ class LoginSignUp extends Component {
           <ScrollView
             contentContainerStyle={{
               padding: 20,
-              paddingTop: orientation != 'PORTRAIT' ? 20 : 120,
+              paddingTop:
+                orientation != 'PORTRAIT'
+                  ? 50
+                  : Platform.OS === 'ios'
+                  ? 120
+                  : 90,
             }}
             showsVerticalScrollIndicator={false}>
             <View

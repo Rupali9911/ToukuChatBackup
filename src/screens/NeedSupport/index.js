@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import {Images, Icons} from '../../constants';
@@ -18,6 +20,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
 import {forgotUserName} from '../../redux/reducers/forgotPassReducer';
 import Toast from '../../components/Toast';
+import DropDown from '../../components/DropDown';
 
 class NeedSupport extends Component {
   constructor(props) {
@@ -61,9 +64,10 @@ class NeedSupport extends Component {
         source={Images.image_touku_bg}
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
-          <ScrollView
+          <KeyboardAwareScrollView
             contentContainerStyle={{
               padding: 20,
+              paddingBottom: 100,
             }}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
@@ -107,15 +111,25 @@ class NeedSupport extends Component {
                   onSubmitEditing={() => {}}
                 />
 
-                <Button
-                  type={'primary'}
-                  title={translate('common.submit')}
-                  //   onPress={() => this.onSubmitPress()}
-                />
+                <View
+                  style={{
+                    paddingBottom: 30,
+                    zIndex: 100,
+                    overflow: 'visible',
+                  }}>
+                  <DropDown />
+                </View>
+                <View style={{marginTop: 30, zIndex: 0, overflow: 'visible'}}>
+                  <Button
+                    type={'primary'}
+                    title={translate('common.submit')}
+                    //   onPress={() => this.onSubmitPress()}
+                  />
+                </View>
               </View>
             </View>
             <LanguageSelector />
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </SafeAreaView>
       </ImageBackground>
     );

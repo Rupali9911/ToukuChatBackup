@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   NativeModules,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -16,6 +17,7 @@ import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Button from '../../components/Button';
 import Inputfield from '../../components/InputField';
@@ -384,7 +386,7 @@ class Login extends Component {
         <SafeAreaView
           pointerEvents={this.props.loading ? 'none' : 'auto'}
           style={globalStyles.safeAreaView}>
-          <ScrollView
+          <KeyboardAwareScrollView
             contentContainerStyle={loginStyles.scrollView}
             showsVerticalScrollIndicator={false}>
             <BackHeader
@@ -397,12 +399,25 @@ class Login extends Component {
                 flex: 1,
                 justifyContent: 'center',
                 paddingHorizontal: orientation !== 'PORTRAIT' ? 50 : 0,
-                paddingTop: orientation !== 'PORTRAIT' ? 0 : 60,
+                paddingTop:
+                  orientation !== 'PORTRAIT'
+                    ? 0
+                    : Platform.OS === 'ios'
+                    ? 60
+                    : 0,
               }}>
               <Text style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
-              <View style={{paddingTop: orientation !== 'PORTRAIT' ? 0 : 40}}>
+              <View
+                style={{
+                  paddingTop:
+                    orientation !== 'PORTRAIT'
+                      ? 0
+                      : Platform.OS === 'ios'
+                      ? 40
+                      : 0,
+                }}>
                 <Inputfield
                   value={this.state.username}
                   placeholder={translate('common.username')}
@@ -560,7 +575,7 @@ class Login extends Component {
               </View>
             </View>
             <LanguageSelector />
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </SafeAreaView>
       </ImageBackground>
     );
