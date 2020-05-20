@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
@@ -89,6 +90,8 @@ export default class InputField extends Component {
       status,
       height,
       numberOfLines,
+      rightBtnText,
+      loading,
       ...rest
     } = this.props;
 
@@ -149,9 +152,13 @@ export default class InputField extends Component {
               locations={[0.1, 0.6, 1]}
               colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
               style={styles.rightBtnSubContainer}>
-              <Text style={globalStyles.smallRegularText}>
-                {this.props.rightBtnText}
-              </Text>
+              {loading ? (
+                <ActivityIndicator color={Colors.white} />
+              ) : (
+                <Text style={globalStyles.smallRegularText}>
+                  {rightBtnText}
+                </Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         ) : (
@@ -231,6 +238,8 @@ InputField.propTypes = {
   isRightSideBtn: PropTypes.any,
   isLeftSideBtn: PropTypes.any,
   isIconRight: PropTypes.bool,
+  rightBtnText: PropTypes.string,
+  loading: PropTypes.bool,
   status: PropTypes.oneOf(['normal', 'wrong', 'right']),
   iconRightUrl: PropTypes.any,
   /**
@@ -249,8 +258,10 @@ InputField.defaultProps = {
   onSubmitEditing: () => null,
   placeholder: '',
   returnKeyType: 'next',
+  rightBtnText: 'SMS',
   isRightSideBtn: false,
   isLeftSideBtn: false,
   isIconRight: false,
+  loading: false,
   status: 'normal',
 };
