@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const GET_SEND_OTP_REQUEST = 'GET_SEND_OTP_REQUEST';
@@ -244,6 +244,23 @@ export const userRegister = (registerData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getRegisterFailure());
+        reject(err);
+      });
+  });
+
+export const socialRegistration = (socialRegistrationData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/edit-user/`, socialRegistrationData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err', err);
         reject(err);
       });
   });
