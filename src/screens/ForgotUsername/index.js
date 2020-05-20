@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import {Images, Icons} from '../../constants';
@@ -86,7 +88,7 @@ class ForgotUserName extends Component {
         source={Images.image_touku_bg}
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
-          <ScrollView
+          <KeyboardAwareScrollView
             contentContainerStyle={{
               flex: 1,
               padding: 20,
@@ -132,7 +134,7 @@ class ForgotUserName extends Component {
               </View>
             </View>
             <LanguageSelector />
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </SafeAreaView>
       </ImageBackground>
     );

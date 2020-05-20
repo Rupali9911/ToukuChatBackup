@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import StepIndicator from 'react-native-step-indicator';
 import AsyncStorage from '@react-native-community/async-storage';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
@@ -573,7 +574,7 @@ class SignUp extends Component {
             this.props.loading || this.props.loadingSMS ? 'none' : 'auto'
           }
           style={globalStyles.safeAreaView}>
-          <ScrollView
+          <KeyboardAwareScrollView
             contentContainerStyle={{padding: 20}}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
@@ -596,7 +597,7 @@ class SignUp extends Component {
               {this.renderPage(currentPosition)}
             </View>
             <LanguageSelector />
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </SafeAreaView>
       </ImageBackground>
     );
