@@ -36,13 +36,15 @@ export const facebookRegister = (socialLoginData) => (dispatch) =>
     client
       .post(`/xchat/facebook-login-auth/`, socialLoginData)
       .then((res) => {
+        console.log('res', res);
         if (res.token) {
-          AsyncStorage.setItem('userToken', res.token);
+          AsyncStorage.setItem('socialToken', res.token);
           // dispatch(getLoginSuccess(res.token))
         }
         resolve(res);
       })
       .catch((err) => {
+        console.log('err', err);
         reject(err);
       });
   });
@@ -54,7 +56,7 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
       .then((res) => {
         console.log(res);
         if (res.token) {
-          AsyncStorage.setItem('userToken', res.token);
+          AsyncStorage.setItem('socialToken', res.token);
           // dispatch(getLoginSuccess(res.token))
         }
         resolve(res);
@@ -70,7 +72,23 @@ export const twitterRegister = (socialLoginData) => (dispatch) =>
       .post(`/xchat/twitter-login-auth/`, socialLoginData)
       .then((res) => {
         if (res.token) {
-          AsyncStorage.setItem('userToken', res.token);
+          AsyncStorage.setItem('socialToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const lineRegister = (socialLoginData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/line-login-auth/`, socialLoginData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('socialToken', res.token);
           // dispatch(getLoginSuccess(res.token))
         }
         resolve(res);

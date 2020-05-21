@@ -255,6 +255,7 @@ export const socialRegistration = (socialRegistrationData) => (dispatch) =>
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);
+          AsyncStorage.removeItem('socialToken');
           // dispatch(getLoginSuccess(res.token))
         }
         resolve(res);

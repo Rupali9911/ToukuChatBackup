@@ -187,7 +187,11 @@ android {
         }
     }
 }
-
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
@@ -205,6 +209,15 @@ dependencies {
   implementation 'com.facebook.fresco:animated-webp:2.1.0'
   implementation 'com.facebook.fresco:webpsupport:2.0.0'
 
+    //For line
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation('com.madgag.spongycastle:prov:1.58.0.0') {
+    exclude group: 'junit', module: 'junit'
+    }
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.10.5'
+    runtimeOnly ('io.jsonwebtoken:jjwt-orgjson:0.10.5') {
+        exclude group: 'org.json', module: 'json' //provided by Android natively
+    }
   // For WebP support, without animations
   implementation 'com.facebook.fresco:webpsupport:2.0.0'
 

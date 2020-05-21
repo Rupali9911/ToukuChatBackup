@@ -40,6 +40,12 @@
 				<string>com.googleusercontent.apps.185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>line3rdp.org.reactjs.native.example.Touku</string>
+			</array>
+   		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -47,10 +53,16 @@
 	<string>534252273873820</string>
 	<key>FacebookDisplayName</key>
 	<string>Touku</string>
+	<key>LineSDKConfig</key>
+	<dict>
+		<key>ChannelID</key>
+		<string>1653912577</string>
+	</dict>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>twitter</string>
 		<string>twitterauth</string>
+		<string>lineauth2</string>
 		<string>fbapi</string>
 		<string>fbapi20130214</string>
 		<string>fbapi20130410</string>
