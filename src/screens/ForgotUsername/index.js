@@ -64,7 +64,6 @@ class ForgotUserName extends Component {
           Toast.show({
             title: 'Send Email',
             text: 'We have sent an email to your registered email id',
-            icon: Icons.icon_message,
             type: 'positive',
           });
         })
@@ -72,14 +71,14 @@ class ForgotUserName extends Component {
           Toast.show({
             title: 'Touku',
             text: 'Email Not Found',
-            icon: Icons.icon_message,
+            type: 'primary',
           });
         });
     } else {
       Toast.show({
         title: 'Touku',
         text: 'Enter valid email address',
-        icon: Icons.icon_message,
+        type: 'primary',
       });
     }
   }

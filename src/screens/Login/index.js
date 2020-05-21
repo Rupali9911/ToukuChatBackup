@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -11,36 +11,33 @@ import {
   NativeModules,
   Platform,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-community/google-signin';
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Button from '../../components/Button';
 import Inputfield from '../../components/InputField';
 import CheckBox from '../../components/CheckBox';
-import { Colors, Images, Icons } from '../../constants';
+import {Colors, Images, Icons} from '../../constants';
 import BackHeader from '../../components/BackHeader';
-import { loginStyles } from './styles';
+import {loginStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
-import { SocialLogin } from '../LoginSignUp';
-import { globalStyles } from '../../styles';
-import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
+import {SocialLogin} from '../LoginSignUp';
+import {globalStyles} from '../../styles';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {
   getUserProfile,
   facebookRegister,
   googleRegister,
   twitterRegister,
 } from '../../redux/reducers/userReducer';
-import { userLogin } from '../../redux/reducers/loginReducer';
+import {userLogin} from '../../redux/reducers/loginReducer';
 import Toast from '../../components/Toast';
-const { RNTwitterSignIn } = NativeModules;
+const {RNTwitterSignIn} = NativeModules;
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -73,7 +70,7 @@ class Login extends Component {
         '185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com',
     });
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -103,7 +100,7 @@ class Login extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleLocalizationChange = () => {
@@ -138,7 +135,7 @@ class Login extends Component {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      this.setState({ userInfo: userInfo, loggedIn: true });
+      this.setState({userInfo: userInfo, loggedIn: true});
 
       const googleLoginData = {
         code: userInfo.idToken,
@@ -190,7 +187,7 @@ class Login extends Component {
     try {
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
-      this.setState({ user: null, loggedIn: false });
+      this.setState({user: null, loggedIn: false});
     } catch (error) {
       console.error(error);
     }
@@ -217,7 +214,7 @@ class Login extends Component {
     console.log('data.accessToken===========', data);
     // Create a Firebase credential with the AccessToken
     const facebookCredential = auth.FacebookAuthProvider.credential(
-      data.accessToken
+      data.accessToken,
     );
     console.log(facebookCredential);
 
@@ -266,14 +263,14 @@ class Login extends Component {
   firebaseTwitterLogin() {
     console.log('twitter tapped');
     this.onTwitterButtonPress().then((result) =>
-      console.log('Signed in with twitter!', JSON.stringify(result))
+      console.log('Signed in with twitter!', JSON.stringify(result)),
     );
   }
 
   async onTwitterButtonPress() {
     RNTwitterSignIn.init(
       TwitterKeys.TWITTER_CONSUMER_KEY,
-      TwitterKeys.TWITTER_CONSUMER_SECRET
+      TwitterKeys.TWITTER_CONSUMER_SECRET,
     ).then(() => console.log('Twitter SDK initialized'));
 
     // Perform the login request
@@ -286,7 +283,7 @@ class Login extends Component {
     // Create a Twitter credential with the tokens
     const twitterCredential = auth.TwitterAuthProvider.credential(
       authToken,
-      authTokenSecret
+      authTokenSecret,
     );
 
     // Sign-in the user with the credential
@@ -333,7 +330,7 @@ class Login extends Component {
   }
 
   handleUserName = (username) => {
-    this.setState({ username });
+    this.setState({username});
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
@@ -346,25 +343,25 @@ class Login extends Component {
       });
     }
     if (isValid) {
-      this.setState({ userNameStatus: 'right', userNameErr: null });
+      this.setState({userNameStatus: 'right', userNameErr: null});
     }
   };
 
   handlePassword = (password) => {
-    this.setState({ password });
+    this.setState({password});
     if (password.length <= 0) {
       this.setState({
         passwordStatus: 'wrong',
         passwordErr: 'messages.required',
       });
     } else {
-      this.setState({ passwordStatus: 'right', passwordErr: null });
+      this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
   onLoginPress() {
-    this.setState({ userNameErr: null, passwordErr: null });
-    const { username, password, isRememberChecked } = this.state;
+    this.setState({userNameErr: null, passwordErr: null});
+    const {username, password, isRememberChecked} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
@@ -405,16 +402,16 @@ class Login extends Component {
             Toast.show({
               title: 'Login Failed',
               text: 'User Not Exist or Incorrect Password',
-              icon: Icons.icon_alert,
+              type: 'primary',
             });
-            this.setState({ authError: res.user });
+            this.setState({authError: res.user});
           }
         })
         .catch((err) => {
           Toast.show({
             title: 'Login Failed',
             text: 'User Not Exist',
-            icon: Icons.icon_alert,
+            type: 'primary',
           });
         });
     }
@@ -437,16 +434,13 @@ class Login extends Component {
     return (
       <ImageBackground
         source={Images.image_touku_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <SafeAreaView
           pointerEvents={this.props.loading ? 'none' : 'auto'}
-          style={globalStyles.safeAreaView}
-        >
+          style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
             contentContainerStyle={loginStyles.scrollView}
-            showsVerticalScrollIndicator={false}
-          >
+            showsVerticalScrollIndicator={false}>
             <BackHeader
               onBackPress={() => this.props.navigation.goBack()}
               isChecked={isCheckLanguages}
@@ -463,8 +457,7 @@ class Login extends Component {
                     : Platform.OS === 'ios'
                     ? 60
                     : 0,
-              }}
-            >
+              }}>
               <Text style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
@@ -476,8 +469,7 @@ class Login extends Component {
                       : Platform.OS === 'ios'
                       ? 40
                       : 0,
-                }}
-              >
+                }}>
                 <Inputfield
                   value={this.state.username}
                   placeholder={translate('common.username')}
@@ -498,11 +490,10 @@ class Login extends Component {
                         marginStart: 10,
                         marginBottom: 5,
                       },
-                    ]}
-                  >
+                    ]}>
                     {translate(userNameErr).replace(
                       '[missing {{field}} value]',
-                      translate('common.usernameEmail')
+                      translate('common.usernameEmail'),
                     )}
                   </Text>
                 ) : null}
@@ -528,11 +519,10 @@ class Login extends Component {
                         marginStart: 10,
                         marginBottom: 5,
                       },
-                    ]}
-                  >
+                    ]}>
                     {translate(passwordErr).replace(
                       '[missing {{field}} value]',
-                      translate('common.password')
+                      translate('common.password'),
                     )}
                   </Text>
                 ) : null}
@@ -541,8 +531,7 @@ class Login extends Component {
               <TouchableOpacity
                 style={loginStyles.rememberContainer}
                 activeOpacity={1}
-                onPress={() => this.onCheckRememberMe()}
-              >
+                onPress={() => this.onCheckRememberMe()}>
                 <CheckBox
                   onCheck={() => this.onCheckRememberMe()}
                   isChecked={isRememberChecked}
@@ -564,48 +553,43 @@ class Login extends Component {
                   marginTop: 15,
                   justifyContent: 'space-between',
                   paddingHorizontal: 10,
-                }}
-              >
+                }}>
                 <View>
                   <Text
                     style={[
                       globalStyles.smallLightText,
-                      { textDecorationLine: 'underline' },
+                      {textDecorationLine: 'underline'},
                     ]}
-                    onPress={() => this.onNeedSupportClick()}
-                  >
+                    onPress={() => this.onNeedSupportClick()}>
                     {translate('pages.xchat.needSupport')}
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{flexDirection: 'row'}}>
                   <Text
                     style={[
                       globalStyles.smallLightText,
-                      { textDecorationLine: 'underline' },
+                      {textDecorationLine: 'underline'},
                     ]}
                     onPress={() =>
                       this.props.navigation.navigate('ForgotUsername')
-                    }
-                  >
+                    }>
                     {translate('common.username')}
                   </Text>
                   <Text
                     style={[
                       globalStyles.smallLightText,
-                      { marginHorizontal: 5 },
-                    ]}
-                  >
+                      {marginHorizontal: 5},
+                    ]}>
                     {translate('pages.setting.or')}
                   </Text>
                   <Text
                     style={[
                       globalStyles.smallLightText,
-                      { textDecorationLine: 'underline' },
+                      {textDecorationLine: 'underline'},
                     ]}
                     onPress={() =>
                       this.props.navigation.navigate('ForgotPassword')
-                    }
-                  >
+                    }>
                     {translate('common.password')}
                   </Text>
                   <Text style={globalStyles.smallLightText}>
@@ -613,7 +597,7 @@ class Login extends Component {
                   </Text>
                 </View>
               </View>
-              <View style={{ marginTop: 25 }}>
+              <View style={{marginTop: 25}}>
                 <Text style={globalStyles.smallLightText}>
                   {translate('pages.welcome.OrLoginWith')}
                 </Text>
@@ -623,8 +607,7 @@ class Login extends Component {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   marginTop: 20,
-                }}
-              >
+                }}>
                 <SocialLogin
                   IconSrc={Icons.icon_facebook}
                   onPress={() => this.firebaseFacebookLogin()}

@@ -38,6 +38,11 @@ class ForgotPassword extends Component {
 
       passwordStatus: 'normal',
       newPasswordConfirmStatus: 'normal',
+
+      userNameErr: null,
+      authCodeErr: null,
+      passwordErr: null,
+      newPasswordErr: null,
     };
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -64,12 +69,30 @@ class ForgotPassword extends Component {
     this.inputs[id].focus();
   }
 
+  handleUserName = (userName) => {
+    this.setState({userName});
+    if (userName.length <= 0) {
+      this.setState({userNameErr: 'messages.required'});
+    } else {
+      this.setState({userNameErr: null});
+    }
+  };
+
+  handleAuthCode = (authCode) => {
+    this.setState({authCode});
+    if (authCode.length <= 0) {
+      this.setState({authCodeErr: 'messages.required'});
+    } else {
+      this.setState({authCodeErr: null});
+    }
+  };
+
   handlePassword = (password) => {
     this.setState({password});
-    if (password.length < 6) {
+    if (password.length <= 0) {
       this.setState({passwordStatus: 'wrong'});
     } else {
-      this.setState({passwordStatus: 'right'});
+      this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
@@ -78,7 +101,7 @@ class ForgotPassword extends Component {
     if (this.state.password != newPassword) {
       this.setState({newPasswordConfirmStatus: 'wrong'});
     } else {
-      this.setState({newPasswordConfirmStatus: 'right'});
+      this.setState({newPasswordConfirmStatus: 'right', newPasswordErr: null});
     }
   };
 
@@ -94,7 +117,6 @@ class ForgotPassword extends Component {
           Toast.show({
             title: 'Send SMS',
             text: 'We have sent OTP code to your phone number',
-            icon: Icons.icon_message,
             type: 'positive',
           });
         })
@@ -102,26 +124,61 @@ class ForgotPassword extends Component {
           Toast.show({
             title: 'Send SMS',
             text: 'Username Not Exist',
-            icon: Icons.icon_message,
+            type: 'primary',
           });
         });
     } else {
       Toast.show({
         title: 'Enter Username',
         text: 'Please Enter User Name',
-        icon: Icons.icon_message,
+        type: 'primary',
       });
     }
   }
 
   onSubmitPress() {
     const {userName, authCode, password, newPassword} = this.state;
-    if (
-      userName !== '' &&
-      authCode !== '' &&
-      password !== '' &&
-      newPassword !== ''
-    ) {
+
+    this.setState({
+      userNameErr: null,
+      authCodeErr: null,
+      passwordErr: null,
+      newPasswordErr: null,
+    });
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    let isValid = true;
+
+    if (userName.length <= 0) {
+      isValid = false;
+      this.setState({
+        userNameErr: 'messages.required',
+      });
+    }
+    if (authCode.length <= 0) {
+      isValid = false;
+      this.setState({
+        authCodeErr: 'messages.required',
+      });
+    }
+    if (password.length <= 0) {
+      isValid = false;
+      this.setState({
+        passwordErr: 'messages.required',
+      });
+    }
+    if (newPassword.length <= 0) {
+      isValid = false;
+      this.setState({
+        newPasswordErr: 'messages.required',
+      });
+    }
+    if (password != newPassword) {
+      isValid = false;
+      this.setState({newPasswordConfirmStatus: 'wrong'});
+    }
+
+    if (isValid) {
       let forgotData = {
         code: authCode,
         confirm_password: newPassword,
@@ -131,31 +188,38 @@ class ForgotPassword extends Component {
       this.props
         .forgotPassword(forgotData)
         .then((res) => {
-          Toast.show({
-            title: 'Successfull',
-            text: 'Password has been changed successfully!',
-            icon: Icons.icon_message,
-            type: 'positive',
-          });
+          if (res.status === true) {
+            Toast.show({
+              title: 'Success',
+              text: 'Password has been changed successfully!',
+              type: 'positive',
+            });
+          } else {
+            Toast.show({
+              title: 'Touku',
+              text: 'Enter valid authentication code',
+              type: 'primary',
+            });
+          }
         })
         .catch((err) => {
           Toast.show({
             title: 'Touku',
             text: 'Enter valid authentication code',
-            icon: Icons.icon_message,
+            type: 'primary',
           });
         });
-    } else {
-      Toast.show({
-        title: 'Enter Valid Details',
-        text: 'Please Enter all valid details',
-        icon: Icons.icon_message,
-      });
     }
   }
 
   render() {
-    const {orientation} = this.state;
+    const {
+      orientation,
+      userNameErr,
+      authCodeErr,
+      passwordErr,
+      newPasswordErr,
+    } = this.state;
     return (
       <ImageBackground
         source={Images.image_touku_bg}
@@ -186,7 +250,7 @@ class ForgotPassword extends Component {
                   rightBtnText={translate('common.sms')}
                   placeholder={translate('common.enterUsername')}
                   value={this.state.userName}
-                  onChangeText={(userName) => this.setState({userName})}
+                  onChangeText={(userName) => this.handleUserName(userName)}
                   onPressConfirm={() => this.sendOTP()}
                   returnKeyType={'next'}
                   onSubmitEditing={() => {
@@ -194,19 +258,53 @@ class ForgotPassword extends Component {
                   }}
                   loading={this.props.loadingSMS}
                 />
+                {userNameErr !== null ? (
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        textAlign: 'left',
+                        marginTop: -10,
+                        marginStart: 10,
+                        marginBottom: 5,
+                      },
+                    ]}>
+                    {translate(userNameErr).replace(
+                      '[missing {{field}} value]',
+                      translate('common.username'),
+                    )}
+                  </Text>
+                ) : null}
                 <Inputfield
                   onRef={(ref) => {
                     this.inputs['authCode'] = ref;
                   }}
                   placeholder={translate('common.enterYourAuthenticationCode')}
                   value={this.state.authCode}
-                  onChangeText={(authCode) => this.setState({authCode})}
+                  onChangeText={(authCode) => this.handleAuthCode(authCode)}
                   returnKeyType={'next'}
                   onSubmitEditing={() => {
                     this.focusNextField('password');
                   }}
                   keyboardType={'number-pad'}
                 />
+                {authCodeErr !== null ? (
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        textAlign: 'left',
+                        marginTop: -10,
+                        marginStart: 10,
+                        marginBottom: 5,
+                      },
+                    ]}>
+                    {translate(authCodeErr).replace(
+                      '[missing {{field}} value]',
+                      translate('common.verificationCode'),
+                    )}
+                  </Text>
+                ) : null}
                 <Inputfield
                   onRef={(ref) => {
                     this.inputs['password'] = ref;
@@ -221,6 +319,23 @@ class ForgotPassword extends Component {
                     this.focusNextField('newPassword');
                   }}
                 />
+                {passwordErr !== null ? (
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        textAlign: 'left',
+                        marginTop: -10,
+                        marginStart: 10,
+                        marginBottom: 5,
+                      },
+                    ]}>
+                    {translate(passwordErr).replace(
+                      '[missing {{field}} value]',
+                      translate('common.password'),
+                    )}
+                  </Text>
+                ) : null}
                 <Inputfield
                   onRef={(ref) => {
                     this.inputs['newPassword'] = ref;
@@ -236,6 +351,23 @@ class ForgotPassword extends Component {
                   status={this.state.newPasswordConfirmStatus}
                   returnKeyType={'done'}
                 />
+                {newPasswordErr !== null ? (
+                  <Text
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        textAlign: 'left',
+                        marginTop: -10,
+                        marginStart: 10,
+                        marginBottom: 5,
+                      },
+                    ]}>
+                    {translate(newPasswordErr).replace(
+                      '[missing {{field}} value]',
+                      translate('pages.resetPassword.repeatPassword'),
+                    )}
+                  </Text>
+                ) : null}
                 <Button
                   type={'primary'}
                   title={translate('pages.resetPassword.resetPassword')}
