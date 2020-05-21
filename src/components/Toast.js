@@ -92,7 +92,9 @@ class Toast extends Component {
       case 'primary':
         return ['#f23ca6', '#f64690', '#f74978'];
       case 'positive':
-        return ['#00FF80', '#00CC66', '#00CC66'];
+        return ['#1bd078', '#1acf98', '#1bd0b7'];
+      case 'warning':
+        return ['#f5c120', '#f8b824', '#f9a92e'];
     }
   }
 
@@ -101,9 +103,20 @@ class Toast extends Component {
       case 'primary':
         return Icons.icon_alert;
       case 'positive':
-        return Icons.icon_tick;
+        return Icons.icon_tick_circle;
       default:
         return Icons.icon_message;
+    }
+  }
+
+  getIconColor() {
+    switch (this.state.type) {
+      case 'primary':
+        return Colors.danger;
+      case 'positive':
+        return null;
+      default:
+        return Colors.danger;
     }
   }
 
@@ -128,7 +141,10 @@ class Toast extends Component {
           colors={this.getGradientColors()}
           style={styles.content}>
           <View style={styles.iconContainer}>
-            <Image source={this.getIcon()} style={styles.iconStyle} />
+            <Image
+              source={this.getIcon()}
+              style={[styles.iconStyle, {tintColor: this.getIconColor()}]}
+            />
           </View>
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text style={styles.title}>{title}</Text>
@@ -195,7 +211,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
-    tintColor: Colors.danger,
   },
 });
 

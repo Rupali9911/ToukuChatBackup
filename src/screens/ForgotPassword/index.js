@@ -129,9 +129,9 @@ class ForgotPassword extends Component {
         });
     } else {
       Toast.show({
-        title: 'Enter Username',
-        text: 'Please Enter User Name',
-        type: 'primary',
+        title: 'Send SMS',
+        text: 'Please enter username',
+        type: 'warning',
       });
     }
   }

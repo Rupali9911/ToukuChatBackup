@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
-import { Colors, Icons, Fonts } from '../constants';
-import { globalStyles } from '../styles';
+import {Colors, Icons, Fonts} from '../constants';
+import {globalStyles} from '../styles';
 
 export default class InputField extends Component {
   constructor(props) {
@@ -36,19 +36,19 @@ export default class InputField extends Component {
   }
 
   onFocus() {
-    this.setState({ isFocus: true });
+    this.setState({isFocus: true});
   }
 
   onBlur() {
-    this.setState({ isFocus: false });
+    this.setState({isFocus: false});
   }
 
   onChangeText = (text) => {
     this.props.onChangeText(text);
     if (text.length > 0) {
-      this.setState({ isFocus: true });
+      this.setState({isFocus: true});
     } else {
-      this.setState({ isFocus: false });
+      this.setState({isFocus: false});
     }
   };
 
@@ -58,13 +58,13 @@ export default class InputField extends Component {
         return <View />;
       case 'wrong':
         return (
-          <View style={{ paddingEnd: 18 }}>
+          <View style={{paddingEnd: 18}}>
             <Image source={Icons.icon_close} style={globalStyles.iconStyle} />
           </View>
         );
       case 'right':
         return (
-          <View style={{ paddingEnd: 18 }}>
+          <View style={{paddingEnd: 18}}>
             <Image source={Icons.icon_tick} style={globalStyles.iconStyle} />
           </View>
         );
@@ -96,7 +96,7 @@ export default class InputField extends Component {
       ...rest
     } = this.props;
 
-    const { isFocus } = this.state;
+    const {isFocus} = this.state;
     return (
       <View
         style={
@@ -118,12 +118,10 @@ export default class InputField extends Component {
                   borderWidth: isFocus ? 1 : 0,
                 },
               ]
-        }
-      >
+        }>
         {isLeftSideBtn ? (
           <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center' }}
-          >
+            style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image
               source={Icons.icon_language_select}
               style={globalStyles.iconStyle}
@@ -155,20 +153,19 @@ export default class InputField extends Component {
           onFocus={() => this.onFocus()}
           onBlur={() => this.onBlur()}
           numberOfLines={numberOfLines}
+          autoCapitalize={'none'}
         />
         {isRightSideBtn ? (
           <TouchableOpacity
             activeOpacity={0.6}
             style={styles.rightBtnContainer}
-            onPress={this.props.onPressConfirm}
-          >
+            onPress={this.props.onPressConfirm}>
             <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.5, y: 0.8 }}
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.5, y: 0.8}}
               locations={[0.1, 0.6, 1]}
               colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
-              style={styles.rightBtnSubContainer}
-            >
+              style={styles.rightBtnSubContainer}>
               {loading ? (
                 <ActivityIndicator color={Colors.white} />
               ) : (

@@ -137,7 +137,7 @@ class ProfileModal extends Component {
                 {userData.username}
               </Text>
               <RoundedImage
-                source={Icons.icon_edit_pen}
+                source={Icons.icon_pencil}
                 size={18}
                 clickable={true}
                 isRounded={false}
@@ -158,7 +158,7 @@ class ProfileModal extends Component {
                 />
               </View>
               <ClickableImage
-                source={Icons.icon_edit_pen}
+                source={Icons.icon_pencil}
                 size={18}
                 onClick={() => this.onShowChangePassModal()}
               />
@@ -180,7 +180,7 @@ class ProfileModal extends Component {
                 />
               </View>
               <RoundedImage
-                source={Icons.icon_edit_pen}
+                source={Icons.icon_pencil}
                 size={18}
                 clickable={true}
                 isRounded={false}

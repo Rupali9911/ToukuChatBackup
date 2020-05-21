@@ -9,6 +9,7 @@ import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {Images} from '../../constants';
+import {SearchInput} from '../../components/TextInputs';
 
 class Home extends Component {
   constructor(props) {
@@ -38,6 +39,8 @@ class Home extends Component {
     this.setState({orientation});
   };
 
+  onSearch = (text) => {};
+
   render() {
     const {orientation} = this.state;
     return (
@@ -46,6 +49,7 @@ class Home extends Component {
         style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.home')} />
+          <SearchInput onChangeText={this.onSearch.bind(this)} />
         </View>
       </ImageBackground>
     );

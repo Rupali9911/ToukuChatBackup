@@ -5,6 +5,7 @@ export const Icons = {
   icon_back: require('../../assets/icons/back_icon.png'),
   icon_arrow_right: require('../../assets/icons/arrow_right.png'),
   icon_tick: require('../../assets/icons/tick.png'),
+  icon_tick_circle: require('../../assets/icons/tick_circle.png'),
   icon_close: require('../../assets/icons/close.png'),
   icon_triangle_down: require('../../assets/icons/triangle_down.png'),
   icon_triangle_up: require('../../assets/icons/triangle_up.png'),
@@ -26,8 +27,10 @@ export const Icons = {
   icon_message: require('../../assets/icons/message.png'),
   icon_scenario: require('../../assets/icons/scenario.png'),
   icon_camera: require('../../assets/icons/camera.png'),
-  icon_edit_pen: require('../../assets/icons/pencil.png'),
+  icon_pencil: require('../../assets/icons/pencil.png'),
   icon_alert: require('../../assets/icons/alert.png'),
+  icon_edit_pen: require('../../assets/icons/edit_icon.png'),
+  icon_search: require('../../assets/icons/search.png'),
 };
 
 export const Images = {
@@ -47,6 +50,7 @@ export const Colors = {
   orange: '#fd7e14',
   gray: '#dcdcdc',
   danger: '#DC3545',
+  home_header: '#fb9a7a',
 };
 
 export const Fonts = {
