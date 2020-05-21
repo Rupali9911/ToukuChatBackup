@@ -22,6 +22,7 @@ class Toast extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       toast: new Animated.Value(width),
+      type: 'primary',
     };
   }
 
@@ -44,6 +45,7 @@ class Toast extends Component {
       title: config.title,
       text: config.text,
       icon: config.icon || Icons.icon_tick,
+      type: config.type || 'primary',
       timing: config.timing,
     });
 
@@ -85,6 +87,15 @@ class Toast extends Component {
     this.setState({orientation});
   };
 
+  getGradientColors() {
+    switch (this.state.type) {
+      case 'primary':
+        return ['#f23ca6', '#f64690', '#f74978'];
+      case 'positive':
+        return ['#00FF80', '#00CC66', '#00CC66'];
+    }
+  }
+
   render() {
     const {title, text, icon, orientation} = this.state;
     return (
@@ -103,7 +114,7 @@ class Toast extends Component {
           start={{x: 0.1, y: 0.7}}
           end={{x: 0.5, y: 0.8}}
           locations={[0.1, 0.6, 1]}
-          colors={['#f23ca6', '#f64690', '#f74978']}
+          colors={this.getGradientColors()}
           style={styles.content}>
           <View style={styles.iconContainer}>
             <Image source={icon} style={styles.iconStyle} />

@@ -95,12 +95,13 @@ class ForgotPassword extends Component {
             title: 'Send SMS',
             text: 'We have sent OTP code to your phone number',
             icon: Icons.icon_message,
+            type: 'positive',
           });
         })
         .catch((err) => {
           Toast.show({
-            title: 'Invalid Username',
-            text: 'Something Went Wrong',
+            title: 'Send SMS',
+            text: 'Username Not Exist',
             icon: Icons.icon_message,
           });
         });
@@ -134,12 +135,13 @@ class ForgotPassword extends Component {
             title: 'Successfull',
             text: 'Password has been changed successfully!',
             icon: Icons.icon_message,
+            type: 'positive',
           });
         })
         .catch((err) => {
           Toast.show({
-            title: 'Invalid Username',
-            text: 'Something Went Wrong',
+            title: 'Touku',
+            text: 'Enter valid authentication code',
             icon: Icons.icon_message,
           });
         });
@@ -190,6 +192,7 @@ class ForgotPassword extends Component {
                   onSubmitEditing={() => {
                     this.focusNextField('authCode');
                   }}
+                  loading={this.props.loadingSMS}
                 />
                 <Inputfield
                   onRef={(ref) => {
@@ -202,6 +205,7 @@ class ForgotPassword extends Component {
                   onSubmitEditing={() => {
                     this.focusNextField('password');
                   }}
+                  keyboardType={'number-pad'}
                 />
                 <Inputfield
                   onRef={(ref) => {
@@ -236,6 +240,7 @@ class ForgotPassword extends Component {
                   type={'primary'}
                   title={translate('pages.resetPassword.resetPassword')}
                   onPress={() => this.onSubmitPress()}
+                  loading={this.props.loading}
                 />
               </View>
             </View>
@@ -250,6 +255,8 @@ class ForgotPassword extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    loading: state.forgotPassReducer.loading,
+    loadingSMS: state.forgotPassReducer.loadingSMS,
   };
 };
 
