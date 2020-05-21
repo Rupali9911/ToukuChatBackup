@@ -6,6 +6,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <TwitterKit/TWTRKit.h>
 #import "RNSplashScreen.h"
+#import <LineSDK/LineSDK.h>
 @import Firebase;
 @import UIKit;
 @import GoogleSignIn;
@@ -71,7 +72,10 @@ static void InitializeFlipper(UIApplication *application) {
 
   BOOL handledT = [[Twitter sharedInstance] application:application openURL:url options:options];
   // Add any custom logic here.
-  return handled || handledT;
+  
+   BOOL handledL = [[LineSDKLogin sharedInstance] handleOpenURL:url];
+  
+  return handled || handledT || handledL;
 }
     
 

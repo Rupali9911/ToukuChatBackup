@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Touku</string>
     <string name="facebook_app_id">534252273873820</string>
+    <string name="line_channel_id" translatable="false">1653912577</string>
 </resources>

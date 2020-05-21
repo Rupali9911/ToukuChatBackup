@@ -26,7 +26,11 @@ client.interceptors.request.use(
     // Do something before request is sent
     // let basicAuth = store.getState().home.accessToken;
     var basicAuth = await AsyncStorage.getItem('userToken');
-    if (basicAuth && basicAuth != null) {
+    var socialAuth = await AsyncStorage.getItem('socialToken');
+    if (socialAuth && socialAuth != null) {
+      config.headers.Authorization = `JWT ${socialAuth}`;
+      //console.log("Token", config.headers.Authorization);
+    } else if (basicAuth && basicAuth != null) {
       config.headers.Authorization = `JWT ${basicAuth}`;
       //console.log("Token", config.headers.Authorization);
     }
@@ -34,7 +38,7 @@ client.interceptors.request.use(
   },
   function (error) {
     return Promise.reject(error);
-  },
+  }
 );
 
 // Add a response interceptor
@@ -58,5 +62,5 @@ client.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error);
-  },
+  }
 );

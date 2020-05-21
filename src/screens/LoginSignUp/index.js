@@ -17,6 +17,7 @@ import {
   statusCodes,
 } from '@react-native-community/google-signin';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import LineLogin from 'react-native-line-sdk';
 import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
 import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
@@ -29,7 +30,9 @@ import {
   facebookRegister,
   googleRegister,
   twitterRegister,
+  lineRegister,
 } from '../../redux/reducers/userReducer';
+import AsyncStorage from '@react-native-community/async-storage';
 const { RNTwitterSignIn } = NativeModules;
 
 const TwitterKeys = {
@@ -112,7 +115,7 @@ class LoginSignUp extends Component {
         site_from: 'touku',
         dev_id: '',
       };
-      this.props.googleRegister(googleLoginData).then((res) => {
+      this.props.googleRegister(googleLoginData).then(async (res) => {
         console.log('JWT TOKEN=> ', JSON.stringify(res));
         if (res.token) {
           let status = res.status;
@@ -131,6 +134,8 @@ class LoginSignUp extends Component {
             });
             return;
           }
+          await AsyncStorage.setItem('userToken', res.token);
+          await AsyncStorage.removeItem('socialToken');
           this.props.navigation.navigate('Home');
           return;
         }
@@ -188,7 +193,11 @@ class LoginSignUp extends Component {
           site_from: 'touku',
           dev_id: '',
         };
-        this.props.facebookRegister(facebookLoginData).then((res) => {
+        console.log(
+          'LoginSignUp -> firebaseFacebookLogin -> facebookLoginData',
+          facebookLoginData
+        );
+        this.props.facebookRegister(facebookLoginData).then(async (res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
@@ -207,6 +216,8 @@ class LoginSignUp extends Component {
               });
               return;
             }
+            await AsyncStorage.setItem('userToken', res.token);
+            await AsyncStorage.removeItem('socialToken');
             this.props.navigation.navigate('Home');
             return;
           }
@@ -253,7 +264,7 @@ class LoginSignUp extends Component {
           username: userName,
         };
 
-        this.props.twitterRegister(twitterLoginData).then((res) => {
+        this.props.twitterRegister(twitterLoginData).then(async (res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
@@ -272,6 +283,8 @@ class LoginSignUp extends Component {
               });
               return;
             }
+            await AsyncStorage.setItem('userToken', res.token);
+            await AsyncStorage.removeItem('socialToken');
             this.props.navigation.navigate('Home');
             return;
           }
@@ -282,6 +295,102 @@ class LoginSignUp extends Component {
       });
   }
 
+  async firebaseLineLogin() {
+    console.log('LoginSignUp -> firebaseLineLogin -> firebaseLineLogin');
+
+    if (Platform.OS === 'ios') {
+      let arrPermissions = ['profile'];
+      LineLogin.loginWithPermissions(arrPermissions)
+        .then((user) => {
+          console.log(user);
+          const lineLoginData = {
+            access_code: user.accessToken.accessToken,
+            site_from: 'touku',
+            dev_id: '',
+          };
+          console.log(
+            'LoginSignUp -> firebaseLineLogin -> lineLoginData',
+            lineLoginData
+          );
+          this.props.lineRegister(lineLoginData).then(async (res) => {
+            console.log('JWT TOKEN=> ', JSON.stringify(res));
+            if (res.token) {
+              let status = res.status;
+              let isEmail = res.email_required;
+              if (!status) {
+                if (isEmail) {
+                  this.props.navigation.navigate('SignUp', {
+                    pageNumber: 1,
+                    isSocial: true,
+                  });
+                  return;
+                }
+                this.props.navigation.navigate('SignUp', {
+                  pageNumber: 2,
+                  isSocial: true,
+                });
+                return;
+              }
+              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.removeItem('socialToken');
+              this.props.navigation.navigate('Home');
+              return;
+            }
+            if (res.user) {
+              // alert('something went wrong!');
+            }
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      LineLogin.login()
+        .then((user) => {
+          console.log(user);
+          const lineLoginData = {
+            access_code: user.accessToken.accessToken,
+            site_from: 'touku',
+            dev_id: '',
+          };
+          console.log(
+            'LoginSignUp -> firebaseLineLogin -> lineLoginData',
+            lineLoginData
+          );
+          this.props.lineRegister(lineLoginData).then(async (res) => {
+            console.log('JWT TOKEN=> ', JSON.stringify(res));
+            if (res.token) {
+              let status = res.status;
+              let isEmail = res.email_required;
+              if (!status) {
+                if (isEmail) {
+                  this.props.navigation.navigate('SignUp', {
+                    pageNumber: 1,
+                    isSocial: true,
+                  });
+                  return;
+                }
+                this.props.navigation.navigate('SignUp', {
+                  pageNumber: 2,
+                  isSocial: true,
+                });
+                return;
+              }
+              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.removeItem('socialToken');
+              this.props.navigation.navigate('Home');
+              return;
+            }
+            if (res.user) {
+              // alert('something went wrong!');
+            }
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
   render() {
     const { orientation } = this.state;
     const { selectedLanguageItem } = this.props;
@@ -355,10 +464,10 @@ class LoginSignUp extends Component {
                   IconSrc={Icons.icon_facebook}
                   onPress={() => this.firebaseFacebookLogin()}
                 />
-                <SocialLogin
+                {/* <SocialLogin
                   IconSrc={Icons.icon_line}
-                  onPress={() => alert('line clicked')}
-                />
+                  onPress={() => this.firebaseLineLogin()}
+                /> */}
                 <SocialLogin
                   IconSrc={Icons.icon_google}
                   onPress={() => this.firebaseGoogleLogin()}
@@ -398,6 +507,7 @@ const mapDispatchToProps = {
   facebookRegister,
   twitterRegister,
   googleRegister,
+  lineRegister,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginSignUp);
