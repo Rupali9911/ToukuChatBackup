@@ -7,6 +7,7 @@ import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {Images} from '../../constants';
+import {SearchInput} from '../../components/TextInputs';
 
 class Chat extends Component {
   constructor(props) {
@@ -35,6 +36,8 @@ class Chat extends Component {
     this.setState({orientation});
   };
 
+  onSearch = (text) => {};
+
   render() {
     const {orientation} = this.state;
     return (
@@ -43,6 +46,7 @@ class Chat extends Component {
         style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.chat')} />
+          <SearchInput onChangeText={this.onSearch.bind(this)} />
         </View>
       </ImageBackground>
     );

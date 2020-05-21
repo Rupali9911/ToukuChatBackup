@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.gradient_2,
+    backgroundColor: Colors.home_header,
   },
 });
 

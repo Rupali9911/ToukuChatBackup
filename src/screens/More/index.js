@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import {View, ImageBackground} from 'react-native';
+import {View, ImageBackground, ScrollView} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {Images} from '../../constants';
+import {Images, Icons, Colors} from '../../constants';
+import SettingsItem from '../../components/SettingsItem';
 
 class More extends Component {
   constructor(props) {
@@ -43,11 +44,48 @@ class More extends Component {
         style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('common.settings')} />
+          {/* <ScrollView>
+            <Section />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('pages.xchat.addFriend')}
+            />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('pages.xchat.createNewGroup')}
+            />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('pages.xchat.createChannel')}
+            />
+            <Section />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('common.profile')}
+            />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('pages.xchat.invitation')}
+            />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('pages.xchat.toukuPoints')}
+            />
+            <SettingsItem
+              icon={Icons.icon_more}
+              title={translate('common.goToXana')}
+            />
+            <Section />
+          </ScrollView> */}
         </View>
       </ImageBackground>
     );
   }
 }
+
+const Section = (props) => {
+  return <View style={{height: 30, backgroundColor: Colors.home_header}} />;
+};
 
 const mapStateToProps = (state) => {
   return {
