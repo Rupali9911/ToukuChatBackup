@@ -19,7 +19,10 @@ import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotUserNameStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
-import {forgotUserName} from '../../redux/reducers/forgotPassReducer';
+import {
+  forgotUserName,
+  recoverUserName,
+} from '../../redux/reducers/forgotPassReducer';
 import Toast from '../../components/Toast';
 
 class ForgotUserName extends Component {
@@ -28,7 +31,7 @@ class ForgotUserName extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
-      userName: '',
+      email: '',
     };
   }
 
@@ -50,31 +53,32 @@ class ForgotUserName extends Component {
   };
 
   onSubmitPress() {
-    const {userName} = this.state;
-    if (userName !== '') {
+    const {email} = this.state;
+    if (email !== '') {
       let userNameData = {
-        username: userName,
+        email: email,
       };
       this.props
-        .forgotUserName(userNameData)
+        .recoverUserName(userNameData)
         .then((res) => {
           Toast.show({
-            title: 'Send SMS',
-            text: 'We have sent OTP code to your phone number',
+            title: 'Send Email',
+            text: 'We have sent an email to your registered email id',
             icon: Icons.icon_message,
+            type: 'positive',
           });
         })
         .catch((err) => {
           Toast.show({
-            title: 'Invalid Username',
-            text: 'Something Went Wrong',
+            title: 'Touku',
+            text: 'Email Not Found',
             icon: Icons.icon_message,
           });
         });
     } else {
       Toast.show({
-        title: 'Enter Username',
-        text: 'Please Enter User Name',
+        title: 'Touku',
+        text: 'Enter valid email address',
         icon: Icons.icon_message,
       });
     }
@@ -117,10 +121,10 @@ class ForgotUserName extends Component {
                   marginTop: orientation != 'PORTRAIT' ? 0 : -100,
                 }}>
                 <Inputfield
-                  value={this.state.userName}
-                  placeholder={translate('common.username')}
+                  value={this.state.email}
+                  placeholder={translate('common.email')}
                   returnKeyType={'done'}
-                  onChangeText={(userName) => this.setState({userName})}
+                  onChangeText={(email) => this.setState({email})}
                   // onSubmitEditing={() => {
                   //   this.onSubmitPress();
                   // }}
@@ -130,6 +134,7 @@ class ForgotUserName extends Component {
                   type={'primary'}
                   title={translate('common.submit')}
                   onPress={() => this.onSubmitPress()}
+                  loading={this.props.loading}
                 />
               </View>
             </View>
@@ -144,11 +149,13 @@ class ForgotUserName extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    loading: state.forgotPassReducer.loading,
   };
 };
 
 const mapDispatchToProps = {
   forgotUserName,
+  recoverUserName,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ForgotUserName);
