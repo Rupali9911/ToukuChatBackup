@@ -44,8 +44,8 @@ class Toast extends Component {
     this.setState({
       title: config.title,
       text: config.text,
-      icon: config.icon || Icons.icon_tick,
       type: config.type || 'primary',
+      icon: config.icon || Icons.icon_alert,
       timing: config.timing,
     });
 
@@ -96,6 +96,17 @@ class Toast extends Component {
     }
   }
 
+  getIcon() {
+    switch (this.state.type) {
+      case 'primary':
+        return Icons.icon_alert;
+      case 'positive':
+        return Icons.icon_tick;
+      default:
+        return Icons.icon_message;
+    }
+  }
+
   render() {
     const {title, text, icon, orientation} = this.state;
     return (
@@ -117,7 +128,7 @@ class Toast extends Component {
           colors={this.getGradientColors()}
           style={styles.content}>
           <View style={styles.iconContainer}>
-            <Image source={icon} style={styles.iconStyle} />
+            <Image source={this.getIcon()} style={styles.iconStyle} />
           </View>
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text style={styles.title}>{title}</Text>

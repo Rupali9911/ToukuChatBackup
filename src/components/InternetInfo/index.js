@@ -31,7 +31,6 @@ class InternetInfo extends PureComponent {
       Toast.show({
         title: 'Notwork Error',
         text: 'Please check your internet connection',
-        icon: Icons.icon_message,
       });
     }
   };
