@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, Image, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
-import {Images} from '../constants';
+import {Images, Colors} from '../constants';
 
 export default class RoundedImage extends Component {
   constructor(props) {
@@ -10,7 +10,16 @@ export default class RoundedImage extends Component {
   }
 
   render() {
-    const {source, size, clickable, onClick, color, isRounded} = this.props;
+    const {
+      source,
+      size,
+      clickable,
+      onClick,
+      color,
+      isRounded,
+      isBadge,
+      isOnline,
+    } = this.props;
     return (
       <TouchableOpacity
         activeOpacity={0.6}
@@ -26,6 +35,29 @@ export default class RoundedImage extends Component {
             tintColor: color,
           }}
         />
+        {isBadge ? (
+          <View
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: Colors.white,
+              top: 5,
+              right: 0,
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 3.5,
+                backgroundColor: isOnline ? Colors.green : Colors.danger,
+              }}
+            />
+          </View>
+        ) : null}
       </TouchableOpacity>
     );
   }
@@ -36,6 +68,8 @@ RoundedImage.propTypes = {
   size: PropTypes.number,
   clickable: PropTypes.bool,
   isRounded: PropTypes.bool,
+  isBadge: PropTypes.bool,
+  isOnline: PropTypes.bool,
   onClick: PropTypes.func,
   color: PropTypes.any,
 };
@@ -45,6 +79,8 @@ RoundedImage.defaultProps = {
   size: 73,
   clickable: false,
   isRounded: true,
+  isBadge: false,
+  isOnline: false,
   onClick: null,
   color: null,
 };

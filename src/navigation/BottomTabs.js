@@ -37,7 +37,7 @@ const Tabs = createBottomTabNavigator(
         // paddingBottom: 10,
         // height: 56,
       },
-      activeTintColor: Colors.primary,
+      activeTintColor: Colors.indigo,
       inactiveTintColor: Colors.white,
       safeAreaInset: {right: 'never', left: 'never', bottom: 'never'},
       // labelStyle: {marginVertical: 5},
@@ -51,7 +51,7 @@ const Tabs = createBottomTabNavigator(
               source={Icons.icon_home_active}
               style={[
                 globalStyles.iconStyle,
-                {tintColor: focused ? Colors.primary : Colors.white},
+                {tintColor: focused ? Colors.indigo : Colors.white},
               ]}
             />
           );
@@ -61,7 +61,7 @@ const Tabs = createBottomTabNavigator(
               source={Icons.icon_chat}
               style={[
                 globalStyles.iconStyle,
-                {tintColor: focused ? Colors.primary : Colors.white},
+                {tintColor: focused ? Colors.indigo : Colors.white},
               ]}
             />
           );
@@ -71,7 +71,7 @@ const Tabs = createBottomTabNavigator(
               source={Icons.icon_more}
               style={[
                 globalStyles.iconStyle,
-                {tintColor: focused ? Colors.primary : Colors.white},
+                {tintColor: focused ? Colors.indigo : Colors.white},
               ]}
             />
           );
