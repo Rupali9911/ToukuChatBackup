@@ -4,6 +4,8 @@ export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
   icon_back: require('../../assets/icons/back_icon.png'),
   icon_arrow_right: require('../../assets/icons/arrow_right.png'),
+  icon_arrow_up: require('../../assets/icons/arrow_up.png'),
+  icon_arrow_down: require('../../assets/icons/arrow_down.png'),
   icon_tick: require('../../assets/icons/tick.png'),
   icon_tick_circle: require('../../assets/icons/tick_circle.png'),
   icon_close: require('../../assets/icons/close.png'),
@@ -49,8 +51,12 @@ export const Colors = {
   gradient_3: '#f68b6b',
   orange: '#fd7e14',
   gray: '#dcdcdc',
+  gray_dark: '#6c757d',
   danger: '#DC3545',
   home_header: '#fb9a7a',
+  indigo: '#6610f2',
+  purple: '#6f42c1',
+  green: '#1bd078',
 };
 
 export const Fonts = {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   AccordionList,
@@ -17,37 +17,33 @@ import {
 } from 'accordion-collapse-react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { Colors, Icons, Images } from '../constants';
+import {Colors, Icons, Images} from '../constants';
 import HamburgerIcon from './HamburgerIcon';
 import RoundedImage from './RoundedImage';
-import { globalStyles } from '../styles';
+import {globalStyles} from '../styles';
 import DrawerItem from './DrawerItem';
-import { ProfileModal } from './Modals';
-import { setI18nConfig, translate } from '../redux/reducers/languageReducer';
-import { getAvatar } from '../utils';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-community/google-signin';
+import {ProfileModal} from './Modals';
+import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
+import {getAvatar} from '../utils';
+import {logout} from '../redux/reducers/index';
 
 class DrawerContent extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
-      isProfileModalVisible: false,
       isAdminCollapsed: false,
       isGeneralCollapsed: true,
       list: [
         {
           title: 'Messages',
           icon: Icons.icon_message,
-          data: [{ name: 'Message List' }, { name: 'Compose Message' }],
+          data: [{name: 'Message List'}, {name: 'Compose Message'}],
         },
         {
           title: 'Scenario',
           icon: Icons.icon_scenario,
-          data: [{ name: 'Scenario List' }, { name: 'Compose Scenario' }],
+          data: [{name: 'Scenario List'}, {name: 'Compose Scenario'}],
         },
       ],
       drawerTabs: [
@@ -101,18 +97,17 @@ class DrawerContent extends Component {
           justifyContent: 'space-between',
           alignItems: 'center',
           marginVertical: 5,
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image
             source={item.icon}
-            style={[globalStyles.iconStyle, { marginEnd: 5 }]}
+            style={[globalStyles.iconStyle, {marginEnd: 5}]}
           />
           <Text style={globalStyles.smallLightText}>{item.title}</Text>
         </View>
         <Image
           source={Icons.icon_arrow_right}
-          style={{ width: 10, height: 10 }}
+          style={{width: 10, height: 10}}
         />
       </View>
     );
@@ -120,10 +115,10 @@ class DrawerContent extends Component {
 
   _body(item) {
     return (
-      <View style={{ paddingStart: 30 }}>
+      <View style={{paddingStart: 30}}>
         {item.data.map((item) => (
           <View>
-            <Text style={[globalStyles.smallLightText, { textAlign: 'left' }]}>
+            <Text style={[globalStyles.smallLightText, {textAlign: 'left'}]}>
               {item.name}
             </Text>
           </View>
@@ -161,45 +156,33 @@ class DrawerContent extends Component {
   };
 
   onViewProfile() {
-    this.setState({ isProfileModalVisible: true });
+    ProfileModal.show();
   }
 
   async onLogoutUser() {
-    AsyncStorage.clear();
-    const isSignedIn = await GoogleSignin.isSignedIn();
-    if (isSignedIn) {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-    }
-    this.props.navigation.navigate('Auth');
+    this.props.logout().then((res) => {
+      this.props.navigation.navigate('Auth');
+    });
   }
 
   render() {
-    const {
-      drawerTabs,
-      isAdminCollapsed,
-      isGeneralCollapsed,
-      isProfileModalVisible,
-    } = this.state;
-    const { userData } = this.props;
+    const {drawerTabs, isAdminCollapsed, isGeneralCollapsed} = this.state;
+    const {userData} = this.props;
     return (
       <LinearGradient
-        start={{ x: 0.1, y: 0.7 }}
-        end={{ x: 0.8, y: 0.3 }}
+        start={{x: 0.1, y: 0.7}}
+        end={{x: 0.8, y: 0.3}}
         locations={[0.1, 0.5, 0.8]}
         colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-        style={{ flex: 1 }}
-      >
+        style={{flex: 1}}>
         <SafeAreaView
-          style={{ flex: 1 }}
-          forceInset={{ top: 'always', horizontal: 'never' }}
-        >
+          style={{flex: 1}}
+          forceInset={{top: 'always', horizontal: 'never'}}>
           <ScrollView
             contentContainerStyle={{
               paddingHorizontal: 20,
               paddingVertical: Platform.OS === 'ios' ? 10 : 50,
-            }}
-          >
+            }}>
             <View>
               <HamburgerIcon />
             </View>
@@ -208,14 +191,13 @@ class DrawerContent extends Component {
                 alignSelf: 'center',
                 alignItems: 'center',
                 marginBottom: 30,
-              }}
-            >
+              }}>
               <RoundedImage
                 source={getAvatar(userData.avatar)}
                 clickable={true}
                 onClick={() => this.onViewProfile()}
               />
-              <Text style={[globalStyles.normalLightText, { marginTop: 10 }]}>
+              <Text style={[globalStyles.normalLightText, {marginTop: 10}]}>
                 {userData.username}
               </Text>
             </View>
@@ -263,8 +245,7 @@ class DrawerContent extends Component {
                   isAdminCollapsed: !isAdminCollapsed,
                 })
               }
-              isCollapsed={isGeneralCollapsed}
-            >
+              isCollapsed={isGeneralCollapsed}>
               <CollapseHeader>
                 <View
                   style={{
@@ -273,16 +254,17 @@ class DrawerContent extends Component {
                     borderBottomWidth: 1,
                     borderColor: Colors.white,
                     marginTop: 15,
-                  }}
-                >
-                  <Text style={globalStyles.smallLightText}>{'General'}</Text>
+                  }}>
+                  <Text style={globalStyles.smallLightText}>
+                    {translate('pages.xchat.general')}
+                  </Text>
                   <Image
                     source={
                       isGeneralCollapsed
                         ? Icons.icon_triangle_down
                         : Icons.icon_triangle_up
                     }
-                    style={{ width: 10, height: 10 }}
+                    style={{width: 10, height: 10}}
                   />
                 </View>
               </CollapseHeader>
@@ -303,12 +285,6 @@ class DrawerContent extends Component {
               </CollapseBody>
             </Collapse>
           </ScrollView>
-          <ProfileModal
-            visible={isProfileModalVisible}
-            onRequestClose={() =>
-              this.setState({ isProfileModalVisible: false })
-            }
-          />
         </SafeAreaView>
       </LinearGradient>
     );
@@ -322,6 +298,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  logout,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrawerContent);

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, ViewPropTypes, Text} from 'react-native';
 import PropTypes from 'prop-types';
 import Toast from '../../components/Toast';
+import {ProfileModal} from '../../components/Modals';
 
 class Root extends Component {
   render() {
@@ -12,6 +13,12 @@ class Root extends Component {
         <Toast
           ref={(c) => {
             if (c) Toast.toastInstance = c;
+          }}
+        />
+
+        <ProfileModal
+          ref={(c) => {
+            if (c) ProfileModal.userProfleInstance = c;
           }}
         />
       </View>

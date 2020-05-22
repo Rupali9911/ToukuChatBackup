@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux';
 import AsyncStorage from '@react-native-community/async-storage';
+import {GoogleSignin} from '@react-native-community/google-signin';
 
 import userReducer from './userReducer';
 import loginReducer from './loginReducer';
@@ -31,6 +32,11 @@ const rootReducer = (state, action) => {
       AsyncStorage.removeItem(`persist:${key}`);
     });
     AsyncStorage.removeItem('userToken');
+    const isSignedIn = GoogleSignin.isSignedIn();
+    if (isSignedIn) {
+      GoogleSignin.revokeAccess();
+      GoogleSignin.signOut();
+    }
     state = undefined;
   }
   return allReducers(state, action);

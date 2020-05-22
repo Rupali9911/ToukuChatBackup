@@ -26,7 +26,7 @@ export default class DrawerItem extends Component {
             source={icon}
             style={[
               globalStyles.iconStyle,
-              {tintColor: item.selected ? Colors.primary : Colors.white},
+              {tintColor: item.selected ? Colors.indigo : Colors.white},
             ]}
           />
         </View>
@@ -38,7 +38,7 @@ export default class DrawerItem extends Component {
                 color: item.disabled
                   ? '#ccc'
                   : item.selected
-                  ? Colors.primary
+                  ? Colors.indigo
                   : Colors.white,
                 marginStart: 10,
               },

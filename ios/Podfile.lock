@@ -559,14 +559,13 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
+    - LineSDK
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
     - TwitterCore
     - TwitterKit
     - YogaKit
-  trunk:
-    - LineSDK
 
 EXTERNAL SOURCES:
   BVLinearGradient:

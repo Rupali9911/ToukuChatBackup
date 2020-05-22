@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Platform,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputContainer: {
-    padding: 10,
+    padding: Platform.OS === 'ios' ? 10 : 0,
     borderWidth: 1,
     borderColor: Colors.gray,
     marginVertical: 5,
