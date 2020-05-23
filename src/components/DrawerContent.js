@@ -50,14 +50,16 @@ class DrawerContent extends Component {
         {
           tab_id: 1,
           tab_name: translate('pages.xchat.home'),
-          tab_icon: Icons.icon_home_active,
+          tab_icon_inactive: Icons.icon_home,
+          tab_icon_active: Icons.icon_home_select,
           selected: true,
           disabled: false,
         },
         {
           tab_id: 2,
           tab_name: translate('pages.xchat.chat'),
-          tab_icon: Icons.icon_chat,
+          tab_icon_inactive: Icons.icon_chat,
+          tab_icon_active: Icons.icon_chat_select,
           selected: false,
           disabled: false,
         },
@@ -65,7 +67,8 @@ class DrawerContent extends Component {
         {
           tab_id: 3,
           tab_name: translate('common.timeline'),
-          tab_icon: Icons.icon_timeline,
+          tab_icon_inactive: Icons.icon_timeline,
+          tab_icon_active: Icons.icon_timeline_select,
           selected: false,
           disabled: true,
         },
@@ -73,7 +76,8 @@ class DrawerContent extends Component {
         {
           tab_id: 4,
           tab_name: translate('pages.xchat.channel'),
-          tab_icon: Icons.icon_channel,
+          tab_icon_inactive: Icons.icon_channel,
+          tab_icon_active: Icons.icon_channel_select,
           selected: false,
           disabled: true,
         },
@@ -81,7 +85,8 @@ class DrawerContent extends Component {
         {
           tab_id: 5,
           tab_name: translate('pages.xchat.more'),
-          tab_icon: Icons.icon_more,
+          tab_icon_inactive: Icons.icon_more,
+          tab_icon_active: Icons.icon_more_select,
           selected: false,
           disabled: false,
         },
@@ -272,7 +277,11 @@ class DrawerContent extends Component {
                 {drawerTabs.map((item, key) => (
                   <DrawerItem
                     title={item.tab_name}
-                    icon={item.tab_icon}
+                    icon={
+                      item.selected
+                        ? item.tab_icon_active
+                        : item.tab_icon_inactive
+                    }
                     item={item}
                     onPress={() => this.changeActiveTab(item, key)}
                   />

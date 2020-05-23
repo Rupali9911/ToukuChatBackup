@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -21,8 +22,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getUserProfile} from '../../redux/reducers/userReducer';
 import {Images, Colors, Icons} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
@@ -31,6 +30,15 @@ import {ProfileModal} from '../../components/Modals';
 import {ChannelListItem} from '../../components/ListItems';
 import FriendListItem from '../../components/ListItems/FriendListItem';
 import GroupListItem from '../../components/ListItems/GroupListItem';
+import NoData from '../../components/NoData';
+import {ListLoader} from '../../components/Loaders';
+import {socket} from '../../helpers/api';
+
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
+import {getUserChannels} from '../../redux/reducers/channelReducer';
+import {getUserGroups} from '../../redux/reducers/groupReducer';
+import {getUserFriends} from '../../redux/reducers/friendReducer';
 
 class Home extends Component {
   constructor(props) {
@@ -39,54 +47,8 @@ class Home extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       isChannelCollapsed: true,
-      isGroupCollapsed: false,
-      isFriendsCollapsed: false,
-
-      channels: [
-        {
-          id: 1,
-          name: 'Channel 1',
-          detail: 'description 1',
-          date: '21/05',
-        },
-
-        {
-          id: 2,
-          name: 'Channel 2',
-          detail: 'description 1',
-          date: '21/05',
-        },
-
-        {
-          id: 3,
-          name: 'Channel 3',
-          detail: 'description 1',
-          date: '21/05',
-        },
-      ],
-
-      groups: [
-        {
-          id: 1,
-          name: 'Group 1',
-          detail: 'description 1',
-          date: '21/05',
-        },
-
-        {
-          id: 2,
-          name: 'Group 2',
-          detail: 'description 1',
-          date: '21/05',
-        },
-
-        {
-          id: 3,
-          name: 'Group 3',
-          detail: 'description 1',
-          date: '21/05',
-        },
-      ],
+      isGroupCollapsed: true,
+      isFriendsCollapsed: true,
 
       friends: [
         {
@@ -130,6 +92,24 @@ class Home extends Component {
   componentDidMount() {
     this.props.getUserProfile();
     Orientation.addOrientationListener(this._orientationDidChange);
+
+    this.props.getUserChannels();
+    this.props.getUserGroups();
+    this.props.getUserFriends();
+
+    socket.on('connect', function () {
+      alert('ghhh');
+    });
+
+    // socket.emit(
+    //   '/bulk-socket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDE1MDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.J1QxUKekSeiqq8UEppSkEfRXEK-YiiuwL9gRY_nsjY0',
+    // );
+    // socket.on(
+    //   '/single-socket/9795?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDE1MDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.J1QxUKekSeiqq8UEppSkEfRXEK-YiiuwL9gRY_nsjY0',
+    //   function (data) {
+    //     alert(data);
+    //   },
+    // );
   }
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -141,6 +121,86 @@ class Home extends Component {
     ProfileModal.show();
   }
 
+  renderUserChannels() {
+    const {userChannels, channelLoading} = this.props;
+    if (userChannels.length === 0 && channelLoading) {
+      return <ListLoader />;
+    } else if (userChannels.length > 0) {
+      return (
+        <FlatList
+          data={userChannels}
+          renderItem={({item, index}) => (
+            <ChannelListItem
+              title={item.name}
+              description={item.description}
+              date={item.created}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
+          ListFooterComponent={() => (
+            <View>{channelLoading ? <ListLoader /> : null}</View>
+          )}
+        />
+      );
+    } else {
+      return <NoData title={'No channels Available!'} />;
+    }
+  }
+
+  renderUserGroups() {
+    const {userGroups, groupLoading} = this.props;
+    if (userGroups.length === 0 && groupLoading) {
+      return <ListLoader />;
+    } else if (userGroups.length > 0) {
+      return (
+        <FlatList
+          data={userGroups}
+          renderItem={({item, index}) => (
+            <GroupListItem
+              title={item.group_name}
+              description={item.last_msg.text}
+              date={item.timestamp}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
+          ListFooterComponent={() => (
+            <View>{groupLoading ? <ListLoader /> : null}</View>
+          )}
+        />
+      );
+    } else {
+      return <NoData title={'No groups Available!'} />;
+    }
+  }
+
+  renderUserFriends() {
+    const {userFriends, friendLoading} = this.props;
+    if (userFriends.length === 0 && friendLoading) {
+      return <ListLoader />;
+    } else if (userFriends.length > 0) {
+      return (
+        <FlatList
+          data={userFriends}
+          renderItem={({item, index}) => (
+            <FriendListItem
+              title={item.username}
+              description={item.last_msg}
+              image={getAvatar(item.profile_picture)}
+              date={item.timestamp}
+              isOnline={item.is_online}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
+          ListFooterComponent={() => (
+            <View>{friendLoading ? <ListLoader /> : null}</View>
+          )}
+        />
+      );
+    } else {
+      return <NoData title={'No groups Available!'} />;
+    }
+  }
+
   render() {
     const {
       orientation,
@@ -148,7 +208,9 @@ class Home extends Component {
       isGroupCollapsed,
       isFriendsCollapsed,
     } = this.state;
-    const {userData} = this.props;
+
+    const {userData, userChannels, userGroups} = this.props;
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -157,25 +219,24 @@ class Home extends Component {
           <HomeHeader title={translate('pages.xchat.home')} />
           <SearchInput onChangeText={this.onSearch.bind(this)} />
           <View style={globalStyles.container}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => this.onUserProfilePress()}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 10,
+              }}>
+              <RoundedImage source={getAvatar(userData.avatar)} size={60} />
+              <Text
+                style={[
+                  globalStyles.smallRegularText,
+                  {color: Colors.black, marginStart: 10},
+                ]}>
+                {userData.username}
+              </Text>
+            </TouchableOpacity>
             <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => this.onUserProfilePress()}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 10,
-                }}>
-                <RoundedImage source={getAvatar(userData.avatar)} size={60} />
-                <Text
-                  style={[
-                    globalStyles.smallRegularText,
-                    {color: Colors.black, marginStart: 10},
-                  ]}>
-                  {userData.username}
-                </Text>
-              </TouchableOpacity>
-
               {/* Channels */}
               <Collapse
                 onToggle={(isColl) =>
@@ -188,20 +249,10 @@ class Home extends Component {
                   <DropdownHeader
                     title={translate('pages.xchat.channels')}
                     isCollapsed={isChannelCollapsed}
+                    counts={userChannels.length}
                   />
                 </CollapseHeader>
-                <CollapseBody>
-                  <FlatList
-                    data={this.state.channels}
-                    renderItem={({item, index}) => (
-                      <ChannelListItem
-                        title={item.name}
-                        description={item.detail}
-                        date={item.date}
-                      />
-                    )}
-                  />
-                </CollapseBody>
+                <CollapseBody>{this.renderUserChannels()}</CollapseBody>
               </Collapse>
 
               {/* Groups */}
@@ -216,20 +267,10 @@ class Home extends Component {
                   <DropdownHeader
                     title={translate('pages.xchat.groups')}
                     isCollapsed={isGroupCollapsed}
+                    counts={userGroups.length}
                   />
                 </CollapseHeader>
-                <CollapseBody>
-                  <FlatList
-                    data={this.state.groups}
-                    renderItem={({item, index}) => (
-                      <GroupListItem
-                        title={item.name}
-                        description={item.detail}
-                        date={item.date}
-                      />
-                    )}
-                  />
-                </CollapseBody>
+                <CollapseBody>{this.renderUserGroups()}</CollapseBody>
               </Collapse>
 
               {/* Friends */}
@@ -244,21 +285,10 @@ class Home extends Component {
                   <DropdownHeader
                     title={translate('pages.xchat.friends')}
                     isCollapsed={isFriendsCollapsed}
+                    counts={this.state.friends.length}
                   />
                 </CollapseHeader>
-                <CollapseBody>
-                  <FlatList
-                    data={this.state.friends}
-                    renderItem={({item, index}) => (
-                      <FriendListItem
-                        title={item.name}
-                        description={item.detail}
-                        date={item.date}
-                        isOnline={item.is_online}
-                      />
-                    )}
-                  />
-                </CollapseBody>
+                <CollapseBody>{this.renderUserFriends()}</CollapseBody>
               </Collapse>
             </KeyboardAwareScrollView>
           </View>
@@ -269,7 +299,7 @@ class Home extends Component {
 }
 
 const DropdownHeader = (props) => {
-  const {title, isCollapsed} = props;
+  const {title, counts, isCollapsed} = props;
   return (
     <LinearGradient
       start={{x: 0.1, y: 0.7}}
@@ -283,7 +313,14 @@ const DropdownHeader = (props) => {
         paddingVertical: 10,
         paddingHorizontal: 15,
       }}>
-      <Text style={globalStyles.smallRegularText}>{title}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={globalStyles.smallRegularText}>{title}</Text>
+        <Text style={[globalStyles.smallRegularText, {marginStart: 5}]}>
+          {'('}
+          {counts}
+          {')'}
+        </Text>
+      </View>
       <Image
         source={isCollapsed ? Icons.icon_arrow_down : Icons.icon_arrow_up}
         style={{width: 10, height: 10, resizeMode: 'contain'}}
@@ -296,11 +333,20 @@ const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
+    userChannels: state.channelReducer.userChannels,
+    channelLoading: state.channelReducer.loading,
+    userGroups: state.groupReducer.userGroups,
+    groupLoading: state.groupReducer.loading,
+    userFriends: state.friendReducer.userFriends,
+    friendLoading: state.friendReducer.loading,
   };
 };
 
 const mapDispatchToProps = {
   getUserProfile,
+  getUserChannels,
+  getUserGroups,
+  getUserFriends,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

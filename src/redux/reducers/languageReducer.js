@@ -173,7 +173,6 @@ export const userLanguage = () => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        console.log('languages ERROR=>', JSON.stringify(err));
         reject(err);
       });
   });

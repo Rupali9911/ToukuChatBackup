@@ -48,31 +48,22 @@ const Tabs = createBottomTabNavigator(
         if (routeName === 'Home') {
           return (
             <Image
-              source={Icons.icon_home_active}
-              style={[
-                globalStyles.iconStyle,
-                {tintColor: focused ? Colors.indigo : Colors.white},
-              ]}
+              source={focused ? Icons.icon_home_select : Icons.icon_home}
+              style={globalStyles.iconStyle}
             />
           );
         } else if (routeName === 'Chat') {
           return (
             <Image
-              source={Icons.icon_chat}
-              style={[
-                globalStyles.iconStyle,
-                {tintColor: focused ? Colors.indigo : Colors.white},
-              ]}
+              source={focused ? Icons.icon_chat_select : Icons.icon_chat}
+              style={globalStyles.iconStyle}
             />
           );
         } else if (routeName === 'More') {
           return (
             <Image
-              source={Icons.icon_more}
-              style={[
-                globalStyles.iconStyle,
-                {tintColor: focused ? Colors.indigo : Colors.white},
-              ]}
+              source={focused ? Icons.icon_more_select : Icons.icon_more}
+              style={globalStyles.iconStyle}
             />
           );
         }

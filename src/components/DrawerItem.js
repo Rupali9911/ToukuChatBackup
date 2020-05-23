@@ -22,13 +22,7 @@ export default class DrawerItem extends Component {
           paddingVertical: 10,
         }}>
         <View>
-          <Image
-            source={icon}
-            style={[
-              globalStyles.iconStyle,
-              {tintColor: item.selected ? Colors.indigo : Colors.white},
-            ]}
-          />
+          <Image source={icon} style={globalStyles.iconStyle} />
         </View>
         <View>
           <Text
