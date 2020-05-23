@@ -63,4 +63,10 @@ export const globalStyles = StyleSheet.create({
     height: 24,
     resizeMode: 'contain',
   },
+
+  //Separator
+  separator: {
+    height: 1,
+    color: Colors.gray,
+  },
 });

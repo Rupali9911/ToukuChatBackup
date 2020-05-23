@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const GET_SEND_OTP_REQUEST = 'GET_SEND_OTP_REQUEST';
@@ -261,7 +261,6 @@ export const socialRegistration = (socialRegistrationData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        console.log('err', err);
         reject(err);
       });
   });

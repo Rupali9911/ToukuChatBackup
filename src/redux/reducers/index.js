@@ -7,6 +7,9 @@ import loginReducer from './loginReducer';
 import signupReducer from './signupReducer';
 import languageReducer from './languageReducer';
 import forgotPassReducer from './forgotPassReducer';
+import channelReducer from './channelReducer';
+import groupReducer from './groupReducer';
+import friendReducer from './friendReducer';
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
@@ -16,6 +19,9 @@ const allReducers = combineReducers({
   signupReducer: signupReducer,
   languageReducer: languageReducer,
   forgotPassReducer: forgotPassReducer,
+  channelReducer: channelReducer,
+  groupReducer: groupReducer,
+  friendReducer: friendReducer,
 });
 
 export const logout = (user) => (dispatch, getState) =>

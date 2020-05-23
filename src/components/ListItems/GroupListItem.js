@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
@@ -28,16 +29,18 @@ export default class GroupListItem extends Component {
             colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
             style={styles.squareImage}>
             <Text style={globalStyles.normalRegularText}>
-              {title.charAt(0)}
+              {title.charAt(0).toUpperCase()}
             </Text>
           </LinearGradient>
           <View style={styles.secondView}>
-            <View style={{alignItems: 'flex-start'}}>
+            <View style={{flex: 1, alignItems: 'flex-start'}}>
               <Text
+                numberOfLines={1}
                 style={[globalStyles.smallRegularText, {color: Colors.black}]}>
                 {title}
               </Text>
               <Text
+                numberOfLines={1}
                 style={[
                   globalStyles.smallLightText,
                   {color: Colors.gray_dark},
@@ -47,11 +50,12 @@ export default class GroupListItem extends Component {
             </View>
             <View>
               <Text
+                numberOfLines={1}
                 style={[
                   globalStyles.smallLightText,
                   {color: Colors.gray_dark},
                 ]}>
-                {date}
+                {moment(date).format('DD/MM')}
               </Text>
             </View>
           </View>
@@ -74,7 +78,6 @@ const styles = StyleSheet.create({
   secondView: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     paddingHorizontal: 10,
   },
   squareImage: {

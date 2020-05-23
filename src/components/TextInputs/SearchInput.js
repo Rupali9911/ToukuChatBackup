@@ -78,12 +78,12 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingBottom: 15,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
     backgroundColor: Colors.home_header,
   },
   searchContainer: {
-    // height: Platform.OS === 'ios' ? 'auto' : 45,
+    height: Platform.OS === 'ios' ? 'auto' : 40,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',

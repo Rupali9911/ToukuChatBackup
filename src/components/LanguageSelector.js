@@ -74,7 +74,7 @@ class LanguageSelector extends Component {
       ],
     };
     this.props.userLanguage().then((res) => {
-      console.log(JSON.stringify(res));
+      // console.log(JSON.stringify(res));
     });
   }
 

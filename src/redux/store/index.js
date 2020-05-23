@@ -12,7 +12,13 @@ import rootReducer from '../reducers';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['userReducer', 'languageReducer'],
+  whitelist: [
+    'userReducer',
+    'languageReducer',
+    'channelReducer',
+    'groupReducer',
+    'friendReducer',
+  ],
 };
 
 // Middleware: Redux Persist Persisted Reducer
