@@ -47,8 +47,8 @@ class Home extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       isChannelCollapsed: true,
-      isGroupCollapsed: true,
-      isFriendsCollapsed: true,
+      isGroupCollapsed: false,
+      isFriendsCollapsed: false,
 
       friends: [
         {
@@ -134,6 +134,7 @@ class Home extends Component {
               title={item.name}
               description={item.description}
               date={item.created}
+              image={item.channel_picture}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -160,6 +161,7 @@ class Home extends Component {
               title={item.group_name}
               description={item.last_msg.text}
               date={item.timestamp}
+              image={item.group_picture}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -209,7 +211,7 @@ class Home extends Component {
       isFriendsCollapsed,
     } = this.state;
 
-    const {userData, userChannels, userGroups} = this.props;
+    const {userData, userChannels, userGroups, userFriends} = this.props;
 
     return (
       <ImageBackground
@@ -285,7 +287,7 @@ class Home extends Component {
                   <DropdownHeader
                     title={translate('pages.xchat.friends')}
                     isCollapsed={isFriendsCollapsed}
-                    counts={this.state.friends.length}
+                    counts={userFriends.length}
                   />
                 </CollapseHeader>
                 <CollapseBody>{this.renderUserFriends()}</CollapseBody>

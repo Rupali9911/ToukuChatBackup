@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -15,23 +15,31 @@ export default class GroupListItem extends Component {
   }
 
   render() {
-    const {title, description, date, onPress} = this.props;
+    const {title, description, date, image, onPress} = this.props;
+    var matches = title.match(/\b(\w)/g);
+    var firstChars = matches.join('');
+    var secondUpperCase = firstChars.charAt(1).toUpperCase();
     return (
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
         style={styles.container}>
         <View style={styles.firstView}>
-          <LinearGradient
-            start={{x: 0.1, y: 0.7}}
-            end={{x: 0.5, y: 0.2}}
-            locations={[0.1, 0.6, 1]}
-            colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-            style={styles.squareImage}>
-            <Text style={globalStyles.normalRegularText}>
-              {title.charAt(0).toUpperCase()}
-            </Text>
-          </LinearGradient>
+          {image != null ? (
+            <Image source={{uri: image}} style={styles.squareImage} />
+          ) : (
+            <LinearGradient
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.5, y: 0.2}}
+              locations={[0.1, 0.6, 1]}
+              colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+              style={styles.squareImage}>
+              <Text style={globalStyles.normalRegularText}>
+                {title.charAt(0).toUpperCase()}
+                {secondUpperCase}
+              </Text>
+            </LinearGradient>
+          )}
           <View style={styles.secondView}>
             <View style={{flex: 1, alignItems: 'flex-start'}}>
               <Text
@@ -92,6 +100,7 @@ GroupListItem.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
   date: PropTypes.any,
+  image: PropTypes.any,
 
   /**
    * Callbacks
@@ -103,5 +112,6 @@ GroupListItem.defaultProps = {
   title: 'Title',
   description: 'description',
   date: '21/05',
+  image: null,
   onPress: null,
 };
