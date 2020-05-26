@@ -14,7 +14,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import {Images, Icons} from '../../constants';
-import BackHeader from '../../components/BackHeader';
+import {BackHeader} from '../../components/Headers';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {forgotStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';

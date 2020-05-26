@@ -19,7 +19,7 @@ import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
 import {Icons, Colors, Images} from '../../constants';
-import BackHeader from '../../components/BackHeader';
+import {BackHeader} from '../../components/Headers';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';

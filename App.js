@@ -6,11 +6,21 @@ import {PersistGate} from 'redux-persist/es/integration/react';
 import {store, persistor} from './src/redux/store';
 import Root from './src/screens/Root';
 import InternetInfo from './src/components/InternetInfo';
+import {socket} from './src/helpers/api';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    // socket.on('connect', function (e) {
+    //   alert('on Connect');
+    // });
+    // socket.on('connect_error', (err) => {
+    //   alert(err);
+    // });
   }
 
   render() {
