@@ -8,11 +8,17 @@ import SignUp from '../screens/SignUp';
 import ForgotPassword from '../screens/ForgotPassword';
 import ForgotUsername from '../screens/ForgotUsername';
 import NeedSupport from '../screens/NeedSupport';
+import ChannelChats from '../screens/ChannelChats';
+import GroupChats from '../screens/GroupChats';
+import FriendChats from '../screens/FriendChats';
 import Drawer from './DrawerNavigation';
 
 const AppStack = createStackNavigator(
   {
     Drawer: Drawer,
+    ChannelChats: ChannelChats,
+    GroupChats: GroupChats,
+    FriendChats: FriendChats,
   },
   {
     initialRouteName: 'Drawer',
