@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -18,6 +17,7 @@ import {
 } from 'accordion-collapse-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {createFilter} from 'react-native-search-filter';
 
 import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
@@ -49,6 +49,7 @@ class Home extends Component {
       isChannelCollapsed: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
+      searchText: '',
     };
   }
 
@@ -71,25 +72,22 @@ class Home extends Component {
     this.props.getUserGroups();
     this.props.getUserFriends();
 
-    socket.on('connect', function () {
-      alert('ghhh');
-    });
+    socket.connect();
 
-    // socket.emit(
-    //   '/bulk-socket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDE1MDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.J1QxUKekSeiqq8UEppSkEfRXEK-YiiuwL9gRY_nsjY0',
-    // );
-    socket.on(
-      '/bulk-socket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDIzNTg4OSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.AB7kOcjtOYiOlD08zkMie6-0RUfVl3Ac3kvcxJC4OB8',
-      function (data) {
-        alert(data);
-      },
-    );
+    socket.on('connect', function (e) {
+      alert('Socket Connected');
+    });
+    socket.on('connect_error', (err) => {
+      // alert(err);
+    });
   }
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
 
-  onSearch = (text) => {};
+  onSearch = (text) => {
+    this.setState({searchText: text});
+  };
 
   onUserProfilePress() {
     ProfileModal.show();
@@ -115,12 +113,16 @@ class Home extends Component {
 
   renderUserChannels() {
     const {userChannels, channelLoading} = this.props;
-    if (userChannels.length === 0 && channelLoading) {
+    const filteredChannels = userChannels.filter(
+      createFilter(this.state.searchText, ['name']),
+    );
+
+    if (filteredChannels.length === 0 && channelLoading) {
       return <ListLoader />;
-    } else if (userChannels.length > 0) {
+    } else if (filteredChannels.length > 0) {
       return (
         <FlatList
-          data={userChannels}
+          data={filteredChannels}
           renderItem={({item, index}) => (
             <ChannelListItem
               title={item.name}
@@ -137,18 +139,22 @@ class Home extends Component {
         />
       );
     } else {
-      return <NoData title={'No channels Available!'} />;
+      return <NoData title={translate('pages.xchat.noChannelFound')} />;
     }
   }
 
   renderUserGroups() {
     const {userGroups, groupLoading} = this.props;
-    if (userGroups.length === 0 && groupLoading) {
+    const filteredGroups = userGroups.filter(
+      createFilter(this.state.searchText, ['group_name']),
+    );
+
+    if (filteredGroups.length === 0 && groupLoading) {
       return <ListLoader />;
-    } else if (userGroups.length > 0) {
+    } else if (filteredGroups.length > 0) {
       return (
         <FlatList
-          data={userGroups}
+          data={filteredGroups}
           renderItem={({item, index}) => (
             <GroupListItem
               title={item.group_name}
@@ -165,18 +171,22 @@ class Home extends Component {
         />
       );
     } else {
-      return <NoData title={'No groups Available!'} />;
+      return <NoData title={translate('pages.xchat.noGroupFound')} />;
     }
   }
 
   renderUserFriends() {
     const {userFriends, friendLoading} = this.props;
-    if (userFriends.length === 0 && friendLoading) {
+    const filteredFriends = userFriends.filter(
+      createFilter(this.state.searchText, ['username']),
+    );
+
+    if (filteredFriends.length === 0 && friendLoading) {
       return <ListLoader />;
-    } else if (userFriends.length > 0) {
+    } else if (filteredFriends.length > 0) {
       return (
         <FlatList
-          data={userFriends}
+          data={filteredFriends}
           renderItem={({item, index}) => (
             <FriendListItem
               title={item.username}
@@ -194,7 +204,7 @@ class Home extends Component {
         />
       );
     } else {
-      return <NoData title={'No groups Available!'} />;
+      return <NoData title={translate('pages.xchat.noFriendFound')} />;
     }
   }
 

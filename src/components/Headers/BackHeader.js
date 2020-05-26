@@ -8,7 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import {Icons, Colors} from '../constants';
+import {Icons, Colors} from '../../constants';
 
 export default class BackHeader extends Component {
   constructor(props) {

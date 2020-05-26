@@ -6,9 +6,23 @@ import io from 'socket.io-client';
 export const staging = true;
 
 //Staging Socket URL
-const socketStaging = io('wss://touku.angelium.net/ws/v1');
+const socketStaging = io.connect('wss://touku.angelium.net/ws/v1', {
+  reconnection: false,
+  reconnectionDelay: 500,
+  jsonp: false,
+  reconnectionAttempts: Infinity,
+  transports: ['websocket'],
+  forceNew: true,
+});
 //Live Socket URL
-const socketLive = io('wss://api-touku.angelium.net/ws/v1');
+const socketLive = io.connect('wss://api-touku.angelium.net/ws/v1', {
+  reconnection: false,
+  reconnectionDelay: 500,
+  jsonp: false,
+  reconnectionAttempts: Infinity,
+  transports: ['websocket'],
+  forceNew: true,
+});
 
 export const socket = staging ? socketStaging : socketLive;
 
