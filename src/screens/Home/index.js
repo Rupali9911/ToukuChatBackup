@@ -49,32 +49,6 @@ class Home extends Component {
       isChannelCollapsed: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
-
-      friends: [
-        {
-          id: 1,
-          name: 'John Doe',
-          detail: 'Hey',
-          date: '21/05',
-          is_online: false,
-        },
-
-        {
-          id: 2,
-          name: 'Harry',
-          detail: 'Good morning',
-          date: '21/05',
-          is_online: true,
-        },
-
-        {
-          id: 3,
-          name: 'David',
-          detail: 'ok',
-          date: '21/05',
-          is_online: true,
-        },
-      ],
     };
   }
 
@@ -104,12 +78,12 @@ class Home extends Component {
     // socket.emit(
     //   '/bulk-socket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDE1MDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.J1QxUKekSeiqq8UEppSkEfRXEK-YiiuwL9gRY_nsjY0',
     // );
-    // socket.on(
-    //   '/single-socket/9795?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDE1MDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.J1QxUKekSeiqq8UEppSkEfRXEK-YiiuwL9gRY_nsjY0',
-    //   function (data) {
-    //     alert(data);
-    //   },
-    // );
+    socket.on(
+      '/bulk-socket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MDIzNTg4OSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.AB7kOcjtOYiOlD08zkMie6-0RUfVl3Ac3kvcxJC4OB8',
+      function (data) {
+        alert(data);
+      },
+    );
   }
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -120,6 +94,24 @@ class Home extends Component {
   onUserProfilePress() {
     ProfileModal.show();
   }
+
+  onOpenChannelChats = (item) => {
+    this.props.navigation.navigate('ChannelChats', {
+      data: item,
+    });
+  };
+
+  onOpenGroupChats = (item) => {
+    this.props.navigation.navigate('GroupChats', {
+      data: item,
+    });
+  };
+
+  onOpenFriendChats = (item) => {
+    this.props.navigation.navigate('FriendChats', {
+      data: item,
+    });
+  };
 
   renderUserChannels() {
     const {userChannels, channelLoading} = this.props;
@@ -135,6 +127,7 @@ class Home extends Component {
               description={item.description}
               date={item.created}
               image={item.channel_picture}
+              onPress={() => this.onOpenChannelChats(item)}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -162,6 +155,7 @@ class Home extends Component {
               description={item.last_msg.text}
               date={item.timestamp}
               image={item.group_picture}
+              onPress={() => this.onOpenGroupChats(item)}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -190,6 +184,7 @@ class Home extends Component {
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}
               isOnline={item.is_online}
+              onPress={() => this.onOpenFriendChats(item)}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}

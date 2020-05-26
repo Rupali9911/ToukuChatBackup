@@ -25,21 +25,21 @@ export default class ChannelListItem extends Component {
         onPress={onPress}
         style={styles.container}>
         <View style={styles.firstView}>
-          {image != null ? (
+          {/* {image != null ? (
             <Image source={{uri: image}} style={styles.squareImage} />
-          ) : (
-            <LinearGradient
-              start={{x: 0.1, y: 0.7}}
-              end={{x: 0.5, y: 0.2}}
-              locations={[0.1, 0.6, 1]}
-              colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-              style={styles.squareImage}>
-              <Text style={globalStyles.normalRegularText}>
-                {title.charAt(0).toUpperCase()}
-                {secondUpperCase}
-              </Text>
-            </LinearGradient>
-          )}
+          ) : ( */}
+          <LinearGradient
+            start={{x: 0.1, y: 0.7}}
+            end={{x: 0.5, y: 0.2}}
+            locations={[0.1, 0.6, 1]}
+            colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+            style={styles.squareImage}>
+            <Text style={globalStyles.normalRegularText}>
+              {title.charAt(0).toUpperCase()}
+              {secondUpperCase}
+            </Text>
+          </LinearGradient>
+          {/* )} */}
           <View style={styles.secondView}>
             <View style={{flex: 1, alignItems: 'flex-start'}}>
               <Text
@@ -63,7 +63,7 @@ export default class ChannelListItem extends Component {
                   globalStyles.smallLightText,
                   {color: Colors.gray_dark},
                 ]}>
-                {moment(date).format('DD/MM')}
+                {moment(date).format('MM/DD')}
               </Text>
             </View>
           </View>

@@ -50,7 +50,7 @@ export default class FriendListItem extends Component {
                   globalStyles.smallLightText,
                   {color: Colors.gray_dark},
                 ]}>
-                {moment(date).format('DD/MM')}
+                {moment(date).format('MM/DD')}
               </Text>
             </View>
           </View>

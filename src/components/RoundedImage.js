@@ -19,6 +19,7 @@ export default class RoundedImage extends Component {
       isRounded,
       isBadge,
       isOnline,
+      resizeMode,
     } = this.props;
     return (
       <TouchableOpacity
@@ -33,6 +34,7 @@ export default class RoundedImage extends Component {
             height: size,
             borderRadius: isRounded ? size / 2 : 0,
             tintColor: color,
+            resizeMode: resizeMode,
           }}
         />
         {isBadge ? (
@@ -72,6 +74,7 @@ RoundedImage.propTypes = {
   isOnline: PropTypes.bool,
   onClick: PropTypes.func,
   color: PropTypes.any,
+  resizeMode: PropTypes.string,
 };
 
 RoundedImage.defaultProps = {
@@ -83,4 +86,5 @@ RoundedImage.defaultProps = {
   isOnline: false,
   onClick: null,
   color: null,
+  resizeMode: 'cover',
 };
