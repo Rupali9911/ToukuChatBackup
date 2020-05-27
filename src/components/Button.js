@@ -75,9 +75,12 @@ export default class Button extends Component {
   }
 
   render() {
-    const {title, onPress, loading, isRounded, height} = this.props;
+    const {title, onPress, loading, isRounded, height, disabled} = this.props;
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
+      <TouchableOpacity
+        disabled={disabled}
+        activeOpacity={0.8}
+        onPress={onPress}>
         <LinearGradient
           start={{x: 0.1, y: 0.7}}
           end={{x: 0.5, y: 0.8}}
@@ -89,6 +92,7 @@ export default class Button extends Component {
               height: height,
               borderRadius: isRounded ? 45 / 2 : 4,
               borderColor: this.getBorderColor(),
+              opacity: disabled ? 0.5 : 1,
             },
           ]}>
           {loading ? (

@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -40,9 +40,9 @@ export const Icons = {
   icon_edit_pen: require('../../assets/icons/edit_icon.png'),
   icon_search: require('../../assets/icons/search.png'),
   icon_dots: require('../../assets/icons/dots.png'),
-  icon_gallery: require('../../assets/icons/gallery.png'),
   icon_create_group_chat: require('../../assets/icons/CreateGroupChat.png'),
   icon_create_new_channel: require('../../assets/icons/CreateNewChannel.png'),
+  icon_upload: require('../../assets/icons/upload.png'),
 };
 
 export const Images = {
@@ -50,6 +50,7 @@ export const Images = {
   image_default_profile: require('../../assets/images/default_profile.png'),
   image_home_bg: require('../../assets/images/touku_home_bg.png'),
   image_loading: require('../../assets/images/loading.gif'),
+  image_gallery: require('../../assets/images/gallery.png'),
 };
 
 export const Colors = {

@@ -2,6 +2,9 @@ import {client} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
+export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
+export const GET_UPLOAD_AVATAR_SUCCESS = 'GET_UPLOAD_AVATAR_SUCCESS';
+export const GET_UPLOAD_AVATAR_FAIL = 'GET_UPLOAD_AVATAR_FAIL';
 
 const initialState = {
   loading: false,
@@ -17,6 +20,22 @@ export default function (state = initialState, action) {
         userData: action.payload.data,
       };
 
+    case GET_UPLOAD_AVATAR_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case GET_UPLOAD_AVATAR_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case GET_UPLOAD_AVATAR_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
     default:
       return state;
   }
@@ -29,6 +48,18 @@ const setUserData = (data) => ({
   payload: {
     data: data,
   },
+});
+
+const getUploadAvatarRequest = () => ({
+  type: GET_UPLOAD_AVATAR_REQUEST,
+});
+
+const getUploadAvatarSuccess = () => ({
+  type: GET_UPLOAD_AVATAR_SUCCESS,
+});
+
+const getUploadAvatarFailure = () => ({
+  type: GET_UPLOAD_AVATAR_FAIL,
 });
 
 export const facebookRegister = (socialLoginData) => (dispatch) =>
@@ -107,6 +138,21 @@ export const getUserProfile = () => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const uploadAvatar = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getUploadAvatarRequest());
+    client
+      .post(`/avatar-upload/`, data)
+      .then((res) => {
+        dispatch(getUploadAvatarSuccess());
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getUploadAvatarFailure());
         reject(err);
       });
   });
