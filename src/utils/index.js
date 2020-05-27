@@ -1,5 +1,5 @@
 import {Dimensions, Platform} from 'react-native';
-import {Images} from '../constants';
+import {Images, Icons} from '../constants';
 
 export function isPortrait() {
   const dim = Dimensions.get('screen');
@@ -39,7 +39,7 @@ export function getAvatar(source) {
 
 export function getImage(source) {
   if (source === null || typeof source === null || source === undefined) {
-    return Images.image_touku_bg;
+    return Icons.icon_gallery;
   } else {
     return {uri: source};
   }

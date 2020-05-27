@@ -40,6 +40,7 @@ export const Icons = {
   icon_edit_pen: require('../../assets/icons/edit_icon.png'),
   icon_search: require('../../assets/icons/search.png'),
   icon_dots: require('../../assets/icons/dots.png'),
+  icon_gallery: require('../../assets/icons/gallery.png'),
 };
 
 export const Images = {
