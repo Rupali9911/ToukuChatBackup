@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   TextInput,
@@ -7,14 +7,21 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import {Colors, Icons, Fonts} from '../../constants';
-import {globalStyles} from '../../styles';
-
+import { Colors, Icons, Fonts } from '../../constants';
+import { globalStyles } from '../../styles';
+import { Menu } from 'react-native-paper';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      visible: false,
+    };
   }
+
+  _openMenu = () => this.setState({ visible: true });
+
+  _closeMenu = () => this.setState({ visible: false });
 
   componentDidMount() {
     if (this.props.onRef != null) {
@@ -41,6 +48,7 @@ export default class SearchInput extends Component {
       isIconRight,
       onIconRightClick,
       onSubmitEditing,
+      navigation,
     } = this.props;
     return (
       <View style={styles.container}>
@@ -62,12 +70,42 @@ export default class SearchInput extends Component {
           />
         </View>
         {!isIconRight ? (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.iconRightContainer}
-            onPress={onIconRightClick}>
-            <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
-          </TouchableOpacity>
+          // <TouchableOpacity
+          //   activeOpacity={0.8}
+          //   style={styles.iconRightContainer}
+          //   onPress={onIconRightClick}>
+          //   <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
+          <Menu
+            visible={this.state.visible}
+            onDismiss={this._closeMenu}
+            anchor={
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.iconRightContainer}
+                onPress={this._openMenu}
+              >
+                <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
+              </TouchableOpacity>
+            }
+          >
+            <Menu.Item
+              icon={Icons.icon_create_group_chat}
+              onPress={() => {
+                navigation.navigate('CreateGroupChat');
+                this._closeMenu();
+              }}
+              title={translate('pages.xchat.createNewGroup')}
+            />
+            <Menu.Item
+              icon={Icons.icon_create_new_channel}
+              onPress={() => {
+                navigation.navigate('CreateChannel');
+                this._closeMenu();
+              }}
+              title={translate('pages.xchat.createChannel')}
+              // title="Create New Channel"
+            />
+          </Menu>
         ) : null}
       </View>
     );

@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -41,6 +41,8 @@ export const Icons = {
   icon_search: require('../../assets/icons/search.png'),
   icon_dots: require('../../assets/icons/dots.png'),
   icon_gallery: require('../../assets/icons/gallery.png'),
+  icon_create_group_chat: require('../../assets/icons/CreateGroupChat.png'),
+  icon_create_new_channel: require('../../assets/icons/CreateNewChannel.png'),
 };
 
 export const Images = {

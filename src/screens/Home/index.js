@@ -240,6 +240,7 @@ class Home extends Component {
           <SearchInput
             onChangeText={this.onSearch.bind(this)}
             onIconRightClick={this.showDropdown}
+            navigation={this.props.navigation}
           />
           <View style={globalStyles.container}>
             <TouchableOpacity

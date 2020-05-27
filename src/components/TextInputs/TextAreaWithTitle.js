@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
-import {View, TextInput, StyleSheet, Text} from 'react-native';
+import React, { Component } from 'react';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { Fonts, Colors } from '../../constants';
 
 export default class TextAreaWithTitle extends Component {
   constructor(props) {
@@ -14,24 +15,46 @@ export default class TextAreaWithTitle extends Component {
   }
 
   render() {
-    const {onChangeText, title, value, rightTitle, maxLength} = this.props;
+    const {
+      onChangeText,
+      title,
+      value,
+      rightTitle,
+      maxLength,
+      extraHeight,
+      titleFontColor,
+      titleFontSize,
+      isBorder,
+    } = this.props;
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
             style={{
               flex: rightTitle ? 0.5 : 1,
-            }}>
-            <Text>{title}</Text>
+            }}
+          >
+            <Text
+              style={[
+                titleFontColor && { color: titleFontColor },
+                titleFontSize && { fontSize: titleFontSize },
+              ]}
+            >
+              {title}
+            </Text>
           </View>
           {rightTitle && (
-            <View style={{flex: 0.5, alignItems: 'flex-end'}}>
-              <Text>{rightTitle}</Text>
+            <View style={{ flex: 0.5, alignItems: 'flex-end' }}>
+              <Text style={styles.rightFont}>{rightTitle}</Text>
             </View>
           )}
         </View>
         <TextInput
-          style={styles.textBox}
+          style={[
+            styles.textBox,
+            extraHeight && { height: extraHeight },
+            isBorder && { borderWidth: 1, borderColor: Colors.orange },
+          ]}
           multiline={true}
           numberOfLines={10}
           onChangeText={onChangeText}
@@ -57,5 +80,8 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
     paddingHorizontal: 10,
+  },
+  rightFont: {
+    fontFamily: Fonts.extralight,
   },
 });

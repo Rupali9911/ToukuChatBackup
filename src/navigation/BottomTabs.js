@@ -6,6 +6,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen from '../screens/Home';
 import ChatScreen from '../screens/Chat';
 import CreateGroupChatScreen from '../screens/CreateGroupChat';
+import CreateChannelScreen from '../screens/CreateChannel';
 import { Image } from 'react-native';
 import { Icons, Colors, Fonts } from '../constants';
 import { globalStyles } from '../styles';
@@ -15,6 +16,7 @@ import MoreScreen from '../screens/More';
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
   CreateGroupChat: CreateGroupChatScreen,
+  CreateChannel: CreateChannelScreen,
 });
 
 HomeTab.navigationOptions = ({ navigation }) => {
