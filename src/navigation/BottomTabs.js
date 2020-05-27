@@ -1,19 +1,32 @@
 import React from 'react';
-import {createAppContainer} from 'react-navigation';
-import {createBottomTabNavigator} from 'react-navigation-tabs';
-import {createStackNavigator} from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import HomeScreen from '../screens/Home';
 import ChatScreen from '../screens/Chat';
-import {Image} from 'react-native';
-import {Icons, Colors, Fonts} from '../constants';
-import {globalStyles} from '../styles';
-import {isIphoneX} from '../utils';
+import CreateGroupChatScreen from '../screens/CreateGroupChat';
+import { Image } from 'react-native';
+import { Icons, Colors, Fonts } from '../constants';
+import { globalStyles } from '../styles';
+import { isIphoneX } from '../utils';
 import MoreScreen from '../screens/More';
 
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
+  CreateGroupChat: CreateGroupChatScreen,
 });
+
+HomeTab.navigationOptions = ({ navigation }) => {
+  let tabBarVisible = true;
+  if (navigation.state.index > 0) {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarVisible,
+  };
+};
 
 const ChatTab = createStackNavigator({
   ChatTab: ChatScreen,
@@ -39,12 +52,12 @@ const Tabs = createBottomTabNavigator(
       },
       activeTintColor: Colors.indigo,
       inactiveTintColor: Colors.white,
-      safeAreaInset: {right: 'never', left: 'never', bottom: 'never'},
+      safeAreaInset: { right: 'never', left: 'never', bottom: 'never' },
       // labelStyle: {marginVertical: 5},
     },
-    defaultNavigationOptions: ({navigation}) => ({
-      tabBarIcon: ({focused, horizontal, tintColor}) => {
-        const {routeName} = navigation.state;
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
         if (routeName === 'Home') {
           return (
             <Image
@@ -69,7 +82,7 @@ const Tabs = createBottomTabNavigator(
         }
       },
     }),
-  },
+  }
 );
 
 export default createAppContainer(Tabs);
