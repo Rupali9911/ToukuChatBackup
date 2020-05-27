@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -18,6 +19,7 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
 import {getAvatar} from '../../utils';
+import UploadUserImageModal from '../Modals/UploadUserImageModal';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -26,6 +28,7 @@ class UserProfile extends Component {
       isChangePassModalVisible: false,
       isChangeEmailModalVisible: false,
       isChangeNameModalVisible: false,
+      isUploadUserImageModalVisible: false,
     };
   }
 
@@ -41,12 +44,17 @@ class UserProfile extends Component {
     this.setState({isChangeNameModalVisible: true});
   }
 
+  onUserImageCameraPress() {
+    this.setState({isUploadUserImageModalVisible: true});
+  }
+
   render() {
     const {onRequestClose, userData} = this.props;
     const {
       isChangePassModalVisible,
       isChangeEmailModalVisible,
       isChangeNameModalVisible,
+      isUploadUserImageModalVisible,
     } = this.state;
     return (
       <View style={styles.Wrapper}>
@@ -58,31 +66,32 @@ class UserProfile extends Component {
             end={{x: 0.8, y: 0.3}}
             locations={[0.3, 0.5, 0.8, 1, 1]}
             colors={['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150']}
-            // colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-            style={styles.firstView}>
-            <View style={styles.firstBottomView}>
-              <View
-                style={[
-                  globalStyles.iconStyle,
-                  {
-                    backgroundColor: Colors.white,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    borderWidth: 1,
-                  },
-                ]}>
-                <ClickableImage
-                  source={Icons.icon_camera}
-                  size={14}
-                  onClick={() => {}}
-                />
+            style={{height: 150}}>
+            <ImageBackground style={styles.firstView}>
+              <View style={styles.firstBottomView}>
+                <View
+                  style={[
+                    globalStyles.iconStyle,
+                    {
+                      backgroundColor: Colors.white,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 12,
+                      borderWidth: 1,
+                    },
+                  ]}>
+                  <ClickableImage
+                    source={Icons.icon_camera}
+                    size={14}
+                    onClick={() => {}}
+                  />
+                </View>
               </View>
-            </View>
 
-            <TouchableOpacity onPress={onRequestClose}>
-              <Image source={Icons.icon_close} style={styles.iconClose} />
-            </TouchableOpacity>
+              <TouchableOpacity onPress={onRequestClose}>
+                <Image source={Icons.icon_close} style={styles.iconClose} />
+              </TouchableOpacity>
+            </ImageBackground>
           </LinearGradient>
 
           <View style={{alignSelf: 'center', marginTop: -40}}>
@@ -106,7 +115,7 @@ class UserProfile extends Component {
                 <ClickableImage
                   source={Icons.icon_camera}
                   size={14}
-                  onClick={() => {}}
+                  onClick={() => this.onUserImageCameraPress()}
                 />
               </View>
             </View>
@@ -178,6 +187,13 @@ class UserProfile extends Component {
             this.setState({isChangeNameModalVisible: false})
           }
         />
+
+        <UploadUserImageModal
+          visible={isUploadUserImageModalVisible}
+          onRequestClose={() =>
+            this.setState({isUploadUserImageModalVisible: false})
+          }
+        />
       </View>
     );
   }
@@ -244,7 +260,6 @@ const styles = StyleSheet.create({
   },
   firstView: {
     height: 150,
-    borderBottomWidth: 1,
     alignItems: 'flex-end',
     padding: 10,
   },
