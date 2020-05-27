@@ -1,5 +1,5 @@
 import {Dimensions, Platform} from 'react-native';
-import {Images} from '../constants';
+import {Images, Icons} from '../constants';
 
 export function isPortrait() {
   const dim = Dimensions.get('screen');
@@ -30,8 +30,16 @@ export function wait(timeout) {
 }
 
 export function getAvatar(source) {
-  if (source === null || typeof source === null) {
+  if (source === null || typeof source === null || source === undefined) {
     return Images.image_default_profile;
+  } else {
+    return {uri: source};
+  }
+}
+
+export function getImage(source) {
+  if (source === null || typeof source === null || source === undefined) {
+    return Icons.icon_gallery;
   } else {
     return {uri: source};
   }

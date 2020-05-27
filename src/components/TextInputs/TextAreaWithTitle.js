@@ -1,15 +1,5 @@
-import React, { Component } from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
-import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
+import React, {Component} from 'react';
+import {View, TextInput, StyleSheet, Text} from 'react-native';
 
 export default class TextAreaWithTitle extends Component {
   constructor(props) {
@@ -24,19 +14,18 @@ export default class TextAreaWithTitle extends Component {
   }
 
   render() {
-    const { onChangeText, title, value, rightTitle } = this.props;
+    const {onChangeText, title, value, rightTitle, maxLength} = this.props;
     return (
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           <View
             style={{
               flex: rightTitle ? 0.5 : 1,
-            }}
-          >
+            }}>
             <Text>{title}</Text>
           </View>
           {rightTitle && (
-            <View style={{ flex: 0.5, alignItems: 'flex-end' }}>
+            <View style={{flex: 0.5, alignItems: 'flex-end'}}>
               <Text>{rightTitle}</Text>
             </View>
           )}
@@ -47,6 +36,7 @@ export default class TextAreaWithTitle extends Component {
           numberOfLines={10}
           onChangeText={onChangeText}
           value={value}
+          maxLength={maxLength}
         />
       </View>
     );
@@ -66,5 +56,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 100,
     textAlignVertical: 'top',
+    paddingHorizontal: 10,
   },
 });

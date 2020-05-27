@@ -49,7 +49,7 @@ const getUserGroupsFailure = () => ({
   type: GET_USER_GROUP_FAIL,
 });
 
-//Login User
+//Get User Groups
 export const getUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserGroupsRequest());
@@ -63,6 +63,33 @@ export const getUserGroups = () => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getUserGroupsFailure());
+        reject(err);
+      });
+  });
+
+export const createNewGroup = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    // dispatch(getCreateGroupRequest());
+    client
+      .post(`/xchat/create-group/`, data)
+      .then((res) => {
+        // dispatch(getCreateGroupSuccess(res));
+        resolve(res);
+      })
+      .catch((err) => {
+        // dispatch(getCreateGroupFailure());
+        reject(err);
+      });
+  });
+
+export const deleteGroup = (groupId) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .delete(`/xchat/delete-group/` + groupId + '/')
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
         reject(err);
       });
   });
