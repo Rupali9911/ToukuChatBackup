@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
+import {Colors, Icons, Fonts} from '../../constants';
+import {globalStyles} from '../../styles';
 
 export default class InputWithTitle extends Component {
   constructor(props) {
@@ -24,7 +24,7 @@ export default class InputWithTitle extends Component {
   }
 
   render() {
-    const { onChangeText, title, value } = this.props;
+    const {onChangeText, title, value} = this.props;
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{title}</Text>
@@ -50,5 +50,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: Colors.gray,
     marginTop: 10,
+    paddingHorizontal: 10,
   },
 });

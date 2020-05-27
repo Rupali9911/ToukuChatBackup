@@ -1,11 +1,12 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const createGroupStyles = StyleSheet.create({
   mainContainer: {
     // flex: 1,
     paddingHorizontal: 15,
+    paddingBottom: 50,
   },
   imageContainer: {
     height: height * 0.23,
@@ -78,5 +79,4 @@ export const createGroupStyles = StyleSheet.create({
   frindListContainer: {
     marginVertical: 20,
   },
-  buttonContainer: {},
 });

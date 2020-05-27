@@ -24,6 +24,8 @@ export default class Button extends Component {
         return [Colors.gray, Colors.gray, Colors.gray];
       case 'transparent':
         return ['rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)'];
+      case 'translucent':
+        return ['transparent', 'transparent', 'transparent'];
       default:
         return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
     }
@@ -37,6 +39,8 @@ export default class Button extends Component {
         return 'transparent';
       case 'transparent':
         return Colors.primary;
+      case 'translucent':
+        return Colors.gradient_3;
       default:
         return 'transparent';
     }
@@ -47,6 +51,8 @@ export default class Button extends Component {
       case 'primary':
         return Colors.white;
       case 'transparent':
+        return Colors.primary;
+      case 'translucent':
         return Colors.primary;
       default:
         return Colors.white;
@@ -61,13 +67,15 @@ export default class Button extends Component {
         return Colors.black;
       case 'transparent':
         return Colors.white;
+      case 'translucent':
+        return Colors.gradient_2;
       default:
         return Colors.white;
     }
   }
 
   render() {
-    const {title, onPress, loading, isRounded} = this.props;
+    const {title, onPress, loading, isRounded, height} = this.props;
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
         <LinearGradient
@@ -78,6 +86,7 @@ export default class Button extends Component {
           style={[
             styles.linearGradient,
             {
+              height: height,
               borderRadius: isRounded ? 45 / 2 : 4,
               borderColor: this.getBorderColor(),
             },
@@ -104,7 +113,6 @@ export default class Button extends Component {
 
 const styles = StyleSheet.create({
   linearGradient: {
-    height: 45,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -118,12 +126,13 @@ Button.propTypes = {
   loading: PropTypes.bool,
   isRounded: PropTypes.bool,
 
-  type: PropTypes.oneOf(['primary', 'secondary', 'transparent']),
+  type: PropTypes.oneOf(['primary', 'secondary', 'transparent', 'translucent']),
 
   /**
    * StyleSheet props
    */
   borderColor: PropTypes.string,
+  height: PropTypes.any,
 
   /**
    * Callbacks
@@ -132,6 +141,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
+  height: 45,
   type: 'primary',
   title: 'Submit',
   disabled: false,
