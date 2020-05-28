@@ -7,18 +7,21 @@ import {
   Text,
   TextInput,
   FlatList,
-  // Switch,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Switch } from 'react-native-switch';
-import { createFilter } from 'react-native-search-filter';
+import { Menu, Divider } from 'react-native-paper';
 
 import { createChannelStyles } from './styles';
 import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
+import {
+  ChannelCategoryModal,
+  BackgroundImgModal,
+} from '../../components/Modals';
 import GroupFriend from '../../components/GroupFriend';
 import { Images, Icons, Colors, Fonts } from '../../constants';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
@@ -28,7 +31,6 @@ import { getUserGroups } from '../../redux/reducers/groupReducer';
 import { getUserFriends } from '../../redux/reducers/friendReducer';
 import Button from '../../components/Button';
 import { ListLoader } from '../../components/Loaders';
-import NoData from '../../components/NoData';
 import { getImage } from '../../utils';
 
 class CreateChannel extends Component {
@@ -41,9 +43,86 @@ class CreateChannel extends Component {
       channelName: '',
       note: '',
       isVIP: false,
-      filePath: {}, //For Image Picker
+      filePath: {},
+      showCategoryModal: false,
+      updateBackgroundMenu: false,
+      showBackgroundImgModal: false,
+      channelCategory: [
+        {
+          id: 1,
+          name: 'Professional',
+          isSelected: false,
+        },
+        {
+          id: 2,
+          name: 'Movies',
+          isSelected: false,
+        },
+        {
+          id: 3,
+          name: 'Music',
+          isSelected: false,
+        },
+        {
+          id: 4,
+          name: 'Sports',
+          isSelected: true,
+        },
+        {
+          id: 5,
+          name: 'Television',
+          isSelected: false,
+        },
+        {
+          id: 6,
+          name: 'Website',
+          isSelected: false,
+        },
+        {
+          id: 7,
+          name: 'Website',
+          isSelected: false,
+        },
+        {
+          id: 8,
+          name: 'Website',
+          isSelected: false,
+        },
+        {
+          id: 9,
+          name: 'Website',
+          isSelected: false,
+        },
+        {
+          id: 10,
+          name: 'Website',
+          isSelected: false,
+        },
+      ],
+      bgImageList: [
+        { id: 1, url: Images.image_touku_bg, isSelected: true },
+        { id: 2, url: Images.image_touku_bg, isSelected: false },
+        { id: 3, url: Images.image_touku_bg, isSelected: false },
+        { id: 4, url: Images.image_touku_bg, isSelected: false },
+        { id: 5, url: Images.image_touku_bg, isSelected: false },
+      ],
     };
   }
+
+  toggleModal = () => {
+    this.setState({ showCategoryModal: !this.state.showCategoryModal });
+  };
+
+  toggleBackgroundImgModal = () => {
+    this.setState({
+      showBackgroundImgModal: !this.state.showBackgroundImgModal,
+    });
+    this._closeMenu();
+  };
+
+  _openMenu = () => this.setState({ updateBackgroundMenu: true });
+
+  _closeMenu = () => this.setState({ updateBackgroundMenu: false });
 
   static navigationOptions = () => {
     return {
@@ -68,76 +147,58 @@ class CreateChannel extends Component {
   };
 
   onAboutPress = () => {
-    console.log(
-      'CreateChannel -> onAboutPress -> onAboutPress',
-      this.state.isManage
-    );
     this.setState({
       isManage: false,
     });
   };
   onManagePress = () => {
-    console.log(
-      'CreateChannel -> onManagePress -> onManagePress',
-      this.state.isManage
-    );
     this.setState({
       isManage: true,
     });
   };
 
   renderUserFriends() {
-    const { userFriends, friendLoading } = this.props;
+    const { friendLoading } = this.props;
     let friends = [
       {
         id: 1,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 2,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 3,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 4,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 5,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 6,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 7,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 8,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 9,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
       {
         id: 10,
         username: 'Jhon Doe',
-        // profile_picture: Images.image_default_profile,
       },
     ];
     return (
@@ -156,9 +217,14 @@ class CreateChannel extends Component {
     );
   }
 
+  selectCategory = (id) => {
+    console.log('selectCategory -> id', id);
+    this.setState({ showCategoryModal: false });
+  };
+
   render() {
     const { userData, userChannels, userGroups, userFriends } = this.props;
-    const { about, channelName, isManage, isVIP } = this.state;
+    const { about, isManage, isVIP, updateBackgroundMenu } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -173,17 +239,45 @@ class CreateChannel extends Component {
             contentContainerStyle={createChannelStyles.mainContainer}
             showsVerticalScrollIndicator={false}
           >
-            <View style={createChannelStyles.createContainer}>
+            <View style={createChannelStyles.channelImageContainer}>
               <ImageBackground
-                style={{ flex: 1, justifyContent: 'flex-end' }}
+                style={createChannelStyles.channelCoverContainer}
                 source={Images.image_touku_bg}
               >
-                <View
-                  style={{
-                    flex: 0.6,
-                    flexDirection: 'row',
-                  }}
-                >
+                <View style={createChannelStyles.updateBackgroundContainer}>
+                  <Menu
+                    visible={updateBackgroundMenu}
+                    onDismiss={this._closeMenu}
+                    anchor={
+                      <TouchableOpacity
+                        style={createChannelStyles.updateBackground}
+                        onPress={this._openMenu}
+                      >
+                        <Image
+                          source={Icons.icon_edit_pen}
+                          style={createChannelStyles.updateBackgroundIcon}
+                        />
+                      </TouchableOpacity>
+                    }
+                  >
+                    <Divider />
+                    <Menu.Item
+                      icon={Icons.icon_camera}
+                      onPress={this.toggleBackgroundImgModal}
+                      title={translate('pages.xchat.selectDefault')}
+                    />
+                    <Divider />
+                    <Menu.Item
+                      icon="desktop-mac"
+                      onPress={() => {
+                        this._closeMenu();
+                      }}
+                      title={translate('pages.xchat.yourComputer')}
+                    />
+                    <Divider />
+                  </Menu>
+                </View>
+                <View style={createChannelStyles.channelInfoContainer}>
                   <View style={createChannelStyles.imageContainer}>
                     <View style={createChannelStyles.imageView}>
                       <Image
@@ -204,44 +298,27 @@ class CreateChannel extends Component {
                   </View>
                   <View style={createChannelStyles.detailView}>
                     <TextInput
-                      style={{
-                        height: 60,
-                        width: '95%',
-                        fontSize: 25,
-                        marginBottom: '5%',
-                        color: Colors.white,
-                      }}
+                      style={createChannelStyles.channelNameInput}
                       placeholder={translate('pages.xchat.channelName')}
                       placeholderTextColor={Colors.white}
                     />
                     <TouchableOpacity
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                      style={createChannelStyles.changeChannelContainer}
+                      onPress={this.toggleModal}
                     >
                       <Text
-                        style={{
-                          fontSize: 20,
-                          maxWidth: '80%',
-                          marginRight: 5,
-                          color: Colors.white,
-                        }}
+                        style={createChannelStyles.channelNameText}
                         numberOfLines={1}
                       >
                         Channel Business
                       </Text>
                       <Image
                         source={Icons.icon_triangle_down}
-                        style={{ hight: '1%', width: '3%' }}
+                        style={createChannelStyles.channelIcon}
                       />
                     </TouchableOpacity>
                   </View>
                 </View>
-                <TouchableOpacity style={createChannelStyles.updateBackground}>
-                  <Image
-                    source={Icons.icon_edit_pen}
-                    resizeMode={'cover'}
-                    style={createChannelStyles.updateBackgroundIcon}
-                  />
-                </TouchableOpacity>
               </ImageBackground>
             </View>
             <View style={createChannelStyles.tabBar}>
@@ -252,7 +329,7 @@ class CreateChannel extends Component {
                 ]}
                 onPress={this.onAboutPress}
               >
-                <Text style={{ fontSize: 16, color: Colors.orange }}>
+                <Text style={createChannelStyles.tabBarTitle}>
                   {translate('pages.xchat.about')}
                 </Text>
               </TouchableOpacity>
@@ -263,7 +340,7 @@ class CreateChannel extends Component {
                 ]}
                 onPress={this.onManagePress}
               >
-                <Text style={{ fontSize: 16, color: Colors.orange }}>
+                <Text style={createChannelStyles.tabBarTitle}>
                   {translate('pages.xchat.manage')}
                 </Text>
               </TouchableOpacity>
@@ -305,38 +382,9 @@ class CreateChannel extends Component {
                     titleFontColor={Colors.orange}
                     titleFontSize={20}
                   />
-                  {/* Search Bar */}
-                  {/* <View style={createChannelStyles.searchContainer}>
-                <Image
-                  source={Icons.icon_search}
-                  style={createChannelStyles.iconSearch}
-                />
-                <TextInput
-                  style={[createChannelStyles.inputStyle]}
-                  placeholder="Search"
-                  onChangeText={this.onChangeText}
-                  returnKeyType={'done'}
-                  autoCorrect={false}
-                  autoCapitalize={'none'}
-                  underlineColorAndroid={'transparent'}
-                />
-              </View> */}
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                    alignItems: 'center',
-                    marginVertical: 20,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: Colors.orange,
-                      marginRight: 2,
-                      fontSize: 12,
-                    }}
-                  >
+                <View style={createChannelStyles.swithContainer}>
+                  <Text style={createChannelStyles.VIPText}>
                     {translate('pages.xchat.vip')}
                   </Text>
                   <Switch
@@ -374,101 +422,52 @@ class CreateChannel extends Component {
                       isBorder
                     />
 
-                    <View
-                      style={{
-                        justifyContent: 'flex-end',
-                        alignItems: 'flex-end',
-                        marginVertical: 10,
-                      }}
-                    >
-                      <Text style={{ fontFamily: Fonts.extralight }}>
+                    <View style={createChannelStyles.vipDetails}>
+                      <Text style={createChannelStyles.detailHeadingText}>
                         {translate('pages.xchat.vipMonth')}
                       </Text>
-                      <Text
-                        style={{
-                          fontFamily: Fonts.medium,
-                          color: Colors.orange,
-                        }}
-                      >
-                        0 TP
-                      </Text>
+                      <Text style={createChannelStyles.detailText}>0 TP</Text>
                     </View>
                   </Fragment>
                 )}
 
-                <View
-                  style={{
-                    justifyContent: 'flex-end',
-                    alignItems: 'flex-end',
-                    marginVertical: 20,
-                  }}
-                >
+                <View style={createChannelStyles.followerDetails}>
                   <Text style={{ fontFamily: Fonts.extralight }}>
                     {translate('pages.xchat.affiliateFollower')}
                   </Text>
-                  <Text
-                    style={{ fontFamily: Fonts.medium, color: Colors.orange }}
-                  >
+                  <Text style={createChannelStyles.detailText}>
                     0 {!isVIP ? 'TP' : '%'}
                   </Text>
                 </View>
               </Fragment>
             )}
-            {/* friendList */}
-            {/* <View style={createChannelStyles.frindListContainer}>
-              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled={true}>
-                <GroupFriend
-                  user={{ name: 'Jhon Doe', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(1)}
-                />
-                <GroupFriend
-                  user={{ name: 'Will Parker', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(2)}
-                />
-                <GroupFriend
-                  user={{ name: 'Patrik Shaw', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(3)}
-                />
-                <GroupFriend
-                  user={{ name: 'Jhon Doe', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(4)}
-                />
-                <GroupFriend
-                  user={{ name: 'Will Parker', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(5)}
-                />
-                <GroupFriend
-                  user={{ name: 'Patrik Shaw', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(6)}
-                />
-                <GroupFriend
-                  user={{ name: 'Jhon Doe', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(7)}
-                />
-                <GroupFriend
-                  user={{ name: 'Will Parker', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(8)}
-                />
-                <GroupFriend
-                  user={{ name: 'Patrik Shaw', avatar: userData.avatar }}
-                  onAddPress={() => this.onAdd(9)}
-                />
-              </ScrollView>
-            </View> */}
             <View style={createChannelStyles.buttonContainer}>
               <Button
                 type={'primary'}
                 title={translate('pages.xchat.create')}
-                onPress={() => this.onSignUpPress()}
+                onPress={() => {}}
               />
               <Button
                 type={'transparent'}
                 title={translate('common.cancel')}
-                onPress={() => this.onLoginPress()}
+                onPress={() => {}}
               />
             </View>
           </KeyboardAwareScrollView>
         </View>
+
+        {/* Channel Categoy Modal */}
+        <ChannelCategoryModal
+          visible={this.state.showCategoryModal}
+          category={this.state.channelCategory}
+          selectCategory={this.selectCategory}
+        />
+        {/* Select Background Modal */}
+        <BackgroundImgModal
+          visible={this.state.showBackgroundImgModal}
+          toggleBackgroundImgModal={this.toggleBackgroundImgModal}
+          backgroudImages={this.state.bgImageList}
+        />
       </ImageBackground>
     );
   }

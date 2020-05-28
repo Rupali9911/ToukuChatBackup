@@ -1,17 +1,14 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons } from '../../constants';
+import { Images, Colors, Icons, Fonts } from '../../constants';
 const { width, height } = Dimensions.get('window');
 
 export const createChannelStyles = StyleSheet.create({
   mainContainer: {
-    // flex: 1,
     paddingHorizontal: 15,
   },
-  createContainer: {
+  channelImageContainer: {
     height: height * 0.55,
     paddingVertical: 15,
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
   profileImage: {
     height: '90%',
@@ -25,9 +22,6 @@ export const createChannelStyles = StyleSheet.create({
     width: height * 0.03,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'absolute',
-    right: '2%',
-    top: '2%',
   },
   updateBackgroundIcon: {
     height: '100%',
@@ -61,14 +55,54 @@ export const createChannelStyles = StyleSheet.create({
     flex: 0.55,
     justifyContent: 'center',
   },
+  channelCoverContainer: {
+    flex: 1,
+  },
+  updateBackgroundContainer: {
+    flex: 0.4,
+    alignItems: 'flex-end',
+    paddingTop: '1%',
+    paddingRight: '1%',
+  },
+  channelInfoContainer: {
+    flex: 0.6,
+    flexDirection: 'row',
+  },
+  channelNameInput: {
+    height: 60,
+    width: '95%',
+    fontSize: 25,
+    marginBottom: '5%',
+    color: Colors.white,
+  },
+  changeChannelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  channelNameText: {
+    fontSize: 20,
+    maxWidth: '80%',
+    marginRight: 5,
+    color: Colors.white,
+  },
+  channelIcon: {
+    height: '30%',
+    width: '3%',
+  },
   tabBar: {
     flexDirection: 'row',
     marginBottom: 5,
+    borderBottomColor: Colors.gray,
+    borderBottomWidth: 0.5,
   },
   tabItem: {
     flex: 0.5,
     alignItems: 'center',
     paddingBottom: 8,
+  },
+  tabBarTitle: {
+    fontSize: 16,
+    color: Colors.orange,
   },
   tabBarBorder: {
     borderBottomWidth: 2.5,
@@ -89,29 +123,46 @@ export const createChannelStyles = StyleSheet.create({
   },
   inputStyle: {
     flex: 1,
-    // width: '100%',
     color: Colors.black,
     fontSize: 13,
-    // fontFamily: Fonts.light,
     marginStart: 10,
     alignSelf: 'center',
-  },
-  iconRight: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
   },
   iconSearch: {
     width: 18,
     height: 18,
     resizeMode: 'contain',
   },
-  iconRightContainer: {
-    marginStart: 15,
-    alignSelf: 'center',
-  },
   frindListContainer: {
     marginVertical: 20,
+  },
+  swithContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  VIPText: {
+    color: Colors.orange,
+    marginRight: 2,
+    fontSize: 12,
+  },
+  vipDetails: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginVertical: 10,
+  },
+  followerDetails: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginVertical: 20,
+  },
+  detailHeadingText: {
+    fontFamily: Fonts.extralight,
+  },
+  detailText: {
+    fontFamily: Fonts.medium,
+    color: Colors.orange,
   },
   buttonContainer: {},
 });
