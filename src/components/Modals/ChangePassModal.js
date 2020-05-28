@@ -9,6 +9,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -16,15 +17,151 @@ import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
+import {wait} from '../../utils';
+import {translate} from '../../redux/reducers/languageReducer';
+import Toast from '../Toast';
+import {changePassword, getUserProfile} from '../../redux/reducers/userReducer';
 
-export default class ChangePassModal extends Component {
+class ChangePassModal extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = this.initialState;
+    this.focusNextField = this.focusNextField.bind(this);
+    this.inputs = {};
   }
 
+  get initialState() {
+    return {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      oldPasswordErr: null,
+      newPasswordErr: null,
+      confirmPasswordErr: null,
+    };
+  }
+
+  focusNextField(id) {
+    this.inputs[id].focus();
+  }
+
+  onRequestClose = () => {
+    this.props.onRequestClose();
+    wait(800).then(() => {
+      this.setState(this.initialState);
+    });
+  };
+
+  handleOldPassword(oldPassword) {
+    this.setState({oldPassword});
+    if (oldPassword.trim() === '') {
+      this.setState({oldPasswordErr: 'messages.required'});
+    } else {
+      this.setState({oldPasswordErr: null});
+    }
+  }
+
+  handleNewPassword(newPassword) {
+    this.setState({newPassword});
+    if (newPassword.trim() === '') {
+      this.setState({newPasswordErr: 'messages.required'});
+    } else {
+      this.setState({newPasswordErr: null});
+    }
+  }
+
+  handleConfirmPassword(confirmPassword) {
+    this.setState({confirmPassword});
+    if (confirmPassword.trim() === '') {
+      this.setState({confirmPasswordErr: 'messages.required'});
+    } else {
+      this.setState({confirmPasswordErr: null});
+    }
+  }
+
+  onChangePasswordPress = () => {
+    const {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+      oldPasswordErr,
+      newPasswordErr,
+      confirmPasswordErr,
+    } = this.state;
+
+    let isValid = true;
+
+    if (oldPassword.trim() === '') {
+      isValid = false;
+      this.setState({oldPasswordErr: 'messages.required'});
+    }
+    if (newPassword.trim() === '') {
+      isValid = false;
+      this.setState({newPasswordErr: 'messages.required'});
+    }
+    if (confirmPassword.trim() === '') {
+      isValid = false;
+      this.setState({confirmPasswordErr: 'messages.required'});
+    }
+    if (confirmPassword != newPassword) {
+      isValid = false;
+      Toast.show({
+        title: translate('pages.resetPassword.changePassword'),
+        text: translate('toastr.confirmPasswordDoNotMatch'),
+        type: 'primary',
+      });
+    }
+    if (isValid) {
+      this.setState({
+        oldPasswordErr: null,
+        newPasswordErr: null,
+        confirmPasswordErr: null,
+      });
+
+      let changePassData = {
+        old_password: oldPassword,
+        password: confirmPassword,
+      };
+
+      this.props
+        .changePassword(changePassData)
+        .then((res) => {
+          this.props.onRequestClose();
+          if (res.status === true) {
+            Toast.show({
+              title: translate('pages.resetPassword.changePassword'),
+              text: translate('pages.resetPassword.toastr.passwordUpdated'),
+              type: 'positive',
+            });
+          } else {
+            Toast.show({
+              title: translate('pages.resetPassword.changePassword'),
+              text: 'Invalid current password',
+              type: 'primary',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: translate('pages.resetPassword.changePassword'),
+            text: 'Invalid current password',
+            type: 'primary',
+          });
+        });
+    }
+  };
+
   render() {
-    const {visible, onRequestClose} = this.props;
+    const {visible, loading} = this.props;
+    const {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+      oldPasswordErr,
+      newPasswordErr,
+      confirmPasswordErr,
+    } = this.state;
+
     return (
       <Modal
         isVisible={visible}
@@ -35,8 +172,8 @@ export default class ChangePassModal extends Component {
         backdropTransitionInTiming={500}
         backdropTransitionOutTiming={500}
         backdropOpacity={0.4}
-        onBackButtonPress={onRequestClose}
-        onBackdropPress={onRequestClose}
+        onBackButtonPress={this.onRequestClose.bind(this)}
+        onBackdropPress={this.onRequestClose.bind(this)}
         style={styles.modalBackground}>
         <View style={styles.Wrapper}>
           <LinearGradient
@@ -47,7 +184,7 @@ export default class ChangePassModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {'Change Password'}
+                {translate('pages.resetPassword.changePassword')}
               </Text>
             </View>
             <RoundedImage
@@ -56,20 +193,118 @@ export default class ChangePassModal extends Component {
               size={14}
               isRounded={false}
               clickable={true}
-              onClick={onRequestClose}
+              onClick={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
           <View style={{padding: 15}}>
             <View style={styles.inputContainer}>
-              <TextInput placeholder={'Old Password'} />
+              <TextInput
+                placeholder={translate('pages.setting.oldPassword')}
+                value={oldPassword}
+                onChangeText={(oldPassword) =>
+                  this.handleOldPassword(oldPassword)
+                }
+                onSubmitEditing={() => {
+                  this.focusNextField('newpassword');
+                }}
+                autoCapitalize={false}
+                secureTextEntry={true}
+                returnKeyType={'next'}
+              />
             </View>
+            {oldPasswordErr !== null ? (
+              <Text
+                style={[
+                  globalStyles.smallLightText,
+                  {
+                    color: Colors.danger,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {translate(oldPasswordErr).replace(
+                  '[missing {{field}} value]',
+                  translate('pages.setting.oldPassword'),
+                )}
+              </Text>
+            ) : null}
+
             <View style={styles.inputContainer}>
-              <TextInput placeholder={'New Password'} />
+              <TextInput
+                ref={(ref) => {
+                  this.inputs['newpassword'] = ref;
+                }}
+                placeholder={translate('pages.setting.newPassword')}
+                value={newPassword}
+                onChangeText={(newPassword) =>
+                  this.handleNewPassword(newPassword)
+                }
+                onSubmitEditing={() => {
+                  this.focusNextField('confirmpassword');
+                }}
+                autoCapitalize={false}
+                secureTextEntry={true}
+                returnKeyType={'next'}
+              />
             </View>
+            {newPasswordErr !== null ? (
+              <Text
+                style={[
+                  globalStyles.smallLightText,
+                  {
+                    color: Colors.danger,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {translate(newPasswordErr).replace(
+                  '[missing {{field}} value]',
+                  translate('pages.setting.newPassword'),
+                )}
+              </Text>
+            ) : null}
+
             <View style={styles.inputContainer}>
-              <TextInput placeholder={'Confirm Password'} />
+              <TextInput
+                ref={(ref) => {
+                  this.inputs['confirmpassword'] = ref;
+                }}
+                placeholder={translate('pages.setting.confirmPassword')}
+                value={confirmPassword}
+                onChangeText={(confirmPassword) =>
+                  this.handleConfirmPassword(confirmPassword)
+                }
+                autoCapitalize={false}
+                secureTextEntry={true}
+                returnKeyType={'done'}
+              />
             </View>
-            <Button isRounded={false} title={'Change Password'} />
+            {confirmPasswordErr !== null ? (
+              <Text
+                style={[
+                  globalStyles.smallLightText,
+                  {
+                    color: Colors.danger,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {translate(confirmPasswordErr).replace(
+                  '[missing {{field}} value]',
+                  translate('pages.setting.confirmPassword'),
+                )}
+              </Text>
+            ) : null}
+
+            <Button
+              isRounded={false}
+              title={translate('pages.resetPassword.changePassword')}
+              onPress={this.onChangePasswordPress.bind(this)}
+              loading={loading}
+            />
           </View>
         </View>
       </Modal>
@@ -100,7 +335,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   header: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
@@ -112,3 +347,17 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    userData: state.userReducer.userData,
+    loading: state.userReducer.loading,
+  };
+};
+
+const mapDispatchToProps = {
+  changePassword,
+  getUserProfile,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePassModal);

@@ -2,9 +2,18 @@ import {client} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
+
 export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
 export const GET_UPLOAD_AVATAR_SUCCESS = 'GET_UPLOAD_AVATAR_SUCCESS';
 export const GET_UPLOAD_AVATAR_FAIL = 'GET_UPLOAD_AVATAR_FAIL';
+
+export const GET_CHANGE_NAME_REQUEST = 'GET_CHANGE_NAME_REQUEST';
+export const GET_CHANGE_NAME_SUCCESS = 'GET_CHANGE_NAME_SUCCESS';
+export const GET_CHANGE_NAME_FAIL = 'GET_CHANGE_NAME_FAIL';
+
+export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
+export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
+export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
 
 const initialState = {
   loading: false,
@@ -36,6 +45,38 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case GET_CHANGE_NAME_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case GET_CHANGE_NAME_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case GET_CHANGE_NAME_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_CHANGE_PASSWORD_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case GET_CHANGE_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case GET_CHANGE_PASSWORD_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
     default:
       return state;
   }
@@ -60,6 +101,32 @@ const getUploadAvatarSuccess = () => ({
 
 const getUploadAvatarFailure = () => ({
   type: GET_UPLOAD_AVATAR_FAIL,
+});
+
+//Change Name
+const getChangeNameRequest = () => ({
+  type: GET_CHANGE_NAME_REQUEST,
+});
+
+const getChangeNameSuccess = () => ({
+  type: GET_CHANGE_NAME_SUCCESS,
+});
+
+const getChangeNameFailure = () => ({
+  type: GET_CHANGE_NAME_FAIL,
+});
+
+//Change Password
+const getChangePasswordRequest = () => ({
+  type: GET_CHANGE_PASSWORD_REQUEST,
+});
+
+const getChangePasswordSuccess = () => ({
+  type: GET_CHANGE_PASSWORD_SUCCESS,
+});
+
+const getChangePasswordFailure = () => ({
+  type: GET_CHANGE_PASSWORD_FAIL,
 });
 
 export const facebookRegister = (socialLoginData) => (dispatch) =>
@@ -153,6 +220,62 @@ export const uploadAvatar = (data) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getUploadAvatarFailure());
+        reject(err);
+      });
+  });
+
+export const changeNameDetails = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getChangeNameRequest());
+    client
+      .put(`/name_details/`, data)
+      .then((res) => {
+        dispatch(getChangeNameSuccess());
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getChangeNameFailure());
+        reject(err);
+      });
+  });
+
+export const changePassword = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getChangePasswordRequest());
+    client
+      .put(`/change-password/`, data)
+      .then((res) => {
+        if (res.status === true) {
+          dispatch(getChangePasswordSuccess());
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getChangePasswordFailure());
+        reject(err);
+      });
+  });
+
+export const changeEmailSendOtp = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/change/send-email-otp/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const changeEmail = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/change/change_email/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
         reject(err);
       });
   });

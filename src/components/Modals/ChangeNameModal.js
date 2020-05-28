@@ -9,6 +9,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -16,15 +17,92 @@ import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
+import {wait} from '../../utils';
+import {translate} from '../../redux/reducers/languageReducer';
+import {
+  changeNameDetails,
+  getUserProfile,
+} from '../../redux/reducers/userReducer';
+import Toast from '../Toast';
 
-export default class ChangeNameModal extends Component {
+class ChangeNameModal extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = this.initialState;
   }
 
+  get initialState() {
+    return {
+      fisrtName: this.props.userData.first_name,
+      lastName: this.props.userData.last_name,
+      fisrtNameErr: null,
+      lastNameErr: null,
+    };
+  }
+
+  onChangePress = () => {
+    const {fisrtName, lastName} = this.state;
+    if (fisrtName.trim() === '') {
+      this.setState({fisrtNameErr: 'messages.required'});
+    } else if (lastName.trim() === '') {
+      this.setState({lastNameErr: 'messages.required'});
+    } else {
+      let nameDetails = {
+        first_name: fisrtName,
+        last_name: lastName,
+      };
+      this.props
+        .changeNameDetails(nameDetails)
+        .then((res) => {
+          if (res.status === true) {
+            this.props.onRequestClose();
+            Toast.show({
+              title: translate('pages.setting.changeName'),
+              text: translate('pages.setting.toastr.nameUpdatedSuccessfully'),
+              type: 'positive',
+            });
+            this.props.getUserProfile();
+          }
+        })
+        .catch((err) => {
+          this.props.onRequestClose();
+          Toast.show({
+            title: translate('pages.setting.changeName'),
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
+
+  handleFirstName(fisrtName) {
+    this.setState({fisrtName});
+    if (fisrtName.trim() === '') {
+      this.setState({fisrtNameErr: 'messages.required'});
+    } else {
+      this.setState({fisrtNameErr: null});
+    }
+  }
+
+  handleLastName(lastName) {
+    this.setState({lastName});
+    if (lastName.trim() === '') {
+      this.setState({lastNameErr: 'messages.required'});
+    } else {
+      this.setState({lastNameErr: null});
+    }
+  }
+
+  onRequestClose = () => {
+    this.props.onRequestClose();
+    wait(800).then(() => {
+      this.setState(this.initialState);
+    });
+  };
+
   render() {
-    const {visible, onRequestClose} = this.props;
+    const {visible, loading} = this.props;
+    const {fisrtName, lastName, fisrtNameErr, lastNameErr} = this.state;
     return (
       <Modal
         isVisible={visible}
@@ -35,8 +113,8 @@ export default class ChangeNameModal extends Component {
         backdropTransitionInTiming={500}
         backdropTransitionOutTiming={500}
         backdropOpacity={0.4}
-        onBackButtonPress={onRequestClose}
-        onBackdropPress={onRequestClose}
+        onBackButtonPress={this.onRequestClose.bind(this)}
+        onBackdropPress={this.onRequestClose.bind(this)}
         style={styles.modalBackground}>
         <View style={styles.Wrapper}>
           <LinearGradient
@@ -47,7 +125,7 @@ export default class ChangeNameModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {'Change Name'}
+                {translate('pages.setting.changeName')}
               </Text>
             </View>
             <RoundedImage
@@ -56,17 +134,64 @@ export default class ChangeNameModal extends Component {
               size={14}
               isRounded={false}
               clickable={true}
-              onClick={onRequestClose}
+              onClick={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
           <View style={{padding: 15}}>
             <View style={styles.inputContainer}>
-              <TextInput placeholder={'First Name'} />
+              <TextInput
+                placeholder={translate('common.firstName')}
+                value={fisrtName}
+                onChangeText={(fisrtName) => this.handleFirstName(fisrtName)}
+              />
             </View>
+            {fisrtNameErr !== null ? (
+              <Text
+                style={[
+                  globalStyles.smallLightText,
+                  {
+                    color: Colors.danger,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {translate(fisrtNameErr).replace(
+                  '[missing {{field}} value]',
+                  translate('common.firstName'),
+                )}
+              </Text>
+            ) : null}
             <View style={styles.inputContainer}>
-              <TextInput placeholder={'Last Name'} />
+              <TextInput
+                placeholder={translate('common.lastName')}
+                value={lastName}
+                onChangeText={(lastName) => this.handleLastName(lastName)}
+              />
             </View>
-            <Button isRounded={false} title={'Change Name'} />
+            {lastNameErr !== null ? (
+              <Text
+                style={[
+                  globalStyles.smallLightText,
+                  {
+                    color: Colors.danger,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {translate(lastNameErr).replace(
+                  '[missing {{field}} value]',
+                  translate('common.lastName'),
+                )}
+              </Text>
+            ) : null}
+            <Button
+              isRounded={false}
+              title={translate('pages.setting.changeName')}
+              onPress={this.onChangePress.bind(this)}
+              loading={loading}
+            />
           </View>
         </View>
       </Modal>
@@ -97,7 +222,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   header: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
@@ -109,3 +234,17 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    userData: state.userReducer.userData,
+    loading: state.userReducer.loading,
+  };
+};
+
+const mapDispatchToProps = {
+  changeNameDetails,
+  getUserProfile,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChangeNameModal);

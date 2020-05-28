@@ -46,6 +46,12 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
+  normalSemiBoldText: {
+    fontSize: 17,
+    fontFamily: Fonts.semibold,
+    color: Colors.white,
+    textAlign: 'center',
+  },
 
   //App Logo Text
   logoText: {
