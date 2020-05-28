@@ -103,7 +103,7 @@ class UploadUserImageModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {'Select your file'}
+                {translate('pages.xchat.selectOrDropYouFile')}
               </Text>
             </View>
             <RoundedImage
@@ -127,7 +127,8 @@ class UploadUserImageModal extends Component {
                     globalStyles.smallRegularText,
                     {color: Colors.black},
                   ]}>
-                  {'Click Here to Upload'}
+                  {translate('pages.xchat.clickHere')}
+                  {/* {'Click Here to Upload'} */}
                   {/* {filePath.uri} */}
                 </Text>
               </TouchableOpacity>
@@ -151,7 +152,7 @@ class UploadUserImageModal extends Component {
               <Button
                 disabled={btnDisabled}
                 isRounded={false}
-                title={'Upload'}
+                title={translate('common.upload')}
                 onPress={this.onUploadImage.bind(this)}
                 loading={this.props.loading}
               />
@@ -160,7 +161,7 @@ class UploadUserImageModal extends Component {
               <Button
                 isRounded={false}
                 type={'secondary'}
-                title={'Cancel'}
+                title={translate('common.cancel')}
                 onPress={this.onRequestClose.bind(this)}
               />
             </View>

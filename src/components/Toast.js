@@ -21,7 +21,7 @@ class Toast extends Component {
     super(props);
     this.state = {
       orientation: 'PORTRAIT',
-      toast: new Animated.Value(width),
+      toast: new Animated.Value(width + width),
       type: 'primary',
     };
   }
@@ -50,7 +50,7 @@ class Toast extends Component {
     });
 
     Animated.spring(this.state.toast, {
-      toValue: width - 380,
+      toValue: width - width,
       bounciness: 5,
       useNativeDriver: true,
     }).start();
@@ -64,7 +64,7 @@ class Toast extends Component {
 
   hideToast() {
     Animated.timing(this.state.toast, {
-      toValue: width + 1000,
+      toValue: width + width,
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -161,12 +161,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '80%',
     alignSelf: 'center',
-    // backgroundColor: Colors.white,
     borderRadius: 8,
     minHeight: 90,
     shadowColor: '#ccc',
-    // borderWidth: 1,
-    // borderColor: Colors.gray,
     alignItems: 'center',
     shadowOffset: {
       width: 0,
@@ -185,7 +182,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
-    // backgroundColor: 'red',
   },
   title: {
     color: '#f1f1f1',

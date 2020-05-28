@@ -20,6 +20,7 @@ import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
 import {getAvatar} from '../../utils';
 import UploadUserImageModal from '../Modals/UploadUserImageModal';
+import {translate} from '../../redux/reducers/languageReducer';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -126,46 +127,63 @@ class UserProfile extends Component {
               flexDirection: 'row',
               alignSelf: 'center',
               alignItems: 'center',
+              marginTop: 10,
             }}>
             <Text
               style={[
-                globalStyles.smallRegularText,
-                {color: Colors.black, margin: 10},
+                globalStyles.normalSemiBoldText,
+                {color: Colors.black, marginHorizontal: 10},
               ]}>
-              {userData.username}
+              {userData.first_name + ' '}
+              {userData.last_name}
             </Text>
             <RoundedImage
               source={Icons.icon_pencil}
-              size={18}
+              size={24}
+              color={Colors.black}
               clickable={true}
               isRounded={false}
               onClick={() => this.onShowChangeNameModal()}
             />
           </View>
 
+          <View
+            style={{
+              alignSelf: 'center',
+              alignItems: 'center',
+            }}>
+            <Text
+              style={[
+                globalStyles.smallRegularText,
+                {color: Colors.black, marginBottom: 10},
+              ]}>
+              {userData.username}
+            </Text>
+          </View>
+
           <ProfileItem
-            title={'Password'}
+            title={translate('common.password')}
             value={'*********'}
             editable={true}
             onEditIconPress={() => this.onShowChangePassModal()}
           />
 
           <ProfileItem
-            title={'Email'}
+            title={translate('common.email')}
             value={userData.email}
             editable={true}
             onEditIconPress={() => this.onShowChangeEmailModal()}
           />
 
           <ProfileItem
-            title={'Country'}
+            title={translate('common.country')}
             value={userData.country}
             editable={false}
           />
 
           <ProfileItem
-            title={'Phone'}
-            value={userData.country}
+            title={translate('common.phone')}
+            value={userData.phone}
             editable={false}
           />
         </ScrollView>
