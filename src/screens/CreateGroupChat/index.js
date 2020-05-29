@@ -83,7 +83,6 @@ class CreateGroupChat extends Component {
         // console.log('ImagePicker Error: ', response.error);
       } else if (response.customButton) {
         // console.log('User tapped custom button: ', response.customButton);
-        alert(response.customButton);
       } else {
         // let source = response;
         // You can also display the image using data:

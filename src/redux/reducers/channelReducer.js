@@ -66,3 +66,18 @@ export const getUserChannels = () => (dispatch) =>
         reject(err);
       });
   });
+
+export const createNewChannel = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    // dispatch(getCreateGroupRequest());
+    client
+      .post(`/xchat/create-channel/`, data)
+      .then((res) => {
+        // dispatch(getCreateGroupSuccess(res));
+        resolve(res);
+      })
+      .catch((err) => {
+        // dispatch(getCreateGroupFailure());
+        reject(err);
+      });
+  });

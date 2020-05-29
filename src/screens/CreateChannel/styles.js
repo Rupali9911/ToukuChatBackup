@@ -1,10 +1,11 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons, Fonts } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons, Fonts} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const createChannelStyles = StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 15,
+    paddingBottom: 50,
   },
   channelImageContainer: {
     height: height * 0.55,

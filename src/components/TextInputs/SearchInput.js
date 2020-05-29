@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
-import { Menu } from 'react-native-paper';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {Colors, Icons, Fonts} from '../../constants';
+import {globalStyles} from '../../styles';
+import {Menu} from 'react-native-paper';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
@@ -19,9 +19,9 @@ export default class SearchInput extends Component {
     };
   }
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => this.setState({visible: true});
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => this.setState({visible: false});
 
   componentDidMount() {
     if (this.props.onRef != null) {
@@ -76,18 +76,17 @@ export default class SearchInput extends Component {
           //   onPress={onIconRightClick}>
           //   <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
           <Menu
+            style={{marginTop: 40}}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
             anchor={
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.iconRightContainer}
-                onPress={this._openMenu}
-              >
+                onPress={this._openMenu}>
                 <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
               </TouchableOpacity>
-            }
-          >
+            }>
             <Menu.Item
               icon={Icons.icon_create_group_chat}
               onPress={() => {

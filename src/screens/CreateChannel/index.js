@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   View,
   ImageBackground,
@@ -9,13 +9,14 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Switch } from 'react-native-switch';
-import { Menu, Divider } from 'react-native-paper';
+import {connect} from 'react-redux';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {Switch} from 'react-native-switch';
+import {Menu, Divider} from 'react-native-paper';
+import {createFilter} from 'react-native-search-filter';
 
-import { createChannelStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {createChannelStyles} from './styles';
+import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
 import {
@@ -23,15 +24,21 @@ import {
   BackgroundImgModal,
 } from '../../components/Modals';
 import GroupFriend from '../../components/GroupFriend';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { getUserProfile } from '../../redux/reducers/userReducer';
-import { getUserChannels } from '../../redux/reducers/channelReducer';
-import { getUserGroups } from '../../redux/reducers/groupReducer';
-import { getUserFriends } from '../../redux/reducers/friendReducer';
+import {Images, Icons, Colors, Fonts} from '../../constants';
 import Button from '../../components/Button';
-import { ListLoader } from '../../components/Loaders';
-import { getImage } from '../../utils';
+import {ListLoader} from '../../components/Loaders';
+import {getImage} from '../../utils';
+import NoData from '../../components/NoData';
+import Toast from '../../components/Toast';
+
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
+import {
+  getUserChannels,
+  createNewChannel,
+} from '../../redux/reducers/channelReducer';
+import {getUserGroups} from '../../redux/reducers/groupReducer';
+import {getUserFriends} from '../../redux/reducers/friendReducer';
 
 class CreateChannel extends Component {
   constructor(props) {
@@ -41,7 +48,10 @@ class CreateChannel extends Component {
       orientation: 'PORTRAIT',
       isManage: false,
       channelName: '',
-      note: '',
+      about: '',
+      about_vip: '',
+      searchText: '',
+      addedFriends: [],
       isVIP: false,
       filePath: {},
       showCategoryModal: false,
@@ -100,17 +110,17 @@ class CreateChannel extends Component {
         },
       ],
       bgImageList: [
-        { id: 1, url: Images.image_touku_bg, isSelected: true },
-        { id: 2, url: Images.image_touku_bg, isSelected: false },
-        { id: 3, url: Images.image_touku_bg, isSelected: false },
-        { id: 4, url: Images.image_touku_bg, isSelected: false },
-        { id: 5, url: Images.image_touku_bg, isSelected: false },
+        {id: 1, url: Images.image_touku_bg, isSelected: true},
+        {id: 2, url: Images.image_touku_bg, isSelected: false},
+        {id: 3, url: Images.image_touku_bg, isSelected: false},
+        {id: 4, url: Images.image_touku_bg, isSelected: false},
+        {id: 5, url: Images.image_touku_bg, isSelected: false},
       ],
     };
   }
 
   toggleModal = () => {
-    this.setState({ showCategoryModal: !this.state.showCategoryModal });
+    this.setState({showCategoryModal: !this.state.showCategoryModal});
   };
 
   toggleBackgroundImgModal = () => {
@@ -120,9 +130,9 @@ class CreateChannel extends Component {
     this._closeMenu();
   };
 
-  _openMenu = () => this.setState({ updateBackgroundMenu: true });
+  _openMenu = () => this.setState({updateBackgroundMenu: true});
 
-  _closeMenu = () => this.setState({ updateBackgroundMenu: false });
+  _closeMenu = () => this.setState({updateBackgroundMenu: false});
 
   static navigationOptions = () => {
     return {
@@ -132,18 +142,25 @@ class CreateChannel extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
   }
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
-  onAdd = (id) => {
-    console.log('CreateGroupChat -> onAdd -> id', id);
+  onAdd = (isAdded, data) => {
+    if (isAdded) {
+      this.state.addedFriends.push(data.user_id);
+    } else {
+      const index = this.state.addedFriends.indexOf(data.user_id);
+      if (index > -1) {
+        this.state.addedFriends.splice(index, 1);
+      }
+    }
   };
 
   onAboutPress = () => {
@@ -151,85 +168,152 @@ class CreateChannel extends Component {
       isManage: false,
     });
   };
+
   onManagePress = () => {
     this.setState({
       isManage: true,
     });
   };
 
+  onCreateChannel() {
+    const {channelName, about, about_vip, isVIP, addedFriends} = this.state;
+    if (channelName.trim() === '') {
+      Toast.show({
+        title: 'Touku',
+        text: translate('pages.xchat.toastr.channelNameIsRequired'),
+        type: 'primary',
+      });
+    } else if (about.trim() === '') {
+      Toast.show({
+        title: 'Touku',
+        text: 'About channel is required',
+        type: 'primary',
+      });
+    } else if (addedFriends.length === 0) {
+      Toast.show({
+        title: 'Touku',
+        text: translate('pages.xchat.toastr.channelMemberIsRequired'),
+        type: 'primary',
+      });
+    } else if (isVIP) {
+      if (about_vip.trim() === '') {
+        Toast.show({
+          title: 'Touku',
+          text: 'About VIP is required',
+          type: 'primary',
+        });
+      }
+    } else {
+      let Members = addedFriends.toString();
+      let normalChannelData = {
+        name: channelName,
+        channel_name: 'create_new_channel',
+        description: about,
+        genre: 2,
+        members: Members,
+        cover_image:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933130327_1.jpg',
+        cover_image_thumb:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933130327_1.jpg',
+        channel_picture:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933136633_1.jpg',
+        channel_picture_thumb:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933136633_1.jpg',
+        is_vip: false,
+        affiliate_follower_amount: 0,
+      };
+
+      let vipChannelData = {
+        name: channelName,
+        channel_name: 'create_new_channel',
+        description: about,
+        genre: 2,
+        members: Members,
+        cover_image:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933130327_1.jpg',
+        cover_image_thumb:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933130327_1.jpg',
+        channel_picture:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933136633_1.jpg',
+        channel_picture_thumb:
+          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933136633_1.jpg',
+        is_vip: true,
+        monthly_vip_fee: 12,
+        vip_description: about_vip,
+        affiliate_percent_vip: 1,
+        affiliate_follower_amount: 0,
+      };
+
+      this.props
+        .createNewChannel(isVIP ? vipChannelData : normalChannelData)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.toastr.channelCreatedSuccessfully'),
+              type: 'positive',
+            });
+            this.props.getUserChannels();
+            this.props.navigation.goBack();
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+          this.props.navigation.goBack();
+        });
+    }
+  }
+
   renderUserFriends() {
-    const { friendLoading } = this.props;
-    let friends = [
-      {
-        id: 1,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 2,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 3,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 4,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 5,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 6,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 7,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 8,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 9,
-        username: 'Jhon Doe',
-      },
-      {
-        id: 10,
-        username: 'Jhon Doe',
-      },
-    ];
-    return (
-      <FlatList
-        data={friends}
-        renderItem={({ item, index }) => (
-          <GroupFriend
-            user={item}
-            onAddPress={(isAdded) => this.onAdd(isAdded, item)}
-          />
-        )}
-        ListFooterComponent={() => (
-          <View>{friendLoading ? <ListLoader /> : null}</View>
-        )}
-      />
+    const {userFriends, friendLoading} = this.props;
+    const filteredFriends = userFriends.filter(
+      createFilter(this.state.searchText, ['username']),
     );
+
+    if (filteredFriends.length === 0 && friendLoading) {
+      return <ListLoader />;
+    } else if (filteredFriends.length > 0) {
+      return (
+        <FlatList
+          data={filteredFriends}
+          renderItem={({item, index}) => (
+            <GroupFriend
+              user={item}
+              onAddPress={(isAdded) => this.onAdd(isAdded, item)}
+            />
+          )}
+          ListFooterComponent={() => (
+            <View>{friendLoading ? <ListLoader /> : null}</View>
+          )}
+        />
+      );
+    } else {
+      return <NoData title={translate('pages.xchat.noFriendFound')} />;
+    }
   }
 
   selectCategory = (id) => {
     console.log('selectCategory -> id', id);
-    this.setState({ showCategoryModal: false });
+    this.setState({showCategoryModal: false});
   };
 
   render() {
-    const { userData, userChannels, userGroups, userFriends } = this.props;
-    const { about, isManage, isVIP, updateBackgroundMenu } = this.state;
+    const {
+      channelName,
+      about,
+      about_vip,
+      isManage,
+      isVIP,
+      updateBackgroundMenu,
+    } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -237,13 +321,11 @@ class CreateChannel extends Component {
           />
           <KeyboardAwareScrollView
             contentContainerStyle={createChannelStyles.mainContainer}
-            showsVerticalScrollIndicator={false}
-          >
+            showsVerticalScrollIndicator={false}>
             <View style={createChannelStyles.channelImageContainer}>
               <ImageBackground
                 style={createChannelStyles.channelCoverContainer}
-                source={Images.image_touku_bg}
-              >
+                source={Images.image_touku_bg}>
                 <View style={createChannelStyles.updateBackgroundContainer}>
                   <Menu
                     visible={updateBackgroundMenu}
@@ -251,15 +333,13 @@ class CreateChannel extends Component {
                     anchor={
                       <TouchableOpacity
                         style={createChannelStyles.updateBackground}
-                        onPress={this._openMenu}
-                      >
+                        onPress={this._openMenu}>
                         <Image
                           source={Icons.icon_edit_pen}
                           style={createChannelStyles.updateBackgroundIcon}
                         />
                       </TouchableOpacity>
-                    }
-                  >
+                    }>
                     <Divider />
                     <Menu.Item
                       icon={Icons.icon_camera}
@@ -286,8 +366,7 @@ class CreateChannel extends Component {
                         style={createChannelStyles.profileImage}
                       />
                       <TouchableOpacity
-                        style={createChannelStyles.uploadImageButton}
-                      >
+                        style={createChannelStyles.uploadImageButton}>
                         <Image
                           source={Icons.icon_edit_pen}
                           resizeMode={'cover'}
@@ -301,15 +380,17 @@ class CreateChannel extends Component {
                       style={createChannelStyles.channelNameInput}
                       placeholder={translate('pages.xchat.channelName')}
                       placeholderTextColor={Colors.white}
+                      onChangeText={(channelName) =>
+                        this.setState({channelName})
+                      }
+                      value={channelName}
                     />
                     <TouchableOpacity
                       style={createChannelStyles.changeChannelContainer}
-                      onPress={this.toggleModal}
-                    >
+                      onPress={this.toggleModal}>
                       <Text
                         style={createChannelStyles.channelNameText}
-                        numberOfLines={1}
-                      >
+                        numberOfLines={1}>
                         Channel Business
                       </Text>
                       <Image
@@ -327,8 +408,7 @@ class CreateChannel extends Component {
                   createChannelStyles.tabItem,
                   !isManage && createChannelStyles.tabBarBorder,
                 ]}
-                onPress={this.onAboutPress}
-              >
+                onPress={this.onAboutPress}>
                 <Text style={createChannelStyles.tabBarTitle}>
                   {translate('pages.xchat.about')}
                 </Text>
@@ -338,8 +418,7 @@ class CreateChannel extends Component {
                   createChannelStyles.tabItem,
                   isManage && createChannelStyles.tabBarBorder,
                 ]}
-                onPress={this.onManagePress}
-              >
+                onPress={this.onManagePress}>
                 <Text style={createChannelStyles.tabBarTitle}>
                   {translate('pages.xchat.manage')}
                 </Text>
@@ -355,7 +434,7 @@ class CreateChannel extends Component {
                   <TextInput
                     style={[createChannelStyles.inputStyle]}
                     placeholder={translate('pages.xchat.search')}
-                    onChangeText={(searchText) => this.setState({ searchText })}
+                    onChangeText={(searchText) => this.setState({searchText})}
                     returnKeyType={'done'}
                     autoCorrect={false}
                     autoCapitalize={'none'}
@@ -372,11 +451,9 @@ class CreateChannel extends Component {
                   {/* TextAreaWithTitle */}
                   <TextAreaWithTitle
                     title={translate('pages.xchat.about')}
-                    rightTitle={
-                      about && about.length > 0 ? about.length : 0 + '/4000'
-                    }
+                    rightTitle={about.length + '/4000'}
                     value={about}
-                    onChangeText={(about) => this.setState({ about })}
+                    onChangeText={(about) => this.setState({about})}
                     maxLength={4000}
                     extraHeight={200}
                     titleFontColor={Colors.orange}
@@ -389,7 +466,7 @@ class CreateChannel extends Component {
                   </Text>
                   <Switch
                     value={this.state.isVIP}
-                    onValueChange={(value) => this.setState({ isVIP: value })}
+                    onValueChange={(value) => this.setState({isVIP: value})}
                     circleSize={18}
                     barHeight={20}
                     innerCircleStyle={{
@@ -410,11 +487,9 @@ class CreateChannel extends Component {
                   <Fragment>
                     <TextAreaWithTitle
                       title={translate('pages.xchat.vipFeature')}
-                      rightTitle={
-                        about && about.length > 0 ? about.length : 0 + '/4000'
-                      }
-                      value={about}
-                      onChangeText={(about) => this.setState({ about })}
+                      rightTitle={about_vip.length + '/4000'}
+                      value={about_vip}
+                      onChangeText={(about_vip) => this.setState({about_vip})}
                       maxLength={4000}
                       extraHeight={150}
                       titleFontColor={Colors.orange}
@@ -432,7 +507,7 @@ class CreateChannel extends Component {
                 )}
 
                 <View style={createChannelStyles.followerDetails}>
-                  <Text style={{ fontFamily: Fonts.extralight }}>
+                  <Text style={{fontFamily: Fonts.extralight}}>
                     {translate('pages.xchat.affiliateFollower')}
                   </Text>
                   <Text style={createChannelStyles.detailText}>
@@ -445,12 +520,12 @@ class CreateChannel extends Component {
               <Button
                 type={'primary'}
                 title={translate('pages.xchat.create')}
-                onPress={() => {}}
+                onPress={() => this.onCreateChannel()}
               />
               <Button
-                type={'transparent'}
+                type={'translucent'}
                 title={translate('common.cancel')}
-                onPress={() => {}}
+                onPress={() => this.props.navigation.goBack()}
               />
             </View>
           </KeyboardAwareScrollView>
@@ -491,6 +566,7 @@ const mapDispatchToProps = {
   getUserChannels,
   getUserGroups,
   getUserFriends,
+  createNewChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateChannel);
