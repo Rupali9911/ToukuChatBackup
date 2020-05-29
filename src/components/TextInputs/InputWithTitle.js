@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   TextInput,
@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import {Colors, Icons, Fonts} from '../../constants';
-import {globalStyles} from '../../styles';
+import { Colors, Icons, Fonts } from '../../constants';
+import { globalStyles } from '../../styles';
 
 export default class InputWithTitle extends Component {
   constructor(props) {
@@ -24,14 +24,15 @@ export default class InputWithTitle extends Component {
   }
 
   render() {
-    const {onChangeText, title, value} = this.props;
+    const { onChangeText, title, value, placeholder } = this.props;
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
+        {title && <Text style={styles.title}>{title}</Text>}
         <TextInput
           style={styles.inputBox}
           onChangeText={onChangeText}
           value={value}
+          placeholder={placeholder ? placeholder : ''}
         />
       </View>
     );
