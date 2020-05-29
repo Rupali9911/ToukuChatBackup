@@ -17,6 +17,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { ChatHeader } from '../../components/Headers';
+import ChatInput from '../../components/TextInputs/ChatInput';
 import { translate } from '../../redux/reducers/languageReducer';
 import { globalStyles } from '../../styles';
 import { getAvatar } from '../../utils';
@@ -135,24 +136,9 @@ export default class FriendChats extends Component {
 
     return (
       <Fragment>
-        <View style={{ alignItems: 'center', marginVertical: 15 }}>
-          <View
-            style={{
-              backgroundColor: Colors.orange,
-              paddingVertical: 4,
-              paddingHorizontal: 5,
-              borderRadius: 100,
-            }}
-          >
-            <Text
-              style={{
-                color: Colors.white,
-                fontFamily: Fonts.medium,
-                fontSize: 12,
-              }}
-            >
-              28/05
-            </Text>
+        <View style={chatStyle.messageDateCntainer}>
+          <View style={chatStyle.messageDate}>
+            <Text style={chatStyle.messageDateText}>28/05</Text>
           </View>
         </View>
         {msg}
@@ -192,22 +178,23 @@ export default class FriendChats extends Component {
           }}
         >
           <View
-            style={{
-              flex: 0.95,
-              justifyContent: 'flex-end',
-              paddingBottom:
-                Platform.OS === 'android'
-                  ? this.state.orientation === 'PORTRAIT'
-                    ? height * 0.03
-                    : height * 0.07
-                  : this.state.orientation === 'PORTRAIT'
-                  ? height * 0.01
-                  : height * 0.03,
-            }}
+            style={[
+              chatStyle.messareAreaConatiner,
+              {
+                paddingBottom:
+                  Platform.OS === 'android'
+                    ? this.state.orientation === 'PORTRAIT'
+                      ? height * 0.05
+                      : height * 0.07
+                    : this.state.orientation === 'PORTRAIT'
+                    ? height * 0.04
+                    : height * 0.05,
+              },
+            ]}
           >
             <ScrollView
               style={{}}
-              contentContainerStyle={{ flexGrow: 1 }}
+              contentContainerStyle={chatStyle.messareAreaScroll}
               ref={(view) => {
                 this.scrollView = view;
               }}
@@ -215,91 +202,127 @@ export default class FriendChats extends Component {
                 this.scrollView.scrollToEnd();
               }}
             >
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'flex-end',
-                }}
-              >
+              <View style={chatStyle.messageContainer}>
                 {this.renderMessage()}
               </View>
             </ScrollView>
           </View>
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              width: '100%',
-              height: 50,
-              backgroundColor: Colors.gradient_1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: 15,
-              paddingTop: 5,
-            }}
-          >
+          <ChatInput
+            onAttachmentPress={null}
+            onChangeText={(message) => this.handleMessage(message)}
+            onSend={this.onMessageSend}
+            value={newMessageText}
+            placeholder={translate('pages.xchat.enterMessage')}
+          />
+          {/* <View style={chatInput.chatInputContainer}>
             <TouchableOpacity
-              style={{
-                height: '100%',
-                width: '10%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+              style={chatInput.chatAttachmentContainer}
               onPress={() => {}}
             >
               <Image
                 source={Icons.icon_camera_grad}
-                style={{
-                  height: '80%',
-                  width: '90%',
-                }}
+                style={chatInput.attachmentImage}
                 resizeMode={'contain'}
               />
             </TouchableOpacity>
-            <View
-              style={{
-                width: '80%',
-                height: '80%',
-                justifyContent: 'center',
-                // alignItems: 'center',
-              }}
-            >
+            <View style={chatInput.textInputContainer}>
               <TextInput
-                style={{
-                  height: '100%',
-                  borderWidth: 0.2,
-                  backgroundColor: Colors.white,
-                  borderRadius: 10,
-                  borderColor: Colors.gray,
-                  paddingHorizontal: 10,
-                }}
+                style={chatInput.textInput}
                 onChangeText={(message) => this.handleMessage(message)}
                 value={newMessageText}
                 placeholder={translate('pages.xchat.enterMessage')}
               />
             </View>
             <TouchableOpacity
-              style={{
-                height: '100%',
-                width: '10%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+              style={chatInput.sendButoonContainer}
               onPress={() => {
                 this.onMessageSend();
               }}
             >
               <Image
                 source={Icons.icon_send_button}
-                style={{ height: '50%', width: '70%', tintColor: Colors.gray }}
+                style={chatInput.sandButtonImage}
                 resizeMode={'contain'}
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </KeyboardAwareScrollView>
       </ImageBackground>
     );
   }
 }
 
+// const styles = StyleSheet.create({});
+
 const styles = StyleSheet.create({});
+
+const chatInput = StyleSheet.create({
+  messareAreaConatiner: {
+    flex: 0.95,
+    justifyContent: 'flex-end',
+  },
+  messareAreaScroll: { flexGrow: 1 },
+  messageContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  chatInputContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 50,
+    backgroundColor: Colors.gradient_1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingTop: 5,
+  },
+  chatAttachmentContainer: {
+    height: '100%',
+    width: '10%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  attachmentImage: {
+    height: '80%',
+    width: '90%',
+  },
+  textInputContainer: {
+    width: '80%',
+    height: '80%',
+    justifyContent: 'center',
+  },
+  textInput: {
+    height: '100%',
+    borderWidth: 0.2,
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    borderColor: Colors.gray,
+    paddingHorizontal: 10,
+  },
+  sendButoonContainer: {
+    height: '100%',
+    width: '10%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sandButtonImage: { height: '50%', width: '70%', tintColor: Colors.gray },
+});
+
+const chatStyle = StyleSheet.create({
+  messageDateCntainer: {
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  messageDate: {
+    backgroundColor: Colors.orange,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    borderRadius: 100,
+  },
+  messageDateText: {
+    color: Colors.white,
+    fontFamily: Fonts.medium,
+    fontSize: 12,
+  },
+});
