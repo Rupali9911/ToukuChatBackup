@@ -22,17 +22,13 @@ export default class ChatMessageBox extends Component {
   layoutChange = (event) => {
     var { x, y, width, height } = event.nativeEvent.layout;
     borderRadius = height / 2;
-    console.log(
-      'ChatMessageBox -> layoutChange -> this.props.message',
-      this.props.message
-    );
     if (height > 40) {
       borderRadius = height / 2;
     }
   };
 
   render() {
-    const { message, isUser } = this.props;
+    const { message, isUser, time, status } = this.props;
     return !isUser ? (
       <View
         style={[
@@ -42,7 +38,13 @@ export default class ChatMessageBox extends Component {
           },
         ]}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            marginVertical: 5,
+          }}
+        >
           <RoundedImage
             source={Images.image_default_profile}
             size={50}
@@ -80,8 +82,8 @@ export default class ChatMessageBox extends Component {
                 marginVertical: 15,
               }}
             >
-              <Text style={styles.statusText}>Read</Text>
-              <Text style={styles.statusText}>20:20</Text>
+              <Text style={styles.statusText}>{status}</Text>
+              <Text style={styles.statusText}>{time}</Text>
             </View>
           </View>
         </View>
@@ -109,8 +111,8 @@ export default class ChatMessageBox extends Component {
               marginVertical: 15,
             }}
           >
-            <Text style={styles.statusText}>Read</Text>
-            <Text style={styles.statusText}>20:20</Text>
+            <Text style={styles.statusText}>{status}</Text>
+            <Text style={styles.statusText}>{time}</Text>
           </View>
           <View style={styles.talkBubble}>
             <View style={styles.talkBubbleAbsoluteRight} />
