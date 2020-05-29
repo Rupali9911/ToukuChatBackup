@@ -3,13 +3,10 @@ import {
   View,
   TextInput,
   StyleSheet,
-  Text,
   Image,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
 
 export default class ChatInput extends Component {
   constructor(props) {
