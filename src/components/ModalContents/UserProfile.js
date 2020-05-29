@@ -11,14 +11,14 @@ import {
   ImageBackground,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import ImagePicker from 'react-native-image-picker';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
-import {getAvatar} from '../../utils';
+import {getAvatar, getImage} from '../../utils';
 import UploadUserImageModal from '../Modals/UploadUserImageModal';
 import {translate} from '../../redux/reducers/languageReducer';
 
@@ -30,6 +30,7 @@ class UserProfile extends Component {
       isChangeEmailModalVisible: false,
       isChangeNameModalVisible: false,
       isUploadUserImageModalVisible: false,
+      backgroundImagePath: {},
     };
   }
 
@@ -49,6 +50,32 @@ class UserProfile extends Component {
     this.setState({isUploadUserImageModalVisible: true});
   }
 
+  onUserBackgroundCameraPress() {
+    this.chooseFile();
+  }
+
+  chooseFile = () => {
+    var options = {
+      title: 'Choose Option',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else {
+        let source = response;
+        // You can also display the image using data:
+        // let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        this.setState({
+          backgroundImagePath: source,
+        });
+      }
+    });
+  };
+
   render() {
     const {onRequestClose, userData} = this.props;
     const {
@@ -56,6 +83,7 @@ class UserProfile extends Component {
       isChangeEmailModalVisible,
       isChangeNameModalVisible,
       isUploadUserImageModalVisible,
+      backgroundImagePath,
     } = this.state;
     return (
       <View style={styles.Wrapper}>
@@ -68,7 +96,11 @@ class UserProfile extends Component {
             locations={[0.3, 0.5, 0.8, 1, 1]}
             colors={['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150']}
             style={{height: 150}}>
-            <ImageBackground style={styles.firstView}>
+            <ImageBackground
+              style={styles.firstView}
+              source={getImage(
+                'data:image/jpeg;base64,' + backgroundImagePath.data,
+              )}>
               <View style={styles.firstBottomView}>
                 <View
                   style={[
@@ -84,7 +116,7 @@ class UserProfile extends Component {
                   <ClickableImage
                     source={Icons.icon_camera}
                     size={14}
-                    onClick={() => {}}
+                    onClick={() => this.onUserBackgroundCameraPress()}
                   />
                 </View>
               </View>

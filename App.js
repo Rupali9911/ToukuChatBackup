@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
-import { View, Text, StatusBar } from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, StatusBar} from 'react-native';
 import Routes from './src/navigation';
-import { Provider } from 'react-redux';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { PersistGate } from 'redux-persist/es/integration/react';
-import { store, persistor } from './src/redux/store';
+import {Provider} from 'react-redux';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {PersistGate} from 'redux-persist/es/integration/react';
+import {store, persistor} from './src/redux/store';
 import Root from './src/screens/Root';
 import InternetInfo from './src/components/InternetInfo';
-import { socket } from './src/helpers/api';
+import {socket} from './src/helpers/api';
+import NavigationService from './src/navigation/NavigationService';
 
 export default class App extends Component {
   constructor(props) {
@@ -30,10 +31,14 @@ export default class App extends Component {
         <PaperProvider>
           <PersistGate loading={null} persistor={persistor}>
             <Root>
-              <View style={{ flex: 1 }}>
+              <View style={{flex: 1}}>
                 <StatusBar barStyle="light-content" translucent />
                 <InternetInfo />
-                <Routes />
+                <Routes
+                  ref={(navigatorRef) => {
+                    NavigationService.setTopLevelNavigator(navigatorRef);
+                  }}
+                />
               </View>
             </Root>
           </PersistGate>
