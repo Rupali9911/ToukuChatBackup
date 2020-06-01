@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -53,6 +53,11 @@ export const Images = {
   image_home_bg: require('../../assets/images/touku_home_bg.png'),
   image_loading: require('../../assets/images/loading.gif'),
   image_gallery: require('../../assets/images/gallery.png'),
+  image_cover_1: require('../../assets/images/cover_1.jpg'),
+  image_cover_2: require('../../assets/images/cover_2.jpg'),
+  image_cover_3: require('../../assets/images/cover_3.jpg'),
+  image_cover_4: require('../../assets/images/cover_4.jpg'),
+  image_cover_5: require('../../assets/images/cover_5.jpg'),
 };
 
 export const Colors = {
@@ -83,4 +88,12 @@ export const Fonts = {
   extralight: 'Poppins-ExtraLight',
   extrabold: 'Poppins-ExtraBold',
   absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
+};
+
+export const environment = {
+  s3BucketConfig: {
+    accessKeyId: 'AKIA4J4DJVXPUM6H57F7',
+    secretAccessKey: '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',
+    region: 'ap-southeast-1',
+  },
 };

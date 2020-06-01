@@ -9,7 +9,7 @@ export const createChannelStyles = StyleSheet.create({
   },
   channelImageContainer: {
     height: height * 0.55,
-    paddingVertical: 15,
+    marginVertical: 15,
   },
   profileImage: {
     height: '90%',
@@ -92,7 +92,7 @@ export const createChannelStyles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    marginBottom: 5,
+    marginVertical: 5,
     borderBottomColor: Colors.gray,
     borderBottomWidth: 0.5,
   },

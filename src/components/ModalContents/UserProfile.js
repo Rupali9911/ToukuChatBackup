@@ -21,6 +21,7 @@ import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
 import {getAvatar, getImage} from '../../utils';
 import UploadUserImageModal from '../Modals/UploadUserImageModal';
 import {translate} from '../../redux/reducers/languageReducer';
+import {S3uploadService} from '../../helpers/s3upload.service';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -62,7 +63,7 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, (response) => {
+    ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
@@ -72,6 +73,11 @@ class UserProfile extends Component {
         this.setState({
           backgroundImagePath: source,
         });
+        // let Images = ['data:image/png;base64,' + source.data];
+        // const imageFiles = await this.S3uploadService.uploadImagesOnS3Bucket(
+        //   Images,
+        // );
+        // alert(JSON.stringify(imageFiles));
       }
     });
   };

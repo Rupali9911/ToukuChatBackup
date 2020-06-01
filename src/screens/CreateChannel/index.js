@@ -14,6 +14,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Switch} from 'react-native-switch';
 import {Menu, Divider} from 'react-native-paper';
 import {createFilter} from 'react-native-search-filter';
+import LinearGradient from 'react-native-linear-gradient';
 
 import {createChannelStyles} from './styles';
 import {globalStyles} from '../../styles';
@@ -57,6 +58,8 @@ class CreateChannel extends Component {
       showCategoryModal: false,
       updateBackgroundMenu: false,
       showBackgroundImgModal: false,
+      selectedBgItem: {},
+      setSelectedBgItem: {},
       channelCategory: [
         {
           id: 1,
@@ -110,11 +113,11 @@ class CreateChannel extends Component {
         },
       ],
       bgImageList: [
-        {id: 1, url: Images.image_touku_bg, isSelected: true},
-        {id: 2, url: Images.image_touku_bg, isSelected: false},
-        {id: 3, url: Images.image_touku_bg, isSelected: false},
-        {id: 4, url: Images.image_touku_bg, isSelected: false},
-        {id: 5, url: Images.image_touku_bg, isSelected: false},
+        {id: 1, url: Images.image_cover_1, isSelected: false},
+        {id: 2, url: Images.image_cover_2, isSelected: false},
+        {id: 3, url: Images.image_cover_3, isSelected: false},
+        {id: 4, url: Images.image_cover_4, isSelected: false},
+        {id: 5, url: Images.image_cover_5, isSelected: false},
       ],
     };
   }
@@ -297,9 +300,25 @@ class CreateChannel extends Component {
   }
 
   selectCategory = (id) => {
-    console.log('selectCategory -> id', id);
     this.setState({showCategoryModal: false});
   };
+
+  onSelectBackground = (data, index) => {
+    let backgrounds = this.state.bgImageList;
+    backgrounds.map((item) => {
+      item.isSelected = false;
+    });
+
+    backgrounds[index].isSelected = true;
+
+    this.setState({bgImageList: this.state.bgImageList}, () => {
+      this.setState({selectedBgItem: this.state.bgImageList[index]});
+    });
+  };
+
+  onSetBackground() {
+    this.setState({setSelectedBgItem: this.state.selectedBgItem});
+  }
 
   render() {
     const {
@@ -309,6 +328,7 @@ class CreateChannel extends Component {
       isManage,
       isVIP,
       updateBackgroundMenu,
+      setSelectedBgItem,
     } = this.state;
     return (
       <ImageBackground
@@ -322,10 +342,16 @@ class CreateChannel extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={createChannelStyles.mainContainer}
             showsVerticalScrollIndicator={false}>
-            <View style={createChannelStyles.channelImageContainer}>
+            <LinearGradient
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.8, y: 0.3}}
+              locations={[0.1, 0.5, 1]}
+              colors={['#c13468', '#ee2e3b', '#fa573a']}
+              style={createChannelStyles.channelImageContainer}>
+              {/* <View style={createChannelStyles.channelImageContainer}> */}
               <ImageBackground
                 style={createChannelStyles.channelCoverContainer}
-                source={Images.image_touku_bg}>
+                source={setSelectedBgItem.url}>
                 <View style={createChannelStyles.updateBackgroundContainer}>
                   <Menu
                     visible={updateBackgroundMenu}
@@ -401,7 +427,8 @@ class CreateChannel extends Component {
                   </View>
                 </View>
               </ImageBackground>
-            </View>
+              {/* </View> */}
+            </LinearGradient>
             <View style={createChannelStyles.tabBar}>
               <TouchableOpacity
                 style={[
@@ -540,8 +567,13 @@ class CreateChannel extends Component {
         {/* Select Background Modal */}
         <BackgroundImgModal
           visible={this.state.showBackgroundImgModal}
+          extraData={this.state}
           toggleBackgroundImgModal={this.toggleBackgroundImgModal}
           backgroudImages={this.state.bgImageList}
+          onSelectBackground={(item, index) =>
+            this.onSelectBackground(item, index)
+          }
+          onSetBackground={() => this.onSetBackground()}
         />
       </ImageBackground>
     );
