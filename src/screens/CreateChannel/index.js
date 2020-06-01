@@ -15,6 +15,7 @@ import {Switch} from 'react-native-switch';
 import {Menu, Divider} from 'react-native-paper';
 import {createFilter} from 'react-native-search-filter';
 import LinearGradient from 'react-native-linear-gradient';
+import ImagePicker from 'react-native-image-picker';
 
 import {createChannelStyles} from './styles';
 import {globalStyles} from '../../styles';
@@ -40,6 +41,7 @@ import {
 } from '../../redux/reducers/channelReducer';
 import {getUserGroups} from '../../redux/reducers/groupReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
+import RoundedImage from '../../components/RoundedImage';
 
 class CreateChannel extends Component {
   constructor(props) {
@@ -54,61 +56,84 @@ class CreateChannel extends Component {
       searchText: '',
       addedFriends: [],
       isVIP: false,
-      filePath: {},
+      channelImagePath: {},
       showCategoryModal: false,
       updateBackgroundMenu: false,
+      channelBusinessMenuVisible: false,
       showBackgroundImgModal: false,
       selectedBgItem: {},
       setSelectedBgItem: {},
+      selectedChannelCategory: {
+        id: 1,
+        label: 'onlineSaloon',
+        value: 'onlineSaloon',
+        isSelected: false,
+      },
       channelCategory: [
         {
           id: 1,
-          name: 'Professional',
+          label: 'onlineSaloon',
+          value: 'onlineSaloon',
           isSelected: false,
         },
         {
           id: 2,
-          name: 'Movies',
+          label: 'professional',
+          value: 'professional',
           isSelected: false,
         },
         {
           id: 3,
-          name: 'Music',
+          label: 'localBusinesses',
+          value: 'localBusinesses',
           isSelected: false,
         },
         {
           id: 4,
-          name: 'Sports',
+          label: 'businesses',
+          value: 'businesses',
           isSelected: true,
         },
         {
           id: 5,
-          name: 'Television',
+          label: 'brands',
+          value: 'brands',
           isSelected: false,
         },
         {
           id: 6,
-          name: 'Website',
+          label: 'book',
+          value: 'book',
           isSelected: false,
         },
         {
           id: 7,
-          name: 'Website',
+          label: 'movies',
+          value: 'movies',
           isSelected: false,
         },
         {
           id: 8,
-          name: 'Website',
+          label: 'music',
+          value: 'music',
           isSelected: false,
         },
         {
           id: 9,
-          name: 'Website',
+          label: 'sports',
+          value: 'sports',
           isSelected: false,
         },
         {
           id: 10,
-          name: 'Website',
+          label: 'television',
+          value: 'television',
+          isSelected: false,
+        },
+        {
+          id: 11,
+          label: 'websites',
+          value: 'websites',
           isSelected: false,
         },
       ],
@@ -126,6 +151,12 @@ class CreateChannel extends Component {
     this.setState({showCategoryModal: !this.state.showCategoryModal});
   };
 
+  toggleChannelBusinessMenu = () => {
+    this.setState((prevState) => ({
+      channelBusinessMenuVisible: !prevState.channelBusinessMenuVisible,
+    }));
+  };
+
   toggleBackgroundImgModal = () => {
     this.setState({
       showBackgroundImgModal: !this.state.showBackgroundImgModal,
@@ -135,7 +166,11 @@ class CreateChannel extends Component {
 
   _openMenu = () => this.setState({updateBackgroundMenu: true});
 
-  _closeMenu = () => this.setState({updateBackgroundMenu: false});
+  _closeMenu = () =>
+    this.setState({
+      updateBackgroundMenu: false,
+      channelBusinessMenuVisible: false,
+    });
 
   static navigationOptions = () => {
     return {
@@ -151,8 +186,55 @@ class CreateChannel extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
   }
+
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
+  };
+
+  chooseChannelImage = () => {
+    var options = {
+      title: 'Choose Option',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else if (response.customButton) {
+      } else {
+        // let source = response;
+        // You can also display the image using data:
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        this.setState({
+          channelImagePath: source,
+        });
+      }
+    });
+  };
+
+  chooseChannelBgImage = () => {
+    var options = {
+      title: 'Choose Option',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else if (response.customButton) {
+      } else {
+        // let source = response;
+        // You can also display the image using data:
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        this.setState({
+          setSelectedBgItem: {url: source},
+        });
+      }
+    });
   };
 
   onAdd = (isAdded, data) => {
@@ -320,6 +402,21 @@ class CreateChannel extends Component {
     this.setState({setSelectedBgItem: this.state.selectedBgItem});
   }
 
+  onSelectBusiness(data, index) {
+    this.toggleChannelBusinessMenu();
+    let categories = this.state.channelCategory;
+    categories.map((item) => {
+      item.isSelected = false;
+    });
+
+    categories[index].isSelected = true;
+
+    this.setState({
+      channelCategory: this.state.channelCategory,
+      selectedChannelCategory: data,
+    });
+  }
+
   render() {
     const {
       channelName,
@@ -328,7 +425,10 @@ class CreateChannel extends Component {
       isManage,
       isVIP,
       updateBackgroundMenu,
+      channelBusinessMenuVisible,
       setSelectedBgItem,
+      channelCategory,
+      selectedChannelCategory,
     } = this.state;
     return (
       <ImageBackground
@@ -348,7 +448,6 @@ class CreateChannel extends Component {
               locations={[0.1, 0.5, 1]}
               colors={['#c13468', '#ee2e3b', '#fa573a']}
               style={createChannelStyles.channelImageContainer}>
-              {/* <View style={createChannelStyles.channelImageContainer}> */}
               <ImageBackground
                 style={createChannelStyles.channelCoverContainer}
                 source={setSelectedBgItem.url}>
@@ -377,6 +476,7 @@ class CreateChannel extends Component {
                       icon="desktop-mac"
                       onPress={() => {
                         this._closeMenu();
+                        this.chooseChannelBgImage();
                       }}
                       title={translate('pages.xchat.yourComputer')}
                     />
@@ -387,11 +487,12 @@ class CreateChannel extends Component {
                   <View style={createChannelStyles.imageContainer}>
                     <View style={createChannelStyles.imageView}>
                       <Image
-                        source={getImage(this.state.filePath.uri)}
+                        source={getImage(this.state.channelImagePath.uri)}
                         resizeMode={'cover'}
                         style={createChannelStyles.profileImage}
                       />
                       <TouchableOpacity
+                        onPress={this.chooseChannelImage.bind(this)}
                         style={createChannelStyles.uploadImageButton}>
                         <Image
                           source={Icons.icon_edit_pen}
@@ -411,23 +512,57 @@ class CreateChannel extends Component {
                       }
                       value={channelName}
                     />
-                    <TouchableOpacity
-                      style={createChannelStyles.changeChannelContainer}
-                      onPress={this.toggleModal}>
-                      <Text
-                        style={createChannelStyles.channelNameText}
-                        numberOfLines={1}>
-                        Channel Business
-                      </Text>
-                      <Image
-                        source={Icons.icon_triangle_down}
-                        style={createChannelStyles.channelIcon}
-                      />
-                    </TouchableOpacity>
+                    <Menu
+                      visible={channelBusinessMenuVisible}
+                      onDismiss={this._closeMenu}
+                      style={{marginVertical: 40}}
+                      anchor={
+                        <TouchableOpacity
+                          style={createChannelStyles.changeChannelContainer}
+                          onPress={() => this.toggleChannelBusinessMenu()}>
+                          <Text
+                            style={createChannelStyles.channelNameText}
+                            numberOfLines={1}>
+                            {translate(
+                              'pages.xchat.' + selectedChannelCategory.label,
+                            )}
+                          </Text>
+                          <Image
+                            source={Icons.icon_arrow_down}
+                            style={createChannelStyles.channelIcon}
+                          />
+                        </TouchableOpacity>
+                      }>
+                      {channelCategory.map((item, key) => {
+                        return (
+                          <TouchableOpacity
+                            onPress={() => this.onSelectBusiness(item, key)}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              padding: 10,
+                            }}>
+                            <RoundedImage
+                              isRounded={false}
+                              source={
+                                item.isSelected ? Icons.icon_tick_circle : null
+                              }
+                              size={24}
+                            />
+                            <Text
+                              style={[
+                                globalStyles.normalRegularText,
+                                {color: Colors.black, marginStart: 10},
+                              ]}>
+                              {translate('pages.xchat.' + item.label)}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </Menu>
                   </View>
                 </View>
               </ImageBackground>
-              {/* </View> */}
             </LinearGradient>
             <View style={createChannelStyles.tabBar}>
               <TouchableOpacity

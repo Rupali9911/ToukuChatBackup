@@ -87,8 +87,9 @@ export const createChannelStyles = StyleSheet.create({
     color: Colors.white,
   },
   channelIcon: {
-    height: '30%',
-    width: '3%',
+    height: 12,
+    width: 12,
+    resizeMode: 'contain',
   },
   tabBar: {
     flexDirection: 'row',
