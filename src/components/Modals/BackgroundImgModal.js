@@ -1,8 +1,15 @@
-import React, { Component } from 'react';
-import { View, Image, TouchableOpacity, Text, FlatList } from 'react-native';
+import React, {Component} from 'react';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  Text,
+  FlatList,
+  SafeAreaView,
+} from 'react-native';
 import Modal from 'react-native-modal';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {Images, Icons, Colors, Fonts} from '../../constants';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import Button from '../../components/Button';
 import RoundedImage from '../../components/RoundedImage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -14,38 +21,34 @@ export default class BackgroundImgModal extends Component {
   }
 
   renderBackgroundImage(backgroudImages) {
-    // console.log('renderBackgroundImage -> renderBackgroundImage');
-
-    // const data = [
-    //   { id: 1, url: Images.image_touku_bg, isSelected: true },
-    //   { id: 2, url: Images.image_touku_bg, isSelected: false },
-    //   { id: 3, url: Images.image_touku_bg, isSelected: false },
-    //   { id: 4, url: Images.image_touku_bg, isSelected: false },
-    //   { id: 5, url: Images.image_touku_bg, isSelected: false },
-    // ];
-    // console.log('renderBackgroundImage -> data', data);
     return (
       <FlatList
         numColumns={2}
         data={backgroudImages}
-        renderItem={({ item, index }) => (
-          <View style={{ flex: 0.5, height: 150 }}>
+        extraData={this.props.extraData}
+        keyExtractor={(item, index) => String(index)}
+        renderItem={({item, index}) => (
+          <View style={{flex: 0.5, height: 150}}>
             <View
               style={{
                 height: '80%',
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
-              <RoundedImage source={item.url} size={100} resizeMode={'cover'} />
+              }}>
+              <RoundedImage
+                source={item.url}
+                size={100}
+                resizeMode={'cover'}
+                borderSize={item.isSelected ? 2 : 0}
+                borderColor={Colors.green}
+              />
             </View>
             <View
               style={{
                 height: '20%',
                 alignItems: 'center',
                 paddingRight: '30%',
-              }}
-            >
+              }}>
               <TouchableOpacity
                 style={{
                   height: 20,
@@ -55,10 +58,10 @@ export default class BackgroundImgModal extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-              >
-                {item.isSelected && (
+                onPress={this.onSelectBackground.bind(this, item, index)}>
+                {item.isSelected ? (
                   <MaterialIcons name="check" color={Colors.green} size={16} />
-                )}
+                ) : null}
               </TouchableOpacity>
             </View>
           </View>
@@ -67,25 +70,35 @@ export default class BackgroundImgModal extends Component {
     );
   }
 
+  onSelectBackground = (item, index) => {
+    this.props.onSelectBackground(item, index);
+  };
+
+  onSetBackground = () => {
+    this.props.toggleBackgroundImgModal();
+    this.props.onSetBackground();
+  };
+
   render() {
-    const { visible, backgroudImages, toggleBackgroundImgModal } = this.props;
+    const {visible, backgroudImages, toggleBackgroundImgModal} = this.props;
     return (
-      <Modal isVisible={visible} onBackdropPress={toggleBackgroundImgModal}>
-        <View
+      <Modal
+        isVisible={visible}
+        onBackButtonPress={toggleBackgroundImgModal}
+        onBackdropPress={toggleBackgroundImgModal}>
+        <SafeAreaView
           style={{
             flex: 1,
-          }}
-        >
+          }}>
           <View
             style={{
-              flex: this.state.orientation === 'LANDSCAPE' ? 0.1 : 0.05,
               backgroundColor: Colors.gray,
               flexDirection: 'row',
               alignItems: 'center',
-            }}
-          >
-            <View style={{ flex: 0.8, paddingHorizontal: 5 }}>
-              <Text>Wallpaper</Text>
+              height: 40,
+            }}>
+            <View style={{flex: 0.8, paddingHorizontal: 5}}>
+              <Text>{translate('pages.xchat.wallpaper')}</Text>
             </View>
             <TouchableOpacity
               style={{
@@ -93,8 +106,7 @@ export default class BackgroundImgModal extends Component {
                 paddingHorizontal: 5,
                 alignItems: 'flex-end',
               }}
-              onPress={toggleBackgroundImgModal}
-            >
+              onPress={toggleBackgroundImgModal}>
               <Image
                 source={Icons.icon_close}
                 style={{
@@ -109,24 +121,87 @@ export default class BackgroundImgModal extends Component {
             style={{
               flex: this.state.orientation === 'LANDSCAPE' ? 0.9 : 0.95,
               backgroundColor: Colors.white,
-              paddingTop: 10,
-            }}
-          >
-            {this.renderBackgroundImage(backgroudImages)}
+              padding: 20,
+            }}>
+            {/* {this.renderBackgroundImage(backgroudImages)} */}
+            <FlatList
+              numColumns={2}
+              data={backgroudImages}
+              extraData={this.props.extraData}
+              keyExtractor={(item, index) => String(index)}
+              renderItem={({item, index}) => (
+                <View style={{flex: 0.5, height: 150}}>
+                  <View
+                    style={{
+                      height: '80%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View
+                      style={{
+                        height: 100,
+                        width: 100,
+                        borderWidth: 1,
+                        borderColor: item.isSelected
+                          ? Colors.green
+                          : Colors.gray,
+                        borderRadius: 50,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <RoundedImage
+                        source={item.url}
+                        size={92}
+                        resizeMode={'cover'}
+                        borderSize={item.isSelected ? 2 : 0}
+                        borderColor={Colors.green}
+                      />
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      height: '20%',
+                      alignItems: 'center',
+                      paddingRight: '30%',
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        height: 20,
+                        width: 20,
+                        borderWidth: 2,
+                        borderColor: Colors.green,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      onPress={this.onSelectBackground.bind(this, item, index)}>
+                      {item.isSelected ? (
+                        <MaterialIcons
+                          name="check"
+                          color={Colors.green}
+                          size={16}
+                        />
+                      ) : null}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            />
             <View>
               <Button
                 type={'primary'}
-                title={translate('pages.xchat.create')}
-                onPress={toggleBackgroundImgModal}
+                title={translate('pages.xchat.set')}
+                onPress={this.onSetBackground.bind(this)}
+                isRounded={false}
               />
               <Button
-                type={'transparent'}
+                type={'secondary'}
                 title={translate('common.cancel')}
                 onPress={toggleBackgroundImgModal}
+                isRounded={false}
               />
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     );
   }
