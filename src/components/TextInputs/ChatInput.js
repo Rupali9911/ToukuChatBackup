@@ -48,6 +48,7 @@ export default class ChatInput extends Component {
             onChangeText={(message) => onChangeText(message)}
             value={value}
             placeholder={placeholder}
+            ref={this.newMessage}
           />
         </View>
         <TouchableOpacity
