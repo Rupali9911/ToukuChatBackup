@@ -23,6 +23,24 @@ export default class FriendChats extends Component {
       data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
+      headerRightIconMenu: [
+        {
+          id: 1,
+          title: translate('pages.xchat.unfriend'),
+          icon: Icons.icon_menu,
+          onPress: () => {
+            alert('Unfriend');
+          },
+        },
+        {
+          id: 2,
+          title: translate('pages.xchat.createGroup'),
+          icon: Icons.icon_menu,
+          onPress: () => {
+            this.props.navigation.navigate('CreateFriendGroup');
+          },
+        },
+      ],
       isReply: false,
       repliedMessage: null,
       messagesArray: [
@@ -177,7 +195,7 @@ export default class FriendChats extends Component {
           type={'friend'}
           image={getAvatar(data.profile_picture)}
           onBackPress={() => this.props.navigation.goBack()}
-          onRightIconPress={() => alert('more')}
+          menuItems={this.state.headerRightIconMenu}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}

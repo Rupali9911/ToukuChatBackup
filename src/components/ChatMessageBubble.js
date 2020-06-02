@@ -5,9 +5,11 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Menu, Divider } from 'react-native-paper';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { Colors, Icons, Fonts, Images } from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
@@ -178,7 +180,7 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon="minus-circle"
+          icon={() => <Image source={Icons.icon_camera} />}
           onPress={() => {
             closeMenu();
           }}
@@ -186,7 +188,7 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon="note"
+          icon={() => <FontAwesome name={'music'} />}
           onPress={() => {
             closeMenu();
           }}
