@@ -200,7 +200,7 @@ class CreateFriendGroup extends Component {
               <Button
                 type={'primary'}
                 title={translate('pages.xchat.create')}
-                onPress={() => this.onCreatePress()}
+                onPress={() => this.props.navigation.goBack()}
               />
               <Button
                 type={'translucent'}
