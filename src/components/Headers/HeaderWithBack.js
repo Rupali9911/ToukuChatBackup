@@ -47,28 +47,57 @@ export default class HeaderWithBack extends Component {
                   ? isIphoneX()
                     ? 50
                     : 30
-                  : 40
+                  : 50
                 : Platform.OS === 'ios'
                 ? 20
                 : 40,
           },
         ]}
       >
-        <View style={{ flex: 0.1 }}>
+        <View
+          style={{
+            flex: 0.1,
+            height: 30,
+            justifyContent: 'center',
+          }}
+        >
           {isBack ? (
-            <TouchableOpacity onPress={onBackPress}>
-              <Image source={Icons.icon_back} style={styles.backIcon} />
+            <TouchableOpacity
+              onPress={onBackPress}
+              style={{
+                flex: 1,
+                paddingBottom: Platform.OS === 'android' && 4,
+                justifyContent: 'center',
+              }}
+            >
+              <Image
+                source={Icons.icon_back}
+                style={styles.backIcon}
+                resizeMode={'center'}
+              />
             </TouchableOpacity>
           ) : (
             <View style={globalStyles.iconStyle} />
           )}
         </View>
-        <View style={{ flex: 0.8 }}>
-          <Text style={[globalStyles.normalRegularText, { textAlign: 'left' }]}>
+        <View
+          style={{
+            flex: 0.8,
+            height: 30,
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={[globalStyles.normalLightText, { textAlign: 'left' }]}>
             {title}
           </Text>
         </View>
-        <View style={{ flex: 0.1 }} />
+        <View
+          style={{
+            flex: 0.1,
+            height: 30,
+            justifyContent: 'center',
+          }}
+        />
       </View>
     );
   }
@@ -79,7 +108,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.home_header,
+    backgroundColor: Colors.orange_light,
+  },
+  backIcon: {
+    height: 15,
   },
 });
 

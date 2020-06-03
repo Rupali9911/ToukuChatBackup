@@ -371,6 +371,7 @@ class CreateChannel extends Component {
             <GroupFriend
               user={item}
               onAddPress={(isAdded) => this.onAdd(isAdded, item)}
+              isRightButton
             />
           )}
           ListFooterComponent={() => (

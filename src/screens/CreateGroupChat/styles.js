@@ -1,6 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons} from '../../constants';
-const {width, height} = Dimensions.get('window');
+import { StyleSheet, Dimensions } from 'react-native';
+import { Images, Colors, Icons, Fonts } from '../../constants';
+const { width, height } = Dimensions.get('window');
 
 export const createGroupStyles = StyleSheet.create({
   mainContainer: {
@@ -9,13 +9,13 @@ export const createGroupStyles = StyleSheet.create({
     paddingBottom: 50,
   },
   imageContainer: {
-    height: height * 0.23,
-    justifyContent: 'center',
+    height: height * 0.22,
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   imageView: {
-    height: height * 0.15,
-    width: height * 0.15,
+    height: height * 0.17,
+    width: height * 0.17,
   },
   profileImage: {
     height: '90%',
@@ -49,18 +49,18 @@ export const createGroupStyles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     backgroundColor: Colors.white,
     borderRadius: 10,
-    borderColor: 'gray',
-    borderWidth: 0.2,
+    borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
+    borderColor: Colors.gray_dark,
     marginTop: 20,
   },
   inputStyle: {
     flex: 1,
-    // width: '100%',
     color: Colors.black,
     fontSize: 13,
-    // fontFamily: Fonts.light,
     marginStart: 10,
     alignSelf: 'center',
+    fontFamily: Fonts.light,
+    paddingVertical: 0,
   },
   iconRight: {
     width: 30,

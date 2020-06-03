@@ -32,7 +32,7 @@ export default class ChannelChats extends Component {
         {
           id: 1,
           title: translate('pages.xchat.channel'),
-          icon: Icons.icon_menu,
+          icon: 'bars',
           onPress: () => {
             this.props.navigation.navigate('CreateGroupChat');
           },

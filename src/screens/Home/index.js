@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   ImageBackground,
@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   AccordionList,
   Collapse,
@@ -16,29 +16,29 @@ import {
   CollapseBody,
 } from 'accordion-collapse-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {createFilter} from 'react-native-search-filter';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { createFilter } from 'react-native-search-filter';
 
-import {homeStyles} from './styles';
-import {globalStyles} from '../../styles';
+import { homeStyles } from './styles';
+import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {Images, Colors, Icons} from '../../constants';
-import {SearchInput} from '../../components/TextInputs';
+import { Images, Colors, Icons } from '../../constants';
+import { SearchInput } from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import {getAvatar} from '../../utils';
-import {ProfileModal} from '../../components/Modals';
-import {ChannelListItem} from '../../components/ListItems';
+import { getAvatar } from '../../utils';
+import { ProfileModal } from '../../components/Modals';
+import { ChannelListItem } from '../../components/ListItems';
 import FriendListItem from '../../components/ListItems/FriendListItem';
 import GroupListItem from '../../components/ListItems/GroupListItem';
 import NoData from '../../components/NoData';
-import {ListLoader} from '../../components/Loaders';
-import {socket} from '../../helpers/api';
+import { ListLoader } from '../../components/Loaders';
+import { socket } from '../../helpers/api';
 
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getUserProfile} from '../../redux/reducers/userReducer';
-import {getUserChannels} from '../../redux/reducers/channelReducer';
-import {getUserGroups} from '../../redux/reducers/groupReducer';
-import {getUserFriends} from '../../redux/reducers/friendReducer';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import { getUserProfile } from '../../redux/reducers/userReducer';
+import { getUserChannels } from '../../redux/reducers/channelReducer';
+import { getUserGroups } from '../../redux/reducers/groupReducer';
+import { getUserFriends } from '../../redux/reducers/friendReducer';
 
 class Home extends Component {
   constructor(props) {
@@ -62,7 +62,7 @@ class Home extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -83,11 +83,11 @@ class Home extends Component {
     });
   }
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   onSearch = (text) => {
-    this.setState({searchText: text});
+    this.setState({ searchText: text });
   };
 
   onUserProfilePress() {
@@ -113,9 +113,9 @@ class Home extends Component {
   };
 
   renderUserChannels() {
-    const {userChannels, channelLoading} = this.props;
+    const { userChannels, channelLoading } = this.props;
     const filteredChannels = userChannels.filter(
-      createFilter(this.state.searchText, ['name']),
+      createFilter(this.state.searchText, ['name'])
     );
 
     if (filteredChannels.length === 0 && channelLoading) {
@@ -124,7 +124,7 @@ class Home extends Component {
       return (
         <FlatList
           data={filteredChannels}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <ChannelListItem
               title={item.name}
               description={item.description}
@@ -145,9 +145,9 @@ class Home extends Component {
   }
 
   renderUserGroups() {
-    const {userGroups, groupLoading} = this.props;
+    const { userGroups, groupLoading } = this.props;
     const filteredGroups = userGroups.filter(
-      createFilter(this.state.searchText, ['group_name']),
+      createFilter(this.state.searchText, ['group_name'])
     );
 
     if (filteredGroups.length === 0 && groupLoading) {
@@ -156,7 +156,7 @@ class Home extends Component {
       return (
         <FlatList
           data={filteredGroups}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <GroupListItem
               title={item.group_name}
               description={item.last_msg.text}
@@ -177,9 +177,9 @@ class Home extends Component {
   }
 
   renderUserFriends() {
-    const {userFriends, friendLoading} = this.props;
+    const { userFriends, friendLoading } = this.props;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username']),
+      createFilter(this.state.searchText, ['username'])
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -188,7 +188,7 @@ class Home extends Component {
       return (
         <FlatList
           data={filteredFriends}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <FriendListItem
               title={item.username}
               description={item.last_msg}
@@ -212,7 +212,7 @@ class Home extends Component {
   showDropdown = () => {
     console.log(
       'Home -> showDropdown -> showDropdown',
-      this.state.showDropdown,
+      this.state.showDropdown
     );
     this.setState({
       showDropdown: !this.state.showDropdown,
@@ -229,20 +229,21 @@ class Home extends Component {
       searchText,
     } = this.state;
 
-    const {userData, userChannels, userGroups, userFriends} = this.props;
+    const { userData, userChannels, userGroups, userFriends } = this.props;
     const filteredChannels = userChannels.filter(
-      createFilter(searchText, ['name']),
+      createFilter(searchText, ['name'])
     );
     const filteredGroups = userGroups.filter(
-      createFilter(searchText, ['group_name']),
+      createFilter(searchText, ['group_name'])
     );
     const filteredFriends = userFriends.filter(
-      createFilter(searchText, ['username']),
+      createFilter(searchText, ['username'])
     );
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.home')} />
           <SearchInput
@@ -258,13 +259,15 @@ class Home extends Component {
                 flexDirection: 'row',
                 alignItems: 'center',
                 padding: 10,
-              }}>
+              }}
+            >
               <RoundedImage source={getAvatar(userData.avatar)} size={60} />
               <Text
                 style={[
-                  globalStyles.smallRegularText,
-                  {color: Colors.black, marginStart: 10},
-                ]}>
+                  globalStyles.normalRegularText,
+                  { color: Colors.black, marginStart: 10 },
+                ]}
+              >
                 {userData.username}
               </Text>
             </TouchableOpacity>
@@ -276,7 +279,8 @@ class Home extends Component {
                     isChannelCollapsed: isColl,
                   })
                 }
-                isCollapsed={isChannelCollapsed}>
+                isCollapsed={isChannelCollapsed}
+              >
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.channels')}
@@ -294,7 +298,8 @@ class Home extends Component {
                     isGroupCollapsed: isColl,
                   })
                 }
-                isCollapsed={isGroupCollapsed}>
+                isCollapsed={isGroupCollapsed}
+              >
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.groups')}
@@ -312,7 +317,8 @@ class Home extends Component {
                     isFriendsCollapsed: isColl,
                   })
                 }
-                isCollapsed={isFriendsCollapsed}>
+                isCollapsed={isFriendsCollapsed}
+              >
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.friends')}
@@ -331,11 +337,11 @@ class Home extends Component {
 }
 
 const DropdownHeader = (props) => {
-  const {title, counts, isCollapsed} = props;
+  const { title, counts, isCollapsed } = props;
   return (
     <LinearGradient
-      start={{x: 0.1, y: 0.7}}
-      end={{x: 0.7, y: 0.8}}
+      start={{ x: 0.1, y: 0.7 }}
+      end={{ x: 0.7, y: 0.8 }}
       locations={[0.2, 0.7, 1]}
       colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
       style={{
@@ -344,10 +350,11 @@ const DropdownHeader = (props) => {
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 15,
-      }}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text style={globalStyles.smallRegularText}>{title}</Text>
-        <Text style={[globalStyles.smallRegularText, {marginStart: 5}]}>
+        <Text style={[globalStyles.smallRegularText, { marginStart: 5 }]}>
           {'('}
           {counts}
           {')'}
@@ -355,7 +362,7 @@ const DropdownHeader = (props) => {
       </View>
       <Image
         source={isCollapsed ? Icons.icon_arrow_down : Icons.icon_arrow_up}
-        style={{width: 10, height: 10, resizeMode: 'contain'}}
+        style={{ width: 10, height: 10, resizeMode: 'contain' }}
       />
     </LinearGradient>
   );

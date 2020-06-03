@@ -10,6 +10,7 @@ import { isIphoneX } from '../../utils';
 import { globalStyles } from '../../styles';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import { Menu } from 'react-native-paper';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 export default class ChatHeader extends Component {
   constructor(props) {
@@ -135,9 +136,16 @@ export default class ChatHeader extends Component {
           >
             {menuItems &&
               menuItems.map((item, index) => {
+                console.log('ChatHeader -> render -> item', item);
                 return (
                   <Menu.Item
-                    icon={Icons.icon_menu}
+                    icon={() => (
+                      <FontAwesome5
+                        name={item.icon}
+                        size={20}
+                        color={Colors.black}
+                      />
+                    )}
                     onPress={() => {
                       item.onPress();
                       this._closeMenu();
@@ -146,14 +154,6 @@ export default class ChatHeader extends Component {
                   />
                 );
               })}
-            {/* <Menu.Item
-              icon={Icons.icon_menu}
-              onPress={() => {
-                navigation.navigate('CreateGroupChat');
-                this._closeMenu();
-              }}
-              title={translate('pages.xchat.channel')}
-            /> */}
           </Menu>
 
           {/* <RoundedImage
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: Colors.home_header,
+    backgroundColor: Colors.orange_light,
   },
   subContainer: {
     flex: 1,

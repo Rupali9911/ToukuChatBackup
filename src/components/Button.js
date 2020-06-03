@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   StyleSheet,
@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
-import {Colors, Fonts} from '../constants';
-import {globalStyles} from '../styles';
+import { Colors, Fonts } from '../constants';
+import { globalStyles } from '../styles';
 
 export default class Button extends Component {
   constructor(props) {
@@ -75,15 +75,16 @@ export default class Button extends Component {
   }
 
   render() {
-    const {title, onPress, loading, isRounded, height, disabled} = this.props;
+    const { title, onPress, loading, isRounded, height, disabled } = this.props;
     return (
       <TouchableOpacity
         disabled={disabled}
         activeOpacity={0.8}
-        onPress={onPress}>
+        onPress={onPress}
+      >
         <LinearGradient
-          start={{x: 0.1, y: 0.7}}
-          end={{x: 0.5, y: 0.8}}
+          start={{ x: 0.1, y: 0.7 }}
+          end={{ x: 0.5, y: 0.8 }}
           locations={[0.1, 0.6, 1]}
           colors={this.getGradientColors()}
           style={[
@@ -94,7 +95,8 @@ export default class Button extends Component {
               borderColor: this.getBorderColor(),
               opacity: disabled ? 0.5 : 1,
             },
-          ]}>
+          ]}
+        >
           {loading ? (
             <ActivityIndicator
               size={'small'}
@@ -103,9 +105,10 @@ export default class Button extends Component {
           ) : (
             <Text
               style={[
-                globalStyles.normalLightText,
-                {color: this.getTitleColor()},
-              ]}>
+                globalStyles.normalRegularText,
+                { color: this.getTitleColor() },
+              ]}
+            >
               {title}
             </Text>
           )}

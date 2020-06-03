@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -69,6 +69,7 @@ export const Colors = {
   gradient_2: '#f27478',
   gradient_3: '#f68b6b',
   orange: '#fd7e14',
+  orange_light: '#FEB381',
   gray: '#dcdcdc',
   gray_dark: '#6c757d',
   danger: '#DC3545',
