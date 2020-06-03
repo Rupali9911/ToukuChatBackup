@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   ImageBackground,
@@ -9,27 +9,30 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {createFilter} from 'react-native-search-filter';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { createFilter } from 'react-native-search-filter';
 import ImagePicker from 'react-native-image-picker';
 
-import {createGroupStyles} from './styles';
-import {globalStyles} from '../../styles';
+import { createGroupStyles } from './styles';
+import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
 import GroupFriend from '../../components/GroupFriend';
-import {Images, Icons, Colors} from '../../constants';
+import { Images, Icons, Colors } from '../../constants';
 import Button from '../../components/Button';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
 
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getUserFriends} from '../../redux/reducers/friendReducer';
-import {createNewGroup, getUserGroups} from '../../redux/reducers/groupReducer';
-import {ListLoader} from '../../components/Loaders';
-import {getImage} from '../../utils';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import { getUserFriends } from '../../redux/reducers/friendReducer';
+import {
+  createNewGroup,
+  getUserGroups,
+} from '../../redux/reducers/groupReducer';
+import { ListLoader } from '../../components/Loaders';
+import { getImage } from '../../utils';
 
 class CreateGroupChat extends Component {
   constructor(props) {
@@ -55,7 +58,7 @@ class CreateGroupChat extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -65,7 +68,7 @@ class CreateGroupChat extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   chooseFile = () => {
@@ -86,7 +89,7 @@ class CreateGroupChat extends Component {
       } else {
         // let source = response;
         // You can also display the image using data:
-        let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
           filePath: source,
         });
@@ -106,18 +109,18 @@ class CreateGroupChat extends Component {
   };
 
   handleGroupName(groupName) {
-    this.setState({groupName});
+    this.setState({ groupName });
     if (groupName.trim() === '') {
-      this.setState({groupNameErr: 'messages.required'});
+      this.setState({ groupNameErr: 'messages.required' });
     } else {
-      this.setState({groupNameErr: null});
+      this.setState({ groupNameErr: null });
     }
   }
 
   onCreatePress() {
-    const {groupName, note, addedFriends} = this.state;
+    const { groupName, note, addedFriends } = this.state;
     if (groupName.trim() === '') {
-      this.setState({groupNameErr: 'messages.required'});
+      this.setState({ groupNameErr: 'messages.required' });
       Toast.show({
         title: 'Touku',
         text: translate('pages.xchat.toastr.groupNameIsRequired'),
@@ -163,9 +166,9 @@ class CreateGroupChat extends Component {
   }
 
   renderUserFriends() {
-    const {userFriends, friendLoading} = this.props;
+    const { userFriends, friendLoading } = this.props;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username']),
+      createFilter(this.state.searchText, ['username'])
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -174,10 +177,11 @@ class CreateGroupChat extends Component {
       return (
         <FlatList
           data={filteredFriends}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <GroupFriend
               user={item}
               onAddPress={(isAdded) => this.onAdd(isAdded, item)}
+              isRightButton
             />
           )}
           ListFooterComponent={() => (
@@ -191,11 +195,12 @@ class CreateGroupChat extends Component {
   }
 
   render() {
-    const {groupName, note, groupNameErr} = this.state;
+    const { groupName, note, groupNameErr } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -203,7 +208,8 @@ class CreateGroupChat extends Component {
           />
           <KeyboardAwareScrollView
             contentContainerStyle={createGroupStyles.mainContainer}
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             <View style={createGroupStyles.imageContainer}>
               <View style={createGroupStyles.imageView}>
                 <Image
@@ -214,7 +220,8 @@ class CreateGroupChat extends Component {
                 />
                 <TouchableOpacity
                   style={createGroupStyles.cameraButton}
-                  onPress={this.chooseFile.bind(this)}>
+                  onPress={this.chooseFile.bind(this)}
+                >
                   <Image
                     source={Icons.icon_camera}
                     resizeMode={'cover'}
@@ -240,10 +247,11 @@ class CreateGroupChat extends Component {
                       marginStart: 10,
                       marginBottom: 5,
                     },
-                  ]}>
+                  ]}
+                >
                   {translate(groupNameErr).replace(
                     '[missing {{field}} value]',
-                    translate('pages.xchat.groupName'),
+                    translate('pages.xchat.groupName')
                   )}
                 </Text>
               ) : null}
@@ -252,7 +260,7 @@ class CreateGroupChat extends Component {
                 title={translate('pages.xchat.note')}
                 rightTitle={note.length + '/3000'}
                 value={note}
-                onChangeText={(note) => this.setState({note})}
+                onChangeText={(note) => this.setState({ note })}
                 maxLength={3000}
               />
 
@@ -264,7 +272,7 @@ class CreateGroupChat extends Component {
                 <TextInput
                   style={[createGroupStyles.inputStyle]}
                   placeholder={translate('pages.xchat.search')}
-                  onChangeText={(searchText) => this.setState({searchText})}
+                  onChangeText={(searchText) => this.setState({ searchText })}
                   returnKeyType={'done'}
                   autoCorrect={false}
                   autoCapitalize={'none'}

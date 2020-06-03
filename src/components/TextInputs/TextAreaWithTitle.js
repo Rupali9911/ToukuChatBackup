@@ -36,6 +36,7 @@ export default class TextAreaWithTitle extends Component {
           >
             <Text
               style={[
+                styles.title,
                 titleFontColor && { color: titleFontColor },
                 titleFontSize && { fontSize: titleFontSize },
               ]}
@@ -77,12 +78,14 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 10,
   },
-  title: {},
+  title: {
+    fontFamily: Fonts.light,
+  },
   textBox: {
     borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 10,
-    borderColor: 'gray',
+    borderColor: Colors.gray_dark,
     marginTop: 10,
     height: 100,
     textAlignVertical: 'top',

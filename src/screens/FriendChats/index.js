@@ -27,7 +27,7 @@ export default class FriendChats extends Component {
         {
           id: 1,
           title: translate('pages.xchat.unfriend'),
-          icon: Icons.icon_menu,
+          icon: 'user-times',
           onPress: () => {
             alert('Unfriend');
           },
@@ -35,7 +35,7 @@ export default class FriendChats extends Component {
         {
           id: 2,
           title: translate('pages.xchat.createGroup'),
-          icon: Icons.icon_menu,
+          icon: 'users',
           onPress: () => {
             this.props.navigation.navigate('CreateFriendGroup');
           },

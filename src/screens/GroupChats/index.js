@@ -19,7 +19,7 @@ export default class GroupChats extends Component {
         {
           id: 1,
           title: translate('pages.xchat.groupDetails'),
-          icon: Icons.icon_menu,
+          icon: 'bars',
           onPress: () => {
             this.props.navigation.navigate('CreateGroupChat');
           },
@@ -27,7 +27,7 @@ export default class GroupChats extends Component {
         {
           id: 2,
           title: translate('pages.xchat.leave'),
-          icon: Icons.icon_menu,
+          icon: 'user-slash',
           onPress: () => {
             alert('Leave');
           },

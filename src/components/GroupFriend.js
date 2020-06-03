@@ -103,7 +103,7 @@ export default class GroupFriend extends Component {
           <RoundedImage source={getAvatar(user.profile_picture)} size={50} />
           <Text
             style={[
-              globalStyles.smallRegularText,
+              globalStyles.smallLightText,
               { color: Colors.black, textAlign: 'left', marginStart: 15 },
             ]}
           >
@@ -115,7 +115,7 @@ export default class GroupFriend extends Component {
             <Button
               title={'Add'}
               type={isAdded ? 'primary' : 'translucent'}
-              height={35}
+              height={30}
               onPress={this.onAddPress.bind(this)}
             />
           </View>

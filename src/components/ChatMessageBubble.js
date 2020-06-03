@@ -6,14 +6,15 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  Clipboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Menu, Divider } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { Colors, Icons, Fonts, Images } from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
-
 const { width, height } = Dimensions.get('window');
 let borderRadius = 20;
 export default class ChatMessageBubble extends Component {
@@ -21,6 +22,10 @@ export default class ChatMessageBubble extends Component {
     super(props);
     this.state = {};
   }
+
+  onCopy = (message) => {
+    Clipboard.setString(message);
+  };
 
   renderReplyMessage = (replyMessage) => {
     return (
@@ -54,6 +59,19 @@ export default class ChatMessageBubble extends Component {
           <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
             {replyMessage.message}
           </Text>
+        </View>
+      </View>
+    );
+  };
+
+  renderMenuItem = () => {
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 0.2 }}>
+          <Text>q</Text>
+        </View>
+        <View style={{ flex: 0.8 }}>
+          <Text>vujfbkud</Text>
         </View>
       </View>
     );
@@ -147,7 +165,9 @@ export default class ChatMessageBubble extends Component {
       >
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon={Icons.icon_camera}
+          icon={() => (
+            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+          )}
           onPress={() => {
             closeMenu();
           }}
@@ -155,7 +175,9 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon="desktop-mac"
+          icon={() => (
+            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+          )}
           onPress={() => {
             onMessageReply(selectedMessageId);
             closeMenu();
@@ -164,7 +186,9 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon="pencil"
+          icon={() => (
+            <FontAwesome5 name={'pencil-alt'} size={20} color={Colors.white} />
+          )}
           onPress={() => {
             closeMenu();
           }}
@@ -172,7 +196,9 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon="delete"
+          icon={() => (
+            <FontAwesome name={'trash'} size={20} color={Colors.white} />
+          )}
           onPress={() => {
             closeMenu();
           }}
@@ -180,7 +206,13 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon={() => <Image source={Icons.icon_camera} />}
+          icon={() => (
+            <FontAwesome5
+              name={'minus-circle'}
+              size={20}
+              color={Colors.white}
+            />
+          )}
           onPress={() => {
             closeMenu();
           }}
@@ -188,8 +220,11 @@ export default class ChatMessageBubble extends Component {
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
-          icon={() => <FontAwesome name={'music'} />}
+          icon={() => (
+            <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+          )}
           onPress={() => {
+            this.onCopy(message.message);
             closeMenu();
           }}
           title={translate('common.copy')}

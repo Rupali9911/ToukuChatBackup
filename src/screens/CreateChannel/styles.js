@@ -116,16 +116,16 @@ export const createChannelStyles = StyleSheet.create({
   },
   inputesContainer: {},
   searchContainer: {
-    height: 35,
+    height: 45,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     backgroundColor: Colors.white,
     borderRadius: 20,
-    borderColor: 'gray',
-    borderWidth: 0.2,
     marginTop: 20,
+    borderWidth: Platform.OS === 'android' ? 0.1 : 0.2,
+    borderColor: Colors.gray_dark,
   },
   inputStyle: {
     flex: 1,
@@ -133,6 +133,8 @@ export const createChannelStyles = StyleSheet.create({
     fontSize: 13,
     marginStart: 10,
     alignSelf: 'center',
+    fontFamily: Fonts.light,
+    paddingVertical: 0,
   },
   iconSearch: {
     width: 18,

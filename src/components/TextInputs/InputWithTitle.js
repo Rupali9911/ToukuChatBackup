@@ -43,14 +43,19 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 10,
   },
-  title: {},
+  title: {
+    fontFamily: Fonts.light,
+  },
   inputBox: {
     height: 35,
-    borderWidth: 0.2,
+    borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
     backgroundColor: Colors.white,
     borderRadius: 10,
-    borderColor: Colors.gray,
+    borderColor: Colors.gray_dark,
     marginTop: 10,
     paddingHorizontal: 10,
+    paddingVertical: 0,
+    fontFamily: Fonts.light,
+    fontSize: 13,
   },
 });
