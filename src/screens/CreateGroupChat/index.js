@@ -281,6 +281,7 @@ class CreateGroupChat extends Component {
                 type={'primary'}
                 title={translate('pages.xchat.create')}
                 onPress={() => this.onCreatePress()}
+                loading={this.props.groupLoading}
               />
               <Button
                 type={'translucent'}
@@ -301,6 +302,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     userFriends: state.friendReducer.userFriends,
     friendLoading: state.friendReducer.loading,
+    groupLoading: state.groupReducer.loading,
   };
 };
 

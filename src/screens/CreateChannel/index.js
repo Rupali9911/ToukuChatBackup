@@ -683,6 +683,7 @@ class CreateChannel extends Component {
                 type={'primary'}
                 title={translate('pages.xchat.create')}
                 onPress={() => this.onCreateChannel()}
+                loading={this.props.channelLoading}
               />
               <Button
                 type={'translucent'}
@@ -718,11 +719,7 @@ class CreateChannel extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
-    userData: state.userReducer.userData,
-    userChannels: state.channelReducer.userChannels,
     channelLoading: state.channelReducer.loading,
-    userGroups: state.groupReducer.userGroups,
-    groupLoading: state.groupReducer.loading,
     userFriends: state.friendReducer.userFriends,
     friendLoading: state.friendReducer.loading,
   };

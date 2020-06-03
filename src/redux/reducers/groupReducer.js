@@ -4,6 +4,10 @@ export const GET_USER_GROUP_REQUEST = 'GET_USER_GROUP_REQUEST';
 export const GET_USER_GROUP_SUCCESS = 'GET_USER_GROUP_SUCCESS';
 export const GET_USER_GROUP_FAIL = 'GET_USER_GROUP_FAIL';
 
+export const GET_CREATE_GROUP_REQUEST = 'GET_CREATE_GROUP_REQUEST';
+export const GET_CREATE_GROUP_SUCCESS = 'GET_CREATE_GROUP_SUCCESS';
+export const GET_CREATE_GROUP_FAIL = 'GET_CREATE_GROUP_FAIL';
+
 const initialState = {
   loading: false,
   userGroups: [],
@@ -30,6 +34,24 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case GET_CREATE_GROUP_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case GET_CREATE_GROUP_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_CREATE_GROUP_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
     default:
       return state;
   }
@@ -47,6 +69,19 @@ const getUserGroupsSuccess = (data) => ({
 
 const getUserGroupsFailure = () => ({
   type: GET_USER_GROUP_FAIL,
+});
+
+//Create Group
+const getCreateGroupRequest = () => ({
+  type: GET_CREATE_GROUP_REQUEST,
+});
+
+const getCreateGroupSuccess = () => ({
+  type: GET_CREATE_GROUP_SUCCESS,
+});
+
+const getCreateGroupFailure = () => ({
+  type: GET_CREATE_GROUP_FAIL,
 });
 
 //Get User Groups
@@ -69,15 +104,15 @@ export const getUserGroups = () => (dispatch) =>
 
 export const createNewGroup = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    // dispatch(getCreateGroupRequest());
+    dispatch(getCreateGroupRequest());
     client
       .post(`/xchat/create-group/`, data)
       .then((res) => {
-        // dispatch(getCreateGroupSuccess(res));
+        dispatch(getCreateGroupSuccess());
         resolve(res);
       })
       .catch((err) => {
-        // dispatch(getCreateGroupFailure());
+        dispatch(getCreateGroupFailure());
         reject(err);
       });
   });
