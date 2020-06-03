@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, Image, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
 import {Images, Colors} from '../constants';
+import {ImageLoader} from './Loaders';
 
 export default class RoundedImage extends Component {
   constructor(props) {
@@ -33,8 +34,7 @@ export default class RoundedImage extends Component {
           height: size,
           borderRadius: size / 2,
         }}>
-        <Image
-          source={source}
+        <ImageLoader
           style={{
             width: size,
             height: size,
@@ -43,7 +43,10 @@ export default class RoundedImage extends Component {
             resizeMode: resizeMode,
             borderWidth: borderSize,
             borderColor: borderColor,
+            overflow: 'hidden',
           }}
+          loadingStyle={{size: 'small', color: Colors.primary}}
+          source={source}
         />
         {isBadge ? (
           <View

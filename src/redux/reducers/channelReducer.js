@@ -4,6 +4,10 @@ export const GET_USER_CHANNELS_REQUEST = 'GET_USER_CHANNELS_REQUEST';
 export const GET_USER_CHANNELS_SUCCESS = 'GET_USER_CHANNELS_SUCCESS';
 export const GET_USER_CHANNELS_FAIL = 'GET_USER_CHANNELS_FAIL';
 
+export const GET_CREATE_CHANNEL_REQUEST = 'GET_CREATE_CHANNEL_REQUEST';
+export const GET_CREATE_CHANNEL_SUCCESS = 'GET_CREATE_CHANNEL_SUCCESS';
+export const GET_CREATE_CHANNEL_FAIL = 'GET_CREATE_CHANNEL_FAIL';
+
 const initialState = {
   loading: false,
   userChannels: [],
@@ -30,6 +34,24 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case GET_CREATE_CHANNEL_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case GET_CREATE_CHANNEL_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_CREATE_CHANNEL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
     default:
       return state;
   }
@@ -49,7 +71,20 @@ const getUserChannelsFailure = () => ({
   type: GET_USER_CHANNELS_FAIL,
 });
 
-//Login User
+//Create Channel
+const getCreateChannelRequest = () => ({
+  type: GET_CREATE_CHANNEL_REQUEST,
+});
+
+const getCreateChannelSuccess = () => ({
+  type: GET_CREATE_CHANNEL_SUCCESS,
+});
+
+const getCreateChannelFailure = () => ({
+  type: GET_CREATE_CHANNEL_FAIL,
+});
+
+//Get user channels
 export const getUserChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
@@ -69,15 +104,15 @@ export const getUserChannels = () => (dispatch) =>
 
 export const createNewChannel = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    // dispatch(getCreateGroupRequest());
+    dispatch(getCreateChannelRequest());
     client
       .post(`/xchat/create-channel/`, data)
       .then((res) => {
-        // dispatch(getCreateGroupSuccess(res));
+        dispatch(getCreateChannelSuccess());
         resolve(res);
       })
       .catch((err) => {
-        // dispatch(getCreateGroupFailure());
+        dispatch(getCreateChannelFailure());
         reject(err);
       });
   });

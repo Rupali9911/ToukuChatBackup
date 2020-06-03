@@ -58,6 +58,7 @@ export const Images = {
   image_cover_3: require('../../assets/images/cover_3.jpg'),
   image_cover_4: require('../../assets/images/cover_4.jpg'),
   image_cover_5: require('../../assets/images/cover_5.jpg'),
+  image_loader: require('../../assets/images/loader.gif'),
 };
 
 export const Colors = {
