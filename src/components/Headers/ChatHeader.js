@@ -151,6 +151,7 @@ export default class ChatHeader extends Component {
                       this._closeMenu();
                     }}
                     title={item.title}
+                    titleStyle={{ marginLeft: -25 }}
                   />
                 );
               })}
