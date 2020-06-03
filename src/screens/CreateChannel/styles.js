@@ -1,6 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-const {width, height} = Dimensions.get('window');
+import { StyleSheet, Dimensions } from 'react-native';
+import { Images, Colors, Icons, Fonts } from '../../constants';
+const { width, height } = Dimensions.get('window');
 
 export const createChannelStyles = StyleSheet.create({
   mainContainer: {
@@ -19,8 +19,8 @@ export const createChannelStyles = StyleSheet.create({
     borderColor: '#fff',
   },
   updateBackground: {
-    height: height * 0.03,
-    width: height * 0.03,
+    height: height * 0.02,
+    width: height * 0.02,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -29,13 +29,13 @@ export const createChannelStyles = StyleSheet.create({
     width: '100%',
   },
   imageContainer: {
-    flex: 0.45,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 0.35,
+    // justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   imageView: {
-    height: height * 0.15,
-    width: height * 0.15,
+    height: height * 0.12,
+    width: height * 0.12,
   },
   uploadImageButton: {
     height: height * 0.03,
@@ -53,30 +53,33 @@ export const createChannelStyles = StyleSheet.create({
     tintColor: Colors.orange,
   },
   detailView: {
-    flex: 0.55,
-    justifyContent: 'center',
+    flex: 0.65,
+    paddingLeft: 5,
+    // justifyContent: 'center',
   },
   channelCoverContainer: {
     flex: 1,
   },
   updateBackgroundContainer: {
-    flex: 0.4,
+    flex: 0.55,
     alignItems: 'flex-end',
-    paddingTop: '1%',
+    paddingTop: '2.5%',
     paddingRight: '1%',
   },
   channelInfoContainer: {
-    flex: 0.6,
+    flex: 0.45,
     flexDirection: 'row',
   },
   channelNameInput: {
-    height: 60,
+    height: 50,
     width: '95%',
     fontSize: 25,
     marginBottom: '5%',
     color: Colors.white,
+    paddingHorizontal: 5,
   },
   changeChannelContainer: {
+    paddingHorizontal: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -104,7 +107,8 @@ export const createChannelStyles = StyleSheet.create({
   },
   tabBarTitle: {
     fontSize: 16,
-    color: Colors.orange,
+    fontFamily: Fonts.light,
+    color: Colors.gradient_1,
   },
   tabBarBorder: {
     borderBottomWidth: 2.5,
@@ -163,8 +167,19 @@ export const createChannelStyles = StyleSheet.create({
     fontFamily: Fonts.extralight,
   },
   detailText: {
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.light,
     color: Colors.orange,
+    fontSize: 18,
+  },
+  detailTextInput: {
+    height: 50,
+    color: Colors.orange,
+    marginRight: 2,
+    width: '80%',
+    paddingHorizontal: 5,
+    textAlign: 'right',
+    fontSize: 18,
+    fontFamily: Fonts.medium,
   },
   buttonContainer: {},
 });
