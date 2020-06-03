@@ -12,6 +12,7 @@ import {
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
@@ -29,6 +30,8 @@ class ChangeNameModal extends Component {
   constructor(props) {
     super(props);
     this.state = this.initialState;
+    this.focusNextField = this.focusNextField.bind(this);
+    this.inputs = {};
   }
 
   get initialState() {
@@ -38,6 +41,10 @@ class ChangeNameModal extends Component {
       fisrtNameErr: null,
       lastNameErr: null,
     };
+  }
+
+  focusNextField(id) {
+    this.inputs[id].focus();
   }
 
   onChangePress = () => {
@@ -137,62 +144,70 @@ class ChangeNameModal extends Component {
               onClick={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-          <View style={{padding: 15}}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder={translate('common.firstName')}
-                value={fisrtName}
-                onChangeText={(fisrtName) => this.handleFirstName(fisrtName)}
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+            <View style={{padding: 15}}>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  placeholder={translate('common.firstName')}
+                  value={fisrtName}
+                  onChangeText={(fisrtName) => this.handleFirstName(fisrtName)}
+                  onSubmitEditing={() => {
+                    this.focusNextField('lastname');
+                  }}
+                />
+              </View>
+              {fisrtNameErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(fisrtNameErr).replace(
+                    '[missing {{field}} value]',
+                    translate('common.firstName'),
+                  )}
+                </Text>
+              ) : null}
+              <View style={styles.inputContainer}>
+                <TextInput
+                  ref={(ref) => {
+                    this.inputs['lastname'] = ref;
+                  }}
+                  placeholder={translate('common.lastName')}
+                  value={lastName}
+                  onChangeText={(lastName) => this.handleLastName(lastName)}
+                />
+              </View>
+              {lastNameErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(lastNameErr).replace(
+                    '[missing {{field}} value]',
+                    translate('common.lastName'),
+                  )}
+                </Text>
+              ) : null}
+              <Button
+                isRounded={false}
+                title={translate('pages.setting.changeName')}
+                onPress={this.onChangePress.bind(this)}
+                loading={loading}
               />
             </View>
-            {fisrtNameErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(fisrtNameErr).replace(
-                  '[missing {{field}} value]',
-                  translate('common.firstName'),
-                )}
-              </Text>
-            ) : null}
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder={translate('common.lastName')}
-                value={lastName}
-                onChangeText={(lastName) => this.handleLastName(lastName)}
-              />
-            </View>
-            {lastNameErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(lastNameErr).replace(
-                  '[missing {{field}} value]',
-                  translate('common.lastName'),
-                )}
-              </Text>
-            ) : null}
-            <Button
-              isRounded={false}
-              title={translate('pages.setting.changeName')}
-              onPress={this.onChangePress.bind(this)}
-              loading={loading}
-            />
-          </View>
+          </KeyboardAwareScrollView>
         </View>
       </Modal>
     );

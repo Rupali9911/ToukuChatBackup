@@ -12,6 +12,7 @@ import {
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
@@ -200,115 +201,117 @@ class ChangeEmailModal extends Component {
               onClick={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-          <View style={{padding: 15}}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder={translate('pages.xchat.enterNewemail')}
-                value={newEmail}
-                onChangeText={(newEmail) => this.handleNewEmail(newEmail)}
-                onSubmitEditing={() => {}}
-                autoCapitalize={false}
-                returnKeyType={'done'}
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+            <View style={{padding: 15}}>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  placeholder={translate('pages.xchat.enterNewemail')}
+                  value={newEmail}
+                  onChangeText={(newEmail) => this.handleNewEmail(newEmail)}
+                  onSubmitEditing={() => {}}
+                  autoCapitalize={false}
+                  returnKeyType={'done'}
+                />
+              </View>
+              {newEmailErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(newEmailErr).replace(
+                    '[missing {{field}} value]',
+                    translate('common.email'),
+                  )}
+                </Text>
+              ) : null}
+
+              <Button
+                isRounded={false}
+                title={translate('common.sendCode')}
+                onPress={() => this.onSendCodePress()}
+              />
+
+              <View style={styles.inputContainer}>
+                <TextInput
+                  placeholder={translate('common.oldEmailVerificationCode')}
+                  value={oldEmailVerificationCode}
+                  onChangeText={(code) => this.handleOldCode(code)}
+                  onSubmitEditing={() => {
+                    this.focusNextField('newcode');
+                  }}
+                  autoCapitalize={false}
+                  returnKeyType={'next'}
+                  keyboardType={'number-pad'}
+                />
+              </View>
+              {oldEmailVerificationCodeErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(oldEmailVerificationCodeErr).replace(
+                    '[missing {{field}} value]',
+                    translate('common.oldEmailVerificationCode'),
+                  )}
+                </Text>
+              ) : null}
+
+              <View style={styles.inputContainer}>
+                <TextInput
+                  ref={(ref) => {
+                    this.inputs['newcode'] = ref;
+                  }}
+                  placeholder={translate('common.newEmailVerificationCode')}
+                  value={newEmailVerificationCode}
+                  onChangeText={(code) => this.handleNewCode(code)}
+                  autoCapitalize={false}
+                  returnKeyType={'done'}
+                  keyboardType={'number-pad'}
+                />
+              </View>
+              {newEmailVerificationCodeErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(newEmailVerificationCodeErr).replace(
+                    '[missing {{field}} value]',
+                    translate('common.newEmailVerificationCode'),
+                  )}
+                </Text>
+              ) : null}
+
+              <Button
+                isRounded={false}
+                title={translate('common.submit')}
+                onPress={this.onSubmitData.bind(this)}
+              />
+              <Button
+                isRounded={false}
+                type={'secondary'}
+                title={translate('common.cancel')}
+                onPress={this.onRequestClose.bind(this)}
               />
             </View>
-            {newEmailErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(newEmailErr).replace(
-                  '[missing {{field}} value]',
-                  translate('common.email'),
-                )}
-              </Text>
-            ) : null}
-
-            <Button
-              isRounded={false}
-              title={translate('common.sendCode')}
-              onPress={() => this.onSendCodePress()}
-            />
-
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder={translate('common.oldEmailVerificationCode')}
-                value={oldEmailVerificationCode}
-                onChangeText={(code) => this.handleOldCode(code)}
-                onSubmitEditing={() => {
-                  this.focusNextField('newcode');
-                }}
-                autoCapitalize={false}
-                returnKeyType={'next'}
-                keyboardType={'number-pad'}
-              />
-            </View>
-            {oldEmailVerificationCodeErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(oldEmailVerificationCodeErr).replace(
-                  '[missing {{field}} value]',
-                  translate('common.oldEmailVerificationCode'),
-                )}
-              </Text>
-            ) : null}
-
-            <View style={styles.inputContainer}>
-              <TextInput
-                ref={(ref) => {
-                  this.inputs['newcode'] = ref;
-                }}
-                placeholder={translate('common.newEmailVerificationCode')}
-                value={newEmailVerificationCode}
-                onChangeText={(code) => this.handleNewCode(code)}
-                autoCapitalize={false}
-                returnKeyType={'done'}
-                keyboardType={'number-pad'}
-              />
-            </View>
-            {newEmailVerificationCodeErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(newEmailVerificationCodeErr).replace(
-                  '[missing {{field}} value]',
-                  translate('common.newEmailVerificationCode'),
-                )}
-              </Text>
-            ) : null}
-
-            <Button
-              isRounded={false}
-              title={translate('common.submit')}
-              onPress={this.onSubmitData.bind(this)}
-            />
-            <Button
-              isRounded={false}
-              type={'secondary'}
-              title={translate('common.cancel')}
-              onPress={this.onRequestClose.bind(this)}
-            />
-          </View>
+          </KeyboardAwareScrollView>
         </View>
       </Modal>
     );

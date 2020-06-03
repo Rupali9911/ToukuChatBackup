@@ -4,9 +4,12 @@ export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
 export const GET_USER_FRIENDS_FAIL = 'GET_USER_FRIENDS_FAIL';
 
+export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
+
 const initialState = {
   loading: false,
   userFriends: [],
+  currentFriend: {},
 };
 
 export default function (state = initialState, action) {
@@ -30,6 +33,12 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case SET_CURRENT_FRIEND_DATA:
+      return {
+        ...state,
+        currentFriend: action.payload,
+      };
+
     default:
       return state;
   }
@@ -49,17 +58,36 @@ const getUserFriendsFailure = () => ({
   type: GET_USER_FRIENDS_FAIL,
 });
 
-//Login User
+//Set Current Friend Data
+const setCurrentFriendData = (data) => ({
+  type: SET_CURRENT_FRIEND_DATA,
+  payload: data,
+});
+
+//Get User's Friends
+export const setCurrentFriend = (friend) => (dispatch) =>
+  dispatch(setCurrentFriendData(friend));
+
+//Get User's Friends
 export const getUserFriends = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserFriendsRequest());
     client
       .get(`/xchat/get-my-friends/`)
       .then((res) => {
+        alert(JSON.stringify(res));
         if (res.conversations) {
-          dispatch(getUserFriendsSuccess(res.conversations));
+          var friends = res.conversations;
+          if (friends && friends.length > 0) {
+            friends = friends.map(function (el) {
+              var o = Object.assign({}, el);
+              o.isChecked = false;
+              return o;
+            });
+          }
+          dispatch(getUserFriendsSuccess(friends));
         }
-        resolve(res);
+        resolve(friends);
       })
       .catch((err) => {
         dispatch(getUserFriendsFailure());

@@ -13,6 +13,7 @@ import {
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
@@ -93,7 +94,7 @@ class UserProfile extends Component {
     } = this.state;
     return (
       <View style={styles.Wrapper}>
-        <ScrollView
+        <KeyboardAwareScrollView
           contentContainerStyle={{backgroundColor: Colors.white}}
           showsVerticalScrollIndicator={false}>
           <LinearGradient
@@ -224,7 +225,7 @@ class UserProfile extends Component {
             value={userData.phone}
             editable={false}
           />
-        </ScrollView>
+        </KeyboardAwareScrollView>
         <ChangePassModal
           visible={isChangePassModalVisible}
           onRequestClose={() =>
