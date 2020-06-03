@@ -12,6 +12,7 @@ import {
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import RoundedImage from '../RoundedImage';
@@ -196,116 +197,118 @@ class ChangePassModal extends Component {
               onClick={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-          <View style={{padding: 15}}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder={translate('pages.setting.oldPassword')}
-                value={oldPassword}
-                onChangeText={(oldPassword) =>
-                  this.handleOldPassword(oldPassword)
-                }
-                onSubmitEditing={() => {
-                  this.focusNextField('newpassword');
-                }}
-                autoCapitalize={false}
-                secureTextEntry={true}
-                returnKeyType={'next'}
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+            <View style={{padding: 15}}>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  placeholder={translate('pages.setting.oldPassword')}
+                  value={oldPassword}
+                  onChangeText={(oldPassword) =>
+                    this.handleOldPassword(oldPassword)
+                  }
+                  onSubmitEditing={() => {
+                    this.focusNextField('newpassword');
+                  }}
+                  autoCapitalize={false}
+                  secureTextEntry={true}
+                  returnKeyType={'next'}
+                />
+              </View>
+              {oldPasswordErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(oldPasswordErr).replace(
+                    '[missing {{field}} value]',
+                    translate('pages.setting.oldPassword'),
+                  )}
+                </Text>
+              ) : null}
+
+              <View style={styles.inputContainer}>
+                <TextInput
+                  ref={(ref) => {
+                    this.inputs['newpassword'] = ref;
+                  }}
+                  placeholder={translate('pages.setting.newPassword')}
+                  value={newPassword}
+                  onChangeText={(newPassword) =>
+                    this.handleNewPassword(newPassword)
+                  }
+                  onSubmitEditing={() => {
+                    this.focusNextField('confirmpassword');
+                  }}
+                  autoCapitalize={false}
+                  secureTextEntry={true}
+                  returnKeyType={'next'}
+                />
+              </View>
+              {newPasswordErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(newPasswordErr).replace(
+                    '[missing {{field}} value]',
+                    translate('pages.setting.newPassword'),
+                  )}
+                </Text>
+              ) : null}
+
+              <View style={styles.inputContainer}>
+                <TextInput
+                  ref={(ref) => {
+                    this.inputs['confirmpassword'] = ref;
+                  }}
+                  placeholder={translate('pages.setting.confirmPassword')}
+                  value={confirmPassword}
+                  onChangeText={(confirmPassword) =>
+                    this.handleConfirmPassword(confirmPassword)
+                  }
+                  autoCapitalize={false}
+                  secureTextEntry={true}
+                  returnKeyType={'done'}
+                />
+              </View>
+              {confirmPasswordErr !== null ? (
+                <Text
+                  style={[
+                    globalStyles.smallLightText,
+                    {
+                      color: Colors.danger,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {translate(confirmPasswordErr).replace(
+                    '[missing {{field}} value]',
+                    translate('pages.setting.confirmPassword'),
+                  )}
+                </Text>
+              ) : null}
+
+              <Button
+                isRounded={false}
+                title={translate('pages.resetPassword.changePassword')}
+                onPress={this.onChangePasswordPress.bind(this)}
+                loading={loading}
               />
             </View>
-            {oldPasswordErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(oldPasswordErr).replace(
-                  '[missing {{field}} value]',
-                  translate('pages.setting.oldPassword'),
-                )}
-              </Text>
-            ) : null}
-
-            <View style={styles.inputContainer}>
-              <TextInput
-                ref={(ref) => {
-                  this.inputs['newpassword'] = ref;
-                }}
-                placeholder={translate('pages.setting.newPassword')}
-                value={newPassword}
-                onChangeText={(newPassword) =>
-                  this.handleNewPassword(newPassword)
-                }
-                onSubmitEditing={() => {
-                  this.focusNextField('confirmpassword');
-                }}
-                autoCapitalize={false}
-                secureTextEntry={true}
-                returnKeyType={'next'}
-              />
-            </View>
-            {newPasswordErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(newPasswordErr).replace(
-                  '[missing {{field}} value]',
-                  translate('pages.setting.newPassword'),
-                )}
-              </Text>
-            ) : null}
-
-            <View style={styles.inputContainer}>
-              <TextInput
-                ref={(ref) => {
-                  this.inputs['confirmpassword'] = ref;
-                }}
-                placeholder={translate('pages.setting.confirmPassword')}
-                value={confirmPassword}
-                onChangeText={(confirmPassword) =>
-                  this.handleConfirmPassword(confirmPassword)
-                }
-                autoCapitalize={false}
-                secureTextEntry={true}
-                returnKeyType={'done'}
-              />
-            </View>
-            {confirmPasswordErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {translate(confirmPasswordErr).replace(
-                  '[missing {{field}} value]',
-                  translate('pages.setting.confirmPassword'),
-                )}
-              </Text>
-            ) : null}
-
-            <Button
-              isRounded={false}
-              title={translate('pages.resetPassword.changePassword')}
-              onPress={this.onChangePasswordPress.bind(this)}
-              loading={loading}
-            />
-          </View>
+          </KeyboardAwareScrollView>
         </View>
       </Modal>
     );

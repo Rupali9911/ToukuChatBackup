@@ -27,6 +27,7 @@ const socketLive = io.connect('wss://api-touku.angelium.net/ws/v1', {
 });
 
 export const socket = staging ? socketStaging : socketLive;
+export const websocket = new WebSocket('wss://touku.angelium.net/ws/v1');
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';

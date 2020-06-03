@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -9,10 +9,10 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../constants';
-import { globalStyles } from '../styles';
-const { width, height } = Dimensions.get('window');
-import { getAvatar } from '../utils';
+import {Colors, Icons, Fonts} from '../constants';
+import {globalStyles} from '../styles';
+const {width, height} = Dimensions.get('window');
+import {getAvatar} from '../utils';
 import RoundedImage from './RoundedImage';
 import Button from './Button';
 export default class GroupFriend extends Component {
@@ -35,7 +35,7 @@ export default class GroupFriend extends Component {
       }),
       () => {
         this.props.onAddPress(this.state.isAdded);
-      }
+      },
     );
   };
 
@@ -46,23 +46,22 @@ export default class GroupFriend extends Component {
       }),
       () => {
         this.props.onCheckPress(this.state.isCheck);
-      }
+      },
     );
   };
 
   render() {
-    const { user, isRightButton, isCheckBox } = this.props;
-    const { isAdded, onChecked } = this.state;
+    const {user, isRightButton, isCheckBox} = this.props;
+    const {isAdded, onChecked} = this.state;
     return (
-      <View style={[styles.container, isCheckBox && { paddingHorizontal: 0 }]}>
+      <View style={[styles.container, isCheckBox && {paddingHorizontal: 0}]}>
         {isCheckBox && (
           <View
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               marginRight: 5,
-            }}
-          >
+            }}>
             <TouchableOpacity
               style={[
                 {
@@ -83,8 +82,7 @@ export default class GroupFriend extends Component {
                       borderColor: Colors.green,
                     },
               ]}
-              onPress={this.onChecked.bind(this)}
-            >
+              onPress={this.onChecked.bind(this)}>
               {user.isChecked && (
                 <Image
                   style={{
@@ -104,14 +102,13 @@ export default class GroupFriend extends Component {
           <Text
             style={[
               globalStyles.smallLightText,
-              { color: Colors.black, textAlign: 'left', marginStart: 15 },
-            ]}
-          >
-            {user.username}
+              {color: Colors.black, textAlign: 'left', marginStart: 15},
+            ]}>
+            {isCheckBox ? '' : user.username}
           </Text>
         </View>
         {isRightButton && (
-          <View style={{ flex: 0.2 }}>
+          <View style={{flex: 0.2}}>
             <Button
               title={'Add'}
               type={isAdded ? 'primary' : 'translucent'}

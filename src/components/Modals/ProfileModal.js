@@ -71,6 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     margin: 0,
     display: 'flex',
+    overflow: 'visible',
+    zIndex: 0,
   },
   Wrapper: {
     width: '80%',
@@ -84,7 +86,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    overflow: 'hidden',
+    overflow: 'visible',
+    zIndex: 0,
   },
   firstView: {
     height: 150,
