@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { View, TextInput, StyleSheet, Text, Platform } from 'react-native';
 import { Fonts, Colors } from '../../constants';
 
 export default class TextAreaWithTitle extends Component {
@@ -45,7 +45,14 @@ export default class TextAreaWithTitle extends Component {
           </View>
           {rightTitle && (
             <View style={{ flex: 0.5, alignItems: 'flex-end' }}>
-              <Text style={styles.rightFont}>{rightTitle}</Text>
+              <Text
+                style={[
+                  styles.rightFont,
+                  titleFontSize && { fontSize: titleFontSize - 2 },
+                ]}
+              >
+                {rightTitle}
+              </Text>
             </View>
           )}
         </View>
@@ -72,7 +79,7 @@ const styles = StyleSheet.create({
   },
   title: {},
   textBox: {
-    borderWidth: 0.2,
+    borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
     backgroundColor: '#fff',
     borderRadius: 10,
     borderColor: 'gray',
@@ -80,8 +87,10 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
     paddingHorizontal: 10,
+    fontFamily: Fonts.light,
   },
   rightFont: {
-    fontFamily: Fonts.extralight,
+    fontFamily: Fonts.light,
+    color: Colors.gray_dark,
   },
 });
