@@ -172,6 +172,7 @@ export default class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.translate')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
@@ -183,6 +184,7 @@ export default class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.reply')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
@@ -193,6 +195,7 @@ export default class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.edit')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
@@ -203,6 +206,7 @@ export default class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.delete')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
@@ -217,6 +221,7 @@ export default class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.unsend')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
@@ -228,6 +233,7 @@ export default class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.copy')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
       </Menu>
     );
