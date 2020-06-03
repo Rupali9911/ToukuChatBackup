@@ -15,6 +15,24 @@ export default class GroupChats extends Component {
       data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
+      headerRightIconMenu: [
+        {
+          id: 1,
+          title: translate('pages.xchat.groupDetails'),
+          icon: Icons.icon_menu,
+          onPress: () => {
+            this.props.navigation.navigate('CreateGroupChat');
+          },
+        },
+        {
+          id: 2,
+          title: translate('pages.xchat.leave'),
+          icon: Icons.icon_menu,
+          onPress: () => {
+            alert('Leave');
+          },
+        },
+      ],
       isReply: false,
       repliedMessage: null,
       messagesArray: [
@@ -168,7 +186,7 @@ export default class GroupChats extends Component {
             data.total_members + ' ' + translate('pages.xchat.members')
           }
           onBackPress={() => this.props.navigation.goBack()}
-          onRightIconPress={() => alert('more')}
+          menuItems={this.state.headerRightIconMenu}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}

@@ -28,6 +28,16 @@ export default class ChannelChats extends Component {
       data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
+      headerRightIconMenu: [
+        {
+          id: 1,
+          title: translate('pages.xchat.channel'),
+          icon: Icons.icon_menu,
+          onPress: () => {
+            this.props.navigation.navigate('CreateGroupChat');
+          },
+        },
+      ],
       isReply: false,
       repliedMessage: null,
       messagesArray: [
@@ -201,7 +211,8 @@ export default class ChannelChats extends Component {
             data.total_members + ' ' + translate('pages.xchat.followers')
           }
           onBackPress={() => this.props.navigation.goBack()}
-          onRightIconPress={() => alert('more')}
+          menuItems={this.state.headerRightIconMenu}
+          navigation={this.props.navigation}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}

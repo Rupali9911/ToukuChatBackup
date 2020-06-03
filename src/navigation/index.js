@@ -1,5 +1,5 @@
-import {createAppContainer, createSwitchNavigator} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import Authentication from '../screens/Authentication';
 import LoginSignUp from '../screens/LoginSignUp';
@@ -11,6 +11,7 @@ import NeedSupport from '../screens/NeedSupport';
 import ChannelChats from '../screens/ChannelChats';
 import GroupChats from '../screens/GroupChats';
 import FriendChats from '../screens/FriendChats';
+import CreateFriendGroup from '../screens/CreateFriendGroup';
 import Drawer from './DrawerNavigation';
 
 const AppStack = createStackNavigator(
@@ -19,13 +20,14 @@ const AppStack = createStackNavigator(
     ChannelChats: ChannelChats,
     GroupChats: GroupChats,
     FriendChats: FriendChats,
+    CreateFriendGroup: CreateFriendGroup,
   },
   {
     initialRouteName: 'Drawer',
     defaultNavigationOptions: {
       header: null,
     },
-  },
+  }
 );
 
 const AuthStack = createStackNavigator(
@@ -42,7 +44,7 @@ const AuthStack = createStackNavigator(
     defaultNavigationOptions: {
       header: null,
     },
-  },
+  }
 );
 
 export default createAppContainer(
@@ -54,6 +56,6 @@ export default createAppContainer(
     },
     {
       initialRouteName: 'Authentication',
-    },
-  ),
+    }
+  )
 );
