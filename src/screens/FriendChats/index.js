@@ -1,27 +1,19 @@
-import React, { Component, Fragment } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import React, {Component} from 'react';
+import {ImageBackground} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
+import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import { translate } from '../../redux/reducers/languageReducer';
-import { globalStyles } from '../../styles';
-import { getAvatar } from '../../utils';
-import { Colors, Fonts, Images, Icons } from '../../constants';
-import { ConfirmationModal } from '../../components/Modals';
+import {translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import {Images} from '../../constants';
+import {ConfirmationModal} from '../../components/Modals';
 
-export default class FriendChats extends Component {
+class FriendChats extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
       showConfirmationModal: false,
@@ -112,12 +104,7 @@ export default class FriendChats extends Component {
   }
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -150,7 +137,7 @@ export default class FriendChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { messagesArray } = this.state;
+    const {messagesArray} = this.state;
 
     const repliedMessage = messagesArray.find((item) => item.id === messageId);
     this.setState({
@@ -168,7 +155,7 @@ export default class FriendChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -176,15 +163,15 @@ export default class FriendChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
   }
 
   toggleConfirmationModal = () => {
-    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
+    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
   };
 
   onCancel = () => {
@@ -198,24 +185,20 @@ export default class FriendChats extends Component {
   };
 
   render() {
-    const {
-      data,
-      newMessageText,
-      showConfirmationModal,
-      orientation,
-    } = this.state;
+    const {newMessageText, showConfirmationModal, orientation} = this.state;
+    const {currentFriend} = this.props;
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
-          title={data.username}
+          title={currentFriend.username}
           description={
-            data.total_members + ' ' + translate('pages.xchat.members')
+            currentFriend.total_members + ' ' + translate('pages.xchat.members')
           }
           type={'friend'}
-          image={data.profile_picture}
+          image={currentFriend.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
         />
@@ -242,3 +225,13 @@ export default class FriendChats extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    currentFriend: state.friendReducer.currentFriend,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

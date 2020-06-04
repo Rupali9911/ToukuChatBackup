@@ -1,6 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons, Fonts } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons, Fonts} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const channelInfoStyles = StyleSheet.create({
   mainContainer: {
@@ -28,11 +28,15 @@ export const channelInfoStyles = StyleSheet.create({
     width: height * 0.12,
   },
   profileImage: {
-    height: '90%',
-    width: '90%',
+    height: '100%',
+    width: '100%',
     backgroundColor: Colors.gray,
     borderWidth: 3,
     borderColor: Colors.white,
+  },
+  coverImage: {
+    height: height * 0.2,
+    width: height * 0.2,
   },
   detailView: {
     flex: 0.65,
