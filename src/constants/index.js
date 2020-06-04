@@ -45,6 +45,7 @@ export const Icons = {
   icon_upload: require('../../assets/icons/upload.png'),
   icon_send_button: require('../../assets/icons/send_button.png'),
   icon_camera_grad: require('../../assets/icons/camera_grad.png'),
+  icon_setting: require('../../assets/icons/setting.png'),
 };
 
 export const Images = {

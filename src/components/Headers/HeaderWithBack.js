@@ -35,7 +35,7 @@ export default class HeaderWithBack extends Component {
   };
 
   render() {
-    const { isBack, title, onBackPress } = this.props;
+    const { isBack, title, onBackPress, isCentered } = this.props;
     return (
       <View
         style={[
@@ -87,7 +87,12 @@ export default class HeaderWithBack extends Component {
             justifyContent: 'center',
           }}
         >
-          <Text style={[globalStyles.normalLightText, { textAlign: 'left' }]}>
+          <Text
+            style={[
+              globalStyles.normalLightText,
+              { textAlign: isCentered ? 'center' : 'left' },
+            ]}
+          >
             {title}
           </Text>
         </View>

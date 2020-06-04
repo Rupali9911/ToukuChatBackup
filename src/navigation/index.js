@@ -12,15 +12,31 @@ import ChannelChats from '../screens/ChannelChats';
 import GroupChats from '../screens/GroupChats';
 import FriendChats from '../screens/FriendChats';
 import CreateFriendGroup from '../screens/CreateFriendGroup';
+import ChannelInfo from '../screens/ChannelInfo';
+import Timeline from '../screens/Timeline';
 import Drawer from './DrawerNavigation';
 
+const ChannelStack = createStackNavigator(
+  {
+    ChannelChatScreen: ChannelChats,
+    ChannelInfo: ChannelInfo,
+  },
+  {
+    initialRouteName: 'ChannelChatScreen',
+    defaultNavigationOptions: {
+      header: null,
+    },
+  }
+);
 const AppStack = createStackNavigator(
   {
     Drawer: Drawer,
-    ChannelChats: ChannelChats,
     GroupChats: GroupChats,
     FriendChats: FriendChats,
     CreateFriendGroup: CreateFriendGroup,
+    ChannelChats: ChannelChats,
+    ChannelInfo: ChannelInfo,
+    Timeline: Timeline,
   },
   {
     initialRouteName: 'Drawer',
