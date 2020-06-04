@@ -12,6 +12,7 @@ export default class RoundedImage extends Component {
 
   render() {
     const {
+      style,
       source,
       size,
       clickable,
@@ -29,11 +30,13 @@ export default class RoundedImage extends Component {
         activeOpacity={0.6}
         disabled={!clickable}
         onPress={onClick}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-        }}>
+        style={
+          style || {
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+          }
+        }>
         <ImageLoader
           style={{
             width: size,
@@ -45,7 +48,6 @@ export default class RoundedImage extends Component {
             borderColor: borderColor,
             overflow: 'hidden',
           }}
-          loadingStyle={{size: 'small', color: Colors.primary}}
           source={source}
         />
         {isBadge ? (
@@ -78,7 +80,7 @@ export default class RoundedImage extends Component {
 
 RoundedImage.propTypes = {
   source: PropTypes.any,
-  size: PropTypes.number,
+  size: PropTypes.any,
   clickable: PropTypes.bool,
   isRounded: PropTypes.bool,
   isBadge: PropTypes.bool,

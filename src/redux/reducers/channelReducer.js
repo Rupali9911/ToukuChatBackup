@@ -10,6 +10,10 @@ export const GET_CREATE_CHANNEL_REQUEST = 'GET_CREATE_CHANNEL_REQUEST';
 export const GET_CREATE_CHANNEL_SUCCESS = 'GET_CREATE_CHANNEL_SUCCESS';
 export const GET_CREATE_CHANNEL_FAIL = 'GET_CREATE_CHANNEL_FAIL';
 
+export const GET_CHANNEL_DETAIL_REQUEST = 'GET_CHANNEL_DETAIL_REQUEST';
+export const GET_CHANNEL_DETAIL_SUCCESS = 'GET_CHANNEL_DETAIL_SUCCESS';
+export const GET_CHANNEL_DETAIL_FAIL = 'GET_CHANNEL_DETAIL_FAIL';
+
 const initialState = {
   loading: false,
   userChannels: [],
@@ -61,12 +65,42 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    //Get Channel Detail
+    case GET_CHANNEL_DETAIL_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case GET_CHANNEL_DETAIL_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_CHANNEL_DETAIL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
     default:
       return state;
   }
 }
 
 //Actions
+
+//Set Current Channel
+const setCurrentChannelData = (data) => ({
+  type: SET_CURRENT_CHANNEL_DATA,
+  payload: data,
+});
+
+export const setCurrentChannel = (channel) => (dispatch) =>
+  dispatch(setCurrentChannelData(channel));
+
+//Get User Channels
 const getUserChannelsRequest = () => ({
   type: GET_USER_CHANNELS_REQUEST,
 });
@@ -80,30 +114,6 @@ const getUserChannelsFailure = () => ({
   type: GET_USER_CHANNELS_FAIL,
 });
 
-//Create Channel
-const getCreateChannelRequest = () => ({
-  type: GET_CREATE_CHANNEL_REQUEST,
-});
-
-const getCreateChannelSuccess = () => ({
-  type: GET_CREATE_CHANNEL_SUCCESS,
-});
-
-const getCreateChannelFailure = () => ({
-  type: GET_CREATE_CHANNEL_FAIL,
-});
-
-//Set Current Channel Data
-const setCurrentChannelData = (data) => ({
-  type: SET_CURRENT_CHANNEL_DATA,
-  payload: data,
-});
-
-//Set Current Friend
-export const setCurrentChannel = (channel) => (dispatch) =>
-  dispatch(setCurrentChannelData(channel));
-
-//Get user channels
 export const getUserChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
@@ -121,6 +131,19 @@ export const getUserChannels = () => (dispatch) =>
       });
   });
 
+//Create New Channel
+const getCreateChannelRequest = () => ({
+  type: GET_CREATE_CHANNEL_REQUEST,
+});
+
+const getCreateChannelSuccess = () => ({
+  type: GET_CREATE_CHANNEL_SUCCESS,
+});
+
+const getCreateChannelFailure = () => ({
+  type: GET_CREATE_CHANNEL_FAIL,
+});
+
 export const createNewChannel = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getCreateChannelRequest());
@@ -137,15 +160,29 @@ export const createNewChannel = (data) => (dispatch) =>
   });
 
 //Get channel details
+const getChannelDetailRequest = () => ({
+  type: GET_CHANNEL_DETAIL_REQUEST,
+});
+
+const getChannelDetailSuccess = () => ({
+  type: GET_CHANNEL_DETAIL_SUCCESS,
+});
+
+const getChannelDetailFailure = () => ({
+  type: GET_CHANNEL_DETAIL_FAIL,
+});
+
 export const getChannelDetails = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    dispatch(getChannelDetailRequest());
     client
       .get(`/xchat/channel-details/` + id + '/')
       .then((res) => {
-        alert(JSON.stringify(res));
+        dispatch(getChannelDetailSuccess());
         resolve(res);
       })
       .catch((err) => {
+        dispatch(getChannelDetailFailure());
         reject(err);
       });
   });

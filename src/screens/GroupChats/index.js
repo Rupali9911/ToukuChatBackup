@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {ImageBackground, Dimensions, Platform} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
 import {ChatHeader} from '../../components/Headers';
@@ -9,7 +10,7 @@ import {Colors, Fonts, Images, Icons} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {ConfirmationModal} from '../../components/Modals';
 
-export default class GroupChats extends Component {
+class GroupChats extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -227,3 +228,11 @@ export default class GroupChats extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {};
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

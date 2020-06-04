@@ -9,9 +9,19 @@ export default class ListLoader extends Component {
   }
 
   render() {
+    const {large} = this.props;
     return (
-      <View style={{padding: 15}}>
-        <ActivityIndicator color={Colors.primary} />
+      <View
+        style={{
+          flex: 1,
+          padding: 15,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <ActivityIndicator
+          color={Colors.primary}
+          size={large ? 'large' : 'small'}
+        />
       </View>
     );
   }

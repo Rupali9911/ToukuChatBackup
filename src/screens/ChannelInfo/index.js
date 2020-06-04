@@ -1,35 +1,28 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
   Image,
   TouchableOpacity,
   Text,
-  TextInput,
-  StyleSheet,
   Dimensions,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {connect} from 'react-redux';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import { channelInfoStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {channelInfoStyles} from './styles';
+import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import { getImage } from '../../utils';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { getUserProfile } from '../../redux/reducers/userReducer';
-import {
-  getUserChannels,
-  createNewChannel,
-} from '../../redux/reducers/channelReducer';
-import { getUserGroups } from '../../redux/reducers/groupReducer';
-import { getUserFriends } from '../../redux/reducers/friendReducer';
+import {Images, Icons, Fonts} from '../../constants';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getChannelDetails} from '../../redux/reducers/channelReducer';
 import Button from '../../components/Button';
-const { width, height } = Dimensions.get('window');
+import {ListLoader, ImageLoader} from '../../components/Loaders';
+import Toast from '../../components/Toast';
+import RoundedImage from '../../components/RoundedImage';
+import {getImage} from '../../utils';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -38,23 +31,7 @@ class ChannelInfo extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       channelImagePath: {},
-      channelData: [
-        {
-          id: 1,
-          title: 'posts',
-          count: 10,
-        },
-        {
-          id: 2,
-          title: 'followers',
-          count: 10,
-        },
-        {
-          id: 3,
-          title: 'vip',
-          count: 2,
-        },
-      ],
+      channelData: [],
       tabBarItem: [
         {
           id: 1,
@@ -80,158 +57,192 @@ class ChannelInfo extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+
+    this.props
+      .getChannelDetails(this.props.currentChannel.id)
+      .then((res) => {
+        this.setState({channelData: res});
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: 'Something went wrong!',
+          type: 'primary',
+        });
+        this.props.navigation.goBack();
+      });
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   render() {
-    const { tabBarItem, channelData } = this.state;
+    const {channelData, tabBarItem} = this.state;
+    const {channelLoading} = this.props;
+
+    const channelCountDetails = [
+      {
+        id: 1,
+        title: 'posts',
+        count: channelData.post,
+      },
+      {
+        id: 2,
+        title: 'followers',
+        count: channelData.members,
+      },
+      {
+        id: 3,
+        title: 'vip',
+        count: channelData.vip,
+      },
+    ];
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             isCentered
             onBackPress={() => this.props.navigation.goBack()}
             title="Channel Info"
           />
-          <KeyboardAwareScrollView
-            contentContainerStyle={channelInfoStyles.mainContainer}
-            showsVerticalScrollIndicator={false}
-            bounces={false}
-          >
-            <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.8, y: 0.3 }}
-              locations={[0.1, 0.5, 1]}
-              colors={['#c13468', '#ee2e3b', '#fa573a']}
-              style={channelInfoStyles.channelImageContainer}
-            >
-              <ImageBackground
-                style={channelInfoStyles.channelCoverContainer}
-                // source={setSelectedBgItem.url}
-              >
-                <View
-                  style={channelInfoStyles.updateBackgroundContainer}
-                ></View>
-                <View style={channelInfoStyles.channelInfoContainer}>
-                  <View style={channelInfoStyles.imageContainer}>
-                    <View style={channelInfoStyles.imageView}>
-                      <Image
-                        // source={getImage(this.state.channelImagePath.uri)}
-                        resizeMode={'cover'}
-                        style={channelInfoStyles.profileImage}
+          {!channelLoading ? (
+            <KeyboardAwareScrollView
+              contentContainerStyle={channelInfoStyles.mainContainer}
+              showsVerticalScrollIndicator={false}
+              bounces={false}>
+              <LinearGradient
+                start={{x: 0.1, y: 0.7}}
+                end={{x: 0.8, y: 0.3}}
+                locations={[0.1, 0.5, 1]}
+                colors={['#c13468', '#ee2e3b', '#fa573a']}
+                style={channelInfoStyles.channelImageContainer}>
+                <ImageLoader
+                  style={channelInfoStyles.channelCoverContainer}
+                  placeholderStyle={channelInfoStyles.coverImage}
+                  source={{uri: channelData.cover_image}}>
+                  <View
+                    style={channelInfoStyles.updateBackgroundContainer}></View>
+                  <View style={channelInfoStyles.channelInfoContainer}>
+                    <View style={channelInfoStyles.imageContainer}>
+                      <View style={channelInfoStyles.imageView}>
+                        <RoundedImage
+                          source={getImage(channelData.channel_picture)}
+                          style={channelInfoStyles.profileImage}
+                          isRounded={false}
+                          resizeMode={'cover'}
+                          size={'100%'}
+                        />
+                      </View>
+                    </View>
+                    <View style={channelInfoStyles.detailView}>
+                      <View
+                        style={channelInfoStyles.changeChannelContainer}
+                        // onPress={() => this.toggleChannelBusinessMenu()}
+                      >
+                        <Text
+                          style={channelInfoStyles.channelNameText}
+                          numberOfLines={1}>
+                          {channelData.name}
+                        </Text>
+                      </View>
+                      <View
+                        style={channelInfoStyles.changeChannelContainer}
+                        // onPress={() => this.toggleChannelBusinessMenu()}
+                      >
+                        <Text
+                          style={channelInfoStyles.channelNameText}
+                          numberOfLines={1}>
+                          {channelData.channel_status}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={channelInfoStyles.channelInfoDetail}>
+                    <View style={channelInfoStyles.channelDetailStatus}>
+                      {channelCountDetails.map((item, index) => {
+                        return (
+                          <View style={channelInfoStyles.detailStatusItem}>
+                            <Text
+                              style={channelInfoStyles.detailStatusItemCount}>
+                              {item.count}
+                            </Text>
+                            <Text
+                              style={channelInfoStyles.detailStatusItemName}>
+                              {translate(`pages.xchat.${item.title}`)}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                    <View style={channelInfoStyles.channelDetailButton}>
+                      <Button
+                        title={translate('pages.xchat.unfollow')}
+                        type={'transparent'}
+                        height={30}
+                        onPress={() => alert('unfollow')}
                       />
                     </View>
                   </View>
-                  <View style={channelInfoStyles.detailView}>
-                    <View
-                      style={channelInfoStyles.changeChannelContainer}
-                      // onPress={() => this.toggleChannelBusinessMenu()}
-                    >
+                </ImageLoader>
+              </LinearGradient>
+              <View style={channelInfoStyles.tabBar}>
+                {tabBarItem.map((item, index) => {
+                  return (
+                    <TouchableOpacity
+                      style={channelInfoStyles.tabItem}
+                      onPress={item.action}>
+                      <Image
+                        source={item.icon}
+                        style={[
+                          channelInfoStyles.tabIamge,
+                          {
+                            opacity: item.title === 'about' ? 1 : 0.5,
+                          },
+                        ]}
+                        resizeMode={'center'}
+                      />
                       <Text
-                        style={channelInfoStyles.channelNameText}
-                        numberOfLines={1}
-                      >
-                        {translate('pages.xchat.channelName')}
+                        style={[
+                          channelInfoStyles.tabTitle,
+                          {
+                            fontFamily:
+                              item.title === 'about'
+                                ? Fonts.regular
+                                : Fonts.extralight,
+                          },
+                        ]}>
+                        {translate(`pages.xchat.${item.title}`)}
                       </Text>
-                    </View>
-                    <View
-                      style={channelInfoStyles.changeChannelContainer}
-                      // onPress={() => this.toggleChannelBusinessMenu()}
-                    >
-                      <Text
-                        style={channelInfoStyles.channelNameText}
-                        numberOfLines={1}
-                      >
-                        {translate('pages.xchat.status')}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                <View style={channelInfoStyles.channelInfoDetail}>
-                  <View style={channelInfoStyles.channelDetailStatus}>
-                    {channelData.map((item, index) => {
-                      return (
-                        <View style={channelInfoStyles.detailStatusItem}>
-                          <Text style={channelInfoStyles.detailStatusItemCount}>
-                            {item.count}
-                          </Text>
-                          <Text style={channelInfoStyles.detailStatusItemName}>
-                            {translate(`pages.xchat.${item.title}`)}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                  <View style={channelInfoStyles.channelDetailButton}>
-                    <Button
-                      title={translate('pages.xchat.unfollow')}
-                      type={'transparent'}
-                      height={30}
-                      onPress={() => alert('unfollow')}
-                    />
-                  </View>
-                </View>
-              </ImageBackground>
-            </LinearGradient>
-            <View style={channelInfoStyles.tabBar}>
-              {tabBarItem.map((item, index) => {
-                return (
-                  <TouchableOpacity
-                    style={channelInfoStyles.tabItem}
-                    onPress={item.action}
-                  >
-                    <Image
-                      source={item.icon}
-                      style={[
-                        channelInfoStyles.tabIamge,
-                        {
-                          opacity: item.title === 'about' ? 1 : 0.5,
-                        },
-                      ]}
-                      resizeMode={'center'}
-                    />
-                    <Text
-                      style={[
-                        channelInfoStyles.tabTitle,
-                        {
-                          fontFamily:
-                            item.title === 'about'
-                              ? Fonts.regular
-                              : Fonts.extralight,
-                        },
-                      ]}
-                    >
-                      {translate(`pages.xchat.${item.title}`)}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-            <View style={channelInfoStyles.about}>
-              <Text style={channelInfoStyles.aboutHeading}>
-                {translate('pages.xchat.about')}
-              </Text>
-            </View>
-            <View style={channelInfoStyles.buttonContainer}>
-              <Button
-                isRounded={false}
-                type={'primary'}
-                title={translate('pages.xchat.affiliate')}
-                onPress={() => alert('Affiliate')}
-              />
-            </View>
-          </KeyboardAwareScrollView>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              <View style={channelInfoStyles.about}>
+                <Text style={channelInfoStyles.aboutHeading}>
+                  {translate('pages.xchat.about')}
+                </Text>
+              </View>
+              <View style={channelInfoStyles.buttonContainer}>
+                <Button
+                  isRounded={false}
+                  type={'primary'}
+                  title={translate('pages.xchat.affiliate')}
+                  onPress={() => alert('Affiliate')}
+                />
+              </View>
+            </KeyboardAwareScrollView>
+          ) : (
+            <ListLoader large />
+          )}
         </View>
       </ImageBackground>
     );
@@ -241,17 +252,12 @@ const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     channelLoading: state.channelReducer.loading,
-    userFriends: state.friendReducer.userFriends,
-    friendLoading: state.friendReducer.loading,
+    currentChannel: state.channelReducer.currentChannel,
   };
 };
 
 const mapDispatchToProps = {
-  getUserProfile,
-  getUserChannels,
-  getUserGroups,
-  getUserFriends,
-  createNewChannel,
+  getChannelDetails,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelInfo);

@@ -124,8 +124,8 @@ class Home extends Component {
   }
 
   onOpenChannelChats = (item) => {
-    this.props.navigation.navigate('ChannelChats');
     this.props.setCurrentChannel(item);
+    this.props.navigation.navigate('ChannelChats');
   };
 
   onOpenGroupChats = (item) => {
@@ -135,10 +135,8 @@ class Home extends Component {
   };
 
   onOpenFriendChats = (item) => {
-    this.props.navigation.navigate('FriendChats', {
-      data: item,
-    });
     this.props.setCurrentFriend(item);
+    this.props.navigation.navigate('FriendChats');
   };
 
   renderUserChannels() {

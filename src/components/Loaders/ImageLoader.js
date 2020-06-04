@@ -40,7 +40,6 @@ class ImageLoader extends React.Component {
       borderRadius,
       backgroundColor,
       children,
-      loadingStyle,
       placeholderSource,
       placeholderStyle,
       customImagePlaceholderDefaultStyle,
