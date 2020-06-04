@@ -55,6 +55,8 @@ export const channelInfoStyles = StyleSheet.create({
     flex: 0.15,
     flexDirection: 'row',
     paddingHorizontal: '3%',
+    alignItems: 'center',
+    paddingVertical: '2%',
   },
   channelDetailStatus: {
     flex: 0.65,

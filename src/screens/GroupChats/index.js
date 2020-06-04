@@ -7,6 +7,7 @@ import { translate } from '../../redux/reducers/languageReducer';
 import { globalStyles } from '../../styles';
 import { Colors, Fonts, Images, Icons } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
+import { ConfirmationModal } from '../../components/Modals';
 
 export default class GroupChats extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class GroupChats extends Component {
       data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
+      showConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -29,7 +31,7 @@ export default class GroupChats extends Component {
           title: translate('pages.xchat.leave'),
           icon: 'user-slash',
           onPress: () => {
-            alert('Leave');
+            this.toggleConfirmationModal();
           },
         },
       ],
@@ -173,8 +175,27 @@ export default class GroupChats extends Component {
     this.setState({ newMessageText: message });
   }
 
+  toggleConfirmationModal = () => {
+    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
+  };
+
+  onCancel = () => {
+    console.log('ChannelChats -> onCancel -> onCancel');
+    this.toggleConfirmationModal();
+  };
+
+  onConfirm = () => {
+    console.log('ChannelChats -> onConfirm -> onConfirm');
+    this.toggleConfirmationModal();
+  };
+
   render() {
-    const { data, newMessageText } = this.state;
+    const {
+      data,
+      newMessageText,
+      showConfirmationModal,
+      orientation,
+    } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -198,6 +219,14 @@ export default class GroupChats extends Component {
           repliedMessage={this.state.repliedMessage}
           isReply={this.state.isReply}
           cancelReply={this.cancelReply}
+        />
+        <ConfirmationModal
+          orientation={orientation}
+          visible={showConfirmationModal}
+          onCancel={this.onCancel}
+          onConfirm={this.onConfirm}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.wantToLeaveText')}
         />
       </ImageBackground>
     );

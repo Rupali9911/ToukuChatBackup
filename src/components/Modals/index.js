@@ -4,6 +4,7 @@ import ChangeEmailModal from './ChangeEmailModal';
 import ChangeNameModal from './ChangeNameModal';
 import ChannelCategoryModal from './ChannelCategoryModal';
 import BackgroundImgModal from './BackgroundImgModal';
+import ConfirmationModal from './ConfirmationModal';
 
 export {
   ProfileModal,
@@ -12,4 +13,5 @@ export {
   ChangeNameModal,
   ChannelCategoryModal,
   BackgroundImgModal,
+  ConfirmationModal,
 };
