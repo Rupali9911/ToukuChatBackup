@@ -215,7 +215,7 @@ export default class FriendChats extends Component {
             data.total_members + ' ' + translate('pages.xchat.members')
           }
           type={'friend'}
-          image={getAvatar(data.profile_picture)}
+          image={data.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
         />

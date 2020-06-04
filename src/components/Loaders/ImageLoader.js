@@ -62,25 +62,22 @@ class ImageLoader extends React.Component {
               {borderRadius: borderRadius},
               backgroundColor ? {backgroundColor: backgroundColor} : {},
             ]}>
-            {/* {this.props.isShowActivity && !this.state.isError && (
-              <ActivityIndicator
-                style={styles.activityIndicator}
-                size={loadingStyle ? loadingStyle.size : 'small'}
-                color={loadingStyle ? loadingStyle.color : 'gray'}
-              />
-            )} */}
-            <Image
-              style={
-                placeholderStyle
-                  ? placeholderStyle
-                  : [
-                      styles.imagePlaceholderStyles,
-                      customImagePlaceholderDefaultStyle,
-                    ]
-              }
-              source={
-                placeholderSource ? placeholderSource : Images.image_loader
-              }></Image>
+            {this.props.isShowActivity &&
+            !this.state.isError &&
+            source != null ? (
+              <Image
+                style={
+                  placeholderStyle
+                    ? placeholderStyle
+                    : [
+                        styles.imagePlaceholderStyles,
+                        customImagePlaceholderDefaultStyle,
+                      ]
+                }
+                source={
+                  placeholderSource ? placeholderSource : Images.image_loader
+                }></Image>
+            ) : null}
           </View>
         )}
         {this.props.children && (
@@ -107,8 +104,8 @@ const styles = {
     alignItems: 'center',
   },
   imagePlaceholderStyles: {
-    width: 100,
-    height: 100,
+    width: 60,
+    height: 60,
     resizeMode: 'contain',
     justifyContent: 'center',
     alignItems: 'center',

@@ -64,7 +64,7 @@ const setCurrentFriendData = (data) => ({
   payload: data,
 });
 
-//Get User's Friends
+//Set Current Friend
 export const setCurrentFriend = (friend) => (dispatch) =>
   dispatch(setCurrentFriendData(friend));
 
@@ -75,7 +75,6 @@ export const getUserFriends = () => (dispatch) =>
     client
       .get(`/xchat/get-my-friends/`)
       .then((res) => {
-        alert(JSON.stringify(res));
         if (res.conversations) {
           var friends = res.conversations;
           if (friends && friends.length > 0) {
@@ -91,6 +90,18 @@ export const getUserFriends = () => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getUserFriendsFailure());
+        reject(err);
+      });
+  });
+
+export const getFriendRequests = () => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/list-friend-request/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
         reject(err);
       });
   });

@@ -36,10 +36,14 @@ import {socket, websocket} from '../../helpers/api';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
-import {getUserChannels} from '../../redux/reducers/channelReducer';
+import {
+  getUserChannels,
+  setCurrentChannel,
+} from '../../redux/reducers/channelReducer';
 import {getUserGroups} from '../../redux/reducers/groupReducer';
 import {
   getUserFriends,
+  getFriendRequests,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
 
@@ -75,6 +79,7 @@ class Home extends Component {
     this.props.getUserChannels();
     this.props.getUserGroups();
     this.props.getUserFriends();
+    this.props.getFriendRequests();
 
     // socket.connect();
 
@@ -119,9 +124,8 @@ class Home extends Component {
   }
 
   onOpenChannelChats = (item) => {
-    this.props.navigation.navigate('ChannelChats', {
-      data: item,
-    });
+    this.props.navigation.navigate('ChannelChats');
+    this.props.setCurrentChannel(item);
   };
 
   onOpenGroupChats = (item) => {
@@ -402,8 +406,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getUserProfile,
   getUserChannels,
+  setCurrentChannel,
   getUserGroups,
   getUserFriends,
+  getFriendRequests,
   setCurrentFriend,
 };
 

@@ -7,6 +7,7 @@ import moment from 'moment';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
+import {getImage} from '../../utils';
 
 export default class ChannelListItem extends Component {
   constructor(props) {
@@ -25,21 +26,25 @@ export default class ChannelListItem extends Component {
         onPress={onPress}
         style={styles.container}>
         <View style={styles.firstView}>
-          {/* {image != null ? (
-            <Image source={{uri: image}} style={styles.squareImage} />
-          ) : ( */}
-          <LinearGradient
-            start={{x: 0.1, y: 0.7}}
-            end={{x: 0.5, y: 0.2}}
-            locations={[0.1, 0.6, 1]}
-            colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-            style={styles.squareImage}>
-            <Text style={globalStyles.normalRegularText}>
-              {title.charAt(0).toUpperCase()}
-              {secondUpperCase}
-            </Text>
-          </LinearGradient>
-          {/* )} */}
+          {image != null ? (
+            <RoundedImage
+              source={getImage(image)}
+              isRounded={false}
+              size={50}
+            />
+          ) : (
+            <LinearGradient
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.5, y: 0.2}}
+              locations={[0.1, 0.6, 1]}
+              colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+              style={styles.squareImage}>
+              <Text style={globalStyles.normalRegularText}>
+                {title.charAt(0).toUpperCase()}
+                {secondUpperCase}
+              </Text>
+            </LinearGradient>
+          )}
           <View style={styles.secondView}>
             <View style={{flex: 1, alignItems: 'flex-start'}}>
               <Text
