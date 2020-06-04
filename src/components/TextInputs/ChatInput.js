@@ -59,7 +59,10 @@ export default class ChatInput extends Component {
         >
           <Image
             source={Icons.icon_send_button}
-            style={chatInput.sandButtonImage}
+            style={[
+              chatInput.sandButtonImage,
+              value != 0 && { tintColor: null },
+            ]}
             resizeMode={'contain'}
           />
         </TouchableOpacity>

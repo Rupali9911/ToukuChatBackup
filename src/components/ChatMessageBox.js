@@ -6,17 +6,11 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { Menu, Divider } from 'react-native-paper';
 import ChatMessageBubble from './ChatMessageBubble';
 
 import { Colors, Icons, Fonts, Images } from '../constants';
 import RoundedImage from './RoundedImage';
-import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
-import { relativeTimeThreshold } from 'moment';
 
-const { width, height } = Dimensions.get('window');
-let borderRadius = 20;
 export default class ChatMessageBox extends Component {
   constructor(props) {
     super(props);

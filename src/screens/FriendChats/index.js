@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,13 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
+import { ChatHeader } from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import {translate} from '../../redux/reducers/languageReducer';
-import {globalStyles} from '../../styles';
-import {getAvatar} from '../../utils';
-import {Colors, Fonts, Images, Icons} from '../../constants';
+import { translate } from '../../redux/reducers/languageReducer';
+import { globalStyles } from '../../styles';
+import { getAvatar } from '../../utils';
+import { Colors, Fonts, Images, Icons } from '../../constants';
+import { ConfirmationModal } from '../../components/Modals';
 
 export default class FriendChats extends Component {
   constructor(props) {
@@ -23,13 +24,14 @@ export default class FriendChats extends Component {
       data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
+      showConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
           title: translate('pages.xchat.unfriend'),
           icon: 'user-times',
           onPress: () => {
-            alert('Unfriend');
+            this.toggleConfirmationModal();
           },
         },
         {
@@ -110,7 +112,12 @@ export default class FriendChats extends Component {
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      messagesArray,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
@@ -143,7 +150,7 @@ export default class FriendChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    const { messagesArray } = this.state;
 
     const repliedMessage = messagesArray.find((item) => item.id === messageId);
     this.setState({
@@ -161,7 +168,7 @@ export default class FriendChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -169,18 +176,39 @@ export default class FriendChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
+
+  toggleConfirmationModal = () => {
+    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
+  };
+
+  onCancel = () => {
+    console.log('ChannelChats -> onCancel -> onCancel');
+    this.toggleConfirmationModal();
+  };
+
+  onConfirm = () => {
+    console.log('ChannelChats -> onConfirm -> onConfirm');
+    this.toggleConfirmationModal();
+  };
+
   render() {
-    const {data, newMessageText} = this.state;
+    const {
+      data,
+      newMessageText,
+      showConfirmationModal,
+      orientation,
+    } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={data.username}
           description={
@@ -201,6 +229,14 @@ export default class FriendChats extends Component {
           repliedMessage={this.state.repliedMessage}
           isReply={this.state.isReply}
           cancelReply={this.cancelReply}
+        />
+        <ConfirmationModal
+          visible={showConfirmationModal}
+          onCancel={this.onCancel}
+          onConfirm={this.onConfirm}
+          orientation={orientation}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toastr.selectedUserWillBeRemoved')}
         />
       </ImageBackground>
     );
