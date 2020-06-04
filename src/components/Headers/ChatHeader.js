@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, StyleSheet, Platform} from 'react-native';
 import Orientation from 'react-native-orientation';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 
 import RoundedImage from '../RoundedImage';
-import { Icons, Colors, Images } from '../../constants';
-import { isIphoneX } from '../../utils';
-import { globalStyles } from '../../styles';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { Menu } from 'react-native-paper';
+import {Icons, Colors, Images} from '../../constants';
+import {isIphoneX, getImage, getAvatar} from '../../utils';
+import {globalStyles} from '../../styles';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {Menu} from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 export default class ChatHeader extends Component {
@@ -21,20 +21,20 @@ export default class ChatHeader extends Component {
     };
   }
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => this.setState({visible: true});
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => this.setState({visible: false});
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
   }
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   render() {
@@ -66,12 +66,11 @@ export default class ChatHeader extends Component {
                 ? 20
                 : 40,
           },
-        ]}
-      >
+        ]}>
         <View style={styles.subContainer}>
           <RoundedImage
             isRounded={false}
-            size={18}
+            size={15}
             source={Icons.icon_back}
             clickable={true}
             onClick={onBackPress}
@@ -79,35 +78,43 @@ export default class ChatHeader extends Component {
           />
           {type === 'friend' ? (
             <View style={styles.subContainer}>
-              <View style={{ marginHorizontal: 10 }}>
-                <RoundedImage size={40} source={image} />
+              <View style={{marginHorizontal: 10}}>
+                <RoundedImage size={40} source={getAvatar(image)} />
               </View>
               <Text style={globalStyles.normalRegularText}>{title}</Text>
             </View>
           ) : (
             <View style={styles.subContainer}>
-              <LinearGradient
-                start={{ x: 0.1, y: 0.7 }}
-                end={{ x: 0.5, y: 0.2 }}
-                locations={[0.1, 0.6, 1]}
-                colors={[
-                  Colors.gradient_1,
-                  Colors.gradient_2,
-                  Colors.gradient_3,
-                ]}
-                style={styles.squareImage}
-              >
-                <Text style={globalStyles.normalRegularText}>
-                  {title.charAt(0).toUpperCase()}
-                  {secondUpperCase}
-                </Text>
-              </LinearGradient>
+              {image != null ? (
+                <View style={{marginHorizontal: 10}}>
+                  <RoundedImage
+                    source={getAvatar(image)}
+                    isRounded={false}
+                    size={40}
+                  />
+                </View>
+              ) : (
+                <LinearGradient
+                  start={{x: 0.1, y: 0.7}}
+                  end={{x: 0.5, y: 0.2}}
+                  locations={[0.1, 0.6, 1]}
+                  colors={[
+                    Colors.gradient_1,
+                    Colors.gradient_2,
+                    Colors.gradient_3,
+                  ]}
+                  style={styles.squareImage}>
+                  <Text style={globalStyles.normalRegularText}>
+                    {title.charAt(0).toUpperCase()}
+                    {secondUpperCase}
+                  </Text>
+                </LinearGradient>
+              )}
               <View
                 style={{
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
-                }}
-              >
+                }}>
                 <Text numberOfLines={1} style={globalStyles.normalRegularText}>
                   {title}
                 </Text>
@@ -118,9 +125,9 @@ export default class ChatHeader extends Component {
             </View>
           )}
         </View>
-        <View style={{ marginEnd: 15 }}>
+        <View style={{marginEnd: 15}}>
           <Menu
-            style={{ marginTop: 40 }}
+            style={{marginTop: 40}}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
             anchor={
@@ -132,8 +139,7 @@ export default class ChatHeader extends Component {
                 onClick={this._openMenu}
                 resizeMode={'contain'}
               />
-            }
-          >
+            }>
             {menuItems &&
               menuItems.map((item, index) => {
                 console.log('ChatHeader -> render -> item', item);
@@ -151,7 +157,7 @@ export default class ChatHeader extends Component {
                       this._closeMenu();
                     }}
                     title={item.title}
-                    titleStyle={{ marginLeft: -25 }}
+                    titleStyle={{marginLeft: -25}}
                   />
                 );
               })}
@@ -175,7 +181,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     backgroundColor: Colors.orange_light,
   },
   subContainer: {
@@ -208,7 +215,7 @@ ChatHeader.defaultProps = {
   title: 'Title',
   description: 'Description',
   type: 'channel',
-  image: Images.image_default_profile,
+  image: null,
   onBackPress: null,
   onRightIconPress: null,
 };

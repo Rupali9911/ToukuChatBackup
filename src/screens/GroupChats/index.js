@@ -1,13 +1,13 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground, Dimensions, Platform } from 'react-native';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground, Dimensions, Platform} from 'react-native';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
-import { translate } from '../../redux/reducers/languageReducer';
-import { globalStyles } from '../../styles';
-import { Colors, Fonts, Images, Icons } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import {Colors, Fonts, Images, Icons} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
-import { ConfirmationModal } from '../../components/Modals';
+import {ConfirmationModal} from '../../components/Modals';
 
 export default class GroupChats extends Component {
   constructor(props) {
@@ -104,12 +104,7 @@ export default class GroupChats extends Component {
   }
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -142,7 +137,7 @@ export default class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { messagesArray } = this.state;
+    const {messagesArray} = this.state;
 
     const repliedMessage = messagesArray.find((item) => item.id === messageId);
     this.setState({
@@ -160,7 +155,7 @@ export default class GroupChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -168,15 +163,15 @@ export default class GroupChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
   }
 
   toggleConfirmationModal = () => {
-    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
+    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
   };
 
   onCancel = () => {
@@ -199,8 +194,7 @@ export default class GroupChats extends Component {
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={data.group_name}
           description={
@@ -208,6 +202,7 @@ export default class GroupChats extends Component {
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
+          image={data.group_picture}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}

@@ -1,17 +1,18 @@
-import React, { Component } from 'react';
-import { ImageBackground, Dimensions } from 'react-native';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
-import { ChatHeader } from '../../components/Headers';
-import { translate } from '../../redux/reducers/languageReducer';
-import { globalStyles } from '../../styles';
-import { Colors, Fonts, Images, Icons } from '../../constants';
+
+import {ChatHeader} from '../../components/Headers';
+import {translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import {Images} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 
-export default class ChannelChats extends Component {
+class ChannelChats extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
       headerRightIconMenu: [
@@ -93,7 +94,7 @@ export default class ChannelChats extends Component {
   }
 
   onMessageSend = () => {
-    const { newMessageText, messagesArray } = this.state;
+    const {newMessageText, messagesArray} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -113,12 +114,7 @@ export default class ChannelChats extends Component {
   };
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -151,7 +147,7 @@ export default class ChannelChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { messagesArray } = this.state;
+    const {messagesArray} = this.state;
 
     const repliedMessage = messagesArray.find((item) => item.id === messageId);
     this.setState({
@@ -169,7 +165,7 @@ export default class ChannelChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -177,28 +173,31 @@ export default class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
   }
 
   render() {
-    const { data, newMessageText } = this.state;
+    const {newMessageText} = this.state;
+    const {currentChannel} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
-          title={data.name}
+          title={currentChannel.name}
           description={
-            data.total_members + ' ' + translate('pages.xchat.followers')
+            currentChannel.total_members +
+            ' ' +
+            translate('pages.xchat.followers')
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
           navigation={this.props.navigation}
+          image={currentChannel.channel_picture}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}
@@ -215,3 +214,13 @@ export default class ChannelChats extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    currentChannel: state.channelReducer.currentChannel,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);
