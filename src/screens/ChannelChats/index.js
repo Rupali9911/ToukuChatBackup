@@ -1,25 +1,11 @@
-import React, { Component, Fragment } from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StyleSheet,
-  ImageBackground,
-  Dimensions,
-  Platform,
-} from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React, { Component } from 'react';
+import { ImageBackground, Dimensions } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { ScrollView } from 'react-native-gesture-handler';
-
-import ChatMessageBox from '../../components/ChatMessageBox';
 import { ChatHeader } from '../../components/Headers';
 import { translate } from '../../redux/reducers/languageReducer';
 import { globalStyles } from '../../styles';
-import ChatInput from '../../components/TextInputs/ChatInput';
 import { Colors, Fonts, Images, Icons } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
-const { width, height } = Dimensions.get('window');
 
 export default class ChannelChats extends Component {
   constructor(props) {
@@ -31,10 +17,10 @@ export default class ChannelChats extends Component {
       headerRightIconMenu: [
         {
           id: 1,
-          title: translate('pages.xchat.channel'),
+          title: translate('pages.xchat.channelDetails'),
           icon: 'bars',
           onPress: () => {
-            this.props.navigation.navigate('CreateGroupChat');
+            this.props.navigation.navigate('ChannelInfo');
           },
         },
       ],

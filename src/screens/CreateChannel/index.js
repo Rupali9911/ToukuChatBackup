@@ -69,14 +69,14 @@ class CreateChannel extends Component {
         id: 1,
         label: 'onlineSaloon',
         value: 'onlineSaloon',
-        isSelected: false,
+        isSelected: true,
       },
       channelCategory: [
         {
           id: 1,
           label: 'onlineSaloon',
           value: 'onlineSaloon',
-          isSelected: false,
+          isSelected: true,
         },
         {
           id: 2,
@@ -94,7 +94,7 @@ class CreateChannel extends Component {
           id: 4,
           label: 'businesses',
           value: 'businesses',
-          isSelected: true,
+          isSelected: false,
         },
         {
           id: 5,
