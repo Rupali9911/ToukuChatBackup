@@ -1,12 +1,12 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
-import {translate} from '../../redux/reducers/languageReducer';
-import {globalStyles} from '../../styles';
-import {Images} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { translate } from '../../redux/reducers/languageReducer';
+import { globalStyles } from '../../styles';
+import { Images } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 
 class ChannelChats extends Component {
@@ -89,12 +89,44 @@ class ChannelChats extends Component {
           userName: 'raj',
           time: '20:27',
         },
+        {
+          id: 7,
+          messageType: 'image',
+          url: 'https://miro.medium.com/max/1400/0*mhcKpcQqduW4KPcB',
+          isUser: true,
+          time: '20:27',
+        },
+        {
+          id: 8,
+          messageType: 'image',
+          url:
+            'https://www.peakperformance.com/dw/image/v2/BDGL_PRD/on/demandware.static/-/Sites-master-catalog-pp/default/dwe2be5cf8/zoom/G66816006_089_model1.jpg?sw=1110&sh=1480',
+          isUser: false,
+          userName: 'raj',
+          time: '20:27',
+        },
+        {
+          id: 9,
+          messageType: 'image',
+          url:
+            'https://www.peakperformance.com/dw/image/v2/BDGL_PRD/on/demandware.static/-/Sites-master-catalog-pp/default/dwe2be5cf8/zoom/G66816006_089_model1.jpg?sw=1110&sh=1480',
+          isUser: true,
+          time: '20:27',
+        },
+        {
+          id: 10,
+          messageType: 'image',
+          url: 'https://miro.medium.com/max/1400/0*mhcKpcQqduW4KPcB',
+          isUser: false,
+          userName: 'raj',
+          time: '20:27',
+        },
       ],
     };
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray} = this.state;
+    const { newMessageText, messagesArray } = this.state;
     if (!newMessageText) {
       return;
     }
@@ -114,7 +146,12 @@ class ChannelChats extends Component {
   };
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      messagesArray,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
@@ -147,7 +184,7 @@ class ChannelChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    const { messagesArray } = this.state;
 
     const repliedMessage = messagesArray.find((item) => item.id === messageId);
     this.setState({
@@ -165,7 +202,7 @@ class ChannelChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -173,20 +210,21 @@ class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   render() {
-    const {newMessageText} = this.state;
-    const {currentChannel} = this.props;
+    const { newMessageText } = this.state;
+    const { currentChannel } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentChannel.name}
           description={

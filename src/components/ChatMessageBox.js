@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
   Text,
+  Image,
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
@@ -10,6 +11,8 @@ import ChatMessageBubble from './ChatMessageBubble';
 
 import { Colors, Icons, Fonts, Images } from '../constants';
 import RoundedImage from './RoundedImage';
+import ChatMessageImage from './ChatMessageImage';
+const { width, height } = Dimensions.get('window');
 
 export default class ChatMessageBox extends Component {
   constructor(props) {
@@ -17,6 +20,7 @@ export default class ChatMessageBox extends Component {
     this.state = {
       longPressMenu: false,
       selectedMessageId: null,
+      isPortrait: false,
     };
   }
 
@@ -44,9 +48,17 @@ export default class ChatMessageBox extends Component {
     this._openMenu();
   };
 
+  isPortrait = async (url) => {
+    await Image.getSize(url, (width, height) => {
+      this.setState({
+        isPortrait: height > width,
+      });
+    });
+  };
   render() {
-    const { longPressMenu, selectedMessageId } = this.state;
+    const { longPressMenu, selectedMessageId, isPortrait } = this.state;
     const { message, isUser, time, status, onMessageReply } = this.props;
+    message.messageType === 'image' && this.isPortrait(message.url);
     return !isUser ? (
       <View
         style={[
@@ -69,16 +81,24 @@ export default class ChatMessageBox extends Component {
             resizeMode={'cover'}
           />
           <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
-            <ChatMessageBubble
-              message={message}
-              isUser={isUser}
-              onMessageReply={onMessageReply}
-              onMessagePress={(id) => this.onMessagePress(id)}
-              longPressMenu={longPressMenu}
-              openMenu={this._openMenu}
-              closeMenu={this._closeMenu}
-              selectedMessageId={selectedMessageId}
-            />
+            {message.messageType === 'image' ? (
+              <ChatMessageImage
+                message={message}
+                isUser={isUser}
+                isPortrait={isPortrait}
+              />
+            ) : (
+              <ChatMessageBubble
+                message={message}
+                isUser={isUser}
+                onMessageReply={onMessageReply}
+                onMessagePress={(id) => this.onMessagePress(id)}
+                longPressMenu={longPressMenu}
+                openMenu={this._openMenu}
+                closeMenu={this._closeMenu}
+                selectedMessageId={selectedMessageId}
+              />
+            )}
             <View
               style={{
                 marginHorizontal: '1.5%',
@@ -118,16 +138,24 @@ export default class ChatMessageBox extends Component {
             <Text style={styles.statusText}>{status}</Text>
             <Text style={styles.statusText}>{time}</Text>
           </View>
-          <ChatMessageBubble
-            message={message}
-            isUser={isUser}
-            onMessageReply={onMessageReply}
-            onMessagePress={(id) => this.onMessagePress(id)}
-            longPressMenu={longPressMenu}
-            openMenu={this._openMenu}
-            closeMenu={this._closeMenu}
-            selectedMessageId={selectedMessageId}
-          />
+          {message.messageType === 'image' ? (
+            <ChatMessageImage
+              message={message}
+              isUser={isUser}
+              isPortrait={isPortrait}
+            />
+          ) : (
+            <ChatMessageBubble
+              message={message}
+              isUser={isUser}
+              onMessageReply={onMessageReply}
+              onMessagePress={(id) => this.onMessagePress(id)}
+              longPressMenu={longPressMenu}
+              openMenu={this._openMenu}
+              closeMenu={this._closeMenu}
+              selectedMessageId={selectedMessageId}
+            />
+          )}
         </View>
       </View>
     );
