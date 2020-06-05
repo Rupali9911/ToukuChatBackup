@@ -209,6 +209,7 @@ class CreateGroupChat extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={createGroupStyles.mainContainer}
             showsVerticalScrollIndicator={false}
+            extraScrollHeight={100}
           >
             <View style={createGroupStyles.imageContainer}>
               <View style={createGroupStyles.imageView}>

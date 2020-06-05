@@ -57,8 +57,15 @@ export default class ChatMessageBox extends Component {
   };
   render() {
     const { longPressMenu, selectedMessageId, isPortrait } = this.state;
-    const { message, isUser, time, status, onMessageReply } = this.props;
-    message.messageType === 'image' && this.isPortrait(message.url);
+    const {
+      message,
+      isUser,
+      time,
+      status,
+      onMessageReply,
+      orientation,
+    } = this.props;
+    message.msg_type === 'image' && this.isPortrait(message.message_body);
     return !isUser ? (
       <View
         style={[
@@ -81,11 +88,12 @@ export default class ChatMessageBox extends Component {
             resizeMode={'cover'}
           />
           <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
-            {message.messageType === 'image' ? (
+            {message.msg_type === 'image' ? (
               <ChatMessageImage
                 message={message}
                 isUser={isUser}
                 isPortrait={isPortrait}
+                orientation={orientation}
               />
             ) : (
               <ChatMessageBubble
@@ -107,7 +115,9 @@ export default class ChatMessageBox extends Component {
               }}
             >
               <Text style={styles.statusText}>{status}</Text>
-              <Text style={styles.statusText}>{time}</Text>
+              <Text
+                style={styles.statusText}
+              >{`${time.getHours()}:${time.getMinutes()}`}</Text>
             </View>
           </View>
         </View>
@@ -136,13 +146,16 @@ export default class ChatMessageBox extends Component {
             }}
           >
             <Text style={styles.statusText}>{status}</Text>
-            <Text style={styles.statusText}>{time}</Text>
+            <Text style={styles.statusText}>
+              {`${time.getHours()}:${time.getMinutes()}`}
+            </Text>
           </View>
-          {message.messageType === 'image' ? (
+          {message.msg_type === 'image' ? (
             <ChatMessageImage
               message={message}
               isUser={isUser}
               isPortrait={isPortrait}
+              orientation={orientation}
             />
           ) : (
             <ChatMessageBubble
@@ -164,7 +177,7 @@ export default class ChatMessageBox extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    maxWidth: '65%',
+    maxWidth: width * 0.65,
     paddingHorizontal: '3%',
   },
   statusText: {
