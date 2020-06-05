@@ -1,18 +1,18 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {Images} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Images } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
-import {translate} from '../../redux/reducers/languageReducer';
+import { translate } from '../../redux/reducers/languageReducer';
 import {
   getChannelConversations,
   readAllChannelMessages,
 } from '../../redux/reducers/channelReducer';
-import {ListLoader} from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 import NoData from '../../components/NoData';
 
 class ChannelChats extends Component {
@@ -164,34 +164,39 @@ class ChannelChats extends Component {
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray} = this.state;
+    const { newMessageText, conversations } = this.state;
     if (!newMessageText) {
       return;
     }
     const newMessage = {
-      id: messagesArray ? messagesArray.length + 1 : 1,
+      id: conversations ? conversations.length + 1 : 1,
       message: newMessageText,
       isUser: true,
       time: '20:27',
     };
 
-    let newMessageArray = messagesArray ? messagesArray : [];
+    let newMessageArray = conversations ? conversations : [];
     newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
+      conversations: newMessageArray,
       newMessageText: '',
     });
   };
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      conversations,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
     let newMessage;
     if (isReply) {
       newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
+        id: conversations ? conversations.length + 1 : 1,
         message: newMessageText,
         isUser: true,
         time: '20:27',
@@ -199,17 +204,17 @@ class ChannelChats extends Component {
       };
     } else {
       newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
+        id: conversations ? conversations.length + 1 : 1,
         message: newMessageText,
         isUser: true,
         time: '20:27',
       };
     }
 
-    let newMessageArray = messagesArray ? messagesArray : [];
+    let newMessageArray = conversations ? conversations : [];
     newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
+      conversations: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -217,9 +222,10 @@ class ChannelChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    console.log('ChannelChats -> onReply -> messageId', messageId);
+    const { conversations } = this.state;
 
-    const repliedMessage = messagesArray.find((item) => item.id === messageId);
+    const repliedMessage = conversations.find((item) => item.id === messageId);
     this.setState({
       isReply: true,
       repliedMessage: repliedMessage,
@@ -235,7 +241,7 @@ class ChannelChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -244,52 +250,57 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
+          this.setState({ conversations: res.conversation }, () => {
+            console.log(
+              'Convertation 1-1-1--1-1-1-1-1-1-1-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1',
+              this.state.conversations
+            );
+          });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
         }
       });
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   renderConversations() {
-    const {channelLoading} = this.props;
-    const {conversations, newMessageText} = this.state;
+    const { channelLoading } = this.props;
+    const { conversations, newMessageText } = this.state;
 
     if (channelLoading) {
       return <ListLoader />;
-    } else if (conversations.length > 0) {
+    } else {
       return (
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}
           onMessageSend={this.onMessageSend}
           onMessageReply={(id) => this.onReply(id)}
           newMessageText={newMessageText}
-          messages={this.state.messagesArray}
+          // messages={this.state.conversations}
+          messages={conversations}
           orientation={this.state.orientation}
           repliedMessage={this.state.repliedMessage}
           isReply={this.state.isReply}
           cancelReply={this.cancelReply}
         />
       );
-    } else {
-      return <NoData title={'Start conversations'} />;
     }
   }
 
   render() {
-    const {newMessageText, conversations} = this.state;
-    const {currentChannel} = this.props;
+    const { newMessageText, conversations } = this.state;
+    const { currentChannel } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentChannel.name}
           description={

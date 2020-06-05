@@ -123,7 +123,7 @@ export default class ChatMessageBubble extends Component {
                       fontFamily: Fonts.light,
                     }}
                   >
-                    {message.message}
+                    {message.message_body}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -155,7 +155,7 @@ export default class ChatMessageBubble extends Component {
                   {message.repliedTo &&
                     this.renderReplyMessage(message.repliedTo)}
                   <Text style={{ color: 'white', fontSize: 15 }}>
-                    {message.message}
+                    {message.message_body}
                   </Text>
                 </TouchableOpacity>
               </LinearGradient>

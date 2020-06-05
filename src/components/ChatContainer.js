@@ -33,10 +33,11 @@ export default class ChatContainer extends Component {
         <ChatMessageBox
           key={item.id}
           message={item}
-          isUser={item.isUser}
-          time={item.time}
-          status={item.status}
+          isUser={item.to_user}
+          time={new Date(item.created)}
+          // status={item.status}
           onMessageReply={(id) => this.props.onMessageReply(id)}
+          orientation={this.props.orientation}
         />
       );
     });
