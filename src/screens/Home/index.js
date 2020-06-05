@@ -38,6 +38,7 @@ import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {
   getUserChannels,
+  getFollowingChannels,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
 import {
@@ -80,6 +81,7 @@ class Home extends Component {
     Orientation.addOrientationListener(this._orientationDidChange);
 
     this.props.getUserChannels();
+    this.props.getFollowingChannels();
     this.props.getUserGroups();
     this.props.getUserFriends();
     this.props.getFriendRequests();
@@ -395,6 +397,7 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
     userChannels: state.channelReducer.userChannels,
+    followingChannels: state.channelReducer.followingChannels,
     channelLoading: state.channelReducer.loading,
     userGroups: state.groupReducer.userGroups,
     groupLoading: state.groupReducer.loading,
@@ -406,6 +409,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getUserProfile,
   getUserChannels,
+  getFollowingChannels,
   setCurrentChannel,
   getUserGroups,
   setCurrentGroup,
