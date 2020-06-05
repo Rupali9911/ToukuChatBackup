@@ -1,5 +1,7 @@
 import {client} from '../../helpers/api';
 
+export const SET_CURRENT_GROUP_DATA = 'SET_CURRENT_GROUP_DATA';
+
 export const GET_USER_GROUP_REQUEST = 'GET_USER_GROUP_REQUEST';
 export const GET_USER_GROUP_SUCCESS = 'GET_USER_GROUP_SUCCESS';
 export const GET_USER_GROUP_FAIL = 'GET_USER_GROUP_FAIL';
@@ -11,10 +13,17 @@ export const GET_CREATE_GROUP_FAIL = 'GET_CREATE_GROUP_FAIL';
 const initialState = {
   loading: false,
   userGroups: [],
+  currentGroup: {},
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
+    case SET_CURRENT_GROUP_DATA:
+      return {
+        ...state,
+        currentGroup: action.payload,
+      };
+
     case GET_USER_GROUP_REQUEST:
       return {
         ...state,
@@ -57,7 +66,16 @@ export default function (state = initialState, action) {
   }
 }
 
-//Actions
+//Set Current Channel
+const setCurrentGroupData = (data) => ({
+  type: SET_CURRENT_GROUP_DATA,
+  payload: data,
+});
+
+export const setCurrentGroup = (group) => (dispatch) =>
+  dispatch(setCurrentGroupData(group));
+
+//Get User Groups
 const getUserGroupsRequest = () => ({
   type: GET_USER_GROUP_REQUEST,
 });
@@ -71,20 +89,6 @@ const getUserGroupsFailure = () => ({
   type: GET_USER_GROUP_FAIL,
 });
 
-//Create Group
-const getCreateGroupRequest = () => ({
-  type: GET_CREATE_GROUP_REQUEST,
-});
-
-const getCreateGroupSuccess = () => ({
-  type: GET_CREATE_GROUP_SUCCESS,
-});
-
-const getCreateGroupFailure = () => ({
-  type: GET_CREATE_GROUP_FAIL,
-});
-
-//Get User Groups
 export const getUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserGroupsRequest());
@@ -101,6 +105,19 @@ export const getUserGroups = () => (dispatch) =>
         reject(err);
       });
   });
+
+//Create Group
+const getCreateGroupRequest = () => ({
+  type: GET_CREATE_GROUP_REQUEST,
+});
+
+const getCreateGroupSuccess = () => ({
+  type: GET_CREATE_GROUP_SUCCESS,
+});
+
+const getCreateGroupFailure = () => ({
+  type: GET_CREATE_GROUP_FAIL,
+});
 
 export const createNewGroup = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {

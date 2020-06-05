@@ -14,7 +14,6 @@ class GroupChats extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
       showConfirmationModal: false,
@@ -186,24 +185,20 @@ class GroupChats extends Component {
   };
 
   render() {
-    const {
-      data,
-      newMessageText,
-      showConfirmationModal,
-      orientation,
-    } = this.state;
+    const {newMessageText, showConfirmationModal, orientation} = this.state;
+    const {currentGroup} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <ChatHeader
-          title={data.group_name}
+          title={currentGroup.group_name}
           description={
-            data.total_members + ' ' + translate('pages.xchat.members')
+            currentGroup.total_members + ' ' + translate('pages.xchat.members')
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
-          image={data.group_picture}
+          image={currentGroup.group_picture}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}
@@ -230,7 +225,9 @@ class GroupChats extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    currentGroup: state.groupReducer.currentGroup,
+  };
 };
 
 const mapDispatchToProps = {};

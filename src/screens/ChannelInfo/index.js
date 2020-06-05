@@ -185,7 +185,11 @@ class ChannelInfo extends Component {
                     </View>
                     <View style={channelInfoStyles.channelDetailButton}>
                       <Button
-                        title={translate('pages.xchat.unfollow')}
+                        title={
+                          channelData.is_member
+                            ? translate('pages.xchat.unfollow')
+                            : translate('pages.xchat.follow')
+                        }
                         type={'transparent'}
                         height={30}
                         onPress={() => alert('unfollow')}
