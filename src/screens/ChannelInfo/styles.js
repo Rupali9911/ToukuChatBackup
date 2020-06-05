@@ -35,8 +35,8 @@ export const channelInfoStyles = StyleSheet.create({
     borderColor: Colors.white,
   },
   coverImage: {
-    height: height * 0.2,
-    width: height * 0.2,
+    height: 70,
+    width: 70,
   },
   detailView: {
     flex: 0.65,

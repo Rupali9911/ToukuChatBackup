@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   View,
   Text,
@@ -9,16 +9,18 @@ import {
   Image,
   Keyboard,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {connect} from 'react-redux';
+import {ScrollView} from 'react-native-gesture-handler';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
-import { translate } from '../redux/reducers/languageReducer';
-import { Colors, Fonts, Images, Icons } from '../constants';
-const { width, height } = Dimensions.get('window');
+import {translate} from '../redux/reducers/languageReducer';
+import {Colors, Fonts, Images, Icons} from '../constants';
+import NoData from './NoData';
+const {width, height} = Dimensions.get('window');
 
-export default class ChatContainer extends Component {
+class ChatContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -26,7 +28,12 @@ export default class ChatContainer extends Component {
 
   renderMessage = (messages) => {
     if (!messages || !messages.length) {
-      return;
+      return (
+        <NoData
+          imageAvailable
+          title={translate('pages.xchat.startANewConversationHere')}
+        />
+      );
     }
     const msg = messages.map((item, index) => {
       return (
@@ -67,7 +74,7 @@ export default class ChatContainer extends Component {
     } = this.props;
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{flex: 1}}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
@@ -75,8 +82,7 @@ export default class ChatContainer extends Component {
         }}
         onKeyboardDidShow={(contentWidth, contentHeight) => {
           this.scrollView.scrollToEnd();
-        }}
-      >
+        }}>
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -90,21 +96,19 @@ export default class ChatContainer extends Component {
                   ? height * 0.01
                   : height * 0.03,
             },
-          ]}
-        >
+          ]}>
           <ScrollView
             style={{}}
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
-              isReply && { paddingBottom: '20%' },
+              isReply && {paddingBottom: '20%'},
             ]}
             ref={(view) => {
               this.scrollView = view;
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd();
-            }}
-          >
+            }}>
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
@@ -120,21 +124,19 @@ export default class ChatContainer extends Component {
                 bottom: 20,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
-              }}
-            >
+              }}>
               <View
                 style={{
                   flex: 3,
                   flexDirection: 'row',
                   alignItems: 'center',
-                }}
-              >
-                <View style={{ flex: 8 }}>
-                  <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+                }}>
+                <View style={{flex: 8}}>
+                  <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.isUser ? 'You' : repliedMessage.userName}
                   </Text>
                 </View>
-                <View style={{ flex: 2, alignItems: 'flex-end' }}>
+                <View style={{flex: 2, alignItems: 'flex-end'}}>
                   <TouchableOpacity
                     style={{
                       //   paddingHorizontal: 5,
@@ -145,8 +147,7 @@ export default class ChatContainer extends Component {
                       borderRadius: 100,
                       backgroundColor: Colors.gradient_1,
                     }}
-                    onPress={cancelReply}
-                  >
+                    onPress={cancelReply}>
                     <Image
                       source={Icons.icon_close}
                       style={{
@@ -158,11 +159,8 @@ export default class ChatContainer extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={{ flex: 7, justifyContent: 'center', width: '95%' }}>
-                <Text
-                  numberOfLines={2}
-                  style={{ fontFamily: Fonts.extralight }}
-                >
+              <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
+                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {repliedMessage.message}
                 </Text>
               </View>
@@ -186,7 +184,7 @@ const chatStyle = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: { flexGrow: 1 },
+  messareAreaScroll: {flexGrow: 1},
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -207,3 +205,13 @@ const chatStyle = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    userData: state.userReducer.userData,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatContainer);

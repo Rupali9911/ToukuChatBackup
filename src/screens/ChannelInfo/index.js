@@ -16,13 +16,16 @@ import {channelInfoStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import {Images, Icons, Fonts} from '../../constants';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getChannelDetails} from '../../redux/reducers/channelReducer';
 import Button from '../../components/Button';
 import {ListLoader, ImageLoader} from '../../components/Loaders';
 import Toast from '../../components/Toast';
 import RoundedImage from '../../components/RoundedImage';
 import {getImage} from '../../utils';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {
+  getChannelDetails,
+  unfollowChannel,
+} from '../../redux/reducers/channelReducer';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -82,6 +85,27 @@ class ChannelInfo extends Component {
     this.setState({orientation});
   };
 
+  onFollowUnfollow() {
+    if (this.state.channelData.is_member) {
+      let user = {
+        user_id: this.props.userData.id,
+      };
+      this.props
+        .unfollowChannel(this.props.currentChannel.id, user)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: 'Channel unfollow successfully',
+              type: 'positive',
+            });
+          }
+        });
+    } else {
+      // alert('Follow');
+    }
+  }
+
   render() {
     const {channelData, tabBarItem} = this.state;
     const {channelLoading} = this.props;
@@ -128,7 +152,7 @@ class ChannelInfo extends Component {
                 <ImageLoader
                   style={channelInfoStyles.channelCoverContainer}
                   placeholderStyle={channelInfoStyles.coverImage}
-                  source={{uri: channelData.cover_image}}>
+                  source={getImage(channelData.cover_image)}>
                   <View
                     style={channelInfoStyles.updateBackgroundContainer}></View>
                   <View style={channelInfoStyles.channelInfoContainer}>
@@ -161,7 +185,9 @@ class ChannelInfo extends Component {
                         <Text
                           style={channelInfoStyles.channelNameText}
                           numberOfLines={1}>
-                          {channelData.channel_status}
+                          {channelData.channel_status != null || ''
+                            ? channelData.channel_status
+                            : 'Status'}
                         </Text>
                       </View>
                     </View>
@@ -192,7 +218,7 @@ class ChannelInfo extends Component {
                         }
                         type={'transparent'}
                         height={30}
-                        onPress={() => alert('unfollow')}
+                        onPress={() => this.onFollowUnfollow()}
                       />
                     </View>
                   </View>
@@ -257,11 +283,13 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     channelLoading: state.channelReducer.loading,
     currentChannel: state.channelReducer.currentChannel,
+    userData: state.userReducer.userData,
   };
 };
 
 const mapDispatchToProps = {
   getChannelDetails,
+  unfollowChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelInfo);

@@ -1,18 +1,18 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
-import { globalStyles } from '../../styles';
-import { Images } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {Images} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
-import { translate } from '../../redux/reducers/languageReducer';
+import {translate} from '../../redux/reducers/languageReducer';
 import {
   getChannelConversations,
   readAllChannelMessages,
 } from '../../redux/reducers/channelReducer';
-import { ListLoader } from '../../components/Loaders';
+import {ListLoader} from '../../components/Loaders';
 import NoData from '../../components/NoData';
 
 class ChannelChats extends Component {
@@ -164,7 +164,7 @@ class ChannelChats extends Component {
   }
 
   onMessageSend = () => {
-    const { newMessageText, conversations } = this.state;
+    const {newMessageText, conversations} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -184,12 +184,7 @@ class ChannelChats extends Component {
   };
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      conversations,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, conversations, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -223,7 +218,7 @@ class ChannelChats extends Component {
 
   onReply = (messageId) => {
     console.log('ChannelChats -> onReply -> messageId', messageId);
-    const { conversations } = this.state;
+    const {conversations} = this.state;
 
     const repliedMessage = conversations.find((item) => item.id === messageId);
     this.setState({
@@ -241,7 +236,7 @@ class ChannelChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -250,10 +245,10 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({ conversations: res.conversation }, () => {
+          this.setState({conversations: res.conversation}, () => {
             console.log(
               'Convertation 1-1-1--1-1-1-1-1-1-1-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1',
-              this.state.conversations
+              this.state.conversations,
             );
           });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
@@ -262,16 +257,16 @@ class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
   }
 
   renderConversations() {
-    const { channelLoading } = this.props;
-    const { conversations, newMessageText } = this.state;
+    const {channelLoading} = this.props;
+    const {conversations, newMessageText} = this.state;
 
     if (channelLoading) {
       return <ListLoader />;
@@ -294,13 +289,12 @@ class ChannelChats extends Component {
   }
 
   render() {
-    const { newMessageText, conversations } = this.state;
-    const { currentChannel } = this.props;
+    const {newMessageText, conversations} = this.state;
+    const {currentChannel} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentChannel.name}
           description={
