@@ -1,13 +1,19 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
-import { translate } from '../../redux/reducers/languageReducer';
-import { globalStyles } from '../../styles';
-import { Images } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {Images} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
+import {translate} from '../../redux/reducers/languageReducer';
+import {
+  getChannelConversations,
+  readAllChannelMessages,
+} from '../../redux/reducers/channelReducer';
+import {ListLoader} from '../../components/Loaders';
+import NoData from '../../components/NoData';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -15,6 +21,7 @@ class ChannelChats extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       newMessageText: '',
+      conversations: [],
       headerRightIconMenu: [
         {
           id: 1,
@@ -28,6 +35,37 @@ class ChannelChats extends Component {
       isReply: false,
       repliedMessage: null,
       messagesArray: [
+        {
+          id: 990,
+          thumbnail: 'www.google.com',
+          from_user: {
+            id: 93,
+            email: 'sourabh.webllisto@gmail.com',
+            username: 'sourabh004',
+            avatar:
+              'https://angelium-media.s3.amazonaws.com/static/avatar/thumb_InShot_20190827_234248134.jpg',
+            is_online: false,
+          },
+          to_user: null,
+          created: '2020-05-18T07:18:56.670428Z',
+          updated: '2020-05-23T16:27:04.286271Z',
+          msg_type: 'image',
+          message_body: 'www.google.com',
+          mutlilanguage_message_body: {},
+          hyperlink: '',
+          is_edited: false,
+          is_multilanguage: false,
+          is_unsent: false,
+          bonus_message: false,
+          channel: 735,
+          reply_to: null,
+          schedule_post: 1717,
+          subchat: null,
+          greeting: null,
+          read_by_in_replies: [],
+          read_by: [],
+          deleted_for: [],
+        },
         {
           id: 1,
           message: 'Hello',
@@ -126,7 +164,7 @@ class ChannelChats extends Component {
   }
 
   onMessageSend = () => {
-    const { newMessageText, messagesArray } = this.state;
+    const {newMessageText, messagesArray} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -146,12 +184,7 @@ class ChannelChats extends Component {
   };
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -184,7 +217,7 @@ class ChannelChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { messagesArray } = this.state;
+    const {messagesArray} = this.state;
 
     const repliedMessage = messagesArray.find((item) => item.id === messageId);
     this.setState({
@@ -202,29 +235,61 @@ class ChannelChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+    this.props
+      .getChannelConversations(this.props.currentChannel.id)
+      .then((res) => {
+        if (res.status === true && res.conversation.length > 0) {
+          this.setState({conversations: res.conversation});
+          this.props.readAllChannelMessages(this.props.currentChannel.id);
+        }
+      });
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
+  }
+
+  renderConversations() {
+    const {channelLoading} = this.props;
+    const {conversations, newMessageText} = this.state;
+
+    if (channelLoading) {
+      return <ListLoader />;
+    } else if (conversations.length > 0) {
+      return (
+        <ChatContainer
+          handleMessage={(message) => this.handleMessage(message)}
+          onMessageSend={this.onMessageSend}
+          onMessageReply={(id) => this.onReply(id)}
+          newMessageText={newMessageText}
+          messages={this.state.messagesArray}
+          orientation={this.state.orientation}
+          repliedMessage={this.state.repliedMessage}
+          isReply={this.state.isReply}
+          cancelReply={this.cancelReply}
+        />
+      );
+    } else {
+      return <NoData title={'Start conversations'} />;
+    }
   }
 
   render() {
-    const { newMessageText } = this.state;
-    const { currentChannel } = this.props;
+    const {newMessageText, conversations} = this.state;
+    const {currentChannel} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentChannel.name}
           description={
@@ -237,17 +302,7 @@ class ChannelChats extends Component {
           navigation={this.props.navigation}
           image={currentChannel.channel_picture}
         />
-        <ChatContainer
-          handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend}
-          onMessageReply={(id) => this.onReply(id)}
-          newMessageText={newMessageText}
-          messages={this.state.messagesArray}
-          orientation={this.state.orientation}
-          repliedMessage={this.state.repliedMessage}
-          isReply={this.state.isReply}
-          cancelReply={this.cancelReply}
-        />
+        {this.renderConversations()}
       </ImageBackground>
     );
   }
@@ -256,9 +311,13 @@ class ChannelChats extends Component {
 const mapStateToProps = (state) => {
   return {
     currentChannel: state.channelReducer.currentChannel,
+    channelLoading: state.channelReducer.loading,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getChannelConversations,
+  readAllChannelMessages,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

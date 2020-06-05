@@ -14,6 +14,12 @@ export const GET_CHANNEL_DETAIL_REQUEST = 'GET_CHANNEL_DETAIL_REQUEST';
 export const GET_CHANNEL_DETAIL_SUCCESS = 'GET_CHANNEL_DETAIL_SUCCESS';
 export const GET_CHANNEL_DETAIL_FAIL = 'GET_CHANNEL_DETAIL_FAIL';
 
+export const GET_CHANNEL_CONVERSATION_REQUEST =
+  'GET_CHANNEL_CONVERSATION_REQUEST';
+export const GET_CHANNEL_CONVERSATION_SUCCESS =
+  'GET_CHANNEL_CONVERSATION_SUCCESS';
+export const GET_CHANNEL_CONVERSATION_FAIL = 'GET_CHANNEL_CONVERSATION_FAIL';
+
 const initialState = {
   loading: false,
   userChannels: [],
@@ -79,6 +85,25 @@ export default function (state = initialState, action) {
       };
 
     case GET_CHANNEL_DETAIL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    //Get Channel Conversations
+    case GET_CHANNEL_CONVERSATION_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case GET_CHANNEL_CONVERSATION_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_CHANNEL_CONVERSATION_FAIL:
       return {
         ...state,
         loading: false,
@@ -183,6 +208,48 @@ export const getChannelDetails = (id) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getChannelDetailFailure());
+        reject(err);
+      });
+  });
+
+//Get Channel Conversations
+const getChannelConversationsRequest = () => ({
+  type: GET_CHANNEL_CONVERSATION_REQUEST,
+});
+
+const getChannelConversationsSuccess = () => ({
+  type: GET_CHANNEL_CONVERSATION_SUCCESS,
+});
+
+const getChannelConversationsFailure = () => ({
+  type: GET_CHANNEL_CONVERSATION_FAIL,
+});
+
+export const getChannelConversations = (id, limit = 30) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getChannelConversationsRequest());
+    client
+      .get(`/xchat/channel-conversation/` + id + '/?' + limit)
+      .then((res) => {
+        dispatch(getChannelConversationsSuccess());
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getChannelConversationsFailure());
+        reject(err);
+      });
+  });
+
+//Read All Message Channel Chat
+export const readAllChannelMessages = (id) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/read-all-msg-channelchat/` + id + '/')
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        alert(JSON.stringify(err));
         reject(err);
       });
   });

@@ -40,7 +40,10 @@ import {
   getUserChannels,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
-import {getUserGroups} from '../../redux/reducers/groupReducer';
+import {
+  getUserGroups,
+  setCurrentGroup,
+} from '../../redux/reducers/groupReducer';
 import {
   getUserFriends,
   getFriendRequests,
@@ -129,9 +132,8 @@ class Home extends Component {
   };
 
   onOpenGroupChats = (item) => {
-    this.props.navigation.navigate('GroupChats', {
-      data: item,
-    });
+    this.props.setCurrentGroup(item);
+    this.props.navigation.navigate('GroupChats');
   };
 
   onOpenFriendChats = (item) => {
@@ -406,6 +408,7 @@ const mapDispatchToProps = {
   getUserChannels,
   setCurrentChannel,
   getUserGroups,
+  setCurrentGroup,
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
