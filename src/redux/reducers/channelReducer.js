@@ -200,7 +200,7 @@ export const getUserChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
     client
-      .get(`/xchat/get-my-channel/?start=20`)
+      .get(`/xchat/get-my-channel/?start=10`)
       .then((res) => {
         if (res.conversations) {
           dispatch(getUserChannelsSuccess(res.conversations));
@@ -315,6 +315,19 @@ export const unfollowChannel = (id, user) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .patch(`/xchat/unfollow-channel/` + id + '/', user)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Follow Channel
+export const followChannel = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/check-user-in-channel/`, data)
       .then((res) => {
         resolve(res);
       })

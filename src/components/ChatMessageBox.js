@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, {Fragment, Component} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import ChatMessageBubble from './ChatMessageBubble';
 
-import { Colors, Icons, Fonts, Images } from '../constants';
+import {Colors, Icons, Fonts, Images} from '../constants';
 import RoundedImage from './RoundedImage';
 import ChatMessageImage from './ChatMessageImage';
-const { width, height } = Dimensions.get('window');
+import {getAvatar} from '../utils';
+const {width, height} = Dimensions.get('window');
 
 export default class ChatMessageBox extends Component {
   constructor(props) {
@@ -30,12 +31,12 @@ export default class ChatMessageBox extends Component {
     }
   }
 
-  _openMenu = () => this.setState({ longPressMenu: true });
+  _openMenu = () => this.setState({longPressMenu: true});
 
-  _closeMenu = () => this.setState({ longPressMenu: false });
+  _closeMenu = () => this.setState({longPressMenu: false});
 
   layoutChange = (event) => {
-    var { x, y, width, height } = event.nativeEvent.layout;
+    var {x, y, width, height} = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -44,7 +45,7 @@ export default class ChatMessageBox extends Component {
 
   onMessagePress = (id) => {
     console.log('ChatMessageBox -> onMessagePress -> id', id);
-    this.setState({ selectedMessageId: id });
+    this.setState({selectedMessageId: id});
     this._openMenu();
   };
 
@@ -56,7 +57,7 @@ export default class ChatMessageBox extends Component {
     });
   };
   render() {
-    const { longPressMenu, selectedMessageId, isPortrait } = this.state;
+    const {longPressMenu, selectedMessageId, isPortrait} = this.state;
     const {
       message,
       isUser,
@@ -73,21 +74,19 @@ export default class ChatMessageBox extends Component {
           {
             justifyContent: 'flex-start',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'flex-start',
             marginVertical: 5,
-          }}
-        >
+          }}>
           <RoundedImage
-            source={Images.image_default_profile}
+            source={getAvatar(message.from_user.avatar)}
             size={50}
             resizeMode={'cover'}
           />
-          <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
+          <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
             {message.msg_type === 'image' ? (
               <ChatMessageImage
                 message={message}
@@ -112,12 +111,12 @@ export default class ChatMessageBox extends Component {
                 marginHorizontal: '1.5%',
                 alignItems: 'center',
                 marginVertical: 15,
-              }}
-            >
+              }}>
               <Text style={styles.statusText}>{status}</Text>
               <Text
-                style={styles.statusText}
-              >{`${time.getHours()}:${time.getMinutes()}`}</Text>
+                style={
+                  styles.statusText
+                }>{`${time.getHours()}:${time.getMinutes()}`}</Text>
             </View>
           </View>
         </View>
@@ -130,21 +129,18 @@ export default class ChatMessageBox extends Component {
             alignItems: 'flex-end',
             alignSelf: 'flex-end',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'flex-end',
-          }}
-        >
+          }}>
           <View
             style={{
               marginHorizontal: '1.5%',
               alignItems: 'center',
               marginVertical: 15,
-            }}
-          >
+            }}>
             <Text style={styles.statusText}>{status}</Text>
             <Text style={styles.statusText}>
               {`${time.getHours()}:${time.getMinutes()}`}

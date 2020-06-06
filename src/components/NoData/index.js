@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Image} from 'react-native';
 import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
 import RoundedImage from '../RoundedImage';
@@ -11,7 +11,7 @@ export default class NoData extends Component {
   }
 
   render() {
-    const {title, imageAvailable} = this.props;
+    const {title, imageAvailable, source, imageColor} = this.props;
     return (
       <View
         style={{
@@ -21,9 +21,21 @@ export default class NoData extends Component {
           justifyContent: 'center',
         }}>
         {imageAvailable ? (
-          <RoundedImage source={Images.image_gallery} size={70} />
+          <Image
+            source={source}
+            style={{
+              width: 70,
+              height: 70,
+              resizeMode: 'contain',
+              tintColor: imageColor,
+            }}
+          />
         ) : null}
-        <Text style={[globalStyles.smallRegularText, {color: Colors.black}]}>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            {color: Colors.gray_dark, marginTop: 10},
+          ]}>
           {title}
         </Text>
       </View>

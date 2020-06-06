@@ -34,154 +34,28 @@ class ChannelChats extends Component {
       ],
       isReply: false,
       repliedMessage: null,
-      messagesArray: [
-        {
-          id: 990,
-          thumbnail: 'www.google.com',
-          from_user: {
-            id: 93,
-            email: 'sourabh.webllisto@gmail.com',
-            username: 'sourabh004',
-            avatar:
-              'https://angelium-media.s3.amazonaws.com/static/avatar/thumb_InShot_20190827_234248134.jpg',
-            is_online: false,
-          },
-          to_user: null,
-          created: '2020-05-18T07:18:56.670428Z',
-          updated: '2020-05-23T16:27:04.286271Z',
-          msg_type: 'image',
-          message_body: 'www.google.com',
-          mutlilanguage_message_body: {},
-          hyperlink: '',
-          is_edited: false,
-          is_multilanguage: false,
-          is_unsent: false,
-          bonus_message: false,
-          channel: 735,
-          reply_to: null,
-          schedule_post: 1717,
-          subchat: null,
-          greeting: null,
-          read_by_in_replies: [],
-          read_by: [],
-          deleted_for: [],
-        },
-        {
-          id: 1,
-          message: 'Hello',
-          isUser: false,
-          userName: 'raj',
-          time: '20:20',
-        },
-        {
-          id: 2,
-          message: 'HI',
-          isUser: true,
-          status: 'Read',
-          time: '20:21',
-        },
-        {
-          id: 3,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: false,
-          userName: 'raj',
-          time: '20:21',
-        },
-        {
-          id: 4,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: true,
-          status: 'Read',
-          time: '20:25',
-          repliedTo: {
-            id: 3,
-            message:
-              'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-            isUser: false,
-            userName: 'raj',
-            time: '20:21',
-          },
-        },
-        {
-          id: 5,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: false,
-          userName: 'raj',
-          time: '20:26',
-          repliedTo: {
-            id: 2,
-            message: 'HI',
-            isUser: true,
-            status: 'Read',
-            time: '20:21',
-          },
-        },
-        {
-          id: 6,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: true,
-          userName: 'raj',
-          time: '20:27',
-        },
-        {
-          id: 7,
-          messageType: 'image',
-          url: 'https://miro.medium.com/max/1400/0*mhcKpcQqduW4KPcB',
-          isUser: true,
-          time: '20:27',
-        },
-        {
-          id: 8,
-          messageType: 'image',
-          url:
-            'https://www.peakperformance.com/dw/image/v2/BDGL_PRD/on/demandware.static/-/Sites-master-catalog-pp/default/dwe2be5cf8/zoom/G66816006_089_model1.jpg?sw=1110&sh=1480',
-          isUser: false,
-          userName: 'raj',
-          time: '20:27',
-        },
-        {
-          id: 9,
-          messageType: 'image',
-          url:
-            'https://www.peakperformance.com/dw/image/v2/BDGL_PRD/on/demandware.static/-/Sites-master-catalog-pp/default/dwe2be5cf8/zoom/G66816006_089_model1.jpg?sw=1110&sh=1480',
-          isUser: true,
-          time: '20:27',
-        },
-        {
-          id: 10,
-          messageType: 'image',
-          url: 'https://miro.medium.com/max/1400/0*mhcKpcQqduW4KPcB',
-          isUser: false,
-          userName: 'raj',
-          time: '20:27',
-        },
-      ],
     };
   }
 
-  onMessageSend = () => {
-    const {newMessageText, conversations} = this.state;
-    if (!newMessageText) {
-      return;
-    }
-    const newMessage = {
-      id: conversations ? conversations.length + 1 : 1,
-      message: newMessageText,
-      isUser: true,
-      time: '20:27',
-    };
+  // onMessageSend = () => {
+  //   const {newMessageText, conversations} = this.state;
+  //   if (!newMessageText) {
+  //     return;
+  //   }
+  //   const newMessage = {
+  //     id: conversations ? conversations.length + 1 : 1,
+  //     message: newMessageText,
+  //     isUser: true,
+  //     time: '20:27',
+  //   };
 
-    let newMessageArray = conversations ? conversations : [];
-    newMessageArray.push(newMessage);
-    this.setState({
-      conversations: newMessageArray,
-      newMessageText: '',
-    });
-  };
+  //   let newMessageArray = conversations ? conversations : [];
+  //   newMessageArray.push(newMessage);
+  //   this.setState({
+  //     conversations: newMessageArray,
+  //     newMessageText: '',
+  //   });
+  // };
 
   onMessageSend = () => {
     const {newMessageText, conversations, isReply, repliedMessage} = this.state;
@@ -201,6 +75,14 @@ class ChannelChats extends Component {
       newMessage = {
         id: conversations ? conversations.length + 1 : 1,
         message: newMessageText,
+        from_user: {
+          id: this.props.userData.id,
+          email: this.props.userData.email,
+          username: this.props.userData.username,
+          avatar: null,
+          is_online: true,
+          display_name: this.props.userData.username,
+        },
         isUser: true,
         time: '20:27',
       };
@@ -237,6 +119,7 @@ class ChannelChats extends Component {
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
+    alert(JSON.stringify(this.props.userData));
   }
 
   componentDidMount() {
@@ -274,7 +157,7 @@ class ChannelChats extends Component {
       return (
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend}
+          onMessageSend={this.onMessageSend.bind(this)}
           onMessageReply={(id) => this.onReply(id)}
           newMessageText={newMessageText}
           // messages={this.state.conversations}
@@ -317,6 +200,7 @@ const mapStateToProps = (state) => {
   return {
     currentChannel: state.channelReducer.currentChannel,
     channelLoading: state.channelReducer.loading,
+    userData: state.userReducer.userData,
   };
 };
 

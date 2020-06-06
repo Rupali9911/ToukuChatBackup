@@ -41,6 +41,14 @@ class GroupChats extends Component {
         {
           id: 1,
           message: 'Hello',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: false,
           userName: 'raj',
           time: '20:20',
@@ -48,6 +56,14 @@ class GroupChats extends Component {
         {
           id: 2,
           message: 'HI',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: true,
           status: 'Read',
           time: '20:21',
@@ -56,6 +72,14 @@ class GroupChats extends Component {
           id: 3,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: false,
           userName: 'raj',
           time: '20:21',
@@ -64,6 +88,14 @@ class GroupChats extends Component {
           id: 4,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: true,
           status: 'Read',
           time: '20:25',
@@ -80,6 +112,14 @@ class GroupChats extends Component {
           id: 5,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: false,
           userName: 'raj',
           time: '20:26',
@@ -95,6 +135,14 @@ class GroupChats extends Component {
           id: 6,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: true,
           userName: 'raj',
           time: '20:27',
@@ -121,6 +169,14 @@ class GroupChats extends Component {
       newMessage = {
         id: messagesArray ? messagesArray.length + 1 : 1,
         message: newMessageText,
+        from_user: {
+          id: 1,
+          email: '',
+          username: '',
+          avatar: null,
+          is_online: false,
+          display_name: '',
+        },
         isUser: true,
         time: '20:27',
       };
