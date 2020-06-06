@@ -119,7 +119,6 @@ class ChannelChats extends Component {
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
-    alert(JSON.stringify(this.props.userData));
   }
 
   componentDidMount() {
