@@ -14,8 +14,10 @@ import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {RNS3} from 'react-native-aws3';
+import * as moment from 'moment';
 
-import {Colors, Fonts, Images, Icons} from '../../constants';
+import {Colors, Fonts, Images, Icons, environment} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
@@ -52,11 +54,7 @@ class UserProfile extends Component {
     this.setState({isUploadUserImageModalVisible: true});
   }
 
-  onUserBackgroundCameraPress() {
-    this.chooseFile();
-  }
-
-  chooseFile = () => {
+  chooseBackgroundImage = () => {
     var options = {
       title: 'Choose Option',
       storageOptions: {
@@ -64,7 +62,7 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, async (response) => {
+    ImagePicker.showImagePicker(options, (response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
@@ -79,6 +77,39 @@ class UserProfile extends Component {
         //   Images,
         // );
         // alert(JSON.stringify(imageFiles));
+
+        const file = {
+          // `uri` can also be a file system path (i.e. file://)
+          uri: response.origURL,
+          name: 'image.jpg',
+          type: 'image/jpeg',
+        };
+
+        const options = {
+          keyPrefix: '/',
+          bucket: 'angelium-media',
+          region: environment.s3BucketConfig.region,
+          accessKey: environment.s3BucketConfig.accessKeyId,
+          secretKey: environment.s3BucketConfig.secretAccessKey,
+          successActionStatus: 201,
+        };
+
+        RNS3.put(file, options).then((response) => {
+          console.log('s3upload response...... ' + JSON.stringify(response));
+          if (response.status !== 201) {
+            alert(response.status);
+          }
+          /**
+           * {
+           *   postResponse: {
+           *     bucket: "your-bucket",
+           *     etag : "9f620878e06d28774406017480a59fd4",
+           *     key: "uploads/image.png",
+           *     location: "https://your-bucket.s3.amazonaws.com/uploads%2Fimage.png"
+           *   }
+           * }
+           */
+        });
       }
     });
   };
@@ -123,7 +154,7 @@ class UserProfile extends Component {
                   <ClickableImage
                     source={Icons.icon_camera}
                     size={14}
-                    onClick={() => this.onUserBackgroundCameraPress()}
+                    onClick={this.chooseBackgroundImage.bind(this)}
                   />
                 </View>
               </View>

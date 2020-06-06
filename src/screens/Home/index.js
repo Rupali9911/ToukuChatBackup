@@ -157,6 +157,7 @@ class Home extends Component {
           data={filteredChannels}
           renderItem={({item, index}) => (
             <ChannelListItem
+              key={index}
               title={item.name}
               description={item.description}
               date={item.created}
@@ -168,6 +169,7 @@ class Home extends Component {
           ListFooterComponent={() => (
             <View>{channelLoading ? <ListLoader /> : null}</View>
           )}
+          keyExtractor={(item, index) => String(index)}
         />
       );
     } else {
@@ -189,6 +191,7 @@ class Home extends Component {
           data={filteredGroups}
           renderItem={({item, index}) => (
             <GroupListItem
+              key={index}
               title={item.group_name}
               description={item.last_msg.text}
               date={item.timestamp}
@@ -200,6 +203,7 @@ class Home extends Component {
           ListFooterComponent={() => (
             <View>{groupLoading ? <ListLoader /> : null}</View>
           )}
+          keyExtractor={(item, index) => String(index)}
         />
       );
     } else {
@@ -221,6 +225,7 @@ class Home extends Component {
           data={filteredFriends}
           renderItem={({item, index}) => (
             <FriendListItem
+              key={index}
               title={item.username}
               description={item.last_msg}
               image={getAvatar(item.profile_picture)}
@@ -233,6 +238,7 @@ class Home extends Component {
           ListFooterComponent={() => (
             <View>{friendLoading ? <ListLoader /> : null}</View>
           )}
+          keyExtractor={(item, index) => String(index)}
         />
       );
     } else {

@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { Fonts, Colors } from '../constants';
+import {StyleSheet} from 'react-native';
+import {Fonts, Colors} from '../constants';
 
 export const globalStyles = StyleSheet.create({
   container: {
@@ -67,6 +67,12 @@ export const globalStyles = StyleSheet.create({
   iconStyle: {
     width: 24,
     height: 24,
+    resizeMode: 'contain',
+  },
+
+  smallIcon: {
+    width: 18,
+    height: 18,
     resizeMode: 'contain',
   },
 

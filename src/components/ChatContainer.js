@@ -10,6 +10,7 @@ import {
   Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
+import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -18,6 +19,7 @@ import ChatInput from './TextInputs/ChatInput';
 import {translate} from '../redux/reducers/languageReducer';
 import {Colors, Fonts, Images, Icons} from '../constants';
 import NoData from './NoData';
+import {isIphoneX} from '../utils';
 const {width, height} = Dimensions.get('window');
 
 class ChatContainer extends Component {
@@ -30,8 +32,10 @@ class ChatContainer extends Component {
     if (!messages || !messages.length) {
       return (
         <NoData
-          imageAvailable
           title={translate('pages.xchat.startANewConversationHere')}
+          source={Images.image_conversation}
+          imageColor={Colors.primary}
+          imageAvailable
         />
       );
     }
@@ -40,7 +44,7 @@ class ChatContainer extends Component {
         <ChatMessageBox
           key={item.id}
           message={item}
-          isUser={item.to_user}
+          isUser={item.from_user.id === this.props.userData.id ? true : false}
           time={new Date(item.created)}
           // status={item.status}
           onMessageReply={(id) => this.props.onMessageReply(id)}
@@ -53,7 +57,9 @@ class ChatContainer extends Component {
       <Fragment>
         <View style={chatStyle.messageDateCntainer}>
           <View style={chatStyle.messageDate}>
-            <Text style={chatStyle.messageDateText}>28/05</Text>
+            <Text style={chatStyle.messageDateText}>
+              {moment(new Date()).format('MM/DD')}
+            </Text>
           </View>
         </View>
         {msg}
@@ -98,7 +104,6 @@ class ChatContainer extends Component {
             },
           ]}>
           <ScrollView
-            style={{}}
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
               isReply && {paddingBottom: '20%'},
@@ -184,7 +189,7 @@ const chatStyle = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: {flexGrow: 1},
+  messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',
