@@ -46,7 +46,8 @@ class Chat extends Component {
         style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.chat')} />
-          <SearchInput onChangeText={this.onSearch.bind(this)} />
+          <SearchInput onChangeText={this.onSearch.bind(this)}
+                       navigation={this.props.navigation}/>
         </View>
       </ImageBackground>
     );

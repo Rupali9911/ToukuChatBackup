@@ -47,6 +47,11 @@ export const Icons = {
   icon_camera_grad: require('../../assets/icons/camera_grad.png'),
   icon_setting: require('../../assets/icons/setting.png'),
   icon_info: require('../../assets/icons/info.png'),
+    add_friend: require('../../assets/icons/add-friend.png'),
+    xana_app: require('../../assets/icons/xana.png'),
+    channel_mode: require('../../assets/icons/Channel-mode.png'),
+
+
 };
 
 export const Images = {
@@ -80,6 +85,7 @@ export const Colors = {
   indigo: '#6610f2',
   purple: '#6f42c1',
   green: '#1bd078',
+  dark_gray: '#2c3e50'
 };
 
 export const Fonts = {

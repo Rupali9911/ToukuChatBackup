@@ -36,7 +36,7 @@ const AppStack = createStackNavigator(
     CreateFriendGroup: CreateFriendGroup,
     ChannelChats: ChannelChats,
     ChannelInfo: ChannelInfo,
-    Timeline: Timeline,
+    Timeline: Timeline
   },
   {
     initialRouteName: 'Drawer',
