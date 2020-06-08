@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     height: 35,
     borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
     backgroundColor: Colors.white,
-    borderRadius: 10,
+    borderRadius: 7,
     borderColor: Colors.gray_dark,
     marginTop: 10,
     paddingHorizontal: 10,
