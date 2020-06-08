@@ -11,9 +11,9 @@ import {translate} from '../../redux/reducers/languageReducer';
 import {
   getChannelConversations,
   readAllChannelMessages,
+  sendChannelMessage,
 } from '../../redux/reducers/channelReducer';
 import {ListLoader} from '../../components/Loaders';
-import NoData from '../../components/NoData';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -86,16 +86,30 @@ class ChannelChats extends Component {
         isUser: true,
         time: '20:27',
       };
+      let messageData = {
+        channel: this.props.currentChannel.id,
+        local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
+        message_body: newMessageText,
+        msg_type: 'text',
+      };
+      this.props
+        .sendChannelMessage(messageData)
+        .then((res) => {
+          this.getChannelConversations();
+        })
+        .catch((err) => {
+          // alert(JSON.stringify(err))
+        });
     }
 
-    let newMessageArray = conversations ? conversations : [];
-    newMessageArray.push(newMessage);
-    this.setState({
-      conversations: newMessageArray,
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-    });
+    // let newMessageArray = conversations ? conversations : [];
+    // newMessageArray.push(newMessage);
+    // this.setState({
+    //   conversations: newMessageArray,
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    // });
   };
 
   onReply = (messageId) => {
@@ -123,6 +137,14 @@ class ChannelChats extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+    this.getChannelConversations();
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
+
+  getChannelConversations() {
     this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
@@ -138,10 +160,6 @@ class ChannelChats extends Component {
       });
   }
 
-  _orientationDidChange = (orientation) => {
-    this.setState({orientation});
-  };
-
   handleMessage(message) {
     this.setState({newMessageText: message});
   }
@@ -150,7 +168,7 @@ class ChannelChats extends Component {
     const {channelLoading} = this.props;
     const {conversations, newMessageText} = this.state;
 
-    if (channelLoading) {
+    if (channelLoading && conversations.length<=0) {
       return <ListLoader />;
     } else {
       return (
@@ -206,6 +224,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getChannelConversations,
   readAllChannelMessages,
+  sendChannelMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

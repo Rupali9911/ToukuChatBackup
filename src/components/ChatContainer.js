@@ -62,7 +62,7 @@ class ChatContainer extends Component {
             </Text>
           </View>
         </View>
-        {msg}
+        {msg.reverse()}
       </Fragment>
     );
   };
