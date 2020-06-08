@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,11 @@ import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 
 import RoundedImage from '../RoundedImage';
-import {Icons, Colors, Images} from '../../constants';
-import {isIphoneX, getImage, getAvatar} from '../../utils';
-import {globalStyles} from '../../styles';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {Menu} from 'react-native-paper';
+import { Icons, Colors, Images, Fonts } from '../../constants';
+import { isIphoneX, getImage, getAvatar } from '../../utils';
+import { globalStyles } from '../../styles';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import { Menu } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 export default class ChatHeader extends Component {
@@ -28,20 +28,20 @@ export default class ChatHeader extends Component {
     };
   }
 
-  _openMenu = () => this.setState({visible: true});
+  _openMenu = () => this.setState({ visible: true });
 
-  _closeMenu = () => this.setState({visible: false});
+  _closeMenu = () => this.setState({ visible: false });
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
   }
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   render() {
@@ -73,14 +73,15 @@ export default class ChatHeader extends Component {
                 ? 20
                 : 40,
           },
-        ]}>
+        ]}
+      >
         <View style={styles.subContainer}>
           <TouchableOpacity onPress={onBackPress}>
             <Image source={Icons.icon_back} style={globalStyles.smallIcon} />
           </TouchableOpacity>
           {type === 'friend' ? (
             <View style={styles.subContainer}>
-              <View style={{marginHorizontal: 10}}>
+              <View style={{ marginHorizontal: 10 }}>
                 <RoundedImage size={40} source={getAvatar(image)} />
               </View>
               <Text style={globalStyles.normalRegularText}>{title}</Text>
@@ -88,7 +89,7 @@ export default class ChatHeader extends Component {
           ) : (
             <View style={styles.subContainer}>
               {image != null ? (
-                <View style={{marginHorizontal: 10}}>
+                <View style={{ marginHorizontal: 10 }}>
                   <RoundedImage
                     source={getAvatar(image)}
                     isRounded={false}
@@ -97,15 +98,16 @@ export default class ChatHeader extends Component {
                 </View>
               ) : (
                 <LinearGradient
-                  start={{x: 0.1, y: 0.7}}
-                  end={{x: 0.5, y: 0.2}}
+                  start={{ x: 0.1, y: 0.7 }}
+                  end={{ x: 0.5, y: 0.2 }}
                   locations={[0.1, 0.6, 1]}
                   colors={[
                     Colors.gradient_1,
                     Colors.gradient_2,
                     Colors.gradient_3,
                   ]}
-                  style={styles.squareImage}>
+                  style={styles.squareImage}
+                >
                   <Text style={globalStyles.normalRegularText}>
                     {title.charAt(0).toUpperCase()}
                     {secondUpperCase}
@@ -116,7 +118,8 @@ export default class ChatHeader extends Component {
                 style={{
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
-                }}>
+                }}
+              >
                 <Text numberOfLines={1} style={globalStyles.normalRegularText}>
                   {title}
                 </Text>
@@ -129,7 +132,7 @@ export default class ChatHeader extends Component {
         </View>
         <View>
           <Menu
-            style={{marginTop: 30}}
+            style={{ marginTop: 30 }}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
             anchor={
@@ -139,17 +142,17 @@ export default class ChatHeader extends Component {
                   style={globalStyles.smallIcon}
                 />
               </TouchableOpacity>
-            }>
+            }
+          >
             {menuItems &&
               menuItems.map((item, index) => {
-                console.log('ChatHeader -> render -> item', item);
                 return (
                   <Menu.Item
                     key={index}
                     icon={() => (
                       <FontAwesome5
                         name={item.icon}
-                        size={20}
+                        size={16}
                         color={Colors.black}
                       />
                     )}
@@ -157,8 +160,12 @@ export default class ChatHeader extends Component {
                       item.onPress();
                       this._closeMenu();
                     }}
-                    title={item.title}
-                    titleStyle={{marginLeft: -25}}
+                    title={`${item.title}`}
+                    titleStyle={{
+                      marginLeft: -25,
+                      fontSize: 16,
+                      fontWeight: '200',
+                    }}
                   />
                 );
               })}

@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
+import { ChatHeader } from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import {globalStyles} from '../../styles';
-import {Images} from '../../constants';
-import {ConfirmationModal} from '../../components/Modals';
-import {ListLoader} from '../../components/Loaders';
-import {translate} from '../../redux/reducers/languageReducer';
+import { globalStyles } from '../../styles';
+import { Images } from '../../constants';
+import { ConfirmationModal } from '../../components/Modals';
+import { ListLoader } from '../../components/Loaders';
+import { translate } from '../../redux/reducers/languageReducer';
 import {
   getPersonalConversation,
   sendPersonalMessage,
@@ -110,7 +110,12 @@ class FriendChats extends Component {
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      messagesArray,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
@@ -158,13 +163,22 @@ class FriendChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    console.log('ChannelChats -> onReply -> messageId', messageId);
+    const { conversations } = this.state;
 
-    const repliedMessage = messagesArray.find((item) => item.id === messageId);
-    this.setState({
-      isReply: true,
-      repliedMessage: repliedMessage,
-    });
+    const repliedMessage = conversations.find((item) => item.id === messageId);
+    this.setState(
+      {
+        isReply: true,
+        repliedMessage: repliedMessage,
+      },
+      () => {
+        console.log(
+          'ChannelChats -> onReply -> repliedMessage',
+          this.state.repliedMessage
+        );
+      }
+    );
   };
 
   cancelReply = () => {
@@ -176,7 +190,7 @@ class FriendChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -185,7 +199,7 @@ class FriendChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getPersonalConversation() {
@@ -193,18 +207,23 @@ class FriendChats extends Component {
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
+          this.setState({ conversations: res.conversation }, () => {
+            console.log(
+              'FriendChats -> getPersonalConversation -> conversation',
+              this.state.conversations
+            );
+          });
           // this.props.readAllChannelMessages(this.props.currentChannel.id);
         }
       });
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   toggleConfirmationModal = () => {
-    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
+    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
   };
 
   onCancel = () => {
@@ -224,12 +243,13 @@ class FriendChats extends Component {
       showConfirmationModal,
       orientation,
     } = this.state;
-    const {currentFriend, chatsLoading} = this.props;
+    const { currentFriend, chatsLoading } = this.props;
 
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentFriend.username}
           description={

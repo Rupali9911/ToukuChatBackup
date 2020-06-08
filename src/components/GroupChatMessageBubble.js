@@ -17,7 +17,7 @@ import { Colors, Icons, Fonts, Images } from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
 const { width, height } = Dimensions.get('window');
 let borderRadius = 20;
-export default class ChatMessageBubble extends Component {
+export default class GroupChatMessageBubble extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -64,19 +64,6 @@ export default class ChatMessageBubble extends Component {
     );
   };
 
-  renderMenuItem = () => {
-    return (
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 0.2 }}>
-          <Text>q</Text>
-        </View>
-        <View style={{ flex: 0.8 }}>
-          <Text>vujfbkud</Text>
-        </View>
-      </View>
-    );
-  };
-
   render() {
     const {
       message,
@@ -111,19 +98,19 @@ export default class ChatMessageBubble extends Component {
                     paddingHorizontal: 20,
                     paddingVertical: 10,
                   }}
-                  onLongPress={(id) => {
-                    onMessagePress(message.id);
+                  onLongPress={(msg_id) => {
+                    onMessagePress(message.msg_id);
                   }}
                 >
-                  {message.repliedTo &&
-                    this.renderReplyMessage(message.repliedTo)}
+                  {/* {message.repliedTo &&
+                    this.renderReplyMessage(message.repliedTo)} */}
                   <Text
                     style={{
                       fontSize: 15,
                       fontFamily: Fonts.light,
                     }}
                   >
-                    {message.message_body}
+                    {message.message_body.text}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -149,15 +136,15 @@ export default class ChatMessageBubble extends Component {
                     paddingHorizontal: 20,
                     paddingVertical: 10,
                   }}
-                  onLongPress={() => {
-                    onMessagePress(message.id);
+                  onLongPress={(msg_id) => {
+                    onMessagePress(message.msg_id);
                   }}
                   activeOpacity={0.8}
                 >
-                  {message.repliedTo &&
-                    this.renderReplyMessage(message.repliedTo)}
+                  {/* {message.repliedTo &&
+                    this.renderReplyMessage(message.repliedTo)} */}
                   <Text style={{ color: 'white', fontSize: 15 }}>
-                    {message.message_body}
+                    {message.message_body.text}
                   </Text>
                 </TouchableOpacity>
               </LinearGradient>

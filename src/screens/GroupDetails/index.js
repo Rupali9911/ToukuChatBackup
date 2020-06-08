@@ -14,7 +14,7 @@ import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-// import { createGroupStyles } from './styles';
+// import { groupDetailStyles } from './styles';
 import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import { Images, Icons, Colors, Fonts } from '../../constants';
@@ -127,17 +127,17 @@ class GroupDetails extends Component {
             isCentered
           />
           <KeyboardAwareScrollView
-            contentContainerStyle={createGroupStyles.mainContainer}
+            contentContainerStyle={groupDetailStyles.mainContainer}
             showsVerticalScrollIndicator={false}
             extraScrollHeight={100}
           >
-            <View style={createGroupStyles.imageContainer}>
-              <View style={createGroupStyles.imageView}>
+            <View style={groupDetailStyles.imageContainer}>
+              <View style={groupDetailStyles.imageView}>
                 <Image
                   // source={{uri: this.state.filePath.uri}}
                   source={getImage(this.state.filePath.uri)}
                   resizeMode={'cover'}
-                  style={createGroupStyles.profileImage}
+                  style={groupDetailStyles.profileImage}
                 />
               </View>
               {isMyGroup && (
@@ -145,16 +145,16 @@ class GroupDetails extends Component {
                   <Image
                     source={Icons.icon_edit_pen}
                     resizeMode={'cover'}
-                    style={createGroupStyles.editIcon}
+                    style={groupDetailStyles.editIcon}
                   />
                 </TouchableOpacity>
               )}
             </View>
             {isMyGroup ? (
-              <View style={createGroupStyles.tabBar}>
+              <View style={groupDetailStyles.tabBar}>
                 <TouchableOpacity
                   style={[
-                    createGroupStyles.tabItem,
+                    groupDetailStyles.tabItem,
                     !isManage && {
                       borderBottomWidth: 5,
                       borderBottomColor: Colors.gradient_2,
@@ -166,7 +166,7 @@ class GroupDetails extends Component {
                 >
                   <Text
                     style={[
-                      createGroupStyles.tabTitle,
+                      groupDetailStyles.tabTitle,
                       {
                         fontFamily: Fonts.regular,
                       },
@@ -177,7 +177,7 @@ class GroupDetails extends Component {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
-                    createGroupStyles.tabItem,
+                    groupDetailStyles.tabItem,
                     isManage && {
                       borderBottomWidth: 5,
                       borderBottomColor: Colors.gradient_2,
@@ -189,7 +189,7 @@ class GroupDetails extends Component {
                 >
                   <Text
                     style={[
-                      createGroupStyles.tabTitle,
+                      groupDetailStyles.tabTitle,
                       {
                         fontFamily: Fonts.regular,
                       },
@@ -210,13 +210,13 @@ class GroupDetails extends Component {
                     justifyContent: 'center',
                   }}
                 >
-                  <View style={createGroupStyles.searchContainer}>
+                  <View style={groupDetailStyles.searchContainer}>
                     <Image
                       source={Icons.icon_search}
-                      style={createGroupStyles.iconSearch}
+                      style={groupDetailStyles.iconSearch}
                     />
                     <TextInput
-                      style={[createGroupStyles.inputStyle]}
+                      style={[groupDetailStyles.inputStyle]}
                       placeholder={translate('pages.xchat.search')}
                       onChangeText={(searchText) =>
                         this.setState({ searchText })
@@ -228,7 +228,7 @@ class GroupDetails extends Component {
                     />
                   </View>
                 </View>
-                <View style={createGroupStyles.frindListContainer}>
+                <View style={groupDetailStyles.frindListContainer}>
                   {this.renderUserFriends()}
                 </View>
               </React.Fragment>
@@ -279,7 +279,7 @@ class GroupDetails extends Component {
                             <Image
                               source={Icons.icon_edit_pen}
                               resizeMode={'cover'}
-                              style={createGroupStyles.editIcon}
+                              style={groupDetailStyles.editIcon}
                             />
                           </TouchableOpacity>
                         )}
@@ -311,7 +311,7 @@ class GroupDetails extends Component {
                             <Image
                               source={Icons.icon_edit_pen}
                               resizeMode={'cover'}
-                              style={createGroupStyles.editIcon}
+                              style={groupDetailStyles.editIcon}
                             />
                           </TouchableOpacity>
                         )}
@@ -354,7 +354,7 @@ class GroupDetails extends Component {
   }
 }
 
-const createGroupStyles = StyleSheet.create({
+const groupDetailStyles = StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 15,
     paddingBottom: 50,

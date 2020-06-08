@@ -1,19 +1,19 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {Images} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Images } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
-import {translate} from '../../redux/reducers/languageReducer';
+import { translate } from '../../redux/reducers/languageReducer';
 import {
   getChannelConversations,
   readAllChannelMessages,
   sendChannelMessage,
 } from '../../redux/reducers/channelReducer';
-import {ListLoader} from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -58,34 +58,29 @@ class ChannelChats extends Component {
   // };
 
   onMessageSend = () => {
-    const {newMessageText, conversations, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      conversations,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
-    let newMessage;
+    // let newMessage;
     if (isReply) {
-      newMessage = {
-        id: conversations ? conversations.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-        repliedTo: repliedMessage,
-      };
+      console.log(
+        'ChannelChats -> onMessageSend -> repliedMessage',
+        repliedMessage
+      );
+      // newMessage = {
+      //   id: conversations ? conversations.length + 1 : 1,
+      //   message: newMessageText,
+      //   isUser: true,
+      //   time: '20:27',
+      //   repliedTo: repliedMessage,
+      // };
     } else {
-      newMessage = {
-        id: conversations ? conversations.length + 1 : 1,
-        message: newMessageText,
-        from_user: {
-          id: this.props.userData.id,
-          email: this.props.userData.email,
-          username: this.props.userData.username,
-          avatar: null,
-          is_online: true,
-          display_name: this.props.userData.username,
-        },
-        isUser: true,
-        time: '20:27',
-      };
       let messageData = {
         channel: this.props.currentChannel.id,
         local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
@@ -97,30 +92,35 @@ class ChannelChats extends Component {
         .then((res) => {
           this.getChannelConversations();
         })
-        .catch((err) => {
-          // alert(JSON.stringify(err))
-        });
+        .catch((err) => {});
     }
 
     // let newMessageArray = conversations ? conversations : [];
     // newMessageArray.push(newMessage);
-    // this.setState({
-    //   conversations: newMessageArray,
-    //   newMessageText: '',
-    //   isReply: false,
-    //   repliedMessage: null,
-    // });
+    this.setState({
+      newMessageText: '',
+      isReply: false,
+      repliedMessage: null,
+    });
   };
 
   onReply = (messageId) => {
     console.log('ChannelChats -> onReply -> messageId', messageId);
-    const {conversations} = this.state;
+    const { conversations } = this.state;
 
     const repliedMessage = conversations.find((item) => item.id === messageId);
-    this.setState({
-      isReply: true,
-      repliedMessage: repliedMessage,
-    });
+    this.setState(
+      {
+        isReply: true,
+        repliedMessage: repliedMessage,
+      },
+      () => {
+        console.log(
+          'ChannelChats -> onReply -> repliedMessage',
+          this.state.repliedMessage
+        );
+      }
+    );
   };
 
   cancelReply = () => {
@@ -132,7 +132,7 @@ class ChannelChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -141,7 +141,7 @@ class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getChannelConversations() {
@@ -149,26 +149,21 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation}, () => {
-            console.log(
-              'Convertation 1-1-1--1-1-1-1-1-1-1-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1',
-              this.state.conversations,
-            );
-          });
+          this.setState({ conversations: res.conversation });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
         }
       });
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   renderConversations() {
-    const {channelLoading} = this.props;
-    const {conversations, newMessageText} = this.state;
+    const { channelLoading } = this.props;
+    const { conversations, newMessageText } = this.state;
 
-    if (channelLoading && conversations.length<=0) {
+    if (channelLoading && conversations.length <= 0) {
       return <ListLoader />;
     } else {
       return (
@@ -189,12 +184,12 @@ class ChannelChats extends Component {
   }
 
   render() {
-    const {newMessageText, conversations} = this.state;
-    const {currentChannel} = this.props;
+    const { currentChannel } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentChannel.name}
           description={
