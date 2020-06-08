@@ -240,7 +240,7 @@ class FriendChats extends Component {
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
         />
-        {chatsLoading ? (
+        {chatsLoading && conversations.length <= 0 ? (
           <ListLoader />
         ) : (
           <ChatContainer

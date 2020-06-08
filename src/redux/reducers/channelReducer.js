@@ -335,3 +335,17 @@ export const followChannel = (data) => (dispatch) =>
         reject(err);
       });
   });
+
+//Follow Channel
+export const sendChannelMessage = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/send-channel-message/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        alert(JSON.stringify(err));
+        reject(err);
+      });
+  });
