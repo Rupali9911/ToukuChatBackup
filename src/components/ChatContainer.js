@@ -7,7 +7,6 @@ import {
   Platform,
   TouchableOpacity,
   Image,
-  Keyboard,
 } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -19,8 +18,7 @@ import ChatInput from './TextInputs/ChatInput';
 import { translate } from '../redux/reducers/languageReducer';
 import { Colors, Fonts, Images, Icons } from '../constants';
 import NoData from './NoData';
-import { isIphoneX } from '../utils';
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 class ChatContainer extends Component {
   constructor(props) {
@@ -44,10 +42,15 @@ class ChatContainer extends Component {
         <ChatMessageBox
           key={item.id}
           message={item}
-          isUser={item.from_user.id === this.props.userData.id ? true : false}
+          isUser={item.from_user.id == this.props.userData.id ? true : false}
           time={new Date(item.created)}
-          // status={item.status}
+          isChannel={this.props.isChannel}
           onMessageReply={(id) => this.props.onMessageReply(id)}
+          onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+          onMessageTranslateClose={this.props.onMessageTranslateClose}
+          translatedMessage={this.props.translatedMessage}
+          translatedMessageId={this.props.translatedMessageId}
+          onDelete={(id) => this.props.onDelete(id)}
           orientation={this.props.orientation}
         />
       );
@@ -151,7 +154,6 @@ class ChatContainer extends Component {
                 <View style={{ flex: 2, alignItems: 'flex-end' }}>
                   <TouchableOpacity
                     style={{
-                      //   paddingHorizontal: 5,
                       justifyContent: 'center',
                       alignItems: 'center',
                       height: '70%',
@@ -210,7 +212,7 @@ const chatStyle = StyleSheet.create({
     marginVertical: 15,
   },
   messageDate: {
-    backgroundColor: Colors.orange,
+    backgroundColor: Colors.orange_light,
     paddingVertical: 4,
     paddingHorizontal: 5,
     borderRadius: 100,

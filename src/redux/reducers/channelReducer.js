@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
