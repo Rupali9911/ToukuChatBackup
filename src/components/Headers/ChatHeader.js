@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: Colors.orange_light,
+    backgroundColor: Colors.home_header,
   },
   subContainer: {
     flex: 1,

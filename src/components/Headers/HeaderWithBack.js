@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.orange_light,
+    backgroundColor: Colors.home_header,
   },
   backIcon: {
     height: 15,

@@ -10,14 +10,17 @@ import GroupChatContainer from '../../components/GroupChatContainer';
 import {ConfirmationModal} from '../../components/Modals';
 import {translate} from '../../redux/reducers/languageReducer';
 import {
+  getGroupConversation,
   getUserGroups,
   getGroupDetail,
   getGroupMembers,
   setCurrentGroupDetail,
   setCurrentGroupMembers,
   deleteGroup,
+  sendGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
+import {ListLoader} from '../../components/Loaders';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -28,6 +31,7 @@ class GroupChats extends Component {
       showLeaveGroupConfirmationModal: false,
       showDeleteGroupConfirmationModal: false,
       isMyGroup: false,
+      conversation: [],
       headerRightIconMenu: [
         {
           id: 1,
@@ -74,353 +78,18 @@ class GroupChats extends Component {
       ],
       isReply: false,
       repliedMessage: null,
-      messagesArray: [
-        {
-          msg_id: 3110,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'SS',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T04:57:33.703368',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3111,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'ASDAD',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T04:58:02.308972',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3112,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'I3435',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T04:58:03.101552',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3113,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'KGGGJ',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T04:58:10.422368',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3114,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'KK',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T04:58:19.325510',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3115,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'ASD',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T04:59:27.730863',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3116,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'ASD',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:04:32.455634',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3117,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'S',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:06:49.480241',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3118,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'S',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:14:13.319157',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3119,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'S',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:16:41.939518',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3120,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'AS',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:19:18.123833',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3121,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'ASD',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:19:23.101623',
-          reply_to: {},
-          mentions: [],
-        },
-        {
-          msg_id: 3122,
-          sender_id: 10101,
-          group_id: 308,
-          sender_username: 'nik',
-          sender_display_name: 'nik',
-          sender_picture: null,
-          message_body: {
-            type: 'text',
-            text: 'S',
-          },
-          is_edited: false,
-          is_unsent: false,
-          timestamp: '2020-05-14T05:21:10.140908',
-          reply_to: {},
-          mentions: [],
-        },
-      ],
-
-      // [
-      //   {
-      //     id: 1,
-      //     message: 'Hello',
-      //     from_user: {
-      //       id: 1,
-      //       email: '',
-      //       username: '',
-      //       avatar: null,
-      //       is_online: false,
-      //       display_name: '',
-      //     },
-      //     isUser: false,
-      //     userName: 'raj',
-      //     time: '20:20',
-      //   },
-      //   {
-      //     id: 2,
-      //     message: 'HI',
-      //     from_user: {
-      //       id: 1,
-      //       email: '',
-      //       username: '',
-      //       avatar: null,
-      //       is_online: false,
-      //       display_name: '',
-      //     },
-      //     isUser: true,
-      //     status: 'Read',
-      //     time: '20:21',
-      //   },
-      //   {
-      //     id: 3,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     from_user: {
-      //       id: 1,
-      //       email: '',
-      //       username: '',
-      //       avatar: null,
-      //       is_online: false,
-      //       display_name: '',
-      //     },
-      //     isUser: false,
-      //     userName: 'raj',
-      //     time: '20:21',
-      //   },
-      //   {
-      //     id: 4,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     from_user: {
-      //       id: 1,
-      //       email: '',
-      //       username: '',
-      //       avatar: null,
-      //       is_online: false,
-      //       display_name: '',
-      //     },
-      //     isUser: true,
-      //     status: 'Read',
-      //     time: '20:25',
-      //     repliedTo: {
-      //       id: 3,
-      //       message:
-      //         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //       isUser: false,
-      //       userName: 'raj',
-      //       time: '20:21',
-      //     },
-      //   },
-      //   {
-      //     id: 5,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     from_user: {
-      //       id: 1,
-      //       email: '',
-      //       username: '',
-      //       avatar: null,
-      //       is_online: false,
-      //       display_name: '',
-      //     },
-      //     isUser: false,
-      //     userName: 'raj',
-      //     time: '20:26',
-      //     repliedTo: {
-      //       id: 2,
-      //       message: 'HI',
-      //       isUser: true,
-      //       status: 'Read',
-      //       time: '20:21',
-      //     },
-      //   },
-      //   {
-      //     id: 6,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     from_user: {
-      //       id: 1,
-      //       email: '',
-      //       username: '',
-      //       avatar: null,
-      //       is_online: false,
-      //       display_name: '',
-      //     },
-      //     isUser: true,
-      //     userName: 'raj',
-      //     time: '20:27',
-      //   },
-      // ],
     };
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const {newMessageText, conversation, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
     let newMessage;
     if (isReply) {
       newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
+        id: conversation ? conversation.length + 1 : 1,
         message: newMessageText,
         isUser: true,
         time: '20:27',
@@ -428,7 +97,7 @@ class GroupChats extends Component {
       };
     } else {
       newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
+        id: conversation ? conversation.length + 1 : 1,
         message: newMessageText,
         from_user: {
           id: 1,
@@ -441,12 +110,24 @@ class GroupChats extends Component {
         isUser: true,
         time: '20:27',
       };
+
+      let groupMessage = {
+        group: this.props.currentGroup.group_id,
+        local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+        mentions: [],
+        message_body: newMessageText,
+        msg_type: 'text',
+      };
+
+      this.props.sendGroupMessage(groupMessage).then((res) => {
+        alert(JSON.stringify(res));
+      });
     }
 
-    let newMessageArray = messagesArray ? messagesArray : [];
+    let newMessageArray = conversation ? conversation : [];
     newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
+      conversation: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -454,9 +135,9 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    const {conversation} = this.state;
 
-    const repliedMessage = messagesArray.find(
+    const repliedMessage = conversation.find(
       (item) => item.msg_id === messageId,
     );
     this.setState({
@@ -499,6 +180,7 @@ class GroupChats extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
 
+    this.getGroupConversation();
     this.getGroupDetail();
     this.getGroupMembers();
   }
@@ -506,6 +188,23 @@ class GroupChats extends Component {
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
+
+  getGroupConversation() {
+    this.props
+      .getGroupConversation(this.props.currentGroup.group_id)
+      .then((res) => {
+        if (res.status) {
+          this.setState({conversation: res.data});
+        }
+      })
+      .catch((err) => {
+        // Toast.show({
+        //   title: 'Touku',
+        //   text: translate('common.somethingWentWrong'),
+        //   type: 'primary',
+        // });
+      });
+  }
 
   getGroupDetail() {
     this.props
@@ -598,8 +297,12 @@ class GroupChats extends Component {
       showDeleteGroupConfirmationModal,
       orientation,
       isMyGroup,
+      conversation,
+      isReply,
+      repliedMessage,
     } = this.state;
-    const {currentGroup} = this.props;
+    const {currentGroup, groupLoading} = this.props;
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -617,17 +320,21 @@ class GroupChats extends Component {
           }
           image={currentGroup.group_picture}
         />
-        <GroupChatContainer
-          handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend}
-          onMessageReply={(id) => this.onReply(id)}
-          newMessageText={newMessageText}
-          messages={this.state.messagesArray}
-          orientation={this.state.orientation}
-          repliedMessage={this.state.repliedMessage}
-          isReply={this.state.isReply}
-          cancelReply={this.cancelReply}
-        />
+        {groupLoading && conversation.length <= 0 ? (
+          <ListLoader />
+        ) : (
+          <GroupChatContainer
+            handleMessage={(message) => this.handleMessage(message)}
+            onMessageSend={this.onMessageSend.bind(this)}
+            onMessageReply={(id) => this.onReply(id)}
+            newMessageText={newMessageText}
+            messages={conversation}
+            orientation={orientation}
+            repliedMessage={repliedMessage}
+            isReply={isReply}
+            cancelReply={this.cancelReply.bind(this)}
+          />
+        )}
         <ConfirmationModal
           orientation={orientation}
           visible={showLeaveGroupConfirmationModal}
@@ -652,17 +359,20 @@ class GroupChats extends Component {
 const mapStateToProps = (state) => {
   return {
     currentGroup: state.groupReducer.currentGroup,
+    groupLoading: state.groupReducer.loading,
     userData: state.userReducer.userData,
   };
 };
 
 const mapDispatchToProps = {
+  getGroupConversation,
   getUserGroups,
   getGroupDetail,
   getGroupMembers,
   setCurrentGroupDetail,
   setCurrentGroupMembers,
   deleteGroup,
+  sendGroupMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);
