@@ -1,14 +1,23 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground, Dimensions, Platform } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground, Dimensions, Platform} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
-import { translate } from '../../redux/reducers/languageReducer';
-import { globalStyles } from '../../styles';
-import { Colors, Fonts, Images, Icons } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {Colors, Fonts, Images, Icons} from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import { ConfirmationModal } from '../../components/Modals';
+import {ConfirmationModal} from '../../components/Modals';
+import {translate} from '../../redux/reducers/languageReducer';
+import {
+  getUserGroups,
+  getGroupDetail,
+  getGroupMembers,
+  setCurrentGroupDetail,
+  setCurrentGroupMembers,
+  deleteGroup,
+} from '../../redux/reducers/groupReducer';
+import Toast from '../../components/Toast';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -16,8 +25,9 @@ class GroupChats extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       newMessageText: '',
-      showConfirmationModal: false,
-      isMyGroup: true,
+      showLeaveGroupConfirmationModal: false,
+      showDeleteGroupConfirmationModal: false,
+      isMyGroup: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -32,7 +42,7 @@ class GroupChats extends Component {
           title: translate('pages.xchat.leave'),
           icon: 'user-slash',
           onPress: () => {
-            this.toggleConfirmationModal();
+            this.toggleLeaveGroupConfirmationModal();
           },
         },
       ],
@@ -49,8 +59,8 @@ class GroupChats extends Component {
           id: 2,
           title: translate('pages.xchat.deleteGroup'),
           icon: 'trash',
-          onPress: (gropuId) => {
-            this.onGroupDelete(gropuId);
+          onPress: () => {
+            this.toggleDeleteGroupConfirmationModal();
           },
         },
         {
@@ -58,7 +68,7 @@ class GroupChats extends Component {
           title: translate('pages.xchat.leave'),
           icon: 'user-slash',
           onPress: () => {
-            this.toggleConfirmationModal();
+            this.toggleLeaveGroupConfirmationModal();
           },
         },
       ],
@@ -403,12 +413,7 @@ class GroupChats extends Component {
   }
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -449,10 +454,10 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { messagesArray } = this.state;
+    const {messagesArray} = this.state;
 
     const repliedMessage = messagesArray.find(
-      (item) => item.msg_id === messageId
+      (item) => item.msg_id === messageId,
     );
     this.setState({
       isReply: true,
@@ -488,52 +493,117 @@ class GroupChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+
+    this.getGroupDetail();
+    this.getGroupMembers();
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
-  handleMessage(message) {
-    this.setState({ newMessageText: message });
+  getGroupDetail() {
+    this.props
+      .getGroupDetail(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupDetail(res);
+        for (let admin of res.admin_details) {
+          if (admin.id === this.props.userData.id) {
+            this.setState({isMyGroup: true});
+          }
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.props.navigation.goBack();
+      });
   }
 
-  toggleConfirmationModal = () => {
-    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
+  getGroupMembers() {
+    this.props
+      .getGroupMembers(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupMembers(res.results);
+      })
+      .catch((err) => {});
+  }
+
+  handleMessage(message) {
+    this.setState({newMessageText: message});
+  }
+
+  //Leave Group
+  toggleLeaveGroupConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showLeaveGroupConfirmationModal: !prevState.showLeaveGroupConfirmationModal,
+    }));
   };
 
-  onCancel = () => {
-    console.log('ChannelChats -> onCancel -> onCancel');
-    this.toggleConfirmationModal();
+  onCancelLeaveGroup = () => {
+    this.toggleLeaveGroupConfirmationModal();
   };
 
-  onConfirm = () => {
-    console.log('ChannelChats -> onConfirm -> onConfirm');
-    this.toggleConfirmationModal();
+  onConfirmLeaveGroup = () => {
+    this.toggleLeaveGroupConfirmationModal();
   };
 
-  onGroupDelete = (gropuId) => {
-    console.log('GroupChats -> onGroupDelete -> gropuId', gropuId);
+  //Delete Group
+  toggleDeleteGroupConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showDeleteGroupConfirmationModal: !prevState.showDeleteGroupConfirmationModal,
+    }));
+  };
+
+  onCancelDeteleGroup = () => {
+    this.toggleDeleteGroupConfirmationModal();
+  };
+
+  onConfirmDeleteGroup = () => {
+    this.toggleDeleteGroupConfirmationModal();
+    this.props
+      .deleteGroup(this.props.currentGroup.group_id)
+      .then((res) => {
+        if (res.status === true) {
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.toastr.groupIsRemoved'),
+            type: 'positive',
+          });
+          this.props.getUserGroups();
+          this.props.navigation.goBack();
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
   };
 
   render() {
     const {
       newMessageText,
-      showConfirmationModal,
+      showLeaveGroupConfirmationModal,
+      showDeleteGroupConfirmationModal,
       orientation,
       isMyGroup,
     } = this.state;
-    const { currentGroup } = this.props;
+    const {currentGroup} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentGroup.group_name}
           description={
@@ -560,11 +630,19 @@ class GroupChats extends Component {
         />
         <ConfirmationModal
           orientation={orientation}
-          visible={showConfirmationModal}
-          onCancel={this.onCancel}
-          onConfirm={this.onConfirm}
+          visible={showLeaveGroupConfirmationModal}
+          onCancel={this.onCancelLeaveGroup.bind(this)}
+          onConfirm={this.onConfirmLeaveGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.wantToLeaveText')}
+        />
+        <ConfirmationModal
+          orientation={orientation}
+          visible={showDeleteGroupConfirmationModal}
+          onCancel={this.onCancelDeteleGroup.bind(this)}
+          onConfirm={this.onConfirmDeleteGroup.bind(this)}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toastr.groupWillBeDeleted')}
         />
       </ImageBackground>
     );
@@ -574,9 +652,17 @@ class GroupChats extends Component {
 const mapStateToProps = (state) => {
   return {
     currentGroup: state.groupReducer.currentGroup,
+    userData: state.userReducer.userData,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getUserGroups,
+  getGroupDetail,
+  getGroupMembers,
+  setCurrentGroupDetail,
+  setCurrentGroupMembers,
+  deleteGroup,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);
