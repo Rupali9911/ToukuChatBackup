@@ -22,7 +22,10 @@ class FriendChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      translatedMessage: null,
+      translatedMessageId: null,
       showConfirmationModal: false,
+      showMessageDeleteConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -110,31 +113,27 @@ class FriendChats extends Component {
   }
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const { newMessageText, isReply, repliedMessage } = this.state;
     if (!newMessageText) {
       return;
     }
-    let newMessage;
+    // let newMessage;
     if (isReply) {
-      newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-        repliedTo: repliedMessage,
+      let data = {
+        friend: this.props.currentFriend.friend,
+        local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
+        message_body: newMessageText,
+        msg_type: 'text',
+        to_user: this.props.currentFriend.user_id,
+        reply_to: repliedMessage.id,
       };
+      this.props
+        .sendPersonalMessage(data)
+        .then((res) => {
+          this.getPersonalConversation();
+        })
+        .catch((err) => {});
     } else {
-      newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-      };
       let data = {
         friend: this.props.currentFriend.friend,
         local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
@@ -147,15 +146,9 @@ class FriendChats extends Component {
         .then((res) => {
           this.getPersonalConversation();
         })
-        .catch((err) => {
-          // alert(JSON.stringify(err))
-        });
+        .catch((err) => {});
     }
-
-    let newMessageArray = messagesArray ? messagesArray : [];
-    newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -163,22 +156,13 @@ class FriendChats extends Component {
   };
 
   onReply = (messageId) => {
-    console.log('ChannelChats -> onReply -> messageId', messageId);
     const { conversations } = this.state;
 
     const repliedMessage = conversations.find((item) => item.id === messageId);
-    this.setState(
-      {
-        isReply: true,
-        repliedMessage: repliedMessage,
-      },
-      () => {
-        console.log(
-          'ChannelChats -> onReply -> repliedMessage',
-          this.state.repliedMessage
-        );
-      }
-    );
+    this.setState({
+      isReply: true,
+      repliedMessage: repliedMessage,
+    });
   };
 
   cancelReply = () => {
@@ -207,13 +191,7 @@ class FriendChats extends Component {
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({ conversations: res.conversation }, () => {
-            console.log(
-              'FriendChats -> getPersonalConversation -> conversation',
-              this.state.conversations
-            );
-          });
-          // this.props.readAllChannelMessages(this.props.currentChannel.id);
+          this.setState({ conversations: res.conversation });
         }
       });
   }
@@ -236,12 +214,50 @@ class FriendChats extends Component {
     this.toggleConfirmationModal();
   };
 
+  // To delete message
+  toggleMessageDeleteConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showMessageDeleteConfirmationModal: !prevState.showMessageDeleteConfirmationModal,
+    }));
+  };
+
+  onCancelDelete = () => {
+    this.toggleMessageDeleteConfirmationModal();
+  };
+
+  onConfirmDelete = () => {
+    this.toggleMessageDeleteConfirmationModal();
+  };
+
+  onDeletePressed = (messageId) => {
+    console.log('ChannelChats -> onDeletePressed -> message', messageId);
+    this.setState({ showMessageDeleteConfirmationModal: true });
+  };
+
+  onMessageTranslate = (message) => {
+    console.log('onMessageTranslate -> message', message);
+    this.setState({
+      translatedMessageId: message.id,
+      translatedMessage: '1234',
+    });
+  };
+
+  onMessageTranslateClose = () => {
+    this.setState({
+      translatedMessageId: null,
+      translatedMessage: null,
+    });
+  };
+
   render() {
     const {
       conversations,
       newMessageText,
       showConfirmationModal,
+      showMessageDeleteConfirmationModal,
       orientation,
+      translatedMessage,
+      translatedMessageId,
     } = this.state;
     const { currentFriend, chatsLoading } = this.props;
 
@@ -273,6 +289,11 @@ class FriendChats extends Component {
             repliedMessage={this.state.repliedMessage}
             isReply={this.state.isReply}
             cancelReply={this.cancelReply}
+            onDelete={(id) => this.onDeletePressed(id)}
+            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onMessageTranslateClose={this.onMessageTranslateClose}
+            translatedMessage={translatedMessage}
+            translatedMessageId={translatedMessageId}
           />
         )}
         <ConfirmationModal
@@ -282,6 +303,15 @@ class FriendChats extends Component {
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.selectedUserWillBeRemoved')}
+        />
+
+        <ConfirmationModal
+          visible={showMessageDeleteConfirmationModal}
+          onCancel={this.onCancelDelete.bind(this)}
+          onConfirm={this.onConfirmDelete.bind(this)}
+          orientation={orientation}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toLeaveThisChannel')}
         />
       </ImageBackground>
     );

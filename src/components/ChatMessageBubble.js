@@ -1,23 +1,21 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
   Text,
-  Dimensions,
   TouchableOpacity,
-  Image,
   Clipboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Menu, Divider } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { connect } from 'react-redux';
+import { Colors, Fonts } from '../constants';
+import { translate } from '../redux/reducers/languageReducer';
 
-import { Colors, Icons, Fonts, Images } from '../constants';
-import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
-const { width, height } = Dimensions.get('window');
 let borderRadius = 20;
-export default class ChatMessageBubble extends Component {
+class ChatMessageBubble extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -46,7 +44,9 @@ export default class ChatMessageBubble extends Component {
           }}
         >
           <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-            {replyMessage.isUser ? 'You' : replyMessage.userName}
+            {replyMessage.sender_id === this.props.userData.id
+              ? 'You'
+              : replyMessage.name}
           </Text>
         </View>
         <View
@@ -64,19 +64,6 @@ export default class ChatMessageBubble extends Component {
     );
   };
 
-  renderMenuItem = () => {
-    return (
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 0.2 }}>
-          <Text>q</Text>
-        </View>
-        <View style={{ flex: 0.8 }}>
-          <Text>vujfbkud</Text>
-        </View>
-      </View>
-    );
-  };
-
   render() {
     const {
       message,
@@ -86,7 +73,10 @@ export default class ChatMessageBubble extends Component {
       longPressMenu,
       closeMenu,
       openMenu,
+      isChannel,
       selectedMessageId,
+      onMessageTranslate,
+      onDelete,
     } = this.props;
     return (
       <Menu
@@ -115,8 +105,8 @@ export default class ChatMessageBubble extends Component {
                     onMessagePress(message.id);
                   }}
                 >
-                  {message.repliedTo &&
-                    this.renderReplyMessage(message.repliedTo)}
+                  {message.reply_to &&
+                    this.renderReplyMessage(message.reply_to)}
                   <Text
                     style={{
                       fontSize: 15,
@@ -154,8 +144,8 @@ export default class ChatMessageBubble extends Component {
                   }}
                   activeOpacity={0.8}
                 >
-                  {message.repliedTo &&
-                    this.renderReplyMessage(message.repliedTo)}
+                  {message.reply_to &&
+                    this.renderReplyMessage(message.reply_to)}
                   <Text style={{ color: 'white', fontSize: 15 }}>
                     {message.message_body}
                   </Text>
@@ -171,23 +161,26 @@ export default class ChatMessageBubble extends Component {
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
           onPress={() => {
+            onMessageTranslate(message);
             closeMenu();
           }}
           title={translate('common.translate')}
           titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        <Menu.Item
-          titleStyle={{ color: Colors.white }}
-          icon={() => (
-            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            onMessageReply(selectedMessageId);
-            closeMenu();
-          }}
-          title={translate('common.reply')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
+        {!isChannel && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              onMessageReply(selectedMessageId);
+              closeMenu();
+            }}
+            title={translate('common.reply')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
         <Menu.Item
           titleStyle={{ color: Colors.white }}
           icon={() => (
@@ -205,6 +198,7 @@ export default class ChatMessageBubble extends Component {
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
           onPress={() => {
+            onDelete(selectedMessageId);
             closeMenu();
           }}
           title={translate('common.delete')}
@@ -281,3 +275,13 @@ const styles = StyleSheet.create({
     top: -15,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    userData: state.userReducer.userData,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);
