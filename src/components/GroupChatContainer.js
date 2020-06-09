@@ -14,7 +14,7 @@ import moment from 'moment';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import ChatMessageBox from './ChatMessageBox';
+import GroupChatMessageBox from './GroupChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import { translate } from '../redux/reducers/languageReducer';
 import { Colors, Fonts, Images, Icons } from '../constants';
@@ -22,7 +22,7 @@ import NoData from './NoData';
 import { isIphoneX } from '../utils';
 const { width, height } = Dimensions.get('window');
 
-class ChatContainer extends Component {
+class GroupChatContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -41,11 +41,11 @@ class ChatContainer extends Component {
     }
     const msg = messages.map((item, index) => {
       return (
-        <ChatMessageBox
-          key={item.id}
+        <GroupChatMessageBox
+          key={item.msg_id}
           message={item}
-          isUser={item.from_user.id === this.props.userData.id ? true : false}
-          time={new Date(item.created)}
+          isUser={item.sender_id === this.props.userData.id ? true : false}
+          time={new Date(item.timestamp)}
           // status={item.status}
           onMessageReply={(id) => this.props.onMessageReply(id)}
           orientation={this.props.orientation}
@@ -143,9 +143,9 @@ class ChatContainer extends Component {
               >
                 <View style={{ flex: 8 }}>
                   <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-                    {repliedMessage.from_user.id === this.props.userData.id
+                    {repliedMessage.sender_id === this.props.userData.id
                       ? 'You'
-                      : repliedMessage.from_user.username}
+                      : repliedMessage.sender_username}
                   </Text>
                 </View>
                 <View style={{ flex: 2, alignItems: 'flex-end' }}>
@@ -177,7 +177,7 @@ class ChatContainer extends Component {
                   numberOfLines={2}
                   style={{ fontFamily: Fonts.extralight }}
                 >
-                  {repliedMessage.message_body}
+                  {repliedMessage.message_body.text}
                 </Text>
               </View>
             </View>
@@ -230,4 +230,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChatContainer);

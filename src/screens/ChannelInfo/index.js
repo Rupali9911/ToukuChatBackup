@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   ImageBackground,
@@ -7,26 +7,26 @@ import {
   Text,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 
-import {channelInfoStyles} from './styles';
-import {globalStyles} from '../../styles';
+import { channelInfoStyles } from './styles';
+import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import {Images, Icons, Fonts} from '../../constants';
+import { Images, Icons, Fonts } from '../../constants';
 import Button from '../../components/Button';
-import {ListLoader} from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 import Toast from '../../components/Toast';
 import RoundedImage from '../../components/RoundedImage';
-import {getImage} from '../../utils';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import { getImage } from '../../utils';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import {
   getChannelDetails,
   unfollowChannel,
   followChannel,
 } from '../../redux/reducers/channelReducer';
-import {ConfirmationModal} from '../../components/Modals';
+import { ConfirmationModal } from '../../components/Modals';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -62,7 +62,7 @@ class ChannelInfo extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -76,14 +76,14 @@ class ChannelInfo extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getChannelDetails() {
     this.props
       .getChannelDetails(this.props.currentChannel.id)
       .then((res) => {
-        this.setState({channelData: res});
+        this.setState({ channelData: res });
       })
       .catch((err) => {
         Toast.show({
@@ -97,7 +97,7 @@ class ChannelInfo extends Component {
 
   onFollowUnfollow() {
     if (this.state.channelData.is_member) {
-      this.setState({showConfirmationModal: true});
+      this.setState({ showConfirmationModal: true });
     } else {
       // alert('Follow');
       let data = {
@@ -165,7 +165,7 @@ class ChannelInfo extends Component {
       orientation,
       showConfirmationModal,
     } = this.state;
-    const {channelLoading} = this.props;
+    const { channelLoading } = this.props;
 
     const channelCountDetails = [
       {
@@ -188,7 +188,8 @@ class ChannelInfo extends Component {
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <View style={globalStyles.container}>
           <HeaderWithBack
             isCentered
@@ -199,18 +200,22 @@ class ChannelInfo extends Component {
             <KeyboardAwareScrollView
               contentContainerStyle={channelInfoStyles.mainContainer}
               showsVerticalScrollIndicator={false}
-              bounces={false}>
+              bounces={false}
+            >
               <LinearGradient
-                start={{x: 0.1, y: 0.7}}
-                end={{x: 0.8, y: 0.3}}
+                start={{ x: 0.1, y: 0.7 }}
+                end={{ x: 0.8, y: 0.3 }}
                 locations={[0.1, 0.5, 1]}
                 colors={['#c13468', '#ee2e3b', '#fa573a']}
-                style={channelInfoStyles.channelImageContainer}>
+                style={channelInfoStyles.channelImageContainer}
+              >
                 <ImageBackground
                   style={channelInfoStyles.channelCoverContainer}
-                  source={getImage(channelData.cover_image)}>
+                  source={getImage(channelData.cover_image)}
+                >
                   <View
-                    style={channelInfoStyles.updateBackgroundContainer}></View>
+                    style={channelInfoStyles.updateBackgroundContainer}
+                  ></View>
                   <View style={channelInfoStyles.channelInfoContainer}>
                     <View style={channelInfoStyles.imageContainer}>
                       <View style={channelInfoStyles.imageView}>
@@ -230,7 +235,8 @@ class ChannelInfo extends Component {
                       >
                         <Text
                           style={channelInfoStyles.channelNameText}
-                          numberOfLines={1}>
+                          numberOfLines={1}
+                        >
                           {channelData.name}
                         </Text>
                       </View>
@@ -240,7 +246,8 @@ class ChannelInfo extends Component {
                       >
                         <Text
                           style={channelInfoStyles.channelNameText}
-                          numberOfLines={1}>
+                          numberOfLines={1}
+                        >
                           {channelData.channel_status != null || ''
                             ? channelData.channel_status
                             : 'Status'}
@@ -254,13 +261,16 @@ class ChannelInfo extends Component {
                         return (
                           <View
                             key={index}
-                            style={channelInfoStyles.detailStatusItem}>
+                            style={channelInfoStyles.detailStatusItem}
+                          >
                             <Text
-                              style={channelInfoStyles.detailStatusItemCount}>
+                              style={channelInfoStyles.detailStatusItemCount}
+                            >
                               {item.count}
                             </Text>
                             <Text
-                              style={channelInfoStyles.detailStatusItemName}>
+                              style={channelInfoStyles.detailStatusItemName}
+                            >
                               {translate(`pages.xchat.${item.title}`)}
                             </Text>
                           </View>
@@ -288,7 +298,8 @@ class ChannelInfo extends Component {
                     <TouchableOpacity
                       key={index}
                       style={channelInfoStyles.tabItem}
-                      onPress={item.action}>
+                      onPress={item.action}
+                    >
                       <Image
                         source={item.icon}
                         style={[
@@ -308,7 +319,8 @@ class ChannelInfo extends Component {
                                 ? Fonts.regular
                                 : Fonts.extralight,
                           },
-                        ]}>
+                        ]}
+                      >
                         {translate(`pages.xchat.${item.title}`)}
                       </Text>
                     </TouchableOpacity>
@@ -319,6 +331,7 @@ class ChannelInfo extends Component {
                 <Text style={channelInfoStyles.aboutHeading}>
                   {translate('pages.xchat.about')}
                 </Text>
+                <Text style={channelInfoStyles.aboutText}>Demo About us</Text>
               </View>
               <View style={channelInfoStyles.buttonContainer}>
                 <Button
