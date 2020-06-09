@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Image, ImageBackground, ActivityIndicator, View} from 'react-native';
-import {Images, Colors} from '../../constants';
+import {Images} from '../../constants';
 
 class ImageLoader extends React.Component {
   static propTypes = {
@@ -98,7 +98,7 @@ const styles = {
   },
   viewImageStyles: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: '#e9eef1',
     justifyContent: 'center',
     alignItems: 'center',
   },
