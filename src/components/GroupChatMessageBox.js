@@ -66,9 +66,10 @@ export default class GroupChatMessageBox extends Component {
       onMessageReply,
       orientation,
     } = this.props;
-    message.message_body.type === 'image' &&
+    message.message_body &&
+      message.message_body.type === 'image' &&
       this.isPortrait(message.message_body.text);
-    return !isUser ? (
+    return !isUser && message.message_body ? (
       <View
         style={[
           styles.container,
@@ -125,54 +126,56 @@ export default class GroupChatMessageBox extends Component {
         </View>
       </View>
     ) : (
-      <View
-        style={[
-          styles.container,
-          {
-            alignItems: 'flex-end',
-            alignSelf: 'flex-end',
-          },
-        ]}
-      >
+      message.message_body && (
         <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-          }}
+          style={[
+            styles.container,
+            {
+              alignItems: 'flex-end',
+              alignSelf: 'flex-end',
+            },
+          ]}
         >
           <View
             style={{
-              marginHorizontal: '1.5%',
-              alignItems: 'center',
-              marginVertical: 15,
+              flexDirection: 'row',
+              alignItems: 'flex-end',
             }}
           >
-            <Text style={styles.statusText}>{status}</Text>
-            <Text style={styles.statusText}>
-              {`${time.getHours()}:${time.getMinutes()}`}
-            </Text>
+            <View
+              style={{
+                marginHorizontal: '1.5%',
+                alignItems: 'center',
+                marginVertical: 15,
+              }}
+            >
+              <Text style={styles.statusText}>{status}</Text>
+              <Text style={styles.statusText}>
+                {`${time.getHours()}:${time.getMinutes()}`}
+              </Text>
+            </View>
+            {message.msg_type === 'image' ? (
+              <ChatMessageImage
+                message={message}
+                isUser={isUser}
+                isPortrait={isPortrait}
+                orientation={orientation}
+              />
+            ) : (
+              <GroupChatMessageBubble
+                message={message}
+                isUser={isUser}
+                onMessageReply={onMessageReply}
+                onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                longPressMenu={longPressMenu}
+                openMenu={this._openMenu}
+                closeMenu={this._closeMenu}
+                selectedMessageId={selectedMessageId}
+              />
+            )}
           </View>
-          {message.msg_type === 'image' ? (
-            <ChatMessageImage
-              message={message}
-              isUser={isUser}
-              isPortrait={isPortrait}
-              orientation={orientation}
-            />
-          ) : (
-            <GroupChatMessageBubble
-              message={message}
-              isUser={isUser}
-              onMessageReply={onMessageReply}
-              onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-              longPressMenu={longPressMenu}
-              openMenu={this._openMenu}
-              closeMenu={this._closeMenu}
-              selectedMessageId={selectedMessageId}
-            />
-          )}
         </View>
-      </View>
+      )
     );
   }
 }

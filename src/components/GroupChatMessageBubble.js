@@ -75,6 +75,10 @@ export default class GroupChatMessageBubble extends Component {
       openMenu,
       selectedMessageId,
     } = this.props;
+
+    if (!message.message_body) {
+      return null;
+    }
     return (
       <Menu
         contentStyle={{

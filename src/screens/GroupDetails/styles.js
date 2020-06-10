@@ -2,45 +2,61 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { Images, Colors, Icons, Fonts } from '../../constants';
 const { width, height } = Dimensions.get('window');
 
-export const createGroupStyles = StyleSheet.create({
+export const groupDetailStyles = StyleSheet.create({
   mainContainer: {
-    // flex: 1,
     paddingHorizontal: 15,
     paddingBottom: 50,
   },
   imageContainer: {
-    height: height * 0.22,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    height: height * 0.18,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    marginBottom: 20,
   },
   imageView: {
-    height: height * 0.17,
-    width: height * 0.17,
-  },
-  profileImage: {
-    height: '90%',
-    width: '90%',
+    height: height * 0.13,
+    width: height * 0.13,
     borderWidth: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+
+    elevation: 3,
     borderColor: '#fff',
   },
-  cameraButton: {
-    height: height * 0.03,
-    width: height * 0.03,
-    borderRadius: height * 0.15,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#000',
-    justifyContent: 'center',
+  profileImage: {
+    height: '100%',
+    width: '100%',
+  },
+  editIcon: {
+    height: 15,
+    width: 15,
+    tintColor: Colors.gradient_2,
+    marginLeft: 7,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    marginVertical: 10,
+    justifyContent: 'space-evenly',
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.gray,
+    // paddingBottom: 10,
+  },
+  tabItem: {
+    marginHorizontal: 10,
     alignItems: 'center',
-    position: 'absolute',
-    right: '5%',
-    bottom: '5%',
+    paddingBottom: 10,
+    paddingHorizontal: 20,
   },
-  cameraIcon: {
-    height: '60%',
-    width: '60%',
+  tabTitle: {
+    fontSize: 16,
+    color: Colors.gradient_2,
   },
-  inputesContainer: {},
   searchContainer: {
     height: 35,
     flexDirection: 'row',
@@ -48,10 +64,10 @@ export const createGroupStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     backgroundColor: Colors.white,
-    borderRadius: 10,
+    borderRadius: 20,
+    margin: 10,
     borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
     borderColor: Colors.gray_dark,
-    marginTop: 20,
   },
   inputStyle: {
     flex: 1,
@@ -62,21 +78,9 @@ export const createGroupStyles = StyleSheet.create({
     fontFamily: Fonts.light,
     paddingVertical: 0,
   },
-  iconRight: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
   iconSearch: {
     width: 18,
     height: 18,
     resizeMode: 'contain',
-  },
-  iconRightContainer: {
-    marginStart: 15,
-    alignSelf: 'center',
-  },
-  frindListContainer: {
-    marginVertical: 20,
   },
 });
