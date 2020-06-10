@@ -1,14 +1,14 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground, Dimensions, Platform} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground, Dimensions, Platform } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {Colors, Fonts, Images, Icons} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Colors, Fonts, Images, Icons } from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import {ConfirmationModal} from '../../components/Modals';
-import {translate} from '../../redux/reducers/languageReducer';
+import { ConfirmationModal } from '../../components/Modals';
+import { translate } from '../../redux/reducers/languageReducer';
 import {
   getGroupConversation,
   getUserGroups,
@@ -20,7 +20,7 @@ import {
   sendGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import {ListLoader} from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -82,35 +82,17 @@ class GroupChats extends Component {
   }
 
   onMessageSend = () => {
-    const {newMessageText, conversation, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      conversation,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
-    let newMessage;
     if (isReply) {
-      newMessage = {
-        id: conversation ? conversation.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-        repliedTo: repliedMessage,
-      };
     } else {
-      newMessage = {
-        id: conversation ? conversation.length + 1 : 1,
-        message: newMessageText,
-        from_user: {
-          id: 1,
-          email: '',
-          username: '',
-          avatar: null,
-          is_online: false,
-          display_name: '',
-        },
-        isUser: true,
-        time: '20:27',
-      };
-
       let groupMessage = {
         group: this.props.currentGroup.group_id,
         local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
@@ -121,13 +103,11 @@ class GroupChats extends Component {
 
       this.props.sendGroupMessage(groupMessage).then((res) => {
         alert(JSON.stringify(res));
+        this.getGroupConversation();
       });
     }
 
-    let newMessageArray = conversation ? conversation : [];
-    newMessageArray.push(newMessage);
     this.setState({
-      conversation: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -135,10 +115,10 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {conversation} = this.state;
+    const { conversation } = this.state;
 
     const repliedMessage = conversation.find(
-      (item) => item.msg_id === messageId,
+      (item) => item.msg_id === messageId
     );
     this.setState({
       isReply: true,
@@ -174,7 +154,7 @@ class GroupChats extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -186,7 +166,7 @@ class GroupChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getGroupConversation() {
@@ -194,7 +174,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({conversation: res.data});
+          this.setState({ conversation: res.data });
         }
       })
       .catch((err) => {
@@ -213,7 +193,7 @@ class GroupChats extends Component {
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
-            this.setState({isMyGroup: true});
+            this.setState({ isMyGroup: true });
           }
         }
       })
@@ -237,7 +217,7 @@ class GroupChats extends Component {
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   //Leave Group
@@ -301,12 +281,13 @@ class GroupChats extends Component {
       isReply,
       repliedMessage,
     } = this.state;
-    const {currentGroup, groupLoading} = this.props;
+    const { currentGroup, groupLoading } = this.props;
 
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentGroup.group_name}
           description={
