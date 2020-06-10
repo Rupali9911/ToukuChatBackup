@@ -23,7 +23,7 @@ export default class HomeHeader extends Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }

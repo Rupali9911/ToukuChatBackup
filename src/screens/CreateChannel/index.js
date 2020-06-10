@@ -65,6 +65,8 @@ class CreateChannel extends Component {
       setSelectedBgItem: {},
       vipPerMonth: 0,
       affiliateReward: 0,
+      status: '',
+      showStatusCount: false,
       selectedChannelCategory: {
         id: 1,
         label: 'onlineSaloon',
@@ -176,11 +178,11 @@ class CreateChannel extends Component {
 
   static navigationOptions = () => {
     return {
-      header: null,
+        headerShown: false,
     };
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
   }
@@ -420,24 +422,43 @@ class CreateChannel extends Component {
     });
   }
 
-  focusedInput = () => {
-    this.textInput.setNativeProps({
+  focusedInput = (input) => {
+    if (input === 'channelName') {
+      this.channelNameTextInput.setNativeProps({
+        style: {
+          borderWidth: 1,
+          borderColor: Colors.white,
+        },
+      });
+      return;
+    }
+    this.statusTextInput.setNativeProps({
       style: {
         borderWidth: 1,
         borderColor: Colors.white,
       },
     });
+    this.setState({ showStatusCount: true });
   };
 
-  blurredInput = () => {
-    this.textInput.setNativeProps({
+  blurredInput = (input) => {
+    if (input === 'channelName') {
+      this.channelNameTextInput.setNativeProps({
+        style: { borderWidth: 0 },
+      });
+      return;
+    }
+    this.statusTextInput.setNativeProps({
       style: { borderWidth: 0 },
     });
+    this.setState({ showStatusCount: false });
   };
 
   render() {
     const {
       channelName,
+      status,
+      showStatusCount,
       about,
       about_vip,
       isManage,
@@ -537,14 +558,43 @@ class CreateChannel extends Component {
                       onChangeText={(channelName) =>
                         this.setState({ channelName })
                       }
-                      ref={(c) => {
-                        this.textInput = c;
+                      ref={(channelName) => {
+                        this.channelNameTextInput = channelName;
                       }}
-                      onFocus={this.focusedInput}
-                      onBlur={this.blurredInput}
+                      onFocus={() => this.focusedInput('channelName')}
+                      onBlur={() => this.blurredInput('channelName')}
                       value={channelName}
                     />
-                    <Menu
+
+                    {/* <View> */}
+                    {showStatusCount && (
+                      <Text
+                        style={{
+                          position: 'absolute',
+                          top: 35,
+                          width: '95%',
+                          color: Colors.white,
+                          textAlign: 'right',
+                        }}
+                      >
+                        {status.length}/20
+                      </Text>
+                    )}
+                    <TextInput
+                      style={createChannelStyles.channelNameInput}
+                      placeholder={translate('pages.xchat.status')}
+                      placeholderTextColor={Colors.white}
+                      maxLength={20}
+                      onChangeText={(status) => this.setState({ status })}
+                      ref={(status) => {
+                        this.statusTextInput = status;
+                      }}
+                      onFocus={() => this.focusedInput('status')}
+                      onBlur={() => this.blurredInput('status')}
+                      value={status}
+                    />
+                    {/* </View> */}
+                    {/* <Menu
                       visible={channelBusinessMenuVisible}
                       onDismiss={this._closeMenu}
                       style={{ marginVertical: 40 }}
@@ -596,7 +646,7 @@ class CreateChannel extends Component {
                           </TouchableOpacity>
                         );
                       })}
-                    </Menu>
+                    </Menu> */}
                   </View>
                 </View>
               </ImageBackground>
@@ -728,10 +778,12 @@ class CreateChannel extends Component {
                       >
                         <TextInput
                           style={createChannelStyles.detailTextInput}
-                          placeholder={'' + vipPerMonth}
+                          placeholder={vipPerMonth.toString()}
                           placeholderTextColor={Colors.orange}
                           onChangeText={(vipPerMonth) =>
-                            this.setState({ vipPerMonth })
+                            this.setState({
+                              vipPerMonth: vipPerMonth.lenght ? vipPerMonth : 0,
+                            })
                           }
                           value={vipPerMonth}
                           keyboardType={'number-pad'}
@@ -754,10 +806,14 @@ class CreateChannel extends Component {
                   >
                     <TextInput
                       style={createChannelStyles.detailTextInput}
-                      placeholder={'' + affiliateReward}
+                      placeholder={affiliateReward.toString()}
                       placeholderTextColor={Colors.orange}
                       onChangeText={(affiliateReward) =>
-                        this.setState({ affiliateReward })
+                        this.setState({
+                          affiliateReward: affiliateReward.lenght
+                            ? affiliateReward
+                            : 0,
+                        })
                       }
                       value={affiliateReward}
                       keyboardType={'number-pad'}

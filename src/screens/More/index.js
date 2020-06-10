@@ -22,11 +22,11 @@ class More extends Component {
 
   static navigationOptions = () => {
     return {
-      header: null,
+        headerShown: false,
     };
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }
@@ -44,15 +44,18 @@ class More extends Component {
         });
     }
 
+
   render() {
     const {orientation} = this.state;
+    const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('common.settings')} />
-            <ScrollView>
+            <ScrollView
+                ref={ref => {this.scrollView = ref}}>
             <Section />
             <SettingsItem
                 icon_name={'user'}
@@ -83,11 +86,13 @@ class More extends Component {
                 icon_name={'id-card'}
               title={translate('pages.xchat.invitation')}
                 isFontAwesome={true}
+                isInvitation={true}
             />
             <SettingsItem
                 icon_name={'star'}
               title={translate('pages.xchat.toukuPoints')}
                 isFontAwesome={true}
+                isToukuPoints={true}
             />
             <SettingsItem
                 icon_name={'user'}
@@ -99,16 +104,21 @@ class More extends Component {
                 <SettingsItem
                     icon_name={'language'}
                     title={translate('pages.setting.language')}
+                    isLanguage={true}
+                    scrollToBottom={() => this.scrollView.scrollToEnd({animated: false})}
                 />
                 <SettingsItem
                     icon_name={'comments'}
                     title={translate('pages.xchat.channelModeText')}
                     isImage={Icons.channel_mode}
+                    isChannelMode={true}
                 />
                 <SettingsItem
                     icon_name={'comments'}
                     title={translate('pages.xchat.customerSupport')}
                     isFontAwesome={true}
+                    isCustomerSupport={true}
+                    // onPress={() => handleOpen}
                 />
                 <SettingsItem
                     icon_name={'sign-out-alt'}

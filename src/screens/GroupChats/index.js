@@ -14,7 +14,6 @@ class GroupChats extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.navigation.getParam('data', null),
       orientation: 'PORTRAIT',
       newMessageText: '',
       showConfirmationModal: false,
@@ -42,6 +41,14 @@ class GroupChats extends Component {
         {
           id: 1,
           message: 'Hello',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: false,
           userName: 'raj',
           time: '20:20',
@@ -49,6 +56,14 @@ class GroupChats extends Component {
         {
           id: 2,
           message: 'HI',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: true,
           status: 'Read',
           time: '20:21',
@@ -57,6 +72,14 @@ class GroupChats extends Component {
           id: 3,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: false,
           userName: 'raj',
           time: '20:21',
@@ -65,6 +88,14 @@ class GroupChats extends Component {
           id: 4,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: true,
           status: 'Read',
           time: '20:25',
@@ -81,6 +112,14 @@ class GroupChats extends Component {
           id: 5,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: false,
           userName: 'raj',
           time: '20:26',
@@ -96,6 +135,14 @@ class GroupChats extends Component {
           id: 6,
           message:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+          from_user: {
+            id: 1,
+            email: '',
+            username: '',
+            avatar: null,
+            is_online: false,
+            display_name: '',
+          },
           isUser: true,
           userName: 'raj',
           time: '20:27',
@@ -122,6 +169,14 @@ class GroupChats extends Component {
       newMessage = {
         id: messagesArray ? messagesArray.length + 1 : 1,
         message: newMessageText,
+        from_user: {
+          id: 1,
+          email: '',
+          username: '',
+          avatar: null,
+          is_online: false,
+          display_name: '',
+        },
         isUser: true,
         time: '20:27',
       };
@@ -154,7 +209,7 @@ class GroupChats extends Component {
     });
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }
@@ -186,24 +241,20 @@ class GroupChats extends Component {
   };
 
   render() {
-    const {
-      data,
-      newMessageText,
-      showConfirmationModal,
-      orientation,
-    } = this.state;
+    const {newMessageText, showConfirmationModal, orientation} = this.state;
+    const {currentGroup} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <ChatHeader
-          title={data.group_name}
+          title={currentGroup.group_name}
           description={
-            data.total_members + ' ' + translate('pages.xchat.members')
+            currentGroup.total_members + ' ' + translate('pages.xchat.members')
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
-          image={data.group_picture}
+          image={currentGroup.group_picture}
         />
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}
@@ -230,7 +281,9 @@ class GroupChats extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    currentGroup: state.groupReducer.currentGroup,
+  };
 };
 
 const mapDispatchToProps = {};

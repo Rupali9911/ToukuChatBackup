@@ -38,7 +38,7 @@ export function getAvatar(source) {
 }
 
 export function getImage(source) {
-  if (source === null || typeof source === null || source === undefined) {
+  if (source === null || typeof source === null || source === undefined || source === '') {
     return Images.image_gallery;
   } else {
     return {uri: source};

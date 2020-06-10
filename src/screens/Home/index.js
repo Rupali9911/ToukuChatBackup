@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  FlatList,
+  FlatList
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -38,9 +38,13 @@ import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {
   getUserChannels,
+  getFollowingChannels,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
-import {getUserGroups} from '../../redux/reducers/groupReducer';
+import {
+  getUserGroups,
+  setCurrentGroup,
+} from '../../redux/reducers/groupReducer';
 import {
   getUserFriends,
   getFriendRequests,
@@ -63,11 +67,11 @@ class Home extends Component {
 
   static navigationOptions = () => {
     return {
-      header: null,
+        headerShown: false,
     };
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }
@@ -77,6 +81,7 @@ class Home extends Component {
     Orientation.addOrientationListener(this._orientationDidChange);
 
     this.props.getUserChannels();
+    this.props.getFollowingChannels();
     this.props.getUserGroups();
     this.props.getUserFriends();
     this.props.getFriendRequests();
@@ -129,9 +134,8 @@ class Home extends Component {
   };
 
   onOpenGroupChats = (item) => {
-    this.props.navigation.navigate('GroupChats', {
-      data: item,
-    });
+    this.props.setCurrentGroup(item);
+    this.props.navigation.navigate('GroupChats');
   };
 
   onOpenFriendChats = (item) => {
@@ -153,6 +157,7 @@ class Home extends Component {
           data={filteredChannels}
           renderItem={({item, index}) => (
             <ChannelListItem
+              key={index}
               title={item.name}
               description={item.description}
               date={item.created}
@@ -164,6 +169,7 @@ class Home extends Component {
           ListFooterComponent={() => (
             <View>{channelLoading ? <ListLoader /> : null}</View>
           )}
+          keyExtractor={(item, index) => String(index)}
         />
       );
     } else {
@@ -185,6 +191,7 @@ class Home extends Component {
           data={filteredGroups}
           renderItem={({item, index}) => (
             <GroupListItem
+              key={index}
               title={item.group_name}
               description={item.last_msg.text}
               date={item.timestamp}
@@ -196,6 +203,7 @@ class Home extends Component {
           ListFooterComponent={() => (
             <View>{groupLoading ? <ListLoader /> : null}</View>
           )}
+          keyExtractor={(item, index) => String(index)}
         />
       );
     } else {
@@ -217,6 +225,7 @@ class Home extends Component {
           data={filteredFriends}
           renderItem={({item, index}) => (
             <FriendListItem
+              key={index}
               title={item.username}
               description={item.last_msg}
               image={getAvatar(item.profile_picture)}
@@ -229,6 +238,7 @@ class Home extends Component {
           ListFooterComponent={() => (
             <View>{friendLoading ? <ListLoader /> : null}</View>
           )}
+          keyExtractor={(item, index) => String(index)}
         />
       );
     } else {
@@ -393,6 +403,7 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
     userChannels: state.channelReducer.userChannels,
+    followingChannels: state.channelReducer.followingChannels,
     channelLoading: state.channelReducer.loading,
     userGroups: state.groupReducer.userGroups,
     groupLoading: state.groupReducer.loading,
@@ -404,8 +415,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getUserProfile,
   getUserChannels,
+  getFollowingChannels,
   setCurrentChannel,
   getUserGroups,
+  setCurrentGroup,
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,

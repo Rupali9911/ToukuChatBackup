@@ -52,11 +52,11 @@ class CreateGroupChat extends Component {
 
   static navigationOptions = () => {
     return {
-      header: null,
+        headerShown: false,
     };
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
   }
@@ -209,6 +209,7 @@ class CreateGroupChat extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={createGroupStyles.mainContainer}
             showsVerticalScrollIndicator={false}
+            extraScrollHeight={100}
           >
             <View style={createGroupStyles.imageContainer}>
               <View style={createGroupStyles.imageView}>

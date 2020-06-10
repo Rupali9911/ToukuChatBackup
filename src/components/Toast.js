@@ -70,7 +70,7 @@ class Toast extends Component {
     }).start();
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }

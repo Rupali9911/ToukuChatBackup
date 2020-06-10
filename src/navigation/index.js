@@ -24,7 +24,7 @@ const ChannelStack = createStackNavigator(
   {
     initialRouteName: 'ChannelChatScreen',
     defaultNavigationOptions: {
-      header: null,
+        headerShown: false,
     },
   }
 );
@@ -41,7 +41,7 @@ const AppStack = createStackNavigator(
   {
     initialRouteName: 'Drawer',
     defaultNavigationOptions: {
-      header: null,
+        headerShown: false,
     },
   }
 );
@@ -58,7 +58,7 @@ const AuthStack = createStackNavigator(
   {
     initialRouteName: 'LoginSignUp',
     defaultNavigationOptions: {
-      header: null,
+        headerShown: false,
     },
   }
 );

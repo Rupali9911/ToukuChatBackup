@@ -68,7 +68,7 @@ class SignUp extends Component {
     this.inputs = {};
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }

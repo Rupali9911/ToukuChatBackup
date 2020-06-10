@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import Orientation from 'react-native-orientation';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
@@ -25,7 +32,7 @@ export default class ChatHeader extends Component {
 
   _closeMenu = () => this.setState({visible: false});
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }
@@ -68,14 +75,9 @@ export default class ChatHeader extends Component {
           },
         ]}>
         <View style={styles.subContainer}>
-          <RoundedImage
-            isRounded={false}
-            size={15}
-            source={Icons.icon_back}
-            clickable={true}
-            onClick={onBackPress}
-            resizeMode={'contain'}
-          />
+          <TouchableOpacity onPress={onBackPress}>
+            <Image source={Icons.icon_back} style={globalStyles.smallIcon} />
+          </TouchableOpacity>
           {type === 'friend' ? (
             <View style={styles.subContainer}>
               <View style={{marginHorizontal: 10}}>
@@ -125,26 +127,24 @@ export default class ChatHeader extends Component {
             </View>
           )}
         </View>
-        <View style={{marginEnd: 15}}>
+        <View>
           <Menu
-            style={{marginTop: 40}}
+            style={{marginTop: 30}}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
             anchor={
-              <RoundedImage
-                isRounded={false}
-                size={18}
-                source={Icons.icon_dots}
-                clickable={true}
-                onClick={this._openMenu}
-                resizeMode={'contain'}
-              />
+              <TouchableOpacity onPress={this._openMenu}>
+                <Image
+                  source={Icons.icon_dots}
+                  style={globalStyles.smallIcon}
+                />
+              </TouchableOpacity>
             }>
             {menuItems &&
               menuItems.map((item, index) => {
-                console.log('ChatHeader -> render -> item', item);
                 return (
                   <Menu.Item
+                    key={index}
                     icon={() => (
                       <FontAwesome5
                         name={item.icon}
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
 ChatHeader.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
-  type: PropTypes.oneOf(['channel, group, friend']),
+  type: PropTypes.oneOf(['channel', 'group', 'friend']),
   image: PropTypes.any,
   /**
    * Callbacks

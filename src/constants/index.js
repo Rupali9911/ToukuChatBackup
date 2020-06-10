@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -50,7 +50,9 @@ export const Icons = {
     add_friend: require('../../assets/icons/add-friend.png'),
     xana_app: require('../../assets/icons/xana.png'),
     channel_mode: require('../../assets/icons/Channel-mode.png'),
-
+    icon_drop_down: require('../../assets/icons/filed_down.png'),
+    icon_copy: require('../../assets/icons/copy.png'),
+    icon_download: require('../../assets/icons/download.png'),
 
 };
 
@@ -66,6 +68,7 @@ export const Images = {
   image_cover_4: require('../../assets/images/cover_4.jpg'),
   image_cover_5: require('../../assets/images/cover_5.jpg'),
   image_loader: require('../../assets/images/loader.gif'),
+  image_conversation: require('../../assets/images/conversation.png'),
 };
 
 export const Colors = {
@@ -84,7 +87,9 @@ export const Colors = {
   indigo: '#6610f2',
   purple: '#6f42c1',
   green: '#1bd078',
-  dark_gray: '#2c3e50'
+  dark_gray: '#2c3e50',
+    dark_orange: '#e15b63',
+    light_gray: '#909093',
 };
 
 export const Fonts = {
@@ -107,3 +112,36 @@ export const environment = {
     region: 'ap-southeast-1',
   },
 };
+
+export const languageArray =[
+    {
+        language_id: 1,
+        language_name: 'en',
+        icon: Icons.icon_flag_america,
+        language_display: 'English'
+    },
+    {
+        language_id: 2,
+        language_name: 'ja',
+        icon: Icons.icon_flag_japan,
+        language_display: '日本語'
+    },
+    {
+        language_id: 3,
+        language_name: 'ch',
+        icon: Icons.icon_flag_china,
+        language_display: '中文（简体）'
+    },
+    {
+        language_id: 4,
+        language_name: 'tw',
+        icon: Icons.icon_flag_taiwan,
+        language_display: '中文（繁体）'
+    },
+    {
+        language_id: 5,
+        language_name: 'ko',
+        icon: Icons.icon_flag_korea,
+        language_display: '한국어'
+    },
+]

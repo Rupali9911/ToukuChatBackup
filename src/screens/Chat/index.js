@@ -20,11 +20,11 @@ class Chat extends Component {
 
   static navigationOptions = () => {
     return {
-      header: null,
+        headerShown: false,
     };
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }

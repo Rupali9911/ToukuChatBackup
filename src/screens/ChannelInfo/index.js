@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   Text,
-  Dimensions,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -16,13 +15,18 @@ import {channelInfoStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import {Images, Icons, Fonts} from '../../constants';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getChannelDetails} from '../../redux/reducers/channelReducer';
 import Button from '../../components/Button';
-import {ListLoader, ImageLoader} from '../../components/Loaders';
+import {ListLoader} from '../../components/Loaders';
 import Toast from '../../components/Toast';
 import RoundedImage from '../../components/RoundedImage';
 import {getImage} from '../../utils';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {
+  getChannelDetails,
+  unfollowChannel,
+  followChannel,
+} from '../../redux/reducers/channelReducer';
+import {ConfirmationModal} from '../../components/Modals';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -32,6 +36,7 @@ class ChannelInfo extends Component {
       orientation: 'PORTRAIT',
       channelImagePath: {},
       channelData: [],
+      showConfirmationModal: false,
       tabBarItem: [
         {
           id: 1,
@@ -55,7 +60,7 @@ class ChannelInfo extends Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }
@@ -63,6 +68,18 @@ class ChannelInfo extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
 
+    this.getChannelDetails();
+  }
+
+  componentWillUnmount() {
+    Orientation.removeOrientationListener(this._orientationDidChange);
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
+
+  getChannelDetails() {
     this.props
       .getChannelDetails(this.props.currentChannel.id)
       .then((res) => {
@@ -78,12 +95,76 @@ class ChannelInfo extends Component {
       });
   }
 
-  _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+  onFollowUnfollow() {
+    if (this.state.channelData.is_member) {
+      this.setState({showConfirmationModal: true});
+    } else {
+      // alert('Follow');
+      let data = {
+        channel_id: this.props.currentChannel.id,
+        referral_code: 'ISGLGA2V',
+        user_id: this.props.userData.id,
+      };
+      this.props
+        .followChannel(data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: this.props.currentChannel.name,
+              text: translate('pages.xchat.toastr.AddedToNewChannel'),
+              type: 'positive',
+            });
+            this.getChannelDetails();
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  }
+
+  onCancel = () => {
+    this.toggleConfirmationModal();
+  };
+
+  onConfirm = () => {
+    let user = {
+      user_id: this.props.userData.id,
+    };
+    this.props
+      .unfollowChannel(this.props.currentChannel.id, user)
+      .then((res) => {
+        if (res.status === true) {
+          this.toggleConfirmationModal();
+          this.props.navigation.goBack();
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
+  };
+
+  toggleConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showConfirmationModal: !prevState.showConfirmationModal,
+    }));
   };
 
   render() {
-    const {channelData, tabBarItem} = this.state;
+    const {
+      channelData,
+      tabBarItem,
+      orientation,
+      showConfirmationModal,
+    } = this.state;
     const {channelLoading} = this.props;
 
     const channelCountDetails = [
@@ -125,10 +206,9 @@ class ChannelInfo extends Component {
                 locations={[0.1, 0.5, 1]}
                 colors={['#c13468', '#ee2e3b', '#fa573a']}
                 style={channelInfoStyles.channelImageContainer}>
-                <ImageLoader
+                <ImageBackground
                   style={channelInfoStyles.channelCoverContainer}
-                  placeholderStyle={channelInfoStyles.coverImage}
-                  source={{uri: channelData.cover_image}}>
+                  source={getImage(channelData.cover_image)}>
                   <View
                     style={channelInfoStyles.updateBackgroundContainer}></View>
                   <View style={channelInfoStyles.channelInfoContainer}>
@@ -161,7 +241,9 @@ class ChannelInfo extends Component {
                         <Text
                           style={channelInfoStyles.channelNameText}
                           numberOfLines={1}>
-                          {channelData.channel_status}
+                          {channelData.channel_status != null || ''
+                            ? channelData.channel_status
+                            : 'Status'}
                         </Text>
                       </View>
                     </View>
@@ -170,7 +252,9 @@ class ChannelInfo extends Component {
                     <View style={channelInfoStyles.channelDetailStatus}>
                       {channelCountDetails.map((item, index) => {
                         return (
-                          <View style={channelInfoStyles.detailStatusItem}>
+                          <View
+                            key={index}
+                            style={channelInfoStyles.detailStatusItem}>
                             <Text
                               style={channelInfoStyles.detailStatusItemCount}>
                               {item.count}
@@ -185,19 +269,24 @@ class ChannelInfo extends Component {
                     </View>
                     <View style={channelInfoStyles.channelDetailButton}>
                       <Button
-                        title={translate('pages.xchat.unfollow')}
+                        title={
+                          channelData.is_member
+                            ? translate('pages.xchat.unfollow')
+                            : translate('pages.xchat.follow')
+                        }
                         type={'transparent'}
                         height={30}
-                        onPress={() => alert('unfollow')}
+                        onPress={() => this.onFollowUnfollow()}
                       />
                     </View>
                   </View>
-                </ImageLoader>
+                </ImageBackground>
               </LinearGradient>
               <View style={channelInfoStyles.tabBar}>
                 {tabBarItem.map((item, index) => {
                   return (
                     <TouchableOpacity
+                      key={index}
                       style={channelInfoStyles.tabItem}
                       onPress={item.action}>
                       <Image
@@ -236,13 +325,21 @@ class ChannelInfo extends Component {
                   isRounded={false}
                   type={'primary'}
                   title={translate('pages.xchat.affiliate')}
-                  onPress={() => alert('Affiliate')}
+                  onPress={() => {}}
                 />
               </View>
             </KeyboardAwareScrollView>
           ) : (
             <ListLoader large />
           )}
+          <ConfirmationModal
+            visible={showConfirmationModal}
+            onCancel={this.onCancel.bind(this)}
+            onConfirm={this.onConfirm.bind(this)}
+            orientation={orientation}
+            title={translate('pages.xchat.toastr.areYouSure')}
+            message={translate('pages.xchat.toLeaveThisChannel')}
+          />
         </View>
       </ImageBackground>
     );
@@ -253,11 +350,14 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     channelLoading: state.channelReducer.loading,
     currentChannel: state.channelReducer.currentChannel,
+    userData: state.userReducer.userData,
   };
 };
 
 const mapDispatchToProps = {
   getChannelDetails,
+  unfollowChannel,
+  followChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelInfo);

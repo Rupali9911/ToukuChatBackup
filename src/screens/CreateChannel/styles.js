@@ -74,7 +74,7 @@ export const createChannelStyles = StyleSheet.create({
     height: 50,
     width: '95%',
     fontSize: 25,
-    marginBottom: '5%',
+    // marginBottom: '5%',
     color: Colors.white,
     paddingHorizontal: 5,
   },

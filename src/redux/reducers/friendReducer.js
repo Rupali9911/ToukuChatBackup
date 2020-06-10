@@ -4,6 +4,12 @@ export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
 export const GET_USER_FRIENDS_FAIL = 'GET_USER_FRIENDS_FAIL';
 
+export const GET_PERSONAL_CONVERSATION_REQUEST =
+  'GET_PERSONAL_CONVERSATION_REQUEST';
+export const GET_PERSONAL_CONVERSATION_SUCCESS =
+  'GET_PERSONAL_CONVERSATION_SUCCESS';
+export const GET_PERSONAL_CONVERSATION_FAIL = 'GET_PERSONAL_CONVERSATION_FAIL';
+
 export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
 
 const initialState = {
@@ -14,6 +20,13 @@ const initialState = {
 
 export default function (state = initialState, action) {
   switch (action.type) {
+    case SET_CURRENT_FRIEND_DATA:
+      return {
+        ...state,
+        currentFriend: action.payload,
+      };
+
+    //Get Friend Requests
     case GET_USER_FRIENDS_REQUEST:
       return {
         ...state,
@@ -33,10 +46,23 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
-    case SET_CURRENT_FRIEND_DATA:
+    //Get Personal Conversations
+    case GET_PERSONAL_CONVERSATION_REQUEST:
       return {
         ...state,
-        currentFriend: action.payload,
+        loading: true,
+      };
+
+    case GET_PERSONAL_CONVERSATION_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_PERSONAL_CONVERSATION_FAIL:
+      return {
+        ...state,
+        loading: false,
       };
 
     default:
@@ -45,6 +71,16 @@ export default function (state = initialState, action) {
 }
 
 //Actions
+//Set Current Friend Data
+const setCurrentFriendData = (data) => ({
+  type: SET_CURRENT_FRIEND_DATA,
+  payload: data,
+});
+
+export const setCurrentFriend = (friend) => (dispatch) =>
+  dispatch(setCurrentFriendData(friend));
+
+//Get User's Friends
 const getUserFriendsRequest = () => ({
   type: GET_USER_FRIENDS_REQUEST,
 });
@@ -58,17 +94,6 @@ const getUserFriendsFailure = () => ({
   type: GET_USER_FRIENDS_FAIL,
 });
 
-//Set Current Friend Data
-const setCurrentFriendData = (data) => ({
-  type: SET_CURRENT_FRIEND_DATA,
-  payload: data,
-});
-
-//Set Current Friend
-export const setCurrentFriend = (friend) => (dispatch) =>
-  dispatch(setCurrentFriendData(friend));
-
-//Get User's Friends
 export const getUserFriends = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserFriendsRequest());
@@ -94,10 +119,52 @@ export const getUserFriends = () => (dispatch) =>
       });
   });
 
+//Get Friend Requests
 export const getFriendRequests = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .get(`/xchat/list-friend-request/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Get Personal Conversation
+const getPersonalConversationRequest = () => ({
+  type: GET_PERSONAL_CONVERSATION_REQUEST,
+});
+
+const getPersonalConversationSuccess = () => ({
+  type: GET_PERSONAL_CONVERSATION_SUCCESS,
+});
+
+const getPersonalConversationFailure = () => ({
+  type: GET_PERSONAL_CONVERSATION_FAIL,
+});
+
+export const getPersonalConversation = (friend) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getPersonalConversationRequest());
+    client
+      .get(`/xchat/personal-conversation/` + friend + '/')
+      .then((res) => {
+        dispatch(getPersonalConversationSuccess());
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getPersonalConversationFailure());
+        reject(err);
+      });
+  });
+
+//Send Personal Message
+export const sendPersonalMessage = (message) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/send-personal-message/`, message)
       .then((res) => {
         resolve(res);
       })

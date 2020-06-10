@@ -70,7 +70,7 @@ client.interceptors.request.use(
 // Add a response interceptor
 client.interceptors.response.use(
   function (response) {
-    // alert(JSON.stringify(response.status));
+     //alert(JSON.stringify(response));
     if (response.data) {
       return response.data;
     } else if (response.status === 401) {

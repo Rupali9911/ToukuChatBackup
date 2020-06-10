@@ -62,7 +62,7 @@ class LoginSignUp extends Component {
     this.props.navigation.navigate('Login');
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
   }

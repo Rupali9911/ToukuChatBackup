@@ -256,7 +256,7 @@ class DrawerContent extends Component {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                    borderBottomWidth: 1,
+                    // borderBottomWidth: 1,
                     borderColor: Colors.white,
                     marginTop: 15,
                   }}>
@@ -269,13 +269,14 @@ class DrawerContent extends Component {
                         ? Icons.icon_triangle_down
                         : Icons.icon_triangle_up
                     }
-                    style={{width: 10, height: 10}}
+                    style={{width: 8, height: 8}}
                   />
                 </View>
               </CollapseHeader>
               <CollapseBody>
                 {drawerTabs.map((item, key) => (
                   <DrawerItem
+                    key={key}
                     title={item.tab_name}
                     icon={
                       item.selected

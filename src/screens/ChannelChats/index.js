@@ -1,13 +1,19 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
-import { translate } from '../../redux/reducers/languageReducer';
-import { globalStyles } from '../../styles';
-import { Images } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {Images} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
+import {translate} from '../../redux/reducers/languageReducer';
+import {
+  getChannelConversations,
+  readAllChannelMessages,
+} from '../../redux/reducers/channelReducer';
+import {ListLoader} from '../../components/Loaders';
+import NoData from '../../components/NoData';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -15,6 +21,7 @@ class ChannelChats extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       newMessageText: '',
+      conversations: [],
       headerRightIconMenu: [
         {
           id: 1,
@@ -27,138 +34,38 @@ class ChannelChats extends Component {
       ],
       isReply: false,
       repliedMessage: null,
-      messagesArray: [
-        {
-          id: 1,
-          message: 'Hello',
-          isUser: false,
-          userName: 'raj',
-          time: '20:20',
-        },
-        {
-          id: 2,
-          message: 'HI',
-          isUser: true,
-          status: 'Read',
-          time: '20:21',
-        },
-        {
-          id: 3,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: false,
-          userName: 'raj',
-          time: '20:21',
-        },
-        {
-          id: 4,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: true,
-          status: 'Read',
-          time: '20:25',
-          repliedTo: {
-            id: 3,
-            message:
-              'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-            isUser: false,
-            userName: 'raj',
-            time: '20:21',
-          },
-        },
-        {
-          id: 5,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: false,
-          userName: 'raj',
-          time: '20:26',
-          repliedTo: {
-            id: 2,
-            message: 'HI',
-            isUser: true,
-            status: 'Read',
-            time: '20:21',
-          },
-        },
-        {
-          id: 6,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: true,
-          userName: 'raj',
-          time: '20:27',
-        },
-        {
-          id: 7,
-          messageType: 'image',
-          url: 'https://miro.medium.com/max/1400/0*mhcKpcQqduW4KPcB',
-          isUser: true,
-          time: '20:27',
-        },
-        {
-          id: 8,
-          messageType: 'image',
-          url:
-            'https://www.peakperformance.com/dw/image/v2/BDGL_PRD/on/demandware.static/-/Sites-master-catalog-pp/default/dwe2be5cf8/zoom/G66816006_089_model1.jpg?sw=1110&sh=1480',
-          isUser: false,
-          userName: 'raj',
-          time: '20:27',
-        },
-        {
-          id: 9,
-          messageType: 'image',
-          url:
-            'https://www.peakperformance.com/dw/image/v2/BDGL_PRD/on/demandware.static/-/Sites-master-catalog-pp/default/dwe2be5cf8/zoom/G66816006_089_model1.jpg?sw=1110&sh=1480',
-          isUser: true,
-          time: '20:27',
-        },
-        {
-          id: 10,
-          messageType: 'image',
-          url: 'https://miro.medium.com/max/1400/0*mhcKpcQqduW4KPcB',
-          isUser: false,
-          userName: 'raj',
-          time: '20:27',
-        },
-      ],
     };
   }
 
-  onMessageSend = () => {
-    const { newMessageText, messagesArray } = this.state;
-    if (!newMessageText) {
-      return;
-    }
-    const newMessage = {
-      id: messagesArray ? messagesArray.length + 1 : 1,
-      message: newMessageText,
-      isUser: true,
-      time: '20:27',
-    };
+  // onMessageSend = () => {
+  //   const {newMessageText, conversations} = this.state;
+  //   if (!newMessageText) {
+  //     return;
+  //   }
+  //   const newMessage = {
+  //     id: conversations ? conversations.length + 1 : 1,
+  //     message: newMessageText,
+  //     isUser: true,
+  //     time: '20:27',
+  //   };
 
-    let newMessageArray = messagesArray ? messagesArray : [];
-    newMessageArray.push(newMessage);
-    this.setState({
-      messagesArray: newMessageArray,
-      newMessageText: '',
-    });
-  };
+  //   let newMessageArray = conversations ? conversations : [];
+  //   newMessageArray.push(newMessage);
+  //   this.setState({
+  //     conversations: newMessageArray,
+  //     newMessageText: '',
+  //   });
+  // };
 
   onMessageSend = () => {
-    const {
-      newMessageText,
-      messagesArray,
-      isReply,
-      repliedMessage,
-    } = this.state;
+    const {newMessageText, conversations, isReply, repliedMessage} = this.state;
     if (!newMessageText) {
       return;
     }
     let newMessage;
     if (isReply) {
       newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
+        id: conversations ? conversations.length + 1 : 1,
         message: newMessageText,
         isUser: true,
         time: '20:27',
@@ -166,17 +73,25 @@ class ChannelChats extends Component {
       };
     } else {
       newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
+        id: conversations ? conversations.length + 1 : 1,
         message: newMessageText,
+        from_user: {
+          id: this.props.userData.id,
+          email: this.props.userData.email,
+          username: this.props.userData.username,
+          avatar: null,
+          is_online: true,
+          display_name: this.props.userData.username,
+        },
         isUser: true,
         time: '20:27',
       };
     }
 
-    let newMessageArray = messagesArray ? messagesArray : [];
+    let newMessageArray = conversations ? conversations : [];
     newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
+      conversations: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -184,9 +99,10 @@ class ChannelChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { messagesArray } = this.state;
+    console.log('ChannelChats -> onReply -> messageId', messageId);
+    const {conversations} = this.state;
 
-    const repliedMessage = messagesArray.find((item) => item.id === messageId);
+    const repliedMessage = conversations.find((item) => item.id === messageId);
     this.setState({
       isReply: true,
       repliedMessage: repliedMessage,
@@ -200,31 +116,67 @@ class ChannelChats extends Component {
     });
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+    this.props
+      .getChannelConversations(this.props.currentChannel.id)
+      .then((res) => {
+        if (res.status === true && res.conversation.length > 0) {
+          this.setState({conversations: res.conversation}, () => {
+            console.log(
+              'Convertation 1-1-1--1-1-1-1-1-1-1-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1',
+              this.state.conversations,
+            );
+          });
+          this.props.readAllChannelMessages(this.props.currentChannel.id);
+        }
+      });
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
+  }
+
+  renderConversations() {
+    const {channelLoading} = this.props;
+    const {conversations, newMessageText} = this.state;
+
+    if (channelLoading) {
+      return <ListLoader />;
+    } else {
+      return (
+        <ChatContainer
+          handleMessage={(message) => this.handleMessage(message)}
+          onMessageSend={this.onMessageSend.bind(this)}
+          onMessageReply={(id) => this.onReply(id)}
+          newMessageText={newMessageText}
+          // messages={this.state.conversations}
+          messages={conversations}
+          orientation={this.state.orientation}
+          repliedMessage={this.state.repliedMessage}
+          isReply={this.state.isReply}
+          cancelReply={this.cancelReply}
+        />
+      );
+    }
   }
 
   render() {
-    const { newMessageText } = this.state;
-    const { currentChannel } = this.props;
+    const {newMessageText, conversations} = this.state;
+    const {currentChannel} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentChannel.name}
           description={
@@ -237,17 +189,7 @@ class ChannelChats extends Component {
           navigation={this.props.navigation}
           image={currentChannel.channel_picture}
         />
-        <ChatContainer
-          handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend}
-          onMessageReply={(id) => this.onReply(id)}
-          newMessageText={newMessageText}
-          messages={this.state.messagesArray}
-          orientation={this.state.orientation}
-          repliedMessage={this.state.repliedMessage}
-          isReply={this.state.isReply}
-          cancelReply={this.cancelReply}
-        />
+        {this.renderConversations()}
       </ImageBackground>
     );
   }
@@ -256,9 +198,14 @@ class ChannelChats extends Component {
 const mapStateToProps = (state) => {
   return {
     currentChannel: state.channelReducer.currentChannel,
+    channelLoading: state.channelReducer.loading,
+    userData: state.userReducer.userData,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getChannelConversations,
+  readAllChannelMessages,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);
