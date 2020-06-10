@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
@@ -332,6 +332,20 @@ export const followChannel = (data) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Follow Channel
+export const sendChannelMessage = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/send-channel-message/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        alert(JSON.stringify(err));
         reject(err);
       });
   });

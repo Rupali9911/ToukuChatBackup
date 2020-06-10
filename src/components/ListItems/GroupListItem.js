@@ -26,13 +26,7 @@ export default class GroupListItem extends Component {
         onPress={onPress}
         style={styles.container}>
         <View style={styles.firstView}>
-          {image != null ? (
-            <RoundedImage
-              source={getImage(image)}
-              isRounded={false}
-              size={50}
-            />
-          ) : (
+          {image === null || image === '' || typeof image === undefined ? (
             <LinearGradient
               start={{x: 0.1, y: 0.7}}
               end={{x: 0.5, y: 0.2}}
@@ -41,9 +35,15 @@ export default class GroupListItem extends Component {
               style={styles.squareImage}>
               <Text style={globalStyles.normalRegularText}>
                 {title.charAt(0).toUpperCase()}
-                {secondUpperCase}
+                {/* {secondUpperCase} */}
               </Text>
             </LinearGradient>
+          ) : (
+            <RoundedImage
+              source={getImage(image)}
+              isRounded={false}
+              size={50}
+            />
           )}
           <View style={styles.secondView}>
             <View style={{flex: 1, alignItems: 'flex-start'}}>

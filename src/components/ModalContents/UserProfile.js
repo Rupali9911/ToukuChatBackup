@@ -83,7 +83,7 @@ class UserProfile extends Component {
         // alert(JSON.stringify(imageFiles));
 
         const file = {
-          uri: response.uri,
+          uri: response.origURL,
           name: 'image.jpg',
           type: 'image/jpeg',
         };

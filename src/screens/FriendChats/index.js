@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
+import { ChatHeader } from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import {globalStyles} from '../../styles';
-import {Images} from '../../constants';
-import {ConfirmationModal} from '../../components/Modals';
-import {ListLoader} from '../../components/Loaders';
-import {translate} from '../../redux/reducers/languageReducer';
+import { globalStyles } from '../../styles';
+import { Images } from '../../constants';
+import { ConfirmationModal } from '../../components/Modals';
+import { ListLoader } from '../../components/Loaders';
+import { translate } from '../../redux/reducers/languageReducer';
 import {
   getPersonalConversation,
   sendPersonalMessage,
@@ -22,7 +22,10 @@ class FriendChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      translatedMessage: null,
+      translatedMessageId: null,
       showConfirmationModal: false,
+      showMessageDeleteConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -110,26 +113,27 @@ class FriendChats extends Component {
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const { newMessageText, isReply, repliedMessage } = this.state;
     if (!newMessageText) {
       return;
     }
-    let newMessage;
+    // let newMessage;
     if (isReply) {
-      newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-        repliedTo: repliedMessage,
+      let data = {
+        friend: this.props.currentFriend.friend,
+        local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
+        message_body: newMessageText,
+        msg_type: 'text',
+        to_user: this.props.currentFriend.user_id,
+        reply_to: repliedMessage.id,
       };
+      this.props
+        .sendPersonalMessage(data)
+        .then((res) => {
+          this.getPersonalConversation();
+        })
+        .catch((err) => {});
     } else {
-      newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-      };
       let data = {
         friend: this.props.currentFriend.friend,
         local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
@@ -142,15 +146,9 @@ class FriendChats extends Component {
         .then((res) => {
           this.getPersonalConversation();
         })
-        .catch((err) => {
-          // alert(JSON.stringify(err))
-        });
+        .catch((err) => {});
     }
-
-    let newMessageArray = messagesArray ? messagesArray : [];
-    newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -158,9 +156,9 @@ class FriendChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    const { conversations } = this.state;
 
-    const repliedMessage = messagesArray.find((item) => item.id === messageId);
+    const repliedMessage = conversations.find((item) => item.id === messageId);
     this.setState({
       isReply: true,
       repliedMessage: repliedMessage,
@@ -176,7 +174,7 @@ class FriendChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -185,7 +183,7 @@ class FriendChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getPersonalConversation() {
@@ -193,18 +191,17 @@ class FriendChats extends Component {
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
-          // this.props.readAllChannelMessages(this.props.currentChannel.id);
+          this.setState({ conversations: res.conversation });
         }
       });
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   toggleConfirmationModal = () => {
-    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
+    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
   };
 
   onCancel = () => {
@@ -217,19 +214,57 @@ class FriendChats extends Component {
     this.toggleConfirmationModal();
   };
 
+  // To delete message
+  toggleMessageDeleteConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showMessageDeleteConfirmationModal: !prevState.showMessageDeleteConfirmationModal,
+    }));
+  };
+
+  onCancelDelete = () => {
+    this.toggleMessageDeleteConfirmationModal();
+  };
+
+  onConfirmDelete = () => {
+    this.toggleMessageDeleteConfirmationModal();
+  };
+
+  onDeletePressed = (messageId) => {
+    console.log('ChannelChats -> onDeletePressed -> message', messageId);
+    this.setState({ showMessageDeleteConfirmationModal: true });
+  };
+
+  onMessageTranslate = (message) => {
+    console.log('onMessageTranslate -> message', message);
+    this.setState({
+      translatedMessageId: message.id,
+      translatedMessage: '1234',
+    });
+  };
+
+  onMessageTranslateClose = () => {
+    this.setState({
+      translatedMessageId: null,
+      translatedMessage: null,
+    });
+  };
+
   render() {
     const {
       conversations,
       newMessageText,
       showConfirmationModal,
+      showMessageDeleteConfirmationModal,
       orientation,
+      translatedMessage,
+      translatedMessageId,
     } = this.state;
-    const {currentFriend, chatsLoading} = this.props;
-
+    const { currentFriend, chatsLoading } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentFriend.username}
           description={
@@ -240,7 +275,7 @@ class FriendChats extends Component {
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
         />
-        {chatsLoading ? (
+        {chatsLoading && conversations.length <= 0 ? (
           <ListLoader />
         ) : (
           <ChatContainer
@@ -253,6 +288,11 @@ class FriendChats extends Component {
             repliedMessage={this.state.repliedMessage}
             isReply={this.state.isReply}
             cancelReply={this.cancelReply}
+            onDelete={(id) => this.onDeletePressed(id)}
+            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onMessageTranslateClose={this.onMessageTranslateClose}
+            translatedMessage={translatedMessage}
+            translatedMessageId={translatedMessageId}
           />
         )}
         <ConfirmationModal
@@ -262,6 +302,15 @@ class FriendChats extends Component {
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.selectedUserWillBeRemoved')}
+        />
+
+        <ConfirmationModal
+          visible={showMessageDeleteConfirmationModal}
+          onCancel={this.onCancelDelete.bind(this)}
+          onConfirm={this.onConfirmDelete.bind(this)}
+          orientation={orientation}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toLeaveThisChannel')}
         />
       </ImageBackground>
     );

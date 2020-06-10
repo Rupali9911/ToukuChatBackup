@@ -30,7 +30,12 @@ export function wait(timeout) {
 }
 
 export function getAvatar(source) {
-  if (source === null || typeof source === null || source === undefined) {
+  if (
+    source === null ||
+    source === '' ||
+    typeof source === null ||
+    source === undefined
+  ) {
     return Images.image_default_profile;
   } else {
     return {uri: source};
@@ -38,7 +43,12 @@ export function getAvatar(source) {
 }
 
 export function getImage(source) {
-  if (source === null || typeof source === null || source === undefined || source === '') {
+  if (
+    source === null ||
+    source === '' ||
+    typeof source === null ||
+    source === undefined
+  ) {
     return Images.image_gallery;
   } else {
     return {uri: source};

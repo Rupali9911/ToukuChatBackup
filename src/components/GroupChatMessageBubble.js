@@ -1,21 +1,23 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import {
   View,
   StyleSheet,
   Text,
+  Dimensions,
   TouchableOpacity,
+  Image,
   Clipboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Menu } from 'react-native-paper';
+import { Menu, Divider } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { connect } from 'react-redux';
-import { Colors, Fonts } from '../constants';
-import { translate } from '../redux/reducers/languageReducer';
 
+import { Colors, Icons, Fonts, Images } from '../constants';
+import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
+const { width, height } = Dimensions.get('window');
 let borderRadius = 20;
-class ChatMessageBubble extends Component {
+export default class GroupChatMessageBubble extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -44,9 +46,7 @@ class ChatMessageBubble extends Component {
           }}
         >
           <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-            {replyMessage.sender_id === this.props.userData.id
-              ? 'You'
-              : replyMessage.name}
+            {replyMessage.isUser ? 'You' : replyMessage.userName}
           </Text>
         </View>
         <View
@@ -73,10 +73,7 @@ class ChatMessageBubble extends Component {
       longPressMenu,
       closeMenu,
       openMenu,
-      isChannel,
       selectedMessageId,
-      onMessageTranslate,
-      onDelete,
     } = this.props;
     return (
       <Menu
@@ -101,19 +98,19 @@ class ChatMessageBubble extends Component {
                     paddingHorizontal: 20,
                     paddingVertical: 10,
                   }}
-                  onLongPress={(id) => {
-                    onMessagePress(message.id);
+                  onLongPress={(msg_id) => {
+                    onMessagePress(message.msg_id);
                   }}
                 >
-                  {message.reply_to &&
-                    this.renderReplyMessage(message.reply_to)}
+                  {/* {message.repliedTo &&
+                    this.renderReplyMessage(message.repliedTo)} */}
                   <Text
                     style={{
                       fontSize: 15,
                       fontFamily: Fonts.light,
                     }}
                   >
-                    {message.message_body}
+                    {message.message_body.text}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -139,15 +136,15 @@ class ChatMessageBubble extends Component {
                     paddingHorizontal: 20,
                     paddingVertical: 10,
                   }}
-                  onLongPress={() => {
-                    onMessagePress(message.id);
+                  onLongPress={(msg_id) => {
+                    onMessagePress(message.msg_id);
                   }}
                   activeOpacity={0.8}
                 >
-                  {message.reply_to &&
-                    this.renderReplyMessage(message.reply_to)}
+                  {/* {message.repliedTo &&
+                    this.renderReplyMessage(message.repliedTo)} */}
                   <Text style={{ color: 'white', fontSize: 15 }}>
-                    {message.message_body}
+                    {message.message_body.text}
                   </Text>
                 </TouchableOpacity>
               </LinearGradient>
@@ -161,26 +158,23 @@ class ChatMessageBubble extends Component {
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
           onPress={() => {
-            onMessageTranslate(message);
             closeMenu();
           }}
           title={translate('common.translate')}
           titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        {!isChannel && (
-          <Menu.Item
-            titleStyle={{ color: Colors.white }}
-            icon={() => (
-              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-            )}
-            onPress={() => {
-              onMessageReply(selectedMessageId);
-              closeMenu();
-            }}
-            title={translate('common.reply')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
-          />
-        )}
+        <Menu.Item
+          titleStyle={{ color: Colors.white }}
+          icon={() => (
+            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+          )}
+          onPress={() => {
+            onMessageReply(selectedMessageId);
+            closeMenu();
+          }}
+          title={translate('common.reply')}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
+        />
         <Menu.Item
           titleStyle={{ color: Colors.white }}
           icon={() => (
@@ -198,7 +192,6 @@ class ChatMessageBubble extends Component {
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
           onPress={() => {
-            onDelete(selectedMessageId);
             closeMenu();
           }}
           title={translate('common.delete')}
@@ -275,13 +268,3 @@ const styles = StyleSheet.create({
     top: -15,
   },
 });
-
-const mapStateToProps = (state) => {
-  return {
-    userData: state.userReducer.userData,
-  };
-};
-
-const mapDispatchToProps = {};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);

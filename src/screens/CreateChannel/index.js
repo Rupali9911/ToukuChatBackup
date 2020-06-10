@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   View,
   ImageBackground,
@@ -9,16 +9,16 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Switch } from 'react-native-switch';
-import { Menu, Divider } from 'react-native-paper';
-import { createFilter } from 'react-native-search-filter';
+import {connect} from 'react-redux';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {Switch} from 'react-native-switch';
+import {Menu, Divider} from 'react-native-paper';
+import {createFilter} from 'react-native-search-filter';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 
-import { createChannelStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {createChannelStyles} from './styles';
+import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
 import {
@@ -26,21 +26,21 @@ import {
   BackgroundImgModal,
 } from '../../components/Modals';
 import GroupFriend from '../../components/GroupFriend';
-import { Images, Icons, Colors, Fonts } from '../../constants';
+import {Images, Icons, Colors, Fonts} from '../../constants';
 import Button from '../../components/Button';
-import { ListLoader } from '../../components/Loaders';
-import { getImage } from '../../utils';
+import {ListLoader} from '../../components/Loaders';
+import {getImage} from '../../utils';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
 
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { getUserProfile } from '../../redux/reducers/userReducer';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
 import {
   getUserChannels,
   createNewChannel,
 } from '../../redux/reducers/channelReducer';
-import { getUserGroups } from '../../redux/reducers/groupReducer';
-import { getUserFriends } from '../../redux/reducers/friendReducer';
+import {getUserGroups} from '../../redux/reducers/groupReducer';
+import {getUserFriends} from '../../redux/reducers/friendReducer';
 import RoundedImage from '../../components/RoundedImage';
 
 class CreateChannel extends Component {
@@ -142,17 +142,17 @@ class CreateChannel extends Component {
         },
       ],
       bgImageList: [
-        { id: 1, url: Images.image_cover_1, isSelected: false },
-        { id: 2, url: Images.image_cover_2, isSelected: false },
-        { id: 3, url: Images.image_cover_3, isSelected: false },
-        { id: 4, url: Images.image_cover_4, isSelected: false },
-        { id: 5, url: Images.image_cover_5, isSelected: false },
+        {id: 1, url: Images.image_cover_1, isSelected: false},
+        {id: 2, url: Images.image_cover_2, isSelected: false},
+        {id: 3, url: Images.image_cover_3, isSelected: false},
+        {id: 4, url: Images.image_cover_4, isSelected: false},
+        {id: 5, url: Images.image_cover_5, isSelected: false},
       ],
     };
   }
 
   toggleModal = () => {
-    this.setState({ showCategoryModal: !this.state.showCategoryModal });
+    this.setState({showCategoryModal: !this.state.showCategoryModal});
   };
 
   toggleChannelBusinessMenu = () => {
@@ -168,7 +168,7 @@ class CreateChannel extends Component {
     this._closeMenu();
   };
 
-  _openMenu = () => this.setState({ updateBackgroundMenu: true });
+  _openMenu = () => this.setState({updateBackgroundMenu: true});
 
   _closeMenu = () =>
     this.setState({
@@ -184,7 +184,7 @@ class CreateChannel extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -192,7 +192,7 @@ class CreateChannel extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   chooseChannelImage = () => {
@@ -210,7 +210,7 @@ class CreateChannel extends Component {
       } else {
         // let source = response;
         // You can also display the image using data:
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           channelImagePath: source,
         });
@@ -233,9 +233,9 @@ class CreateChannel extends Component {
       } else {
         // let source = response;
         // You can also display the image using data:
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
-          setSelectedBgItem: { url: source },
+          setSelectedBgItem: {url: source},
         });
       }
     });
@@ -265,7 +265,7 @@ class CreateChannel extends Component {
   };
 
   onCreateChannel() {
-    const { channelName, about, about_vip, isVIP, addedFriends } = this.state;
+    const {channelName, about, about_vip, isVIP, addedFriends} = this.state;
     if (channelName.trim() === '') {
       Toast.show({
         title: 'Touku',
@@ -300,14 +300,10 @@ class CreateChannel extends Component {
         description: about,
         genre: 2,
         members: Members,
-        cover_image:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933130327_1.jpg',
-        cover_image_thumb:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933130327_1.jpg',
-        channel_picture:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933136633_1.jpg',
-        channel_picture_thumb:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933136633_1.jpg',
+        cover_image: null,
+        cover_image_thumb: null,
+        channel_picture: null,
+        channel_picture_thumb: null,
         is_vip: false,
         affiliate_follower_amount: 0,
       };
@@ -318,14 +314,10 @@ class CreateChannel extends Component {
         description: about,
         genre: 2,
         members: Members,
-        cover_image:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933130327_1.jpg',
-        cover_image_thumb:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933130327_1.jpg',
-        channel_picture:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/image_1588933136633_1.jpg',
-        channel_picture_thumb:
-          'https://angelium-media.s3.ap-southeast-1.amazonaws.com/thumb_image_1588933136633_1.jpg',
+        cover_image: null,
+        cover_image_thumb: null,
+        channel_picture: null,
+        channel_picture_thumb: null,
         is_vip: true,
         monthly_vip_fee: 12,
         vip_description: about_vip,
@@ -358,9 +350,9 @@ class CreateChannel extends Component {
   }
 
   renderUserFriends() {
-    const { userFriends, friendLoading } = this.props;
+    const {userFriends, friendLoading} = this.props;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['username']),
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -369,7 +361,7 @@ class CreateChannel extends Component {
       return (
         <FlatList
           data={filteredFriends}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <GroupFriend
               user={item}
               onAddPress={(isAdded) => this.onAdd(isAdded, item)}
@@ -387,7 +379,7 @@ class CreateChannel extends Component {
   }
 
   selectCategory = (id) => {
-    this.setState({ showCategoryModal: false });
+    this.setState({showCategoryModal: false});
   };
 
   onSelectBackground = (data, index) => {
@@ -398,13 +390,13 @@ class CreateChannel extends Component {
 
     backgrounds[index].isSelected = true;
 
-    this.setState({ bgImageList: this.state.bgImageList }, () => {
-      this.setState({ selectedBgItem: this.state.bgImageList[index] });
+    this.setState({bgImageList: this.state.bgImageList}, () => {
+      this.setState({selectedBgItem: this.state.bgImageList[index]});
     });
   };
 
   onSetBackground() {
-    this.setState({ setSelectedBgItem: this.state.selectedBgItem });
+    this.setState({setSelectedBgItem: this.state.selectedBgItem});
   }
 
   onSelectBusiness(data, index) {
@@ -438,20 +430,20 @@ class CreateChannel extends Component {
         borderColor: Colors.white,
       },
     });
-    this.setState({ showStatusCount: true });
+    this.setState({showStatusCount: true});
   };
 
   blurredInput = (input) => {
     if (input === 'channelName') {
       this.channelNameTextInput.setNativeProps({
-        style: { borderWidth: 0 },
+        style: {borderWidth: 0},
       });
       return;
     }
     this.statusTextInput.setNativeProps({
-      style: { borderWidth: 0 },
+      style: {borderWidth: 0},
     });
-    this.setState({ showStatusCount: false });
+    this.setState({showStatusCount: false});
   };
 
   render() {
@@ -474,8 +466,7 @@ class CreateChannel extends Component {
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -483,19 +474,16 @@ class CreateChannel extends Component {
           />
           <KeyboardAwareScrollView
             contentContainerStyle={createChannelStyles.mainContainer}
-            showsVerticalScrollIndicator={false}
-          >
+            showsVerticalScrollIndicator={false}>
             <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.8, y: 0.3 }}
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.8, y: 0.3}}
               locations={[0.1, 0.5, 1]}
               colors={['#c13468', '#ee2e3b', '#fa573a']}
-              style={createChannelStyles.channelImageContainer}
-            >
+              style={createChannelStyles.channelImageContainer}>
               <ImageBackground
                 style={createChannelStyles.channelCoverContainer}
-                source={setSelectedBgItem.url}
-              >
+                source={setSelectedBgItem.url}>
                 <View style={createChannelStyles.updateBackgroundContainer}>
                   <Menu
                     visible={updateBackgroundMenu}
@@ -503,15 +491,13 @@ class CreateChannel extends Component {
                     anchor={
                       <TouchableOpacity
                         style={createChannelStyles.updateBackground}
-                        onPress={this._openMenu}
-                      >
+                        onPress={this._openMenu}>
                         <Image
                           source={Icons.icon_edit_pen}
                           style={createChannelStyles.updateBackgroundIcon}
                         />
                       </TouchableOpacity>
-                    }
-                  >
+                    }>
                     <Divider />
                     <Menu.Item
                       icon={Icons.icon_camera}
@@ -540,8 +526,7 @@ class CreateChannel extends Component {
                       />
                       <TouchableOpacity
                         onPress={this.chooseChannelImage.bind(this)}
-                        style={createChannelStyles.uploadImageButton}
-                      >
+                        style={createChannelStyles.uploadImageButton}>
                         <Image
                           source={Icons.icon_edit_pen}
                           resizeMode={'cover'}
@@ -556,7 +541,7 @@ class CreateChannel extends Component {
                       placeholder={translate('pages.xchat.channelName')}
                       placeholderTextColor={Colors.white}
                       onChangeText={(channelName) =>
-                        this.setState({ channelName })
+                        this.setState({channelName})
                       }
                       ref={(channelName) => {
                         this.channelNameTextInput = channelName;
@@ -575,8 +560,7 @@ class CreateChannel extends Component {
                           width: '95%',
                           color: Colors.white,
                           textAlign: 'right',
-                        }}
-                      >
+                        }}>
                         {status.length}/20
                       </Text>
                     )}
@@ -585,7 +569,7 @@ class CreateChannel extends Component {
                       placeholder={translate('pages.xchat.status')}
                       placeholderTextColor={Colors.white}
                       maxLength={20}
-                      onChangeText={(status) => this.setState({ status })}
+                      onChangeText={(status) => this.setState({status})}
                       ref={(status) => {
                         this.statusTextInput = status;
                       }}
@@ -657,14 +641,12 @@ class CreateChannel extends Component {
                   createChannelStyles.tabItem,
                   !isManage && createChannelStyles.tabBarBorder,
                 ]}
-                onPress={this.onAboutPress}
-              >
+                onPress={this.onAboutPress}>
                 <Text
                   style={[
                     createChannelStyles.tabBarTitle,
-                    isManage && { fontFamily: Fonts.thin },
-                  ]}
-                >
+                    isManage && {fontFamily: Fonts.thin},
+                  ]}>
                   {translate('pages.xchat.about')}
                 </Text>
               </TouchableOpacity>
@@ -673,14 +655,12 @@ class CreateChannel extends Component {
                   createChannelStyles.tabItem,
                   isManage && createChannelStyles.tabBarBorder,
                 ]}
-                onPress={this.onManagePress}
-              >
+                onPress={this.onManagePress}>
                 <Text
                   style={[
                     createChannelStyles.tabBarTitle,
-                    !isManage && { fontFamily: Fonts.thin },
-                  ]}
-                >
+                    !isManage && {fontFamily: Fonts.thin},
+                  ]}>
                   {translate('pages.xchat.manage')}
                 </Text>
               </TouchableOpacity>
@@ -695,7 +675,7 @@ class CreateChannel extends Component {
                   <TextInput
                     style={[createChannelStyles.inputStyle]}
                     placeholder={translate('pages.xchat.search')}
-                    onChangeText={(searchText) => this.setState({ searchText })}
+                    onChangeText={(searchText) => this.setState({searchText})}
                     returnKeyType={'done'}
                     autoCorrect={false}
                     autoCapitalize={'none'}
@@ -714,7 +694,7 @@ class CreateChannel extends Component {
                     title={translate('pages.xchat.about')}
                     rightTitle={about.length + '/4000'}
                     value={about}
-                    onChangeText={(about) => this.setState({ about })}
+                    onChangeText={(about) => this.setState({about})}
                     maxLength={4000}
                     extraHeight={200}
                     titleFontColor={Colors.gradient_2}
@@ -761,7 +741,7 @@ class CreateChannel extends Component {
                       title={translate('pages.xchat.vipFeature')}
                       rightTitle={about_vip.length + '/4000'}
                       value={about_vip}
-                      onChangeText={(about_vip) => this.setState({ about_vip })}
+                      onChangeText={(about_vip) => this.setState({about_vip})}
                       maxLength={4000}
                       extraHeight={150}
                       titleFontColor={Colors.orange}
@@ -774,8 +754,7 @@ class CreateChannel extends Component {
                         {translate('pages.xchat.vipMonth')}
                       </Text>
                       <View
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
-                      >
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
                         <TextInput
                           style={createChannelStyles.detailTextInput}
                           placeholder={vipPerMonth.toString()}
@@ -795,15 +774,14 @@ class CreateChannel extends Component {
                 )}
 
                 <View style={createChannelStyles.followerDetails}>
-                  <Text style={{ fontFamily: Fonts.extralight }}>
+                  <Text style={{fontFamily: Fonts.extralight}}>
                     {translate('pages.xchat.affiliateFollower')}
                   </Text>
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                    }}
-                  >
+                    }}>
                     <TextInput
                       style={createChannelStyles.detailTextInput}
                       placeholder={affiliateReward.toString()}

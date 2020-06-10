@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 
 import RoundedImage from '../RoundedImage';
-import {Icons, Colors, Images} from '../../constants';
+import {Icons, Colors, Images, Fonts} from '../../constants';
 import {isIphoneX, getImage, getAvatar} from '../../utils';
 import {globalStyles} from '../../styles';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
@@ -87,7 +87,7 @@ export default class ChatHeader extends Component {
             </View>
           ) : (
             <View style={styles.subContainer}>
-              {image != null ? (
+              {image != null && image != '' && typeof image != undefined ? (
                 <View style={{marginHorizontal: 10}}>
                   <RoundedImage
                     source={getAvatar(image)}
@@ -108,7 +108,7 @@ export default class ChatHeader extends Component {
                   style={styles.squareImage}>
                   <Text style={globalStyles.normalRegularText}>
                     {title.charAt(0).toUpperCase()}
-                    {secondUpperCase}
+                    {/* {secondUpperCase} */}
                   </Text>
                 </LinearGradient>
               )}
@@ -148,7 +148,7 @@ export default class ChatHeader extends Component {
                     icon={() => (
                       <FontAwesome5
                         name={item.icon}
-                        size={20}
+                        size={16}
                         color={Colors.black}
                       />
                     )}
@@ -156,8 +156,12 @@ export default class ChatHeader extends Component {
                       item.onPress();
                       this._closeMenu();
                     }}
-                    title={item.title}
-                    titleStyle={{marginLeft: -25}}
+                    title={`${item.title}`}
+                    titleStyle={{
+                      marginLeft: -25,
+                      fontSize: 16,
+                      fontWeight: '200',
+                    }}
                   />
                 );
               })}
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: Colors.orange_light,
+    backgroundColor: Colors.home_header,
   },
   subContainer: {
     flex: 1,

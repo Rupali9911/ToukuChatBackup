@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   View,
   Text,
@@ -7,20 +7,22 @@ import {
   Platform,
   TouchableOpacity,
   Image,
+  Keyboard,
 } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import ChatMessageBox from './ChatMessageBox';
+import GroupChatMessageBox from './GroupChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import { translate } from '../redux/reducers/languageReducer';
 import { Colors, Fonts, Images, Icons } from '../constants';
 import NoData from './NoData';
-const { height } = Dimensions.get('window');
+import { isIphoneX } from '../utils';
+const { width, height } = Dimensions.get('window');
 
-class ChatContainer extends Component {
+class GroupChatContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -39,18 +41,13 @@ class ChatContainer extends Component {
     }
     const msg = messages.map((item, index) => {
       return (
-        <ChatMessageBox
-          key={item.id}
+        <GroupChatMessageBox
+          key={item.msg_id}
           message={item}
-          isUser={item.from_user.id == this.props.userData.id ? true : false}
-          time={new Date(item.created)}
-          isChannel={this.props.isChannel}
+          isUser={item.sender_id === this.props.userData.id ? true : false}
+          time={new Date(item.timestamp)}
+          // status={item.status}
           onMessageReply={(id) => this.props.onMessageReply(id)}
-          onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
-          onMessageTranslateClose={this.props.onMessageTranslateClose}
-          translatedMessage={this.props.translatedMessage}
-          translatedMessageId={this.props.translatedMessageId}
-          onDelete={(id) => this.props.onDelete(id)}
           orientation={this.props.orientation}
         />
       );
@@ -83,7 +80,7 @@ class ChatContainer extends Component {
     } = this.props;
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={{flex: 1}}
+        contentContainerStyle={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
@@ -91,7 +88,8 @@ class ChatContainer extends Component {
         }}
         onKeyboardDidShow={(contentWidth, contentHeight) => {
           this.scrollView.scrollToEnd();
-        }}>
+        }}
+      >
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -105,18 +103,20 @@ class ChatContainer extends Component {
                   ? height * 0.01
                   : height * 0.03,
             },
-          ]}>
+          ]}
+        >
           <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
-              isReply && {paddingBottom: '20%'},
+              isReply && { paddingBottom: '20%' },
             ]}
             ref={(view) => {
               this.scrollView = view;
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd();
-            }}>
+            }}
+          >
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
@@ -132,7 +132,8 @@ class ChatContainer extends Component {
                 bottom: 20,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
-              }}>
+              }}
+            >
               <View
                 style={{
                   flex: 3,
@@ -142,14 +143,15 @@ class ChatContainer extends Component {
               >
                 <View style={{ flex: 8 }}>
                   <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-                    {repliedMessage.from_user.id === this.props.userData.id
+                    {repliedMessage.sender_id === this.props.userData.id
                       ? 'You'
-                      : repliedMessage.from_user.username}
+                      : repliedMessage.sender_username}
                   </Text>
                 </View>
-                <View style={{flex: 2, alignItems: 'flex-end'}}>
+                <View style={{ flex: 2, alignItems: 'flex-end' }}>
                   <TouchableOpacity
                     style={{
+                      //   paddingHorizontal: 5,
                       justifyContent: 'center',
                       alignItems: 'center',
                       height: '70%',
@@ -157,7 +159,8 @@ class ChatContainer extends Component {
                       borderRadius: 100,
                       backgroundColor: Colors.gradient_1,
                     }}
-                    onPress={cancelReply}>
+                    onPress={cancelReply}
+                  >
                     <Image
                       source={Icons.icon_close}
                       style={{
@@ -174,7 +177,7 @@ class ChatContainer extends Component {
                   numberOfLines={2}
                   style={{ fontFamily: Fonts.extralight }}
                 >
-                  {repliedMessage.message_body}
+                  {repliedMessage.message_body.text}
                 </Text>
               </View>
             </View>
@@ -207,7 +210,7 @@ const chatStyle = StyleSheet.create({
     marginVertical: 15,
   },
   messageDate: {
-    backgroundColor: Colors.orange_light,
+    backgroundColor: Colors.orange,
     paddingVertical: 4,
     paddingHorizontal: 5,
     borderRadius: 100,
@@ -227,4 +230,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChatContainer);

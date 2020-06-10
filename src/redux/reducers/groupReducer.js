@@ -1,29 +1,53 @@
 import {client} from '../../helpers/api';
 
 export const SET_CURRENT_GROUP_DATA = 'SET_CURRENT_GROUP_DATA';
+export const SET_CURRENT_GROUP_DETAIL_DATA = 'SET_CURRENT_GROUP_DETAIL_DATA';
+export const SET_CURRENT_GROUP_MEMBERS = 'SET_CURRENT_GROUP_MEMBERS';
 
 export const GET_USER_GROUP_REQUEST = 'GET_USER_GROUP_REQUEST';
 export const GET_USER_GROUP_SUCCESS = 'GET_USER_GROUP_SUCCESS';
 export const GET_USER_GROUP_FAIL = 'GET_USER_GROUP_FAIL';
 
-export const GET_CREATE_GROUP_REQUEST = 'GET_CREATE_GROUP_REQUEST';
-export const GET_CREATE_GROUP_SUCCESS = 'GET_CREATE_GROUP_SUCCESS';
-export const GET_CREATE_GROUP_FAIL = 'GET_CREATE_GROUP_FAIL';
+export const CREATE_GROUP_REQUEST = 'CREATE_GROUP_REQUEST';
+export const CREATE_GROUP_SUCCESS = 'CREATE_GROUP_SUCCESS';
+export const CREATE_GROUP_FAIL = 'CREATE_GROUP_FAIL';
+
+export const GET_GROUP_CONVERSATION_REQUEST = 'GET_GROUP_CONVERSATION_REQUEST';
+export const GET_GROUP_CONVERSATION_SUCCESS = 'GET_GROUP_CONVERSATION_SUCCESS';
+export const GET_GROUP_CONVERSATION_FAIL = 'GET_GROUP_CONVERSATION_FAIL';
 
 const initialState = {
   loading: false,
   userGroups: [],
   currentGroup: {},
+  currentGroupDetail: {},
+  currentGroupMembers: [],
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
+    //Current Group Data
     case SET_CURRENT_GROUP_DATA:
       return {
         ...state,
         currentGroup: action.payload,
       };
 
+    //Current Group Detail
+    case SET_CURRENT_GROUP_DETAIL_DATA:
+      return {
+        ...state,
+        currentGroupDetail: action.payload,
+      };
+
+    //Current Group Members
+    case SET_CURRENT_GROUP_MEMBERS:
+      return {
+        ...state,
+        currentGroupMembers: action.payload,
+      };
+
+    //Get User Groups
     case GET_USER_GROUP_REQUEST:
       return {
         ...state,
@@ -43,19 +67,39 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
-    case GET_CREATE_GROUP_REQUEST:
+    //Create New Group
+    case CREATE_GROUP_REQUEST:
       return {
         ...state,
         loading: true,
       };
 
-    case GET_CREATE_GROUP_SUCCESS:
+    case CREATE_GROUP_SUCCESS:
       return {
         ...state,
         loading: false,
       };
 
-    case GET_CREATE_GROUP_FAIL:
+    case CREATE_GROUP_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    //Create New Group
+    case GET_GROUP_CONVERSATION_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case GET_GROUP_CONVERSATION_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_GROUP_CONVERSATION_FAIL:
       return {
         ...state,
         loading: false,
@@ -66,7 +110,7 @@ export default function (state = initialState, action) {
   }
 }
 
-//Set Current Channel
+//Set Current Group data
 const setCurrentGroupData = (data) => ({
   type: SET_CURRENT_GROUP_DATA,
   payload: data,
@@ -74,6 +118,24 @@ const setCurrentGroupData = (data) => ({
 
 export const setCurrentGroup = (group) => (dispatch) =>
   dispatch(setCurrentGroupData(group));
+
+//Set Current Group Detail
+const setCurrentGroupDetailData = (data) => ({
+  type: SET_CURRENT_GROUP_DETAIL_DATA,
+  payload: data,
+});
+
+export const setCurrentGroupDetail = (data) => (dispatch) =>
+  dispatch(setCurrentGroupDetailData(data));
+
+//Set Current Group Members
+const setCurrentGroupMembersData = (members) => ({
+  type: SET_CURRENT_GROUP_MEMBERS,
+  payload: members,
+});
+
+export const setCurrentGroupMembers = (members) => (dispatch) =>
+  dispatch(setCurrentGroupMembersData(members));
 
 //Get User Groups
 const getUserGroupsRequest = () => ({
@@ -108,15 +170,15 @@ export const getUserGroups = () => (dispatch) =>
 
 //Create Group
 const getCreateGroupRequest = () => ({
-  type: GET_CREATE_GROUP_REQUEST,
+  type: CREATE_GROUP_REQUEST,
 });
 
 const getCreateGroupSuccess = () => ({
-  type: GET_CREATE_GROUP_SUCCESS,
+  type: CREATE_GROUP_SUCCESS,
 });
 
 const getCreateGroupFailure = () => ({
-  type: GET_CREATE_GROUP_FAIL,
+  type: CREATE_GROUP_FAIL,
 });
 
 export const createNewGroup = (data) => (dispatch) =>
@@ -134,10 +196,113 @@ export const createNewGroup = (data) => (dispatch) =>
       });
   });
 
+//Get Group Conversations
+const getGroupConversationRequest = () => ({
+  type: GET_GROUP_CONVERSATION_REQUEST,
+});
+
+const getGroupConversationSuccess = () => ({
+  type: GET_GROUP_CONVERSATION_SUCCESS,
+});
+
+const getGroupConversationFailure = () => ({
+  type: GET_GROUP_CONVERSATION_FAIL,
+});
+
+export const getGroupConversation = (groupId) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getGroupConversationRequest());
+    client
+      .get(`/xchat/group-conversation/` + groupId + '/')
+      .then((res) => {
+        dispatch(getGroupConversationSuccess());
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getGroupConversationFailure());
+        reject(err);
+      });
+  });
+
+//Delete Group
 export const deleteGroup = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .delete(`/xchat/delete-group/` + groupId + '/')
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Edit Group
+export const editGroup = (groupId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/edit-group/` + groupId + '/', data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Update Group Members
+export const updateGroupMembers = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/update-group-members/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Get Group Details
+export const getGroupDetail = (groupId) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/group-detail/` + groupId + '/')
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Get Group Members
+export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
+  dispatch,
+) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(
+        `/xchat/get-group-members/` +
+          groupId +
+          '/?limit=' +
+          limit +
+          '&offset=' +
+          offset,
+      )
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Send Group Message
+export const sendGroupMessage = (message) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/send-group-message/`, message)
       .then((res) => {
         resolve(res);
       })

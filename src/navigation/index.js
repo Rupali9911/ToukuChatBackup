@@ -13,6 +13,7 @@ import GroupChats from '../screens/GroupChats';
 import FriendChats from '../screens/FriendChats';
 import CreateFriendGroup from '../screens/CreateFriendGroup';
 import ChannelInfo from '../screens/ChannelInfo';
+import GroupDetails from '../screens/GroupDetails';
 import Timeline from '../screens/Timeline';
 import Drawer from './DrawerNavigation';
 
@@ -36,7 +37,8 @@ const AppStack = createStackNavigator(
     CreateFriendGroup: CreateFriendGroup,
     ChannelChats: ChannelChats,
     ChannelInfo: ChannelInfo,
-    Timeline: Timeline
+    Timeline: Timeline,
+    GroupDetails: GroupDetails,
   },
   {
     initialRouteName: 'Drawer',

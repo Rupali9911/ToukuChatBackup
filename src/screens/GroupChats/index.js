@@ -1,14 +1,26 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground, Dimensions, Platform} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground, Dimensions, Platform } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import {ChatHeader} from '../../components/Headers';
-import {translate} from '../../redux/reducers/languageReducer';
-import {globalStyles} from '../../styles';
-import {Colors, Fonts, Images, Icons} from '../../constants';
-import ChatContainer from '../../components/ChatContainer';
-import {ConfirmationModal} from '../../components/Modals';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Colors, Fonts, Images, Icons } from '../../constants';
+import GroupChatContainer from '../../components/GroupChatContainer';
+import { ConfirmationModal } from '../../components/Modals';
+import { translate } from '../../redux/reducers/languageReducer';
+import {
+  getGroupConversation,
+  getUserGroups,
+  getGroupDetail,
+  getGroupMembers,
+  setCurrentGroupDetail,
+  setCurrentGroupMembers,
+  deleteGroup,
+  sendGroupMessage,
+} from '../../redux/reducers/groupReducer';
+import Toast from '../../components/Toast';
+import { ListLoader } from '../../components/Loaders';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -16,14 +28,17 @@ class GroupChats extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       newMessageText: '',
-      showConfirmationModal: false,
+      showLeaveGroupConfirmationModal: false,
+      showDeleteGroupConfirmationModal: false,
+      isMyGroup: false,
+      conversation: [],
       headerRightIconMenu: [
         {
           id: 1,
           title: translate('pages.xchat.groupDetails'),
           icon: 'bars',
           onPress: () => {
-            this.props.navigation.navigate('CreateGroupChat');
+            this.props.navigation.navigate('GroupDetails');
           },
         },
         {
@@ -31,161 +46,68 @@ class GroupChats extends Component {
           title: translate('pages.xchat.leave'),
           icon: 'user-slash',
           onPress: () => {
-            this.toggleConfirmationModal();
+            this.toggleLeaveGroupConfirmationModal();
+          },
+        },
+      ],
+      headerRightIconMenuIsGroup: [
+        {
+          id: 1,
+          title: translate('pages.xchat.groupDetails'),
+          icon: 'bars',
+          onPress: () => {
+            this.props.navigation.navigate('GroupDetails');
+          },
+        },
+        {
+          id: 2,
+          title: translate('pages.xchat.deleteGroup'),
+          icon: 'trash',
+          onPress: () => {
+            this.toggleDeleteGroupConfirmationModal();
+          },
+        },
+        {
+          id: 2,
+          title: translate('pages.xchat.leave'),
+          icon: 'user-slash',
+          onPress: () => {
+            this.toggleLeaveGroupConfirmationModal();
           },
         },
       ],
       isReply: false,
       repliedMessage: null,
-      messagesArray: [
-        {
-          id: 1,
-          message: 'Hello',
-          from_user: {
-            id: 1,
-            email: '',
-            username: '',
-            avatar: null,
-            is_online: false,
-            display_name: '',
-          },
-          isUser: false,
-          userName: 'raj',
-          time: '20:20',
-        },
-        {
-          id: 2,
-          message: 'HI',
-          from_user: {
-            id: 1,
-            email: '',
-            username: '',
-            avatar: null,
-            is_online: false,
-            display_name: '',
-          },
-          isUser: true,
-          status: 'Read',
-          time: '20:21',
-        },
-        {
-          id: 3,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          from_user: {
-            id: 1,
-            email: '',
-            username: '',
-            avatar: null,
-            is_online: false,
-            display_name: '',
-          },
-          isUser: false,
-          userName: 'raj',
-          time: '20:21',
-        },
-        {
-          id: 4,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          from_user: {
-            id: 1,
-            email: '',
-            username: '',
-            avatar: null,
-            is_online: false,
-            display_name: '',
-          },
-          isUser: true,
-          status: 'Read',
-          time: '20:25',
-          repliedTo: {
-            id: 3,
-            message:
-              'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-            isUser: false,
-            userName: 'raj',
-            time: '20:21',
-          },
-        },
-        {
-          id: 5,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          from_user: {
-            id: 1,
-            email: '',
-            username: '',
-            avatar: null,
-            is_online: false,
-            display_name: '',
-          },
-          isUser: false,
-          userName: 'raj',
-          time: '20:26',
-          repliedTo: {
-            id: 2,
-            message: 'HI',
-            isUser: true,
-            status: 'Read',
-            time: '20:21',
-          },
-        },
-        {
-          id: 6,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          from_user: {
-            id: 1,
-            email: '',
-            username: '',
-            avatar: null,
-            is_online: false,
-            display_name: '',
-          },
-          isUser: true,
-          userName: 'raj',
-          time: '20:27',
-        },
-      ],
     };
   }
 
   onMessageSend = () => {
-    const {newMessageText, messagesArray, isReply, repliedMessage} = this.state;
+    const {
+      newMessageText,
+      conversation,
+      isReply,
+      repliedMessage,
+    } = this.state;
     if (!newMessageText) {
       return;
     }
-    let newMessage;
     if (isReply) {
-      newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
-        message: newMessageText,
-        isUser: true,
-        time: '20:27',
-        repliedTo: repliedMessage,
-      };
     } else {
-      newMessage = {
-        id: messagesArray ? messagesArray.length + 1 : 1,
-        message: newMessageText,
-        from_user: {
-          id: 1,
-          email: '',
-          username: '',
-          avatar: null,
-          is_online: false,
-          display_name: '',
-        },
-        isUser: true,
-        time: '20:27',
+      let groupMessage = {
+        group: this.props.currentGroup.group_id,
+        local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+        mentions: [],
+        message_body: newMessageText,
+        msg_type: 'text',
       };
+
+      this.props.sendGroupMessage(groupMessage).then((res) => {
+        alert(JSON.stringify(res));
+        this.getGroupConversation();
+      });
     }
 
-    let newMessageArray = messagesArray ? messagesArray : [];
-    newMessageArray.push(newMessage);
     this.setState({
-      messagesArray: newMessageArray,
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
@@ -193,14 +115,35 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {messagesArray} = this.state;
+    const { conversation } = this.state;
 
-    const repliedMessage = messagesArray.find((item) => item.id === messageId);
+    const repliedMessage = conversation.find(
+      (item) => item.msg_id === messageId
+    );
     this.setState({
       isReply: true,
       repliedMessage: repliedMessage,
     });
   };
+
+  // onReply = (messageId) => {
+  //   console.log('ChannelChats -> onReply -> messageId', messageId);
+  //   const { conversations } = this.state;
+
+  //   const repliedMessage = conversations.find((item) => item.id === messageId);
+  //   this.setState(
+  //     {
+  //       isReply: true,
+  //       repliedMessage: repliedMessage,
+  //     },
+  //     () => {
+  //       console.log(
+  //         'ChannelChats -> onReply -> repliedMessage',
+  //         this.state.repliedMessage
+  //       );
+  //     }
+  //   );
+  // };
 
   cancelReply = () => {
     this.setState({
@@ -211,69 +154,182 @@ class GroupChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+
+    this.getGroupConversation();
+    this.getGroupDetail();
+    this.getGroupMembers();
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
-  handleMessage(message) {
-    this.setState({newMessageText: message});
+  getGroupConversation() {
+    this.props
+      .getGroupConversation(this.props.currentGroup.group_id)
+      .then((res) => {
+        if (res.status) {
+          this.setState({ conversation: res.data });
+        }
+      })
+      .catch((err) => {
+        // Toast.show({
+        //   title: 'Touku',
+        //   text: translate('common.somethingWentWrong'),
+        //   type: 'primary',
+        // });
+      });
   }
 
-  toggleConfirmationModal = () => {
-    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
+  getGroupDetail() {
+    this.props
+      .getGroupDetail(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupDetail(res);
+        for (let admin of res.admin_details) {
+          if (admin.id === this.props.userData.id) {
+            this.setState({ isMyGroup: true });
+          }
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.props.navigation.goBack();
+      });
+  }
+
+  getGroupMembers() {
+    this.props
+      .getGroupMembers(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupMembers(res.results);
+      })
+      .catch((err) => {});
+  }
+
+  handleMessage(message) {
+    this.setState({ newMessageText: message });
+  }
+
+  //Leave Group
+  toggleLeaveGroupConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showLeaveGroupConfirmationModal: !prevState.showLeaveGroupConfirmationModal,
+    }));
   };
 
-  onCancel = () => {
-    console.log('ChannelChats -> onCancel -> onCancel');
-    this.toggleConfirmationModal();
+  onCancelLeaveGroup = () => {
+    this.toggleLeaveGroupConfirmationModal();
   };
 
-  onConfirm = () => {
-    console.log('ChannelChats -> onConfirm -> onConfirm');
-    this.toggleConfirmationModal();
+  onConfirmLeaveGroup = () => {
+    this.toggleLeaveGroupConfirmationModal();
+  };
+
+  //Delete Group
+  toggleDeleteGroupConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showDeleteGroupConfirmationModal: !prevState.showDeleteGroupConfirmationModal,
+    }));
+  };
+
+  onCancelDeteleGroup = () => {
+    this.toggleDeleteGroupConfirmationModal();
+  };
+
+  onConfirmDeleteGroup = () => {
+    this.toggleDeleteGroupConfirmationModal();
+    this.props
+      .deleteGroup(this.props.currentGroup.group_id)
+      .then((res) => {
+        if (res.status === true) {
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.toastr.groupIsRemoved'),
+            type: 'positive',
+          });
+          this.props.getUserGroups();
+          this.props.navigation.goBack();
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
   };
 
   render() {
-    const {newMessageText, showConfirmationModal, orientation} = this.state;
-    const {currentGroup} = this.props;
+    const {
+      newMessageText,
+      showLeaveGroupConfirmationModal,
+      showDeleteGroupConfirmationModal,
+      orientation,
+      isMyGroup,
+      conversation,
+      isReply,
+      repliedMessage,
+    } = this.state;
+    const { currentGroup, groupLoading } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentGroup.group_name}
           description={
             currentGroup.total_members + ' ' + translate('pages.xchat.members')
           }
           onBackPress={() => this.props.navigation.goBack()}
-          menuItems={this.state.headerRightIconMenu}
+          menuItems={
+            isMyGroup
+              ? this.state.headerRightIconMenuIsGroup
+              : this.state.headerRightIconMenu
+          }
           image={currentGroup.group_picture}
         />
-        <ChatContainer
-          handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend}
-          onMessageReply={(id) => this.onReply(id)}
-          newMessageText={newMessageText}
-          messages={this.state.messagesArray}
-          orientation={this.state.orientation}
-          repliedMessage={this.state.repliedMessage}
-          isReply={this.state.isReply}
-          cancelReply={this.cancelReply}
+        {groupLoading && conversation.length <= 0 ? (
+          <ListLoader />
+        ) : (
+          <GroupChatContainer
+            handleMessage={(message) => this.handleMessage(message)}
+            onMessageSend={this.onMessageSend.bind(this)}
+            onMessageReply={(id) => this.onReply(id)}
+            newMessageText={newMessageText}
+            messages={conversation}
+            orientation={orientation}
+            repliedMessage={repliedMessage}
+            isReply={isReply}
+            cancelReply={this.cancelReply.bind(this)}
+          />
+        )}
+        <ConfirmationModal
+          orientation={orientation}
+          visible={showLeaveGroupConfirmationModal}
+          onCancel={this.onCancelLeaveGroup.bind(this)}
+          onConfirm={this.onConfirmLeaveGroup.bind(this)}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.wantToLeaveText')}
         />
         <ConfirmationModal
           orientation={orientation}
-          visible={showConfirmationModal}
-          onCancel={this.onCancel}
-          onConfirm={this.onConfirm}
+          visible={showDeleteGroupConfirmationModal}
+          onCancel={this.onCancelDeteleGroup.bind(this)}
+          onConfirm={this.onConfirmDeleteGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
-          message={translate('pages.xchat.wantToLeaveText')}
+          message={translate('pages.xchat.toastr.groupWillBeDeleted')}
         />
       </ImageBackground>
     );
@@ -283,9 +339,20 @@ class GroupChats extends Component {
 const mapStateToProps = (state) => {
   return {
     currentGroup: state.groupReducer.currentGroup,
+    groupLoading: state.groupReducer.loading,
+    userData: state.userReducer.userData,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getGroupConversation,
+  getUserGroups,
+  getGroupDetail,
+  getGroupMembers,
+  setCurrentGroupDetail,
+  setCurrentGroupMembers,
+  deleteGroup,
+  sendGroupMessage,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);
