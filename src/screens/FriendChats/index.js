@@ -172,7 +172,7 @@ class FriendChats extends Component {
     });
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
   }
@@ -260,7 +260,6 @@ class FriendChats extends Component {
       translatedMessageId,
     } = this.state;
     const { currentFriend, chatsLoading } = this.props;
-
     return (
       <ImageBackground
         source={Images.image_home_bg}

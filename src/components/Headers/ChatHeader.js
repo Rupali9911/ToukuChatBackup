@@ -32,7 +32,7 @@ export default class ChatHeader extends Component {
 
   _closeMenu = () => this.setState({visible: false});
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
   }

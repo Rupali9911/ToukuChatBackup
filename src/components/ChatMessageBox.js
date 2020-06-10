@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import ChatMessageBubble from './ChatMessageBubble';
-
 import { Colors, Fonts } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
 import RoundedImage from './RoundedImage';
@@ -33,12 +32,12 @@ export default class ChatMessageBox extends Component {
     }
   }
 
-  _openMenu = () => this.setState({ longPressMenu: true });
+  _openMenu = () => this.setState({longPressMenu: true});
 
-  _closeMenu = () => this.setState({ longPressMenu: false });
+  _closeMenu = () => this.setState({longPressMenu: false});
 
   layoutChange = (event) => {
-    var { x, y, width, height } = event.nativeEvent.layout;
+    var {x, y, width, height} = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -132,8 +131,7 @@ export default class ChatMessageBox extends Component {
           {
             justifyContent: 'flex-start',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             alignItems: 'flex-start',
@@ -198,8 +196,7 @@ export default class ChatMessageBox extends Component {
             alignItems: 'flex-end',
             alignSelf: 'flex-end',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             alignItems: 'flex-end',

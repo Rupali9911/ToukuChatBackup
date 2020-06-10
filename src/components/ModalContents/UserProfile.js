@@ -67,11 +67,15 @@ class UserProfile extends Component {
       } else if (response.error) {
       } else {
         let source = response;
+
+        console.log('source library', response)
+
         // You can also display the image using data:
         // let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           backgroundImagePath: source,
         });
+
         // let Images = ['data:image/png;base64,' + source.data];
         // const imageFiles = await this.S3uploadService.uploadImagesOnS3Bucket(
         //   Images,
@@ -79,7 +83,6 @@ class UserProfile extends Component {
         // alert(JSON.stringify(imageFiles));
 
         const file = {
-          // `uri` can also be a file system path (i.e. file://)
           uri: response.origURL,
           name: 'image.jpg',
           type: 'image/jpeg',

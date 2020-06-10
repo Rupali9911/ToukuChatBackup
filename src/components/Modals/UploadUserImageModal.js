@@ -44,10 +44,12 @@ class UploadUserImageModal extends Component {
     ImagePicker.showImagePicker(options, (response) => {
       if (response.didCancel) {
       } else if (response.error) {
+        console.log('response.error', response.error)
       } else {
         let source = response;
         // You can also display the image using data:
         // let source = {uri: 'data:image/jpeg;base64,' + response.data};
+          console.log('source from library')
         this.setState({
           filePath: source,
           btnDisabled: false,

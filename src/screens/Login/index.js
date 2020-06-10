@@ -67,7 +67,7 @@ class Login extends Component {
     this.inputs = {};
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     GoogleSignin.configure({
       webClientId:
         '185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com',

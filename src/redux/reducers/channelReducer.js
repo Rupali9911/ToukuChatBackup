@@ -200,7 +200,7 @@ export const getUserChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
     client
-      .get(`/xchat/get-my-channel/?start=0`)
+      .get(`/xchat/get-my-channel/?start=10`)
       .then((res) => {
         if (res.conversations) {
           dispatch(getUserChannelsSuccess(res.conversations));

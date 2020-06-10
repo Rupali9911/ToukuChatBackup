@@ -60,7 +60,7 @@ class ChannelInfo extends Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
   }
@@ -166,7 +166,6 @@ class ChannelInfo extends Component {
       showConfirmationModal,
     } = this.state;
     const { channelLoading } = this.props;
-
     const channelCountDetails = [
       {
         id: 1,
@@ -263,7 +262,7 @@ class ChannelInfo extends Component {
                             key={index}
                             style={channelInfoStyles.detailStatusItem}
                           >
-                            <Text
+                              <Text
                               style={channelInfoStyles.detailStatusItemCount}
                             >
                               {item.count}

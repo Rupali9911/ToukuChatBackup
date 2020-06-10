@@ -152,7 +152,7 @@ class GroupChats extends Component {
     });
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
   }
@@ -282,7 +282,6 @@ class GroupChats extends Component {
       repliedMessage,
     } = this.state;
     const { currentGroup, groupLoading } = this.props;
-
     return (
       <ImageBackground
         source={Images.image_home_bg}
