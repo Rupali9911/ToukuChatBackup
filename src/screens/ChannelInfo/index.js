@@ -165,7 +165,7 @@ class ChannelInfo extends Component {
       orientation,
       showConfirmationModal,
     } = this.state;
-    const { channelLoading } = this.props;
+    const { channelLoading, currentChannel } = this.props;
     const channelCountDetails = [
       {
         id: 1,
@@ -262,7 +262,7 @@ class ChannelInfo extends Component {
                             key={index}
                             style={channelInfoStyles.detailStatusItem}
                           >
-                              <Text
+                            <Text
                               style={channelInfoStyles.detailStatusItemCount}
                             >
                               {item.count}
@@ -332,6 +332,27 @@ class ChannelInfo extends Component {
                 </Text>
                 <Text style={channelInfoStyles.aboutText}>Demo About us</Text>
               </View>
+              {currentChannel.is_vip && (
+                <React.Fragment>
+                  <View style={channelInfoStyles.about}>
+                    <Text style={channelInfoStyles.aboutHeading}>
+                      {translate('pages.xchat.vipFeature')}
+                    </Text>
+                    <Text style={channelInfoStyles.aboutText}>
+                      Demo About us
+                    </Text>
+                  </View>
+                  <View style={channelInfoStyles.followerDetails}>
+                    <Text
+                      style={{ fontFamily: Fonts.extralight, marginRight: 5 }}
+                    >
+                      {translate('pages.xchat.affiliateRewardText')}
+                    </Text>
+                    <Text style={channelInfoStyles.detailText}>1 %</Text>
+                  </View>
+                </React.Fragment>
+              )}
+
               <View style={channelInfoStyles.buttonContainer}>
                 <Button
                   isRounded={false}
@@ -339,7 +360,25 @@ class ChannelInfo extends Component {
                   title={translate('pages.xchat.affiliate')}
                   onPress={() => {}}
                 />
+                {currentChannel.is_vip && (
+                  <Button
+                    isRounded={false}
+                    type={'primary'}
+                    title={translate('pages.xchat.vip')}
+                    onPress={() => {}}
+                  />
+                )}
               </View>
+              {currentChannel.is_vip && (
+                <View style={channelInfoStyles.followerDetails}>
+                  <Text
+                    style={{ fontFamily: Fonts.extralight, marginRight: 5 }}
+                  >
+                    {translate('pages.xchat.vipMonth')}
+                  </Text>
+                  <Text style={channelInfoStyles.detailText}>1 TP</Text>
+                </View>
+              )}
             </KeyboardAwareScrollView>
           ) : (
             <ListLoader large />
