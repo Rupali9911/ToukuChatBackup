@@ -12,12 +12,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Menu, Divider } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
+import { connect } from 'react-redux';
 import { Colors, Icons, Fonts, Images } from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
 const { width, height } = Dimensions.get('window');
 let borderRadius = 20;
-export default class GroupChatMessageBubble extends Component {
+
+class GroupChatMessageBubble extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -28,6 +29,10 @@ export default class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (replyMessage) => {
+    console.log(
+      'GroupChatMessageBubble -> renderReplyMessage -> replyMessage',
+      replyMessage
+    );
     return (
       <View
         style={{
@@ -46,7 +51,9 @@ export default class GroupChatMessageBubble extends Component {
           }}
         >
           <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-            {replyMessage.isUser ? 'You' : replyMessage.userName}
+            {replyMessage.sender_id === this.props.userData.id
+              ? 'You'
+              : replyMessage.display_name}
           </Text>
         </View>
         <View
@@ -54,6 +61,7 @@ export default class GroupChatMessageBubble extends Component {
             flex: 7,
             justifyContent: 'center',
             width: '95%',
+            marginTop: 5,
           }}
         >
           <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
@@ -74,6 +82,8 @@ export default class GroupChatMessageBubble extends Component {
       closeMenu,
       openMenu,
       selectedMessageId,
+      onMessageTranslate,
+      onDelete,
     } = this.props;
 
     if (!message.message_body) {
@@ -106,8 +116,10 @@ export default class GroupChatMessageBubble extends Component {
                     onMessagePress(message.msg_id);
                   }}
                 >
-                  {/* {message.repliedTo &&
-                    this.renderReplyMessage(message.repliedTo)} */}
+                  {message.reply_to &&
+                    Object.keys(message.reply_to).length !== 0 &&
+                    message.reply_to.constructor === Object &&
+                    this.renderReplyMessage(message.reply_to)}
                   <Text
                     style={{
                       fontSize: 15,
@@ -145,8 +157,10 @@ export default class GroupChatMessageBubble extends Component {
                   }}
                   activeOpacity={0.8}
                 >
-                  {/* {message.repliedTo &&
-                    this.renderReplyMessage(message.repliedTo)} */}
+                  {message.reply_to &&
+                    Object.keys(message.reply_to).length !== 0 &&
+                    message.reply_to.constructor === Object &&
+                    this.renderReplyMessage(message.reply_to)}
                   <Text style={{ color: 'white', fontSize: 15 }}>
                     {message.message_body.text}
                   </Text>
@@ -162,6 +176,7 @@ export default class GroupChatMessageBubble extends Component {
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
           onPress={() => {
+            onMessageTranslate(message);
             closeMenu();
           }}
           title={translate('common.translate')}
@@ -196,6 +211,7 @@ export default class GroupChatMessageBubble extends Component {
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
           onPress={() => {
+            onDelete(selectedMessageId);
             closeMenu();
           }}
           title={translate('common.delete')}
@@ -272,3 +288,16 @@ const styles = StyleSheet.create({
     top: -15,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    userData: state.userReducer.userData,
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GroupChatMessageBubble);
