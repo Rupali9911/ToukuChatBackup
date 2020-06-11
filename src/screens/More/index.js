@@ -6,10 +6,12 @@ import {connect} from 'react-redux';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {Images, Icons, Colors} from '../../constants';
+import {Images, Icons, Colors, supportUrl} from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from "../../components/Modals/ProfileModal";
 import {logout} from "../../redux/reducers";
+import WebViewClass from '../../components/WebView';
+import QRCodeClass from "../../components/QRCode";
 
 class More extends Component {
   constructor(props) {
@@ -17,6 +19,8 @@ class More extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
+        isWebViewVisible: false,
+        isQRVisible: false
     };
   }
 
@@ -46,7 +50,7 @@ class More extends Component {
 
 
   render() {
-    const {orientation} = this.state;
+    const {orientation, isWebViewVisible, isQRVisible} = this.state;
     const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
@@ -87,6 +91,7 @@ class More extends Component {
               title={translate('pages.xchat.invitation')}
                 isFontAwesome={true}
                 isInvitation={true}
+                onPressQR={() => this.setState({isQRVisible: true})}
             />
             <SettingsItem
                 icon_name={'star'}
@@ -118,12 +123,22 @@ class More extends Component {
                     title={translate('pages.xchat.customerSupport')}
                     isFontAwesome={true}
                     isCustomerSupport={true}
-                    // onPress={() => handleOpen}
+                    onPress={() => this.setState({isWebViewVisible: true})}
                 />
                 <SettingsItem
                     icon_name={'sign-out-alt'}
                     title={translate('header.logout')}
                     onPress={() => this.actionLogout()}
+                />
+                <WebViewClass
+                modalVisible={isWebViewVisible}
+                url={supportUrl}
+                closeModal={() => this.setState({isWebViewVisible: false})}
+                />
+
+                <QRCodeClass
+                    modalVisible={isQRVisible}
+                    closeModal={() => this.setState({isQRVisible: false})}
                 />
 
           </ScrollView>

@@ -90,6 +90,8 @@ export const Colors = {
   dark_gray: '#2c3e50',
     dark_orange: '#e15b63',
     light_gray: '#909093',
+    gradient_4: '#ff62a5eb',
+    gradient_5: '#ff8960eb'
 };
 
 export const Fonts = {
@@ -145,3 +147,6 @@ export const languageArray =[
         language_display: '한국어'
     },
 ]
+
+export const supportUrl = 'https://www.touku.net/#/support/'
+export const registerUrl = 'https://www.touku.net/#/register/'

@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 import * as RNLocalize from "react-native-localize";
 import {Theme} from "react-native-paper/src/types";
 import Toast from "../Toast";
+
 class SettingsItem extends Component {
   constructor(props) {
     super(props);
@@ -57,6 +58,10 @@ class SettingsItem extends Component {
           type: 'positive'
       });
   }
+
+    showQR(){
+      this.props.onPressQR()
+    }
 
 render() {
       const {title, icon_name,
@@ -146,10 +151,16 @@ render() {
             {isInvitation &&
             <View style={styles.vwRightInv}>
                 <Text style={[styles.txtInvitation]}>{userData.invitation_code}</Text>
-                <TouchableOpacity onPress={() => this.copyCode()}>
+                <TouchableOpacity
+                    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                    onPress={() => this.copyCode()}>
                     <Image style={{marginEnd:10, height: 13, width: 13}} source={Icons.icon_copy}/>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                    onPress={() => this.showQR()}>
                 <Image style={{height: 13, width: 13}} source={Icons.icon_download}/>
+                </TouchableOpacity>
 
             </View>
             }
@@ -228,6 +239,7 @@ SettingsItem.propTypes = {
     isChannelMode: PropTypes.bool,
     selectedLanguage: PropTypes.string,
     scrollToBottom: PropTypes.func,
+    onPressQR: PropTypes.func,
     isInvitation: PropTypes.bool,
     isToukuPoints: PropTypes.bool,
     isCustomerSupport: PropTypes.bool,
@@ -244,6 +256,7 @@ SettingsItem.defaultProps = {
     isChannelMode: false,
     selectedLanguage: 'English',
     scrollToBottom: null,
+    onPressQR: null,
     isInvitation: false,
     isToukuPoints: false,
     isCustomerSupport: false,
