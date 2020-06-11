@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  FlatList
+  FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -18,6 +18,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {createFilter} from 'react-native-search-filter';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
@@ -32,10 +33,12 @@ import FriendListItem from '../../components/ListItems/FriendListItem';
 import GroupListItem from '../../components/ListItems/GroupListItem';
 import NoData from '../../components/NoData';
 import {ListLoader} from '../../components/Loaders';
-import {socket, websocket} from '../../helpers/api';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getUserProfile} from '../../redux/reducers/userReducer';
+import {
+  getUserProfile,
+  getConfiguration,
+} from '../../redux/reducers/userReducer';
 import {
   getUserChannels,
   getFollowingChannels,
@@ -50,6 +53,7 @@ import {
   getFriendRequests,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
+import SingleSocket from '../../helpers/SingleSocket';
 
 class Home extends Component {
   constructor(props) {
@@ -67,7 +71,7 @@ class Home extends Component {
 
   static navigationOptions = () => {
     return {
-        headerShown: false,
+      headerShown: false,
     };
   };
 
@@ -76,8 +80,9 @@ class Home extends Component {
     this.setState({orientation: initial});
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     this.props.getUserProfile();
+    this.props.getConfiguration();
     Orientation.addOrientationListener(this._orientationDidChange);
 
     this.props.getUserChannels();
@@ -86,36 +91,20 @@ class Home extends Component {
     this.props.getUserFriends();
     this.props.getFriendRequests();
 
-    // socket.connect();
-
-    // socket.on('connect', function (e) {
-    //   alert('Socket Connected');
-    // });
-    // socket.on('connect_error', (err) => {
-    //   // alert(err);
-    // });
-
-    websocket.onopen = () => {
-      // connection opened
-      // ws.send('something'); // send a message
-      // alert('connected');
-    };
-
-    websocket.onmessage = (e) => {
-      // a message was received
-      console.log(e.data);
-    };
-
-    websocket.onerror = (e) => {
-      // an error occurred
-      // alert(JSON.stringify(e));
-    };
-
-    websocket.onclose = (e) => {
-      // connection closed
-      console.log(e.code, e.reason);
-    };
-  }
+    var basicAuth = await AsyncStorage.getItem('userToken');
+    var socialAuth = await AsyncStorage.getItem('socialToken');
+    if (socialAuth && socialAuth != null) {
+      SingleSocket.create({
+        user_id: this.props.userData.id,
+        token: socialAuth,
+      });
+    } else if (basicAuth && basicAuth != null) {
+      SingleSocket.create({
+        user_id: this.props.userData.id,
+        token: basicAuth,
+      });
+    }
+  };
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
@@ -415,6 +404,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   getUserProfile,
+  getConfiguration,
   getUserChannels,
   getFollowingChannels,
   setCurrentChannel,

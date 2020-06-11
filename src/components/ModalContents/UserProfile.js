@@ -23,8 +23,13 @@ import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
 import {getAvatar, getImage} from '../../utils';
 import UploadUserImageModal from '../Modals/UploadUserImageModal';
+import S3uploadService from '../../helpers/S3uploadService';
+import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
-import {S3uploadService} from '../../helpers/s3upload.service';
+import {
+  changeBackgroundImage,
+  getConfiguration,
+} from '../../redux/reducers/userReducer';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -34,8 +39,15 @@ class UserProfile extends Component {
       isChangeEmailModalVisible: false,
       isChangeNameModalVisible: false,
       isUploadUserImageModalVisible: false,
-      backgroundImagePath: {},
+      backgroundImagePath: {uri: this.props.configuration.background_image},
+      uploadLoading: false,
     };
+
+    this.S3uploadService = new S3uploadService();
+  }
+
+  componentDidMount() {
+    this.props.getConfiguration();
   }
 
   onShowChangePassModal() {
@@ -54,7 +66,7 @@ class UserProfile extends Component {
     this.setState({isUploadUserImageModalVisible: true});
   }
 
-  chooseBackgroundImage = () => {
+  chooseBackgroundImage = async () => {
     var options = {
       title: 'Choose Option',
       storageOptions: {
@@ -62,56 +74,29 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, (response) => {
+    ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
-        let source = response;
-
-        console.log('source library', response)
-
         // You can also display the image using data:
-        // let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
+          uploadLoading: true,
           backgroundImagePath: source,
         });
 
-        // let Images = ['data:image/png;base64,' + source.data];
-        // const imageFiles = await this.S3uploadService.uploadImagesOnS3Bucket(
-        //   Images,
-        // );
-        // alert(JSON.stringify(imageFiles));
+        let file = source.uri;
+        let files = [file];
+        const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+          files,
+        );
 
-        const file = {
-          uri: response.origURL,
-          name: 'image.jpg',
-          type: 'image/jpeg',
+        let bgData = {
+          // background_image: uploadedImages.image[0].image,
+          background_image: uploadedImages.image[0].thumbnail,
         };
-
-        const options = {
-          keyPrefix: '/',
-          bucket: 'angelium-media',
-          region: environment.s3BucketConfig.region,
-          accessKey: environment.s3BucketConfig.accessKeyId,
-          secretKey: environment.s3BucketConfig.secretAccessKey,
-          successActionStatus: 201,
-        };
-
-        RNS3.put(file, options).then((response) => {
-          console.log('s3upload response...... ' + JSON.stringify(response));
-          if (response.status !== 201) {
-            alert(response.status);
-          }
-          /**
-           * {
-           *   postResponse: {
-           *     bucket: "your-bucket",
-           *     etag : "9f620878e06d28774406017480a59fd4",
-           *     key: "uploads/image.png",
-           *     location: "https://your-bucket.s3.amazonaws.com/uploads%2Fimage.png"
-           *   }
-           * }
-           */
+        this.props.changeBackgroundImage(bgData).then((res) => {
+          this.setState({uploadLoading: false});
         });
       }
     });
@@ -125,6 +110,7 @@ class UserProfile extends Component {
       isChangeNameModalVisible,
       isUploadUserImageModalVisible,
       backgroundImagePath,
+      uploadLoading,
     } = this.state;
     return (
       <View style={styles.Wrapper}>
@@ -137,35 +123,46 @@ class UserProfile extends Component {
             locations={[0.3, 0.5, 0.8, 1, 1]}
             colors={['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150']}
             style={{height: 150}}>
-            <ImageBackground
-              style={styles.firstView}
-              source={getImage(
-                'data:image/jpeg;base64,' + backgroundImagePath.data,
-              )}>
-              <View style={styles.firstBottomView}>
-                <View
-                  style={[
-                    globalStyles.iconStyle,
-                    {
-                      backgroundColor: Colors.white,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 12,
-                      borderWidth: 1,
-                    },
-                  ]}>
-                  <ClickableImage
-                    source={Icons.icon_camera}
-                    size={14}
-                    onClick={this.chooseBackgroundImage.bind(this)}
-                  />
+            {uploadLoading ? (
+              <ListLoader />
+            ) : (
+              <View style={{flex: 1}}>
+                {backgroundImagePath.uri != '' ? (
+                  <ImageLoader
+                    style={styles.firstView}
+                    source={getImage(backgroundImagePath.uri)}>
+                    <TouchableOpacity onPress={onRequestClose}>
+                      <Image
+                        source={Icons.icon_close}
+                        style={styles.iconClose}
+                      />
+                    </TouchableOpacity>
+                  </ImageLoader>
+                ) : null}
+                <View style={styles.firstBottomView}>
+                  <View
+                    style={[
+                      globalStyles.iconStyle,
+                      {
+                        backgroundColor: Colors.white,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 12,
+                        borderWidth: 1,
+                      },
+                    ]}>
+                    <ClickableImage
+                      source={Icons.icon_camera}
+                      size={14}
+                      onClick={this.chooseBackgroundImage.bind(this)}
+                    />
+                  </View>
                 </View>
               </View>
-
-              <TouchableOpacity onPress={onRequestClose}>
-                <Image source={Icons.icon_close} style={styles.iconClose} />
-              </TouchableOpacity>
-            </ImageBackground>
+            )}
+            <TouchableOpacity onPress={onRequestClose}>
+              <Image source={Icons.icon_close} style={styles.iconClose} />
+            </TouchableOpacity>
           </LinearGradient>
 
           <View style={{alignSelf: 'center', marginTop: -40}}>
@@ -351,11 +348,11 @@ const styles = StyleSheet.create({
   },
   firstView: {
     height: 150,
-    alignItems: 'flex-end',
-    padding: 10,
+    width: '100%',
   },
   firstBottomView: {
     bottom: 0,
+    right: 0,
     position: 'absolute',
     padding: 10,
   },
@@ -369,6 +366,9 @@ const styles = StyleSheet.create({
     height: 12,
     resizeMode: 'contain',
     tintColor: Colors.white,
+    top: 10,
+    right: 10,
+    position: 'absolute',
   },
   textNormal: {
     textAlign: 'left',
@@ -387,9 +387,13 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
+    configuration: state.userReducer.configuration,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  changeBackgroundImage,
+  getConfiguration,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
