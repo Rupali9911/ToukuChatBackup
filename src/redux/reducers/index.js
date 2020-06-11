@@ -10,6 +10,7 @@ import forgotPassReducer from './forgotPassReducer';
 import channelReducer from './channelReducer';
 import groupReducer from './groupReducer';
 import friendReducer from './friendReducer';
+import configurationReducer from './configurationReducer';
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
@@ -22,6 +23,7 @@ const allReducers = combineReducers({
   channelReducer: channelReducer,
   groupReducer: groupReducer,
   friendReducer: friendReducer,
+    configurationReducer:configurationReducer,
 });
 
 export const logout = (user) => (dispatch, getState) =>

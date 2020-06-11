@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {Images, Icons, Colors, supportUrl} from '../../constants';
+import {Images, Icons, Colors, supportUrl, xanaUrl} from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from "../../components/Modals/ProfileModal";
 import {logout} from "../../redux/reducers";
@@ -20,7 +20,8 @@ class More extends Component {
     this.state = {
       orientation: 'PORTRAIT',
         isWebViewVisible: false,
-        isQRVisible: false
+        isQRVisible: false,
+        isSupport: false
     };
   }
 
@@ -50,7 +51,7 @@ class More extends Component {
 
 
   render() {
-    const {orientation, isWebViewVisible, isQRVisible} = this.state;
+    const {orientation, isWebViewVisible, isQRVisible, isSupport} = this.state;
     const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
@@ -104,6 +105,7 @@ class More extends Component {
               title={translate('common.goToXana')}
                 onPress={() => console.log('Create New Group')}
                 isImage={Icons.xana_app}
+                onPress={() => this.setState({isWebViewVisible: true, isSupport: false})}
             />
             <Section />
                 <SettingsItem
@@ -123,7 +125,7 @@ class More extends Component {
                     title={translate('pages.xchat.customerSupport')}
                     isFontAwesome={true}
                     isCustomerSupport={true}
-                    onPress={() => this.setState({isWebViewVisible: true})}
+                    onPress={() => this.setState({isWebViewVisible: true, isSupport: true})}
                 />
                 <SettingsItem
                     icon_name={'sign-out-alt'}
@@ -132,7 +134,7 @@ class More extends Component {
                 />
                 <WebViewClass
                 modalVisible={isWebViewVisible}
-                url={supportUrl}
+                url={isSupport ? supportUrl : xanaUrl}
                 closeModal={() => this.setState({isWebViewVisible: false})}
                 />
 
