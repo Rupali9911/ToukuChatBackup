@@ -13,21 +13,24 @@ export default class GroupChatMessageImage extends Component {
   render() {
     const { message, isUser, isPortrait, orientation } = this.props;
     return (
-      <View
-        style={[
-          styles.imageContainer,
-          !isUser && { marginLeft: 5 },
-          isPortrait && {
-            minHeight: orientation === 'PORTRAIT' ? height * 0.4 : height * 1.5,
-          },
-        ]}
-      >
-        <Image
-          source={{ uri: message.message_body.text }}
-          style={isPortrait ? styles.imagePortrait : styles.image}
-          resizeMode={'cover'}
-        />
-      </View>
+      message.message_body && (
+        <View
+          style={[
+            styles.imageContainer,
+            !isUser && { marginLeft: 5 },
+            isPortrait && {
+              minHeight:
+                orientation === 'PORTRAIT' ? height * 0.4 : height * 1.5,
+            },
+          ]}
+        >
+          <Image
+            source={{ uri: message.message_body.text }}
+            style={isPortrait ? styles.imagePortrait : styles.image}
+            resizeMode={'cover'}
+          />
+        </View>
+      )
     );
   }
 }
@@ -42,7 +45,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 10,
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.white,
   },
   imagePortrait: {
     flex: 1,

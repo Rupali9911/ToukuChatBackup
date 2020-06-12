@@ -29,10 +29,6 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (replyMessage) => {
-    console.log(
-      'GroupChatMessageBubble -> renderReplyMessage -> replyMessage',
-      replyMessage
-    );
     return (
       <View
         style={{

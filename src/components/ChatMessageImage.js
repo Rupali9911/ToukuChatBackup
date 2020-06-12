@@ -12,22 +12,26 @@ export default class ChatMessageImage extends Component {
 
   render() {
     const { message, isUser, isPortrait, orientation } = this.props;
+
     return (
-      <View
-        style={[
-          styles.imageContainer,
-          !isUser && { marginLeft: 5 },
-          isPortrait && {
-            minHeight: orientation === 'PORTRAIT' ? height * 0.4 : height * 1.5,
-          },
-        ]}
-      >
-        <Image
-          source={{ uri: message.message_body }}
-          style={isPortrait ? styles.imagePortrait : styles.image}
-          resizeMode={'cover'}
-        />
-      </View>
+      message.message_body && (
+        <View
+          style={[
+            styles.imageContainer,
+            !isUser && { marginLeft: 5 },
+            isPortrait && {
+              minHeight:
+                orientation === 'PORTRAIT' ? height * 0.4 : height * 1.5,
+            },
+          ]}
+        >
+          <Image
+            source={{ uri: message.message_body }}
+            style={isPortrait ? styles.imagePortrait : styles.image}
+            resizeMode={'cover'}
+          />
+        </View>
+      )
     );
   }
 }
