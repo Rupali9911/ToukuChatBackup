@@ -78,7 +78,6 @@ class UserProfile extends Component {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
-        // You can also display the image using data:
         let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           uploadLoading: true,
