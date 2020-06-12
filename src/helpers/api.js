@@ -3,27 +3,45 @@ import AsyncStorage from '@react-native-community/async-storage';
 import io from 'socket.io-client';
 import NavigationService from '../navigation/NavigationService';
 import Toast from '../components/Toast';
-import SingleSocket from './SingleSocket';
 
 /* switch this for testing on staging or production */
 export const staging = true;
-export const websocket = new WebSocket(
-  'wss://touku.angelium.net/ws/v1/single-socket/9795?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MTMzNDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.LUr-PtbJGyUISMG7_pYd6sWGoRA4UBTibj1uBeR0gZM',
-);
+
+//Staging Socket URL
+const socketStaging = io.connect('wss://touku.angelium.net/ws/v1', {
+  reconnection: false,
+  reconnectionDelay: 500,
+  jsonp: false,
+  reconnectionAttempts: Infinity,
+  transports: ['websocket'],
+  forceNew: true,
+});
+//Live Socket URL
+const socketLive = io.connect('wss://api-touku.angelium.net/ws/v1', {
+  reconnection: false,
+  reconnectionDelay: 500,
+  jsonp: false,
+  reconnectionAttempts: Infinity,
+  transports: ['websocket'],
+  forceNew: true,
+});
+
+export const socket = staging ? socketStaging : socketLive;
+export const websocket = new WebSocket('wss://touku.angelium.net/ws/v1');
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
 //Live API URL
 export const apiRootLive = 'https://api-touku.angelium.net/api';
 
-//Staging Socket URL
-const socketURLStaging = 'wss://touku.angelium.net/ws/v1';
-const socketURLLive = 'wss://api-touku.angelium.net/ws/v1';
-
 export const apiRoot = staging ? apiRootStaging : apiRootLive;
-export const socketUrl = staging ? socketURLStaging : socketURLLive;
 export const userAgent =
   'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1';
+
+
+export const GET_USER_CONFIG = apiRoot + '/xchat/configuration/'
+export const UPDATE_CHANNEL_MODE = apiRoot + '/xchat/update-channel-mode/'
+
 
 export const client = axios.create({
   baseURL: apiRoot,
@@ -43,17 +61,9 @@ client.interceptors.request.use(
     if (socialAuth && socialAuth != null) {
       config.headers.Authorization = `JWT ${socialAuth}`;
       //console.log("Token", config.headers.Authorization);
-      // SingleSocket.create({
-      //   user_id: 9795,
-      //   token: socialAuth,
-      // });
     } else if (basicAuth && basicAuth != null) {
       config.headers.Authorization = `JWT ${basicAuth}`;
       //console.log("Token", config.headers.Authorization);
-      // SingleSocket.create({
-      //   user_id: 9795,
-      //   token: basicAuth,
-      // });
     }
     return config;
   },
@@ -65,7 +75,7 @@ client.interceptors.request.use(
 // Add a response interceptor
 client.interceptors.response.use(
   function (response) {
-    //alert(JSON.stringify(response));
+     //alert(JSON.stringify(response));
     if (response.data) {
       return response.data;
     } else if (response.status === 401) {

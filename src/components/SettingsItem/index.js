@@ -3,15 +3,14 @@ import {View, Text, StyleSheet, Image, TouchableOpacity, Clipboard} from 'react-
 import PropTypes from 'prop-types';
 import {globalStyles} from '../../styles';
 import {Icons, Colors, Fonts, languageArray} from '../../constants';
-import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {Switch} from "react-native-switch";
 import {Menu} from "react-native-paper";
 import {setAppLanguage, setI18nConfig, translate, userLanguage} from "../../redux/reducers/languageReducer";
+import {setChannelMode, updateChannelMode} from "../../redux/reducers/configurationReducer";
 import {connect} from 'react-redux';
-import * as RNLocalize from "react-native-localize";
-import {Theme} from "react-native-paper/src/types";
+import {showToast} from '../../utils'
+import SwitchCustom from '../SwitchCustom'
 import Toast from "../Toast";
 
 class SettingsItem extends Component {
@@ -20,17 +19,20 @@ class SettingsItem extends Component {
     this.state = {
         isLanguageSelected: false,
         selectedLanguage: 'English',
-        arrLanguage: languageArray
+        arrLanguage: languageArray,
+        channelMode: this.props.userConfig.channel_mode
     };
   }
     async componentDidMount() {
+      const {selectedLanguageItem} = this.props
         await Promise.all(
             languageArray.map((item) => {
-                if (this.props.selectedLanguageItem.language_name === item.language_name) {
+                if (selectedLanguageItem.language_name === item.language_name) {
                     this.setState({selectedLanguage: item.language_display})
                 }
             })
         );
+
     }
 
     onPressLanguage(){
@@ -52,21 +54,35 @@ class SettingsItem extends Component {
 
   copyCode(){
       Clipboard.setString(this.props.userData.invitation_code)
-      Toast.show({
-          title: translate('pages.setting.referralLink'),
-          text: translate('pages.setting.toastr.linkCopiedSuccessfully'),
-          type: 'positive'
-      });
+      showToast(translate('pages.setting.referralLink'), translate('pages.setting.toastr.linkCopiedSuccessfully'), 'positive' )
   }
 
     showQR(){
       this.props.onPressQR()
     }
 
+    updateChannelM(value){
+        this.setState({channelMode: value})
+        let  updateChannelModeParam= {
+            channel_mode: value,
+        };
+        this.props
+            .updateChannelMode(updateChannelModeParam)
+            .then((res) => {
+                if (value === true){
+                    showToast(translate('pages.xchat.channelModeText'), translate('pages.xchat.toastr.channelModeToastr'), 'positive' )
+                }
+                //this.props.setChannelMode(value)
+            })
+            .catch((err) => {
+                showToast(translate('pages.xchat.channelModeText'), translate('common.somethingWentWrong'), 'primary' )
+            });
+    }
+
 render() {
       const {title, icon_name,
           onPress, isImage, isFontAwesome, isLanguage, isChannelMode, userData, isInvitation, isToukuPoints, isCustomerSupport} = this.props;
-   const {isLanguageSelected, arrLanguage, selectedLanguage} = this.state
+   const {isLanguageSelected, arrLanguage, selectedLanguage, channelMode} = this.state
 
     const conditionalRender = ()=>{
         if (isImage){
@@ -125,26 +141,9 @@ render() {
             </Menu>
             }
             { isChannelMode &&
-                <Switch
-                containerStyle={{
-                borderWidth: 2,
-                paddingVertical: 10,
-                borderColor: Colors.gradient_2}}
-                value={false}
-                onValueChange={(value) => console.log('SwitchValue', value)}
-                circleSize={18}
-                barHeight={20}
-                innerCircleStyle={{
-                borderColor: Colors.gradient_1}}
-                circleBorderWidth={0}
-                backgroundActive={'#FFDBE9'}
-                backgroundInactive={Colors.white}
-                circleActiveColor={Colors.gradient_1}
-                circleInActiveColor={Colors.gradient_1}
-                switchLeftPx={2.2}
-                switchRightPx={1.7}
-                switchWidthMultiplier={2.5}
-                useNativeDriver={false}
+                <SwitchCustom
+                    value={channelMode}
+                    onValueChange={(value) => this.updateChannelM(value)}
                 />
             }
 
@@ -266,12 +265,15 @@ const mapStateToProps = (state) => {
     return {
         selectedLanguageItem: state.languageReducer.selectedLanguageItem,
         userData: state.userReducer.userData,
+        userConfig: state.configurationReducer.userConfig,
     };
 };
 
 const mapDispatchToProps = {
     setAppLanguage,
     userLanguage,
+    updateChannelMode,
+    setChannelMode
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsItem);

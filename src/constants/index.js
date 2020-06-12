@@ -150,3 +150,5 @@ export const languageArray =[
 
 export const supportUrl = 'https://www.touku.net/#/support/'
 export const registerUrl = 'https://www.touku.net/#/register/'
+export const xanaUrl = 'https://www.xana.net/#/login'
+

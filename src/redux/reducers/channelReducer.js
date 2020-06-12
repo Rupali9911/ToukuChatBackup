@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
@@ -200,7 +200,7 @@ export const getUserChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
     client
-      .get(`/xchat/get-my-channel/?start=0`)
+      .get(`/xchat/get-my-channel/?start=10`)
       .then((res) => {
         if (res.conversations) {
           dispatch(getUserChannelsSuccess(res.conversations));
@@ -345,6 +345,7 @@ export const sendChannelMessage = (data) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
+        alert(JSON.stringify(err));
         reject(err);
       });
   });
