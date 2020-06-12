@@ -15,14 +15,9 @@ export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
 export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
 export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
 
-export const GET_CONFIGURATION_REQUEST = 'GET_CONFIGURATION_REQUEST';
-export const GET_CONFIGURATION_SUCCESS = 'GET_CONFIGURATION_SUCCESS';
-export const GET_CONFIGURATION_FAIL = 'GET_CONFIGURATION_FAIL';
-
 const initialState = {
   loading: false,
   userData: {},
-  configuration: {},
 };
 
 export default function (state = initialState, action) {
@@ -77,24 +72,6 @@ export default function (state = initialState, action) {
         loading: false,
       };
     case GET_CHANGE_PASSWORD_FAIL:
-      return {
-        ...state,
-        loading: false,
-      };
-
-    //Get Configuration
-    case GET_CONFIGURATION_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case GET_CONFIGURATION_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        configuration: action.payload,
-      };
-    case GET_CONFIGURATION_FAIL:
       return {
         ...state,
         loading: false,
@@ -299,48 +276,6 @@ export const changeEmail = (data) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        reject(err);
-      });
-  });
-
-export const changeBackgroundImage = (data) => (dispatch) =>
-  new Promise(function (resolve, reject) {
-    client
-      .post(`/xchat/configuration/`, data)
-      .then((res) => {
-        dispatch(getConfiguraionSuccess(res));
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-
-//Get Configuration
-const getConfiguraionRequest = () => ({
-  type: GET_CONFIGURATION_REQUEST,
-});
-
-const getConfiguraionSuccess = (data) => ({
-  type: GET_CONFIGURATION_SUCCESS,
-  payload: data,
-});
-
-const getConfiguraionFailure = () => ({
-  type: GET_CONFIGURATION_FAIL,
-});
-
-export const getConfiguration = () => (dispatch) =>
-  new Promise(function (resolve, reject) {
-    dispatch(getConfiguraionRequest());
-    client
-      .get(`/xchat/configuration/`)
-      .then((res) => {
-        dispatch(getConfiguraionSuccess(res));
-        resolve(res);
-      })
-      .catch((err) => {
-        dispatch(getConfiguraionFailure());
         reject(err);
       });
   });

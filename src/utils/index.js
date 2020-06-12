@@ -1,5 +1,6 @@
 import {Dimensions, Platform} from 'react-native';
 import {Images, Icons} from '../constants';
+import Toast from "../components/Toast";
 
 export function isPortrait() {
   const dim = Dimensions.get('screen');
@@ -54,3 +55,12 @@ export function getImage(source) {
     return {uri: source};
   }
 }
+
+export function showToast(title, text, type) {
+    Toast.show({
+        title: title,
+        text: text,
+        type: type
+    });
+}
+

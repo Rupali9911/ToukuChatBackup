@@ -150,7 +150,7 @@ class ChangeEmailModal extends Component {
         .catch((err) => {
           Toast.show({
             title: translate('pages.xchat.changeEmail'),
-            text: 'Please try again.',
+            text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
         });

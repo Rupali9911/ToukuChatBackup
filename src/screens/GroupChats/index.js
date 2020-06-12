@@ -32,6 +32,9 @@ class GroupChats extends Component {
       showDeleteGroupConfirmationModal: false,
       isMyGroup: false,
       conversation: [],
+      translatedMessage: null,
+      translatedMessageId: null,
+      showMessageDeleteConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -92,6 +95,19 @@ class GroupChats extends Component {
       return;
     }
     if (isReply) {
+      let groupMessage = {
+        group: this.props.currentGroup.group_id,
+        local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+        mentions: [],
+        message_body: newMessageText,
+        msg_type: 'text',
+        reply_to: repliedMessage.msg_id,
+      };
+
+      this.props.sendGroupMessage(groupMessage).then((res) => {
+        // alert(JSON.stringify(res));
+        this.getGroupConversation();
+      });
     } else {
       let groupMessage = {
         group: this.props.currentGroup.group_id,
@@ -102,7 +118,7 @@ class GroupChats extends Component {
       };
 
       this.props.sendGroupMessage(groupMessage).then((res) => {
-        alert(JSON.stringify(res));
+        // alert(JSON.stringify(res));
         this.getGroupConversation();
       });
     }
@@ -174,7 +190,12 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({ conversation: res.data });
+          this.setState({ conversation: res.data }, () => {
+            console.log(
+              'GroupChats -> getGroupConversation -----------------> this.state.conversation',
+              this.state.conversation
+            );
+          });
         }
       })
       .catch((err) => {
@@ -270,6 +291,44 @@ class GroupChats extends Component {
       });
   };
 
+  toggleMessageDeleteConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showMessageDeleteConfirmationModal: !prevState.showMessageDeleteConfirmationModal,
+    }));
+  };
+
+  onCancelMessageDelete = () => {
+    console.log('GroupChats -> onCancelMessageDelete -> onCancelMessageDelete');
+    this.toggleMessageDeleteConfirmationModal();
+  };
+
+  onConfirmMessageDelete = () => {
+    console.log(
+      'GroupChats -> onConfirmMessageDelete -> onConfirmMessageDelete'
+    );
+    this.toggleMessageDeleteConfirmationModal();
+  };
+
+  onDeleteMessagePressed = (messageId) => {
+    console.log('ChannelChats -> onDeletePressed -> message', messageId);
+    this.setState({ showMessageDeleteConfirmationModal: true });
+  };
+
+  onMessageTranslate = (message) => {
+    console.log('onMessageTranslate -> message', message);
+    this.setState({
+      translatedMessageId: message.msg_id,
+      translatedMessage: '1234',
+    });
+  };
+
+  onMessageTranslateClose = () => {
+    this.setState({
+      translatedMessageId: null,
+      translatedMessage: null,
+    });
+  };
+
   render() {
     const {
       newMessageText,
@@ -280,6 +339,9 @@ class GroupChats extends Component {
       conversation,
       isReply,
       repliedMessage,
+      showMessageDeleteConfirmationModal,
+      translatedMessage,
+      translatedMessageId,
     } = this.state;
     const { currentGroup, groupLoading } = this.props;
     return (
@@ -313,6 +375,11 @@ class GroupChats extends Component {
             repliedMessage={repliedMessage}
             isReply={isReply}
             cancelReply={this.cancelReply.bind(this)}
+            onDelete={(id) => this.onDeleteMessagePressed(id)}
+            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onMessageTranslateClose={this.onMessageTranslateClose}
+            translatedMessage={translatedMessage}
+            translatedMessageId={translatedMessageId}
           />
         )}
         <ConfirmationModal
@@ -330,6 +397,15 @@ class GroupChats extends Component {
           onConfirm={this.onConfirmDeleteGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.groupWillBeDeleted')}
+        />
+
+        <ConfirmationModal
+          visible={showMessageDeleteConfirmationModal}
+          onCancel={this.onCancelMessageDelete.bind(this)}
+          onConfirm={this.onConfirmMessageDelete.bind(this)}
+          orientation={orientation}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toLeaveThisChannel')}
         />
       </ImageBackground>
     );

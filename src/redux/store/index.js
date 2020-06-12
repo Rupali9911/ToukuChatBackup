@@ -18,6 +18,7 @@ const persistConfig = {
     'channelReducer',
     'groupReducer',
     'friendReducer',
+      'configurationReducer'
   ],
 };
 

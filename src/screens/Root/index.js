@@ -3,7 +3,6 @@ import {View, ViewPropTypes, Text} from 'react-native';
 import PropTypes from 'prop-types';
 import Toast from '../../components/Toast';
 import {ProfileModal} from '../../components/Modals';
-import SingleSocket from '../../helpers/SingleSocket';
 
 class Root extends Component {
   render() {
@@ -20,12 +19,6 @@ class Root extends Component {
         <ProfileModal
           ref={(c) => {
             if (c) ProfileModal.userProfleInstance = c;
-          }}
-        />
-
-        <SingleSocket
-          ref={(c) => {
-            if (c) SingleSocket.singleSocketInstance = c;
           }}
         />
       </View>
