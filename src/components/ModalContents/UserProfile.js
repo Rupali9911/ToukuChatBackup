@@ -66,12 +66,7 @@ class UserProfile extends Component {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
-        let source = response;
-
-        console.log('source library', response)
-
-        // You can also display the image using data:
-        // let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           backgroundImagePath: source,
         });
