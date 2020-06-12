@@ -1,4 +1,4 @@
-import {client, GET_USER_CONFIG, UPDATE_CHANNEL_MODE} from '../../helpers/api';
+import {client, GET_USER_CONFIG, UPDATE_CHANNEL_MODE, GET_TOUKU_POINTS} from '../../helpers/api';
 import {wSetChannelMode} from '../utility/worker';
 
 export const SET_USER_CONFIGURATION = 'SET_USER_CONFIGURATION';
@@ -64,13 +64,12 @@ const setUserConfig = (data) => ({
 });
 
 // set channel mode
-export const setChannelMode = (state, {channelMode}) => {
-  console('setChannelMode called', channelMode, state.userConfig);
-  const updatedUserConfig = wSetChannelMode(state.userConfig, channelMode);
-  //return state.merge({ userConfig: updatedUserConfig })
-  console('updatedUserConfig', updatedUserConfig);
-  dispatch(setUserConfig(updatedUserConfig));
-};
+export const setChannelMode = (userConfig, channelMode) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+      userConfig.channel_mode = channelMode
+      dispatch(setUserConfig(userConfig));
+      resolve(userConfig);
+})
 
 //Get User Config
 export const getUserConfiguration = () => (dispatch) =>
@@ -78,7 +77,6 @@ export const getUserConfiguration = () => (dispatch) =>
     client
       .get(GET_USER_CONFIG)
       .then((res) => {
-        console.log('res /xchat/configuration/', res);
         dispatch(setUserConfig(res));
         resolve(res);
       })
@@ -114,3 +112,17 @@ export const changeBackgroundImage = (data) => (dispatch) =>
         reject(err);
       });
   });
+
+export const getToukuPoints = (data) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        client
+            .get(GET_TOUKU_POINTS, data)
+            .then((res) => {
+              console.log('GET_TOUKU_POINTS called', res)
+                //dispatch(setUserConfig(res));
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });

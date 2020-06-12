@@ -34,12 +34,11 @@ class QRCodeClass extends Component {
 
                         <View style={{width: 250}}>
                             <LinearGradient
-                                useAngle={true}
-                                angle = {247.32}
-                                angleCenter= {{ x: 0, y: 1}}
-                                colors={[Colors.gradient_5, Colors.gradient_4]}
-                                style={styles.lgVw}
-                            >
+                                start={{x: 0.1, y: 0.7}}
+                                end={{x: 0.5, y: 0.2}}
+                                locations={[0.1, 0.6, 1]}
+                                colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+                                style={styles.lgVw}>
                                 <Text style={styles.qrTxt}>{translate('pages.setting.QRCode')}</Text>
                                 <TouchableOpacity
                                     hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}

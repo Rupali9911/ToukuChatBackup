@@ -6,6 +6,8 @@ import {connect} from 'react-redux';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getToukuPoints} from '../../redux/reducers/configurationReducer';
+import {setToukuPoints} from '../../redux/reducers/userReducer';
 import {Images, Icons, Colors, supportUrl, xanaUrl} from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from "../../components/Modals/ProfileModal";
@@ -38,7 +40,18 @@ class More extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+      this.props.navigation.addListener('willFocus', this.load)
   }
+
+    load = () => {
+        this.props.getToukuPoints().then((res) => {
+            console.log('getToukuPoints res', res)
+            if (res && res.status === true){
+                this.props.setToukuPoints(this.props.userData, 1)
+            }
+        })
+    }
+
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
@@ -157,11 +170,15 @@ const Section = (props) => {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+      userConfig: state.configurationReducer.userConfig,
+      userData: state.userReducer.userData,
   };
 };
 
 const mapDispatchToProps = {
-    logout
+    logout,
+    getToukuPoints,
+    setToukuPoints
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(More);
