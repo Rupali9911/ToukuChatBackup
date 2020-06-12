@@ -265,7 +265,17 @@ class CreateChannel extends Component {
   };
 
   onCreateChannel() {
-    const { channelName, about, about_vip, isVIP, addedFriends } = this.state;
+    const {
+      channelName,
+      about,
+      about_vip,
+      isVIP,
+      addedFriends,
+      status,
+      isPastPost,
+      vipPerMonth,
+      affiliateReward,
+    } = this.state;
     if (channelName.trim() === '') {
       Toast.show({
         title: 'Touku',
@@ -298,32 +308,48 @@ class CreateChannel extends Component {
       name: channelName,
       channel_name: 'create_new_channel',
       description: about,
-      genre: 2,
+      channel_status: status,
       members: Members,
       cover_image: null,
       cover_image_thumb: null,
       channel_picture: null,
       channel_picture_thumb: null,
       is_vip: false,
-      affiliate_follower_amount: 0,
+      show_history: isPastPost,
+      monthly_vip_fee: vipPerMonth,
+      vip_description: about_vip,
+      affiliate_percent_vip: 0,
+      affiliate_follower_amount: affiliateReward,
     };
 
     let vipChannelData = {
       name: channelName,
       channel_name: 'create_new_channel',
       description: about,
-      genre: 2,
+      channel_status: status,
       members: Members,
       cover_image: null,
       cover_image_thumb: null,
       channel_picture: null,
       channel_picture_thumb: null,
       is_vip: true,
-      monthly_vip_fee: 12,
+      show_history: isPastPost,
+      monthly_vip_fee: vipPerMonth,
       vip_description: about_vip,
-      affiliate_percent_vip: 1,
+      affiliate_percent_vip: affiliateReward,
       affiliate_follower_amount: 0,
     };
+    if (isVIP) {
+      console.log(
+        'CreateChannel -> onCreateChannel -> vipChannelData',
+        vipChannelData
+      );
+    } else {
+      console.log(
+        'CreateChannel -> onCreateChannel -> normalChannelData',
+        normalChannelData
+      );
+    }
 
     this.props
       .createNewChannel(isVIP ? vipChannelData : normalChannelData)
@@ -339,6 +365,7 @@ class CreateChannel extends Component {
         }
       })
       .catch((err) => {
+        console.log('CreateChannel -> onCreateChannel -> err', err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
