@@ -9,11 +9,17 @@ import { globalStyles } from '../../styles';
 import { Images } from '../../constants';
 import { ConfirmationModal } from '../../components/Modals';
 import { ListLoader } from '../../components/Loaders';
-import { translate } from '../../redux/reducers/languageReducer';
+import {
+  translate,
+  translateMessage,
+} from '../../redux/reducers/languageReducer';
 import {
   getPersonalConversation,
   sendPersonalMessage,
+  unFriendUser,
+  getUserFriends,
 } from '../../redux/reducers/friendReducer';
+import Toast from '../../components/Toast';
 
 class FriendChats extends Component {
   constructor(props) {
@@ -210,8 +216,38 @@ class FriendChats extends Component {
   };
 
   onConfirm = () => {
-    console.log('ChannelChats -> onConfirm -> onConfirm');
-    this.toggleConfirmationModal();
+    const payload = {
+      channel_name: `unfriend_${this.props.currentFriend.user_id}`,
+      unfriend_user_id: this.props.currentFriend.user_id,
+    };
+    console.log(
+      'FriendChats -> onConfirm -> this.props.currentFriend',
+      this.props.currentFriend
+    );
+    this.props
+      .unFriendUser(payload)
+      .then((res) => {
+        console.log('FriendChats -> onConfirm -> res', res);
+        if (res.status === true) {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.success'),
+            type: 'positive',
+          });
+          this.props.getUserFriends();
+          this.props.navigation.goBack();
+        }
+        this.toggleConfirmationModal();
+      })
+      .catch((err) => {
+        console.log('FriendChats -> onConfirm -> err', err);
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.toggleConfirmationModal();
+      });
   };
 
   // To delete message
@@ -235,10 +271,17 @@ class FriendChats extends Component {
   };
 
   onMessageTranslate = (message) => {
-    console.log('onMessageTranslate -> message', message);
-    this.setState({
-      translatedMessageId: message.id,
-      translatedMessage: '1234',
+    const payload = {
+      text: message.message_body,
+      language: this.props.selectedLanguageItem.language_name,
+    };
+    this.props.translateMessage(payload).then((res) => {
+      if (res.status === true) {
+        this.setState({
+          translatedMessageId: message.id,
+          translatedMessage: res.data,
+        });
+      }
     });
   };
 
@@ -321,12 +364,17 @@ const mapStateToProps = (state) => {
   return {
     currentFriend: state.friendReducer.currentFriend,
     chatsLoading: state.friendReducer.loading,
+    userData: state.userReducer.userData,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
 };
 
 const mapDispatchToProps = {
+  getUserFriends,
   getPersonalConversation,
   sendPersonalMessage,
+  translateMessage,
+  unFriendUser,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

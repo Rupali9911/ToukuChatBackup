@@ -6,7 +6,10 @@ import { ChatHeader } from '../../components/Headers';
 import { globalStyles } from '../../styles';
 import { Images } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
-import { translate } from '../../redux/reducers/languageReducer';
+import {
+  translate,
+  translateMessage,
+} from '../../redux/reducers/languageReducer';
 import {
   getChannelConversations,
   readAllChannelMessages,
@@ -209,17 +212,22 @@ class ChannelChats extends Component {
   };
 
   onMessageTranslate = (message) => {
-    console.log('onMessageTranslate -> message', message);
-    this.setState({
-      translatedMessageId: message.id,
-      translatedMessage: '1234',
+    const payload = {
+      text: message.message_body,
+      language: this.props.selectedLanguageItem.language_name,
+    };
+
+    this.props.translateMessage(payload).then((res) => {
+      if (res.status === true) {
+        this.setState({
+          translatedMessageId: message.id,
+          translatedMessage: res.data,
+        });
+      }
     });
   };
 
   onMessageTranslateClose = () => {
-    console.log(
-      'ChannelChats -> onMessageTranslateClose -> onMessageTranslateClose'
-    );
     this.setState({
       translatedMessageId: null,
       translatedMessage: null,
@@ -264,6 +272,7 @@ const mapStateToProps = (state) => {
     currentChannel: state.channelReducer.currentChannel,
     channelLoading: state.channelReducer.loading,
     userData: state.userReducer.userData,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
 };
 
@@ -271,6 +280,7 @@ const mapDispatchToProps = {
   getChannelConversations,
   readAllChannelMessages,
   sendChannelMessage,
+  translateMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

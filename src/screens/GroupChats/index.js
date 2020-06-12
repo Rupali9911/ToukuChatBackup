@@ -8,7 +8,10 @@ import { globalStyles } from '../../styles';
 import { Colors, Fonts, Images, Icons } from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
 import { ConfirmationModal } from '../../components/Modals';
-import { translate } from '../../redux/reducers/languageReducer';
+import {
+  translate,
+  translateMessage,
+} from '../../redux/reducers/languageReducer';
 import {
   getGroupConversation,
   getUserGroups,
@@ -18,6 +21,7 @@ import {
   setCurrentGroupMembers,
   deleteGroup,
   sendGroupMessage,
+  leaveGroup,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import { ListLoader } from '../../components/Loaders';
@@ -142,25 +146,6 @@ class GroupChats extends Component {
     });
   };
 
-  // onReply = (messageId) => {
-  //   console.log('ChannelChats -> onReply -> messageId', messageId);
-  //   const { conversations } = this.state;
-
-  //   const repliedMessage = conversations.find((item) => item.id === messageId);
-  //   this.setState(
-  //     {
-  //       isReply: true,
-  //       repliedMessage: repliedMessage,
-  //     },
-  //     () => {
-  //       console.log(
-  //         'ChannelChats -> onReply -> repliedMessage',
-  //         this.state.repliedMessage
-  //       );
-  //     }
-  //   );
-  // };
-
   cancelReply = () => {
     this.setState({
       isReply: false,
@@ -190,12 +175,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({ conversation: res.data }, () => {
-            console.log(
-              'GroupChats -> getGroupConversation -----------------> this.state.conversation',
-              this.state.conversation
-            );
-          });
+          this.setState({ conversation: res.data });
         }
       })
       .catch((err) => {
@@ -253,7 +233,31 @@ class GroupChats extends Component {
   };
 
   onConfirmLeaveGroup = () => {
-    this.toggleLeaveGroupConfirmationModal();
+    const payload = {
+      group_id: this.props.currentGroup.group_id,
+    };
+    this.props
+      .leaveGroup(payload)
+      .then((res) => {
+        if (res.status === true) {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.success'),
+            type: 'positive',
+          });
+          this.props.getUserGroups();
+          this.props.navigation.goBack();
+        }
+        this.toggleLeaveGroupConfirmationModal();
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.toggleLeaveGroupConfirmationModal();
+      });
   };
 
   //Delete Group
@@ -315,10 +319,17 @@ class GroupChats extends Component {
   };
 
   onMessageTranslate = (message) => {
-    console.log('onMessageTranslate -> message', message);
-    this.setState({
-      translatedMessageId: message.msg_id,
-      translatedMessage: '1234',
+    const payload = {
+      text: message.message_body.text,
+      language: this.props.selectedLanguageItem.language_name,
+    };
+    this.props.translateMessage(payload).then((res) => {
+      if (res.status == true) {
+        this.setState({
+          translatedMessageId: message.msg_id,
+          translatedMessage: res.data,
+        });
+      }
     });
   };
 
@@ -417,6 +428,7 @@ const mapStateToProps = (state) => {
     currentGroup: state.groupReducer.currentGroup,
     groupLoading: state.groupReducer.loading,
     userData: state.userReducer.userData,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
 };
 
@@ -428,7 +440,9 @@ const mapDispatchToProps = {
   setCurrentGroupDetail,
   setCurrentGroupMembers,
   deleteGroup,
+  leaveGroup,
   sendGroupMessage,
+  translateMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);
