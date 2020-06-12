@@ -1,6 +1,6 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import { ChatHeader } from '../../components/Headers';
 import { globalStyles } from '../../styles';
@@ -39,7 +39,6 @@ class ChannelChats extends Component {
     };
   }
 
-
   onMessageSend = () => {
     const { newMessageText, isReply, repliedMessage } = this.state;
     if (!newMessageText) {
@@ -47,11 +46,10 @@ class ChannelChats extends Component {
     }
     if (isReply) {
       let messageData = {
-        friend: this.props.currentFriend.friend,
-        local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
+        channel: this.props.currentChannel.id,
+        local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
         message_body: newMessageText,
         msg_type: 'text',
-        to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
       this.props
@@ -99,7 +97,7 @@ class ChannelChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -108,7 +106,7 @@ class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getChannelConversations() {
@@ -123,12 +121,12 @@ class ChannelChats extends Component {
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   renderConversations() {
-    const {channelLoading} = this.props;
-    const {conversations, newMessageText} = this.state;
+    const { channelLoading } = this.props;
+    const { conversations, newMessageText } = this.state;
 
     if (channelLoading) {
       return <ListLoader />;
@@ -233,7 +231,8 @@ class ChannelChats extends Component {
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentChannel.name}
           description={

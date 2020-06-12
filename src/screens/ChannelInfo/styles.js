@@ -120,7 +120,19 @@ export const channelInfoStyles = StyleSheet.create({
     fontFamily: Fonts.light,
   },
   buttonContainer: {
+    alignSelf: 'center',
     marginHorizontal: '5%',
-    width: '90%',
+    width: '50%',
+  },
+  followerDetails: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: '5%',
+  },
+  detailText: {
+    fontFamily: Fonts.regular,
+    color: Colors.orange,
+    fontSize: 16,
   },
 });
