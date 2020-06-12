@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
@@ -165,6 +165,18 @@ export const sendPersonalMessage = (message) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/send-personal-message/`, message)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const unFriendUser = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/unfriend-user/`, data)
       .then((res) => {
         resolve(res);
       })

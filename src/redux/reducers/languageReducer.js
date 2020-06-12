@@ -1,9 +1,9 @@
 import * as RNLocalize from 'react-native-localize';
 import i18n from 'i18n-js';
 import memoize from 'lodash.memoize';
-import {Icons} from '../../constants/index.js';
-import {client} from '../../helpers/api.js';
-import {translationGetters} from '../../screens/Authentication/index.js';
+import { Icons } from '../../constants/index.js';
+import { client } from '../../helpers/api.js';
+import { translationGetters } from '../../screens/Authentication/index.js';
 
 let languages = [
   'en.json?t=1588152637880',
@@ -14,7 +14,7 @@ let languages = [
 ];
 
 let languageRequests = languages.map((name) =>
-  fetch(`https://wallet.angelium.net/languages/touku/${name}`),
+  fetch(`https://wallet.angelium.net/languages/touku/${name}`)
 );
 
 // export const translationGetters = {
@@ -27,18 +27,18 @@ let languageRequests = languages.map((name) =>
 
 export const translate = memoize(
   (key, config) => i18n.t(key, config),
-  (key, config) => (config ? key + JSON.stringify(config) : key),
+  (key, config) => (config ? key + JSON.stringify(config) : key)
 );
 
 export function setI18nConfig(tag) {
-  const fallback = {languageTag: tag || 'en'};
-  const {languageTag} =
+  const fallback = { languageTag: tag || 'en' };
+  const { languageTag } =
     // RNLocalize.findBestAvailableLanguage(Object.keys(translationGetters)) ||
     fallback;
 
   translate.cache.clear();
 
-  i18n.translations = {[languageTag]: translationGetters[languageTag]()};
+  i18n.translations = { [languageTag]: translationGetters[languageTag]() };
   i18n.locale = languageTag;
 }
 
@@ -169,6 +169,18 @@ export const userLanguage = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .get(`/languages/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const translateMessage = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/chatbot/translator/`, data)
       .then((res) => {
         resolve(res);
       })

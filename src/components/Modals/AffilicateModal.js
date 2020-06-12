@@ -102,54 +102,6 @@ export default class AffilicateModal extends Component {
               isRounded={false}
             />
           </View>
-          {/* <View
-            style={{
-              flex: 0.5,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Image
-              source={Icons.icon_info}
-              style={{
-                height: '50%',
-                width: '20%',
-                tintColor: Colors.orange_light,
-              }}
-              resizeMode={'contain'}
-            />
-          </View>
-          <View
-            style={{
-              flex: 0.2,
-              flexDirection: 'row',
-              paddingHorizontal: '20%',
-            }}
-          >
-            <View style={{ flex: 0.5, marginHorizontal: 5 }}>
-              <Button
-                height={'80%'}
-                title={'Cancel'}
-                type={'secondary'}
-                onPress={onCancel}
-                isRounded={false}
-              />
-            </View>
-            <View
-              style={{
-                flex: 0.5,
-                marginHorizontal: 5,
-              }}
-            >
-              <Button
-                height={'80%'}
-                title={'Sure'}
-                type={'primary'}
-                onPress={() => onConfirm(url)}
-                isRounded={false}
-              />
-            </View>
-          </View> */}
         </View>
       </Modal>
     );
