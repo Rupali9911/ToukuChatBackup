@@ -46,9 +46,8 @@ class UploadUserImageModal extends Component {
       } else if (response.error) {
         console.log('response.error', response.error)
       } else {
-        let source = response;
         // You can also display the image using data:
-        // let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
           console.log('source from library')
         this.setState({
           filePath: source,
@@ -118,8 +117,8 @@ class UploadUserImageModal extends Component {
             />
           </LinearGradient>
           <View style={styles.container}>
-            {filePath.data === undefined ||
-            typeof filePath.data === undefined ? (
+            {filePath.uri === undefined ||
+            typeof filePath.uri === undefined || filePath.uri === '' || filePath.uri === null? (
               <TouchableOpacity
                 style={{flexDirection: 'row', alignItems: 'center'}}
                 onPress={this.chooseFile.bind(this)}>
@@ -136,8 +135,7 @@ class UploadUserImageModal extends Component {
               </TouchableOpacity>
             ) : (
               <RoundedImage
-                source={getImage(
-                  'data:image/jpeg;base64,' + this.state.filePath.data,
+                source={getImage(this.state.filePath.uri,
                 )}
                 size={80}
               />

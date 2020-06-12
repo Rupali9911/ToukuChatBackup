@@ -24,6 +24,7 @@ import {Images, Icons, Colors} from '../../constants';
 import Button from '../../components/Button';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
+import S3uploadService from '../../helpers/S3uploadService';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
@@ -43,13 +44,15 @@ class CreateGroupChat extends Component {
       addedFriends: [],
       groupNameErr: null,
 
-      filePath: {}, //For Image Picker
+      groupImagePath: {uri: null}, //For Image Picker
+      loading: false,
     };
+    this.S3uploadService = new S3uploadService();
   }
 
   static navigationOptions = () => {
     return {
-        headerShown: false,
+      headerShown: false,
     };
   };
 
@@ -88,7 +91,7 @@ class CreateGroupChat extends Component {
         // You can also display the image using data:
         let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
-          filePath: source,
+          groupImagePath: source,
         });
       }
     });
@@ -114,8 +117,8 @@ class CreateGroupChat extends Component {
     }
   }
 
-  onCreatePress() {
-    const {groupName, note, addedFriends} = this.state;
+  async onCreatePress() {
+    const {groupName, note, addedFriends, groupImagePath} = this.state;
     if (groupName.trim() === '') {
       this.setState({groupNameErr: 'messages.required'});
       Toast.show({
@@ -130,33 +133,71 @@ class CreateGroupChat extends Component {
         type: 'primary',
       });
     } else {
-      let groupData = {
-        company_name: '',
-        cover_image: '',
-        cover_image_thumb: '',
-        description: note,
-        email: '',
-        genre: '',
-        greeting_text: '',
-        group_members: addedFriends,
-        group_picture: null,
-        group_picture_thumb: null,
-        name: groupName,
-        sub_genre: '',
-      };
+      if (groupImagePath.uri != null) {
+        this.setState({loading: true});
+        let file = groupImagePath.uri;
+        let files = [file];
+        const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+          files,
+        );
 
-      this.props.createNewGroup(groupData).then((res) => {
-        Toast.show({
-          title: 'Touku',
-          text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
-          type: 'positive',
+        let groupData = {
+          company_name: '',
+          cover_image: '',
+          cover_image_thumb: '',
+          description: note,
+          email: '',
+          genre: '',
+          greeting_text: '',
+          group_members: addedFriends,
+          group_picture: uploadedImages.image[0].image,
+          group_picture_thumb: uploadedImages.image[0].thumbnail,
+          name: groupName,
+          sub_genre: '',
+        };
+
+        this.props.createNewGroup(groupData).then((res) => {
+          this.setState({loading: false});
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
+            type: 'positive',
+          });
+          this.props.getUserGroups().then((res) => {
+            if (res.conversations) {
+              this.props.navigation.goBack();
+            }
+          });
         });
-        this.props.getUserGroups().then((res) => {
-          if (res.conversations) {
-            this.props.navigation.goBack();
-          }
+      } else {
+        let groupData = {
+          company_name: '',
+          cover_image: '',
+          cover_image_thumb: '',
+          description: note,
+          email: '',
+          genre: '',
+          greeting_text: '',
+          group_members: addedFriends,
+          group_picture: null,
+          group_picture_thumb: null,
+          name: groupName,
+          sub_genre: '',
+        };
+
+        this.props.createNewGroup(groupData).then((res) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
+            type: 'positive',
+          });
+          this.props.getUserGroups().then((res) => {
+            if (res.conversations) {
+              this.props.navigation.goBack();
+            }
+          });
         });
-      });
+      }
     }
   }
 
@@ -190,7 +231,7 @@ class CreateGroupChat extends Component {
   }
 
   render() {
-    const {groupName, note, groupNameErr} = this.state;
+    const {groupName, note, groupNameErr, loading, groupImagePath} = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -207,8 +248,8 @@ class CreateGroupChat extends Component {
             <View style={createGroupStyles.imageContainer}>
               <View style={createGroupStyles.imageView}>
                 <Image
-                  // source={{uri: this.state.filePath.uri}}
-                  source={getImage(this.state.filePath.uri)}
+                  // source={{uri: this.state.groupImagePath.uri}}
+                  source={getImage(groupImagePath.uri)}
                   resizeMode={'cover'}
                   style={createGroupStyles.profileImage}
                 />
@@ -281,7 +322,9 @@ class CreateGroupChat extends Component {
                 type={'primary'}
                 title={translate('pages.xchat.create')}
                 onPress={() => this.onCreatePress()}
-                loading={this.props.groupLoading}
+                loading={
+                  groupImagePath.uri != null ? loading : this.props.groupLoading
+                }
               />
               <Button
                 type={'translucent'}
