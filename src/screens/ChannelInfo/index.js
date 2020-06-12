@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  Clipboard,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
@@ -26,7 +27,7 @@ import {
   unfollowChannel,
   followChannel,
 } from '../../redux/reducers/channelReducer';
-import { ConfirmationModal } from '../../components/Modals';
+import { ConfirmationModal, AffilicateModal } from '../../components/Modals';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class ChannelInfo extends Component {
       channelImagePath: {},
       channelData: [],
       showConfirmationModal: false,
+      showAffiliateModal: false,
       tabBarItem: [
         {
           id: 1,
@@ -80,6 +82,15 @@ class ChannelInfo extends Component {
   };
 
   getChannelDetails() {
+    console.log(
+      'ChannelInfo -> getChannelDetails -> this.props.currentChannel',
+      this.props.currentChannel
+    );
+
+    console.log(
+      'ChannelInfo -> getChannelDetails -> this.props.userData',
+      this.props.userData
+    );
     this.props
       .getChannelDetails(this.props.currentChannel.id)
       .then((res) => {
@@ -158,12 +169,28 @@ class ChannelInfo extends Component {
     }));
   };
 
+  toggleAffiliateModal = () => {
+    this.setState((prevState) => ({
+      showAffiliateModal: !prevState.showAffiliateModal,
+    }));
+  };
+
+  onClose = () => {
+    this.toggleAffiliateModal();
+  };
+
+  onCopyAffilation = (url) => {
+    Clipboard.setString(url);
+    this.toggleAffiliateModal();
+  };
+
   render() {
     const {
       channelData,
       tabBarItem,
       orientation,
       showConfirmationModal,
+      showAffiliateModal,
     } = this.state;
     const { channelLoading, currentChannel } = this.props;
     const channelCountDetails = [
@@ -358,7 +385,7 @@ class ChannelInfo extends Component {
                   isRounded={false}
                   type={'primary'}
                   title={translate('pages.xchat.affiliate')}
-                  onPress={() => {}}
+                  onPress={this.toggleAffiliateModal}
                 />
                 {currentChannel.is_vip && (
                   <Button
@@ -390,6 +417,15 @@ class ChannelInfo extends Component {
             orientation={orientation}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.toLeaveThisChannel')}
+          />
+          <AffilicateModal
+            orientation={orientation}
+            visible={showAffiliateModal}
+            onCancel={this.onClose}
+            onConfirm={this.onCopyAffilation}
+            title={translate('pages.xchat.invitation')}
+            url={'http://www.example.com'}
+            buttonText={translate('common.copy')}
           />
         </View>
       </ImageBackground>

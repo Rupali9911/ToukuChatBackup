@@ -30,14 +30,17 @@ export default class ChatMessageBox extends Component {
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
+    this.props.message.msg_type === 'image' &&
+      this.props.message.message_body &&
+      this.isPortrait(this.props.message.message_body);
   }
 
-  _openMenu = () => this.setState({longPressMenu: true});
+  _openMenu = () => this.setState({ longPressMenu: true });
 
-  _closeMenu = () => this.setState({longPressMenu: false});
+  _closeMenu = () => this.setState({ longPressMenu: false });
 
   layoutChange = (event) => {
-    var {x, y, width, height} = event.nativeEvent.layout;
+    var { x, y, width, height } = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -52,6 +55,9 @@ export default class ChatMessageBox extends Component {
   };
 
   isPortrait = async (url) => {
+    if (!url) {
+      return;
+    }
     await Image.getSize(url, (width, height) => {
       this.setState({
         isPortrait: height > width,
@@ -123,15 +129,15 @@ export default class ChatMessageBox extends Component {
       translatedMessage,
       translatedMessageId,
     } = this.props;
-    message.msg_type === 'image' && this.isPortrait(message.message_body);
-    return !isUser ? (
+    return !isUser && message.message_body ? (
       <View
         style={[
           styles.container,
           {
             justifyContent: 'flex-start',
           },
-        ]}>
+        ]}
+      >
         <View
           style={{
             alignItems: 'flex-start',
@@ -189,62 +195,65 @@ export default class ChatMessageBox extends Component {
         </View>
       </View>
     ) : (
-      <View
-        style={[
-          styles.container,
-          {
-            alignItems: 'flex-end',
-            alignSelf: 'flex-end',
-          },
-        ]}>
+      message.message_body && (
         <View
-          style={{
-            alignItems: 'flex-end',
-          }}
+          style={[
+            styles.container,
+            {
+              alignItems: 'flex-end',
+              alignSelf: 'flex-end',
+            },
+          ]}
         >
-          <View style={{ flexDirection: 'row' }}>
-            <View
-              style={{
-                marginHorizontal: '1.5%',
-                alignItems: 'center',
-                marginVertical: 15,
-              }}
-            >
-              <Text style={styles.statusText}>{status}</Text>
-              <Text style={styles.statusText}>
-                {`${time.getHours()}:${time.getMinutes()}`}
-              </Text>
+          <View
+            style={{
+              alignItems: 'flex-end',
+            }}
+          >
+            <View style={{ flexDirection: 'row' }}>
+              <View
+                style={{
+                  marginHorizontal: '1.5%',
+                  alignItems: 'center',
+                  marginVertical: 15,
+                }}
+              >
+                <Text style={styles.statusText}>{status}</Text>
+                <Text style={styles.statusText}>
+                  {`${time.getHours()}:${time.getMinutes()}`}
+                </Text>
+              </View>
+              {message.msg_type === 'image' ? (
+                <ChatMessageImage
+                  message={message}
+                  isUser={isUser}
+                  isPortrait={isPortrait}
+                  orientation={orientation}
+                />
+              ) : (
+                <ChatMessageBubble
+                  message={message}
+                  isUser={isUser}
+                  onMessageReply={onMessageReply}
+                  onMessagePress={(id) => this.onMessagePress(id)}
+                  longPressMenu={longPressMenu}
+                  openMenu={this._openMenu}
+                  closeMenu={this._closeMenu}
+                  selectedMessageId={selectedMessageId}
+                  isChannel={isChannel}
+                  onMessageTranslate={onMessageTranslate}
+                  translatedMessage={translatedMessage}
+                  translatedMessageId={translatedMessageId}
+                  onDelete={onDelete}
+                />
+              )}
             </View>
-            {message.msg_type === 'image' ? (
-              <ChatMessageImage
-                message={message}
-                isUser={isUser}
-                isPortrait={isPortrait}
-                orientation={orientation}
-              />
-            ) : (
-              <ChatMessageBubble
-                message={message}
-                isUser={isUser}
-                onMessageReply={onMessageReply}
-                onMessagePress={(id) => this.onMessagePress(id)}
-                longPressMenu={longPressMenu}
-                openMenu={this._openMenu}
-                closeMenu={this._closeMenu}
-                selectedMessageId={selectedMessageId}
-                isChannel={isChannel}
-                onMessageTranslate={onMessageTranslate}
-                translatedMessage={translatedMessage}
-                translatedMessageId={translatedMessageId}
-                onDelete={onDelete}
-              />
-            )}
+            {translatedMessageId &&
+              message.id === translatedMessageId &&
+              this.renderTransltedMessage()}
           </View>
-          {translatedMessageId &&
-            message.id === translatedMessageId &&
-            this.renderTransltedMessage()}
         </View>
-      </View>
+      )
     );
   }
 }

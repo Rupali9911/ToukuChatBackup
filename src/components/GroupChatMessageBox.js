@@ -32,6 +32,9 @@ export default class GroupChatMessageBox extends Component {
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
+    this.props.message.msg_type === 'image' &&
+      this.props.message.message_body &&
+      this.isPortrait(this.props.message.message_body);
   }
 
   _openMenu = () => this.setState({ longPressMenu: true });
@@ -53,6 +56,9 @@ export default class GroupChatMessageBox extends Component {
   };
 
   isPortrait = async (url) => {
+    if (!url) {
+      return;
+    }
     await Image.getSize(url, (width, height) => {
       this.setState({
         isPortrait: height > width,
@@ -124,9 +130,6 @@ export default class GroupChatMessageBox extends Component {
       translatedMessage,
       translatedMessageId,
     } = this.props;
-    message.message_body &&
-      message.message_body.type === 'image' &&
-      this.isPortrait(message.message_body.text);
     return !isUser && message.message_body ? (
       <View
         style={[
