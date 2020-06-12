@@ -23,10 +23,11 @@ import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
 import {getAvatar, getImage} from '../../utils';
 import UploadUserImageModal from '../Modals/UploadUserImageModal';
-import {translate} from '../../redux/reducers/languageReducer';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
+import {translate} from '../../redux/reducers/languageReducer';
 import {changeBackgroundImage} from '../../redux/reducers/configurationReducer';
+import {uploadAvatar} from '../../redux/reducers/userReducer';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class UserProfile extends Component {
       isChangeNameModalVisible: false,
       isUploadUserImageModalVisible: false,
       backgroundImagePath: {uri: this.props.userConfig.background_image},
+      profileImagePath: {uri: this.props.userData.avatar},
     };
     this.S3uploadService = new S3uploadService();
   }
@@ -54,7 +56,44 @@ class UserProfile extends Component {
   }
 
   onUserImageCameraPress() {
-    this.setState({isUploadUserImageModalVisible: true});
+    // this.setState({isUploadUserImageModalVisible: true});
+    var options = {
+      title: 'Choose Option',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.showImagePicker(options, async (response) => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else {
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        this.setState({
+          profileImagePath: source,
+        });
+
+        // let file = source.uri;
+        // let files = [file];
+        // const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+        //   files,
+        // );
+
+        // let avatarData = {
+        //   avatar: uploadedImages.image[0].image,
+        //   avatar_thumbnail: uploadedImages.image[0].thumbnail,
+        // };
+
+        // this.props
+        //   .uploadAvatar(avatarData)
+        //   .then((res) => {
+        //     alert(JSON.stringify(res));
+        //   })
+        //   .catch((err) => {
+        //     alert(JSON.stringify(err));
+        //   });
+      }
+    });
   }
 
   chooseBackgroundImage = async () => {
@@ -101,6 +140,7 @@ class UserProfile extends Component {
       isChangeNameModalVisible,
       isUploadUserImageModalVisible,
       backgroundImagePath,
+      profileImagePath,
       uploadLoading,
     } = this.state;
     return (
@@ -159,7 +199,7 @@ class UserProfile extends Component {
           <View style={{alignSelf: 'center', marginTop: -40}}>
             <RoundedImage
               size={80}
-              source={getAvatar(userData.avatar)}
+              source={getAvatar(profileImagePath.uri)}
               clickable={true}
             />
             <View style={styles.centerBottomView}>
@@ -384,6 +424,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   changeBackgroundImage,
+  uploadAvatar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
