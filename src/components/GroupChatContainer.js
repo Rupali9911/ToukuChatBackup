@@ -49,6 +49,11 @@ class GroupChatContainer extends Component {
           // status={item.status}
           onMessageReply={(id) => this.props.onMessageReply(id)}
           orientation={this.props.orientation}
+          onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+          onMessageTranslateClose={this.props.onMessageTranslateClose}
+          translatedMessage={this.props.translatedMessage}
+          translatedMessageId={this.props.translatedMessageId}
+          onDelete={(id) => this.props.onDelete(id)}
         />
       );
     });
