@@ -164,12 +164,6 @@ class DrawerContent extends Component {
     ProfileModal.show();
   }
 
-  async onLogoutUser() {
-    this.props.logout().then((res) => {
-      this.props.navigation.navigate('Auth');
-    });
-  }
-
   render() {
     const {drawerTabs, isAdminCollapsed, isGeneralCollapsed} = this.state;
     const {userData} = this.props;
@@ -206,7 +200,7 @@ class DrawerContent extends Component {
                 {userData.username}
               </Text>
             </View>
-            {/* 
+            {/*
             <Collapse
               onToggle={(isColl) =>
                 this.setState({
@@ -287,11 +281,6 @@ class DrawerContent extends Component {
                     onPress={() => this.changeActiveTab(item, key)}
                   />
                 ))}
-                <DrawerItem
-                  title={'Logout'}
-                  icon={Icons.icon_back}
-                  onPress={() => this.onLogoutUser()}
-                />
               </CollapseBody>
             </Collapse>
           </ScrollView>

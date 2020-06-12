@@ -72,7 +72,7 @@ class SettingsItem extends Component {
                 if (value === true){
                     showToast(translate('pages.xchat.channelModeText'), translate('pages.xchat.toastr.channelModeToastr'), 'positive' )
                 }
-                //this.props.setChannelMode(value)
+                this.props.setChannelMode(this.props.userConfig, value)
             })
             .catch((err) => {
                 showToast(translate('pages.xchat.channelModeText'), translate('common.somethingWentWrong'), 'primary' )
