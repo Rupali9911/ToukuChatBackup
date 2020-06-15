@@ -184,3 +184,19 @@ export const unFriendUser = (data) => (dispatch) =>
         reject(err);
       });
   });
+
+export const editPersonalMessage = (id, payload) => (dispatch) =>
+  //{message_body: "hey", friend: 2652}
+  new Promise(function (resolve, reject) {
+    console.log('payload', payload);
+    client
+      .PATCH(`/xchat/edit-personal-message/${id}/`, payload)
+      .then((res) => {
+        console.log('res', res);
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err', err);
+        reject(err);
+      });
+  });

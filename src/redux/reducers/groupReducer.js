@@ -322,3 +322,16 @@ export const sendGroupMessage = (message) => (dispatch) =>
         reject(err);
       });
   });
+
+export const editGroupMessage = (data) => (dispatch) =>
+  //{message_body: "Fffffvbccc"}
+  new Promise(function (resolve, reject) {
+    client
+      .PATCH(`/xchat/edit-group-message/${data.id}/`, data.payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

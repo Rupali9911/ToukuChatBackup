@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   View,
   Text,
@@ -37,37 +37,58 @@ class ChatContainer extends Component {
         />
       );
     }
+
+    let hedaingDate = new Date();
+    setDate = (date) => {
+      hedaingDate = new Date(date);
+    };
+
+    getDate = (date) => {
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+      const msgDate = new Date(date);
+
+      if (today.getDate() === msgDate.getDate()) return 'Today';
+      if (yesterday.getDate() === msgDate.getDate()) return 'Yesterday';
+      return moment(msgDate).format('MM/DD');
+    };
     const msg = messages.map((item, index) => {
       return (
-        <ChatMessageBox
-          key={item.id}
-          message={item}
-          isUser={item.from_user.id == this.props.userData.id ? true : false}
-          time={new Date(item.created)}
-          isChannel={this.props.isChannel}
-          onMessageReply={(id) => this.props.onMessageReply(id)}
-          onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
-          onMessageTranslateClose={this.props.onMessageTranslateClose}
-          translatedMessage={this.props.translatedMessage}
-          translatedMessageId={this.props.translatedMessageId}
-          onDelete={(id) => this.props.onDelete(id)}
-          orientation={this.props.orientation}
-        />
+        <Fragment>
+          {hedaingDate.getDate() !== new Date(item.created).getDate() ||
+          index === 0 ? (
+            <Fragment>
+              {setDate(item.created)}
+              <View style={chatStyle.messageDateCntainer}>
+                <View style={chatStyle.messageDate}>
+                  <Text style={chatStyle.messageDateText}>
+                    {getDate(item.created)}
+                  </Text>
+                </View>
+              </View>
+            </Fragment>
+          ) : null}
+          <ChatMessageBox
+            key={item.id}
+            message={item}
+            isUser={item.from_user.id == this.props.userData.id ? true : false}
+            time={new Date(item.created)}
+            isChannel={this.props.isChannel}
+            onMessageReply={(id) => this.props.onMessageReply(id)}
+            onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+            onMessageTranslateClose={this.props.onMessageTranslateClose}
+            onEditMessage={(msg) => this.props.onEditMessage(msg)}
+            translatedMessage={this.props.translatedMessage}
+            translatedMessageId={this.props.translatedMessageId}
+            onDelete={(id) => this.props.onDelete(id)}
+            orientation={this.props.orientation}
+          />
+        </Fragment>
       );
     });
 
-    return (
-      <Fragment>
-        <View style={chatStyle.messageDateCntainer}>
-          <View style={chatStyle.messageDate}>
-            <Text style={chatStyle.messageDateText}>
-              {moment(new Date()).format('MM/DD')}
-            </Text>
-          </View>
-        </View>
-        {msg.reverse()}
-      </Fragment>
-    );
+    return <Fragment>{msg.reverse()}</Fragment>;
   };
 
   render() {
@@ -83,7 +104,7 @@ class ChatContainer extends Component {
     } = this.props;
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={{flex: 1}}
+        contentContainerStyle={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
@@ -91,7 +112,8 @@ class ChatContainer extends Component {
         }}
         onKeyboardDidShow={(contentWidth, contentHeight) => {
           this.scrollView.scrollToEnd();
-        }}>
+        }}
+      >
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -105,18 +127,20 @@ class ChatContainer extends Component {
                   ? height * 0.01
                   : height * 0.03,
             },
-          ]}>
+          ]}
+        >
           <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
-              isReply && {paddingBottom: '20%'},
+              isReply && { paddingBottom: '20%' },
             ]}
             ref={(view) => {
               this.scrollView = view;
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd();
-            }}>
+            }}
+          >
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
@@ -132,7 +156,8 @@ class ChatContainer extends Component {
                 bottom: 20,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
-              }}>
+              }}
+            >
               <View
                 style={{
                   flex: 3,
@@ -147,7 +172,7 @@ class ChatContainer extends Component {
                       : repliedMessage.from_user.username}
                   </Text>
                 </View>
-                <View style={{flex: 2, alignItems: 'flex-end'}}>
+                <View style={{ flex: 2, alignItems: 'flex-end' }}>
                   <TouchableOpacity
                     style={{
                       justifyContent: 'center',
@@ -157,7 +182,8 @@ class ChatContainer extends Component {
                       borderRadius: 100,
                       backgroundColor: Colors.gradient_1,
                     }}
-                    onPress={cancelReply}>
+                    onPress={cancelReply}
+                  >
                     <Image
                       source={Icons.icon_close}
                       style={{

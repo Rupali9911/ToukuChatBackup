@@ -82,15 +82,6 @@ class ChannelInfo extends Component {
   };
 
   getChannelDetails() {
-    console.log(
-      'ChannelInfo -> getChannelDetails -> this.props.currentChannel',
-      this.props.currentChannel
-    );
-
-    console.log(
-      'ChannelInfo -> getChannelDetails -> this.props.userData',
-      this.props.userData
-    );
     this.props
       .getChannelDetails(this.props.currentChannel.id)
       .then((res) => {
@@ -192,7 +183,7 @@ class ChannelInfo extends Component {
       showConfirmationModal,
       showAffiliateModal,
     } = this.state;
-    const { channelLoading, currentChannel } = this.props;
+    const { channelLoading, currentChannel, userData } = this.props;
     const channelCountDetails = [
       {
         id: 1,
@@ -424,7 +415,9 @@ class ChannelInfo extends Component {
             onCancel={this.onClose}
             onConfirm={this.onCopyAffilation}
             title={translate('pages.xchat.invitation')}
-            url={'http://www.example.com'}
+            url={`https://www.touku.net/#/channels/${
+              currentChannel.id
+            }/${userData.referral_link.split('/').pop()}`}
             buttonText={translate('common.copy')}
           />
         </View>
