@@ -1,46 +1,37 @@
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import {socketUrl} from './api';
 
-export default class SingleSocket extends Component {
+export default class BulkSocket extends Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.webSocketBridge;
     this.jwt;
-    this.userId;
     this.subject;
     this.socketChecker;
   }
 
-  async create({...config}) {
-    this.userId = config.user_id;
+  create({...config}) {
     this.jwt = config.token;
-
-    let basicAuth = await AsyncStorage.getItem('userToken');
-    let socialAuth = await AsyncStorage.getItem('socialToken');
-    if (socialAuth && socialAuth != null) {
-      this.jwt = socialAuth;
-    } else if (basicAuth && basicAuth != null) {
-      this.jwt = basicAuth;
-    }
-
     this.connectSocket();
   }
 
   connectSocket() {
     if (this.jwt !== '') {
       this.webSocketBridge = new WebSocket(
-        `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
+        `${socketUrl}/bulk-socket?token=${this.jwt}`,
       );
       this.webSocketBridge.onopen = (e) => {
+        console.log('Bulk Socket Connected.....');
         this.checkSocketConnected();
       };
       this.webSocketBridge.onmessage = (e) => {
-        this.onNewMessage(e);
+        //   this.onNewMessage(e);
+        console.log('Bulk socket on Message.....', JSON.stringify(e));
       };
       this.webSocketBridge.onerror = (e) => {
+        console.log('Bulk socket Error.....', JSON.stringify(e));
         setTimeout(() => {
           this.checkSocketConnected();
         }, 1000);
@@ -59,13 +50,11 @@ export default class SingleSocket extends Component {
   closeSocket() {
     setTimeout(() => {
       this.jwt = '';
-      this.userId = 0;
       this.webSocketBridge.close();
     }, 1000);
   }
 
   onNewMessage(e) {
-    // alert(JSON.stringify(e));
     // this.subject.next(JSON.parse(e.data));
   }
 

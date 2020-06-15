@@ -581,7 +581,7 @@ class Login extends Component {
                 }}>
                 <Inputfield
                   value={this.state.username}
-                  placeholder={translate('common.username')}
+                  placeholder={translate('common.usernameEmail')}
                   returnKeyType={'next'}
                   onChangeText={(username) => this.handleUserName(username)}
                   onSubmitEditing={() => {
@@ -658,12 +658,11 @@ class Login extends Component {
               <View
                 style={{
                   flexDirection: 'row',
-                  // alignSelf: 'center',
                   marginTop: 15,
                   justifyContent: 'space-between',
-                  paddingHorizontal: 10,
+                  paddingHorizontal: 5,
                 }}>
-                <View>
+                <View style={{alignItems: 'flex-start'}}>
                   <Text
                     style={[
                       globalStyles.smallLightText,
@@ -673,8 +672,17 @@ class Login extends Component {
                     {translate('pages.xchat.needSupport')}
                   </Text>
                 </View>
-                <View style={{flexDirection: 'row'}}>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    flexDirection:
+                      this.props.selectedLanguageItem.language_name === 'ja' &&
+                      orientation === 'PORTRAIT'
+                        ? 'column'
+                        : 'row',
+                  }}>
                   <Text
+                    numberOfLines={1}
                     style={[
                       globalStyles.smallLightText,
                       {textDecorationLine: 'underline'},
@@ -685,6 +693,7 @@ class Login extends Component {
                     {translate('common.username')}
                   </Text>
                   <Text
+                    numberOfLines={1}
                     style={[
                       globalStyles.smallLightText,
                       {marginHorizontal: 5},
@@ -692,6 +701,7 @@ class Login extends Component {
                     {translate('pages.setting.or')}
                   </Text>
                   <Text
+                    numberOfLines={1}
                     style={[
                       globalStyles.smallLightText,
                       {textDecorationLine: 'underline'},

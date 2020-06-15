@@ -47,13 +47,12 @@ export const Icons = {
   icon_camera_grad: require('../../assets/icons/camera_grad.png'),
   icon_setting: require('../../assets/icons/setting.png'),
   icon_info: require('../../assets/icons/info.png'),
-    add_friend: require('../../assets/icons/add-friend.png'),
-    xana_app: require('../../assets/icons/xana.png'),
-    channel_mode: require('../../assets/icons/Channel-mode.png'),
-    icon_drop_down: require('../../assets/icons/filed_down.png'),
-    icon_copy: require('../../assets/icons/copy.png'),
-    icon_download: require('../../assets/icons/download.png'),
-
+  add_friend: require('../../assets/icons/add-friend.png'),
+  xana_app: require('../../assets/icons/xana.png'),
+  channel_mode: require('../../assets/icons/Channel-mode.png'),
+  icon_drop_down: require('../../assets/icons/filed_down.png'),
+  icon_copy: require('../../assets/icons/copy.png'),
+  icon_download: require('../../assets/icons/download.png'),
 };
 
 export const Images = {
@@ -88,10 +87,10 @@ export const Colors = {
   purple: '#6f42c1',
   green: '#1bd078',
   dark_gray: '#2c3e50',
-    dark_orange: '#e15b63',
-    light_gray: '#909093',
-    gradient_4: '#ff62a5eb',
-    gradient_5: '#ff8960eb'
+  dark_orange: '#e15b63',
+  light_gray: '#909093',
+  gradient_4: '#ff62a5eb',
+  gradient_5: '#ff8960eb',
 };
 
 export const Fonts = {
@@ -115,40 +114,115 @@ export const environment = {
   },
 };
 
-export const languageArray =[
-    {
-        language_id: 1,
-        language_name: 'en',
-        icon: Icons.icon_flag_america,
-        language_display: 'English'
-    },
-    {
-        language_id: 2,
-        language_name: 'ja',
-        icon: Icons.icon_flag_japan,
-        language_display: '日本語'
-    },
-    {
-        language_id: 3,
-        language_name: 'ch',
-        icon: Icons.icon_flag_china,
-        language_display: '中文（简体）'
-    },
-    {
-        language_id: 4,
-        language_name: 'tw',
-        icon: Icons.icon_flag_taiwan,
-        language_display: '中文（繁体）'
-    },
-    {
-        language_id: 5,
-        language_name: 'ko',
-        icon: Icons.icon_flag_korea,
-        language_display: '한국어'
-    },
-]
+export const languageArray = [
+  {
+    language_id: 1,
+    language_name: 'en',
+    icon: Icons.icon_flag_america,
+    language_display: 'English',
+  },
+  {
+    language_id: 2,
+    language_name: 'ja',
+    icon: Icons.icon_flag_japan,
+    language_display: '日本語',
+  },
+  {
+    language_id: 3,
+    language_name: 'ch',
+    icon: Icons.icon_flag_china,
+    language_display: '中文（简体）',
+  },
+  {
+    language_id: 4,
+    language_name: 'tw',
+    icon: Icons.icon_flag_taiwan,
+    language_display: '中文（繁体）',
+  },
+  {
+    language_id: 5,
+    language_name: 'ko',
+    icon: Icons.icon_flag_korea,
+    language_display: '한국어',
+  },
+];
 
-export const supportUrl = 'https://www.touku.net/#/support/'
-export const registerUrl = 'https://www.touku.net/#/register/'
-export const xanaUrl = 'https://www.xana.net/#/login'
+export const supportUrl = 'https://www.touku.net/#/support/';
+export const registerUrl = 'https://www.touku.net/#/register/';
+export const xanaUrl = 'https://www.xana.net/#/login';
 
+export const SocketEvents = {
+  // Friend actions
+  NEW_MESSAGE_IN_FREIND: 'New message in friend',
+  MESSAGE_EDITED_IN_FRIEND: 'Message edited in friend',
+  DELETE_MESSAGE_IN_FRIEND: 'Delete message in friend',
+  UNSENT_MESSAGE_IN_FRIEND: 'Unsend message in friend',
+  MESSAGE_READ_IN_FRIEND: 'Message read in friend',
+  FRIEND_TYPING_MESSAGE: 'Friend typing message',
+  NEW_FRIEND_REQUEST: 'New friend request',
+  FRIEND_REQUEST_ACCEPTED: 'Friend request accepted',
+  FRIEND_REQUEST_REJECTED: 'Friend request rejected',
+  UNFRIEND: 'Unfriend',
+  FRIEND_REQUEST_CANCELLED: 'Friend request cancelled',
+  READ_ALL_MESSAGE_FRIEND_CHAT: 'Read all message friend chat',
+  // Thread actions
+  MESSAGE_IN_THREAD: 'Message in thread',
+  MULTIPLE_MESSAGE_IN_THREAD: 'Multiple message in thread',
+  MESSAGE_IN_FOLLOWING_CHANNEL: 'Message in following channel',
+  MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
+    'Multiple message in following channel',
+  MESSAGE_EDITED_IN_THREAD: 'Message edited in thread',
+  MESSAGE_EDITED_IN_FOLLOWING_CHANNEL: 'Message edit in following channel',
+  DELETE_MESSAGE_IN_THREAD: 'Delete message in thread',
+  DELETE_MESSAGE_IN_MY_CHANNEL: 'Delete message in my channel',
+  DELETE_MESSAGE_IN_FOLLOWING_CHANNEL: 'Delete message in following channel',
+  UNSENT_MESSAGE_IN_MY_CHANNEL: 'Unsent message in my channel',
+  UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL: 'Unsent message in following channel',
+  UNSENT_MESSAGE_IN_THREAD: 'Unsent message in thread',
+  NEW_TIMELINE_BULCK_SOCKET: 'New timeline bulck socket',
+  NEW_CHANNEL_BULCK_SOCKET: 'New channel bulck socket',
+  REMOVE_MEMBER_FROM_CHANNEL: 'Remove member from channel',
+  MEMBER_REMOVED_FROM_CHANNEL_COUNT: 'Member removed from channel count',
+  REMOVE_CHANNEL_MEMBER_ADMIN_SIDE: 'Remove channel member admin side',
+  REMOVE_CHANNEL_ADMIN_ADMIN_SIDE: 'Remove channel admin side',
+  REMOVE_CHANNEL_MEMBER: 'Remove member from channel',
+  REMOVE_CHANNEL_ADMIN: 'Remove admin from channel',
+  ADD_CHANNEL_USER: 'Add channel user',
+  ADD_CHANNEL_MEMBER: 'Add channel member',
+  ADD_CHANNEL_MEMBER_ADMIN_SIDE: 'Add channel member admin side',
+  ADD_CHANNEL_ADMIN_ADMIN_SIDE: 'Add channel admin admin side',
+  MEMBER_ADDED_IN_CHANNEL_COUNT: 'Member added in channel count',
+  CHANNEL_MEMBER_TO_ADMIN: 'Add channel member to admin',
+  CHANNEL_MEMBER_TO_ADMIN_ADMIN_SIDE: 'Channel member to admin',
+  ADD_CHANNEL_ADMIN: 'Add channel admin',
+  CHANNEL_DELETE: 'Channel delete',
+  UPDATE_CHANNEL_DETAIL: 'Update channel detail',
+  CREATE_NEW_CHANNEL: 'Create new channel',
+  MESSAGE_TYPING: 'Message typing',
+  USER_ONLINE_STATUS: 'Usser online status',
+  CREATE_NEW_SUB_CHANNEL: 'Create new sub channel',
+  READ_ALL_MESSAGE_CHANNEL_CHAT: 'Read all message channel chat',
+  READ_ALL_MESSAGE_CHANNEL_SUBCHAT: 'Read all message channel subchat',
+  // Group
+  CREATE_NEW_GROUP: 'Create new group',
+  EDIT_GROUP_DETAIL: 'Edit group detail',
+  ADD_GROUP_MEMBER: 'Add group member',
+  REMOVE_GROUP_MEMBER: 'Remove group member',
+  GROUP_MEMBER_TO_ADMIN: 'Group member to admin',
+  DELETE_GROUP: 'Delete group',
+  MUTE_GROUP: 'Mute group',
+  NEW_MESSAGE_IN_GROUP: 'New message in group',
+  MESSAGE_EDIT_FROM_GROUP: 'Message edit from group',
+  DELETE_MESSAGE_IN_GROUP: 'Delete message in group',
+  UNSENT_MESSAGE_FROM_GROUP: 'Unsent message from group',
+  READ_ALL_MESSAGE_GROUP_CHAT: 'Read all message group chat',
+  TP_POINT_ACTION: 'Tp point action',
+  TP_POINT_ADD: 'Tp point add',
+  TP_POINT_DEDUCT: 'Tp point deduct',
+  UPLOAD_AVTAR: 'Upload avtar',
+  SOCKET_CONNECTED: 'Socket connected',
+  CHECK_IS_USER_ONLINE: 'Check is user online',
+  UPDATE_USER_PROFILE: 'Update user profile',
+  // UPDATE_CHANNEL_MODE NOT ALLOWED FOR PUSH NOTIFICATION
+  UPDATE_CHANNEL_MODE: 'Update configration channel mode',
+};
