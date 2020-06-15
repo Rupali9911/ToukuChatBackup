@@ -23,11 +23,11 @@ class Root extends Component {
           }}
         />
 
-        <SingleSocket
+        {/* <SingleSocket
           ref={(c) => {
             if (c) SingleSocket.singleSocketInstance = c;
           }}
-        />
+        /> */}
       </View>
     );
   }

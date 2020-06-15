@@ -196,11 +196,11 @@ const getUserChannelsFailure = () => ({
   type: GET_USER_CHANNELS_FAIL,
 });
 
-export const getUserChannels = () => (dispatch) =>
+export const getUserChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
     client
-      .get(`/xchat/get-my-channel/?start=0`)
+      .get(`/xchat/get-my-channel/?start=` + start)
       .then((res) => {
         if (res.conversations) {
           dispatch(getUserChannelsSuccess(res.conversations));

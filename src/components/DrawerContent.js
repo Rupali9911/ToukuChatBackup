@@ -49,7 +49,7 @@ class DrawerContent extends Component {
       drawerTabs: [
         {
           tab_id: 1,
-          tab_name: translate('pages.xchat.home'),
+          tab_name: 'pages.xchat.home',
           tab_icon_inactive: Icons.icon_home,
           tab_icon_active: Icons.icon_home_select,
           selected: true,
@@ -57,7 +57,7 @@ class DrawerContent extends Component {
         },
         {
           tab_id: 2,
-          tab_name: translate('pages.xchat.chat'),
+          tab_name: 'pages.xchat.chat',
           tab_icon_inactive: Icons.icon_chat,
           tab_icon_active: Icons.icon_chat_select,
           selected: false,
@@ -66,7 +66,7 @@ class DrawerContent extends Component {
 
         {
           tab_id: 3,
-          tab_name: translate('common.timeline'),
+          tab_name: 'common.timeline',
           tab_icon_inactive: Icons.icon_timeline,
           tab_icon_active: Icons.icon_timeline_select,
           selected: false,
@@ -75,7 +75,7 @@ class DrawerContent extends Component {
 
         {
           tab_id: 4,
-          tab_name: translate('pages.xchat.channel'),
+          tab_name: 'pages.xchat.channel',
           tab_icon_inactive: Icons.icon_channel,
           tab_icon_active: Icons.icon_channel_select,
           selected: false,
@@ -84,7 +84,7 @@ class DrawerContent extends Component {
 
         {
           tab_id: 5,
-          tab_name: translate('pages.xchat.more'),
+          tab_name: 'pages.xchat.more',
           tab_icon_inactive: Icons.icon_more,
           tab_icon_active: Icons.icon_more_select,
           selected: false,
@@ -143,15 +143,15 @@ class DrawerContent extends Component {
     this.props.navigation.closeDrawer();
     // this.props.navigation.navigate(item.tab_name);
     switch (item.tab_name) {
-      case translate('pages.xchat.home'):
+      case 'pages.xchat.home':
         this.props.navigation.navigate('Home');
         break;
 
-      case translate('pages.xchat.chat'):
+      case 'pages.xchat.chat':
         this.props.navigation.navigate('Chat');
         break;
 
-      case translate('pages.xchat.more'):
+      case 'pages.xchat.more':
         this.props.navigation.navigate('More');
         break;
 
@@ -271,7 +271,7 @@ class DrawerContent extends Component {
                 {drawerTabs.map((item, key) => (
                   <DrawerItem
                     key={key}
-                    title={item.tab_name}
+                    title={translate(item.tab_name)}
                     icon={
                       item.selected
                         ? item.tab_icon_active
