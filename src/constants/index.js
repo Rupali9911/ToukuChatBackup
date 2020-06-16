@@ -61,11 +61,6 @@ export const Images = {
   image_home_bg: require('../../assets/images/touku_home_bg.png'),
   image_loading: require('../../assets/images/loading.gif'),
   image_gallery: require('../../assets/images/gallery.png'),
-  image_cover_1: require('../../assets/images/cover_1.jpg'),
-  image_cover_2: require('../../assets/images/cover_2.jpg'),
-  image_cover_3: require('../../assets/images/cover_3.jpg'),
-  image_cover_4: require('../../assets/images/cover_4.jpg'),
-  image_cover_5: require('../../assets/images/cover_5.jpg'),
   image_loader: require('../../assets/images/loader.gif'),
   image_conversation: require('../../assets/images/conversation.png'),
 };

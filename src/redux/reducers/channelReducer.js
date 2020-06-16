@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
@@ -6,9 +6,14 @@ export const GET_USER_CHANNELS_REQUEST = 'GET_USER_CHANNELS_REQUEST';
 export const GET_USER_CHANNELS_SUCCESS = 'GET_USER_CHANNELS_SUCCESS';
 export const GET_USER_CHANNELS_FAIL = 'GET_USER_CHANNELS_FAIL';
 
+export const GET_USER_MORE_CHANNELS_SUCCESS = 'GET_USER_MORE_CHANNELS_SUCCESS';
+
 export const GET_FOLLOWING_CHANNELS_REQUEST = 'GET_FOLLOWING_CHANNELS_REQUEST';
 export const GET_FOLLOWING_CHANNELS_SUCCESS = 'GET_FOLLOWING_CHANNELS_SUCCESS';
 export const GET_FOLLOWING_CHANNELS_FAIL = 'GET_FOLLOWING_CHANNELS_FAIL';
+
+export const GET_MORE_FOLLOWING_CHANNELS_SUCCESS =
+  'GET_MORE_FOLLOWING_CHANNELS_SUCCESS';
 
 export const GET_CREATE_CHANNEL_REQUEST = 'GET_CREATE_CHANNEL_REQUEST';
 export const GET_CREATE_CHANNEL_SUCCESS = 'GET_CREATE_CHANNEL_SUCCESS';
@@ -53,6 +58,13 @@ export default function (state = initialState, action) {
         followingChannels: action.payload,
       };
 
+    case GET_MORE_FOLLOWING_CHANNELS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        followingChannels: state.followingChannels.concat(action.payload),
+      };
+
     case GET_FOLLOWING_CHANNELS_FAIL:
       return {
         ...state,
@@ -71,6 +83,13 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
         userChannels: action.payload,
+      };
+
+    case GET_USER_MORE_CHANNELS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        userChannels: state.userChannels.concat(action.payload),
       };
 
     case GET_USER_CHANNELS_FAIL:
@@ -161,18 +180,40 @@ const getFollowingChannelsSuccess = (data) => ({
   payload: data,
 });
 
+const getMoreFollowingChannelsSuccess = (data) => ({
+  type: GET_MORE_FOLLOWING_CHANNELS_SUCCESS,
+  payload: data,
+});
+
 const getFollowingChannelsFailure = () => ({
   type: GET_FOLLOWING_CHANNELS_FAIL,
 });
 
-export const getFollowingChannels = () => (dispatch) =>
+export const getFollowingChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelsRequest());
     client
-      .get(`/xchat/get-following-channel/?start=0`)
+      .get(`/xchat/get-following-channel/?start=` + start)
       .then((res) => {
         if (res.conversations) {
           dispatch(getFollowingChannelsSuccess(res.conversations));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getFollowingChannelsFailure());
+        reject(err);
+      });
+  });
+
+export const getMoreFollowingChannels = (start) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getFollowingChannelsRequest());
+    client
+      .get(`/xchat/get-following-channel/?start=` + start)
+      .then((res) => {
+        if (res.conversations) {
+          dispatch(getMoreFollowingChannelsSuccess(res.conversations));
         }
         resolve(res);
       })
@@ -192,6 +233,11 @@ const getUserChannelsSuccess = (data) => ({
   payload: data,
 });
 
+const getMoreUserChannelsSuccess = (data) => ({
+  type: GET_USER_MORE_CHANNELS_SUCCESS,
+  payload: data,
+});
+
 const getUserChannelsFailure = () => ({
   type: GET_USER_CHANNELS_FAIL,
 });
@@ -204,6 +250,23 @@ export const getUserChannels = (start = 0) => (dispatch) =>
       .then((res) => {
         if (res.conversations) {
           dispatch(getUserChannelsSuccess(res.conversations));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getUserChannelsFailure());
+        reject(err);
+      });
+  });
+
+export const getMoreUserChannels = (start = 20) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getUserChannelsRequest());
+    client
+      .get(`/xchat/get-my-channel/?start=` + start)
+      .then((res) => {
+        if (res.conversations) {
+          dispatch(getMoreUserChannelsSuccess(res.conversations));
         }
         resolve(res);
       })

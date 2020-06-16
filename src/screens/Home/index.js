@@ -26,7 +26,7 @@ import HomeHeader from '../../components/HomeHeader';
 import {Images, Colors, Icons, SocketEvents} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import {getAvatar} from '../../utils';
+import {getAvatar, eventService} from '../../utils';
 import {ProfileModal} from '../../components/Modals';
 import {ChannelListItem} from '../../components/ListItems';
 import FriendListItem from '../../components/ListItems/FriendListItem';
@@ -40,7 +40,7 @@ import {getUserProfile} from '../../redux/reducers/userReducer';
 import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
 
 import {
-  getUserChannels,
+  getMoreFollowingChannels,
   getFollowingChannels,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
@@ -53,6 +53,7 @@ import {
   getFriendRequests,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
+import Button from '../../components/Button';
 
 class Home extends Component {
   constructor(props) {
@@ -65,8 +66,10 @@ class Home extends Component {
       isFriendsCollapsed: false,
       searchText: '',
       showDropdown: false,
+      loadMoreVisible: true,
     };
     this.SingleSocket = new SingleSocket();
+    this.start = 0;
   }
 
   static navigationOptions = () => {
@@ -78,13 +81,20 @@ class Home extends Component {
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
+
+    this.events = eventService.getMessage().subscribe((message) => {
+      // alert(JSON.stringify(message.text.data));
+    });
+  }
+
+  componentWillUnmount() {
+    this.events.unsubscribe();
   }
 
   async componentDidMount() {
     this.props.getUserProfile();
     Orientation.addOrientationListener(this._orientationDidChange);
 
-    this.props.getUserChannels();
     this.props.getFollowingChannels();
     this.props.getUserGroups();
     this.props.getUserFriends();
@@ -115,18 +125,37 @@ class Home extends Component {
   };
 
   onOpenGroupChats = (item) => {
+    let eventMessage = {
+      type: SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT,
+      message_details: {
+        read_count: 0,
+        group_id: item.group_id,
+      },
+    };
+    this.SingleSocket.sendMessage(eventMessage);
     this.props.setCurrentGroup(item);
     this.props.navigation.navigate('GroupChats');
   };
 
   onOpenFriendChats = (item) => {
+    this.SingleSocket.sendMessage(SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT);
     this.props.setCurrentFriend(item);
     this.props.navigation.navigate('FriendChats');
   };
 
+  handleLoadMoreChannels = () => {
+    this.start = this.start + 20;
+    this.props.getMoreFollowingChannels(this.start).then((res) => {
+      if (res.conversations.length <= 0) {
+        this.setState({loadMoreVisible: false});
+      }
+    });
+  };
+
   renderUserChannels() {
-    const {userChannels, channelLoading} = this.props;
-    const filteredChannels = userChannels.filter(
+    const {followingChannels, channelLoading} = this.props;
+    const {loadMoreVisible} = this.state;
+    const filteredChannels = followingChannels.filter(
       createFilter(this.state.searchText, ['name']),
     );
 
@@ -136,6 +165,7 @@ class Home extends Component {
       return (
         <FlatList
           data={filteredChannels}
+          extraData={this.state}
           renderItem={({item, index}) => (
             <ChannelListItem
               key={index}
@@ -148,9 +178,27 @@ class Home extends Component {
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
           ListFooterComponent={() => (
-            <View>{channelLoading ? <ListLoader /> : null}</View>
+            <View>
+              {/* {channelLoading && loadMoreVisible ? <ListLoader /> : null} */}
+              {/* {channelLoading ? (
+                <ListLoader />
+              ) :  */}
+              {loadMoreVisible ? (
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <Button
+                    title={'Load More'}
+                    onPress={this.handleLoadMoreChannels.bind(this)}
+                    height={30}
+                    // isRounded={channelLoading ? true : false}
+                    loading={channelLoading}
+                  />
+                </View>
+              ) : null}
+            </View>
           )}
           keyExtractor={(item, index) => String(index)}
+          // onEndReached={this.handleLoadMoreChannels}
+          // onEndReachedThreshold={0.8}
         />
       );
     } else {
@@ -171,6 +219,7 @@ class Home extends Component {
       return (
         <FlatList
           data={filteredGroups}
+          extraData={this.state}
           renderItem={({item, index}) => (
             <GroupListItem
               key={index}
@@ -205,6 +254,7 @@ class Home extends Component {
       return (
         <FlatList
           data={filteredFriends}
+          extraData={this.state}
           renderItem={({item, index}) => (
             <FriendListItem
               key={index}
@@ -229,14 +279,9 @@ class Home extends Component {
   }
 
   showDropdown = () => {
-    console.log(
-      'Home -> showDropdown -> showDropdown',
-      this.state.showDropdown,
-    );
-    this.setState({
-      showDropdown: !this.state.showDropdown,
-    });
-    this.props.navigation.navigate('CreateGroupChat');
+    this.setState((prevState) => ({
+      showDropdown: !prevState.showDropdown,
+    }));
   };
 
   render() {
@@ -248,8 +293,8 @@ class Home extends Component {
       searchText,
     } = this.state;
 
-    const {userData, userChannels, userGroups, userFriends} = this.props;
-    const filteredChannels = userChannels.filter(
+    const {userData, userGroups, userFriends, followingChannels} = this.props;
+    const filteredChannels = followingChannels.filter(
       createFilter(searchText, ['name']),
     );
     const filteredGroups = userGroups.filter(
@@ -396,7 +441,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   getUserProfile,
-  getUserChannels,
+  getMoreFollowingChannels,
   getFollowingChannels,
   setCurrentChannel,
   getUserGroups,

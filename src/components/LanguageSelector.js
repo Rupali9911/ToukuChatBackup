@@ -21,7 +21,7 @@ class LanguageSelector extends Component {
     super(props);
     this.state = {
       isChecked: false,
-      languages: languageArray
+      languages: languageArray,
     };
     this.props.userLanguage().then((res) => {
       // console.log(JSON.stringify(res));
@@ -30,13 +30,15 @@ class LanguageSelector extends Component {
 
   async componentDidMount() {
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
-      await Promise.all(
-    this.state.languages.map((item) => {
-      if (this.props.selectedLanguageItem.language_name === item.language_name) {
-        this.props.setAppLanguage(item);
-        setI18nConfig(item.language_name);
-       }
-      })
+    await Promise.all(
+      this.state.languages.map((item) => {
+        if (
+          this.props.selectedLanguageItem.language_name === item.language_name
+        ) {
+          this.props.setAppLanguage(item);
+          setI18nConfig(item.language_name);
+        }
+      }),
     );
   }
 
@@ -78,7 +80,7 @@ class LanguageSelector extends Component {
           </TouchableOpacity>
 
           {languages.map((item, key) => (
-            <View>
+            <View key={key}>
               {selectedLanguageItem.language_name ===
               item.language_name ? null : (
                 <TouchableOpacity
