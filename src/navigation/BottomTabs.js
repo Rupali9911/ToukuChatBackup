@@ -13,6 +13,7 @@ import {globalStyles} from '../styles';
 import {isIphoneX} from '../utils';
 import MoreScreen from '../screens/More';
 import {translate} from '../redux/reducers/languageReducer';
+import AddFriend  from '../screens/AddFriend'
 
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
@@ -33,10 +34,15 @@ HomeTab.navigationOptions = ({navigation}) => {
 
 const ChatTab = createStackNavigator({
   ChatTab: ChatScreen,
+    CreateGroupChat: CreateGroupChatScreen,
+    CreateChannel: CreateChannelScreen,
 });
 
 const MoreTab = createStackNavigator({
   MoreTab: MoreScreen,
+    AddFriend: AddFriend,
+    CreateGroupChat: CreateGroupChatScreen,
+    CreateChannel: CreateChannelScreen,
 });
 
 const Tabs = createBottomTabNavigator(
