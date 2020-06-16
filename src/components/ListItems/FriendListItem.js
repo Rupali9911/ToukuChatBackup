@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import RoundedImage from '../RoundedImage';
-import {globalStyles} from '../../styles';
-import {Colors, Images} from '../../constants';
+import { globalStyles } from '../../styles';
+import { Colors, Images } from '../../constants';
 
 export default class FriendListItem extends Component {
   constructor(props) {
@@ -14,12 +14,21 @@ export default class FriendListItem extends Component {
   }
 
   render() {
-    const {title, description, date, image, onPress, isOnline} = this.props;
+    const {
+      title,
+      description,
+      date,
+      image,
+      onPress,
+      isOnline,
+      unreadCount,
+    } = this.props;
     return (
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        style={styles.container}>
+        style={styles.container}
+      >
         <View style={styles.firstView}>
           <RoundedImage
             source={image}
@@ -28,18 +37,20 @@ export default class FriendListItem extends Component {
             isOnline={isOnline}
           />
           <View style={styles.secondView}>
-            <View style={{flex: 1, alignItems: 'flex-start'}}>
+            <View style={{ flex: 1, alignItems: 'flex-start' }}>
               <Text
                 numberOfLines={1}
-                style={[globalStyles.smallRegularText, {color: Colors.black}]}>
+                style={[globalStyles.smallRegularText, { color: Colors.black }]}
+              >
                 {title}
               </Text>
               <Text
                 numberOfLines={1}
                 style={[
                   globalStyles.smallLightText,
-                  {color: Colors.gray_dark, textAlign: 'left'},
-                ]}>
+                  { color: Colors.gray_dark, textAlign: 'left' },
+                ]}
+              >
                 {description}
               </Text>
             </View>
@@ -48,10 +59,12 @@ export default class FriendListItem extends Component {
                 numberOfLines={1}
                 style={[
                   globalStyles.smallLightText,
-                  {color: Colors.gray_dark},
-                ]}>
+                  { color: Colors.gray_dark },
+                ]}
+              >
                 {moment(date).format('MM/DD')}
               </Text>
+              <Text>{unreadCount}</Text>
             </View>
           </View>
         </View>
