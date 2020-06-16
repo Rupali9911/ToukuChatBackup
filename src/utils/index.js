@@ -1,6 +1,7 @@
 import {Dimensions, Platform} from 'react-native';
 import {Images, Icons} from '../constants';
-import Toast from "../components/Toast";
+import Toast from '../components/Toast';
+import {Subject} from 'rxjs';
 
 export function isPortrait() {
   const dim = Dimensions.get('screen');
@@ -57,10 +58,17 @@ export function getImage(source) {
 }
 
 export function showToast(title, text, type) {
-    Toast.show({
-        title: title,
-        text: text,
-        type: type
-    });
+  Toast.show({
+    title: title,
+    text: text,
+    type: type,
+  });
 }
 
+const subject = new Subject();
+
+export const eventService = {
+  sendMessage: (message) => subject.next({text: message}),
+  clearMessages: () => subject.next(),
+  getMessage: () => subject.asObservable(),
+};

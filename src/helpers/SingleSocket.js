@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, Text} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {socketUrl} from './api';
+import {eventService} from '../utils';
 
 export default class SingleSocket extends Component {
   constructor(props) {
@@ -65,8 +66,7 @@ export default class SingleSocket extends Component {
   }
 
   onNewMessage(e) {
-    // alert(JSON.stringify(e));
-    // this.subject.next(JSON.parse(e.data));
+    eventService.sendMessage(JSON.parse(e.data));
   }
 
   checkSocketConnected() {

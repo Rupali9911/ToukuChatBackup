@@ -13,61 +13,12 @@ import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import Button from '../../components/Button';
 import RoundedImage from '../../components/RoundedImage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {getImage} from '../../utils';
 
 export default class BackgroundImgModal extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-  }
-
-  renderBackgroundImage(backgroudImages) {
-    return (
-      <FlatList
-        numColumns={2}
-        data={backgroudImages}
-        extraData={this.props.extraData}
-        keyExtractor={(item, index) => String(index)}
-        renderItem={({item, index}) => (
-          <View style={{flex: 0.5, height: 150}}>
-            <View
-              style={{
-                height: '80%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <RoundedImage
-                source={item.url}
-                size={100}
-                resizeMode={'cover'}
-                borderSize={item.isSelected ? 2 : 0}
-                borderColor={Colors.green}
-              />
-            </View>
-            <View
-              style={{
-                height: '20%',
-                alignItems: 'center',
-                paddingRight: '30%',
-              }}>
-              <TouchableOpacity
-                style={{
-                  height: 20,
-                  width: 20,
-                  borderWidth: 2,
-                  borderColor: Colors.green,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={this.onSelectBackground.bind(this, item, index)}>
-                {item.isSelected ? (
-                  <MaterialIcons name="check" color={Colors.green} size={16} />
-                ) : null}
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />
-    );
   }
 
   onSelectBackground = (item, index) => {
@@ -123,7 +74,6 @@ export default class BackgroundImgModal extends Component {
               backgroundColor: Colors.white,
               padding: 20,
             }}>
-            {/* {this.renderBackgroundImage(backgroudImages)} */}
             <FlatList
               numColumns={2}
               data={backgroudImages}
@@ -150,7 +100,7 @@ export default class BackgroundImgModal extends Component {
                         justifyContent: 'center',
                       }}>
                       <RoundedImage
-                        source={item.url}
+                        source={getImage(item.uri)}
                         size={92}
                         resizeMode={'cover'}
                         borderSize={item.isSelected ? 2 : 0}
