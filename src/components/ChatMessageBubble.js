@@ -186,7 +186,7 @@ class ChatMessageBubble extends Component {
             titleStyle={{ marginLeft: -25, color: Colors.white }}
           />
         )}
-        {isEditable > new Date() && (
+        {isUser && isEditable > new Date() && (
           <Menu.Item
             titleStyle={{ color: Colors.white }}
             icon={() => (
@@ -216,7 +216,7 @@ class ChatMessageBubble extends Component {
           title={translate('common.delete')}
           titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        {isEditable > new Date() && (
+        {isUser && isEditable > new Date() && (
           <Menu.Item
             titleStyle={{ color: Colors.white }}
             icon={() => (

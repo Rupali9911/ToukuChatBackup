@@ -349,11 +349,10 @@ export const sendChannelMessage = (data) => (dispatch) =>
       });
   });
 
-export const editChannelMessage = (data) => (dispatch) =>
-  // {message_body: "Fffffvbccc"}
+export const editChannelMessage = (id, payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .PATCH(`/xchat/edit-channel-message/${data.id}/`, data.payload)
+      .patch(`/xchat/edit-channel-message/${id}/`, payload)
       .then((res) => {
         resolve(res);
       })

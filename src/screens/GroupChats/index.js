@@ -22,6 +22,7 @@ import {
   deleteGroup,
   sendGroupMessage,
   leaveGroup,
+  editGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import { ListLoader } from '../../components/Loaders';
@@ -85,6 +86,8 @@ class GroupChats extends Component {
       ],
       isReply: false,
       repliedMessage: null,
+      isEdited: false,
+      editMessageId: null,
     };
   }
 
@@ -94,8 +97,13 @@ class GroupChats extends Component {
       conversation,
       isReply,
       repliedMessage,
+      isEdited,
     } = this.state;
     if (!newMessageText) {
+      return;
+    }
+    if (isEdited) {
+      this.sendEditMessage();
       return;
     }
     if (isReply) {
@@ -131,6 +139,42 @@ class GroupChats extends Component {
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
+      isEdited: false,
+    });
+  };
+
+  sendEditMessage = () => {
+    const { newMessageText, editMessageId } = this.state;
+
+    const data = {
+      message_body: newMessageText,
+    };
+
+    this.props.editGroupMessage(editMessageId, data).then((res) => {
+      this.getGroupConversation();
+    });
+    // .catch((err) => {});
+    this.setState({
+      newMessageText: '',
+      isReply: false,
+      repliedMessage: null,
+      isEdited: false,
+    });
+  };
+
+  onEdit = (message) => {
+    console.log('GroupChats -> onEdit -> message', message);
+    this.setState({
+      newMessageText: message.message_body.text,
+      editMessageId: message.msg_id,
+      isEdited: true,
+    });
+  };
+
+  onEditClear = () => {
+    this.setState({
+      editMessageId: null,
+      isEdited: false,
     });
   };
 
@@ -179,6 +223,7 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
+        console.log('GroupChats -> getGroupConversation -> err', err);
         // Toast.show({
         //   title: 'Touku',
         //   text: translate('common.somethingWentWrong'),
@@ -219,6 +264,9 @@ class GroupChats extends Component {
 
   handleMessage(message) {
     this.setState({ newMessageText: message });
+    if (!message.length && this.state.isEdited) {
+      this.onEditClear();
+    }
   }
 
   //Leave Group
@@ -388,6 +436,7 @@ class GroupChats extends Component {
             cancelReply={this.cancelReply.bind(this)}
             onDelete={(id) => this.onDeleteMessagePressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onEditMessage={(msg) => this.onEdit(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
@@ -443,6 +492,7 @@ const mapDispatchToProps = {
   leaveGroup,
   sendGroupMessage,
   translateMessage,
+  editGroupMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

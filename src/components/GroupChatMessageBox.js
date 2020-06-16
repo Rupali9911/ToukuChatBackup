@@ -129,6 +129,7 @@ export default class GroupChatMessageBox extends Component {
       onMessageTranslate,
       translatedMessage,
       translatedMessageId,
+      onEditMessage,
     } = this.props;
     return !isUser && message.message_body ? (
       <View
@@ -177,6 +178,7 @@ export default class GroupChatMessageBox extends Component {
                   translatedMessage={translatedMessage}
                   translatedMessageId={translatedMessageId}
                   onDelete={onDelete}
+                  onEditMessage={onEditMessage}
                 />
               )}
               <View
@@ -258,6 +260,7 @@ export default class GroupChatMessageBox extends Component {
                   translatedMessage={translatedMessage}
                   translatedMessageId={translatedMessageId}
                   onDelete={onDelete}
+                  onEditMessage={onEditMessage}
                 />
               )}
             </View>

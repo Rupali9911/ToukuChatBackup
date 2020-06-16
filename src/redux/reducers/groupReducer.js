@@ -323,11 +323,10 @@ export const sendGroupMessage = (message) => (dispatch) =>
       });
   });
 
-export const editGroupMessage = (data) => (dispatch) =>
-  //{message_body: "Fffffvbccc"}
+export const editGroupMessage = (id, payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .PATCH(`/xchat/edit-group-message/${data.id}/`, data.payload)
+      .put(`/xchat/edit-group-message/${id}/`, payload)
       .then((res) => {
         resolve(res);
       })
