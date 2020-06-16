@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   TextInput,
@@ -6,8 +6,8 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import {Colors, Icons, Fonts} from '../../constants';
-import {isIphoneX} from '../../utils';
+import { Colors, Icons, Fonts } from '../../constants';
+import { isIphoneX } from '../../utils';
 
 export default class ChatInput extends Component {
   constructor(props) {
@@ -35,7 +35,8 @@ export default class ChatInput extends Component {
           style={chatInput.chatAttachmentContainer}
           onPress={() => {
             onAttachmentPress ? onAttachmentPress : null;
-          }}>
+          }}
+        >
           <Image
             source={Icons.icon_camera_grad}
             style={chatInput.attachmentImage}
@@ -44,6 +45,7 @@ export default class ChatInput extends Component {
         </TouchableOpacity>
         <View style={chatInput.textInputContainer}>
           <TextInput
+            multiline={true}
             style={chatInput.textInput}
             onChangeText={(message) => onChangeText(message)}
             value={value}
@@ -55,10 +57,14 @@ export default class ChatInput extends Component {
           style={chatInput.sendButoonContainer}
           onPress={() => {
             onSend();
-          }}>
+          }}
+        >
           <Image
             source={Icons.icon_send_button}
-            style={[chatInput.sandButtonImage, value != 0 && {tintColor: null}]}
+            style={[
+              chatInput.sandButtonImage,
+              value != 0 && { tintColor: null },
+            ]}
             resizeMode={'contain'}
           />
         </TouchableOpacity>
@@ -72,7 +78,7 @@ const chatInput = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: {flexGrow: 1},
+  messareAreaScroll: { flexGrow: 1 },
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -82,7 +88,7 @@ const chatInput = StyleSheet.create({
     bottom: 0,
     width: '100%',
     height: isIphoneX() ? 70 : 50,
-    backgroundColor: Colors.gradient_1,
+    backgroundColor: '#FC94B8',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
@@ -111,6 +117,8 @@ const chatInput = StyleSheet.create({
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
+    paddingTop: Platform.OS === 'ios' ? 10 : 0,
+    paddingBottom: 0,
   },
   sendButoonContainer: {
     height: '100%',
@@ -118,5 +126,5 @@ const chatInput = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sandButtonImage: {height: '50%', width: '70%', tintColor: Colors.gray},
+  sandButtonImage: { height: '50%', width: '70%', tintColor: Colors.gray },
 });

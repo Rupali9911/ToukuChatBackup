@@ -187,9 +187,11 @@ export default class GroupChatMessageBox extends Component {
                 }}
               >
                 <Text style={styles.statusText}>{status}</Text>
-                <Text
-                  style={styles.statusText}
-                >{`${time.getHours()}:${time.getMinutes()}`}</Text>
+                <Text style={styles.statusText}>{`${time.getHours()}:${
+                  time.getMinutes() < 10
+                    ? '0' + time.getMinutes()
+                    : time.getMinutes()
+                }`}</Text>
               </View>
             </View>
           </View>
@@ -228,7 +230,11 @@ export default class GroupChatMessageBox extends Component {
               >
                 <Text style={styles.statusText}>{status}</Text>
                 <Text style={styles.statusText}>
-                  {`${time.getHours()}:${time.getMinutes()}`}
+                  {`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}
                 </Text>
               </View>
               {message.message_body.type === 'image' ? (

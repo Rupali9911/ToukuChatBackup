@@ -18,6 +18,7 @@ import {
   sendPersonalMessage,
   unFriendUser,
   getUserFriends,
+  editPersonalMessage,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 
@@ -52,75 +53,82 @@ class FriendChats extends Component {
       ],
       isReply: false,
       repliedMessage: null,
-      messagesArray: [
-        {
-          id: 1,
-          message: 'Hello',
-          isUser: false,
-          userName: 'raj',
-          time: '20:20',
-        },
-        {
-          id: 2,
-          message: 'HI',
-          isUser: true,
-          status: 'Read',
-          time: '20:21',
-        },
-        {
-          id: 3,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: false,
-          userName: 'raj',
-          time: '20:21',
-        },
-        {
-          id: 4,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: true,
-          status: 'Read',
-          time: '20:25',
-          repliedTo: {
-            id: 3,
-            message:
-              'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-            isUser: false,
-            userName: 'raj',
-            time: '20:21',
-          },
-        },
-        {
-          id: 5,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: false,
-          userName: 'raj',
-          time: '20:26',
-          repliedTo: {
-            id: 2,
-            message: 'HI',
-            isUser: true,
-            status: 'Read',
-            time: '20:21',
-          },
-        },
-        {
-          id: 6,
-          message:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-          isUser: true,
-          userName: 'raj',
-          time: '20:27',
-        },
-      ],
+      isEdited: false,
+      editMessageId: null,
+      // messagesArray: [
+      //   {
+      //     id: 1,
+      //     message: 'Hello',
+      //     isUser: false,
+      //     userName: 'raj',
+      //     time: '20:20',
+      //   },
+      //   {
+      //     id: 2,
+      //     message: 'HI',
+      //     isUser: true,
+      //     status: 'Read',
+      //     time: '20:21',
+      //   },
+      //   {
+      //     id: 3,
+      //     message:
+      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      //     isUser: false,
+      //     userName: 'raj',
+      //     time: '20:21',
+      //   },
+      //   {
+      //     id: 4,
+      //     message:
+      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      //     isUser: true,
+      //     status: 'Read',
+      //     time: '20:25',
+      //     repliedTo: {
+      //       id: 3,
+      //       message:
+      //         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      //       isUser: false,
+      //       userName: 'raj',
+      //       time: '20:21',
+      //     },
+      //   },
+      //   {
+      //     id: 5,
+      //     message:
+      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      //     isUser: false,
+      //     userName: 'raj',
+      //     time: '20:26',
+      //     repliedTo: {
+      //       id: 2,
+      //       message: 'HI',
+      //       isUser: true,
+      //       status: 'Read',
+      //       time: '20:21',
+      //     },
+      //   },
+      //   {
+      //     id: 6,
+      //     message:
+      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      //     isUser: true,
+      //     userName: 'raj',
+      //     time: '20:27',
+      //   },
+      // ],
     };
   }
 
   onMessageSend = () => {
-    const { newMessageText, isReply, repliedMessage } = this.state;
+    const { newMessageText, isReply, repliedMessage, isEdited } = this.state;
     if (!newMessageText) {
+      return;
+    }
+
+    if (isEdited) {
+      this.sendEditMessage();
       return;
     }
     // let newMessage;
@@ -161,6 +169,30 @@ class FriendChats extends Component {
     });
   };
 
+  sendEditMessage = () => {
+    const { newMessageText, editMessageId } = this.state;
+
+    const data = {
+      message_body: newMessageText,
+      friend: this.props.currentFriend.user_id,
+    };
+    console.log('FriendChats -> sendEditMessage -> data', data);
+
+    this.props
+      .editPersonalMessage(editMessageId, data)
+      .then((res) => {
+        console.log('FriendChats -> onConfirm -> res', res);
+        if (res.status === true) {
+          this.getPersonalConversation();
+        }
+      })
+      .catch((err) => {});
+    this.setState({
+      newMessageText: '',
+      isReply: false,
+      repliedMessage: null,
+    });
+  };
   onReply = (messageId) => {
     const { conversations } = this.state;
 
@@ -204,6 +236,9 @@ class FriendChats extends Component {
 
   handleMessage(message) {
     this.setState({ newMessageText: message });
+    if (!message.length && this.state.isEdited) {
+      this.onEditClear();
+    }
   }
 
   toggleConfirmationModal = () => {
@@ -220,10 +255,6 @@ class FriendChats extends Component {
       channel_name: `unfriend_${this.props.currentFriend.user_id}`,
       unfriend_user_id: this.props.currentFriend.user_id,
     };
-    console.log(
-      'FriendChats -> onConfirm -> this.props.currentFriend',
-      this.props.currentFriend
-    );
     this.props
       .unFriendUser(payload)
       .then((res) => {
@@ -292,6 +323,22 @@ class FriendChats extends Component {
     });
   };
 
+  onEdit = (message) => {
+    this.setState({
+      newMessageText: message.message_body,
+      editMessageId: message.id,
+      isEdited: true,
+    });
+  };
+
+  onEditClear = () => {
+    console.log('FriendChats -> onEditClear -> onEditClear');
+    this.setState({
+      editMessageId: null,
+      isEdited: false,
+    });
+  };
+
   render() {
     const {
       conversations,
@@ -334,6 +381,7 @@ class FriendChats extends Component {
             onDelete={(id) => this.onDeletePressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
+            onEditMessage={(msg) => this.onEdit(msg)}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
           />
@@ -375,6 +423,7 @@ const mapDispatchToProps = {
   sendPersonalMessage,
   translateMessage,
   unFriendUser,
+  editPersonalMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

@@ -128,6 +128,7 @@ export default class ChatMessageBox extends Component {
       onMessageTranslate,
       translatedMessage,
       translatedMessageId,
+      onEditMessage,
     } = this.props;
     return !isUser && message.message_body ? (
       <View
@@ -170,6 +171,7 @@ export default class ChatMessageBox extends Component {
                   selectedMessageId={selectedMessageId}
                   isChannel={isChannel}
                   onMessageTranslate={onMessageTranslate}
+                  onEditMessage={onEditMessage}
                   translatedMessage={translatedMessage}
                   translatedMessageId={translatedMessageId}
                   onDelete={onDelete}
@@ -183,9 +185,11 @@ export default class ChatMessageBox extends Component {
                 }}
               >
                 <Text style={styles.statusText}>{status}</Text>
-                <Text
-                  style={styles.statusText}
-                >{`${time.getHours()}:${time.getMinutes()}`}</Text>
+                <Text style={styles.statusText}>{`${time.getHours()}:${
+                  time.getMinutes() < 10
+                    ? '0' + time.getMinutes()
+                    : time.getMinutes()
+                }`}</Text>
               </View>
             </View>
           </View>
@@ -220,7 +224,11 @@ export default class ChatMessageBox extends Component {
               >
                 <Text style={styles.statusText}>{status}</Text>
                 <Text style={styles.statusText}>
-                  {`${time.getHours()}:${time.getMinutes()}`}
+                  {`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}
                 </Text>
               </View>
               {message.msg_type === 'image' ? (
@@ -242,6 +250,7 @@ export default class ChatMessageBox extends Component {
                   selectedMessageId={selectedMessageId}
                   isChannel={isChannel}
                   onMessageTranslate={onMessageTranslate}
+                  onEditMessage={onEditMessage}
                   translatedMessage={translatedMessage}
                   translatedMessageId={translatedMessageId}
                   onDelete={onDelete}

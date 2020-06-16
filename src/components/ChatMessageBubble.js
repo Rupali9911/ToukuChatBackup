@@ -76,8 +76,13 @@ class ChatMessageBubble extends Component {
       isChannel,
       selectedMessageId,
       onMessageTranslate,
+      onEditMessage,
       onDelete,
     } = this.props;
+    const msgTime = new Date(message.created);
+    const isEditable = new Date(msgTime);
+
+    isEditable.setDate(isEditable.getDate() + 1);
     return (
       <Menu
         contentStyle={{
@@ -181,17 +186,24 @@ class ChatMessageBubble extends Component {
             titleStyle={{ marginLeft: -25, color: Colors.white }}
           />
         )}
-        <Menu.Item
-          titleStyle={{ color: Colors.white }}
-          icon={() => (
-            <FontAwesome5 name={'pencil-alt'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            closeMenu();
-          }}
-          title={translate('common.edit')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
+        {isEditable > new Date() && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5
+                name={'pencil-alt'}
+                size={20}
+                color={Colors.white}
+              />
+            )}
+            onPress={() => {
+              onEditMessage(message);
+              closeMenu();
+            }}
+            title={translate('common.edit')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
         <Menu.Item
           titleStyle={{ color: Colors.white }}
           icon={() => (
@@ -204,21 +216,23 @@ class ChatMessageBubble extends Component {
           title={translate('common.delete')}
           titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        <Menu.Item
-          titleStyle={{ color: Colors.white }}
-          icon={() => (
-            <FontAwesome5
-              name={'minus-circle'}
-              size={20}
-              color={Colors.white}
-            />
-          )}
-          onPress={() => {
-            closeMenu();
-          }}
-          title={translate('common.unsend')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
+        {isEditable > new Date() && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5
+                name={'minus-circle'}
+                size={20}
+                color={Colors.white}
+              />
+            )}
+            onPress={() => {
+              closeMenu();
+            }}
+            title={translate('common.unsend')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
         <Menu.Item
           titleStyle={{ color: Colors.white }}
           icon={() => (

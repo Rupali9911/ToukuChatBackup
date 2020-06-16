@@ -39,37 +39,57 @@ class GroupChatContainer extends Component {
         />
       );
     }
+
+    let hedaingDate = new Date();
+    setDate = (date) => {
+      hedaingDate = new Date(date);
+    };
+
+    getDate = (date) => {
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+      const msgDate = new Date(date);
+
+      if (today.getDate() === msgDate.getDate()) return 'Today';
+      if (yesterday.getDate() === msgDate.getDate()) return 'Yesterday';
+      return moment(msgDate).format('MM/DD');
+    };
     const msg = messages.map((item, index) => {
       return (
-        <GroupChatMessageBox
-          key={item.msg_id}
-          message={item}
-          isUser={item.sender_id === this.props.userData.id ? true : false}
-          time={new Date(item.timestamp)}
-          // status={item.status}
-          onMessageReply={(id) => this.props.onMessageReply(id)}
-          orientation={this.props.orientation}
-          onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
-          onMessageTranslateClose={this.props.onMessageTranslateClose}
-          translatedMessage={this.props.translatedMessage}
-          translatedMessageId={this.props.translatedMessageId}
-          onDelete={(id) => this.props.onDelete(id)}
-        />
+        <Fragment>
+          {hedaingDate.getDate() !== new Date(item.timestamp).getDate() ||
+          index === 0 ? (
+            <Fragment>
+              {setDate(item.timestamp)}
+              <View style={chatStyle.messageDateCntainer}>
+                <View style={chatStyle.messageDate}>
+                  <Text style={chatStyle.messageDateText}>
+                    {getDate(item.timestamp)}
+                  </Text>
+                </View>
+              </View>
+            </Fragment>
+          ) : null}
+          <GroupChatMessageBox
+            key={item.msg_id}
+            message={item}
+            isUser={item.sender_id === this.props.userData.id ? true : false}
+            time={new Date(item.timestamp)}
+            // status={item.status}
+            onMessageReply={(id) => this.props.onMessageReply(id)}
+            orientation={this.props.orientation}
+            onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+            onMessageTranslateClose={this.props.onMessageTranslateClose}
+            translatedMessage={this.props.translatedMessage}
+            translatedMessageId={this.props.translatedMessageId}
+            onDelete={(id) => this.props.onDelete(id)}
+          />
+        </Fragment>
       );
     });
 
-    return (
-      <Fragment>
-        <View style={chatStyle.messageDateCntainer}>
-          <View style={chatStyle.messageDate}>
-            <Text style={chatStyle.messageDateText}>
-              {moment(new Date()).format('MM/DD')}
-            </Text>
-          </View>
-        </View>
-        {msg.reverse()}
-      </Fragment>
-    );
+    return <Fragment>{msg}</Fragment>;
   };
 
   render() {
@@ -215,7 +235,7 @@ const chatStyle = StyleSheet.create({
     marginVertical: 15,
   },
   messageDate: {
-    backgroundColor: Colors.orange,
+    backgroundColor: Colors.orange_light,
     paddingVertical: 4,
     paddingHorizontal: 5,
     borderRadius: 100,
