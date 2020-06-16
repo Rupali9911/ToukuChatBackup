@@ -55,69 +55,6 @@ class FriendChats extends Component {
       repliedMessage: null,
       isEdited: false,
       editMessageId: null,
-      // messagesArray: [
-      //   {
-      //     id: 1,
-      //     message: 'Hello',
-      //     isUser: false,
-      //     userName: 'raj',
-      //     time: '20:20',
-      //   },
-      //   {
-      //     id: 2,
-      //     message: 'HI',
-      //     isUser: true,
-      //     status: 'Read',
-      //     time: '20:21',
-      //   },
-      //   {
-      //     id: 3,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     isUser: false,
-      //     userName: 'raj',
-      //     time: '20:21',
-      //   },
-      //   {
-      //     id: 4,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     isUser: true,
-      //     status: 'Read',
-      //     time: '20:25',
-      //     repliedTo: {
-      //       id: 3,
-      //       message:
-      //         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //       isUser: false,
-      //       userName: 'raj',
-      //       time: '20:21',
-      //     },
-      //   },
-      //   {
-      //     id: 5,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     isUser: false,
-      //     userName: 'raj',
-      //     time: '20:26',
-      //     repliedTo: {
-      //       id: 2,
-      //       message: 'HI',
-      //       isUser: true,
-      //       status: 'Read',
-      //       time: '20:21',
-      //     },
-      //   },
-      //   {
-      //     id: 6,
-      //     message:
-      //       'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      //     isUser: true,
-      //     userName: 'raj',
-      //     time: '20:27',
-      //   },
-      // ],
     };
   }
 
@@ -131,7 +68,6 @@ class FriendChats extends Component {
       this.sendEditMessage();
       return;
     }
-    // let newMessage;
     if (isReply) {
       let data = {
         friend: this.props.currentFriend.friend,
@@ -166,6 +102,7 @@ class FriendChats extends Component {
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
+      isEdited: false,
     });
   };
 
@@ -174,23 +111,20 @@ class FriendChats extends Component {
 
     const data = {
       message_body: newMessageText,
-      friend: this.props.currentFriend.user_id,
+      friend: this.props.currentFriend.friend,
     };
-    console.log('FriendChats -> sendEditMessage -> data', data);
 
     this.props
       .editPersonalMessage(editMessageId, data)
       .then((res) => {
-        console.log('FriendChats -> onConfirm -> res', res);
-        if (res.status === true) {
-          this.getPersonalConversation();
-        }
+        this.getPersonalConversation();
       })
       .catch((err) => {});
     this.setState({
       newMessageText: '',
       isReply: false,
       repliedMessage: null,
+      isEdited: false,
     });
   };
   onReply = (messageId) => {
@@ -332,7 +266,6 @@ class FriendChats extends Component {
   };
 
   onEditClear = () => {
-    console.log('FriendChats -> onEditClear -> onEditClear');
     this.setState({
       editMessageId: null,
       isEdited: false,

@@ -80,6 +80,7 @@ class GroupChatMessageBubble extends Component {
       selectedMessageId,
       onMessageTranslate,
       onDelete,
+      onEditMessage,
     } = this.props;
 
     if (!message.message_body) {
@@ -195,7 +196,7 @@ class GroupChatMessageBubble extends Component {
           title={translate('common.reply')}
           titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        {isEditable > new Date() && (
+        {isUser && isEditable > new Date() && (
           <Menu.Item
             titleStyle={{ color: Colors.white }}
             icon={() => (
@@ -206,6 +207,7 @@ class GroupChatMessageBubble extends Component {
               />
             )}
             onPress={() => {
+              onEditMessage(message);
               closeMenu();
             }}
             title={translate('common.edit')}
@@ -224,7 +226,7 @@ class GroupChatMessageBubble extends Component {
           title={translate('common.delete')}
           titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        {isEditable > new Date() && (
+        {isUser && isEditable > new Date() && (
           <Menu.Item
             titleStyle={{ color: Colors.white }}
             icon={() => (

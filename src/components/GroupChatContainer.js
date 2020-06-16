@@ -84,6 +84,7 @@ class GroupChatContainer extends Component {
             translatedMessage={this.props.translatedMessage}
             translatedMessageId={this.props.translatedMessageId}
             onDelete={(id) => this.props.onDelete(id)}
+            onEditMessage={(msg) => this.props.onEditMessage(msg)}
           />
         </Fragment>
       );

@@ -186,11 +186,9 @@ export const unFriendUser = (data) => (dispatch) =>
   });
 
 export const editPersonalMessage = (id, payload) => (dispatch) =>
-  //{message_body: "hey", friend: 2652}
   new Promise(function (resolve, reject) {
-    console.log('payload', payload);
     client
-      .PATCH(`/xchat/edit-personal-message/${id}/`, payload)
+      .patch(`/xchat/edit-personal-message/${id}/`, payload)
       .then((res) => {
         console.log('res', res);
         resolve(res);

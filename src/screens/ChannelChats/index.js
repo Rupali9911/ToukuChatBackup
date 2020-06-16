@@ -14,6 +14,7 @@ import {
   getChannelConversations,
   readAllChannelMessages,
   sendChannelMessage,
+  editChannelMessage,
 } from '../../redux/reducers/channelReducer';
 import { ListLoader } from '../../components/Loaders';
 import { ConfirmationModal } from '../../components/Modals';
@@ -27,6 +28,8 @@ class ChannelChats extends Component {
       translatedMessage: null,
       translatedMessageId: null,
       showConfirmationModal: false,
+      isEdited: false,
+      editMessageId: null,
       headerRightIconMenu: [
         {
           id: 1,
@@ -37,64 +40,69 @@ class ChannelChats extends Component {
           },
         },
       ],
-      isReply: false,
-      repliedMessage: null,
     };
   }
 
   onMessageSend = () => {
-    const { newMessageText, isReply, repliedMessage } = this.state;
+    const { newMessageText, isEdited } = this.state;
     if (!newMessageText) {
       return;
     }
-    if (isReply) {
-      let messageData = {
-        channel: this.props.currentChannel.id,
-        local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
-        message_body: newMessageText,
-        msg_type: 'text',
-        reply_to: repliedMessage.id,
-      };
-      this.props
-        .sendChannelMessage(messageData)
-        .then((res) => {
-          this.getChannelConversations();
-        })
-        .catch((err) => {});
-    } else {
-      let messageData = {
-        channel: this.props.currentChannel.id,
-        local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
-        message_body: newMessageText,
-        msg_type: 'text',
-      };
-      this.props
-        .sendChannelMessage(messageData)
-        .then((res) => {
-          this.getChannelConversations();
-        })
-        .catch((err) => {});
+    if (isEdited) {
+      this.sendEditMessage();
+      return;
     }
+    let messageData = {
+      channel: this.props.currentChannel.id,
+      local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
+      message_body: newMessageText,
+      msg_type: 'text',
+    };
+    this.props
+      .sendChannelMessage(messageData)
+      .then((res) => {
+        this.getChannelConversations();
+      })
+      .catch((err) => {});
     this.setState({
       newMessageText: '',
-      isReply: false,
       repliedMessage: null,
+      isEdited: false,
     });
   };
 
-  onReply = (messageId) => {
-    const { conversations } = this.state;
-    const repliedMessage = conversations.find((item) => item.id === messageId);
+  onEdit = (message) => {
     this.setState({
-      isReply: true,
-      repliedMessage: repliedMessage,
+      newMessageText: message.message_body,
+      editMessageId: message.id,
+      isEdited: true,
     });
   };
 
-  cancelReply = () => {
+  onEditClear = () => {
     this.setState({
-      isReply: false,
+      editMessageId: null,
+      isEdited: false,
+    });
+  };
+
+  sendEditMessage = () => {
+    const { newMessageText, editMessageId } = this.state;
+
+    const data = {
+      message_body: newMessageText,
+    };
+
+    this.props
+      .editChannelMessage(editMessageId, data)
+      .then((res) => {
+        this.getChannelConversations();
+      })
+      .catch((err) => {});
+    this.setState({
+      newMessageText: '',
       repliedMessage: null,
+      isEdited: false,
     });
   };
 
@@ -125,29 +133,8 @@ class ChannelChats extends Component {
 
   handleMessage(message) {
     this.setState({ newMessageText: message });
-  }
-
-  renderConversations() {
-    const { channelLoading } = this.props;
-    const { conversations, newMessageText } = this.state;
-
-    if (channelLoading) {
-      return <ListLoader />;
-    } else {
-      return (
-        <ChatContainer
-          handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend.bind(this)}
-          onMessageReply={(id) => this.onReply(id)}
-          newMessageText={newMessageText}
-          // messages={this.state.conversations}
-          messages={conversations}
-          orientation={this.state.orientation}
-          repliedMessage={this.state.repliedMessage}
-          isReply={this.state.isReply}
-          cancelReply={this.cancelReply}
-        />
-      );
+    if (!message.length && this.state.isEdited) {
+      this.onEditClear();
     }
   }
 
@@ -160,7 +147,6 @@ class ChannelChats extends Component {
       translatedMessageId,
       orientation,
       repliedMessage,
-      isReply,
     } = this.state;
 
     if (channelLoading && conversations.length <= 0) {
@@ -170,20 +156,17 @@ class ChannelChats extends Component {
         <ChatContainer
           handleMessage={(message) => this.handleMessage(message)}
           onMessageSend={this.onMessageSend.bind(this)}
-          onMessageReply={(id) => this.onReply(id)}
           newMessageText={newMessageText}
-          // messages={this.state.conversations}
           messages={conversations}
           orientation={orientation}
           repliedMessage={repliedMessage}
-          isReply={isReply}
-          cancelReply={this.cancelReply}
           onDelete={(id) => this.onDeletePressed(id)}
           onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
           onMessageTranslateClose={this.onMessageTranslateClose}
           translatedMessage={translatedMessage}
           translatedMessageId={translatedMessageId}
           isChannel={true}
+          onEditMessage={(msg) => this.onEdit(msg)}
         />
       );
     }
@@ -197,17 +180,14 @@ class ChannelChats extends Component {
   };
 
   onCancel = () => {
-    console.log('ChannelChats -> onCancel -> onCancel');
     this.toggleConfirmationModal();
   };
 
   onConfirm = () => {
-    console.log('ChannelChats -> onConfirm -> onConfirm');
     this.toggleConfirmationModal();
   };
 
   onDeletePressed = (messageId) => {
-    console.log('ChannelChats -> onReply -> messageId', messageId);
     this.setState({ showConfirmationModal: true });
   };
 
@@ -281,6 +261,7 @@ const mapDispatchToProps = {
   readAllChannelMessages,
   sendChannelMessage,
   translateMessage,
+  editChannelMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);
