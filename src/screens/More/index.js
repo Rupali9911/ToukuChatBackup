@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, ScrollView} from 'react-native';
+import {View, ImageBackground, ScrollView, Linking} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
@@ -118,7 +118,7 @@ class More extends Component {
               title={translate('common.goToXana')}
                 onPress={() => console.log('Create New Group')}
                 isImage={Icons.xana_app}
-                onPress={() => this.setState({isWebViewVisible: true, isSupport: false})}
+                onPress={() => Linking.openURL(supportUrl)}
             />
             <Section />
                 <SettingsItem
@@ -138,7 +138,7 @@ class More extends Component {
                     title={translate('pages.xchat.customerSupport')}
                     isFontAwesome={true}
                     isCustomerSupport={true}
-                    onPress={() => this.setState({isWebViewVisible: true, isSupport: true})}
+                    onPress={() => Linking.openURL(supportUrl)}
                 />
                 <SettingsItem
                     icon_name={'sign-out-alt'}

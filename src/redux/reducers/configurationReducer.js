@@ -118,8 +118,6 @@ export const getToukuPoints = (data) => (dispatch) =>
         client
             .get(GET_TOUKU_POINTS, data)
             .then((res) => {
-              console.log('GET_TOUKU_POINTS called', res)
-                //dispatch(setUserConfig(res));
                 resolve(res);
             })
             .catch((err) => {
