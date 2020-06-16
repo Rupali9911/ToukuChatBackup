@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
@@ -196,11 +196,11 @@ const getUserChannelsFailure = () => ({
   type: GET_USER_CHANNELS_FAIL,
 });
 
-export const getUserChannels = () => (dispatch) =>
+export const getUserChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserChannelsRequest());
     client
-      .get(`/xchat/get-my-channel/?start=0`)
+      .get(`/xchat/get-my-channel/?start=` + start)
       .then((res) => {
         if (res.conversations) {
           dispatch(getUserChannelsSuccess(res.conversations));
@@ -341,6 +341,19 @@ export const sendChannelMessage = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/send-channel-message/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const editChannelMessage = (data) => (dispatch) =>
+  // {message_body: "Fffffvbccc"}
+  new Promise(function (resolve, reject) {
+    client
+      .PATCH(`/xchat/edit-channel-message/${data.id}/`, data.payload)
       .then((res) => {
         resolve(res);
       })

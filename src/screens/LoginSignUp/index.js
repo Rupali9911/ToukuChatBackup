@@ -203,13 +203,13 @@ class LoginSignUp extends Component {
             let status = res.status;
             let isEmail = res.email_required;
             if (!status) {
-              if (isEmail) {
-                this.props.navigation.navigate('SignUp', {
-                  pageNumber: 1,
-                  isSocial: true,
-                });
-                return;
-              }
+              // if (isEmail) {
+              //   this.props.navigation.navigate('SignUp', {
+              //     pageNumber: 1,
+              //     isSocial: true,
+              //   });
+              //   return;
+              // }
               this.props.navigation.navigate('SignUp', {
                 pageNumber: 2,
                 isSocial: true,

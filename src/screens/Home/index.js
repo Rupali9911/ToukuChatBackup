@@ -23,7 +23,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {Images, Colors, Icons} from '../../constants';
+import {Images, Colors, Icons, SocketEvents} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
 import {getAvatar} from '../../utils';
@@ -66,6 +66,7 @@ class Home extends Component {
       searchText: '',
       showDropdown: false,
     };
+    this.SingleSocket = new SingleSocket();
   }
 
   static navigationOptions = () => {
@@ -90,19 +91,9 @@ class Home extends Component {
     this.props.getFriendRequests();
     this.props.getUserConfiguration();
 
-    var basicAuth = await AsyncStorage.getItem('userToken');
-    var socialAuth = await AsyncStorage.getItem('socialToken');
-    if (socialAuth && socialAuth != null) {
-      SingleSocket.create({
-        user_id: this.props.userData.id,
-        token: socialAuth,
-      });
-    } else if (basicAuth && basicAuth != null) {
-      SingleSocket.create({
-        user_id: this.props.userData.id,
-        token: basicAuth,
-      });
-    }
+    this.SingleSocket.create({
+      user_id: this.props.userData.id,
+    });
   }
 
   _orientationDidChange = (orientation) => {
