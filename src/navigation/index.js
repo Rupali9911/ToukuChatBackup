@@ -17,6 +17,7 @@ import GroupDetails from '../screens/GroupDetails';
 import Timeline from '../screens/Timeline';
 import Drawer from './DrawerNavigation';
 
+
 const ChannelStack = createStackNavigator(
   {
     ChannelChatScreen: ChannelChats,
@@ -29,6 +30,7 @@ const ChannelStack = createStackNavigator(
     },
   }
 );
+
 const AppStack = createStackNavigator(
   {
     Drawer: Drawer,

@@ -5,7 +5,7 @@ const { width, height } = Dimensions.get('window');
 export const createChannelStyles = StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 15,
-    paddingBottom: 50,
+    paddingBottom: 50
   },
   channelImageContainer: {
     height: height * 0.55,

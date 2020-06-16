@@ -65,7 +65,7 @@ class More extends Component {
 
   render() {
     const {orientation, isWebViewVisible, isQRVisible, isSupport} = this.state;
-    const {selectedLanguageItem} = this.props;
+    const {selectedLanguageItem, navigation} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -78,19 +78,19 @@ class More extends Component {
             <SettingsItem
                 icon_name={'user'}
               title={translate('pages.xchat.addFriend')}
-                onPress={() => console.log('Add Friend pressed')}
+                onPress={() => navigation.navigate('AddFriend')}
                 isImage={Icons.add_friend}
             />
             <SettingsItem
                 icon_name={'user'}
               title={translate('pages.xchat.createNewGroup')}
-                onPress={() => this.props.navigation.navigate('CreateGroupChat')}
+                onPress={() => navigation.navigate('CreateGroupChat')}
                 isImage={Icons.icon_create_group_chat}
             />
             <SettingsItem
                 icon_name={'user'}
               title={translate('pages.xchat.createChannel')}
-                onPress={() => this.props.navigation.navigate('CreateChannel')}
+                onPress={() => navigation.navigate('CreateChannel')}
                 isImage={Icons.icon_create_new_channel}
             />
             <Section />
