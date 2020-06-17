@@ -98,8 +98,9 @@ class Chat extends Component {
     this.setState({ orientation });
   };
 
-  onSearch = (text) => {
-    this.setState({ searchText: text });
+  onSearch = async (text) => {
+    await this.setState({ searchText: text, commonConversation: [] });
+    this.getCommonChat();
   };
 
   onOpenChannelChats = (item) => {
@@ -127,6 +128,11 @@ class Chat extends Component {
       groupLoading,
       friendLoading,
     } = this.props;
+
+    console.log(
+      'Chat -> getCommonChat -> this.state.searchText',
+      this.state.searchText
+    );
     const filteredChannels = followingChannels.filter(
       createFilter(this.state.searchText, ['name'])
     );
@@ -167,10 +173,6 @@ class Chat extends Component {
   }
 
   shotListBy = (sortBy) => {
-    console.log(
-      'Chat -> shotListBy -> this.props.userConfig',
-      this.props.userConfig
-    );
     switch (sortBy) {
       case 'time': {
         let sortData = {
@@ -179,7 +181,6 @@ class Chat extends Component {
         };
 
         this.props.updateConfiguration(sortData).then((res) => {
-          console.log('Chat -> shotListBy -> res', res);
           this.setState({
             sortBy: res.sort_by,
           });
@@ -193,7 +194,6 @@ class Chat extends Component {
         };
 
         this.props.updateConfiguration(sortData).then((res) => {
-          console.log('Chat -> shotListBy -> res', res);
           this.setState({
             sortBy: res.sort_by,
           });
@@ -207,7 +207,6 @@ class Chat extends Component {
         };
 
         this.props.updateConfiguration(sortData).then((res) => {
-          console.log('Chat -> shotListBy -> res', res);
           this.setState({
             sortBy: res.sort_by,
           });
@@ -221,7 +220,6 @@ class Chat extends Component {
         };
 
         this.props.updateConfiguration(sortData).then((res) => {
-          console.log('Chat -> shotListBy -> res', res);
           this.setState({
             sortBy: res.sort_by,
           });
@@ -232,7 +230,6 @@ class Chat extends Component {
 
   sortList = () => {
     const { commonConversation, sortBy } = this.state;
-    console.log('Chat -> sortList -> sortBy', sortBy);
 
     switch (sortBy) {
       case 'time': {
