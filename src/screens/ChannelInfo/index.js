@@ -56,7 +56,7 @@ class ChannelInfo extends Component {
           id: 3,
           title: 'timeline',
           icon: Icons.icon_timeline,
-          action: () => this.props.navigation.navigate('Timeline'),
+          action: () => this.props.navigation.navigate('ChannelTimeline'),
         },
       ],
     };

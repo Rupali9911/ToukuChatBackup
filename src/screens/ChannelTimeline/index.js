@@ -6,11 +6,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 // import { createChannelStyles } from './styles';
 import { globalStyles } from '../../styles';
-import HomeHeader from '../../components/HomeHeader';
+import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import { Images, Icons, Colors, Fonts } from '../../constants';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 
-class Timeline extends Component {
+class ChannelTimeline extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
@@ -45,21 +45,22 @@ class Timeline extends Component {
         style={globalStyles.container}
       >
         <View style={globalStyles.container}>
-          <HomeHeader title={translate('pages.xchat.timeline')} />
-          <View style={globalStyles.container}>
-            <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-              <Text
-                style={{
-                  fontFamily: Fonts.thin,
-                  fontSize: 12,
-                  marginTop: 20,
-                  textAlign: 'center',
-                }}
-              >
-                {translate('pages.xchat.noTimelineFound')}
-              </Text>
-            </KeyboardAwareScrollView>
-          </View>
+          <HeaderWithBack
+            isCentered
+            onBackPress={() => this.props.navigation.goBack()}
+            title={translate('pages.xchat.timeline')}
+          />
+          <KeyboardAwareScrollView
+            contentContainerStyle={createChannelStyles.mainContainer}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
+            <Text
+              style={{ fontFamily: Fonts.thin, fontSize: 12, marginTop: 20 }}
+            >
+              {translate('pages.xchat.noTimelineFound')}
+            </Text>
+          </KeyboardAwareScrollView>
         </View>
       </ImageBackground>
     );
@@ -82,4 +83,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Timeline);
+export default connect(mapStateToProps, mapDispatchToProps)(ChannelTimeline);
