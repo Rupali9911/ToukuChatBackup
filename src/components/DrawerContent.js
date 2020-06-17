@@ -15,7 +15,6 @@ import {
   CollapseHeader,
   CollapseBody,
 } from 'accordion-collapse-react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import {Colors, Icons, Images} from '../constants';
 import HamburgerIcon from './HamburgerIcon';

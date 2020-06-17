@@ -15,7 +15,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
-import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
 import Toast from '../Toast';
@@ -25,6 +24,7 @@ import {
   changeEmail,
   getUserProfile,
 } from '../../redux/reducers/userReducer';
+import {ClickableImage} from '../ImageComponents';
 
 class ChangeEmailModal extends Component {
   constructor(props) {
@@ -192,13 +192,10 @@ class ChangeEmailModal extends Component {
                 {translate('pages.xchat.changeEmail')}
               </Text>
             </View>
-            <RoundedImage
-              source={Icons.icon_close}
-              color={Colors.white}
+            <ClickableImage
               size={14}
-              isRounded={false}
-              clickable={true}
-              onClick={this.onRequestClose.bind(this)}
+              source={Icons.icon_close}
+              onPress={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
           <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
