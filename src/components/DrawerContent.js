@@ -70,7 +70,7 @@ class DrawerContent extends Component {
           tab_icon_inactive: Icons.icon_timeline,
           tab_icon_active: Icons.icon_timeline_select,
           selected: false,
-          disabled: true,
+          disabled: false,
         },
 
         {
@@ -79,7 +79,7 @@ class DrawerContent extends Component {
           tab_icon_inactive: Icons.icon_channel,
           tab_icon_active: Icons.icon_channel_select,
           selected: false,
-          disabled: true,
+          disabled: false,
         },
 
         {
@@ -149,6 +149,14 @@ class DrawerContent extends Component {
 
       case 'pages.xchat.chat':
         this.props.navigation.navigate('Chat');
+        break;
+
+      case 'common.timeline':
+        this.props.navigation.navigate('Timeline');
+        break;
+
+      case 'pages.xchat.channel':
+        this.props.navigation.navigate('Channel');
         break;
 
       case 'pages.xchat.more':
