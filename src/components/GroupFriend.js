@@ -117,7 +117,7 @@ export default class GroupFriend extends Component {
               { color: Colors.black, textAlign: 'left', marginStart: 15 },
             ]}
           >
-            {isCheckBox ? '' : user.username}
+            {user.display_name}
           </Text>
         </View>
         {isRightButton && (
