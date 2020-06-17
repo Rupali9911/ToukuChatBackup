@@ -43,6 +43,7 @@ import {
   getFriendRequests,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
+import { updateConfiguration } from '../../redux/reducers/configurationReducer';
 
 class Chat extends Component {
   constructor(props) {
@@ -54,7 +55,7 @@ class Chat extends Component {
       showDropdown: false,
       isLoading: true,
       commonConversation: [],
-      sortBy: 'time',
+      sortBy: this.props.userConfig.sort_by,
       sortOptions: [
         {
           title: translate('pages.xchat.timeReceived'),
@@ -125,10 +126,7 @@ class Chat extends Component {
       channelLoading,
       groupLoading,
       friendLoading,
-      userChannels,
-      userConfig,
     } = this.props;
-    console.log('Chat -> getCommonChat -> userConfig', userConfig);
     const filteredChannels = followingChannels.filter(
       createFilter(this.state.searchText, ['name'])
     );
@@ -169,28 +167,64 @@ class Chat extends Component {
   }
 
   shotListBy = (sortBy) => {
+    console.log(
+      'Chat -> shotListBy -> this.props.userConfig',
+      this.props.userConfig
+    );
     switch (sortBy) {
       case 'time': {
-        this.setState({
-          sortBy: sortBy,
+        let sortData = {
+          sort_by: sortBy,
+          sort_order: this.props.userConfig.sort_order,
+        };
+
+        this.props.updateConfiguration(sortData).then((res) => {
+          console.log('Chat -> shotListBy -> res', res);
+          this.setState({
+            sortBy: res.sort_by,
+          });
         });
         return;
       }
       case 'unread': {
-        this.setState({
-          sortBy: sortBy,
+        let sortData = {
+          sort_by: sortBy,
+          sort_order: this.props.userConfig.sort_order,
+        };
+
+        this.props.updateConfiguration(sortData).then((res) => {
+          console.log('Chat -> shotListBy -> res', res);
+          this.setState({
+            sortBy: res.sort_by,
+          });
         });
         return;
       }
       case 'name': {
-        this.setState({
-          sortBy: sortBy,
+        let sortData = {
+          sort_by: sortBy,
+          sort_order: this.props.userConfig.sort_order,
+        };
+
+        this.props.updateConfiguration(sortData).then((res) => {
+          console.log('Chat -> shotListBy -> res', res);
+          this.setState({
+            sortBy: res.sort_by,
+          });
         });
         return;
       }
       default:
-        this.setState({
-          sortBy: 'sortBy',
+        let sortData = {
+          sort_by: this.props.userConfig.sort_by,
+          sort_order: this.props.userConfig.sort_order,
+        };
+
+        this.props.updateConfiguration(sortData).then((res) => {
+          console.log('Chat -> shotListBy -> res', res);
+          this.setState({
+            sortBy: res.sort_by,
+          });
         });
         return;
     }
@@ -198,25 +232,26 @@ class Chat extends Component {
 
   sortList = () => {
     const { commonConversation, sortBy } = this.state;
+    console.log('Chat -> sortList -> sortBy', sortBy);
 
     switch (sortBy) {
       case 'time': {
         commonConversation.sort((a, b) =>
-          a.chat === 'channel' &&
-          b.chat === 'channel' &&
-          a.last_msg &&
-          b.last_msg &&
-          new Date(a.last_msg.created) < new Date(b.last_msg.created)
+          a.created &&
+          b.created &&
+          new Date(a.last_msg ? a.last_msg.created : a.created) <
+            new Date(b.last_msg ? b.last_msg.created : b.created)
             ? 1
-            : a.chat === 'channel' &&
+            : a.created &&
               a.last_msg &&
               b.timestamp &&
-              new Date(a.last_msg.created) < new Date(b.timestamp)
+              new Date(a.last_msg ? a.last_msg.created : a.created) <
+                new Date(b.timestamp)
             ? 1
             : a.timestamp &&
-              b.chat === 'channel' &&
-              b.last_msg &&
-              new Date(a.timestamp) < new Date(b.last_msg.created)
+              b.created &&
+              new Date(a.timestamp) <
+                new Date(b.last_msg ? b.last_msg.created : b.created)
             ? 1
             : a.timestamp &&
               b.timestamp &&
@@ -229,7 +264,31 @@ class Chat extends Component {
       }
       case 'unread': {
         commonConversation.sort((a, b) =>
-          a.unread_msg <= b.unread_msg ? 1 : -1
+          a.created &&
+          b.created &&
+          new Date(a.last_msg ? a.last_msg.created : a.created) >
+            new Date(b.last_msg ? b.last_msg.created : b.created)
+            ? 1
+            : a.created &&
+              a.last_msg &&
+              b.timestamp &&
+              new Date(a.last_msg ? a.last_msg.created : a.created) >
+                new Date(b.timestamp)
+            ? 1
+            : a.timestamp &&
+              b.created &&
+              new Date(a.timestamp) >
+                new Date(b.last_msg ? b.last_msg.created : b.created)
+            ? 1
+            : a.timestamp &&
+              b.timestamp &&
+              new Date(a.timestamp) > new Date(b.timestamp)
+            ? 1
+            : -1
+        );
+
+        commonConversation.sort((a, b) =>
+          a.unread_msg < b.unread_msg ? 1 : -1
         );
         return;
       }
@@ -389,6 +448,7 @@ const mapDispatchToProps = {
   getFriendRequests,
   setCurrentFriend,
   getUserConfiguration,
+  updateConfiguration,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);
