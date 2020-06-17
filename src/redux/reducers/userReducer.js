@@ -282,8 +282,23 @@ export const changeEmail = (data) => (dispatch) =>
 
 // set touku points
 export const setToukuPoints = (userData, toukuPoints) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        userData.total_tp = toukuPoints
-        dispatch(setUserData(userData));
-        resolve(userData);
-    })
+  new Promise(function (resolve, reject) {
+    userData.total_tp = toukuPoints;
+    dispatch(setUserData(userData));
+    resolve(userData);
+  });
+
+export const getMissedSocketEventsById = (id) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
+      .then((res) => {
+        alert(JSON.stringify(res));
+        resolve(res);
+      })
+      .catch((err) => {
+        alert(JSON.stringify(err));
+
+        reject(err);
+      });
+  });
