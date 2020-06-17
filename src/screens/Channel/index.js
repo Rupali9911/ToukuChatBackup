@@ -4,13 +4,13 @@ import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-// import { createChannelStyles } from './styles';
+import { channelStyles } from './styles';
 import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import { Images, Icons, Colors, Fonts } from '../../constants';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 
-class Timeline extends Component {
+class Channel extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
@@ -24,7 +24,6 @@ class Timeline extends Component {
       headerShown: false,
     };
   };
-
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
@@ -45,7 +44,7 @@ class Timeline extends Component {
         style={globalStyles.container}
       >
         <View style={globalStyles.container}>
-          <HomeHeader title={translate('pages.xchat.timeline')} />
+          <HomeHeader title={translate('pages.xchat.channel')} />
           <View style={globalStyles.container}>
             <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
               <Text
@@ -56,7 +55,7 @@ class Timeline extends Component {
                   textAlign: 'center',
                 }}
               >
-                {translate('pages.xchat.noTimelineFound')}
+                {translate('pages.xchat.noChannelFound')}
               </Text>
             </KeyboardAwareScrollView>
           </View>
@@ -82,4 +81,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Timeline);
+export default connect(mapStateToProps, mapDispatchToProps)(Channel);
