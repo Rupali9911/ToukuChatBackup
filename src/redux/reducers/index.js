@@ -11,6 +11,7 @@ import channelReducer from './channelReducer';
 import groupReducer from './groupReducer';
 import friendReducer from './friendReducer';
 import configurationReducer from './configurationReducer';
+import addFriendReducer from './addFriendReducer'
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
@@ -24,6 +25,7 @@ const allReducers = combineReducers({
   groupReducer: groupReducer,
   friendReducer: friendReducer,
     configurationReducer:configurationReducer,
+    addFriendReducer: addFriendReducer
 });
 
 export const logout = (user) => (dispatch, getState) =>

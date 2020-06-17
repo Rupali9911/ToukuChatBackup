@@ -44,10 +44,12 @@ class More extends Component {
   }
 
     load = () => {
-        this.props.getToukuPoints().then((res) => {
-            console.log('getToukuPoints res', res)
+        const {getToukuPoints, setToukuPoints} = this.props
+        getToukuPoints().then((res) => {
             if (res && res.status === true){
-                this.props.setToukuPoints(this.props.userData, 1)
+                setToukuPoints(this.props.userData, res.total_tp).then((res) => {
+                    this.setState({isQRVisible: false})
+                });
             }
         })
     }
