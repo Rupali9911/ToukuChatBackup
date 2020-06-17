@@ -15,56 +15,45 @@ import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
-import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
 import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
-import {
-  changeNameDetails,
-  getUserProfile,
-} from '../../redux/reducers/userReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
+import {updateConfiguration} from '../../redux/reducers/configurationReducer';
 import Toast from '../Toast';
+import {ClickableImage} from '../ImageComponents';
 
 class ChangeNameModal extends Component {
   constructor(props) {
     super(props);
     this.state = this.initialState;
-    this.focusNextField = this.focusNextField.bind(this);
-    this.inputs = {};
   }
 
   get initialState() {
     return {
-      fisrtName: this.props.userData.first_name,
-      lastName: this.props.userData.last_name,
-      fisrtNameErr: null,
-      lastNameErr: null,
+      displayName: this.props.userConfig.display_name,
+      displayNameErr: null,
     };
   }
 
-  focusNextField(id) {
-    this.inputs[id].focus();
-  }
-
   onChangePress = () => {
-    const {fisrtName, lastName} = this.state;
-    if (fisrtName.trim() === '') {
-      this.setState({fisrtNameErr: 'messages.required'});
-    } else if (lastName.trim() === '') {
-      this.setState({lastNameErr: 'messages.required'});
+    const {displayName} = this.state;
+    if (displayName.trim() === '') {
+      this.setState({
+        displayNameErr: 'pages.setting.toastr.enterValidDisplayName',
+      });
     } else {
-      let nameDetails = {
-        first_name: fisrtName,
-        last_name: lastName,
+      let configuration = {
+        display_name: displayName,
       };
       this.props
-        .changeNameDetails(nameDetails)
+        .updateConfiguration(configuration)
         .then((res) => {
           if (res.status === true) {
             this.props.onRequestClose();
             Toast.show({
-              title: translate('pages.setting.changeName'),
+              title: translate('pages.changeDisplayName'),
               text: translate('pages.setting.toastr.nameUpdatedSuccessfully'),
               type: 'positive',
             });
@@ -74,7 +63,7 @@ class ChangeNameModal extends Component {
         .catch((err) => {
           this.props.onRequestClose();
           Toast.show({
-            title: translate('pages.setting.changeName'),
+            title: translate('pages.changeDisplayName'),
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -82,21 +71,14 @@ class ChangeNameModal extends Component {
     }
   };
 
-  handleFirstName(fisrtName) {
-    this.setState({fisrtName});
-    if (fisrtName.trim() === '') {
-      this.setState({fisrtNameErr: 'messages.required'});
+  handleDisplayName(displayName) {
+    this.setState({displayName});
+    if (displayName.trim() === '') {
+      this.setState({
+        displayNameErr: 'pages.setting.toastr.enterValidDisplayName',
+      });
     } else {
-      this.setState({fisrtNameErr: null});
-    }
-  }
-
-  handleLastName(lastName) {
-    this.setState({lastName});
-    if (lastName.trim() === '') {
-      this.setState({lastNameErr: 'messages.required'});
-    } else {
-      this.setState({lastNameErr: null});
+      this.setState({displayNameErr: null});
     }
   }
 
@@ -108,8 +90,8 @@ class ChangeNameModal extends Component {
   };
 
   render() {
-    const {visible, loading} = this.props;
-    const {fisrtName, lastName, fisrtNameErr, lastNameErr} = this.state;
+    const {visible, loading, userConfig} = this.props;
+    const {displayName, displayNameErr} = this.state;
     return (
       <Modal
         isVisible={visible}
@@ -132,31 +114,36 @@ class ChangeNameModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {translate('pages.setting.changeName')}
+                {translate('pages.changeDisplayName')}
               </Text>
             </View>
-            <RoundedImage
-              source={Icons.icon_close}
-              color={Colors.white}
+            <ClickableImage
               size={14}
-              isRounded={false}
-              clickable={true}
-              onClick={this.onRequestClose.bind(this)}
+              source={Icons.icon_close}
+              onPress={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
           <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
             <View style={{padding: 15}}>
+              <Text
+                style={{
+                  color: Colors.gray_dark,
+                  textAlign: 'right',
+                }}>
+                {displayName.length}/{32}
+              </Text>
               <View style={styles.inputContainer}>
                 <TextInput
-                  placeholder={translate('common.firstName')}
-                  value={fisrtName}
-                  onChangeText={(fisrtName) => this.handleFirstName(fisrtName)}
-                  onSubmitEditing={() => {
-                    this.focusNextField('lastname');
-                  }}
+                  placeholder={translate('common.enterDisplayName')}
+                  value={displayName}
+                  onChangeText={(displayName) =>
+                    this.handleDisplayName(displayName)
+                  }
+                  maxLength={32}
+                  onSubmitEditing={() => {}}
                 />
               </View>
-              {fisrtNameErr !== null ? (
+              {displayNameErr !== null ? (
                 <Text
                   style={[
                     globalStyles.smallLightText,
@@ -167,42 +154,12 @@ class ChangeNameModal extends Component {
                       marginBottom: 5,
                     },
                   ]}>
-                  {translate(fisrtNameErr).replace(
-                    '[missing {{field}} value]',
-                    translate('common.firstName'),
-                  )}
-                </Text>
-              ) : null}
-              <View style={styles.inputContainer}>
-                <TextInput
-                  ref={(ref) => {
-                    this.inputs['lastname'] = ref;
-                  }}
-                  placeholder={translate('common.lastName')}
-                  value={lastName}
-                  onChangeText={(lastName) => this.handleLastName(lastName)}
-                />
-              </View>
-              {lastNameErr !== null ? (
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {
-                      color: Colors.danger,
-                      textAlign: 'left',
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
-                  ]}>
-                  {translate(lastNameErr).replace(
-                    '[missing {{field}} value]',
-                    translate('common.lastName'),
-                  )}
+                  {translate(displayNameErr)}
                 </Text>
               ) : null}
               <Button
                 isRounded={false}
-                title={translate('pages.setting.changeName')}
+                title={translate('pages.changeDisplayName')}
                 onPress={this.onChangePress.bind(this)}
                 loading={loading}
               />
@@ -253,13 +210,14 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
+    userConfig: state.configurationReducer.userConfig,
     loading: state.userReducer.loading,
   };
 };
 
 const mapDispatchToProps = {
-  changeNameDetails,
   getUserProfile,
+  updateConfiguration,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangeNameModal);

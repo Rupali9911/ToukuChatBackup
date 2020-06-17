@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
   AccordionList,
   Collapse,
@@ -16,29 +16,32 @@ import {
   CollapseBody,
 } from 'accordion-collapse-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { createFilter } from 'react-native-search-filter';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {createFilter} from 'react-native-search-filter';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { homeStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {homeStyles} from './styles';
+import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Colors, Icons, SocketEvents } from '../../constants';
-import { SearchInput } from '../../components/TextInputs';
+import {Images, Colors, Icons, SocketEvents} from '../../constants';
+import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import { getAvatar, eventService } from '../../utils';
-import { ProfileModal } from '../../components/Modals';
-import { ChannelListItem } from '../../components/ListItems';
+import {getAvatar, eventService} from '../../utils';
+import {ProfileModal} from '../../components/Modals';
+import {ChannelListItem} from '../../components/ListItems';
 import FriendListItem from '../../components/ListItems/FriendListItem';
 import GroupListItem from '../../components/ListItems/GroupListItem';
 import NoData from '../../components/NoData';
-import { ListLoader } from '../../components/Loaders';
+import Button from '../../components/Button';
+import {ListLoader} from '../../components/Loaders';
 import SingleSocket from '../../helpers/SingleSocket';
 
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { getUserProfile } from '../../redux/reducers/userReducer';
-import { getUserConfiguration } from '../../redux/reducers/configurationReducer';
-
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {
+  getUserProfile,
+  getMissedSocketEventsById,
+} from '../../redux/reducers/userReducer';
+import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
 import {
   getMoreFollowingChannels,
   getFollowingChannels,
@@ -53,7 +56,6 @@ import {
   getFriendRequests,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
-import Button from '../../components/Button';
 
 class Home extends Component {
   constructor(props) {
@@ -67,6 +69,8 @@ class Home extends Component {
       searchText: '',
       showDropdown: false,
       loadMoreVisible: true,
+
+      userFriendsState: this.props.userFriends,
     };
     this.SingleSocket = new SingleSocket();
     this.start = 0;
@@ -80,10 +84,12 @@ class Home extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
     this.events = eventService.getMessage().subscribe((message) => {
-      // alert(JSON.stringify(message.text.data));
+      this.setFriendsOnlineStatus(message);
+      this.readAllMessageFriendChat(message);
+      // alert(JSON.stringify(message));
     });
   }
 
@@ -107,11 +113,52 @@ class Home extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
+  //Set Friend's online status with socket event
+  setFriendsOnlineStatus(message) {
+    const {userFriendsState} = this.state;
+
+    if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
+      for (var i in userFriendsState) {
+        if (
+          userFriendsState[i].user_id ==
+          message.text.data.message_details.user_id
+        ) {
+          if (message.text.data.message_details.status === 'online') {
+            userFriendsState[i].is_online = true;
+          } else {
+            userFriendsState[i].is_online = false;
+          }
+          break;
+        }
+      }
+      this.setState({userFriendsState});
+    }
+  }
+
+  //Read Friend's all messages with socket event
+  readAllMessageFriendChat(message) {
+    const {userFriendsState} = this.state;
+    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
+      let detail = message.text.data.message_details;
+      for (var i in userFriendsState) {
+        if (
+          userFriendsState[i].friend == detail.friend_id &&
+          detail.read_by === this.props.userData.id
+        ) {
+          this.props.getMissedSocketEventsById(
+            message.text.data.socket_event_id,
+          );
+          break;
+        }
+      }
+    }
+  }
+
   onSearch = (text) => {
-    this.setState({ searchText: text });
+    this.setState({searchText: text});
   };
 
   onUserProfilePress() {
@@ -147,16 +194,16 @@ class Home extends Component {
     this.start = this.start + 20;
     this.props.getMoreFollowingChannels(this.start).then((res) => {
       if (res.conversations.length <= 0) {
-        this.setState({ loadMoreVisible: false });
+        this.setState({loadMoreVisible: false});
       }
     });
   };
 
   renderUserChannels() {
-    const { followingChannels, channelLoading } = this.props;
-    const { loadMoreVisible } = this.state;
+    const {followingChannels, channelLoading} = this.props;
+    const {loadMoreVisible} = this.state;
     const filteredChannels = followingChannels.filter(
-      createFilter(this.state.searchText, ['name'])
+      createFilter(this.state.searchText, ['name']),
     );
 
     if (filteredChannels.length === 0 && channelLoading) {
@@ -166,7 +213,7 @@ class Home extends Component {
         <FlatList
           data={filteredChannels}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <ChannelListItem
               key={index}
               title={item.name}
@@ -184,9 +231,7 @@ class Home extends Component {
                 <ListLoader />
               ) :  */}
               {loadMoreVisible ? (
-                <View
-                  style={{ alignItems: 'center', justifyContent: 'center' }}
-                >
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   <Button
                     title={'Load More'}
                     onPress={this.handleLoadMoreChannels.bind(this)}
@@ -209,10 +254,10 @@ class Home extends Component {
   }
 
   renderUserGroups() {
-    const { userGroups, groupLoading } = this.props;
+    const {userGroups, groupLoading} = this.props;
 
     const filteredGroups = userGroups.filter(
-      createFilter(this.state.searchText, ['group_name'])
+      createFilter(this.state.searchText, ['group_name']),
     );
 
     if (filteredGroups.length === 0 && groupLoading) {
@@ -222,7 +267,7 @@ class Home extends Component {
         <FlatList
           data={filteredGroups}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <GroupListItem
               key={index}
               title={item.group_name}
@@ -245,9 +290,10 @@ class Home extends Component {
   }
 
   renderUserFriends() {
-    const { userFriends, friendLoading } = this.props;
-    const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+    const {friendLoading} = this.props;
+    const {userFriendsState} = this.state;
+    const filteredFriends = userFriendsState.filter(
+      createFilter(this.state.searchText, ['username']),
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -257,7 +303,7 @@ class Home extends Component {
         <FlatList
           data={filteredFriends}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <FriendListItem
               key={index}
               title={item.username}
@@ -293,23 +339,23 @@ class Home extends Component {
       isGroupCollapsed,
       isFriendsCollapsed,
       searchText,
+      userFriendsState,
     } = this.state;
 
-    const { userData, userGroups, userFriends, followingChannels } = this.props;
+    const {userData, userGroups, followingChannels} = this.props;
     const filteredChannels = followingChannels.filter(
-      createFilter(searchText, ['name'])
+      createFilter(searchText, ['name']),
     );
     const filteredGroups = userGroups.filter(
-      createFilter(searchText, ['group_name'])
+      createFilter(searchText, ['group_name']),
     );
-    const filteredFriends = userFriends.filter(
-      createFilter(searchText, ['username'])
+    const filteredFriends = userFriendsState.filter(
+      createFilter(searchText, ['username']),
     );
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.home')} />
           <SearchInput
@@ -325,15 +371,13 @@ class Home extends Component {
                 flexDirection: 'row',
                 alignItems: 'center',
                 padding: 10,
-              }}
-            >
+              }}>
               <RoundedImage source={getAvatar(userData.avatar)} size={60} />
               <Text
                 style={[
                   globalStyles.normalRegularText,
-                  { color: Colors.black, marginStart: 10 },
-                ]}
-              >
+                  {color: Colors.black, marginStart: 10},
+                ]}>
                 {userData.username}
               </Text>
             </TouchableOpacity>
@@ -345,8 +389,7 @@ class Home extends Component {
                     isChannelCollapsed: isColl,
                   })
                 }
-                isCollapsed={isChannelCollapsed}
-              >
+                isCollapsed={isChannelCollapsed}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.channels')}
@@ -364,8 +407,7 @@ class Home extends Component {
                     isGroupCollapsed: isColl,
                   })
                 }
-                isCollapsed={isGroupCollapsed}
-              >
+                isCollapsed={isGroupCollapsed}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.groups')}
@@ -383,8 +425,7 @@ class Home extends Component {
                     isFriendsCollapsed: isColl,
                   })
                 }
-                isCollapsed={isFriendsCollapsed}
-              >
+                isCollapsed={isFriendsCollapsed}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.friends')}
@@ -403,11 +444,11 @@ class Home extends Component {
 }
 
 const DropdownHeader = (props) => {
-  const { title, counts, isCollapsed } = props;
+  const {title, counts, isCollapsed} = props;
   return (
     <LinearGradient
-      start={{ x: 0.1, y: 0.7 }}
-      end={{ x: 0.7, y: 0.8 }}
+      start={{x: 0.1, y: 0.7}}
+      end={{x: 0.7, y: 0.8}}
       locations={[0.2, 0.7, 1]}
       colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
       style={{
@@ -416,11 +457,10 @@ const DropdownHeader = (props) => {
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 15,
-      }}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Text style={globalStyles.smallRegularText}>{title}</Text>
-        <Text style={[globalStyles.smallRegularText, { marginStart: 5 }]}>
+        <Text style={[globalStyles.smallRegularText, {marginStart: 5}]}>
           {'('}
           {counts}
           {')'}
@@ -428,7 +468,7 @@ const DropdownHeader = (props) => {
       </View>
       <Image
         source={isCollapsed ? Icons.icon_arrow_down : Icons.icon_arrow_up}
-        style={{ width: 10, height: 10, resizeMode: 'contain' }}
+        style={{width: 10, height: 10, resizeMode: 'contain'}}
       />
     </LinearGradient>
   );
@@ -459,6 +499,7 @@ const mapDispatchToProps = {
   getFriendRequests,
   setCurrentFriend,
   getUserConfiguration,
+  getMissedSocketEventsById,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
