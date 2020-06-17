@@ -86,6 +86,7 @@ export const Colors = {
   light_gray: '#909093',
   gradient_4: '#ff62a5eb',
   gradient_5: '#ff8960eb',
+  black_light: '#0a1f44',
 };
 
 export const Fonts = {

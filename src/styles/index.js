@@ -53,6 +53,14 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
   },
 
+    //Weight black text
+    regularWeightedText: {
+        fontSize: 17,
+        fontWeight: '500',
+        fontFamily: Fonts.regular,
+        color: Colors.black_light,
+        textAlign: 'center',
+    },
   //App Logo Text
   logoText: {
     fontSize: 100,

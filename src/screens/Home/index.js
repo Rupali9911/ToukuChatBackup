@@ -174,7 +174,6 @@ class Home extends Component {
               date={item.created}
               image={item.channel_picture}
               onPress={() => this.onOpenChannelChats(item)}
-              unreadCount={item.unread_msg}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -231,7 +230,6 @@ class Home extends Component {
               date={item.timestamp}
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}
-              unreadCount={item.unread_msg}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -268,7 +266,6 @@ class Home extends Component {
               date={item.timestamp}
               isOnline={item.is_online}
               onPress={() => this.onOpenFriendChats(item)}
-              unreadCount={item.unread_msg}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}

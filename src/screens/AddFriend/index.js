@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
-import { createFilter } from 'react-native-search-filter';
 import { addFriendStyles } from './styles';
 import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
@@ -18,24 +17,20 @@ import { Images, Icons, Colors, Fonts } from '../../constants';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import {ListLoader} from '../../components/Loaders';
+import FriendWithStatus from '../../components/FriendWithStatus';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import {
-    getUserChannels,
-    createNewChannel,
-} from '../../redux/reducers/channelReducer';
-import { getUserGroups } from '../../redux/reducers/groupReducer';
-import { getUserFriends } from '../../redux/reducers/friendReducer';
-import SwitchCustom from '../../components/SwitchCustom';
-
-import {getSearchedFriends} from '../../redux/reducers/addFriendReducer'
+import {getSearchedFriends, sendFriendRequest, cancelFriendRequest, setIsRequestedParam} from '../../redux/reducers/addFriendReducer'
+import {showToast} from '../../utils'
 
 class AddFriend extends Component {
     constructor(props) {
         super(props);
         this.state = {
             searchText: '',
+            arrFriends: []
         }
+        global.timeout = null
     }
 
     static navigationOptions = () => {
@@ -57,28 +52,56 @@ class AddFriend extends Component {
         this.setState({ orientation });
     };
 
+    searchFriends = (txt) => {
+        const {getSearchedFriends} = this.props
+        clearTimeout(timeout)
+        if (txt && txt.length !== 0) {
+            timeout = setTimeout(() => {
+                getSearchedFriends(txt).then((res) => {
+                    this.setState({arrFriends: res})
+                });
+            }, 500)
+        }else{
+            this.setState({arrFriends: []})
+        }
+    }
+
+    actionOnStatus (user, index){
+        const {cancelFriendRequest, setIsRequestedParam, sendFriendRequest, searchedFriend} = this.props
+        if (user.is_requested && user.is_requested === true){
+            cancelFriendRequest(user.id).then((res) => {
+                setIsRequestedParam(searchedFriend, false, index).then((res) => {
+                    this.setState({arrFriends: res})
+                });
+            });
+        }else{
+            sendFriendRequest(user.id).then((res) => {
+                setIsRequestedParam(searchedFriend, true, index).then((res) => {
+                    this.setState({arrFriends: res})
+                });
+                showToast(translate('pages.xchat.toastr.added'),translate('pages.xchat.toastr.friendRequestSentSuccessfully'), 'positive')
+            });
+        }
+    }
 
     renderUserFriends() {
-        const { getSearchedFriends, friendLoading } = this.props;
-        const filteredFriends = userFriends.filter(
-            createFilter(this.state.searchText, ['username'])
-        );
+        const { arrFriends } = this.state;
+        const { isLoading } = this.props;
 
-        if (filteredFriends.length === 0 && friendLoading) {
+        if (arrFriends.length === 0 && isLoading) {
             return <ListLoader />;
-        } else if (filteredFriends.length > 0) {
+        } else if (arrFriends.length > 0) {
             return (
                 <FlatList
-                    data={filteredFriends}
+                    data={arrFriends}
                     renderItem={({ item, index }) => (
-                        <GroupFriend
+                        <FriendWithStatus
                             user={item}
-                            onAddPress={(isAdded) => this.onAdd(isAdded, item)}
-                            isRightButton
+                            onButtonAction={() => this.actionOnStatus(item, index)}
                         />
                     )}
                     ListFooterComponent={() => (
-                        <View>{friendLoading ? <ListLoader /> : null}</View>
+                        <View>{isLoading ? <ListLoader /> : null}</View>
                     )}
                 />
             );
@@ -108,7 +131,7 @@ class AddFriend extends Component {
                         <TextInput
                             style={[addFriendStyles.inputStyle]}
                             placeholder={translate('pages.xchat.search')}
-                            onChangeText={(searchText) => this.setState({ searchText })}
+                            onChangeText={(searchText) =>  this.searchFriends(searchText)}
                             returnKeyType={'done'}
                             autoCorrect={false}
                             autoCapitalize={'none'}
@@ -127,12 +150,16 @@ class AddFriend extends Component {
 
 const mapStateToProps = (state) => {
     return {
-
+        isLoading: state.addFriendReducer.loading,
+        searchedFriend: state.addFriendReducer.searchedFriend,
     };
 };
 
 const mapDispatchToProps = {
-    getSearchedFriends
+    getSearchedFriends,
+    sendFriendRequest,
+    cancelFriendRequest,
+    setIsRequestedParam
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddFriend);

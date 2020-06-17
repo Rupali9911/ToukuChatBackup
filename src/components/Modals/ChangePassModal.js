@@ -1,18 +1,27 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, TextInput, Platform} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-import {Colors, Icons} from '../../constants';
+import {Colors, Fonts, Images, Icons} from '../../constants';
+import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
 import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 import Toast from '../Toast';
 import {changePassword, getUserProfile} from '../../redux/reducers/userReducer';
-import {ClickableImage} from '../ImageComponents';
 
 class ChangePassModal extends Component {
   constructor(props) {
@@ -179,10 +188,13 @@ class ChangePassModal extends Component {
                 {translate('pages.resetPassword.changePassword')}
               </Text>
             </View>
-            <ClickableImage
-              size={14}
+            <RoundedImage
               source={Icons.icon_close}
-              onPress={this.onRequestClose.bind(this)}
+              color={Colors.white}
+              size={14}
+              isRounded={false}
+              clickable={true}
+              onClick={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
           <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>

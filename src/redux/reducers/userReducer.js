@@ -283,9 +283,7 @@ export const changeEmail = (data) => (dispatch) =>
 // set touku points
 export const setToukuPoints = (userData, toukuPoints) => (dispatch) =>
     new Promise(function (resolve, reject) {
-        console.log('userData before', userData, toukuPoints)
         userData.total_tp = toukuPoints
         dispatch(setUserData(userData));
-        console.log('userData After', userData, toukuPoints)
         resolve(userData);
     })

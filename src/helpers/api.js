@@ -29,6 +29,8 @@ export const GET_USER_CONFIG = apiRoot + '/xchat/configuration/';
 export const UPDATE_CHANNEL_MODE = apiRoot + '/xchat/update-channel-mode/';
 export const GET_TOUKU_POINTS = apiRoot + '/xchat/get-total-tp/';
 export const GET_SEARCHED_FRIEND = apiRoot + '/xchat/search-contacts/';
+export const SEND_FRIEND_REQUEST = apiRoot + '/xchat/send-friend-request/';
+export const CANCEL_FRIEND_REQUEST = apiRoot + '/xchat/cancel-sent-request/';
 
 export const client = axios.create({
   baseURL: apiRoot,

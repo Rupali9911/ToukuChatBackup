@@ -62,17 +62,17 @@ class SettingsItem extends Component {
     }
 
     updateChannelM(value){
+      const {updateChannelMode, setChannelMode, userConfig} = this.props
         this.setState({channelMode: value})
         let  updateChannelModeParam= {
             channel_mode: value,
         };
-        this.props
-            .updateChannelMode(updateChannelModeParam)
+        updateChannelMode(updateChannelModeParam)
             .then((res) => {
                 if (value === true){
                     showToast(translate('pages.xchat.channelModeText'), translate('pages.xchat.toastr.channelModeToastr'), 'positive' )
                 }
-                this.props.setChannelMode(this.props.userConfig, value)
+                setChannelMode(userConfig, value)
             })
             .catch((err) => {
                 showToast(translate('pages.xchat.channelModeText'), translate('common.somethingWentWrong'), 'primary' )
