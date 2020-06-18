@@ -22,11 +22,10 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
 import {getAvatar, getImage} from '../../utils';
-import UploadUserImageModal from '../Modals/UploadUserImageModal';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
-import {changeBackgroundImage} from '../../redux/reducers/configurationReducer';
+import {updateConfiguration} from '../../redux/reducers/configurationReducer';
 import {uploadAvatar} from '../../redux/reducers/userReducer';
 
 class UserProfile extends Component {
@@ -36,7 +35,6 @@ class UserProfile extends Component {
       isChangePassModalVisible: false,
       isChangeEmailModalVisible: false,
       isChangeNameModalVisible: false,
-      isUploadUserImageModalVisible: false,
       backgroundImagePath: {uri: this.props.userConfig.background_image},
       profileImagePath: {uri: this.props.userData.avatar},
     };
@@ -56,7 +54,6 @@ class UserProfile extends Component {
   }
 
   onUserImageCameraPress() {
-    // this.setState({isUploadUserImageModalVisible: true});
     var options = {
       title: 'Choose Option',
       storageOptions: {
@@ -125,7 +122,7 @@ class UserProfile extends Component {
           background_image: uploadedImages.image[0].thumbnail,
         };
 
-        this.props.changeBackgroundImage(bgData).then((res) => {
+        this.props.updateConfiguration(bgData).then((res) => {
           this.setState({uploadLoading: false});
         });
       }
@@ -138,7 +135,6 @@ class UserProfile extends Component {
       isChangePassModalVisible,
       isChangeEmailModalVisible,
       isChangeNameModalVisible,
-      isUploadUserImageModalVisible,
       backgroundImagePath,
       profileImagePath,
       uploadLoading,
@@ -235,8 +231,9 @@ class UserProfile extends Component {
                 globalStyles.normalSemiBoldText,
                 {color: Colors.black, marginHorizontal: 10},
               ]}>
-              {userData.first_name + ' '}
-              {userData.last_name}
+              {/* {userData.first_name + ' '}
+              {userData.last_name} */}
+              {userConfig.display_name}
             </Text>
             <RoundedImage
               source={Icons.icon_pencil}
@@ -304,13 +301,6 @@ class UserProfile extends Component {
           visible={isChangeNameModalVisible}
           onRequestClose={() =>
             this.setState({isChangeNameModalVisible: false})
-          }
-        />
-
-        <UploadUserImageModal
-          visible={isUploadUserImageModalVisible}
-          onRequestClose={() =>
-            this.setState({isUploadUserImageModalVisible: false})
           }
         />
       </View>
@@ -423,7 +413,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  changeBackgroundImage,
+  updateConfiguration,
   uploadAvatar,
 };
 

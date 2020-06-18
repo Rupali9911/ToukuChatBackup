@@ -311,7 +311,7 @@ class SignUp extends Component {
                   AsyncStorage.multiRemove(keys);
                   this.props.getUserProfile().then((res) => {
                     if (res.id) {
-                      this.props.navigation.navigate('Home');
+                      this.props.navigation.navigate('Chat');
                     }
                   });
                 }
@@ -462,7 +462,7 @@ class SignUp extends Component {
         this.props.socialRegistration(registrationData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Chat');
             return;
           }
         });

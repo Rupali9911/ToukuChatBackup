@@ -31,9 +31,12 @@ import {
   googleRegister,
   twitterRegister,
   lineRegister,
+    kakaoRegister,
+    getAccessCodeKakao
 } from '../../redux/reducers/userReducer';
 import AsyncStorage from '@react-native-community/async-storage';
 const { RNTwitterSignIn } = NativeModules;
+import KakaoLogins from '@react-native-seoul/kakao-login';
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -391,6 +394,53 @@ class LoginSignUp extends Component {
         });
     }
   }
+
+  kakaoLogin (){
+    console.log('kakaoLogin')
+      KakaoLogins.login()
+          .then(result => {
+            console.log('result kakaoLogin', result)
+              const kakaoLoginData = {
+                 code: result.refreshToken,
+                  dev_id: "",
+                  site_from: "touku"
+              };
+            console.log('kakao request', kakaoLoginData)
+              this.props.getAccessCodeKakao().then((resCode) => {
+                  console.log('getAccessCodeKakao', resCode)
+              })
+              // this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
+              //     console.log('JWT TOKEN=> ', JSON.stringify(res));
+              //     if (res.token) {
+              //         let status = res.status;
+              //         if (!status) {
+              //             this.props.navigation.navigate('SignUp', {
+              //                 pageNumber: 2,
+              //                 isSocial: true,
+              //             });
+              //             return;
+              //         }
+              //         await AsyncStorage.setItem('userToken', res.token);
+              //         await AsyncStorage.removeItem('socialToken');
+              //         this.props.navigation.navigate('Home');
+              //         return;
+              //     }
+              // });
+          })
+          .catch(err => {
+              console.log('Error kakaoLogin', err)
+              if (err.code === 'E_CANCELLED_OPERATION') {
+
+                  //logCallback(`Login Cancelled:${err.message}`, setLoginLoading(false));
+              } else {
+                  // logCallback(
+                  //     `Login Failed:${err.code} ${err.message}`,
+                  //     setLoginLoading(false),
+                  // );
+              }
+          });
+  }
+
   render() {
     const { orientation } = this.state;
     const { selectedLanguageItem } = this.props;
@@ -476,6 +526,10 @@ class LoginSignUp extends Component {
                   IconSrc={Icons.icon_twitter}
                   onPress={() => this.firebaseTwitterLogin()}
                 />
+                  <SocialLogin
+                      IconSrc={Icons.icon_kakao}
+                      onPress={() => this.kakaoLogin()}
+                  />
               </View>
             </View>
             <LanguageSelector />
@@ -508,6 +562,8 @@ const mapDispatchToProps = {
   twitterRegister,
   googleRegister,
   lineRegister,
+    kakaoRegister,
+    getAccessCodeKakao
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginSignUp);

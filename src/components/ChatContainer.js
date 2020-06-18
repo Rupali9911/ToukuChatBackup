@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   View,
   Text,
@@ -8,17 +8,17 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import moment from 'moment';
-import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {ScrollView} from 'react-native-gesture-handler';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
-import { translate } from '../redux/reducers/languageReducer';
-import { Colors, Fonts, Images, Icons } from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
+import {Colors, Fonts, Images, Icons} from '../constants';
 import NoData from './NoData';
-const { height } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 class ChatContainer extends Component {
   constructor(props) {
@@ -104,7 +104,7 @@ class ChatContainer extends Component {
     } = this.props;
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{flex: 1}}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
@@ -112,8 +112,7 @@ class ChatContainer extends Component {
         }}
         onKeyboardDidShow={(contentWidth, contentHeight) => {
           this.scrollView.scrollToEnd();
-        }}
-      >
+        }}>
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -127,20 +126,19 @@ class ChatContainer extends Component {
                   ? height * 0.01
                   : height * 0.03,
             },
-          ]}
-        >
+          ]}>
           <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
-              isReply && { paddingBottom: '20%' },
+              isReply && {paddingBottom: '20%'},
             ]}
             ref={(view) => {
               this.scrollView = view;
             }}
-            onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd();
-            }}
-          >
+            onLayout={() => this.scrollView.scrollToEnd()}
+            automaticallyAdjustContentInsets
+            contentInsetAdjustmentBehavior={'automatic'}
+            decelerationRate={'fast'}>
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
@@ -156,23 +154,21 @@ class ChatContainer extends Component {
                 bottom: 20,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
-              }}
-            >
+              }}>
               <View
                 style={{
                   flex: 3,
                   flexDirection: 'row',
                   alignItems: 'center',
-                }}
-              >
-                <View style={{ flex: 8 }}>
-                  <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+                }}>
+                <View style={{flex: 8}}>
+                  <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.from_user.id === this.props.userData.id
                       ? 'You'
                       : repliedMessage.from_user.username}
                   </Text>
                 </View>
-                <View style={{ flex: 2, alignItems: 'flex-end' }}>
+                <View style={{flex: 2, alignItems: 'flex-end'}}>
                   <TouchableOpacity
                     style={{
                       justifyContent: 'center',
@@ -182,8 +178,7 @@ class ChatContainer extends Component {
                       borderRadius: 100,
                       backgroundColor: Colors.gradient_1,
                     }}
-                    onPress={cancelReply}
-                  >
+                    onPress={cancelReply}>
                     <Image
                       source={Icons.icon_close}
                       style={{
@@ -195,11 +190,8 @@ class ChatContainer extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={{ flex: 7, justifyContent: 'center', width: '95%' }}>
-                <Text
-                  numberOfLines={2}
-                  style={{ fontFamily: Fonts.extralight }}
-                >
+              <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
+                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {repliedMessage.message_body}
                 </Text>
               </View>
@@ -223,7 +215,7 @@ const chatStyle = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: { flexGrow: 1, paddingBottom: 20 },
+  messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',

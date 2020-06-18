@@ -82,7 +82,28 @@ export default class ChannelListItem extends Component {
               >
                 {moment(date).format('MM/DD')}
               </Text>
-              <Text>{unreadCount}</Text>
+              {unreadCount !== 0 && unreadCount != null && (
+                <View
+                  style={{
+                    marginTop: 2,
+                    backgroundColor: Colors.green,
+                    alignSelf: 'flex-end',
+                    height: 20,
+                    width: 20,
+                    borderRadius: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={
+                      (globalStyles.smallLightText, { color: Colors.white })
+                    }
+                  >
+                    {unreadCount}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </View>

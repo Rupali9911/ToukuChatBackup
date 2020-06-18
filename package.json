@@ -17,6 +17,7 @@
     "@react-native-community/netinfo": "^5.8.1",
     "@react-native-firebase/app": "^6.7.1",
     "@react-native-firebase/auth": "^6.7.1",
+    "@react-native-seoul/kakao-login": "^2.5.0",
     "accordion-collapse-react-native": "^0.2.10",
     "aws-sdk": "^2.686.0",
     "axios": "^0.19.2",

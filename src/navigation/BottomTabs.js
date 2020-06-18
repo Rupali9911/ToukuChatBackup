@@ -1,19 +1,21 @@
 import React from 'react';
-import {Image, View, Text} from 'react-native';
-import {createAppContainer} from 'react-navigation';
-import {createBottomTabNavigator} from 'react-navigation-tabs';
-import {createStackNavigator} from 'react-navigation-stack';
+import { Image, View, Text } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import HomeScreen from '../screens/Home';
 import ChatScreen from '../screens/Chat';
 import CreateGroupChatScreen from '../screens/CreateGroupChat';
 import CreateChannelScreen from '../screens/CreateChannel';
-import {Icons, Colors, Fonts} from '../constants';
-import {globalStyles} from '../styles';
-import {isIphoneX} from '../utils';
+import TimelineScreen from '../screens/Timeline';
+import ChannelScreen from '../screens/Channel';
+import { Icons, Colors, Fonts } from '../constants';
+import { globalStyles } from '../styles';
+import { isIphoneX } from '../utils';
 import MoreScreen from '../screens/More';
-import {translate} from '../redux/reducers/languageReducer';
-import AddFriend  from '../screens/AddFriend'
+import { translate } from '../redux/reducers/languageReducer';
+import AddFriend from '../screens/AddFriend';
 
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
@@ -21,7 +23,7 @@ const HomeTab = createStackNavigator({
   CreateChannel: CreateChannelScreen,
 });
 
-HomeTab.navigationOptions = ({navigation}) => {
+HomeTab.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
@@ -34,21 +36,31 @@ HomeTab.navigationOptions = ({navigation}) => {
 
 const ChatTab = createStackNavigator({
   ChatTab: ChatScreen,
-    CreateGroupChat: CreateGroupChatScreen,
-    CreateChannel: CreateChannelScreen,
+  CreateGroupChat: CreateGroupChatScreen,
+  CreateChannel: CreateChannelScreen,
 });
 
 const MoreTab = createStackNavigator({
   MoreTab: MoreScreen,
-    AddFriend: AddFriend,
-    CreateGroupChat: CreateGroupChatScreen,
-    CreateChannel: CreateChannelScreen,
+  AddFriend: AddFriend,
+  CreateGroupChat: CreateGroupChatScreen,
+  CreateChannel: CreateChannelScreen,
+});
+
+const TimelineTab = createStackNavigator({
+  TimelineTab: TimelineScreen,
+});
+
+const ChannelTab = createStackNavigator({
+  ChannelTab: ChannelScreen,
 });
 
 const Tabs = createBottomTabNavigator(
   {
     Home: HomeTab,
     Chat: ChatTab,
+    Timeline: TimelineTab,
+    Channel: ChannelTab,
     More: MoreTab,
   },
   {
@@ -61,13 +73,13 @@ const Tabs = createBottomTabNavigator(
       },
       activeTintColor: Colors.indigo,
       inactiveTintColor: Colors.white,
-      safeAreaInset: {right: 'never', left: 'never', bottom: 'always'},
+      safeAreaInset: { right: 'never', left: 'never', bottom: 'always' },
       // labelStyle: {marginVertical: 5},
       showLabel: false,
     },
-    defaultNavigationOptions: ({navigation}) => ({
-      tabBarIcon: ({focused, horizontal, tintColor}) => {
-        const {routeName} = navigation.state;
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
         if (routeName === 'Home') {
           return (
             <TabItem
@@ -92,24 +104,43 @@ const Tabs = createBottomTabNavigator(
               titleColor={focused ? Colors.indigo : Colors.white}
             />
           );
+        } else if (routeName === 'Timeline') {
+          return (
+            <TabItem
+              source={
+                focused ? Icons.icon_timeline_select : Icons.icon_timeline
+              }
+              title={translate('pages.xchat.timeline')}
+              titleColor={focused ? Colors.indigo : Colors.white}
+            />
+          );
+        } else if (routeName === 'Channel') {
+          return (
+            <TabItem
+              source={focused ? Icons.icon_channel_select : Icons.icon_channel}
+              title={translate('pages.xchat.channel')}
+              titleColor={focused ? Colors.indigo : Colors.white}
+            />
+          );
         }
       },
     }),
-  },
+  }
 );
 
 const TabItem = (props) => {
   return (
-    <View style={{alignItems: 'center', justifyContent: 'center'}}>
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
       <Image
         source={props.source}
-        style={[globalStyles.iconStyle, {paddingTop: 10}]}
+        style={[globalStyles.iconStyle, { paddingTop: 10 }]}
       />
       <Text
         style={[
           globalStyles.smallLightText,
-          {color: props.titleColor || Colors.white},
-        ]}>
+          { color: props.titleColor || Colors.white },
+        ]}
+      >
         {props.title}
       </Text>
     </View>

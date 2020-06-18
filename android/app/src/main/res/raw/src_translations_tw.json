@@ -125,7 +125,11 @@
     "goBackAlert": "您確定要離開流程嗎？",
     "invitation": "邀請函",
     "changeFirstName": "成功更改名字",
-    "changeLastName": "成功更改姓氏"
+    "changeLastName": "成功更改姓氏",
+    "live": "生活",
+    "deleteChannel": "刪除頻道",
+    "close": "關",
+    "enterDisplayName": "輸入顯示名稱"
   },
   "messages": {
     "required": "規定的（必填）"

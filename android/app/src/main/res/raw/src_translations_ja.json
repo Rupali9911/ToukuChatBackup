@@ -125,7 +125,11 @@
     "goBackAlert": "プロセスを終了してもよろしいですか？",
     "invitation": "チャンネル招待URLを発行",
     "changeFirstName": "名が正常に変更されました",
-    "changeLastName": "姓を変更しました"
+    "changeLastName": "姓を変更しました",
+    "live": "住む",
+    "deleteChannel": "チャンネルを削除",
+    "close": "閉じる",
+    "enterDisplayName": "表示名を入力してください"
   },
   "messages": {
     "required": "{{field}} 必須"

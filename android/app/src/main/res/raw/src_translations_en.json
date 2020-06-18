@@ -125,7 +125,11 @@
     "goBackAlert": "Are you sure to leave the process?",
     "invitation": "Invitation",
     "changeFirstName": "Changed First name successfully",
-    "changeLastName": "Changed Last name successfully"
+    "changeLastName": "Changed Last name successfully",
+    "live": "Live",
+    "deleteChannel": "Delete Channel",
+    "close": "Close",
+    "enterDisplayName": "Enter display name"
   },
   "messages": {
     "required": "{{field}} is required"

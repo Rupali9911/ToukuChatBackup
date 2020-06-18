@@ -53,7 +53,7 @@ class Login extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
-      isRememberChecked: false,
+      isRememberChecked: true,
       isCheckLanguages: false,
       username: '',
       password: '',
@@ -167,7 +167,7 @@ class Login extends Component {
           }
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
-          this.props.navigation.navigate('Home');
+          this.props.navigation.navigate('Chat');
           return;
         }
         if (res.user) {
@@ -259,7 +259,7 @@ class Login extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Chat');
             return;
           }
           if (res.user) {
@@ -331,7 +331,7 @@ class Login extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Chat');
             return;
           }
           if (res.user) {
@@ -379,7 +379,7 @@ class Login extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Home');
+              this.props.navigation.navigate('Chat');
               return;
             }
             if (res.user) {
@@ -424,7 +424,7 @@ class Login extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Home');
+              this.props.navigation.navigate('Chat');
               return;
             }
             if (res.user) {
@@ -503,7 +503,7 @@ class Login extends Component {
           if (res.token) {
             this.props.getUserProfile().then((res) => {
               if (res.id) {
-                this.props.navigation.navigate('Home');
+                this.props.navigation.navigate('Chat');
               }
             });
           }

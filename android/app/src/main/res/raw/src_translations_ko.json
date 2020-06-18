@@ -125,7 +125,11 @@
         "goBackAlert": "프로세스를 종료 하시겠습니까?",
         "invitation": "초대",
         "changeFirstName": "이름이 성공적으로 변경되었습니다.",
-        "changeLastName": "성을 성공적으로 변경 함"
+        "changeLastName": "성을 성공적으로 변경 함",
+        "live": "라이브",
+        "deleteChannel": "채널 삭제",
+        "close": "닫기",
+        "enterDisplayName": "표시 이름을 입력하십시오"
     },
     "messages": {
         "required": "{{field}} 이(가) 필요합니다"

@@ -14,9 +14,8 @@ import FriendChats from '../screens/FriendChats';
 import CreateFriendGroup from '../screens/CreateFriendGroup';
 import ChannelInfo from '../screens/ChannelInfo';
 import GroupDetails from '../screens/GroupDetails';
-import Timeline from '../screens/Timeline';
+import ChannelTimeline from '../screens/ChannelTimeline';
 import Drawer from './DrawerNavigation';
-
 
 const ChannelStack = createStackNavigator(
   {
@@ -26,7 +25,7 @@ const ChannelStack = createStackNavigator(
   {
     initialRouteName: 'ChannelChatScreen',
     defaultNavigationOptions: {
-        headerShown: false,
+      headerShown: false,
     },
   }
 );
@@ -39,13 +38,13 @@ const AppStack = createStackNavigator(
     CreateFriendGroup: CreateFriendGroup,
     ChannelChats: ChannelChats,
     ChannelInfo: ChannelInfo,
-    Timeline: Timeline,
+    ChannelTimeline: ChannelTimeline,
     GroupDetails: GroupDetails,
   },
   {
     initialRouteName: 'Drawer',
     defaultNavigationOptions: {
-        headerShown: false,
+      headerShown: false,
     },
   }
 );
@@ -62,7 +61,7 @@ const AuthStack = createStackNavigator(
   {
     initialRouteName: 'LoginSignUp',
     defaultNavigationOptions: {
-        headerShown: false,
+      headerShown: false,
     },
   }
 );

@@ -2,4 +2,5 @@
     <string name="app_name">Touku</string>
     <string name="facebook_app_id">534252273873820</string>
     <string name="line_channel_id" translatable="false">1653912577</string>
+    <string name="kakao_app_key">39152cc4df634359df4920277d99b009</string>
 </resources>
