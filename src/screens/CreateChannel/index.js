@@ -297,10 +297,10 @@ class CreateChannel extends Component {
       normalChannelData.discription = about;
     }
     if (status.trim() != '') {
-      normlChannelData.channel_status = status;
+      normalChannelData.channel_status = status;
     }
     if (addedFriends.length > 0) {
-      normlChannelData.members = Members;
+      normalChannelData.members = Members;
     }
     return normalChannelData;
   }

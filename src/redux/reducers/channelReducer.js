@@ -12,6 +12,8 @@ export const GET_FOLLOWING_CHANNELS_REQUEST = 'GET_FOLLOWING_CHANNELS_REQUEST';
 export const GET_FOLLOWING_CHANNELS_SUCCESS = 'GET_FOLLOWING_CHANNELS_SUCCESS';
 export const GET_FOLLOWING_CHANNELS_FAIL = 'GET_FOLLOWING_CHANNELS_FAIL';
 
+export const UPDATE_FOLLOWING_CHANNELS = 'UPDATE_FOLLOWING_CHANNELS';
+
 export const GET_MORE_FOLLOWING_CHANNELS_SUCCESS =
   'GET_MORE_FOLLOWING_CHANNELS_SUCCESS';
 
@@ -69,6 +71,13 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
+      };
+
+    //Update Following Channels
+    case UPDATE_FOLLOWING_CHANNELS:
+      return {
+        ...state,
+        followingChannels: action.payload,
       };
 
     //Get User Channels
@@ -169,6 +178,15 @@ const setCurrentChannelData = (data) => ({
 
 export const setCurrentChannel = (channel) => (dispatch) =>
   dispatch(setCurrentChannelData(channel));
+
+//Update Following Channels
+const updateFollowingChannelsData = (data) => ({
+  type: UPDATE_FOLLOWING_CHANNELS,
+  payload: data,
+});
+
+export const updateFollowingChannels = (channel) => (dispatch) =>
+  dispatch(updateFollowingChannelsData(channel));
 
 //Get Following Channels
 const getFollowingChannelsRequest = () => ({
