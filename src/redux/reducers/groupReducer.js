@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 
 export const SET_CURRENT_GROUP_DATA = 'SET_CURRENT_GROUP_DATA';
 export const SET_CURRENT_GROUP_DETAIL_DATA = 'SET_CURRENT_GROUP_DETAIL_DATA';
@@ -208,6 +208,19 @@ export const leaveGroup = (data) => (dispatch) =>
       });
   });
 
+//Mark Group Conversation Read
+export const markGroupConversationRead = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/mark-read-group-conversation/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
 //Get Group Conversations
 const getGroupConversationRequest = () => ({
   type: GET_GROUP_CONVERSATION_REQUEST,
@@ -290,7 +303,7 @@ export const getGroupDetail = (groupId) => (dispatch) =>
 
 //Get Group Members
 export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
-  dispatch
+  dispatch,
 ) =>
   new Promise(function (resolve, reject) {
     client
@@ -300,7 +313,7 @@ export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
           '/?limit=' +
           limit +
           '&offset=' +
-          offset
+          offset,
       )
       .then((res) => {
         resolve(res);

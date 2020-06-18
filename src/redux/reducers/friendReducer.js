@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
@@ -165,6 +165,19 @@ export const sendPersonalMessage = (message) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/send-personal-message/`, message)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+//Mark Friend Messages Read
+export const markFriendMsgsRead = (id) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/mark-friend-msgs-read/` + id + '/')
       .then((res) => {
         resolve(res);
       })
