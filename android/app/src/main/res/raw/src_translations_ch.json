@@ -883,18 +883,20 @@
       "usersCanClickOrTabThisButtonText": "用户可以单击或选中此按钮与您的朋友成为朋友，复制HTML标签以将其添加到网站，博客，其他",
       "invitationPage": "邀请函"
     },
-    "swal": {
-        "cancel": "取消",
-        "yesSure": "是的，当然！",
-        "ok": "好的",
-        "agree": "同意",
-        "goBack": "返回"
-    },
-    "backendMessage": {},
-    "toastr": {
-        "pleaseEnterYourPassword": "请输入您的密码",
-        "pleaseEnterYourConfirmPassword": "请输入您的确认密码",
-        "confirmPasswordDoNotMatch": "确认密码不匹配",
-        "unableToLoginTryLater": "Unable to login. Please try again later."
-    }
+    "changeDisplayName": "更改显示名称"
+  },
+  "swal": {
+    "cancel": "取消",
+    "yesSure": "是的，当然！",
+    "ok": "好的",
+    "agree": "同意",
+    "goBack": "返回"
+  },
+  "backendMessage": {},
+  "toastr": {
+    "pleaseEnterYourPassword": "请输入您的密码",
+    "pleaseEnterYourConfirmPassword": "请输入您的确认密码",
+    "confirmPasswordDoNotMatch": "确认密码不匹配",
+    "unableToLoginTryLater": "Unable to login. Please try again later."
+  }
 }
