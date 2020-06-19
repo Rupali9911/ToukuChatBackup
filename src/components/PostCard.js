@@ -22,7 +22,7 @@ export default class PostCard extends Component {
   _closeMenu = () => this.setState({ visible: false });
 
   render() {
-    const { menuItems, posts } = this.props;
+    const { menuItems, posts, isTimeline } = this.props;
     return posts.length ? (
       posts.map((post, index) => {
         return (
@@ -41,7 +41,7 @@ export default class PostCard extends Component {
             ) : null}
             <View style={{ marginHorizontal: '4%', marginVertical: 5 }}>
               <Text style={{ fontFamily: Fonts.light }}>
-                {post.text ? post.text : post.mutlilanguage_message_body.en}
+                {post.text ? post.text : post.mutlilanguage_message_body ? post.mutlilanguage_message_body.en : ''}
               </Text>
             </View>
           </View>
@@ -56,7 +56,7 @@ export default class PostCard extends Component {
           textAlign: 'center',
         }}
       >
-        {translate('pages.xchat.noTimelineFound')}
+        {isTimeline ? translate('pages.xchat.noTimelineFound') : translate('pages.xchat.noChannelFound')}
       </Text>
     );
   }

@@ -16,6 +16,7 @@ import { isIphoneX } from '../utils';
 import MoreScreen from '../screens/More';
 import { translate } from '../redux/reducers/languageReducer';
 import AddFriend from '../screens/AddFriend';
+import TabBarComp from '../components/TabBarComp'
 
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
@@ -64,12 +65,10 @@ const Tabs = createBottomTabNavigator(
     More: MoreTab,
   },
   {
+      tabBarComponent:TabBarComp,
     tabBarOptions: {
       tabStyle: {
         backgroundColor: Colors.home_header,
-        // paddingTop: 10,
-        // paddingBottom: 10,
-        height: 56,
       },
       activeTintColor: Colors.indigo,
       inactiveTintColor: Colors.white,
@@ -117,7 +116,7 @@ const Tabs = createBottomTabNavigator(
         } else if (routeName === 'Channel') {
           return (
             <TabItem
-              source={focused ? Icons.icon_channel_select : Icons.icon_channel}
+              source={focused ? Icons.icon_channel_select : Icons.icon_channel_new}
               title={translate('pages.xchat.channel')}
               titleColor={focused ? Colors.indigo : Colors.white}
             />
@@ -130,15 +129,15 @@ const Tabs = createBottomTabNavigator(
 
 const TabItem = (props) => {
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ alignItems: 'center', justifyContent: 'center'}}>
       <Image
         source={props.source}
-        style={[globalStyles.iconStyle, { paddingTop: 10 }]}
+        style={globalStyles.iconStyleTab}
       />
       <Text
         style={[
-          globalStyles.smallLightText,
-          { color: props.titleColor || Colors.white },
+          globalStyles.smallLightTextTab,
+          { color: props.titleColor || Colors.white , paddingTop: 2},
         ]}
       >
         {props.title}

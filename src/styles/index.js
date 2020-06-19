@@ -18,6 +18,12 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
+    smallLightTextTab: {
+        fontSize: 10,
+        fontFamily: Fonts.regular,
+        color: Colors.white,
+        textAlign: 'center',
+    },
   normalLightText: {
     fontSize: 17,
     fontFamily: Fonts.light,
@@ -77,6 +83,12 @@ export const globalStyles = StyleSheet.create({
     height: 24,
     resizeMode: 'contain',
   },
+
+    iconStyleTab: {
+        width: 26,
+        height: 26,
+        resizeMode: 'contain',
+    },
 
   smallIcon: {
     width: 18,

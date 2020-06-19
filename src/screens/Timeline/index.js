@@ -89,12 +89,19 @@ class Timeline extends Component {
     this.setState({ orientation: initial });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.props.getTrendTimeline();
-    this.props.getFollowingTimeline();
-    this.props.getRankingTimeline();
-    this.showData();
+    // this.props.getTrendTimeline();
+    // this.props.getFollowingTimeline();
+    // this.props.getRankingTimeline();
+    // this.showData();
+      await this.props.getTrendTimeline().then((res) => {
+          this.props.getFollowingTimeline().then((res) => {
+              this.props.getRankingTimeline().then((res) => {
+                this.showData();
+              })
+          })
+      })
   }
 
   showData() {
@@ -135,14 +142,14 @@ class Timeline extends Component {
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.timeline')} />
           <View style={globalStyles.container}>
-            <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
+            <TabBar tabBarItem={tabBarItem} activeTab={activeTab}/>
             <ScrollView>
               {activeTab === 'trend' ? (
-                <PostCard menuItems={menuItems} posts={trendTimline} />
+                <PostCard menuItems={menuItems} posts={trendTimline} isTimeline={true}/>
               ) : activeTab === 'following' ? (
-                <PostCard menuItems={menuItems} posts={followingTimeline} />
+                <PostCard menuItems={menuItems} posts={followingTimeline} isTimeline={true}/>
               ) : (
-                <PostCard menuItems={menuItems} posts={rankingTimeLine} />
+                <PostCard menuItems={menuItems} posts={rankingTimeLine} isTimeline={true}/>
               )}
             </ScrollView>
           </View>

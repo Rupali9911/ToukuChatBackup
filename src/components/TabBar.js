@@ -14,6 +14,7 @@ import { translate } from '../redux/reducers/languageReducer';
 
 const { width, height } = Dimensions.get('window');
 
+
 export default class TabBar extends Component {
   constructor(props) {
     super(props);

@@ -517,11 +517,11 @@ class LoginSignUp extends Component {
                   IconSrc={Icons.icon_twitter}
                   onPress={() => this.firebaseTwitterLogin()}
                 />
-                <SocialLogin
-                  IconSrc={Icons.icon_kakao}
-                  onPress={() => this.kakaoLogin()}
-                />
-              </View>
+                {/*<SocialLogin*/}
+                  {/*IconSrc={Icons.icon_kakao}*/}
+                  {/*onPress={() => this.kakaoLogin()}*/}
+                {/*/>*/}
+               </View>
             </View>
             <LanguageSelector />
           </ScrollView>

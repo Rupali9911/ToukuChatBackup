@@ -86,15 +86,23 @@ class Chat extends Component {
     this.setState({ orientation: initial });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getUserChannels();
-    this.props.getFollowingChannels();
-    this.props.getUserGroups();
-    this.props.getUserFriends();
-    this.props.getFriendRequests();
-    this.props.getUserConfiguration();
-    this.getCommonChat();
+   await this.props.getFollowingChannels().then((res) => {
+     this.props.getFriendRequests().then((res) => {
+       this.props.getUserConfiguration().then((res) => {
+         this.getCommonChat();
+       })
+     })
+    })
+
+    //   this.props.getFollowingChannels();
+    //   this.props.getUserGroups();
+    //   this.props.getUserFriends();
+    // this.props.getFriendRequests();
+    // this.props.getUserConfiguration();
+    // this.getCommonChat();
   }
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
