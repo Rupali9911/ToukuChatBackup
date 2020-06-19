@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Image } from 'react-native';
-import { Colors } from '../constants';
+import React, {Component} from 'react';
+import {View, StyleSheet, Dimensions, Image} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
-const { width, height } = Dimensions.get('window');
+import {Colors} from '../constants';
+
+const {width, height} = Dimensions.get('window');
 
 export default class ChatMessageImage extends Component {
   constructor(props) {
@@ -10,27 +12,35 @@ export default class ChatMessageImage extends Component {
     this.state = {};
   }
 
+  getGradients(isUser) {
+    if (isUser) {
+      return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
+    } else {
+      return [Colors.white, Colors.white, Colors.white];
+    }
+  }
+
   render() {
-    const { message, isUser, isPortrait, orientation } = this.props;
+    const {message, isUser, isPortrait, orientation} = this.props;
 
     return (
       message.message_body && (
-        <View
+        <LinearGradient
+          colors={this.getGradients(isUser)}
           style={[
             styles.imageContainer,
-            !isUser && { marginLeft: 5 },
+            !isUser && {marginLeft: 5},
             isPortrait && {
               minHeight:
                 orientation === 'PORTRAIT' ? height * 0.4 : height * 1.5,
             },
-          ]}
-        >
+          ]}>
           <Image
-            source={{ uri: message.message_body }}
+            source={{uri: message.message_body}}
             style={isPortrait ? styles.imagePortrait : styles.image}
             resizeMode={'cover'}
           />
-        </View>
+        </LinearGradient>
       )
     );
   }
@@ -38,8 +48,10 @@ export default class ChatMessageImage extends Component {
 const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: 'flex-end',
-    marginVertical: 15,
+    marginBottom: 15,
+    marginTop: 5,
     borderRadius: 10,
+    padding: 10,
     width: width * 0.65,
   },
   image: {

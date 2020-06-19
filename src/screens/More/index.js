@@ -166,7 +166,7 @@ class More extends Component {
 }
 
 const Section = (props) => {
-  return <View style={{height: 30, backgroundColor: Colors.home_header}} />;
+  return <View style={{height: 27, backgroundColor: Colors.home_header}} />;
 };
 
 const mapStateToProps = (state) => {

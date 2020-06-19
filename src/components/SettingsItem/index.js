@@ -88,9 +88,9 @@ render() {
         if (isImage){
             return <Image source={isImage} style={{width: 20, height: 20}} resizeMode={'cover'}/>
         }else if (isFontAwesome) {
-            return <FontAwesome name={icon_name} size={20}/>
+            return <FontAwesome name={icon_name} size={17}/>
         }else{
-            return <FontAwesome5 name={icon_name} size={20}/>
+            return <FontAwesome5 name={icon_name} size={17}/>
         }
     }
 
@@ -111,12 +111,12 @@ render() {
       <TouchableOpacity style={styles.container} activeOpacity={1} onPress={onPress}>
         <View style={styles.row}>
             <View style={styles.row}>
-          <View style={{marginEnd: 15}}>
-              {conditionalRender()}
-          </View>
-          <Text style={[globalStyles.smallRegularText, {color: Colors.black, fontWeight: '300'}]}>
-            {title}
-          </Text>
+                <View style={{width: 30}}>
+                    {conditionalRender()}
+                </View>
+                <Text style={[globalStyles.smallRegularText, {color: Colors.black, fontWeight: '300'}]}>
+                    {title}
+                </Text>
             </View>
 
             {isLanguage &&

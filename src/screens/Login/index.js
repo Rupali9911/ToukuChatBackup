@@ -171,7 +171,7 @@ class Login extends Component {
           return;
         }
         if (res.user) {
-          alert('something went wrong!');
+          // alert('something went wrong!');
         }
       });
     } catch (error) {

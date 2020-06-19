@@ -16,6 +16,9 @@ import Button from './Button';
 import RoundedImage from './RoundedImage';
 import moment from 'moment';
 import { Menu, Divider } from 'react-native-paper';
+import LinearGradient from "react-native-linear-gradient";
+import {globalStyles} from "../styles";
+import {getImage} from "../utils";
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,11 +45,31 @@ export default class PostCardHeader extends Component {
         }}
       >
         <View style={{ justifyContent: 'center' }}>
-          <RoundedImage
-            source={post.channel_picture_thumb}
-            isRounded={false}
-            size={35}
-          />
+            {post.channel_picture_thumb === null || post.channel_picture_thumb === '' || typeof post.channel_picture_thumb === undefined ? (
+                <LinearGradient
+                    start={{ x: 0.1, y: 0.7 }}
+                    end={{ x: 0.5, y: 0.2 }}
+                    locations={[0.1, 0.6, 1]}
+                    colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+                    style={styles.squareImage}
+                >
+                    <Text style={globalStyles.normalRegularText}>
+                        {post.channel_name.charAt(0).toUpperCase()}
+                        {/* {secondUpperCase} */}
+                    </Text>
+                </LinearGradient>
+            ) : (
+                <RoundedImage
+                    source={getImage(post.channel_picture_thumb)}
+                    isRounded={false}
+                    size={35}
+                />
+            )}
+          {/*<RoundedImage*/}
+            {/*source={post.channel_picture_thumb}*/}
+            {/*isRounded={false}*/}
+            {/*size={35}*/}
+          {/*/>*/}
         </View>
         <View
           style={{
@@ -173,4 +196,10 @@ const styles = StyleSheet.create({
     color: Colors.gradient_1,
     fontFamily: Fonts.regular,
   },
+    squareImage: {
+        width: 35,
+        height: 35,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
