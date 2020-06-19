@@ -111,7 +111,7 @@ class ChatContainer extends Component {
           this.keyboardAwareScrollView = view;
         }}
         onKeyboardDidShow={(contentWidth, contentHeight) => {
-          this.scrollView.scrollToEnd();
+          this.scrollView.scrollToEnd({animated: false});
         }}>
         <View
           style={[
@@ -135,7 +135,9 @@ class ChatContainer extends Component {
             ref={(view) => {
               this.scrollView = view;
             }}
-            onLayout={() => this.scrollView.scrollToEnd()}
+            onContentSizeChange={() => {
+              this.scrollView.scrollToEnd({animated: false});
+            }}
             automaticallyAdjustContentInsets
             contentInsetAdjustmentBehavior={'automatic'}
             decelerationRate={'fast'}>

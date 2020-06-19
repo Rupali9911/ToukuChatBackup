@@ -51,13 +51,11 @@ import {
 import {
   getUserGroups,
   setCurrentGroup,
-  markGroupConversationRead,
 } from '../../redux/reducers/groupReducer';
 import {
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
-  markFriendMsgsRead,
 } from '../../redux/reducers/friendReducer';
 
 class Home extends Component {
@@ -123,15 +121,19 @@ class Home extends Component {
   getFollowingChannels() {
     this.props.getFollowingChannels().then((res) => {
       this.setState(
-        {followingChannelsState: this.props.followingChannels},
+        {
+          followingChannelsState: this.props.followingChannels,
+        },
         () => {
-          for (var channel of this.state.followingChannelsState) {
-            this.setState((prevState) => ({
-              channelHeaderCounts:
-                prevState.channelHeaderCounts + channel.unread_msg,
-            }));
+          if (res.conversations.length > 0) {
+            this.handleLoadMoreChannels();
           }
-          this.props.updateFollowingChannels(this.state.followingChannelsState);
+          let counts = 0;
+          for (var channel of this.state.followingChannelsState) {
+            counts = counts + channel.unread_msg;
+          }
+          this.setState({channelHeaderCounts: counts});
+          // this.props.updateFollowingChannels(this.state.followingChannelsState);
         },
       );
     });
@@ -140,24 +142,25 @@ class Home extends Component {
   getUserGroups() {
     this.props.getUserGroups().then((res) => {
       this.setState({userGroupsState: this.props.userGroups}, () => {
+        let counts = 0;
         for (let group of this.state.userGroupsState) {
-          this.setState((prevState) => ({
-            groupHeaderCounts: prevState.groupHeaderCounts + group.unread_msg,
-          }));
+          counts = counts + group.unread_msg;
         }
+        this.setState({groupHeaderCounts: counts});
       });
     });
   }
 
   getUserFriends() {
-    this.props.getUserFriends().then((res) => {
-      this.setState({userFriendsState: this.props.userFriends}, () => {
-        for (let friend of this.state.userFriendsState) {
-          this.setState((prevState) => ({
-            friendHeaderCounts:
-              prevState.friendHeaderCounts + friend.unread_msg,
-          }));
-        }
+    this.setState({userFriendsState: this.props.userFriends}, () => {
+      this.props.getUserFriends().then((res) => {
+        this.setState({userFriendsState: this.props.userFriends}, () => {
+          let counts = 0;
+          for (let friend of this.state.userFriendsState) {
+            counts = counts + friend.unread_msg;
+          }
+          this.setState({friendHeaderCounts: counts});
+        });
       });
     });
   }
@@ -174,6 +177,14 @@ class Home extends Component {
         this.readAllMessageChannelChat(message);
       case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
         this.readAllMessageGroupChat(message);
+      case SocketEvents.FRIEND_TYPING_MESSAGE:
+        this.friendIsTyping(message);
+      case SocketEvents.NEW_MESSAGE_IN_GROUP:
+        this.onNewMessageInGroup(message);
+      case SocketEvents.NEW_MESSAGE_IN_FREIND:
+        this.onNewMessageInFriend(message);
+      case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.messageInFollowingChannel(message);
     }
   }
 
@@ -187,60 +198,154 @@ class Home extends Component {
     }
   }
 
+  //Friend is Typing
+  friendIsTyping(message) {
+    const {userFriendsState} = this.state;
+    if (message.text.data.message_details.type === 'personal') {
+      for (var i in userFriendsState) {
+        if (
+          userFriendsState[i].user_id ==
+            message.text.data.message_details.sender_user_id &&
+          this.props.userData.id ==
+            message.text.data.message_details.receiver_user_id
+        ) {
+          if (message.text.data.message_details.status === 'typing') {
+            userFriendsState[i].is_typing = true;
+          } else {
+            userFriendsState[i].is_typing = false;
+          }
+          break;
+        }
+      }
+      this.setState({userFriendsState});
+    } else {
+      for (var i in userFriendsState) {
+        userFriendsState[i].is_typing = false;
+      }
+    }
+  }
+
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
     const {userFriendsState} = this.state;
-    for (var i in userFriendsState) {
-      if (
-        userFriendsState[i].user_id == message.text.data.message_details.user_id
-      ) {
-        if (message.text.data.message_details.status === 'online') {
-          userFriendsState[i].is_online = true;
-        } else {
-          userFriendsState[i].is_online = false;
+    if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
+      for (var i in userFriendsState) {
+        if (
+          userFriendsState[i].user_id ==
+          message.text.data.message_details.user_id
+        ) {
+          if (message.text.data.message_details.status === 'online') {
+            userFriendsState[i].is_online = true;
+          } else {
+            userFriendsState[i].is_online = false;
+          }
+          break;
         }
-        break;
       }
+      this.setState({userFriendsState});
     }
-    this.setState({userFriendsState});
   }
 
-  readAllMessageGroupChat(message) {
-    const {userGroupsState} = this.state;
-    for (var i in userGroupsState) {
-      if (
-        userGroupsState[i].group_id ==
-        message.text.data.message_details.group_id
-      ) {
-        userGroupsState[i].unread_msg =
-          message.text.data.message_details.read_count;
-        this.props.getMissedSocketEventsById(message.text.data.socket_event_id);
-        this.setState({groupHeaderCounts: 0}, () => {
-          this.getUserGroups();
-        });
-        break;
+  //Message in Following Channel
+  messageInFollowingChannel(message) {
+    const {followingChannelsState} = this.state;
+    const {userData} = this.props;
+
+    if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
+      for (let i of followingChannelsState) {
+        if (message.text.data.message_details.channel == i.id) {
+          if (message.text.data.message_details.from_user.id == userData.id) {
+            this.getFollowingChannels();
+            break;
+          } else if (
+            message.text.data.message_details.to_user != null &&
+            message.text.data.message_details.to_user.id == userData.id
+          ) {
+            this.getFollowingChannels();
+            break;
+          }
+          break;
+        }
       }
     }
-    this.setState({userGroupsState});
+  }
+
+  //New Message in Friend
+  onNewMessageInFriend(message) {
+    const {userFriendsState} = this.state;
+    const {userData} = this.props;
+
+    if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
+      for (var i in userFriendsState) {
+        if (message.text.data.message_details.from_user.id == userData.id) {
+          this.getUserFriends();
+          break;
+        } else if (
+          message.text.data.message_details.to_user.id == userData.id
+        ) {
+          this.getUserFriends();
+          break;
+        }
+      }
+      this.setState({userFriendsState});
+    }
+  }
+
+  //New Message in Group
+  onNewMessageInGroup(message) {
+    const {userGroupsState} = this.state;
+    if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
+      for (let i of userGroupsState) {
+        if (i.group_id === message.text.data.message_details.group_id) {
+          this.getUserGroups();
+          break;
+        }
+      }
+      this.setState({userGroupsState});
+    }
+  }
+
+  //Mark as Read Group Chat
+  readAllMessageGroupChat(message) {
+    const {userGroupsState} = this.state;
+    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
+      for (var i in userGroupsState) {
+        if (
+          userGroupsState[i].group_id ==
+          message.text.data.message_details.group_id
+        ) {
+          userGroupsState[i].unread_msg =
+            message.text.data.message_details.read_count;
+          this.props.getMissedSocketEventsById(
+            message.text.data.socket_event_id,
+          );
+          this.getUserGroups();
+          break;
+        }
+      }
+      // this.setState({userGroupsState});
+    }
   }
 
   //Read Channel's all messages with socket event
   readAllMessageChannelChat(message) {
     const {followingChannelsState} = this.state;
-    // alert(JSON.stringify(message));
-    for (var i in followingChannelsState) {
-      if (
-        followingChannelsState[i].id ==
-        message.text.data.message_details.channel_id
-      ) {
-        followingChannelsState[i].unread_msg =
-          message.text.data.message_details.read_count;
-        this.props.getMissedSocketEventsById(message.text.data.socket_event_id);
-        this.setState({channelHeaderCounts: 0}, () => {
+    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT) {
+      for (var i in followingChannelsState) {
+        if (
+          followingChannelsState[i].id ==
+          message.text.data.message_details.channel_id
+        ) {
+          followingChannelsState[i].unread_msg =
+            message.text.data.message_details.read_count;
+          this.props.getMissedSocketEventsById(
+            message.text.data.socket_event_id,
+          );
           this.getFollowingChannels();
-        });
-        break;
+          break;
+        }
       }
+      // this.setState({followingChannelsState});
     }
   }
 
@@ -248,19 +353,22 @@ class Home extends Component {
   readAllMessageFriendChat(message) {
     const {userFriendsState} = this.state;
     let detail = message.text.data.message_details;
-    for (var i in userFriendsState) {
-      if (
-        userFriendsState[i].friend == detail.friend_id &&
-        detail.read_by === this.props.userData.id
-      ) {
-        userFriendsState[i].unread_msg =
-          message.text.data.message_details.read_count;
-        this.props.getMissedSocketEventsById(message.text.data.socket_event_id);
-        this.setState({friendHeaderCounts: 0}, () => {
+    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
+      for (var i in userFriendsState) {
+        if (
+          userFriendsState[i].friend == detail.friend_id &&
+          detail.read_by === this.props.userData.id
+        ) {
+          userFriendsState[i].unread_msg =
+            message.text.data.message_details.read_count;
+          this.props.getMissedSocketEventsById(
+            message.text.data.socket_event_id,
+          );
           this.getUserFriends();
-        });
-        break;
+          break;
+        }
       }
+      // this.setState({userFriendsState});
     }
   }
 
@@ -279,14 +387,11 @@ class Home extends Component {
   };
 
   onOpenGroupChats = (item) => {
-    let data = {group_id: item.group_id};
-    this.props.markGroupConversationRead(data);
     this.props.setCurrentGroup(item);
     this.props.navigation.navigate('GroupChats');
   };
 
   onOpenFriendChats = (item) => {
-    this.props.markFriendMsgsRead(item.friend);
     this.props.setCurrentFriend(item);
     this.props.navigation.navigate('FriendChats');
   };
@@ -327,11 +432,11 @@ class Home extends Component {
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
-          ListFooterComponent={() => (
-            <View>
-              {channelLoading && loadMoreVisible ? <ListLoader /> : null}
-            </View>
-          )}
+          // ListFooterComponent={() => (
+          //   <View>
+          //     {channelLoading && loadMoreVisible ? <ListLoader /> : null}
+          //   </View>
+          // )}
           keyExtractor={(item, index) => String(index)}
           onEndReached={this.handleLoadMoreChannels.bind(this)}
           onEndReachedThreshold={1}
@@ -369,9 +474,9 @@ class Home extends Component {
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
-          ListFooterComponent={() => (
-            <View>{groupLoading ? <ListLoader /> : null}</View>
-          )}
+          // ListFooterComponent={() => (
+          //   <View>{groupLoading ? <ListLoader /> : null}</View>
+          // )}
           keyExtractor={(item, index) => String(index)}
         />
       );
@@ -402,14 +507,15 @@ class Home extends Component {
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}
               isOnline={item.is_online}
+              isTyping={item.is_typing}
               onPress={() => this.onOpenFriendChats(item)}
               unreadCount={item.unread_msg}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
-          ListFooterComponent={() => (
-            <View>{friendLoading ? <ListLoader /> : null}</View>
-          )}
+          // ListFooterComponent={() => (
+          //   <View>{friendLoading ? <ListLoader /> : null}</View>
+          // )}
           keyExtractor={(item, index) => String(index)}
         />
       );
@@ -616,8 +722,6 @@ const mapDispatchToProps = {
   getUserConfiguration,
   getMissedSocketEventsById,
   updateFollowingChannels,
-  markFriendMsgsRead,
-  markGroupConversationRead,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
