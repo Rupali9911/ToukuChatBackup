@@ -18,6 +18,7 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <KakaoOpenSDK/KakaoOpenSDK.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -75,7 +76,25 @@ static void InitializeFlipper(UIApplication *application) {
   
    BOOL handledL = [[LineSDKLogin sharedInstance] handleOpenURL:url];
   
+  if ([KOSession isKakaoAccountLoginCallback:url]) {
+      return [KOSession handleOpenURL:url];
+  }
+  
   return handled || handledT || handledL;
+}
+
+//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+//                                      sourceApplication:(NSString *)sourceApplication
+//                                              annotation:(id)annotation {
+//    if ([KOSession isKakaoAccountLoginCallback:url]) {
+//        return [KOSession handleOpenURL:url];
+//    }
+//    return false;
+//}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    [KOSession handleDidBecomeActive];
 }
     
 

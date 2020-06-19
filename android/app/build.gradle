@@ -209,6 +209,7 @@ dependencies {
   implementation 'com.facebook.fresco:animated-webp:2.1.0'
   implementation 'com.facebook.fresco:webpsupport:2.0.0'
 
+    implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
     //For line
     implementation 'com.android.support:multidex:1.0.3'
     implementation('com.madgag.spongycastle:prov:1.58.0.0') {

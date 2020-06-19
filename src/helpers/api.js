@@ -25,6 +25,8 @@ export const socketUrl = staging ? socketURLStaging : socketURLLive;
 export const userAgent =
   'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1';
 
+
+export const KAKAO_API_KEY = '7608d108073fe9a65906c012b5c3f489'
 export const GET_USER_CONFIG = apiRoot + '/xchat/configuration/';
 export const UPDATE_CHANNEL_MODE = apiRoot + '/xchat/update-channel-mode/';
 export const GET_TOUKU_POINTS = apiRoot + '/xchat/get-total-tp/';

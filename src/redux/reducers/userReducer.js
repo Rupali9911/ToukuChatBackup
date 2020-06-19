@@ -1,5 +1,6 @@
 import {client} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
+import {KAKAO_API_KEY} from '../../helpers/api'
 
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
@@ -192,6 +193,40 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
         reject(err);
       });
   });
+
+export const kakaoRegister = (socialLoginData) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        client
+            .post(`/xchat/kakao-login-auth/`, socialLoginData)
+            .then((res) => {
+                if (res.token) {
+                    AsyncStorage.setItem('socialToken', res.token);
+                    // dispatch(getLoginSuccess(res.token))
+                }
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+
+export const getAccessCodeKakao = () => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        client
+            .get('https://kauth.kakao.com/oauth/authorize?client_id=' + KAKAO_API_KEY +'&scope=account_email&redirect_uri=https://touku.angelium.net&response_type=code&auth_tran_id=lvlxw5uu5g7608d108073fe9a65906c012b5c3f489kbkep4jw')
+            .then((res) => {
+                // if (res.token) {
+                //     AsyncStorage.setItem('socialToken', res.token);
+                //     // dispatch(getLoginSuccess(res.token))
+                // }
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+
+
 
 //Get User Profile
 export const getUserProfile = () => (dispatch) =>
