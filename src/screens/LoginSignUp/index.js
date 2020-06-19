@@ -521,7 +521,7 @@ class LoginSignUp extends Component {
                   {/*IconSrc={Icons.icon_kakao}*/}
                   {/*onPress={() => this.kakaoLogin()}*/}
                 {/*/>*/}
-              </View>
+               </View>
             </View>
             <LanguageSelector />
           </ScrollView>
