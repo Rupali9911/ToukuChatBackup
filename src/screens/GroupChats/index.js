@@ -1,13 +1,13 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground, Dimensions, Platform } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground, Dimensions, Platform} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 
-import { ChatHeader } from '../../components/Headers';
-import { globalStyles } from '../../styles';
-import { Colors, Fonts, Images, Icons } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {Colors, Fonts, Images, Icons, SocketEvents} from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import { ConfirmationModal } from '../../components/Modals';
+import {ConfirmationModal} from '../../components/Modals';
 import {
   translate,
   translateMessage,
@@ -23,9 +23,11 @@ import {
   sendGroupMessage,
   leaveGroup,
   editGroupMessage,
+  markGroupConversationRead,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import { ListLoader } from '../../components/Loaders';
+import {ListLoader} from '../../components/Loaders';
+import {eventService} from '../../utils';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -144,7 +146,7 @@ class GroupChats extends Component {
   };
 
   sendEditMessage = () => {
-    const { newMessageText, editMessageId } = this.state;
+    const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -179,10 +181,10 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { conversation } = this.state;
+    const {conversation} = this.state;
 
     const repliedMessage = conversation.find(
-      (item) => item.msg_id === messageId
+      (item) => item.msg_id === messageId,
     );
     this.setState({
       isReply: true,
@@ -199,7 +201,15 @@ class GroupChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
+
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
+  }
+
+  componentWillUnmount() {
+    this.events.unsubscribe();
   }
 
   componentDidMount() {
@@ -211,15 +221,31 @@ class GroupChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
+
+  checkEventTypes(message) {
+    const {currentGroup, userData} = this.props;
+
+    if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_GROUP) {
+      if (message.text.data.message_details.group_id == currentGroup.group_id) {
+        this.getGroupConversation();
+      }
+    }
+  }
+
+  markGroupConversationRead() {
+    let data = {group_id: this.props.currentGroup.group_id};
+    this.props.markGroupConversationRead(data);
+  }
 
   getGroupConversation() {
     this.props
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({ conversation: res.data });
+          this.setState({conversation: res.data});
+          this.markGroupConversationRead();
         }
       })
       .catch((err) => {
@@ -239,7 +265,7 @@ class GroupChats extends Component {
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
-            this.setState({ isMyGroup: true });
+            this.setState({isMyGroup: true});
           }
         }
       })
@@ -263,7 +289,7 @@ class GroupChats extends Component {
   }
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
     if (!message.length && this.state.isEdited) {
       this.onEditClear();
     }
@@ -356,14 +382,14 @@ class GroupChats extends Component {
 
   onConfirmMessageDelete = () => {
     console.log(
-      'GroupChats -> onConfirmMessageDelete -> onConfirmMessageDelete'
+      'GroupChats -> onConfirmMessageDelete -> onConfirmMessageDelete',
     );
     this.toggleMessageDeleteConfirmationModal();
   };
 
   onDeleteMessagePressed = (messageId) => {
     console.log('ChannelChats -> onDeletePressed -> message', messageId);
-    this.setState({ showMessageDeleteConfirmationModal: true });
+    this.setState({showMessageDeleteConfirmationModal: true});
   };
 
   onMessageTranslate = (message) => {
@@ -402,12 +428,11 @@ class GroupChats extends Component {
       translatedMessage,
       translatedMessageId,
     } = this.state;
-    const { currentGroup, groupLoading } = this.props;
+    const {currentGroup, groupLoading} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentGroup.group_name}
           description={
@@ -493,6 +518,7 @@ const mapDispatchToProps = {
   sendGroupMessage,
   translateMessage,
   editGroupMessage,
+  markGroupConversationRead,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

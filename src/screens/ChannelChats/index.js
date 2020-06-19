@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from 'react';
-import { ImageBackground } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component, Fragment} from 'react';
+import {ImageBackground} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
-import { ChatHeader } from '../../components/Headers';
-import { globalStyles } from '../../styles';
-import { Images } from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {Images, SocketEvents} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {
   translate,
@@ -16,8 +16,9 @@ import {
   sendChannelMessage,
   editChannelMessage,
 } from '../../redux/reducers/channelReducer';
-import { ListLoader } from '../../components/Loaders';
-import { ConfirmationModal } from '../../components/Modals';
+import {ListLoader} from '../../components/Loaders';
+import {ConfirmationModal} from '../../components/Modals';
+import {eventService} from '../../utils';
 class ChannelChats extends Component {
   constructor(props) {
     super(props);
@@ -44,7 +45,7 @@ class ChannelChats extends Component {
   }
 
   onMessageSend = () => {
-    const { newMessageText, isEdited } = this.state;
+    const {newMessageText, isEdited} = this.state;
     if (!newMessageText) {
       return;
     }
@@ -87,7 +88,7 @@ class ChannelChats extends Component {
   };
 
   sendEditMessage = () => {
-    const { newMessageText, editMessageId } = this.state;
+    const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -108,7 +109,15 @@ class ChannelChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
+
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
+  }
+
+  componentWillUnmount() {
+    this.events.unsubscribe();
   }
 
   componentDidMount() {
@@ -117,29 +126,47 @@ class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
+
+  checkEventTypes(message) {
+    const {currentChannel, userData} = this.props;
+
+    if (
+      message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        this.getChannelConversations();
+      }
+    }
+  }
 
   getChannelConversations() {
     this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({ conversations: res.conversation });
+          this.setState({conversations: res.conversation});
           this.props.readAllChannelMessages(this.props.currentChannel.id);
         }
       });
   }
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
     if (!message.length && this.state.isEdited) {
       this.onEditClear();
     }
   }
 
   renderConversations() {
-    const { channelLoading } = this.props;
+    const {channelLoading} = this.props;
     const {
       conversations,
       newMessageText,
@@ -188,7 +215,7 @@ class ChannelChats extends Component {
   };
 
   onDeletePressed = (messageId) => {
-    this.setState({ showConfirmationModal: true });
+    this.setState({showConfirmationModal: true});
   };
 
   onMessageTranslate = (message) => {
@@ -215,12 +242,11 @@ class ChannelChats extends Component {
   };
 
   render() {
-    const { currentChannel, showConfirmationModal, orientation } = this.props;
+    const {currentChannel, showConfirmationModal, orientation} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentChannel.name}
           description={

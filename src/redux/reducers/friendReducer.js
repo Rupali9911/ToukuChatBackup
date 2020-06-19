@@ -106,6 +106,7 @@ export const getUserFriends = () => (dispatch) =>
             friends = friends.map(function (el) {
               var o = Object.assign({}, el);
               o.isChecked = false;
+              o.is_typing = false;
               return o;
             });
           }

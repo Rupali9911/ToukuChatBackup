@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, {Fragment, Component} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,13 +9,13 @@ import {
   Clipboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Menu, Divider } from 'react-native-paper';
+import {Menu, Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { connect } from 'react-redux';
-import { Colors, Icons, Fonts, Images } from '../constants';
-import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
-const { width, height } = Dimensions.get('window');
+import {connect} from 'react-redux';
+import {Colors, Icons, Fonts, Images} from '../constants';
+import {translate, setI18nConfig} from '../redux/reducers/languageReducer';
+const {width, height} = Dimensions.get('window');
 let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
@@ -37,16 +37,14 @@ class GroupChatMessageBubble extends Component {
           width: '100%',
           borderRadius: 5,
           marginBottom: 5,
-        }}
-      >
+        }}>
         <View
           style={{
             flex: 3,
             flexDirection: 'row',
             alignItems: 'center',
-          }}
-        >
-          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+          }}>
+          <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
             {replyMessage.sender_id === this.props.userData.id
               ? 'You'
               : replyMessage.display_name}
@@ -58,9 +56,8 @@ class GroupChatMessageBubble extends Component {
             justifyContent: 'center',
             width: '95%',
             marginTop: 5,
-          }}
-        >
-          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+          }}>
+          <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
             {replyMessage.message}
           </Text>
         </View>
@@ -102,7 +99,7 @@ class GroupChatMessageBubble extends Component {
         anchor={
           !isUser ? (
             <View style={styles.talkBubble}>
-              <View style={{ marginLeft: 5 }}>
+              <View style={{marginLeft: 5}}>
                 <View style={styles.talkBubbleAbsoluteLeft} />
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -116,8 +113,7 @@ class GroupChatMessageBubble extends Component {
                   }}
                   onLongPress={(msg_id) => {
                     onMessagePress(message.msg_id);
-                  }}
-                >
+                  }}>
                   {message.reply_to &&
                     Object.keys(message.reply_to).length !== 0 &&
                     message.reply_to.constructor === Object &&
@@ -126,8 +122,7 @@ class GroupChatMessageBubble extends Component {
                     style={{
                       fontSize: 15,
                       fontFamily: Fonts.light,
-                    }}
-                  >
+                    }}>
                     {message.message_body.text}
                   </Text>
                 </TouchableOpacity>
@@ -145,8 +140,7 @@ class GroupChatMessageBubble extends Component {
                 style={{
                   minHeight: 40,
                   borderRadius: borderRadius,
-                }}
-              >
+                }}>
                 <TouchableOpacity
                   style={{
                     flex: 1,
@@ -157,23 +151,21 @@ class GroupChatMessageBubble extends Component {
                   onLongPress={(msg_id) => {
                     onMessagePress(message.msg_id);
                   }}
-                  activeOpacity={0.8}
-                >
+                  activeOpacity={0.8}>
                   {message.reply_to &&
                     Object.keys(message.reply_to).length !== 0 &&
                     message.reply_to.constructor === Object &&
                     this.renderReplyMessage(message.reply_to)}
-                  <Text style={{ color: 'white', fontSize: 15 }}>
+                  <Text style={{color: 'white', fontSize: 15}}>
                     {message.message_body.text}
                   </Text>
                 </TouchableOpacity>
               </LinearGradient>
             </View>
           )
-        }
-      >
+        }>
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
@@ -182,10 +174,10 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.translate')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
@@ -194,11 +186,11 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.reply')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5
                 name={'pencil-alt'}
@@ -211,11 +203,11 @@ class GroupChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.edit')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
@@ -224,11 +216,11 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.delete')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5
                 name={'minus-circle'}
@@ -240,11 +232,11 @@ class GroupChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.unsend')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
           )}
@@ -253,7 +245,7 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.copy')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
       </Menu>
     );
@@ -263,7 +255,8 @@ class GroupChatMessageBubble extends Component {
 const styles = StyleSheet.create({
   talkBubble: {
     justifyContent: 'flex-end',
-    marginVertical: 15,
+    marginBottom: 15,
+    marginTop: 5,
   },
   talkBubbleAbsoluteRight: {
     width: 30,
@@ -278,7 +271,7 @@ const styles = StyleSheet.create({
     borderLeftColor: Colors.gradient_3,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '-90deg' }],
+    transform: [{rotate: '-90deg'}],
     right: -5,
     top: -15,
   },
@@ -294,7 +287,7 @@ const styles = StyleSheet.create({
     borderRightColor: Colors.white,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '90deg' }],
+    transform: [{rotate: '90deg'}],
     left: -5,
     top: -15,
   },
@@ -310,5 +303,5 @@ const mapDispatchToProps = {};
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(GroupChatMessageBubble);
