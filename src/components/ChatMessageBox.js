@@ -152,31 +152,22 @@ export default class ChatMessageBox extends Component {
               resizeMode={'cover'}
             />
             <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
-              {message.msg_type === 'image' ? (
-                <ChatMessageImage
-                  message={message}
-                  isUser={isUser}
-                  isPortrait={isPortrait}
-                  orientation={orientation}
-                />
-              ) : (
-                <ChatMessageBubble
-                  message={message}
-                  isUser={isUser}
-                  onMessageReply={onMessageReply}
-                  onMessagePress={(id) => this.onMessagePress(id)}
-                  longPressMenu={longPressMenu}
-                  openMenu={this._openMenu}
-                  closeMenu={this._closeMenu}
-                  selectedMessageId={selectedMessageId}
-                  isChannel={isChannel}
-                  onMessageTranslate={onMessageTranslate}
-                  onEditMessage={onEditMessage}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
-                  onDelete={onDelete}
-                />
-              )}
+              <ChatMessageBubble
+                message={message}
+                isUser={isUser}
+                onMessageReply={onMessageReply}
+                onMessagePress={(id) => this.onMessagePress(id)}
+                longPressMenu={longPressMenu}
+                openMenu={this._openMenu}
+                closeMenu={this._closeMenu}
+                selectedMessageId={selectedMessageId}
+                isChannel={isChannel}
+                onMessageTranslate={onMessageTranslate}
+                onEditMessage={onEditMessage}
+                translatedMessage={translatedMessage}
+                translatedMessageId={translatedMessageId}
+                onDelete={onDelete}
+              />
               <View
                 style={{
                   marginHorizontal: '1.5%',
@@ -231,31 +222,22 @@ export default class ChatMessageBox extends Component {
                   }`}
                 </Text>
               </View>
-              {message.msg_type === 'image' ? (
-                <ChatMessageImage
-                  message={message}
-                  isUser={isUser}
-                  isPortrait={isPortrait}
-                  orientation={orientation}
-                />
-              ) : (
-                <ChatMessageBubble
-                  message={message}
-                  isUser={isUser}
-                  onMessageReply={onMessageReply}
-                  onMessagePress={(id) => this.onMessagePress(id)}
-                  longPressMenu={longPressMenu}
-                  openMenu={this._openMenu}
-                  closeMenu={this._closeMenu}
-                  selectedMessageId={selectedMessageId}
-                  isChannel={isChannel}
-                  onMessageTranslate={onMessageTranslate}
-                  onEditMessage={onEditMessage}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
-                  onDelete={onDelete}
-                />
-              )}
+              <ChatMessageBubble
+                message={message}
+                isUser={isUser}
+                onMessageReply={onMessageReply}
+                onMessagePress={(id) => this.onMessagePress(id)}
+                longPressMenu={longPressMenu}
+                openMenu={this._openMenu}
+                closeMenu={this._closeMenu}
+                selectedMessageId={selectedMessageId}
+                isChannel={isChannel}
+                onMessageTranslate={onMessageTranslate}
+                onEditMessage={onEditMessage}
+                translatedMessage={translatedMessage}
+                translatedMessageId={translatedMessageId}
+                onDelete={onDelete}
+              />
             </View>
             {translatedMessageId &&
               message.id === translatedMessageId &&

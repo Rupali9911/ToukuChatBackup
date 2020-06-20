@@ -13,6 +13,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
 import { Colors, Fonts } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
+import ScalableImage from './ScalableImage';
+import VideoPlayerCustom from './VideoPlayerCustom';
 
 let borderRadius = 20;
 class ChatMessageBubble extends Component {
@@ -83,7 +85,9 @@ class ChatMessageBubble extends Component {
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
-    return (
+    return message.msg_type === 'image' ||
+      message.msg_type === 'video' ||
+      (message.msg_type === 'text' && message.message_body != '') ? (
       <Menu
         contentStyle={{
           backgroundColor: Colors.gradient_3,
@@ -103,8 +107,8 @@ class ChatMessageBubble extends Component {
                     backgroundColor: Colors.white,
                     borderRadius: borderRadius,
                     justifyContent: 'center',
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
+                    paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
+                    paddingVertical: message.msg_type === 'image' ? 5 : 10,
                   }}
                   onLongPress={(id) => {
                     onMessagePress(message.id);
@@ -112,14 +116,18 @@ class ChatMessageBubble extends Component {
                 >
                   {message.reply_to &&
                     this.renderReplyMessage(message.reply_to)}
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      fontFamily: Fonts.light,
-                    }}
-                  >
-                    {message.message_body}
-                  </Text>
+                  {message.msg_type === 'image' ? (
+                    <ScalableImage
+                      src={message.message_body}
+                      borderRadius={borderRadius}
+                    />
+                  ) : message.msg_type === 'video' ? (
+                    <VideoPlayerCustom url={message.message_body} />
+                  ) : (
+                    <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
+                      {message.message_body}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -141,8 +149,8 @@ class ChatMessageBubble extends Component {
                   style={{
                     flex: 1,
                     justifyContent: 'center',
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
+                    paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
+                    paddingVertical: message.msg_type === 'image' ? 5 : 10,
                   }}
                   onLongPress={() => {
                     onMessagePress(message.id);
@@ -151,27 +159,38 @@ class ChatMessageBubble extends Component {
                 >
                   {message.reply_to &&
                     this.renderReplyMessage(message.reply_to)}
-                  <Text style={{ color: 'white', fontSize: 15 }}>
-                    {message.message_body}
-                  </Text>
+                  {message.msg_type === 'image' ? (
+                    <ScalableImage
+                      src={message.message_body}
+                      borderRadius={borderRadius}
+                    />
+                  ) : message.msg_type === 'video' ? (
+                    <VideoPlayerCustom url={message.message_body} />
+                  ) : (
+                    <Text style={{ color: 'white', fontSize: 15 }}>
+                      {message.message_body}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </LinearGradient>
             </View>
           )
         }
       >
-        <Menu.Item
-          titleStyle={{ color: Colors.white }}
-          icon={() => (
-            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            onMessageTranslate(message);
-            closeMenu();
-          }}
-          title={translate('common.translate')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
+        {message.msg_type === 'text' && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              onMessageTranslate(message);
+              closeMenu();
+            }}
+            title={translate('common.translate')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
         {!isChannel && (
           <Menu.Item
             titleStyle={{ color: Colors.white }}
@@ -186,7 +205,7 @@ class ChatMessageBubble extends Component {
             titleStyle={{ marginLeft: -25, color: Colors.white }}
           />
         )}
-        {isUser && isEditable > new Date() && (
+        {isUser && isEditable > new Date() && message.msg_type === 'text' && (
           <Menu.Item
             titleStyle={{ color: Colors.white }}
             icon={() => (
@@ -233,20 +252,35 @@ class ChatMessageBubble extends Component {
             titleStyle={{ marginLeft: -25, color: Colors.white }}
           />
         )}
-        <Menu.Item
-          titleStyle={{ color: Colors.white }}
-          icon={() => (
-            <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            this.onCopy(message.message_body);
-            closeMenu();
-          }}
-          title={translate('common.copy')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
+        {message.msg_type === 'text' && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              this.onCopy(message.message_body);
+              closeMenu();
+            }}
+            title={translate('common.copy')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
+        {message.msg_type !== 'text' && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome name={'download'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              closeMenu();
+            }}
+            title={translate('pages.setting.download')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
       </Menu>
-    );
+    ) : null;
   }
 }
 

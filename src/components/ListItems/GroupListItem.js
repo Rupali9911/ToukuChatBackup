@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {Badge} from 'react-native-paper';
+import { Badge, Divider } from 'react-native-paper';
 
 import RoundedImage from '../RoundedImage';
-import {globalStyles} from '../../styles';
-import {Colors} from '../../constants';
-import {getImage} from '../../utils';
+import { globalStyles } from '../../styles';
+import { Colors } from '../../constants';
+import { getImage } from '../../utils';
 
 export default class GroupListItem extends Component {
   constructor(props) {
@@ -17,77 +17,100 @@ export default class GroupListItem extends Component {
   }
 
   render() {
-    const {title, description, date, image, onPress, unreadCount} = this.props;
+    const {
+      title,
+      description,
+      date,
+      image,
+      onPress,
+      unreadCount,
+    } = this.props;
     var matches = title.match(/\b(\w)/g);
     var firstChars = matches.join('');
     var secondUpperCase = firstChars.charAt(1).toUpperCase();
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onPress}
-        style={styles.container}>
-        <View style={styles.firstView}>
-          {image === null || image === '' || typeof image === undefined ? (
-            <LinearGradient
-              start={{x: 0.1, y: 0.7}}
-              end={{x: 0.5, y: 0.2}}
-              locations={[0.1, 0.6, 1]}
-              colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-              style={styles.squareImage}>
-              <Text style={globalStyles.normalRegularText}>
-                {title.charAt(0).toUpperCase()}
-                {/* {secondUpperCase} */}
-              </Text>
-            </LinearGradient>
-          ) : (
-            <RoundedImage
-              source={getImage(image)}
-              isRounded={false}
-              size={50}
-            />
-          )}
-          <View style={styles.secondView}>
-            <View style={{flex: 1, alignItems: 'flex-start'}}>
-              <Text
-                numberOfLines={1}
-                style={[globalStyles.smallRegularText, {color: Colors.black}]}>
-                {title}
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[
-                  globalStyles.smallLightText,
-                  {color: Colors.gray_dark},
-                ]}>
-                {description}
-              </Text>
-            </View>
-            <View>
-              <Text
-                numberOfLines={1}
-                style={[
-                  globalStyles.smallLightText,
-                  {color: Colors.gray_dark},
-                ]}>
-                {moment(date).format('MM/DD')}
-              </Text>
-              {unreadCount !== 0 && unreadCount != null && (
-                <Badge
+      <Fragment>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onPress}
+          style={styles.container}
+        >
+          <View style={styles.firstView}>
+            {image === null || image === '' || typeof image === undefined ? (
+              <LinearGradient
+                start={{ x: 0.1, y: 0.7 }}
+                end={{ x: 0.5, y: 0.2 }}
+                locations={[0.1, 0.6, 1]}
+                colors={[
+                  Colors.gradient_1,
+                  Colors.gradient_2,
+                  Colors.gradient_3,
+                ]}
+                style={styles.squareImage}
+              >
+                <Text style={globalStyles.normalRegularText}>
+                  {title.charAt(0).toUpperCase()}
+                  {/* {secondUpperCase} */}
+                </Text>
+              </LinearGradient>
+            ) : (
+              <RoundedImage
+                source={getImage(image)}
+                isRounded={false}
+                size={50}
+              />
+            )}
+            <View style={styles.secondView}>
+              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    globalStyles.smallRegularText,
+                    { color: Colors.black },
+                  ]}
+                >
+                  {title}
+                </Text>
+                <Text
+                  numberOfLines={1}
                   style={[
                     globalStyles.smallLightText,
-                    {
-                      backgroundColor: Colors.green,
-                      color: Colors.white,
-                      fontSize: 11,
-                    },
-                  ]}>
-                  {unreadCount}
-                </Badge>
-              )}
+                    { color: Colors.gray_dark },
+                  ]}
+                >
+                  {description}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    globalStyles.smallLightText,
+                    { color: Colors.gray_dark },
+                  ]}
+                >
+                  {moment(date).format('MM/DD')}
+                </Text>
+                {unreadCount !== 0 && unreadCount != null && (
+                  <Badge
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        backgroundColor: Colors.green,
+                        color: Colors.white,
+                        fontSize: 11,
+                      },
+                    ]}
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        <Divider />
+      </Fragment>
     );
   }
 }

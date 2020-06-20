@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, { Fragment, Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,15 +9,15 @@ import {
 } from 'react-native';
 import GroupChatMessageBubble from './GroupChatMessageBubble';
 
-import {Colors, Icons, Fonts, Images} from '../constants';
+import { Colors, Icons, Fonts, Images } from '../constants';
 import RoundedImage from './RoundedImage';
 import GroupChatMessageImage from './GroupChatMessageImage';
-import {getAvatar} from '../utils';
-import {translate} from '../redux/reducers/languageReducer';
+import { getAvatar } from '../utils';
+import { translate } from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {globalStyles} from '../styles';
+import { globalStyles } from '../styles';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default class GroupChatMessageBox extends Component {
   constructor(props) {
@@ -38,12 +38,12 @@ export default class GroupChatMessageBox extends Component {
       this.isPortrait(this.props.message.message_body);
   }
 
-  _openMenu = () => this.setState({longPressMenu: true});
+  _openMenu = () => this.setState({ longPressMenu: true });
 
-  _closeMenu = () => this.setState({longPressMenu: false});
+  _closeMenu = () => this.setState({ longPressMenu: false });
 
   layoutChange = (event) => {
-    var {x, y, width, height} = event.nativeEvent.layout;
+    var { x, y, width, height } = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -52,7 +52,7 @@ export default class GroupChatMessageBox extends Component {
 
   onMessagePress = (id) => {
     console.log('ChatMessageBox -> onMessagePress -> id', id);
-    this.setState({selectedMessageId: id});
+    this.setState({ selectedMessageId: id });
     this._openMenu();
   };
 
@@ -78,12 +78,14 @@ export default class GroupChatMessageBox extends Component {
           paddingHorizontal: 20,
           paddingVertical: 10,
           marginBottom: 15,
-        }}>
+        }}
+      >
         <Text
           style={{
             fontFamily: Fonts.light,
             fontSize: 14,
-          }}>
+          }}
+        >
           {this.props.translatedMessage}
         </Text>
         <View
@@ -91,20 +93,23 @@ export default class GroupChatMessageBox extends Component {
             flexDirection: 'row',
             alignItems: 'center',
             marginTop: 5,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontFamily: Fonts.extralight,
               fontSize: 12,
               color: Colors.gray_dark,
-            }}>
+            }}
+          >
             {translate('common.translatedMessage')}
           </Text>
           <TouchableOpacity
-            style={{marginLeft: 10}}
+            style={{ marginLeft: 10 }}
             onPress={() => {
               this.props.onMessageTranslateClose();
-            }}>
+            }}
+          >
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
         </View>
@@ -113,7 +118,7 @@ export default class GroupChatMessageBox extends Component {
   };
 
   render() {
-    const {longPressMenu, selectedMessageId, isPortrait} = this.state;
+    const { longPressMenu, selectedMessageId, isPortrait } = this.state;
     const {
       message,
       isUser,
@@ -134,76 +139,60 @@ export default class GroupChatMessageBox extends Component {
           {
             justifyContent: 'flex-start',
           },
-        ]}>
+        ]}
+      >
         <View
           style={{
             alignItems: 'flex-start',
             marginVertical: 5,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
-            }}>
+            }}
+          >
             <RoundedImage
               source={getAvatar(message.sender_picture)}
               size={50}
               resizeMode={'cover'}
             />
-            <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
-              {message.message_body.type === 'image' ? (
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 11,
-                      fontFamily: Fonts.regular,
-                      color: Colors.primary,
-                      textAlign: 'left',
-                      marginStart: 10,
-                    }}>
-                    {message.sender_display_name}
-                  </Text>
-                  <GroupChatMessageImage
-                    message={message}
-                    isUser={isUser}
-                    isPortrait={isPortrait}
-                    orientation={orientation}
-                  />
-                </View>
-              ) : (
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 11,
-                      fontFamily: Fonts.regular,
-                      color: Colors.primary,
-                      textAlign: 'left',
-                      marginStart: 10,
-                    }}>
-                    {message.sender_display_name}
-                  </Text>
-                  <GroupChatMessageBubble
-                    message={message}
-                    isUser={isUser}
-                    onMessageReply={onMessageReply}
-                    onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-                    longPressMenu={longPressMenu}
-                    openMenu={this._openMenu}
-                    closeMenu={this._closeMenu}
-                    selectedMessageId={selectedMessageId}
-                    onMessageTranslate={onMessageTranslate}
-                    translatedMessage={translatedMessage}
-                    translatedMessageId={translatedMessageId}
-                    onDelete={onDelete}
-                    onEditMessage={onEditMessage}
-                  />
-                </View>
-              )}
+            <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
+              <View>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontFamily: Fonts.regular,
+                    color: Colors.primary,
+                    textAlign: 'left',
+                    marginStart: 10,
+                  }}
+                >
+                  {message.sender_display_name}
+                </Text>
+                <GroupChatMessageBubble
+                  message={message}
+                  isUser={isUser}
+                  onMessageReply={onMessageReply}
+                  onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                  longPressMenu={longPressMenu}
+                  openMenu={this._openMenu}
+                  closeMenu={this._closeMenu}
+                  selectedMessageId={selectedMessageId}
+                  onMessageTranslate={onMessageTranslate}
+                  translatedMessage={translatedMessage}
+                  translatedMessageId={translatedMessageId}
+                  onDelete={onDelete}
+                  onEditMessage={onEditMessage}
+                />
+              </View>
               <View
                 style={{
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
-                }}>
+                }}
+              >
                 <Text style={styles.statusText}>{status}</Text>
                 <Text
                   style={{
@@ -212,7 +201,8 @@ export default class GroupChatMessageBox extends Component {
                     color: Colors.white,
                     textAlign: 'center',
                     color: Colors.primary,
-                  }}>{`${time.getHours()}:${
+                  }}
+                >{`${time.getHours()}:${
                   time.getMinutes() < 10
                     ? '0' + time.getMinutes()
                     : time.getMinutes()
@@ -234,21 +224,25 @@ export default class GroupChatMessageBox extends Component {
               alignItems: 'flex-end',
               alignSelf: 'flex-end',
             },
-          ]}>
+          ]}
+        >
           <View
             style={{
               alignItems: 'flex-end',
-            }}>
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
-              }}>
+              }}
+            >
               <View
                 style={{
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
-                }}>
+                }}
+              >
                 <Text style={styles.statusText}>{status}</Text>
                 <Text style={styles.statusText}>
                   {`${time.getHours()}:${
@@ -258,30 +252,21 @@ export default class GroupChatMessageBox extends Component {
                   }`}
                 </Text>
               </View>
-              {message.message_body.type === 'image' ? (
-                <GroupChatMessageImage
-                  message={message}
-                  isUser={isUser}
-                  isPortrait={isPortrait}
-                  orientation={orientation}
-                />
-              ) : (
-                <GroupChatMessageBubble
-                  message={message}
-                  isUser={isUser}
-                  onMessageReply={onMessageReply}
-                  onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-                  longPressMenu={longPressMenu}
-                  openMenu={this._openMenu}
-                  closeMenu={this._closeMenu}
-                  selectedMessageId={selectedMessageId}
-                  onMessageTranslate={onMessageTranslate}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
-                  onDelete={onDelete}
-                  onEditMessage={onEditMessage}
-                />
-              )}
+              <GroupChatMessageBubble
+                message={message}
+                isUser={isUser}
+                onMessageReply={onMessageReply}
+                onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                longPressMenu={longPressMenu}
+                openMenu={this._openMenu}
+                closeMenu={this._closeMenu}
+                selectedMessageId={selectedMessageId}
+                onMessageTranslate={onMessageTranslate}
+                translatedMessage={translatedMessage}
+                translatedMessageId={translatedMessageId}
+                onDelete={onDelete}
+                onEditMessage={onEditMessage}
+              />
             </View>
             {translatedMessageId &&
               message.msg_id === translatedMessageId &&

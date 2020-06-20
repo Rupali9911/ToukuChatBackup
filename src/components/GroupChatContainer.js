@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   View,
   Text,
@@ -9,18 +9,18 @@ import {
   Image,
   Keyboard,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import moment from 'moment';
-import {ScrollView} from 'react-native-gesture-handler';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { ScrollView } from 'react-native-gesture-handler';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import GroupChatMessageBox from './GroupChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
-import {translate} from '../redux/reducers/languageReducer';
-import {Colors, Fonts, Images, Icons} from '../constants';
+import { translate } from '../redux/reducers/languageReducer';
+import { Colors, Fonts, Images, Icons } from '../constants';
 import NoData from './NoData';
-import {isIphoneX} from '../utils';
-const {width, height} = Dimensions.get('window');
+import { isIphoneX } from '../utils';
+const { width, height } = Dimensions.get('window');
 
 class GroupChatContainer extends Component {
   constructor(props) {
@@ -60,16 +60,18 @@ class GroupChatContainer extends Component {
         <Fragment key={index}>
           {hedaingDate.getDate() !== new Date(item.timestamp).getDate() ||
           index === 0 ? (
-            <Fragment>
-              {setDate(item.timestamp)}
-              <View style={chatStyle.messageDateCntainer}>
-                <View style={chatStyle.messageDate}>
-                  <Text style={chatStyle.messageDateText}>
-                    {getDate(item.timestamp)}
-                  </Text>
+            item.message_body == null ? null : (
+              <Fragment>
+                {setDate(item.timestamp)}
+                <View style={chatStyle.messageDateCntainer}>
+                  <View style={chatStyle.messageDate}>
+                    <Text style={chatStyle.messageDateText}>
+                      {getDate(item.timestamp)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </Fragment>
+              </Fragment>
+            )
           ) : null}
           <GroupChatMessageBox
             key={item.msg_id}
@@ -106,15 +108,16 @@ class GroupChatContainer extends Component {
     } = this.props;
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={{flex: 1}}
+        contentContainerStyle={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
           this.keyboardAwareScrollView = view;
         }}
         onKeyboardDidShow={(contentWidth, contentHeight) => {
-          this.scrollView.scrollToEnd({animated: false});
-        }}>
+          this.scrollView.scrollToEnd({ animated: false });
+        }}
+      >
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -128,18 +131,20 @@ class GroupChatContainer extends Component {
                   ? height * 0.01
                   : height * 0.03,
             },
-          ]}>
+          ]}
+        >
           <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
-              isReply && {paddingBottom: '20%'},
+              isReply && { paddingBottom: '20%' },
             ]}
             ref={(view) => {
               this.scrollView = view;
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd({animated: false});
-            }}>
+              this.scrollView.scrollToEnd({ animated: false });
+            }}
+          >
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
@@ -155,21 +160,23 @@ class GroupChatContainer extends Component {
                 bottom: 20,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
-              }}>
+              }}
+            >
               <View
                 style={{
                   flex: 3,
                   flexDirection: 'row',
                   alignItems: 'center',
-                }}>
-                <View style={{flex: 8}}>
-                  <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+                }}
+              >
+                <View style={{ flex: 8 }}>
+                  <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
                     {repliedMessage.sender_id === this.props.userData.id
                       ? 'You'
                       : repliedMessage.sender_username}
                   </Text>
                 </View>
-                <View style={{flex: 2, alignItems: 'flex-end'}}>
+                <View style={{ flex: 2, alignItems: 'flex-end' }}>
                   <TouchableOpacity
                     style={{
                       //   paddingHorizontal: 5,
@@ -180,7 +187,8 @@ class GroupChatContainer extends Component {
                       borderRadius: 100,
                       backgroundColor: Colors.gradient_1,
                     }}
-                    onPress={cancelReply}>
+                    onPress={cancelReply}
+                  >
                     <Image
                       source={Icons.icon_close}
                       style={{
@@ -192,8 +200,11 @@ class GroupChatContainer extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
-                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+              <View style={{ flex: 7, justifyContent: 'center', width: '95%' }}>
+                <Text
+                  numberOfLines={2}
+                  style={{ fontFamily: Fonts.extralight }}
+                >
                   {repliedMessage.message_body.text}
                 </Text>
               </View>
@@ -217,7 +228,7 @@ const chatStyle = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
+  messareAreaScroll: { flexGrow: 1, paddingBottom: 20 },
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',

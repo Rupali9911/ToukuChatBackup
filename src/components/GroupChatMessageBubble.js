@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, { Fragment, Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,13 +9,13 @@ import {
   Clipboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Menu, Divider} from 'react-native-paper';
+import { Menu, Divider } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {connect} from 'react-redux';
-import {Colors, Icons, Fonts, Images} from '../constants';
-import {translate, setI18nConfig} from '../redux/reducers/languageReducer';
-const {width, height} = Dimensions.get('window');
+import { connect } from 'react-redux';
+import { Colors, Icons, Fonts, Images } from '../constants';
+import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
+import ScalableImage from './ScalableImage';
 let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
@@ -37,14 +37,16 @@ class GroupChatMessageBubble extends Component {
           width: '100%',
           borderRadius: 5,
           marginBottom: 5,
-        }}>
+        }}
+      >
         <View
           style={{
             flex: 3,
             flexDirection: 'row',
             alignItems: 'center',
-          }}>
-          <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+          }}
+        >
+          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
             {replyMessage.sender_id === this.props.userData.id
               ? 'You'
               : replyMessage.display_name}
@@ -56,8 +58,9 @@ class GroupChatMessageBubble extends Component {
             justifyContent: 'center',
             width: '95%',
             marginTop: 5,
-          }}>
-          <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+          }}
+        >
+          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
             {replyMessage.message}
           </Text>
         </View>
@@ -83,12 +86,14 @@ class GroupChatMessageBubble extends Component {
     if (!message.message_body) {
       return null;
     }
-
     const msgTime = new Date(message.timestamp);
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
-    return (
+    return message.message_body.type === 'image' ||
+      message.message_body.type === 'video' ||
+      (message.message_body.type === 'text' &&
+        message.message_body.text != '') ? (
       <Menu
         contentStyle={{
           backgroundColor: Colors.gradient_3,
@@ -99,7 +104,7 @@ class GroupChatMessageBubble extends Component {
         anchor={
           !isUser ? (
             <View style={styles.talkBubble}>
-              <View style={{marginLeft: 5}}>
+              <View style={{ marginLeft: 5 }}>
                 <View style={styles.talkBubbleAbsoluteLeft} />
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -108,23 +113,36 @@ class GroupChatMessageBubble extends Component {
                     backgroundColor: Colors.white,
                     borderRadius: borderRadius,
                     justifyContent: 'center',
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
+                    paddingHorizontal:
+                      message.message_body.type === 'image' ? 5 : 10,
+                    paddingVertical:
+                      message.message_body.type === 'image' ? 5 : 10,
                   }}
                   onLongPress={(msg_id) => {
                     onMessagePress(message.msg_id);
-                  }}>
+                  }}
+                >
                   {message.reply_to &&
                     Object.keys(message.reply_to).length !== 0 &&
                     message.reply_to.constructor === Object &&
                     this.renderReplyMessage(message.reply_to)}
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      fontFamily: Fonts.light,
-                    }}>
-                    {message.message_body.text}
-                  </Text>
+                  {message.message_body.type === 'image' ? (
+                    <ScalableImage
+                      src={message.message_body.text}
+                      borderRadius={borderRadius}
+                    />
+                  ) : message.message_body.type === 'video' ? (
+                    <VideoPlayerCustom url={message.message_body.text} />
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontFamily: Fonts.light,
+                      }}
+                    >
+                      {message.message_body.text}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -140,44 +158,60 @@ class GroupChatMessageBubble extends Component {
                 style={{
                   minHeight: 40,
                   borderRadius: borderRadius,
-                }}>
+                }}
+              >
                 <TouchableOpacity
                   style={{
                     flex: 1,
                     justifyContent: 'center',
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
+                    paddingHorizontal:
+                      message.message_body.type === 'image' ? 5 : 10,
+                    paddingVertical:
+                      message.message_body.type === 'image' ? 5 : 10,
                   }}
                   onLongPress={(msg_id) => {
                     onMessagePress(message.msg_id);
                   }}
-                  activeOpacity={0.8}>
+                  activeOpacity={0.8}
+                >
                   {message.reply_to &&
                     Object.keys(message.reply_to).length !== 0 &&
                     message.reply_to.constructor === Object &&
                     this.renderReplyMessage(message.reply_to)}
-                  <Text style={{color: 'white', fontSize: 15}}>
-                    {message.message_body.text}
-                  </Text>
+                  {message.message_body.type === 'image' ? (
+                    <ScalableImage
+                      src={message.message_body.text}
+                      borderRadius={borderRadius}
+                    />
+                  ) : message.message_body.type === 'video' ? (
+                    <VideoPlayerCustom url={message.message_body.text} />
+                  ) : (
+                    <Text style={{ color: 'white', fontSize: 15 }}>
+                      {message.message_body.text}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </LinearGradient>
             </View>
           )
-        }>
+        }
+      >
+        {message.message_body.type === 'text' && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              onMessageTranslate(message);
+              closeMenu();
+            }}
+            title={translate('common.translate')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
         <Menu.Item
-          titleStyle={{color: Colors.white}}
-          icon={() => (
-            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            onMessageTranslate(message);
-            closeMenu();
-          }}
-          title={translate('common.translate')}
-          titleStyle={{marginLeft: -25, color: Colors.white}}
-        />
-        <Menu.Item
-          titleStyle={{color: Colors.white}}
+          titleStyle={{ color: Colors.white }}
           icon={() => (
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
@@ -186,28 +220,31 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.reply')}
-          titleStyle={{marginLeft: -25, color: Colors.white}}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
-        {isUser && isEditable > new Date() && (
-          <Menu.Item
-            titleStyle={{color: Colors.white}}
-            icon={() => (
-              <FontAwesome5
-                name={'pencil-alt'}
-                size={20}
-                color={Colors.white}
+        {isUser &&
+          isEditable > new Date() &&
+          message.msg_type ===
+            'text'(
+              <Menu.Item
+                titleStyle={{ color: Colors.white }}
+                icon={() => (
+                  <FontAwesome5
+                    name={'pencil-alt'}
+                    size={20}
+                    color={Colors.white}
+                  />
+                )}
+                onPress={() => {
+                  onEditMessage(message);
+                  closeMenu();
+                }}
+                title={translate('common.edit')}
+                titleStyle={{ marginLeft: -25, color: Colors.white }}
               />
             )}
-            onPress={() => {
-              onEditMessage(message);
-              closeMenu();
-            }}
-            title={translate('common.edit')}
-            titleStyle={{marginLeft: -25, color: Colors.white}}
-          />
-        )}
         <Menu.Item
-          titleStyle={{color: Colors.white}}
+          titleStyle={{ color: Colors.white }}
           icon={() => (
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
@@ -216,11 +253,11 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.delete')}
-          titleStyle={{marginLeft: -25, color: Colors.white}}
+          titleStyle={{ marginLeft: -25, color: Colors.white }}
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{color: Colors.white}}
+            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5
                 name={'minus-circle'}
@@ -232,23 +269,38 @@ class GroupChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.unsend')}
-            titleStyle={{marginLeft: -25, color: Colors.white}}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
           />
         )}
-        <Menu.Item
-          titleStyle={{color: Colors.white}}
-          icon={() => (
-            <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            this.onCopy(message.message_body);
-            closeMenu();
-          }}
-          title={translate('common.copy')}
-          titleStyle={{marginLeft: -25, color: Colors.white}}
-        />
+        {message.message_body.type === 'text' && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              this.onCopy(message.message_body);
+              closeMenu();
+            }}
+            title={translate('common.copy')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
+        {message.message_body.type !== 'text' && (
+          <Menu.Item
+            titleStyle={{ color: Colors.white }}
+            icon={() => (
+              <FontAwesome name={'download'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              closeMenu();
+            }}
+            title={translate('pages.setting.download')}
+            titleStyle={{ marginLeft: -25, color: Colors.white }}
+          />
+        )}
       </Menu>
-    );
+    ) : null;
   }
 }
 
@@ -271,7 +323,7 @@ const styles = StyleSheet.create({
     borderLeftColor: Colors.gradient_3,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{rotate: '-90deg'}],
+    transform: [{ rotate: '-90deg' }],
     right: -5,
     top: -15,
   },
@@ -287,7 +339,7 @@ const styles = StyleSheet.create({
     borderRightColor: Colors.white,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{rotate: '90deg'}],
+    transform: [{ rotate: '90deg' }],
     left: -5,
     top: -15,
   },
@@ -303,5 +355,5 @@ const mapDispatchToProps = {};
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(GroupChatMessageBubble);
