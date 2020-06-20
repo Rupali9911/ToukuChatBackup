@@ -89,13 +89,13 @@ class Chat extends Component {
   async componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getUserChannels();
-   await this.props.getFollowingChannels().then((res) => {
-     this.props.getFriendRequests().then((res) => {
-       this.props.getUserConfiguration().then((res) => {
-         this.getCommonChat();
-       })
-     })
-    })
+    await this.props.getFollowingChannels().then((res) => {
+      this.props.getFriendRequests().then((res) => {
+        this.props.getUserConfiguration().then((res) => {
+          this.getCommonChat();
+        });
+      });
+    });
 
     //   this.props.getFollowingChannels();
     //   this.props.getUserGroups();
@@ -356,7 +356,13 @@ class Chat extends Component {
               <GroupListItem
                 key={index}
                 title={item.group_name}
-                description={item.last_msg && item.last_msg.text}
+                description={
+                  item.last_msg
+                    ? item.last_msg.type === 'text'
+                      ? item.last_msg.text
+                      : item.last_msg.type
+                    : ''
+                }
                 date={item.timestamp}
                 image={item.group_picture}
                 onPress={() => this.onOpenGroupChats(item)}
@@ -366,7 +372,13 @@ class Chat extends Component {
               <ChannelListItem
                 key={index}
                 title={item.name}
-                description={item.description}
+                description={
+                  item.last_msg
+                    ? item.last_msg.msg_type === 'text'
+                      ? item.last_msg.message_body
+                      : item.last_msg.msg_type
+                    : ''
+                }
                 date={item.created}
                 image={item.channel_picture}
                 onPress={() => this.onOpenChannelChats(item)}
@@ -376,7 +388,13 @@ class Chat extends Component {
               <FriendListItem
                 key={index}
                 title={item.username}
-                description={item.last_msg}
+                description={
+                  item.last_msg
+                    ? item.last_msg_type === 'text'
+                      ? item.last_msg
+                      : item.last_msg_type
+                    : ''
+                }
                 image={getAvatar(item.profile_picture)}
                 date={item.timestamp}
                 isOnline={item.is_online}

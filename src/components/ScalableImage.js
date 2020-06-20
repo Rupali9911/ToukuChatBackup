@@ -22,7 +22,7 @@ export default class ScalableImage extends Component {
   };
 
   render() {
-    const { src } = this.props;
+    const { src, borderRadius } = this.props;
     const { ratio } = this.state;
     return (
       <Image
@@ -32,6 +32,7 @@ export default class ScalableImage extends Component {
         style={{
           width: '100%',
           aspectRatio: ratio,
+          borderRadius: borderRadius ? borderRadius : 0,
         }}
         resizeMode="contain"
       />

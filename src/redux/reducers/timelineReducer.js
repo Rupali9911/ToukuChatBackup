@@ -29,9 +29,9 @@ const initialState = {
   trendTimline: [],
   followingTimeline: [],
   rankingTimeLine: [],
-    trendChannel: [],
-    followingChannel: [],
-    rankingChannel: [],
+  trendChannel: [],
+  followingChannel: [],
+  rankingChannel: [],
 };
 
 export default function (state = initialState, action) {
@@ -96,65 +96,65 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
-      //Get trend channel
-      case GET_TREND_CHANNEL_REQUEST:
-          return {
-              ...state,
-              loading: true,
-          };
+    //Get trend channel
+    case GET_TREND_CHANNEL_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
 
-      case GET_TREND_CHANNEL_SUCCESS:
-          return {
-              ...state,
-              trendChannel: action.payload,
-              loading: false,
-          };
+    case GET_TREND_CHANNEL_SUCCESS:
+      return {
+        ...state,
+        trendChannel: action.payload,
+        loading: false,
+      };
 
-      case GET_TREND_CHANNEL_FAIL:
-          return {
-              ...state,
-              loading: false,
-          };
+    case GET_TREND_CHANNEL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
 
-      //Get following channel
-      case GET_FOLLOWING_CHANNEL_REQUEST:
-          return {
-              ...state,
-              loading: true,
-          };
+    //Get following channel
+    case GET_FOLLOWING_CHANNEL_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
 
-      case GET_FOLLOWING_CHANNEL_SUCCESS:
-          return {
-              ...state,
-              followingChannel: action.payload,
-              loading: false,
-          };
+    case GET_FOLLOWING_CHANNEL_SUCCESS:
+      return {
+        ...state,
+        followingChannel: action.payload,
+        loading: false,
+      };
 
-      case GET_FOLLOWING_CHANNEL_FAIL:
-          return {
-              ...state,
-              loading: false,
-          };
+    case GET_FOLLOWING_CHANNEL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
 
-      //Get ranking channel
-      case GET_RANKING_CHANNEL_REQUEST:
-          return {
-              ...state,
-              loading: true,
-          };
+    //Get ranking channel
+    case GET_RANKING_CHANNEL_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
 
-      case GET_RANKING_CHANNEL_SUCCESS:
-          return {
-              ...state,
-              rankingChannel: action.payload,
-              loading: false,
-          };
+    case GET_RANKING_CHANNEL_SUCCESS:
+      return {
+        ...state,
+        rankingChannel: action.payload,
+        loading: false,
+      };
 
-      case GET_RANKING_CHANNEL_FAIL:
-          return {
-              ...state,
-              loading: false,
-          };
+    case GET_RANKING_CHANNEL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
 
     default:
       return state;
@@ -257,93 +257,93 @@ export const getRankingTimeline = () => (dispatch) =>
 
 //Get trend channel
 const getTrendChannelRequest = () => ({
-    type: GET_TREND_CHANNEL_REQUEST,
+  type: GET_TREND_CHANNEL_REQUEST,
 });
 
 const getTrendChannelSuccess = (data) => ({
-    type: GET_TREND_CHANNEL_SUCCESS,
-    payload: data,
+  type: GET_TREND_CHANNEL_SUCCESS,
+  payload: data,
 });
 
 const getTrendChannelFailure = () => ({
-    type: GET_TREND_CHANNEL_FAIL,
+  type: GET_TREND_CHANNEL_FAIL,
 });
 
 export const getTrendChannel = () => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        dispatch(getTrendChannelRequest());
-        client
-            .get(`/xchat/channel-listing-trend/?last_id=0`)
-            .then((res) => {
-                if (res.status) {
-                    dispatch(getTrendChannelSuccess(res.posts));
-                }
-                resolve(res);
-            })
-            .catch((err) => {
-                dispatch(getChannelFailure());
-                reject(err);
-            });
-    });
+  new Promise(function (resolve, reject) {
+    dispatch(getTrendChannelRequest());
+    client
+      .get(`/xchat/channel-listing-trend/?last_id=0`)
+      .then((res) => {
+        if (res.status) {
+          dispatch(getTrendChannelSuccess(res.posts));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getTrendChannelFailure());
+        reject(err);
+      });
+  });
 
 //Get following channel
 const getFollowingChannelRequest = () => ({
-    type: GET_FOLLOWING_CHANNEL_REQUEST,
+  type: GET_FOLLOWING_CHANNEL_REQUEST,
 });
 
 const getFollowingChannelSuccess = (data) => ({
-    type: GET_FOLLOWING_CHANNEL_SUCCESS,
-    payload: data,
+  type: GET_FOLLOWING_CHANNEL_SUCCESS,
+  payload: data,
 });
 
 const getFollowingChannelFailure = () => ({
-    type: GET_FOLLOWING_CHANNEL_FAIL,
+  type: GET_FOLLOWING_CHANNEL_FAIL,
 });
 
 export const getFollowingChannel = () => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        dispatch(getFollowingChannelRequest());
-        client
-            .get(`/xchat/channel-listing-following/?last_id=0`)
-            .then((res) => {
-                if (res.status) {
-                    dispatch(getFollowingChannelSuccess(res.posts));
-                }
-                resolve(res);
-            })
-            .catch((err) => {
-                dispatch(getFollowingChannelFailure());
-                reject(err);
-            });
-    });
+  new Promise(function (resolve, reject) {
+    dispatch(getFollowingChannelRequest());
+    client
+      .get(`/xchat/channel-listing-following/?last_id=0`)
+      .then((res) => {
+        if (res.status) {
+          dispatch(getFollowingChannelSuccess(res.posts));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getFollowingChannelFailure());
+        reject(err);
+      });
+  });
 
 //Get ranking channel
 const getRankingChannelRequest = () => ({
-    type: GET_RANKING_CHANNEL_REQUEST,
+  type: GET_RANKING_CHANNEL_REQUEST,
 });
 
 const getRankingChannelSuccess = (data) => ({
-    type: GET_RANKING_CHANNEL_SUCCESS,
-    payload: data,
+  type: GET_RANKING_CHANNEL_SUCCESS,
+  payload: data,
 });
 
 const getRankingChannelFailure = () => ({
-    type: GET_RANKING_CHANNEL_FAIL,
+  type: GET_RANKING_CHANNEL_FAIL,
 });
 
 export const getRankingChannel = () => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        dispatch(getRankingChannelRequest());
-        client
-            .get(`/xchat/channel-listing-ranked/?last_id=0`)
-            .then((res) => {
-                if (res.status) {
-                    dispatch(getRankingChannelSuccess(res.posts));
-                }
-                resolve(res);
-            })
-            .catch((err) => {
-                dispatch(getRankingChannelFailure());
-                reject(err);
-            });
-    });
+  new Promise(function (resolve, reject) {
+    dispatch(getRankingChannelRequest());
+    client
+      .get(`/xchat/channel-listing-ranked/?last_id=0`)
+      .then((res) => {
+        if (res.status) {
+          dispatch(getRankingChannelSuccess(res.posts));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getRankingChannelFailure());
+        reject(err);
+      });
+  });

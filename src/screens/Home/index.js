@@ -424,7 +424,13 @@ class Home extends Component {
             <ChannelListItem
               key={index}
               title={item.name}
-              description={item.description}
+              description={
+                item.last_msg
+                  ? item.last_msg.msg_type === 'text'
+                    ? item.last_msg.message_body
+                    : item.last_msg.msg_type
+                  : ''
+              }
               date={item.created}
               image={item.channel_picture}
               onPress={() => this.onOpenChannelChats(item)}
@@ -466,7 +472,13 @@ class Home extends Component {
             <GroupListItem
               key={index}
               title={item.group_name}
-              description={item.last_msg && item.last_msg.text}
+              description={
+                item.last_msg
+                  ? item.last_msg.type === 'text'
+                    ? item.last_msg.text
+                    : item.last_msg.type
+                  : ''
+              }
               date={item.timestamp}
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}

@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
 import PropTypes from 'prop-types';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Slider from '@react-native-community/slider';
 
 import { Colors, Fonts, Images, Icons } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import PostCardHeader from './PostCardHeader';
-
+import VideoPlayerCustom from './VideoPlayerCustom';
+import AudioPlayerCustom from './AudioPlayerCustom';
 const { width, height } = Dimensions.get('window');
 
 export default class PostCard extends Component {
@@ -34,14 +44,26 @@ export default class PostCard extends Component {
             }}
           >
             <PostCardHeader menuItems={menuItems} post={post} />
-            {post.media.image && post.media.image.length ? (
+            {post.media.audio && post.media.audio.length ? (
+              <View style={{ margin: 5 }}>
+                <AudioPlayerCustom />
+              </View>
+            ) : post.media.image && post.media.image.length ? (
               <View style={{ margin: 5 }}>
                 <ScalableImage src={post.media.image[0]} />
+              </View>
+            ) : post.media.video && post.media.video.length ? (
+              <View style={{ margin: 5 }}>
+                <VideoPlayerCustom url={post.media.video[0]} />
               </View>
             ) : null}
             <View style={{ marginHorizontal: '4%', marginVertical: 5 }}>
               <Text style={{ fontFamily: Fonts.light }}>
-                {post.text ? post.text : post.mutlilanguage_message_body ? post.mutlilanguage_message_body.en : ''}
+                {post.text
+                  ? post.text
+                  : post.mutlilanguage_message_body
+                  ? post.mutlilanguage_message_body.en
+                  : ''}
               </Text>
             </View>
           </View>
@@ -56,7 +78,9 @@ export default class PostCard extends Component {
           textAlign: 'center',
         }}
       >
-        {isTimeline ? translate('pages.xchat.noTimelineFound') : translate('pages.xchat.noChannelFound')}
+        {isTimeline
+          ? translate('pages.xchat.noTimelineFound')
+          : translate('pages.xchat.noChannelFound')}
       </Text>
     );
   }

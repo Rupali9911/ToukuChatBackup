@@ -8,7 +8,7 @@ import SingleSocket from './SingleSocket';
 /* switch this for testing on staging or production */
 export const staging = true;
 export const websocket = new WebSocket(
-  'wss://touku.angelium.net/ws/v1/single-socket/9795?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MTMzNDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.LUr-PtbJGyUISMG7_pYd6sWGoRA4UBTibj1uBeR0gZM',
+  'wss://touku.angelium.net/ws/v1/single-socket/9795?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MTMzNDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.LUr-PtbJGyUISMG7_pYd6sWGoRA4UBTibj1uBeR0gZM'
 );
 
 //Staging API URL
@@ -25,8 +25,7 @@ export const socketUrl = staging ? socketURLStaging : socketURLLive;
 export const userAgent =
   'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1';
 
-
-export const KAKAO_API_KEY = '7608d108073fe9a65906c012b5c3f489'
+export const KAKAO_API_KEY = '7608d108073fe9a65906c012b5c3f489';
 export const GET_USER_CONFIG = apiRoot + '/xchat/configuration/';
 export const UPDATE_CHANNEL_MODE = apiRoot + '/xchat/update-channel-mode/';
 export const GET_TOUKU_POINTS = apiRoot + '/xchat/get-total-tp/';
@@ -68,7 +67,7 @@ client.interceptors.request.use(
   },
   function (error) {
     return Promise.reject(error);
-  },
+  }
 );
 
 // Add a response interceptor
@@ -101,5 +100,5 @@ client.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error);
-  },
+  }
 );
