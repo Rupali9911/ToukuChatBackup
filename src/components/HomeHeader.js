@@ -69,7 +69,14 @@ export default class HomeHeader extends Component {
           )}
         </View>
         <View style={{ flex: 0.8, alignItems: 'center' }}>
-          <Text style={[globalStyles.normalRegularText, {fontWeight: '300',fontSize: 16}]}>{title}</Text>
+          <Text
+            style={[
+              globalStyles.normalRegularText,
+              { fontWeight: '400', fontSize: 16 },
+            ]}
+          >
+            {title}
+          </Text>
         </View>
         <View
           style={{

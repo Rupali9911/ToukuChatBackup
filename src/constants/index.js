@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -31,7 +31,7 @@ export const Icons = {
   icon_timeline: require('../../assets/icons/timeline.png'),
   icon_timeline_select: require('../../assets/icons/timeline_select.png'),
   icon_channel: require('../../assets/icons/channel.png'),
-    icon_channel_new: require('../../assets/icons/Channel_new.png'),
+  icon_channel_new: require('../../assets/icons/Channel_new.png'),
   icon_channel_select: require('../../assets/icons/channel_select.png'),
   icon_message: require('../../assets/icons/message.png'),
   icon_scenario: require('../../assets/icons/scenario.png'),
@@ -90,6 +90,8 @@ export const Colors = {
   gradient_4: '#ff8960',
   gradient_5: '#ff62a5',
   black_light: '#0a1f44',
+  foorter_gradient_1: 'rgba(255, 137, 96, 0.68)',
+  foorter_gradient_2: 'rgba(255, 98, 165, 0.68)',
 };
 
 export const Fonts = {

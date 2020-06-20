@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {Badge} from 'react-native-paper';
+import { Badge, Divider } from 'react-native-paper';
 
 import RoundedImage from '../RoundedImage';
-import {globalStyles} from '../../styles';
-import {Colors, Images} from '../../constants';
+import { globalStyles } from '../../styles';
+import { Colors, Images } from '../../constants';
 
 export default class FriendListItem extends Component {
   constructor(props) {
@@ -26,60 +26,71 @@ export default class FriendListItem extends Component {
       unreadCount,
     } = this.props;
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onPress}
-        style={styles.container}>
-        <View style={styles.firstView}>
-          <RoundedImage
-            source={image}
-            size={50}
-            isBadge={true}
-            isOnline={isOnline}
-          />
-          <View style={styles.secondView}>
-            <View style={{flex: 1, alignItems: 'flex-start'}}>
-              <Text
-                numberOfLines={1}
-                style={[globalStyles.smallRegularText, {color: Colors.black}]}>
-                {title}
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[
-                  globalStyles.smallLightText,
-                  {color: Colors.gray_dark, textAlign: 'left'},
-                ]}>
-                {/* {isTyping ? 'Typing...' : description} */}
-                {description}
-              </Text>
-            </View>
-            <View>
-              <Text
-                numberOfLines={1}
-                style={[
-                  globalStyles.smallLightText,
-                  {color: Colors.gray_dark},
-                ]}>
-                {moment(date).format('MM/DD')}
-              </Text>
-              {unreadCount !== 0 && unreadCount != null && (
-                <Badge
+      <Fragment>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onPress}
+          style={styles.container}
+        >
+          <View style={styles.firstView}>
+            <RoundedImage
+              source={image}
+              size={50}
+              isBadge={true}
+              isOnline={isOnline}
+            />
+            <View style={styles.secondView}>
+              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    globalStyles.smallRegularText,
+                    { color: Colors.black },
+                  ]}
+                >
+                  {title}
+                </Text>
+                <Text
+                  numberOfLines={1}
                   style={[
                     globalStyles.smallLightText,
-                    {
-                      backgroundColor: Colors.green,
-                      color: Colors.white,
-                      fontSize: 11,
-                    },
-                  ]}>
-                  {unreadCount}
-                </Badge>
-              )}
+                    { color: Colors.gray_dark, textAlign: 'left' },
+                  ]}
+                >
+                  {/* {isTyping ? 'Typing...' : description} */}
+                  {description}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    globalStyles.smallLightText,
+                    { color: Colors.gray_dark },
+                  ]}
+                >
+                  {moment(date).format('MM/DD')}
+                </Text>
+                {unreadCount !== 0 && unreadCount != null && (
+                  <Badge
+                    style={[
+                      globalStyles.smallLightText,
+                      {
+                        backgroundColor: Colors.green,
+                        color: Colors.white,
+                        fontSize: 11,
+                      },
+                    ]}
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        <Divider />
+      </Fragment>
     );
   }
 }
