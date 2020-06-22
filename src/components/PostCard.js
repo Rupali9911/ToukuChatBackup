@@ -24,6 +24,8 @@ export default class PostCard extends Component {
     super(props);
     this.state = {
       visible: false,
+      audioPlayingId: null,
+      perviousPlayingAudioId: null,
     };
   }
 
@@ -45,8 +47,19 @@ export default class PostCard extends Component {
           >
             <PostCardHeader menuItems={menuItems} post={post} />
             {post.media.audio && post.media.audio.length ? (
-              <View style={{ margin: 5 }}>
-                <AudioPlayerCustom />
+              <View style={{ margin: 10 }}>
+                <AudioPlayerCustom
+                  onAudioPlayPress={(id) =>
+                    this.setState({
+                      audioPlayingId: id,
+                      perviousPlayingAudioId: this.state.audioPlayingId,
+                    })
+                  }
+                  audioPlayingId={this.state.audioPlayingId}
+                  perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                  postId={post.id}
+                  url={post.media.audio[0]}
+                />
               </View>
             ) : post.media.image && post.media.image.length ? (
               <View style={{ margin: 5 }}>

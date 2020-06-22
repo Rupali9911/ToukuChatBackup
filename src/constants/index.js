@@ -56,6 +56,7 @@ export const Icons = {
   icon_download: require('../../assets/icons/download.png'),
   icon_kakao: require('../../assets/icons/talk.png'),
   icon_telegram: require('../../assets/icons/telegram.png'),
+  man_plus_icon: require('../../assets/icons/man_plus_icon.png'),
 };
 
 export const Images = {

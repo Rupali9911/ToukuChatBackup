@@ -23,7 +23,10 @@ const { height } = Dimensions.get('window');
 class ChatContainer extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      audioPlayingId: null,
+      perviousPlayingAudioId: null,
+    };
   }
 
   renderMessage = (messages) => {
@@ -54,7 +57,6 @@ class ChatContainer extends Component {
       return moment(msgDate).format('MM/DD');
     };
     const msg = messages.map((item, index) => {
-      console.log('ChatContainer -> renderMessage -> item', item);
       return (
         <Fragment>
           {hedaingDate.getDate() !== new Date(item.created).getDate() ||
@@ -86,6 +88,14 @@ class ChatContainer extends Component {
             translatedMessageId={this.props.translatedMessageId}
             onDelete={(id) => this.props.onDelete(id)}
             orientation={this.props.orientation}
+            audioPlayingId={this.state.audioPlayingId}
+            perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+            onAudioPlayPress={(id) => {
+              this.setState({
+                audioPlayingId: id,
+                perviousPlayingAudioId: this.state.audioPlayingId,
+              });
+            }}
           />
         </Fragment>
       );
