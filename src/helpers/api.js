@@ -6,10 +6,7 @@ import Toast from '../components/Toast';
 import SingleSocket from './SingleSocket';
 
 /* switch this for testing on staging or production */
-export const staging = true;
-export const websocket = new WebSocket(
-  'wss://touku.angelium.net/ws/v1/single-socket/9795?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5Nzk1LCJ1c2VybmFtZSI6Im5ldy5yZWdpc3RlciIsImV4cCI6MTU5MTMzNDIzNSwiZW1haWwiOiJuZXcucmVnaXN0ZXJAYW5nZWxpdW0ubmV0In0.LUr-PtbJGyUISMG7_pYd6sWGoRA4UBTibj1uBeR0gZM'
-);
+export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -67,7 +64,7 @@ client.interceptors.request.use(
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add a response interceptor
@@ -100,5 +97,5 @@ client.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );

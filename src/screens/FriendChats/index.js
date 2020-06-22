@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {ImageBackground} from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
+import moment from 'moment';
 
 import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
@@ -23,6 +24,7 @@ import {
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
+import SingleSocket from '../../helpers/SingleSocket';
 
 class FriendChats extends Component {
   constructor(props) {
@@ -58,10 +60,72 @@ class FriendChats extends Component {
       isEdited: false,
       editMessageId: null,
     };
+
+    this.SingleSocket = new SingleSocket();
   }
+
+  UNSAFE_componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
+
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
+  }
+
+  componentWillUnmount() {
+    this.events.unsubscribe();
+  }
+
+  componentDidMount() {
+    Orientation.addOrientationListener(this._orientationDidChange);
+    this.getPersonalConversation();
+
+    this.SingleSocket.create({user_id: this.props.userData.id});
+
+    // alert(JSON.stringify(this.props.userData));
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
 
   onMessageSend = () => {
     const {newMessageText, isReply, repliedMessage, isEdited} = this.state;
+    const {currentFriend, userData} = this.props;
+
+    let sendmsgdata = {
+      // id: 2808,
+      thumbnail: null,
+      from_user: {
+        id: userData.id,
+        email: userData.email,
+        username: userData.username,
+        avatar: userData.avatar,
+        is_online: true,
+        display_name: userData.display_name,
+      },
+      to_user: {
+        id: currentFriend.user_id,
+        email: null,
+        username: currentFriend.username,
+        avatar: currentFriend.avatar,
+        is_online: currentFriend.is_online,
+        display_name: currentFriend.display_name,
+      },
+      message_body: newMessageText,
+      reply_to: isReply ? repliedMessage : null,
+      local_id: null,
+      created: moment().format(),
+      updated: moment().format(),
+      msg_type: 'text',
+      is_read: false,
+      is_unsent: false,
+      is_edited: false,
+      friend: userData.id,
+      deleted_for: [],
+    };
+
     if (!newMessageText) {
       return;
     }
@@ -79,6 +143,7 @@ class FriendChats extends Component {
         to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
+      this.state.conversations.unshift(sendmsgdata);
       this.props.sendPersonalMessage(data);
       // .then((res) => {
       //   this.getPersonalConversation();
@@ -92,6 +157,7 @@ class FriendChats extends Component {
         msg_type: 'text',
         to_user: this.props.currentFriend.user_id,
       };
+      this.state.conversations.unshift(sendmsgdata);
       this.props.sendPersonalMessage(data);
       // .then((res) => {
       //   this.getPersonalConversation();
@@ -127,6 +193,7 @@ class FriendChats extends Component {
       isEdited: false,
     });
   };
+
   onReply = (messageId) => {
     const {conversations} = this.state;
 
@@ -144,28 +211,6 @@ class FriendChats extends Component {
     });
   };
 
-  UNSAFE_componentWillMount() {
-    const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
-
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
-  }
-
-  componentWillUnmount() {
-    this.events.unsubscribe();
-  }
-
-  componentDidMount() {
-    Orientation.addOrientationListener(this._orientationDidChange);
-    this.getPersonalConversation();
-  }
-
-  _orientationDidChange = (orientation) => {
-    this.setState({orientation});
-  };
-
   checkEventTypes(message) {
     const {currentFriend, userData} = this.props;
     const {conversations} = this.state;
@@ -175,7 +220,7 @@ class FriendChats extends Component {
         if (
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
-          this.getPersonalConversation();
+          // this.getPersonalConversation();
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         if (
@@ -208,6 +253,17 @@ class FriendChats extends Component {
     if (!message.length && this.state.isEdited) {
       this.onEditClear();
     }
+    // friend
+    const payload = {
+      type: SocketEvents.FRIEND_TYPING_MESSAGE,
+      data: {
+        sender: this.props.userData.id,
+        receiver: this.props.currentFriend.user_id,
+        chat_type: 'personal',
+        channel_name: '',
+      },
+    };
+    // this.SingleSocket.sendMessage(payload);
   }
 
   toggleConfirmationModal = () => {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
   AccordionList,
   Collapse,
@@ -16,32 +16,32 @@ import {
   CollapseBody,
 } from 'accordion-collapse-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { createFilter } from 'react-native-search-filter';
-import { Badge } from 'react-native-paper';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {createFilter} from 'react-native-search-filter';
+import {Badge} from 'react-native-paper';
 
-import { homeStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {homeStyles} from './styles';
+import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Colors, Icons, SocketEvents } from '../../constants';
-import { SearchInput } from '../../components/TextInputs';
+import {Images, Colors, Icons, SocketEvents} from '../../constants';
+import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import { getAvatar, eventService } from '../../utils';
-import { ProfileModal } from '../../components/Modals';
-import { ChannelListItem } from '../../components/ListItems';
+import {getAvatar, eventService} from '../../utils';
+import {ProfileModal} from '../../components/Modals';
+import {ChannelListItem} from '../../components/ListItems';
 import FriendListItem from '../../components/ListItems/FriendListItem';
 import GroupListItem from '../../components/ListItems/GroupListItem';
 import NoData from '../../components/NoData';
 import Button from '../../components/Button';
-import { ListLoader } from '../../components/Loaders';
+import {ListLoader} from '../../components/Loaders';
 import SingleSocket from '../../helpers/SingleSocket';
 
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   getUserProfile,
   getMissedSocketEventsById,
 } from '../../redux/reducers/userReducer';
-import { getUserConfiguration } from '../../redux/reducers/configurationReducer';
+import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
 import {
   getMoreFollowingChannels,
   getFollowingChannels,
@@ -91,7 +91,7 @@ class Home extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
@@ -104,7 +104,7 @@ class Home extends Component {
 
   async componentDidMount() {
     this.props.getUserProfile();
-    this.SingleSocket.create({ user_id: this.props.userData.id });
+    this.SingleSocket.create({user_id: this.props.userData.id});
     Orientation.addOrientationListener(this._orientationDidChange);
 
     this.getFollowingChannels();
@@ -115,7 +115,7 @@ class Home extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   getFollowingChannels() {
@@ -132,34 +132,34 @@ class Home extends Component {
           for (var channel of this.state.followingChannelsState) {
             counts = counts + channel.unread_msg;
           }
-          this.setState({ channelHeaderCounts: counts });
+          this.setState({channelHeaderCounts: counts});
           // this.props.updateFollowingChannels(this.state.followingChannelsState);
-        }
+        },
       );
     });
   }
 
   getUserGroups() {
     this.props.getUserGroups().then((res) => {
-      this.setState({ userGroupsState: this.props.userGroups }, () => {
+      this.setState({userGroupsState: this.props.userGroups}, () => {
         let counts = 0;
         for (let group of this.state.userGroupsState) {
           counts = counts + group.unread_msg;
         }
-        this.setState({ groupHeaderCounts: counts });
+        this.setState({groupHeaderCounts: counts});
       });
     });
   }
 
   getUserFriends() {
-    this.setState({ userFriendsState: this.props.userFriends }, () => {
+    this.setState({userFriendsState: this.props.userFriends}, () => {
       this.props.getUserFriends().then((res) => {
-        this.setState({ userFriendsState: this.props.userFriends }, () => {
+        this.setState({userFriendsState: this.props.userFriends}, () => {
           let counts = 0;
           for (let friend of this.state.userFriendsState) {
             counts = counts + friend.unread_msg;
           }
-          this.setState({ friendHeaderCounts: counts });
+          this.setState({friendHeaderCounts: counts});
         });
       });
     });
@@ -200,7 +200,7 @@ class Home extends Component {
 
   //Friend is Typing
   friendIsTyping(message) {
-    const { userFriendsState } = this.state;
+    const {userFriendsState} = this.state;
     if (message.text.data.message_details.type === 'personal') {
       for (var i in userFriendsState) {
         if (
@@ -217,7 +217,7 @@ class Home extends Component {
           break;
         }
       }
-      this.setState({ userFriendsState });
+      this.setState({userFriendsState});
     } else {
       for (var i in userFriendsState) {
         userFriendsState[i].is_typing = false;
@@ -227,7 +227,7 @@ class Home extends Component {
 
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
-    const { userFriendsState } = this.state;
+    const {userFriendsState} = this.state;
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
       for (var i in userFriendsState) {
         if (
@@ -242,14 +242,14 @@ class Home extends Component {
           break;
         }
       }
-      this.setState({ userFriendsState });
+      this.setState({userFriendsState});
     }
   }
 
   //Message in Following Channel
   messageInFollowingChannel(message) {
-    const { followingChannelsState } = this.state;
-    const { userData } = this.props;
+    const {followingChannelsState} = this.state;
+    const {userData} = this.props;
 
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       for (let i of followingChannelsState) {
@@ -272,8 +272,8 @@ class Home extends Component {
 
   //New Message in Friend
   onNewMessageInFriend(message) {
-    const { userFriendsState } = this.state;
-    const { userData } = this.props;
+    const {userFriendsState} = this.state;
+    const {userData} = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       for (var i in userFriendsState) {
@@ -287,13 +287,13 @@ class Home extends Component {
           break;
         }
       }
-      this.setState({ userFriendsState });
+      this.setState({userFriendsState});
     }
   }
 
   //New Message in Group
   onNewMessageInGroup(message) {
-    const { userGroupsState } = this.state;
+    const {userGroupsState} = this.state;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
       for (let i of userGroupsState) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -301,13 +301,13 @@ class Home extends Component {
           break;
         }
       }
-      this.setState({ userGroupsState });
+      this.setState({userGroupsState});
     }
   }
 
   //Mark as Read Group Chat
   readAllMessageGroupChat(message) {
-    const { userGroupsState } = this.state;
+    const {userGroupsState} = this.state;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       for (var i in userGroupsState) {
         if (
@@ -317,7 +317,7 @@ class Home extends Component {
           userGroupsState[i].unread_msg =
             message.text.data.message_details.read_count;
           this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id
+            message.text.data.socket_event_id,
           );
           this.getUserGroups();
           break;
@@ -329,7 +329,7 @@ class Home extends Component {
 
   //Read Channel's all messages with socket event
   readAllMessageChannelChat(message) {
-    const { followingChannelsState } = this.state;
+    const {followingChannelsState} = this.state;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT) {
       for (var i in followingChannelsState) {
         if (
@@ -339,7 +339,7 @@ class Home extends Component {
           followingChannelsState[i].unread_msg =
             message.text.data.message_details.read_count;
           this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id
+            message.text.data.socket_event_id,
           );
           this.getFollowingChannels();
           break;
@@ -351,7 +351,7 @@ class Home extends Component {
 
   //Read Friend's all messages with socket event
   readAllMessageFriendChat(message) {
-    const { userFriendsState } = this.state;
+    const {userFriendsState} = this.state;
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       for (var i in userFriendsState) {
@@ -362,7 +362,7 @@ class Home extends Component {
           userFriendsState[i].unread_msg =
             message.text.data.message_details.read_count;
           this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id
+            message.text.data.socket_event_id,
           );
           this.getUserFriends();
           break;
@@ -373,7 +373,7 @@ class Home extends Component {
   }
 
   onSearch = (text) => {
-    this.setState({ searchText: text });
+    this.setState({searchText: text});
   };
 
   onUserProfilePress() {
@@ -400,16 +400,16 @@ class Home extends Component {
     this.start = this.start + 20;
     this.props.getMoreFollowingChannels(this.start).then((res) => {
       if (res.conversations.length < 20) {
-        this.setState({ loadMoreVisible: false });
+        this.setState({loadMoreVisible: false});
       }
     });
   };
 
   renderUserChannels() {
-    const { followingChannels, channelLoading } = this.props;
-    const { loadMoreVisible } = this.state;
+    const {followingChannels, channelLoading} = this.props;
+    const {loadMoreVisible} = this.state;
     const filteredChannels = followingChannels.filter(
-      createFilter(this.state.searchText, ['name'])
+      createFilter(this.state.searchText, ['name']),
     );
 
     if (filteredChannels.length === 0 && channelLoading) {
@@ -417,10 +417,10 @@ class Home extends Component {
     } else if (filteredChannels.length > 0) {
       return (
         <FlatList
-          contentContainerStyle={{ display: 'flex' }}
+          contentContainerStyle={{display: 'flex'}}
           data={filteredChannels}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <ChannelListItem
               key={index}
               title={item.name}
@@ -454,11 +454,11 @@ class Home extends Component {
   }
 
   renderUserGroups() {
-    const { groupLoading } = this.props;
-    const { userGroupsState } = this.state;
+    const {groupLoading} = this.props;
+    const {userGroupsState} = this.state;
 
     const filteredGroups = userGroupsState.filter(
-      createFilter(this.state.searchText, ['group_name'])
+      createFilter(this.state.searchText, ['group_name']),
     );
 
     if (filteredGroups.length === 0 && groupLoading) {
@@ -468,7 +468,7 @@ class Home extends Component {
         <FlatList
           data={filteredGroups}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <GroupListItem
               key={index}
               title={item.group_name}
@@ -498,10 +498,10 @@ class Home extends Component {
   }
 
   renderUserFriends() {
-    const { friendLoading } = this.props;
-    const { userFriendsState } = this.state;
+    const {friendLoading} = this.props;
+    const {userFriendsState} = this.state;
     const filteredFriends = userFriendsState.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['username']),
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -511,7 +511,7 @@ class Home extends Component {
         <FlatList
           data={filteredFriends}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <FriendListItem
               key={index}
               title={item.username}
@@ -556,21 +556,20 @@ class Home extends Component {
       friendHeaderCounts,
     } = this.state;
 
-    const { followingChannels, userData } = this.props;
+    const {followingChannels, userData, userConfig} = this.props;
     const filteredChannels = followingChannels.filter(
-      createFilter(searchText, ['name'])
+      createFilter(searchText, ['name']),
     );
     const filteredGroups = userGroupsState.filter(
-      createFilter(searchText, ['group_name'])
+      createFilter(searchText, ['group_name']),
     );
     const filteredFriends = userFriendsState.filter(
-      createFilter(searchText, ['username'])
+      createFilter(searchText, ['username']),
     );
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HomeHeader title={translate('pages.xchat.home')} />
           <SearchInput
@@ -587,16 +586,14 @@ class Home extends Component {
                 alignItems: 'center',
                 paddingVertical: 7,
                 paddingHorizontal: 10,
-              }}
-            >
+              }}>
               <RoundedImage source={getAvatar(userData.avatar)} size={50} />
               <Text
                 style={[
                   globalStyles.normalRegularText,
-                  { color: Colors.black, marginStart: 10 },
-                ]}
-              >
-                {userData.username}
+                  {color: Colors.black, marginStart: 10},
+                ]}>
+                {userConfig.display_name}
               </Text>
             </TouchableOpacity>
             <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
@@ -607,8 +604,7 @@ class Home extends Component {
                     isChannelCollapsed: isColl,
                   })
                 }
-                isCollapsed={isChannelCollapsed}
-              >
+                isCollapsed={isChannelCollapsed}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.channels')}
@@ -627,8 +623,7 @@ class Home extends Component {
                     isGroupCollapsed: isColl,
                   })
                 }
-                isCollapsed={isGroupCollapsed}
-              >
+                isCollapsed={isGroupCollapsed}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.groups')}
@@ -647,8 +642,7 @@ class Home extends Component {
                     isFriendsCollapsed: isColl,
                   })
                 }
-                isCollapsed={isFriendsCollapsed}
-              >
+                isCollapsed={isFriendsCollapsed}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.friends')}
@@ -668,11 +662,11 @@ class Home extends Component {
 }
 
 const DropdownHeader = (props) => {
-  const { title, listcounts, badgeCount, isCollapsed } = props;
+  const {title, listcounts, badgeCount, isCollapsed} = props;
   return (
     <LinearGradient
-      start={{ x: 0.1, y: 0.7 }}
-      end={{ x: 0.7, y: 0.8 }}
+      start={{x: 0.1, y: 0.7}}
+      end={{x: 0.7, y: 0.8}}
       locations={[0.2, 0.7, 1]}
       colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
       style={{
@@ -681,25 +675,23 @@ const DropdownHeader = (props) => {
         alignItems: 'center',
         paddingVertical: 7,
         paddingHorizontal: 15,
-      }}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Text style={globalStyles.smallRegularText}>{title}</Text>
-        <Text style={[globalStyles.smallRegularText, { marginStart: 5 }]}>
+        <Text style={[globalStyles.smallRegularText, {marginStart: 5}]}>
           {'('}
           {listcounts}
           {')'}
         </Text>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         {badgeCount > 0 ? (
           <Badge
             style={{
               backgroundColor: Colors.green,
               color: Colors.white,
               fontSize: 11,
-            }}
-          >
+            }}>
             {badgeCount}
           </Badge>
         ) : null}
@@ -721,6 +713,7 @@ const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
+    userConfig: state.configurationReducer.userConfig,
     followingChannels: state.channelReducer.followingChannels,
     channelLoading: state.channelReducer.loading,
     userGroups: state.groupReducer.userGroups,
