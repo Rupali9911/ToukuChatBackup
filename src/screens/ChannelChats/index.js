@@ -2,6 +2,8 @@ import React, {Component, Fragment} from 'react';
 import {ImageBackground} from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
+import moment from 'moment';
+
 import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
 import {Images, SocketEvents} from '../../constants';
@@ -19,6 +21,7 @@ import {
 import {ListLoader} from '../../components/Loaders';
 import {ConfirmationModal} from '../../components/Modals';
 import {eventService} from '../../utils';
+
 class ChannelChats extends Component {
   constructor(props) {
     super(props);
@@ -44,8 +47,65 @@ class ChannelChats extends Component {
     };
   }
 
+  UNSAFE_componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({orientation: initial});
+
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
+  }
+
+  componentWillUnmount() {
+    this.events.unsubscribe();
+  }
+
+  componentDidMount() {
+    Orientation.addOrientationListener(this._orientationDidChange);
+    this.getChannelConversations();
+  }
+
+  _orientationDidChange = (orientation) => {
+    this.setState({orientation});
+  };
+
   onMessageSend = () => {
     const {newMessageText, isEdited} = this.state;
+    const {userData, currentChannel} = this.props;
+
+    let sendmsgdata = {
+      // id: 2808,
+      thumbnail: null,
+      from_user: {
+        id: userData.id,
+        email: userData.email,
+        username: userData.username,
+        avatar: userData.avatar,
+        is_online: true,
+        display_name: userData.display_name,
+      },
+      to_user: null,
+      replies_is_read: null,
+      created: moment().format(),
+      updated: moment().format(),
+      msg_type: 'text',
+      message_body: newMessageText,
+      mutlilanguage_message_body: {},
+      hyperlink: null,
+      is_edited: false,
+      is_multilanguage: false,
+      is_unsent: false,
+      bonus_message: false,
+      channel: currentChannel.id,
+      reply_to: null,
+      schedule_post: null,
+      subchat: null,
+      greeting: null,
+      read_by_in_replies: [],
+      read_by: [],
+      deleted_for: [],
+    };
+
     if (!newMessageText) {
       return;
     }
@@ -59,10 +119,11 @@ class ChannelChats extends Component {
       message_body: newMessageText,
       msg_type: 'text',
     };
+    this.state.conversations.unshift(sendmsgdata);
     this.props
       .sendChannelMessage(messageData)
       .then((res) => {
-        this.getChannelConversations();
+        // this.getChannelConversations();
       })
       .catch((err) => {});
     this.setState({
@@ -107,28 +168,6 @@ class ChannelChats extends Component {
     });
   };
 
-  UNSAFE_componentWillMount() {
-    const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
-
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
-  }
-
-  componentWillUnmount() {
-    this.events.unsubscribe();
-  }
-
-  componentDidMount() {
-    Orientation.addOrientationListener(this._orientationDidChange);
-    this.getChannelConversations();
-  }
-
-  _orientationDidChange = (orientation) => {
-    this.setState({orientation});
-  };
-
   checkEventTypes(message) {
     const {currentChannel, userData} = this.props;
 
@@ -137,7 +176,7 @@ class ChannelChats extends Component {
       message.text.data.message_details.channel == currentChannel.id
     ) {
       if (message.text.data.message_details.from_user.id == userData.id) {
-        this.getChannelConversations();
+        // this.getChannelConversations();
       } else if (
         message.text.data.message_details.to_user != null &&
         message.text.data.message_details.to_user.id == userData.id

@@ -174,7 +174,7 @@ class DrawerContent extends Component {
 
   render() {
     const {drawerTabs, isAdminCollapsed, isGeneralCollapsed} = this.state;
-    const {userData} = this.props;
+    const {userData, userConfig} = this.props;
     return (
       <LinearGradient
         start={{x: 0.1, y: 0.7}}
@@ -205,7 +205,7 @@ class DrawerContent extends Component {
                 onClick={() => this.onViewProfile()}
               />
               <Text style={[globalStyles.normalLightText, {marginTop: 10}]}>
-                {userData.username}
+                {userConfig.display_name}
               </Text>
             </View>
             {/*
@@ -302,6 +302,7 @@ const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
+    userConfig: state.configurationReducer.userConfig,
   };
 };
 
