@@ -8,7 +8,7 @@ import {
   AppState,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Slider from '@react-native-community/slider';
+import Slider from 'react-native-slider';
 import { Colors, Fonts, Images, Icons } from '../constants';
 import SoundPlayer from 'react-native-sound-player';
 
@@ -208,20 +208,38 @@ export default class AudioPlayerCustom extends Component {
           </Text>
         </View>
 
-        <View style={{ flex: isSmall ? 0.43 : 0.53 }}>
+        <View style={{ flex: isSmall ? 0.53 : 0.63 }}>
           <Slider
-            style={{ width: '100%' }}
+            style={{
+              width: '100%',
+              backgroundColor: 'red',
+              height: 10,
+            }}
             minimumValue={0}
             maximumValue={this.state.duration}
             value={this.currentTime}
             onValueChange={(value) => this.updateValue({ value })}
+            style={{ height: 30 }}
             minimumTrackTintColor={Colors.black}
-            maximumTrackTintColor={Colors.gray_dark}
-            thumbTintColor={Colors.black}
+            thumbTouchSize={{ width: 50, height: 40 }}
+            trackStyle={{
+              height: 2,
+              backgroundColor: Colors.gray_dark,
+            }}
+            thumbStyle={{
+              width: 10,
+              height: 10,
+              backgroundColor: Colors.black,
+              borderRadius: 10 / 2,
+              shadowColor: Colors.black,
+              shadowOffset: { width: 0, height: 0 },
+              shadowRadius: 2,
+              shadowOpacity: 1,
+            }}
           />
         </View>
 
-        <View
+        {/* <View
           style={{
             flex: 0.1,
             alignItems: 'flex-end',
@@ -230,7 +248,7 @@ export default class AudioPlayerCustom extends Component {
           <TouchableOpacity style={{}} onPress={() => {}}>
             <FontAwesome5 name="volume-up" color={Colors.black} size={15} />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View
           style={{
             flex: 0.1,
