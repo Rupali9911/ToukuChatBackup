@@ -129,6 +129,9 @@ export default class ChatMessageBox extends Component {
       translatedMessage,
       translatedMessageId,
       onEditMessage,
+      audioPlayingId,
+      perviousPlayingAudioId,
+      onAudioPlayPress,
     } = this.props;
     return !isUser && message.message_body ? (
       <View
@@ -167,6 +170,9 @@ export default class ChatMessageBox extends Component {
                 translatedMessage={translatedMessage}
                 translatedMessageId={translatedMessageId}
                 onDelete={onDelete}
+                audioPlayingId={audioPlayingId}
+                perviousPlayingAudioId={perviousPlayingAudioId}
+                onAudioPlayPress={onAudioPlayPress}
               />
               <View
                 style={{
@@ -237,6 +243,9 @@ export default class ChatMessageBox extends Component {
                 translatedMessage={translatedMessage}
                 translatedMessageId={translatedMessageId}
                 onDelete={onDelete}
+                audioPlayingId={audioPlayingId}
+                perviousPlayingAudioId={perviousPlayingAudioId}
+                onAudioPlayPress={onAudioPlayPress}
               />
             </View>
             {translatedMessageId &&

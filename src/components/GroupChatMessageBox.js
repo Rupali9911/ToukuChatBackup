@@ -131,6 +131,9 @@ export default class GroupChatMessageBox extends Component {
       translatedMessage,
       translatedMessageId,
       onEditMessage,
+      audioPlayingId,
+      perviousPlayingAudioId,
+      onAudioPlayPress,
     } = this.props;
     return !isUser && message.message_body ? (
       <View
@@ -184,6 +187,9 @@ export default class GroupChatMessageBox extends Component {
                   translatedMessageId={translatedMessageId}
                   onDelete={onDelete}
                   onEditMessage={onEditMessage}
+                  audioPlayingId={audioPlayingId}
+                  perviousPlayingAudioId={perviousPlayingAudioId}
+                  onAudioPlayPress={onAudioPlayPress}
                 />
               </View>
               <View
@@ -266,6 +272,9 @@ export default class GroupChatMessageBox extends Component {
                 translatedMessageId={translatedMessageId}
                 onDelete={onDelete}
                 onEditMessage={onEditMessage}
+                audioPlayingId={audioPlayingId}
+                perviousPlayingAudioId={perviousPlayingAudioId}
+                onAudioPlayPress={onAudioPlayPress}
               />
             </View>
             {translatedMessageId &&

@@ -25,7 +25,10 @@ const { width, height } = Dimensions.get('window');
 class GroupChatContainer extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      audioPlayingId: null,
+      perviousPlayingAudioId: null,
+    };
   }
 
   renderMessage = (messages) => {
@@ -87,6 +90,14 @@ class GroupChatContainer extends Component {
             translatedMessageId={this.props.translatedMessageId}
             onDelete={(id) => this.props.onDelete(id)}
             onEditMessage={(msg) => this.props.onEditMessage(msg)}
+            audioPlayingId={this.state.audioPlayingId}
+            perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+            onAudioPlayPress={(id) => {
+              this.setState({
+                audioPlayingId: id,
+                perviousPlayingAudioId: this.state.audioPlayingId,
+              });
+            }}
           />
         </Fragment>
       );

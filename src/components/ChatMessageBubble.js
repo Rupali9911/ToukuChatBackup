@@ -15,6 +15,7 @@ import { Colors, Fonts } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
+import AudioPlayerCustom from './AudioPlayerCustom';
 
 let borderRadius = 20;
 class ChatMessageBubble extends Component {
@@ -80,6 +81,9 @@ class ChatMessageBubble extends Component {
       onMessageTranslate,
       onEditMessage,
       onDelete,
+      audioPlayingId,
+      perviousPlayingAudioId,
+      onAudioPlayPress,
     } = this.props;
     const msgTime = new Date(message.created);
     const isEditable = new Date(msgTime);
@@ -87,6 +91,7 @@ class ChatMessageBubble extends Component {
     isEditable.setDate(isEditable.getDate() + 1);
     return message.msg_type === 'image' ||
       message.msg_type === 'video' ||
+      message.msg_type === 'audio' ||
       (message.msg_type === 'text' && message.message_body != '') ? (
       <Menu
         contentStyle={{
@@ -102,14 +107,17 @@ class ChatMessageBubble extends Component {
                 <View style={styles.talkBubbleAbsoluteLeft} />
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  style={{
-                    minHeight: 40,
-                    backgroundColor: Colors.white,
-                    borderRadius: borderRadius,
-                    justifyContent: 'center',
-                    paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
-                    paddingVertical: message.msg_type === 'image' ? 5 : 10,
-                  }}
+                  style={[
+                    {
+                      minHeight: 40,
+                      backgroundColor: Colors.white,
+                      borderRadius: borderRadius,
+                      justifyContent: 'center',
+                      paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
+                      paddingVertical: message.msg_type === 'image' ? 5 : 10,
+                    },
+                    message.msg_type === 'audio' && { minWidth: '100%' },
+                  ]}
                   onLongPress={(id) => {
                     onMessagePress(message.id);
                   }}
@@ -123,6 +131,15 @@ class ChatMessageBubble extends Component {
                     />
                   ) : message.msg_type === 'video' ? (
                     <VideoPlayerCustom url={message.message_body} />
+                  ) : message.msg_type === 'audio' ? (
+                    <AudioPlayerCustom
+                      audioPlayingId={audioPlayingId}
+                      perviousPlayingAudioId={perviousPlayingAudioId}
+                      onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                      postId={message.id}
+                      url={message.message_body}
+                      isSmall={true}
+                    />
                   ) : (
                     <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
                       {message.message_body}
@@ -140,10 +157,13 @@ class ChatMessageBubble extends Component {
                   Colors.gradient_2,
                   Colors.gradient_1,
                 ]}
-                style={{
-                  minHeight: 40,
-                  borderRadius: borderRadius,
-                }}
+                style={[
+                  {
+                    minHeight: 40,
+                    borderRadius: borderRadius,
+                  },
+                  message.msg_type === 'audio' && { minWidth: '100%' },
+                ]}
               >
                 <TouchableOpacity
                   style={{
@@ -166,6 +186,15 @@ class ChatMessageBubble extends Component {
                     />
                   ) : message.msg_type === 'video' ? (
                     <VideoPlayerCustom url={message.message_body} />
+                  ) : message.msg_type === 'audio' ? (
+                    <AudioPlayerCustom
+                      audioPlayingId={audioPlayingId}
+                      perviousPlayingAudioId={perviousPlayingAudioId}
+                      onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                      postId={message.id}
+                      url={message.message_body}
+                      isSmall={true}
+                    />
                   ) : (
                     <Text style={{ color: 'white', fontSize: 15 }}>
                       {message.message_body}

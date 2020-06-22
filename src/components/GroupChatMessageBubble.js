@@ -16,12 +16,16 @@ import { connect } from 'react-redux';
 import { Colors, Icons, Fonts, Images } from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
+import AudioPlayerCustom from './AudioPlayerCustom';
 let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      audioPlayingId: null,
+      perviousPlayingAudioId: null,
+    };
   }
 
   onCopy = (message) => {
@@ -81,6 +85,9 @@ class GroupChatMessageBubble extends Component {
       onMessageTranslate,
       onDelete,
       onEditMessage,
+      audioPlayingId,
+      perviousPlayingAudioId,
+      onAudioPlayPress,
     } = this.props;
 
     if (!message.message_body) {
@@ -92,6 +99,7 @@ class GroupChatMessageBubble extends Component {
     isEditable.setDate(isEditable.getDate() + 1);
     return message.message_body.type === 'image' ||
       message.message_body.type === 'video' ||
+      message.message_body.type === 'audio' ||
       (message.message_body.type === 'text' &&
         message.message_body.text != '') ? (
       <Menu
@@ -108,16 +116,21 @@ class GroupChatMessageBubble extends Component {
                 <View style={styles.talkBubbleAbsoluteLeft} />
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  style={{
-                    minHeight: 40,
-                    backgroundColor: Colors.white,
-                    borderRadius: borderRadius,
-                    justifyContent: 'center',
-                    paddingHorizontal:
-                      message.message_body.type === 'image' ? 5 : 10,
-                    paddingVertical:
-                      message.message_body.type === 'image' ? 5 : 10,
-                  }}
+                  style={[
+                    {
+                      minHeight: 40,
+                      backgroundColor: Colors.white,
+                      borderRadius: borderRadius,
+                      justifyContent: 'center',
+                      paddingHorizontal:
+                        message.message_body.type === 'image' ? 5 : 10,
+                      paddingVertical:
+                        message.message_body.type === 'image' ? 5 : 10,
+                    },
+                    message.message_body.type === 'audio' && {
+                      minWidth: '100%',
+                    },
+                  ]}
                   onLongPress={(msg_id) => {
                     onMessagePress(message.msg_id);
                   }}
@@ -133,6 +146,15 @@ class GroupChatMessageBubble extends Component {
                     />
                   ) : message.message_body.type === 'video' ? (
                     <VideoPlayerCustom url={message.message_body.text} />
+                  ) : message.message_body.type === 'audio' ? (
+                    <AudioPlayerCustom
+                      audioPlayingId={audioPlayingId}
+                      perviousPlayingAudioId={perviousPlayingAudioId}
+                      onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                      postId={message.msg_id}
+                      url={message.message_body.text}
+                      isSmall={true}
+                    />
                   ) : (
                     <Text
                       style={{
@@ -155,10 +177,13 @@ class GroupChatMessageBubble extends Component {
                   Colors.gradient_2,
                   Colors.gradient_1,
                 ]}
-                style={{
-                  minHeight: 40,
-                  borderRadius: borderRadius,
-                }}
+                style={[
+                  {
+                    minHeight: 40,
+                    borderRadius: borderRadius,
+                  },
+                  message.message_body.type === 'audio' && { minWidth: '100%' },
+                ]}
               >
                 <TouchableOpacity
                   style={{
@@ -185,6 +210,15 @@ class GroupChatMessageBubble extends Component {
                     />
                   ) : message.message_body.type === 'video' ? (
                     <VideoPlayerCustom url={message.message_body.text} />
+                  ) : message.message_body.type === 'audio' ? (
+                    <AudioPlayerCustom
+                      audioPlayingId={audioPlayingId}
+                      perviousPlayingAudioId={perviousPlayingAudioId}
+                      onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                      postId={message.msg_id}
+                      url={message.message_body.text}
+                      isSmall={true}
+                    />
                   ) : (
                     <Text style={{ color: 'white', fontSize: 15 }}>
                       {message.message_body.text}

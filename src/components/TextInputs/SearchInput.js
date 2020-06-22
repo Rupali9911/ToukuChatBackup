@@ -86,7 +86,7 @@ export default class SearchInput extends Component {
                 style={styles.iconRightContainer}
                 onPress={this._openMenu}
               >
-                <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
+                <Image source={Icons.man_plus_icon} style={styles.iconRight} />
               </TouchableOpacity>
             }
           >
