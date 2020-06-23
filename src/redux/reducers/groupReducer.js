@@ -374,3 +374,15 @@ export const editGroupMessage = (id, payload) => (dispatch) =>
         reject(err);
       });
   });
+
+export const unSendGroupMessage = (id, payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/delete-group-message/${id}/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

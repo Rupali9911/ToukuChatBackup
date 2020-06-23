@@ -87,6 +87,7 @@ class ChatContainer extends Component {
             translatedMessage={this.props.translatedMessage}
             translatedMessageId={this.props.translatedMessageId}
             onDelete={(id) => this.props.onDelete(id)}
+            onUnSend={(id) => this.props.onUnSendMsg(id)}
             orientation={this.props.orientation}
             audioPlayingId={this.state.audioPlayingId}
             perviousPlayingAudioId={this.state.perviousPlayingAudioId}

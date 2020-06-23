@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import {ImageBackground} from 'react-native';
+import {ImageBackground, View} from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
@@ -21,6 +21,7 @@ import {
 import {ListLoader} from '../../components/Loaders';
 import {ConfirmationModal} from '../../components/Modals';
 import {eventService} from '../../utils';
+import Toast from '../../components/Toast';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -29,9 +30,11 @@ class ChannelChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
       showConfirmationModal: false,
+      showMessageUnSendConfirmationModal: false,
       isEdited: false,
       editMessageId: null,
       headerRightIconMenu: [
@@ -213,27 +216,50 @@ class ChannelChats extends Component {
       translatedMessageId,
       orientation,
       repliedMessage,
+      showConfirmationModal,
+      showMessageUnSendConfirmationModal,
     } = this.state;
 
     if (channelLoading && conversations.length <= 0) {
       return <ListLoader />;
     } else {
       return (
-        <ChatContainer
-          handleMessage={(message) => this.handleMessage(message)}
-          onMessageSend={this.onMessageSend.bind(this)}
-          newMessageText={newMessageText}
-          messages={conversations}
-          orientation={orientation}
-          repliedMessage={repliedMessage}
-          onDelete={(id) => this.onDeletePressed(id)}
-          onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
-          onMessageTranslateClose={this.onMessageTranslateClose}
-          translatedMessage={translatedMessage}
-          translatedMessageId={translatedMessageId}
-          isChannel={true}
-          onEditMessage={(msg) => this.onEdit(msg)}
-        />
+        <View style={{flex: 1}}>
+          <ChatContainer
+            handleMessage={(message) => this.handleMessage(message)}
+            onMessageSend={this.onMessageSend.bind(this)}
+            newMessageText={newMessageText}
+            messages={conversations}
+            orientation={orientation}
+            repliedMessage={repliedMessage}
+            onDelete={(id) => this.onDeletePressed(id)}
+            onUnSendMsg={(id) => this.onUnSendPressed(id)}
+            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onMessageTranslateClose={this.onMessageTranslateClose}
+            translatedMessage={translatedMessage}
+            translatedMessageId={translatedMessageId}
+            isChannel={true}
+            onEditMessage={(msg) => this.onEdit(msg)}
+          />
+
+          <ConfirmationModal
+            visible={showConfirmationModal}
+            onCancel={this.onCancel.bind(this)}
+            onConfirm={this.onConfirm.bind(this)}
+            orientation={orientation}
+            title={translate('pages.xchat.toastr.areYouSure')}
+            message={translate('pages.xchat.toLeaveThisChannel')}
+          />
+
+          <ConfirmationModal
+            visible={showMessageUnSendConfirmationModal}
+            onCancel={this.onCancel.bind(this)}
+            onConfirm={this.onConfirmUnSend.bind(this)}
+            orientation={orientation}
+            title={translate('common.unsend')}
+            message={translate('pages.xchat.toastr.messageWillBeUnsent')}
+          />
+        </View>
       );
     }
   }
@@ -246,7 +272,10 @@ class ChannelChats extends Component {
   };
 
   onCancel = () => {
-    this.toggleConfirmationModal();
+    this.setState({
+      showConfirmationModal: false,
+      showMessageUnSendConfirmationModal: false,
+    });
   };
 
   onConfirm = () => {
@@ -255,6 +284,30 @@ class ChannelChats extends Component {
 
   onDeletePressed = (messageId) => {
     this.setState({showConfirmationModal: true});
+  };
+
+  onUnSendPressed = (messageId) => {
+    this.setState({
+      showMessageUnSendConfirmationModal: true,
+      selectedMessageId: messageId,
+    });
+  };
+
+  onConfirmUnSend = () => {
+    this.setState({showMessageUnSendConfirmationModal: false});
+    if (this.state.selectedMessageId != null) {
+      let payload = {message_body: '', is_unsent: true};
+      this.props
+        .editChannelMessage(this.state.selectedMessageId, payload)
+        .then((res) => {
+          this.getChannelConversations();
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.messageUnsent'),
+            type: 'positive',
+          });
+        });
+    }
   };
 
   onMessageTranslate = (message) => {
@@ -282,6 +335,7 @@ class ChannelChats extends Component {
 
   render() {
     const {currentChannel, showConfirmationModal, orientation} = this.props;
+    const {showMessageUnSendConfirmationModal} = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -299,14 +353,6 @@ class ChannelChats extends Component {
           image={currentChannel.channel_picture}
         />
         {this.renderConversations()}
-        <ConfirmationModal
-          visible={showConfirmationModal}
-          onCancel={this.onCancel.bind(this)}
-          onConfirm={this.onConfirm.bind(this)}
-          orientation={orientation}
-          title={translate('pages.xchat.toastr.areYouSure')}
-          message={translate('pages.xchat.toLeaveThisChannel')}
-        />
       </ImageBackground>
     );
   }

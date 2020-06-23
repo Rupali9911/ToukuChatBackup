@@ -170,7 +170,7 @@ export const getPersonalConversation = (friend) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getPersonalConversationRequest());
     client
-      .get(`/xchat/personal-conversation/` + friend + '/')
+      .get(`/xchat/personal-conversation/${friend}/`)
       .then((res) => {
         dispatch(getPersonalConversationSuccess());
         resolve(res);
@@ -198,7 +198,7 @@ export const sendPersonalMessage = (message) => (dispatch) =>
 export const markFriendMsgsRead = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .get(`/xchat/mark-friend-msgs-read/` + id + '/')
+      .get(`/xchat/mark-friend-msgs-read/${id}/`)
       .then((res) => {
         resolve(res);
       })
@@ -224,11 +224,22 @@ export const editPersonalMessage = (id, payload) => (dispatch) =>
     client
       .patch(`/xchat/edit-personal-message/${id}/`, payload)
       .then((res) => {
-        console.log('res', res);
         resolve(res);
       })
       .catch((err) => {
-        console.log('err', err);
+        reject(err);
+      });
+  });
+
+//Unsend Personal Message
+export const unSendPersonalMessage = (id, payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/unsent-personal-message/${id}/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
         reject(err);
       });
   });
