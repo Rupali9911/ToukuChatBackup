@@ -124,13 +124,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.home_header,
   },
   searchContainer: {
-    height: 30,
+    height: Platform.OS === 'ios' ? 'auto' : 45,
+    // height: 30,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 4,
     paddingHorizontal: 10,
-    // paddingVertical: Platform.OS === 'ios' ? 10 : 0,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     backgroundColor: Colors.white,
   },
   inputStyle: {

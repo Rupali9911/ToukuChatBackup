@@ -1,12 +1,12 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground, View} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground, View } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {Images, SocketEvents} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Images, SocketEvents } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {
   translate,
@@ -18,9 +18,9 @@ import {
   sendChannelMessage,
   editChannelMessage,
 } from '../../redux/reducers/channelReducer';
-import {ListLoader} from '../../components/Loaders';
-import {ConfirmationModal} from '../../components/Modals';
-import {eventService} from '../../utils';
+import { ListLoader } from '../../components/Loaders';
+import { ConfirmationModal } from '../../components/Modals';
+import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
 
 class ChannelChats extends Component {
@@ -52,7 +52,7 @@ class ChannelChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
 
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
@@ -69,12 +69,12 @@ class ChannelChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   onMessageSend = () => {
-    const {newMessageText, isEdited} = this.state;
-    const {userData, currentChannel} = this.props;
+    const { newMessageText, isEdited } = this.state;
+    const { userData, currentChannel } = this.props;
 
     let sendmsgdata = {
       // id: 2808,
@@ -152,7 +152,7 @@ class ChannelChats extends Component {
   };
 
   sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+    const { newMessageText, editMessageId } = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -172,7 +172,7 @@ class ChannelChats extends Component {
   };
 
   checkEventTypes(message) {
-    const {currentChannel, userData} = this.props;
+    const { currentChannel, userData } = this.props;
 
     if (
       message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
@@ -194,21 +194,18 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
+          this.setState({ conversations: res.conversation });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
         }
       });
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
-    if (!message.length && this.state.isEdited) {
-      this.onEditClear();
-    }
+    this.setState({ newMessageText: message });
   }
 
   renderConversations() {
-    const {channelLoading} = this.props;
+    const { channelLoading } = this.props;
     const {
       conversations,
       newMessageText,
@@ -224,7 +221,7 @@ class ChannelChats extends Component {
       return <ListLoader />;
     } else {
       return (
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend.bind(this)}
@@ -283,7 +280,7 @@ class ChannelChats extends Component {
   };
 
   onDeletePressed = (messageId) => {
-    this.setState({showConfirmationModal: true});
+    this.setState({ showConfirmationModal: true });
   };
 
   onUnSendPressed = (messageId) => {
@@ -294,9 +291,9 @@ class ChannelChats extends Component {
   };
 
   onConfirmUnSend = () => {
-    this.setState({showMessageUnSendConfirmationModal: false});
+    this.setState({ showMessageUnSendConfirmationModal: false });
     if (this.state.selectedMessageId != null) {
-      let payload = {message_body: '', is_unsent: true};
+      let payload = { message_body: '', is_unsent: true };
       this.props
         .editChannelMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -334,12 +331,13 @@ class ChannelChats extends Component {
   };
 
   render() {
-    const {currentChannel, showConfirmationModal, orientation} = this.props;
-    const {showMessageUnSendConfirmationModal} = this.state;
+    const { currentChannel, showConfirmationModal, orientation } = this.props;
+    const { showMessageUnSendConfirmationModal } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentChannel.name}
           description={
