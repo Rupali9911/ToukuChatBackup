@@ -25,7 +25,7 @@ export default class ChannelListItem extends Component {
       onPress,
       unreadCount,
     } = this.props;
-    var matches = title.match(/\b(\w)/g);
+    // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
     return (
