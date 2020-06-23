@@ -303,11 +303,12 @@ class LoginSignUp extends Component {
       LineLogin.loginWithPermissions(arrPermissions)
         .then((user) => {
           console.log(user);
-          const lineLoginData = {
-            access_code: user.accessToken.accessToken,
-            site_from: 'touku',
-            dev_id: '',
-          };
+            const lineLoginData = {
+                code: '',
+                access_token:user.accessToken.accessToken,
+                dev_id: '',
+                site_from: 'touku',
+            };
           console.log(
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
             lineLoginData,
@@ -349,9 +350,10 @@ class LoginSignUp extends Component {
         .then((user) => {
           console.log(user);
           const lineLoginData = {
-            access_code: user.accessToken.accessToken,
-            site_from: 'touku',
-            dev_id: '',
+              code: '',
+              access_token:user.accessToken.accessToken,
+              dev_id: '',
+              site_from: 'touku',
           };
           console.log(
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
@@ -398,31 +400,29 @@ class LoginSignUp extends Component {
       .then((result) => {
         console.log('result kakaoLogin', result);
         const kakaoLoginData = {
-          code: result.refreshToken,
+          code: '',
+            access_token:result.accessToken,
           dev_id: '',
           site_from: 'touku',
         };
         console.log('kakao request', kakaoLoginData);
-        this.props.getAccessCodeKakao().then((resCode) => {
-          console.log('getAccessCodeKakao', resCode);
+        this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
+            console.log('JWT TOKEN=> ', JSON.stringify(res));
+            if (res.token) {
+                let status = res.status;
+                if (!status) {
+                    this.props.navigation.navigate('SignUp', {
+                        pageNumber: 2,
+                        isSocial: true,
+                    });
+                    return;
+                }
+                await AsyncStorage.setItem('userToken', res.token);
+                await AsyncStorage.removeItem('socialToken');
+                this.props.navigation.navigate('Home');
+                return;
+            }
         });
-        // this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
-        //     console.log('JWT TOKEN=> ', JSON.stringify(res));
-        //     if (res.token) {
-        //         let status = res.status;
-        //         if (!status) {
-        //             this.props.navigation.navigate('SignUp', {
-        //                 pageNumber: 2,
-        //                 isSocial: true,
-        //             });
-        //             return;
-        //         }
-        //         await AsyncStorage.setItem('userToken', res.token);
-        //         await AsyncStorage.removeItem('socialToken');
-        //         this.props.navigation.navigate('Home');
-        //         return;
-        //     }
-        // });
       })
       .catch((err) => {
         console.log('Error kakaoLogin', err);
@@ -505,10 +505,10 @@ class LoginSignUp extends Component {
                   IconSrc={Icons.icon_facebook}
                   onPress={() => this.firebaseFacebookLogin()}
                 />
-                {/* <SocialLogin
+                <SocialLogin
                   IconSrc={Icons.icon_line}
                   onPress={() => this.firebaseLineLogin()}
-                /> */}
+                />
                 <SocialLogin
                   IconSrc={Icons.icon_google}
                   onPress={() => this.firebaseGoogleLogin()}
@@ -517,10 +517,10 @@ class LoginSignUp extends Component {
                   IconSrc={Icons.icon_twitter}
                   onPress={() => this.firebaseTwitterLogin()}
                 />
-                {/*<SocialLogin*/}
-                  {/*IconSrc={Icons.icon_kakao}*/}
-                  {/*onPress={() => this.kakaoLogin()}*/}
-                {/*/>*/}
+                <SocialLogin
+                  IconSrc={Icons.icon_kakao}
+                  onPress={() => this.kakaoLogin()}
+                />
                </View>
             </View>
             <LanguageSelector />

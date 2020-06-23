@@ -474,7 +474,7 @@ PODS:
     - RNFBApp
   - RNGestureHandler (1.6.1):
     - React
-  - RNGoogleSignin (4.0.3):
+  - RNGoogleSignin (4.0.0):
     - GoogleSignIn (~> 5.0.0)
     - React
   - RNLocalize (1.4.0):

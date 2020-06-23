@@ -196,7 +196,7 @@ export default class GroupChatMessageBox extends Component {
                   style={{
                     fontSize: 11,
                     fontFamily: Fonts.regular,
-                    color: Colors.white,
+                    //color: Colors.white,
                     textAlign: 'center',
                     color: Colors.primary,
                   }}>{`${time.getHours()}:${
