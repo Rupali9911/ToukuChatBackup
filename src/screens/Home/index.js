@@ -28,9 +28,11 @@ import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
 import {getAvatar, eventService} from '../../utils';
 import {ProfileModal} from '../../components/Modals';
-import {ChannelListItem} from '../../components/ListItems';
-import FriendListItem from '../../components/ListItems/FriendListItem';
-import GroupListItem from '../../components/ListItems/GroupListItem';
+import {
+  ChannelListItem,
+  FriendListItem,
+  GroupListItem,
+} from '../../components/ListItems';
 import NoData from '../../components/NoData';
 import Button from '../../components/Button';
 import {ListLoader} from '../../components/Loaders';
@@ -51,11 +53,13 @@ import {
 import {
   getUserGroups,
   setCurrentGroup,
+  updateUnreadGroupMsgsCounts,
 } from '../../redux/reducers/groupReducer';
 import {
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
+  updateUnreadFriendMsgsCounts,
 } from '../../redux/reducers/friendReducer';
 
 class Home extends Component {
@@ -73,7 +77,6 @@ class Home extends Component {
 
       userFriendsState: this.props.userFriends,
       followingChannelsState: this.props.followingChannels,
-      userGroupsState: this.props.userGroups,
 
       channelHeaderCounts: 0,
       groupHeaderCounts: 0,
@@ -141,13 +144,13 @@ class Home extends Component {
 
   getUserGroups() {
     this.props.getUserGroups().then((res) => {
-      this.setState({userGroupsState: this.props.userGroups}, () => {
+      if (res.conversations && res.conversations.length > 0) {
         let counts = 0;
-        for (let group of this.state.userGroupsState) {
+        for (let group of this.props.userGroups) {
           counts = counts + group.unread_msg;
         }
         this.setState({groupHeaderCounts: counts});
-      });
+      }
     });
   }
 
@@ -293,29 +296,34 @@ class Home extends Component {
 
   //New Message in Group
   onNewMessageInGroup(message) {
-    const {userGroupsState} = this.state;
+    const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
-      for (let i of userGroupsState) {
+      for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
           this.getUserGroups();
           break;
         }
       }
-      this.setState({userGroupsState});
     }
   }
 
   //Mark as Read Group Chat
   readAllMessageGroupChat(message) {
-    const {userGroupsState} = this.state;
+    const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
-      for (var i in userGroupsState) {
+      let unread_counts = 0;
+      for (var i in userGroups) {
         if (
-          userGroupsState[i].group_id ==
-          message.text.data.message_details.group_id
+          userGroups[i].group_id == message.text.data.message_details.group_id
         ) {
-          userGroupsState[i].unread_msg =
+          userGroups[i].unread_msg =
             message.text.data.message_details.read_count;
+
+          unread_counts =
+            unread_counts + message.text.data.message_details.read_count;
+
+          this.props.updateUnreadGroupMsgsCounts(unread_counts);
+
           this.props.getMissedSocketEventsById(
             message.text.data.socket_event_id,
           );
@@ -323,7 +331,6 @@ class Home extends Component {
           break;
         }
       }
-      // this.setState({userGroupsState});
     }
   }
 
@@ -354,6 +361,7 @@ class Home extends Component {
     const {userFriendsState} = this.state;
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
+      let unread_counts = 0;
       for (var i in userFriendsState) {
         if (
           userFriendsState[i].friend == detail.friend_id &&
@@ -361,6 +369,12 @@ class Home extends Component {
         ) {
           userFriendsState[i].unread_msg =
             message.text.data.message_details.read_count;
+
+          unread_counts =
+            unread_counts + message.text.data.message_details.read_count;
+
+          this.props.updateUnreadFriendMsgsCounts(unread_counts);
+
           this.props.getMissedSocketEventsById(
             message.text.data.socket_event_id,
           );
@@ -454,10 +468,9 @@ class Home extends Component {
   }
 
   renderUserGroups() {
-    const {groupLoading} = this.props;
-    const {userGroupsState} = this.state;
+    const {groupLoading, userGroups} = this.props;
 
-    const filteredGroups = userGroupsState.filter(
+    const filteredGroups = userGroups.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
 
@@ -515,7 +528,13 @@ class Home extends Component {
             <FriendListItem
               key={index}
               title={item.username}
-              description={item.last_msg}
+              description={
+                item.last_msg
+                  ? item.last_msg_type === 'text'
+                    ? item.last_msg
+                    : item.last_msg_type
+                  : ''
+              }
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}
               isOnline={item.is_online}
@@ -550,17 +569,16 @@ class Home extends Component {
       isFriendsCollapsed,
       searchText,
       userFriendsState,
-      userGroupsState,
       channelHeaderCounts,
       groupHeaderCounts,
       friendHeaderCounts,
     } = this.state;
 
-    const {followingChannels, userData, userConfig} = this.props;
+    const {followingChannels, userGroups, userData, userConfig} = this.props;
     const filteredChannels = followingChannels.filter(
       createFilter(searchText, ['name']),
     );
-    const filteredGroups = userGroupsState.filter(
+    const filteredGroups = userGroups.filter(
       createFilter(searchText, ['group_name']),
     );
     const filteredFriends = userFriendsState.filter(
@@ -736,6 +754,8 @@ const mapDispatchToProps = {
   getUserConfiguration,
   getMissedSocketEventsById,
   updateFollowingChannels,
+  updateUnreadFriendMsgsCounts,
+  updateUnreadGroupMsgsCounts,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

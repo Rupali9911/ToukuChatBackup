@@ -11,11 +11,13 @@ export const GET_PERSONAL_CONVERSATION_SUCCESS =
 export const GET_PERSONAL_CONVERSATION_FAIL = 'GET_PERSONAL_CONVERSATION_FAIL';
 
 export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
+export const SET_UNREAD_FRIEND_MSG_COUNTS = 'SET_UNREAD_FRIEND_MSG_COUNTS';
 
 const initialState = {
   loading: false,
   userFriends: [],
   currentFriend: {},
+  unreadFriendMsgsCounts: 0,
 };
 
 export default function (state = initialState, action) {
@@ -65,6 +67,12 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case SET_UNREAD_FRIEND_MSG_COUNTS:
+      return {
+        ...state,
+        unreadFriendMsgsCounts: action.payload,
+      };
+
     default:
       return state;
   }
@@ -79,6 +87,15 @@ const setCurrentFriendData = (data) => ({
 
 export const setCurrentFriend = (friend) => (dispatch) =>
   dispatch(setCurrentFriendData(friend));
+
+//Set Unread Friend Msgs Count
+const setUnreadFriendMsgsCounts = (counts) => ({
+  type: SET_UNREAD_FRIEND_MSG_COUNTS,
+  payload: counts,
+});
+
+export const updateUnreadFriendMsgsCounts = (counts) => (dispatch) =>
+  dispatch(setUnreadFriendMsgsCounts(counts));
 
 //Get User's Friends
 const getUserFriendsRequest = () => ({
@@ -102,13 +119,16 @@ export const getUserFriends = () => (dispatch) =>
       .then((res) => {
         if (res.conversations) {
           var friends = res.conversations;
+          let unread_counts = 0;
           if (friends && friends.length > 0) {
             friends = friends.map(function (el) {
+              unread_counts = unread_counts + el.unread_msg;
               var o = Object.assign({}, el);
               o.isChecked = false;
               o.is_typing = false;
               return o;
             });
+            dispatch(setUnreadFriendMsgsCounts(unread_counts));
           }
           dispatch(getUserFriendsSuccess(friends));
         }

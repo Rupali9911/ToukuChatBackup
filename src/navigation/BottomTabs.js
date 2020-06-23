@@ -17,6 +17,7 @@ import MoreScreen from '../screens/More';
 import {translate} from '../redux/reducers/languageReducer';
 import AddFriend from '../screens/AddFriend';
 import TabBarComp from '../components/TabBarComp';
+import {BottomTabItem} from '../components/ListItems';
 
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
@@ -125,46 +126,51 @@ const Tabs = createBottomTabNavigator(
         const {routeName} = navigation.state;
         if (routeName === 'Home') {
           return (
-            <TabItem
+            <BottomTabItem
               source={focused ? Icons.icon_home_select : Icons.icon_home}
               title={translate('pages.xchat.home')}
               titleColor={focused ? Colors.indigo : Colors.white}
+              routeName={'Home'}
             />
           );
         } else if (routeName === 'Chat') {
           return (
-            <TabItem
+            <BottomTabItem
               source={focused ? Icons.icon_chat_select : Icons.icon_chat}
               title={translate('pages.xchat.chat')}
               titleColor={focused ? Colors.indigo : Colors.white}
+              routeName={'Chat'}
             />
           );
         } else if (routeName === 'More') {
           return (
-            <TabItem
+            <BottomTabItem
               source={focused ? Icons.icon_more_select : Icons.icon_more}
               title={translate('pages.xchat.more')}
               titleColor={focused ? Colors.indigo : Colors.white}
+              routeName={'More'}
             />
           );
         } else if (routeName === 'Timeline') {
           return (
-            <TabItem
+            <BottomTabItem
               source={
                 focused ? Icons.icon_timeline_select : Icons.icon_timeline
               }
               title={translate('pages.xchat.timeline')}
               titleColor={focused ? Colors.indigo : Colors.white}
+              routeName={'Timeline'}
             />
           );
         } else if (routeName === 'Channel') {
           return (
-            <TabItem
+            <BottomTabItem
               source={
                 focused ? Icons.icon_channel_select : Icons.icon_channel_new
               }
               title={translate('pages.xchat.channel')}
               titleColor={focused ? Colors.indigo : Colors.white}
+              routeName={'Channel'}
             />
           );
         }
@@ -173,19 +179,36 @@ const Tabs = createBottomTabNavigator(
   },
 );
 
-const TabItem = (props) => {
-  return (
-    <View style={{alignItems: 'center', justifyContent: 'center'}}>
-      <Image source={props.source} style={globalStyles.iconStyleTab} />
-      <Text
-        style={[
-          globalStyles.smallLightTextTab,
-          {color: props.titleColor || Colors.white, paddingTop: 2},
-        ]}>
-        {props.title}
-      </Text>
-    </View>
-  );
-};
+// const TabItem = (props) => {
+//   return (
+//     <View>
+//       <View style={{alignItems: 'center', justifyContent: 'center'}}>
+//         <Image source={props.source} style={globalStyles.iconStyleTab} />
+//         <Text
+//           style={[
+//             globalStyles.smallLightTextTab,
+//             {color: props.titleColor || Colors.white, paddingTop: 2},
+//           ]}>
+//           {props.title}
+//         </Text>
+//         <Badge
+//           visible={props.badgeCount > 0 ? true : false}
+//           style={[
+//             globalStyles.smallLightText,
+//             {
+//               backgroundColor: Colors.green,
+//               color: Colors.white,
+//               fontSize: 11,
+//               position: 'absolute',
+//               top: -5,
+//               right: -6,
+//             },
+//           ]}>
+//           {props.badgeCount}
+//         </Badge>
+//       </View>
+//     </View>
+//   );
+// };
 
 export default createAppContainer(Tabs);
