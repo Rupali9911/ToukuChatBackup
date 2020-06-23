@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>KAKAO_APP_KEY</key>
-	<string>39152cc4df634359df4920277d99b009</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -58,11 +56,15 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
 	<string>534252273873820</string>
 	<key>FacebookDisplayName</key>
 	<string>Touku</string>
+	<key>KAKAO_APP_KEY</key>
+	<string>39152cc4df634359df4920277d99b009</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>twitter</string>
@@ -113,7 +115,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>App requires to access your camera to show image on profile and send via chat</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>App requires to access your location for better user experience</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App requires to access your photo library to show image on profile and send via chat</string>
 	<key>UIAppFonts</key>
@@ -156,9 +158,8 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

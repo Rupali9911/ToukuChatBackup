@@ -36,10 +36,12 @@ import {
   googleRegister,
   twitterRegister,
   lineRegister,
+    kakaoRegister
 } from '../../redux/reducers/userReducer';
 import {userLogin} from '../../redux/reducers/loginReducer';
 import Toast from '../../components/Toast';
 import AsyncStorage from '@react-native-community/async-storage';
+import KakaoLogins from "@react-native-seoul/kakao-login";
 const {RNTwitterSignIn} = NativeModules;
 
 const TwitterKeys = {
@@ -349,11 +351,12 @@ class Login extends Component {
       LineLogin.loginWithPermissions(arrPermissions)
         .then((user) => {
           console.log(user);
-          const lineLoginData = {
-            access_code: user.accessToken.accessToken,
-            site_from: 'touku',
-            dev_id: '',
-          };
+            const lineLoginData = {
+                code: '',
+                access_token:user.accessToken.accessToken,
+                dev_id: '',
+                site_from: 'touku',
+            };
           console.log(
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
             lineLoginData,
@@ -394,11 +397,12 @@ class Login extends Component {
       LineLogin.login()
         .then((user) => {
           console.log(user);
-          const lineLoginData = {
-            access_code: user.accessToken.accessToken,
-            site_from: 'touku',
-            dev_id: '',
-          };
+            const lineLoginData = {
+                code: '',
+                access_token:user.accessToken.accessToken,
+                dev_id: '',
+                site_from: 'touku',
+            };
           console.log(
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
             lineLoginData,
@@ -437,6 +441,49 @@ class Login extends Component {
         });
     }
   }
+
+    kakaoLogin() {
+        console.log('kakaoLogin');
+        KakaoLogins.login()
+            .then((result) => {
+                console.log('result kakaoLogin', result);
+                const kakaoLoginData = {
+                    code: '',
+                    access_token:result.accessToken,
+                    dev_id: '',
+                    site_from: 'touku',
+                };
+                console.log('kakao request', kakaoLoginData);
+                this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
+                    console.log('JWT TOKEN=> ', JSON.stringify(res));
+                    if (res.token) {
+                        let status = res.status;
+                        if (!status) {
+                            this.props.navigation.navigate('SignUp', {
+                                pageNumber: 2,
+                                isSocial: true,
+                            });
+                            return;
+                        }
+                        await AsyncStorage.setItem('userToken', res.token);
+                        await AsyncStorage.removeItem('socialToken');
+                        this.props.navigation.navigate('Home');
+                        return;
+                    }
+                });
+            })
+            .catch((err) => {
+                console.log('Error kakaoLogin', err);
+                if (err.code === 'E_CANCELLED_OPERATION') {
+                    //logCallback(`Login Cancelled:${err.message}`, setLoginLoading(false));
+                } else {
+                    // logCallback(
+                    //     `Login Failed:${err.code} ${err.message}`,
+                    //     setLoginLoading(false),
+                    // );
+                }
+            });
+    }
 
   handleUserName = (username) => {
     this.setState({username});
@@ -731,10 +778,10 @@ class Login extends Component {
                   IconSrc={Icons.icon_facebook}
                   onPress={() => this.firebaseFacebookLogin()}
                 />
-                {/* <SocialLogin
+                 <SocialLogin
                   IconSrc={Icons.icon_line}
                   onPress={() => this.firebaseLineLogin()}
-                /> */}
+                />
                 <SocialLogin
                   IconSrc={Icons.icon_google}
                   onPress={() => this.firebaseGoogleLogin()}
@@ -743,6 +790,10 @@ class Login extends Component {
                   IconSrc={Icons.icon_twitter}
                   onPress={() => this.firebaseTwitterLogin()}
                 />
+                  <SocialLogin
+                      IconSrc={Icons.icon_kakao}
+                      onPress={() => this.kakaoLogin()}
+                  />
               </View>
             </View>
             <LanguageSelector />
@@ -767,6 +818,7 @@ const mapDispatchToProps = {
   twitterRegister,
   googleRegister,
   lineRegister,
+    kakaoRegister
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

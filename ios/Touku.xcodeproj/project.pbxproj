@@ -926,7 +926,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -935,6 +935,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public/kakao-login\"",
 					"$(SRCROOT)/../node_modules/react-native-line-sdk/ios/**",
 				);
 				INFOPLIST_FILE = Touku/Info.plist;
@@ -962,10 +963,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public/kakao-login\"",
 					"$(SRCROOT)/../node_modules/react-native-line-sdk/ios/**",
 				);
 				INFOPLIST_FILE = Touku/Info.plist;

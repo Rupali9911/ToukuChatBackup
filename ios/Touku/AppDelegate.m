@@ -10,6 +10,7 @@
 @import Firebase;
 @import UIKit;
 @import GoogleSignIn;
+#import <KakaoOpenSDK/KakaoOpenSDK.h>
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>
@@ -18,7 +19,7 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
-#import <KakaoOpenSDK/KakaoOpenSDK.h>
+
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -83,14 +84,14 @@ static void InitializeFlipper(UIApplication *application) {
   return handled || handledT || handledL;
 }
 
-//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-//                                      sourceApplication:(NSString *)sourceApplication
-//                                              annotation:(id)annotation {
-//    if ([KOSession isKakaoAccountLoginCallback:url]) {
-//        return [KOSession handleOpenURL:url];
-//    }
-//    return false;
-//}
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+                                      sourceApplication:(NSString *)sourceApplication
+                                              annotation:(id)annotation {
+    if ([KOSession isKakaoAccountLoginCallback:url]) {
+        return [KOSession handleOpenURL:url];
+    }
+    return false;
+}
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
