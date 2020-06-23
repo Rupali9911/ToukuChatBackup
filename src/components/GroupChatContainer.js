@@ -103,7 +103,7 @@ class GroupChatContainer extends Component {
       );
     });
 
-    return <Fragment>{msg}</Fragment>;
+    return <Fragment>{msg.reverse()}</Fragment>;
   };
 
   render() {

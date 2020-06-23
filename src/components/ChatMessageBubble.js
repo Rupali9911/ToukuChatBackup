@@ -1,22 +1,24 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   View,
   StyleSheet,
   Text,
   TouchableOpacity,
   Clipboard,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Menu } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
-import { Colors, Fonts } from '../constants';
+import OpenFile from 'react-native-doc-viewer';
+
+import { Colors, Fonts, Images, Icons } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
-
 let borderRadius = 20;
 class ChatMessageBubble extends Component {
   constructor(props) {
@@ -26,6 +28,49 @@ class ChatMessageBubble extends Component {
 
   onCopy = (message) => {
     Clipboard.setString(message);
+  };
+
+  onDocumentPress = (url) => {
+    if (Platform.OS === 'ios') {
+      OpenFile.openDoc(
+        [
+          {
+            url: url,
+            fileNameOptional: 'test filename',
+          },
+        ],
+        (error, url) => {
+          if (error) {
+            this.setState({ animating: false });
+          } else {
+            this.setState({ animating: false });
+            console.log(url);
+          }
+        }
+      );
+    } else {
+      //Android
+      this.setState({ animating: true });
+      OpenFile.openDoc(
+        [
+          {
+            url: url, // Local "file://" + filepath
+            fileName: 'sample',
+            cache: false,
+            fileType: url.split('.').pop(),
+          },
+        ],
+        (error, url) => {
+          if (error) {
+            this.setState({ animating: false });
+            console.error(error);
+          } else {
+            this.setState({ animating: false });
+            console.log(url);
+          }
+        }
+      );
+    }
   };
 
   renderReplyMessage = (replyMessage) => {
@@ -89,10 +134,7 @@ class ChatMessageBubble extends Component {
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
-    return message.msg_type === 'image' ||
-      message.msg_type === 'video' ||
-      message.msg_type === 'audio' ||
-      (message.msg_type === 'text' && message.message_body != '') ? (
+    return (
       <Menu
         contentStyle={{
           backgroundColor: Colors.gradient_3,
@@ -121,6 +163,11 @@ class ChatMessageBubble extends Component {
                   onLongPress={(id) => {
                     onMessagePress(message.id);
                   }}
+                  onPress={() =>
+                    message.msg_type === 'doc'
+                      ? this.onDocumentPress(message.message_body)
+                      : null
+                  }
                 >
                   {message.reply_to &&
                     this.renderReplyMessage(message.reply_to)}
@@ -140,6 +187,40 @@ class ChatMessageBubble extends Component {
                       url={message.message_body}
                       isSmall={true}
                     />
+                  ) : message.msg_type === 'doc' ? (
+                    <Fragment>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontFamily: Fonts.light,
+                          fontWeight: '500',
+                        }}
+                      >
+                        {message.message_body.split('/').pop()}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 5,
+                        }}
+                      >
+                        <FontAwesome
+                          name={'file-o'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text
+                          style={{
+                            color: Colors.dark_gray,
+                            fontSize: 13,
+                            marginLeft: 5,
+                            fontFamily: Fonts.light,
+                          }}
+                        >
+                          File
+                        </Text>
+                      </View>
+                    </Fragment>
                   ) : (
                     <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
                       {message.message_body}
@@ -175,6 +256,11 @@ class ChatMessageBubble extends Component {
                   onLongPress={() => {
                     onMessagePress(message.id);
                   }}
+                  onPress={() =>
+                    message.msg_type === 'doc'
+                      ? this.onDocumentPress(message.message_body)
+                      : null
+                  }
                   activeOpacity={0.8}
                 >
                   {message.reply_to &&
@@ -195,8 +281,42 @@ class ChatMessageBubble extends Component {
                       url={message.message_body}
                       isSmall={true}
                     />
+                  ) : message.msg_type === 'doc' ? (
+                    <Fragment>
+                      <Text
+                        style={{
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: '500',
+                        }}
+                      >
+                        {message.message_body.split('/').pop()}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 5,
+                        }}
+                      >
+                        <FontAwesome
+                          name={'file-o'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text
+                          style={{
+                            color: Colors.dark_gray,
+                            fontSize: 13,
+                            marginLeft: 5,
+                            fontFamily: Fonts.light,
+                          }}
+                        >
+                          File
+                        </Text>
+                      </View>
+                    </Fragment>
                   ) : (
-                    <Text style={{ color: 'white', fontSize: 15 }}>
+                    <Text style={{ color: Colors.white, fontSize: 15 }}>
                       {message.message_body}
                     </Text>
                   )}
@@ -309,7 +429,7 @@ class ChatMessageBubble extends Component {
           />
         )}
       </Menu>
-    ) : null;
+    );
   }
 }
 
