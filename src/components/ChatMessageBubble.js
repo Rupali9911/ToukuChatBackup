@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,14 +8,14 @@ import {
   Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Menu } from 'react-native-paper';
+import {Menu} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import { Colors, Fonts, Images, Icons } from '../constants';
-import { translate } from '../redux/reducers/languageReducer';
+import {Colors, Fonts, Images, Icons} from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
@@ -41,16 +41,16 @@ class ChatMessageBubble extends Component {
         ],
         (error, url) => {
           if (error) {
-            this.setState({ animating: false });
+            this.setState({animating: false});
           } else {
-            this.setState({ animating: false });
+            this.setState({animating: false});
             console.log(url);
           }
-        }
+        },
       );
     } else {
       //Android
-      this.setState({ animating: true });
+      this.setState({animating: true});
       OpenFile.openDoc(
         [
           {
@@ -62,13 +62,13 @@ class ChatMessageBubble extends Component {
         ],
         (error, url) => {
           if (error) {
-            this.setState({ animating: false });
+            this.setState({animating: false});
             console.error(error);
           } else {
-            this.setState({ animating: false });
+            this.setState({animating: false});
             console.log(url);
           }
-        }
+        },
       );
     }
   };
@@ -82,16 +82,14 @@ class ChatMessageBubble extends Component {
           width: '100%',
           borderRadius: 5,
           marginBottom: 5,
-        }}
-      >
+        }}>
         <View
           style={{
             flex: 3,
             flexDirection: 'row',
             alignItems: 'center',
-          }}
-        >
-          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+          }}>
+          <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
             {replyMessage.sender_id === this.props.userData.id
               ? 'You'
               : replyMessage.name}
@@ -102,9 +100,8 @@ class ChatMessageBubble extends Component {
             flex: 7,
             justifyContent: 'center',
             width: '95%',
-          }}
-        >
-          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+          }}>
+          <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
             {replyMessage.message}
           </Text>
         </View>
@@ -126,6 +123,7 @@ class ChatMessageBubble extends Component {
       onMessageTranslate,
       onEditMessage,
       onDelete,
+      onUnSend,
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
@@ -145,7 +143,7 @@ class ChatMessageBubble extends Component {
         anchor={
           !isUser ? (
             <View style={styles.talkBubble}>
-              <View style={{ marginLeft: 5 }}>
+              <View style={{marginLeft: 5}}>
                 <View style={styles.talkBubbleAbsoluteLeft} />
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -158,7 +156,7 @@ class ChatMessageBubble extends Component {
                       paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
                       paddingVertical: message.msg_type === 'image' ? 5 : 10,
                     },
-                    message.msg_type === 'audio' && { minWidth: '100%' },
+                    message.msg_type === 'audio' && {minWidth: '100%'},
                   ]}
                   onLongPress={(id) => {
                     onMessagePress(message.id);
@@ -167,8 +165,7 @@ class ChatMessageBubble extends Component {
                     message.msg_type === 'doc'
                       ? this.onDocumentPress(message.message_body)
                       : null
-                  }
-                >
+                  }>
                   {message.reply_to &&
                     this.renderReplyMessage(message.reply_to)}
                   {message.msg_type === 'image' ? (
@@ -194,16 +191,14 @@ class ChatMessageBubble extends Component {
                           fontSize: 15,
                           fontFamily: Fonts.light,
                           fontWeight: '500',
-                        }}
-                      >
+                        }}>
                         {message.message_body.split('/').pop()}
                       </Text>
                       <View
                         style={{
                           flexDirection: 'row',
                           marginTop: 5,
-                        }}
-                      >
+                        }}>
                         <FontAwesome
                           name={'file-o'}
                           size={15}
@@ -215,14 +210,13 @@ class ChatMessageBubble extends Component {
                             fontSize: 13,
                             marginLeft: 5,
                             fontFamily: Fonts.light,
-                          }}
-                        >
+                          }}>
                           File
                         </Text>
                       </View>
                     </Fragment>
                   ) : (
-                    <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
+                    <Text style={{fontSize: 15, fontFamily: Fonts.light}}>
                       {message.message_body}
                     </Text>
                   )}
@@ -243,9 +237,8 @@ class ChatMessageBubble extends Component {
                     minHeight: 40,
                     borderRadius: borderRadius,
                   },
-                  message.msg_type === 'audio' && { minWidth: '100%' },
-                ]}
-              >
+                  message.msg_type === 'audio' && {minWidth: '100%'},
+                ]}>
                 <TouchableOpacity
                   style={{
                     flex: 1,
@@ -261,8 +254,7 @@ class ChatMessageBubble extends Component {
                       ? this.onDocumentPress(message.message_body)
                       : null
                   }
-                  activeOpacity={0.8}
-                >
+                  activeOpacity={0.8}>
                   {message.reply_to &&
                     this.renderReplyMessage(message.reply_to)}
                   {message.msg_type === 'image' ? (
@@ -288,16 +280,14 @@ class ChatMessageBubble extends Component {
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: '500',
-                        }}
-                      >
+                        }}>
                         {message.message_body.split('/').pop()}
                       </Text>
                       <View
                         style={{
                           flexDirection: 'row',
                           marginTop: 5,
-                        }}
-                      >
+                        }}>
                         <FontAwesome
                           name={'file-o'}
                           size={15}
@@ -309,14 +299,13 @@ class ChatMessageBubble extends Component {
                             fontSize: 13,
                             marginLeft: 5,
                             fontFamily: Fonts.light,
-                          }}
-                        >
+                          }}>
                           File
                         </Text>
                       </View>
                     </Fragment>
                   ) : (
-                    <Text style={{ color: Colors.white, fontSize: 15 }}>
+                    <Text style={{color: Colors.white, fontSize: 15}}>
                       {message.message_body}
                     </Text>
                   )}
@@ -324,11 +313,10 @@ class ChatMessageBubble extends Component {
               </LinearGradient>
             </View>
           )
-        }
-      >
+        }>
         {message.msg_type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             )}
@@ -337,12 +325,12 @@ class ChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.translate')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         {!isChannel && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             )}
@@ -351,12 +339,12 @@ class ChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.reply')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         {isUser && isEditable > new Date() && message.msg_type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5
                 name={'pencil-alt'}
@@ -369,11 +357,11 @@ class ChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.edit')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
@@ -382,11 +370,11 @@ class ChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.delete')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5
                 name={'minus-circle'}
@@ -395,15 +383,16 @@ class ChatMessageBubble extends Component {
               />
             )}
             onPress={() => {
+              onUnSend(selectedMessageId);
               closeMenu();
             }}
             title={translate('common.unsend')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         {message.msg_type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
             )}
@@ -412,12 +401,12 @@ class ChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.copy')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         {message.msg_type !== 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome name={'download'} size={20} color={Colors.white} />
             )}
@@ -425,7 +414,7 @@ class ChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('pages.setting.download')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
       </Menu>
@@ -451,7 +440,7 @@ const styles = StyleSheet.create({
     borderLeftColor: Colors.gradient_3,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '-90deg' }],
+    transform: [{rotate: '-90deg'}],
     right: -5,
     top: -15,
   },
@@ -467,7 +456,7 @@ const styles = StyleSheet.create({
     borderRightColor: Colors.white,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '90deg' }],
+    transform: [{rotate: '90deg'}],
     left: -5,
     top: -15,
   },

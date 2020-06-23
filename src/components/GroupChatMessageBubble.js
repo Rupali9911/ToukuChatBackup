@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, {Fragment, Component} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,14 +9,14 @@ import {
   Clipboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Menu, Divider } from 'react-native-paper';
+import {Menu, Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import { Colors, Icons, Fonts, Images } from '../constants';
-import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
+import {Colors, Icons, Fonts, Images} from '../constants';
+import {translate, setI18nConfig} from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
 let borderRadius = 20;
@@ -34,6 +34,10 @@ class GroupChatMessageBubble extends Component {
     Clipboard.setString(message);
   };
 
+  onUnSend = (selectedMessageId) => {
+    this.props.onUnSend(selectedMessageId);
+  };
+
   onDocumentPress = (url) => {
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
@@ -45,16 +49,16 @@ class GroupChatMessageBubble extends Component {
         ],
         (error, url) => {
           if (error) {
-            this.setState({ animating: false });
+            this.setState({animating: false});
           } else {
-            this.setState({ animating: false });
+            this.setState({animating: false});
             console.log(url);
           }
-        }
+        },
       );
     } else {
       //Android
-      this.setState({ animating: true });
+      this.setState({animating: true});
       OpenFile.openDoc(
         [
           {
@@ -66,13 +70,13 @@ class GroupChatMessageBubble extends Component {
         ],
         (error, url) => {
           if (error) {
-            this.setState({ animating: false });
+            this.setState({animating: false});
             console.error(error);
           } else {
-            this.setState({ animating: false });
+            this.setState({animating: false});
             console.log(url);
           }
-        }
+        },
       );
     }
   };
@@ -86,16 +90,14 @@ class GroupChatMessageBubble extends Component {
           width: '100%',
           borderRadius: 5,
           marginBottom: 5,
-        }}
-      >
+        }}>
         <View
           style={{
             flex: 3,
             flexDirection: 'row',
             alignItems: 'center',
-          }}
-        >
-          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+          }}>
+          <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
             {replyMessage.sender_id === this.props.userData.id
               ? 'You'
               : replyMessage.display_name}
@@ -107,9 +109,8 @@ class GroupChatMessageBubble extends Component {
             justifyContent: 'center',
             width: '95%',
             marginTop: 5,
-          }}
-        >
-          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+          }}>
+          <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
             {replyMessage.message}
           </Text>
         </View>
@@ -129,6 +130,7 @@ class GroupChatMessageBubble extends Component {
       selectedMessageId,
       onMessageTranslate,
       onDelete,
+      onUnSend,
       onEditMessage,
       audioPlayingId,
       perviousPlayingAudioId,
@@ -153,7 +155,7 @@ class GroupChatMessageBubble extends Component {
         anchor={
           !isUser ? (
             <View style={styles.talkBubble}>
-              <View style={{ marginLeft: 5 }}>
+              <View style={{marginLeft: 5}}>
                 <View style={styles.talkBubbleAbsoluteLeft} />
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -179,8 +181,7 @@ class GroupChatMessageBubble extends Component {
                     message.message_body.type === 'doc'
                       ? this.onDocumentPress(message.message_body.text)
                       : null
-                  }
-                >
+                  }>
                   {message.reply_to &&
                     Object.keys(message.reply_to).length !== 0 &&
                     message.reply_to.constructor === Object &&
@@ -208,16 +209,14 @@ class GroupChatMessageBubble extends Component {
                           fontSize: 15,
                           fontFamily: Fonts.light,
                           fontWeight: '500',
-                        }}
-                      >
+                        }}>
                         {message.message_body.text.split('/').pop()}
                       </Text>
                       <View
                         style={{
                           flexDirection: 'row',
                           marginTop: 5,
-                        }}
-                      >
+                        }}>
                         <FontAwesome
                           name={'file-o'}
                           size={15}
@@ -229,8 +228,7 @@ class GroupChatMessageBubble extends Component {
                             fontSize: 13,
                             marginLeft: 5,
                             fontFamily: Fonts.light,
-                          }}
-                        >
+                          }}>
                           File
                         </Text>
                       </View>
@@ -240,8 +238,7 @@ class GroupChatMessageBubble extends Component {
                       style={{
                         fontSize: 15,
                         fontFamily: Fonts.light,
-                      }}
-                    >
+                      }}>
                       {message.message_body.text}
                     </Text>
                   )}
@@ -262,9 +259,8 @@ class GroupChatMessageBubble extends Component {
                     minHeight: 40,
                     borderRadius: borderRadius,
                   },
-                  message.message_body.type === 'audio' && { minWidth: '100%' },
-                ]}
-              >
+                  message.message_body.type === 'audio' && {minWidth: '100%'},
+                ]}>
                 <TouchableOpacity
                   style={{
                     flex: 1,
@@ -282,8 +278,7 @@ class GroupChatMessageBubble extends Component {
                       ? this.onDocumentPress(message.message_body.text)
                       : null
                   }
-                  activeOpacity={0.8}
-                >
+                  activeOpacity={0.8}>
                   {message.reply_to &&
                     Object.keys(message.reply_to).length !== 0 &&
                     message.reply_to.constructor === Object &&
@@ -311,16 +306,14 @@ class GroupChatMessageBubble extends Component {
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: '500',
-                        }}
-                      >
+                        }}>
                         {message.message_body.text.split('/').pop()}
                       </Text>
                       <View
                         style={{
                           flexDirection: 'row',
                           marginTop: 5,
-                        }}
-                      >
+                        }}>
                         <FontAwesome
                           name={'file-o'}
                           size={15}
@@ -332,14 +325,13 @@ class GroupChatMessageBubble extends Component {
                             fontSize: 13,
                             marginLeft: 5,
                             fontFamily: Fonts.light,
-                          }}
-                        >
+                          }}>
                           File
                         </Text>
                       </View>
                     </Fragment>
                   ) : (
-                    <Text style={{ color: 'white', fontSize: 15 }}>
+                    <Text style={{color: 'white', fontSize: 15}}>
                       {message.message_body.text}
                     </Text>
                   )}
@@ -347,11 +339,10 @@ class GroupChatMessageBubble extends Component {
               </LinearGradient>
             </View>
           )
-        }
-      >
+        }>
         {message.message_body.type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             )}
@@ -360,11 +351,11 @@ class GroupChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.translate')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
@@ -373,28 +364,30 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.reply')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
-        {isUser && isEditable > new Date() && message.msg_type === 'text' && (
-          <Menu.Item
-            titleStyle={{ color: Colors.white }}
-            icon={() => (
-              <FontAwesome5
-                name={'pencil-alt'}
-                size={20}
-                color={Colors.white}
-              />
-            )}
-            onPress={() => {
-              onEditMessage(message);
-              closeMenu();
-            }}
-            title={translate('common.edit')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
-          />
-        )}
+        {isUser &&
+          isEditable > new Date() &&
+          message.message_body.type === 'text' && (
+            <Menu.Item
+              titleStyle={{color: Colors.white}}
+              icon={() => (
+                <FontAwesome5
+                  name={'pencil-alt'}
+                  size={20}
+                  color={Colors.white}
+                />
+              )}
+              onPress={() => {
+                onEditMessage(message);
+                closeMenu();
+              }}
+              title={translate('common.edit')}
+              titleStyle={{marginLeft: -25, color: Colors.white}}
+            />
+          )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
+          titleStyle={{color: Colors.white}}
           icon={() => (
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
@@ -403,11 +396,11 @@ class GroupChatMessageBubble extends Component {
             closeMenu();
           }}
           title={translate('common.delete')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
+          titleStyle={{marginLeft: -25, color: Colors.white}}
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5
                 name={'minus-circle'}
@@ -416,15 +409,16 @@ class GroupChatMessageBubble extends Component {
               />
             )}
             onPress={() => {
+              this.onUnSend(selectedMessageId);
               closeMenu();
             }}
             title={translate('common.unsend')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         {message.message_body.type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
             )}
@@ -433,12 +427,12 @@ class GroupChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('common.copy')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
         {message.message_body.type !== 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
+            titleStyle={{color: Colors.white}}
             icon={() => (
               <FontAwesome name={'download'} size={20} color={Colors.white} />
             )}
@@ -446,7 +440,7 @@ class GroupChatMessageBubble extends Component {
               closeMenu();
             }}
             title={translate('pages.setting.download')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
         )}
       </Menu>
@@ -473,7 +467,7 @@ const styles = StyleSheet.create({
     borderLeftColor: Colors.gradient_3,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '-90deg' }],
+    transform: [{rotate: '-90deg'}],
     right: -5,
     top: -15,
   },
@@ -489,7 +483,7 @@ const styles = StyleSheet.create({
     borderRightColor: Colors.white,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '90deg' }],
+    transform: [{rotate: '90deg'}],
     left: -5,
     top: -15,
   },
@@ -505,5 +499,5 @@ const mapDispatchToProps = {};
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(GroupChatMessageBubble);

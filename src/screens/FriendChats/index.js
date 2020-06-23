@@ -21,6 +21,7 @@ import {
   getUserFriends,
   editPersonalMessage,
   markFriendMsgsRead,
+  unSendPersonalMessage,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
@@ -33,10 +34,12 @@ class FriendChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
       showConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showMessageUnSendConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -321,9 +324,37 @@ class FriendChats extends Component {
     this.toggleMessageDeleteConfirmationModal();
   };
 
+  onCancelUnSend = () => {
+    this.setState({showMessageUnSendConfirmationModal: false});
+  };
+
+  onConfirmUnSend = () => {
+    this.setState({showMessageUnSendConfirmationModal: false});
+    if (this.state.selectedMessageId != null) {
+      let payload = {friend: this.props.currentFriend.friend, is_unsent: true};
+      this.props
+        .unSendPersonalMessage(this.state.selectedMessageId, payload)
+        .then((res) => {
+          this.getPersonalConversation();
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.messageUnsent'),
+            type: 'positive',
+          });
+        });
+    }
+  };
+
   onDeletePressed = (messageId) => {
     console.log('ChannelChats -> onDeletePressed -> message', messageId);
     this.setState({showMessageDeleteConfirmationModal: true});
+  };
+
+  onUnSendPressed = (messageId) => {
+    this.setState({
+      showMessageUnSendConfirmationModal: true,
+      selectedMessageId: messageId,
+    });
   };
 
   onMessageTranslate = (message) => {
@@ -369,6 +400,7 @@ class FriendChats extends Component {
       newMessageText,
       showConfirmationModal,
       showMessageDeleteConfirmationModal,
+      showMessageUnSendConfirmationModal,
       orientation,
       translatedMessage,
       translatedMessageId,
@@ -402,6 +434,7 @@ class FriendChats extends Component {
             isReply={this.state.isReply}
             cancelReply={this.cancelReply}
             onDelete={(id) => this.onDeletePressed(id)}
+            onUnSendMsg={(id) => this.onUnSendPressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
             onEditMessage={(msg) => this.onEdit(msg)}
@@ -424,7 +457,16 @@ class FriendChats extends Component {
           onConfirm={this.onConfirmDelete.bind(this)}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
-          message={translate('pages.xchat.toLeaveThisChannel')}
+          message={translate('pages.xchat.youWantToDeleteThisMessage')}
+        />
+
+        <ConfirmationModal
+          visible={showMessageUnSendConfirmationModal}
+          onCancel={this.onCancelUnSend.bind(this)}
+          onConfirm={this.onConfirmUnSend.bind(this)}
+          orientation={orientation}
+          title={translate('common.unsend')}
+          message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
       </ImageBackground>
     );
@@ -448,6 +490,7 @@ const mapDispatchToProps = {
   unFriendUser,
   editPersonalMessage,
   markFriendMsgsRead,
+  unSendPersonalMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

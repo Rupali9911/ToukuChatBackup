@@ -75,7 +75,6 @@ class Home extends Component {
       showDropdown: false,
       loadMoreVisible: true,
 
-      userFriendsState: this.props.userFriends,
       followingChannelsState: this.props.followingChannels,
 
       channelHeaderCounts: 0,
@@ -155,16 +154,12 @@ class Home extends Component {
   }
 
   getUserFriends() {
-    this.setState({userFriendsState: this.props.userFriends}, () => {
-      this.props.getUserFriends().then((res) => {
-        this.setState({userFriendsState: this.props.userFriends}, () => {
-          let counts = 0;
-          for (let friend of this.state.userFriendsState) {
-            counts = counts + friend.unread_msg;
-          }
-          this.setState({friendHeaderCounts: counts});
-        });
-      });
+    this.props.getUserFriends().then((res) => {
+      let counts = 0;
+      for (let friend of this.props.userFriends) {
+        counts = counts + friend.unread_msg;
+      }
+      this.setState({friendHeaderCounts: counts});
     });
   }
 
@@ -203,49 +198,46 @@ class Home extends Component {
 
   //Friend is Typing
   friendIsTyping(message) {
-    const {userFriendsState} = this.state;
+    const {userFriends} = this.props;
     if (message.text.data.message_details.type === 'personal') {
-      for (var i in userFriendsState) {
+      for (var i in userFriends) {
         if (
-          userFriendsState[i].user_id ==
+          userFriends[i].user_id ==
             message.text.data.message_details.sender_user_id &&
           this.props.userData.id ==
             message.text.data.message_details.receiver_user_id
         ) {
           if (message.text.data.message_details.status === 'typing') {
-            userFriendsState[i].is_typing = true;
+            userFriends[i].is_typing = true;
           } else {
-            userFriendsState[i].is_typing = false;
+            userFriends[i].is_typing = false;
           }
           break;
         }
       }
-      this.setState({userFriendsState});
     } else {
-      for (var i in userFriendsState) {
-        userFriendsState[i].is_typing = false;
+      for (var i in userFriends) {
+        userFriends[i].is_typing = false;
       }
     }
   }
 
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
-    const {userFriendsState} = this.state;
+    const {userFriends} = this.props;
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
-      for (var i in userFriendsState) {
+      for (var i in userFriends) {
         if (
-          userFriendsState[i].user_id ==
-          message.text.data.message_details.user_id
+          userFriends[i].user_id == message.text.data.message_details.user_id
         ) {
           if (message.text.data.message_details.status === 'online') {
-            userFriendsState[i].is_online = true;
+            userFriends[i].is_online = true;
           } else {
-            userFriendsState[i].is_online = false;
+            userFriends[i].is_online = false;
           }
           break;
         }
       }
-      this.setState({userFriendsState});
     }
   }
 
@@ -275,22 +267,15 @@ class Home extends Component {
 
   //New Message in Friend
   onNewMessageInFriend(message) {
-    const {userFriendsState} = this.state;
+    const {userFriends} = this.props;
     const {userData} = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
-      for (var i in userFriendsState) {
-        if (message.text.data.message_details.from_user.id == userData.id) {
-          this.getUserFriends();
-          break;
-        } else if (
-          message.text.data.message_details.to_user.id == userData.id
-        ) {
-          this.getUserFriends();
-          break;
-        }
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getUserFriends();
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        this.getUserFriends();
       }
-      this.setState({userFriendsState});
     }
   }
 
@@ -358,16 +343,16 @@ class Home extends Component {
 
   //Read Friend's all messages with socket event
   readAllMessageFriendChat(message) {
-    const {userFriendsState} = this.state;
+    const {userFriends} = this.props;
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       let unread_counts = 0;
-      for (var i in userFriendsState) {
+      for (var i in userFriends) {
         if (
-          userFriendsState[i].friend == detail.friend_id &&
+          userFriends[i].friend == detail.friend_id &&
           detail.read_by === this.props.userData.id
         ) {
-          userFriendsState[i].unread_msg =
+          userFriends[i].unread_msg =
             message.text.data.message_details.read_count;
 
           unread_counts =
@@ -382,7 +367,6 @@ class Home extends Component {
           break;
         }
       }
-      // this.setState({userFriendsState});
     }
   }
 
@@ -511,9 +495,8 @@ class Home extends Component {
   }
 
   renderUserFriends() {
-    const {friendLoading} = this.props;
-    const {userFriendsState} = this.state;
-    const filteredFriends = userFriendsState.filter(
+    const {friendLoading, userFriends} = this.props;
+    const filteredFriends = userFriends.filter(
       createFilter(this.state.searchText, ['username']),
     );
 
@@ -568,20 +551,25 @@ class Home extends Component {
       isGroupCollapsed,
       isFriendsCollapsed,
       searchText,
-      userFriendsState,
       channelHeaderCounts,
       groupHeaderCounts,
       friendHeaderCounts,
     } = this.state;
 
-    const {followingChannels, userGroups, userData, userConfig} = this.props;
+    const {
+      followingChannels,
+      userFriends,
+      userGroups,
+      userData,
+      userConfig,
+    } = this.props;
     const filteredChannels = followingChannels.filter(
       createFilter(searchText, ['name']),
     );
     const filteredGroups = userGroups.filter(
       createFilter(searchText, ['group_name']),
     );
-    const filteredFriends = userFriendsState.filter(
+    const filteredFriends = userFriends.filter(
       createFilter(searchText, ['username']),
     );
     return (

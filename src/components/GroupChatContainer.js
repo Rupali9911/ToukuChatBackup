@@ -89,6 +89,7 @@ class GroupChatContainer extends Component {
             translatedMessage={this.props.translatedMessage}
             translatedMessageId={this.props.translatedMessageId}
             onDelete={(id) => this.props.onDelete(id)}
+            onUnSend={(id) => this.props.onUnSendMsg(id)}
             onEditMessage={(msg) => this.props.onEditMessage(msg)}
             audioPlayingId={this.state.audioPlayingId}
             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
@@ -103,7 +104,7 @@ class GroupChatContainer extends Component {
       );
     });
 
-    return <Fragment>{msg.reverse()}</Fragment>;
+    return <Fragment>{msg}</Fragment>;
   };
 
   render() {
