@@ -54,9 +54,9 @@ export default class ChatHeader extends Component {
       image,
       menuItems,
     } = this.props;
-    var matches = title.match(/\b(\w)/g);
-    var firstChars = matches.join('');
-    var secondUpperCase = firstChars.charAt(1).toUpperCase();
+    // var matches = title.match(/\b(\w)/g);
+    // var firstChars = matches.join('');
+    // var secondUpperCase = firstChars.charAt(1).toUpperCase();
     return (
       <View
         style={[
