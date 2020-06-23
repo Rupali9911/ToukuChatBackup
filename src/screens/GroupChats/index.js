@@ -1,14 +1,14 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground, Dimensions, Platform} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground, Dimensions, Platform } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {Colors, Fonts, Images, Icons, SocketEvents} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Colors, Fonts, Images, Icons, SocketEvents } from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import {ConfirmationModal} from '../../components/Modals';
+import { ConfirmationModal } from '../../components/Modals';
 import {
   translate,
   translateMessage,
@@ -25,10 +25,11 @@ import {
   leaveGroup,
   editGroupMessage,
   markGroupConversationRead,
+  unSendGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import {ListLoader} from '../../components/Loaders';
-import {eventService} from '../../utils';
+import { ListLoader } from '../../components/Loaders';
+import { eventService } from '../../utils';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -38,8 +39,10 @@ class GroupChats extends Component {
       newMessageText: '',
       showLeaveGroupConfirmationModal: false,
       showDeleteGroupConfirmationModal: false,
+      showDeleteGroupConfirmationModal: false,
       isMyGroup: false,
       conversation: [],
+      selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
       showMessageDeleteConfirmationModal: false,
@@ -102,7 +105,7 @@ class GroupChats extends Component {
       repliedMessage,
       isEdited,
     } = this.state;
-    const {userData, currentGroup} = this.props;
+    const { userData, currentGroup } = this.props;
 
     let sendmsgdata = {
       // msg_id: 3122,
@@ -162,7 +165,7 @@ class GroupChats extends Component {
   };
 
   sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+    const { newMessageText, editMessageId } = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -197,10 +200,10 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {conversation} = this.state;
+    const { conversation } = this.state;
 
     const repliedMessage = conversation.find(
-      (item) => item.msg_id === messageId,
+      (item) => item.msg_id === messageId
     );
     this.setState({
       isReply: true,
@@ -217,7 +220,7 @@ class GroupChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
 
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
@@ -237,11 +240,11 @@ class GroupChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   checkEventTypes(message) {
-    const {currentGroup, userData} = this.props;
+    const { currentGroup, userData } = this.props;
 
     if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_GROUP) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
@@ -253,7 +256,7 @@ class GroupChats extends Component {
   }
 
   markGroupConversationRead() {
-    let data = {group_id: this.props.currentGroup.group_id};
+    let data = { group_id: this.props.currentGroup.group_id };
     this.props.markGroupConversationRead(data);
   }
 
@@ -262,7 +265,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({conversation: res.data});
+          this.setState({ conversation: res.data });
           this.markGroupConversationRead();
         }
       })
@@ -283,7 +286,7 @@ class GroupChats extends Component {
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
-            this.setState({isMyGroup: true});
+            this.setState({ isMyGroup: true });
           }
         }
       })
@@ -307,10 +310,7 @@ class GroupChats extends Component {
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
-    if (!message.length && this.state.isEdited) {
-      this.onEditClear();
-    }
+    this.setState({ newMessageText: message });
   }
 
   //Leave Group
@@ -318,10 +318,6 @@ class GroupChats extends Component {
     this.setState((prevState) => ({
       showLeaveGroupConfirmationModal: !prevState.showLeaveGroupConfirmationModal,
     }));
-  };
-
-  onCancelLeaveGroup = () => {
-    this.toggleLeaveGroupConfirmationModal();
   };
 
   onConfirmLeaveGroup = () => {
@@ -359,10 +355,6 @@ class GroupChats extends Component {
     }));
   };
 
-  onCancelDeteleGroup = () => {
-    this.toggleDeleteGroupConfirmationModal();
-  };
-
   onConfirmDeleteGroup = () => {
     this.toggleDeleteGroupConfirmationModal();
     this.props
@@ -393,21 +385,49 @@ class GroupChats extends Component {
     }));
   };
 
-  onCancelMessageDelete = () => {
-    console.log('GroupChats -> onCancelMessageDelete -> onCancelMessageDelete');
-    this.toggleMessageDeleteConfirmationModal();
-  };
-
   onConfirmMessageDelete = () => {
     console.log(
-      'GroupChats -> onConfirmMessageDelete -> onConfirmMessageDelete',
+      'GroupChats -> onConfirmMessageDelete -> onConfirmMessageDelete'
     );
     this.toggleMessageDeleteConfirmationModal();
   };
 
   onDeleteMessagePressed = (messageId) => {
     console.log('ChannelChats -> onDeletePressed -> message', messageId);
-    this.setState({showMessageDeleteConfirmationModal: true});
+    this.setState({ showMessageDeleteConfirmationModal: true });
+  };
+
+  onUnsendMessagePressed = (messageId) => {
+    this.setState({
+      showMessageUnsendConfirmationModal: true,
+      selectedMessageId: messageId,
+    });
+  };
+
+  onConfirmMessageUnSend = () => {
+    this.setState({ showMessageUnsendConfirmationModal: false });
+    if (this.state.selectedMessageId != null) {
+      let payload = { delete_type: 2 };
+      this.props
+        .unSendGroupMessage(this.state.selectedMessageId, payload)
+        .then((res) => {
+          this.getGroupConversation();
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.messageUnsent'),
+            type: 'positive',
+          });
+        });
+    }
+  };
+
+  onCancelPress = () => {
+    this.setState({
+      showDeleteGroupConfirmationModal: false,
+      showLeaveGroupConfirmationModal: false,
+      showMessageDeleteConfirmationModal: false,
+      showMessageUnsendConfirmationModal: false,
+    });
   };
 
   onMessageTranslate = (message) => {
@@ -437,6 +457,7 @@ class GroupChats extends Component {
       newMessageText,
       showLeaveGroupConfirmationModal,
       showDeleteGroupConfirmationModal,
+      showMessageUnsendConfirmationModal,
       orientation,
       isMyGroup,
       conversation,
@@ -446,11 +467,12 @@ class GroupChats extends Component {
       translatedMessage,
       translatedMessageId,
     } = this.state;
-    const {currentGroup, groupLoading} = this.props;
+    const { currentGroup, groupLoading } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentGroup.group_name}
           description={
@@ -478,6 +500,7 @@ class GroupChats extends Component {
             isReply={isReply}
             cancelReply={this.cancelReply.bind(this)}
             onDelete={(id) => this.onDeleteMessagePressed(id)}
+            onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onEditMessage={(msg) => this.onEdit(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
@@ -488,7 +511,7 @@ class GroupChats extends Component {
         <ConfirmationModal
           orientation={orientation}
           visible={showLeaveGroupConfirmationModal}
-          onCancel={this.onCancelLeaveGroup.bind(this)}
+          onCancel={this.onCancelPress.bind(this)}
           onConfirm={this.onConfirmLeaveGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.wantToLeaveText')}
@@ -496,7 +519,7 @@ class GroupChats extends Component {
         <ConfirmationModal
           orientation={orientation}
           visible={showDeleteGroupConfirmationModal}
-          onCancel={this.onCancelDeteleGroup.bind(this)}
+          onCancel={this.onCancelPress.bind(this)}
           onConfirm={this.onConfirmDeleteGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.groupWillBeDeleted')}
@@ -504,11 +527,20 @@ class GroupChats extends Component {
 
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
-          onCancel={this.onCancelMessageDelete.bind(this)}
+          onCancel={this.onCancelPress.bind(this)}
           onConfirm={this.onConfirmMessageDelete.bind(this)}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toLeaveThisChannel')}
+        />
+
+        <ConfirmationModal
+          visible={showMessageUnsendConfirmationModal}
+          onCancel={this.onCancelPress.bind(this)}
+          onConfirm={this.onConfirmMessageUnSend.bind(this)}
+          orientation={orientation}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
       </ImageBackground>
     );
@@ -537,6 +569,7 @@ const mapDispatchToProps = {
   translateMessage,
   editGroupMessage,
   markGroupConversationRead,
+  unSendGroupMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

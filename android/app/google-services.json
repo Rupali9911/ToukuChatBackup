@@ -40,10 +40,10 @@
               "client_type": 3
             },
             {
-              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_id": "185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.xcall"
+                "bundle_id": "org.reactjs.native.example.Touku"
               }
             }
           ]
@@ -58,6 +58,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "185609886814-3d98pddr6tplpktsiqpa4tei4unom5sd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.touku.app",
+            "certificate_hash": "dd207d8ec30d9436af812d25942bd2ffdf1eac66"
+          }
+        },
         {
           "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
           "client_type": 3
@@ -76,10 +84,54 @@
               "client_type": 3
             },
             {
-              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_id": "185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.xcall"
+                "bundle_id": "org.reactjs.native.example.Touku"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185609886814:android:b0f74efc2478ae14a1a8cf",
+        "android_client_info": {
+          "package_name": "com.toukuApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "185609886814-vods6kv70oeva9gvi2igmjd79fb2fjvv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.toukuApp",
+            "certificate_hash": "dd207d8ec30d9436af812d25942bd2ffdf1eac66"
+          }
+        },
+        {
+          "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBayzPHi0VII8KPvLbG3ZSj_SIjzrD4Ack"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.Touku"
               }
             }
           ]
@@ -112,10 +164,10 @@
               "client_type": 3
             },
             {
-              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_id": "185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.xcall"
+                "bundle_id": "org.reactjs.native.example.Touku"
               }
             }
           ]
@@ -148,10 +200,10 @@
               "client_type": 3
             },
             {
-              "client_id": "185609886814-qqd3rqv5lhl72c5782dsnjv81k70tuei.apps.googleusercontent.com",
+              "client_id": "185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.xcall"
+                "bundle_id": "org.reactjs.native.example.Touku"
               }
             }
           ]

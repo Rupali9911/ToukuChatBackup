@@ -11,11 +11,13 @@ export const GET_PERSONAL_CONVERSATION_SUCCESS =
 export const GET_PERSONAL_CONVERSATION_FAIL = 'GET_PERSONAL_CONVERSATION_FAIL';
 
 export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
+export const SET_UNREAD_FRIEND_MSG_COUNTS = 'SET_UNREAD_FRIEND_MSG_COUNTS';
 
 const initialState = {
   loading: false,
   userFriends: [],
   currentFriend: {},
+  unreadFriendMsgsCounts: 0,
 };
 
 export default function (state = initialState, action) {
@@ -65,6 +67,12 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case SET_UNREAD_FRIEND_MSG_COUNTS:
+      return {
+        ...state,
+        unreadFriendMsgsCounts: action.payload,
+      };
+
     default:
       return state;
   }
@@ -79,6 +87,15 @@ const setCurrentFriendData = (data) => ({
 
 export const setCurrentFriend = (friend) => (dispatch) =>
   dispatch(setCurrentFriendData(friend));
+
+//Set Unread Friend Msgs Count
+const setUnreadFriendMsgsCounts = (counts) => ({
+  type: SET_UNREAD_FRIEND_MSG_COUNTS,
+  payload: counts,
+});
+
+export const updateUnreadFriendMsgsCounts = (counts) => (dispatch) =>
+  dispatch(setUnreadFriendMsgsCounts(counts));
 
 //Get User's Friends
 const getUserFriendsRequest = () => ({
@@ -102,13 +119,16 @@ export const getUserFriends = () => (dispatch) =>
       .then((res) => {
         if (res.conversations) {
           var friends = res.conversations;
+          let unread_counts = 0;
           if (friends && friends.length > 0) {
             friends = friends.map(function (el) {
+              unread_counts = unread_counts + el.unread_msg;
               var o = Object.assign({}, el);
               o.isChecked = false;
               o.is_typing = false;
               return o;
             });
+            dispatch(setUnreadFriendMsgsCounts(unread_counts));
           }
           dispatch(getUserFriendsSuccess(friends));
         }
@@ -150,7 +170,7 @@ export const getPersonalConversation = (friend) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getPersonalConversationRequest());
     client
-      .get(`/xchat/personal-conversation/` + friend + '/')
+      .get(`/xchat/personal-conversation/${friend}/`)
       .then((res) => {
         dispatch(getPersonalConversationSuccess());
         resolve(res);
@@ -178,7 +198,7 @@ export const sendPersonalMessage = (message) => (dispatch) =>
 export const markFriendMsgsRead = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .get(`/xchat/mark-friend-msgs-read/` + id + '/')
+      .get(`/xchat/mark-friend-msgs-read/${id}/`)
       .then((res) => {
         resolve(res);
       })
@@ -204,11 +224,22 @@ export const editPersonalMessage = (id, payload) => (dispatch) =>
     client
       .patch(`/xchat/edit-personal-message/${id}/`, payload)
       .then((res) => {
-        console.log('res', res);
         resolve(res);
       })
       .catch((err) => {
-        console.log('err', err);
+        reject(err);
+      });
+  });
+
+//Unsend Personal Message
+export const unSendPersonalMessage = (id, payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/unsent-personal-message/${id}/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
         reject(err);
       });
   });

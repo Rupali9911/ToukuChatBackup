@@ -16,12 +16,15 @@ export const GET_GROUP_CONVERSATION_REQUEST = 'GET_GROUP_CONVERSATION_REQUEST';
 export const GET_GROUP_CONVERSATION_SUCCESS = 'GET_GROUP_CONVERSATION_SUCCESS';
 export const GET_GROUP_CONVERSATION_FAIL = 'GET_GROUP_CONVERSATION_FAIL';
 
+export const SET_UNREAD_GROUP_MSG_COUNTS = 'SET_UNREAD_GROUP_MSG_COUNTS';
+
 const initialState = {
   loading: false,
   userGroups: [],
   currentGroup: {},
   currentGroupDetail: {},
   currentGroupMembers: [],
+  unreadGroupMsgsCounts: 0,
 };
 
 export default function (state = initialState, action) {
@@ -105,6 +108,12 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case SET_UNREAD_GROUP_MSG_COUNTS:
+      return {
+        ...state,
+        unreadGroupMsgsCounts: action.payload,
+      };
+
     default:
       return state;
   }
@@ -118,6 +127,15 @@ const setCurrentGroupData = (data) => ({
 
 export const setCurrentGroup = (group) => (dispatch) =>
   dispatch(setCurrentGroupData(group));
+
+//Set Unread Group Msgs Count
+const setUnreadGroupMsgsCounts = (counts) => ({
+  type: SET_UNREAD_GROUP_MSG_COUNTS,
+  payload: counts,
+});
+
+export const updateUnreadGroupMsgsCounts = (counts) => (dispatch) =>
+  dispatch(setUnreadGroupMsgsCounts(counts));
 
 //Set Current Group Detail
 const setCurrentGroupDetailData = (data) => ({
@@ -158,6 +176,15 @@ export const getUserGroups = () => (dispatch) =>
       .get(`/xchat/user-conversations/?chat_type=group`)
       .then((res) => {
         if (res.conversations) {
+          var groups = res.conversations;
+          let unread_counts = 0;
+          if (groups && groups.length > 0) {
+            groups = groups.map(function (el) {
+              unread_counts = unread_counts + el.unread_msg;
+              return groups;
+            });
+            dispatch(setUnreadGroupMsgsCounts(unread_counts));
+          }
           dispatch(getUserGroupsSuccess(res.conversations));
         }
         resolve(res);
@@ -340,6 +367,18 @@ export const editGroupMessage = (id, payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .put(`/xchat/edit-group-message/${id}/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const unSendGroupMessage = (id, payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/delete-group-message/${id}/`, payload)
       .then((res) => {
         resolve(res);
       })

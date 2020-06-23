@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import {ImageBackground} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { ImageBackground } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 
-import {ChatHeader} from '../../components/Headers';
+import { ChatHeader } from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import {globalStyles} from '../../styles';
-import {Images, SocketEvents} from '../../constants';
-import {ConfirmationModal} from '../../components/Modals';
-import {ListLoader} from '../../components/Loaders';
+import { globalStyles } from '../../styles';
+import { Images, SocketEvents } from '../../constants';
+import { ConfirmationModal } from '../../components/Modals';
+import { ListLoader } from '../../components/Loaders';
 import {
   translate,
   translateMessage,
@@ -21,9 +21,10 @@ import {
   getUserFriends,
   editPersonalMessage,
   markFriendMsgsRead,
+  unSendPersonalMessage,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
-import {eventService} from '../../utils';
+import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
 
 class FriendChats extends Component {
@@ -33,10 +34,12 @@ class FriendChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
       showConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showMessageUnSendConfirmationModal: false,
       headerRightIconMenu: [
         {
           id: 1,
@@ -66,7 +69,7 @@ class FriendChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
 
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
@@ -81,18 +84,18 @@ class FriendChats extends Component {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getPersonalConversation();
 
-    this.SingleSocket.create({user_id: this.props.userData.id});
+    this.SingleSocket.create({ user_id: this.props.userData.id });
 
     // alert(JSON.stringify(this.props.userData));
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   onMessageSend = () => {
-    const {newMessageText, isReply, repliedMessage, isEdited} = this.state;
-    const {currentFriend, userData} = this.props;
+    const { newMessageText, isReply, repliedMessage, isEdited } = this.state;
+    const { currentFriend, userData } = this.props;
 
     let sendmsgdata = {
       // id: 2808,
@@ -173,7 +176,7 @@ class FriendChats extends Component {
   };
 
   sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+    const { newMessageText, editMessageId } = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -195,7 +198,7 @@ class FriendChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {conversations} = this.state;
+    const { conversations } = this.state;
 
     const repliedMessage = conversations.find((item) => item.id === messageId);
     this.setState({
@@ -212,8 +215,8 @@ class FriendChats extends Component {
   };
 
   checkEventTypes(message) {
-    const {currentFriend, userData} = this.props;
-    const {conversations} = this.state;
+    const { currentFriend, userData } = this.props;
+    const { conversations } = this.state;
 
     if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -238,7 +241,7 @@ class FriendChats extends Component {
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
+          this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
         }
       });
@@ -249,10 +252,7 @@ class FriendChats extends Component {
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
-    if (!message.length && this.state.isEdited) {
-      this.onEditClear();
-    }
+    this.setState({ newMessageText: message });
     // friend
     const payload = {
       type: SocketEvents.FRIEND_TYPING_MESSAGE,
@@ -267,7 +267,7 @@ class FriendChats extends Component {
   }
 
   toggleConfirmationModal = () => {
-    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
+    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
   };
 
   onCancel = () => {
@@ -321,9 +321,40 @@ class FriendChats extends Component {
     this.toggleMessageDeleteConfirmationModal();
   };
 
+  onCancelUnSend = () => {
+    this.setState({ showMessageUnSendConfirmationModal: false });
+  };
+
+  onConfirmUnSend = () => {
+    this.setState({ showMessageUnSendConfirmationModal: false });
+    if (this.state.selectedMessageId != null) {
+      let payload = {
+        friend: this.props.currentFriend.friend,
+        is_unsent: true,
+      };
+      this.props
+        .unSendPersonalMessage(this.state.selectedMessageId, payload)
+        .then((res) => {
+          this.getPersonalConversation();
+          Toast.show({
+            title: 'Touku',
+            text: translate('pages.xchat.messageUnsent'),
+            type: 'positive',
+          });
+        });
+    }
+  };
+
   onDeletePressed = (messageId) => {
     console.log('ChannelChats -> onDeletePressed -> message', messageId);
-    this.setState({showMessageDeleteConfirmationModal: true});
+    this.setState({ showMessageDeleteConfirmationModal: true });
+  };
+
+  onUnSendPressed = (messageId) => {
+    this.setState({
+      showMessageUnSendConfirmationModal: true,
+      selectedMessageId: messageId,
+    });
   };
 
   onMessageTranslate = (message) => {
@@ -369,15 +400,17 @@ class FriendChats extends Component {
       newMessageText,
       showConfirmationModal,
       showMessageDeleteConfirmationModal,
+      showMessageUnSendConfirmationModal,
       orientation,
       translatedMessage,
       translatedMessageId,
     } = this.state;
-    const {currentFriend, chatsLoading} = this.props;
+    const { currentFriend, chatsLoading } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentFriend.username}
           description={
@@ -402,6 +435,7 @@ class FriendChats extends Component {
             isReply={this.state.isReply}
             cancelReply={this.cancelReply}
             onDelete={(id) => this.onDeletePressed(id)}
+            onUnSendMsg={(id) => this.onUnSendPressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
             onEditMessage={(msg) => this.onEdit(msg)}
@@ -424,7 +458,16 @@ class FriendChats extends Component {
           onConfirm={this.onConfirmDelete.bind(this)}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
-          message={translate('pages.xchat.toLeaveThisChannel')}
+          message={translate('pages.xchat.youWantToDeleteThisMessage')}
+        />
+
+        <ConfirmationModal
+          visible={showMessageUnSendConfirmationModal}
+          onCancel={this.onCancelUnSend.bind(this)}
+          onConfirm={this.onConfirmUnSend.bind(this)}
+          orientation={orientation}
+          title={translate('common.unsend')}
+          message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
       </ImageBackground>
     );
@@ -448,6 +491,7 @@ const mapDispatchToProps = {
   unFriendUser,
   editPersonalMessage,
   markFriendMsgsRead,
+  unSendPersonalMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);
