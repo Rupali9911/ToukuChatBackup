@@ -441,3 +441,16 @@ export const editChannelMessage = (id, payload) => (dispatch) =>
         reject(err);
       });
   });
+
+export const deleteChannelMessage = (id, payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/delete-channel-message/${id}/`, payload)
+      .then((res) => {
+        // alert(JSON.stringify(res));
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
