@@ -1,23 +1,33 @@
-import React, {Component} from 'react';
-import {View, ImageBackground, Text, FlatList} from 'react-native';
+import React, { Component } from 'react';
+import {
+  View,
+  ImageBackground,
+  Text,
+  FlatList,
+  Dimensions,
+} from 'react-native';
 import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import {createGroupStyles} from './styles';
-import {globalStyles} from '../../styles';
+import { createGroupStyles } from './styles';
+import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import GroupFriend from '../../components/GroupFriend';
-import {Images, Icons, Colors} from '../../constants';
+import { Images, Icons, Colors } from '../../constants';
 import Button from '../../components/Button';
 
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getUserFriends} from '../../redux/reducers/friendReducer';
-import {createNewGroup, getUserGroups} from '../../redux/reducers/groupReducer';
-import {ListLoader} from '../../components/Loaders';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import { getUserFriends } from '../../redux/reducers/friendReducer';
+import {
+  createNewGroup,
+  getUserGroups,
+} from '../../redux/reducers/groupReducer';
+import { ListLoader } from '../../components/Loaders';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
+const { width, height } = Dimensions.get('window');
 
 class CreateFriendGroup extends Component {
   constructor(props) {
@@ -35,13 +45,13 @@ class CreateFriendGroup extends Component {
 
   static navigationOptions = () => {
     return {
-        headerShown: false,
+      headerShown: false,
     };
   };
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   componentDidMount() {
@@ -64,12 +74,14 @@ class CreateFriendGroup extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   onCheckRecentPress = (status, item, index) => {
     const recent = this.state.recent.map((recent) =>
-      recent.user_id === item.user_id ? {...recent, isChecked: status} : recent,
+      recent.user_id === item.user_id
+        ? { ...recent, isChecked: status }
+        : recent
     );
 
     this.setState({
@@ -78,7 +90,7 @@ class CreateFriendGroup extends Component {
   };
 
   onCheckFriendPress = (status, item, index) => {
-    const {filteredFriends, addedFriends} = this.state;
+    const { filteredFriends, addedFriends } = this.state;
 
     filteredFriends[index].isChecked = status;
     if (status === true) {
@@ -90,15 +102,15 @@ class CreateFriendGroup extends Component {
       }
     }
 
-    this.setState({filteredFriends: this.state.filteredFriends});
+    this.setState({ filteredFriends: this.state.filteredFriends });
   };
 
   handleGroupName(groupName) {
-    this.setState({groupName});
+    this.setState({ groupName });
     if (groupName.trim() === '') {
-      this.setState({groupNameErr: 'messages.required'});
+      this.setState({ groupNameErr: 'messages.required' });
     } else {
-      this.setState({groupNameErr: null});
+      this.setState({ groupNameErr: null });
     }
   }
 
@@ -106,7 +118,7 @@ class CreateFriendGroup extends Component {
     return (
       <FlatList
         data={this.state.recent}
-        renderItem={({item, index}) => (
+        renderItem={({ item, index }) => (
           <GroupFriend
             user={item}
             isCheckBox
@@ -120,8 +132,8 @@ class CreateFriendGroup extends Component {
   };
 
   renderFriends = () => {
-    const {friendLoading} = this.props;
-    const {filteredFriends} = this.state;
+    const { friendLoading } = this.props;
+    const { filteredFriends } = this.state;
 
     if (filteredFriends.length === 0 && friendLoading) {
       return <ListLoader />;
@@ -129,7 +141,7 @@ class CreateFriendGroup extends Component {
       return (
         <FlatList
           data={filteredFriends}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <GroupFriend
               user={item}
               isCheckBox
@@ -150,9 +162,9 @@ class CreateFriendGroup extends Component {
   };
 
   createFriendGroup() {
-    const {groupName, addedFriends} = this.state;
+    const { groupName, addedFriends } = this.state;
     if (groupName.trim() === '') {
-      this.setState({groupNameErr: 'messages.required'});
+      this.setState({ groupNameErr: 'messages.required' });
       Toast.show({
         title: 'Touku',
         text: translate('pages.xchat.toastr.groupNameIsRequired'),
@@ -198,11 +210,12 @@ class CreateFriendGroup extends Component {
   }
 
   render() {
-    const {groupName, groupNameErr} = this.state;
+    const { groupName, groupNameErr } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -211,24 +224,26 @@ class CreateFriendGroup extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={createGroupStyles.mainContainer}
             showsVerticalScrollIndicator={false}
-            bounces={false}>
+            bounces={false}
+          >
             <View
               style={{
                 height: '5%',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               <Text>{translate('pages.xchat.recentChats')}</Text>
             </View>
-            {this.renderRecent()}
+            <View style={{ maxHeight: '30%' }}>{this.renderRecent()}</View>
             <View
               style={{
                 height: '5%',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               <Text>{translate('pages.xchat.friends')}</Text>
             </View>
-            {this.renderFriends()}
-
+            <View style={{ maxHeight: '30%' }}>{this.renderFriends()}</View>
             <InputWithTitle
               title={translate('pages.xchat.groupName')}
               value={groupName}
@@ -245,10 +260,11 @@ class CreateFriendGroup extends Component {
                     marginStart: 10,
                     marginBottom: 5,
                   },
-                ]}>
+                ]}
+              >
                 {translate(groupNameErr).replace(
                   '[missing {{field}} value]',
-                  translate('pages.xchat.groupName'),
+                  translate('pages.xchat.groupName')
                 )}
               </Text>
             ) : null}
