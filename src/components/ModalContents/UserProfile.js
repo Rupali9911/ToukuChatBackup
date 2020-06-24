@@ -75,20 +75,25 @@ class UserProfile extends Component {
         // const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         //   files,
         // );
+        const responseblob = await fetch(source.uri);
+        const blob = await responseblob.blob();
 
-        // let avatarData = {
-        //   avatar: uploadedImages.image[0].image,
-        //   avatar_thumbnail: uploadedImages.image[0].thumbnail,
-        // };
+        // console.log('Blob generated...', JSON.stringify(blob));
 
-        // this.props
-        //   .uploadAvatar(avatarData)
-        //   .then((res) => {
-        //     alert(JSON.stringify(res));
-        //   })
-        //   .catch((err) => {
-        //     alert(JSON.stringify(err));
-        //   });
+        let avatarData = {
+          avatar_thumbnail: blob._data.blobId,
+          avatar: blob._data.blobId,
+          // avatar: uploadedImages.image[0].image,
+          // avatar_thumbnail: uploadedImages.image[0].thumbnail,
+        };
+
+        // this.props.uploadAvatar(avatarData);
+        // .then((res) => {
+        //   alert(JSON.stringify(res));
+        // })
+        // .catch((err) => {
+        //   alert(JSON.stringify(err));
+        // });
       }
     });
   }
@@ -158,7 +163,9 @@ class UserProfile extends Component {
                   <ImageLoader
                     style={styles.firstView}
                     source={getImage(backgroundImagePath.uri)}>
-                    <TouchableOpacity onPress={onRequestClose}>
+                    <TouchableOpacity
+                      style={{padding: 10}}
+                      onPress={onRequestClose}>
                       <Image
                         source={Icons.icon_close}
                         style={styles.iconClose}

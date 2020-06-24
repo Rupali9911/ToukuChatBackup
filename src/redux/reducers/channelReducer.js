@@ -31,11 +31,14 @@ export const GET_CHANNEL_CONVERSATION_SUCCESS =
   'GET_CHANNEL_CONVERSATION_SUCCESS';
 export const GET_CHANNEL_CONVERSATION_FAIL = 'GET_CHANNEL_CONVERSATION_FAIL';
 
+export const SET_UNREAD_CHANNEL_MSG_COUNTS = 'SET_UNREAD_CHANNEL_MSG_COUNTS';
+
 const initialState = {
   loading: false,
   userChannels: [],
   followingChannels: [],
   currentChannel: {},
+  unreadChannelMsgsCounts: 0,
 };
 
 export default function (state = initialState, action) {
@@ -163,13 +166,18 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+    case SET_UNREAD_CHANNEL_MSG_COUNTS:
+      return {
+        ...state,
+        unreadChannelMsgsCounts: action.payload,
+      };
+
     default:
       return state;
   }
 }
 
 //Actions
-
 //Set Current Channel
 const setCurrentChannelData = (data) => ({
   type: SET_CURRENT_CHANNEL_DATA,
@@ -178,6 +186,15 @@ const setCurrentChannelData = (data) => ({
 
 export const setCurrentChannel = (channel) => (dispatch) =>
   dispatch(setCurrentChannelData(channel));
+
+//Set Unread Friend Msgs Count
+const setUnreadChannelMsgsCounts = (counts) => ({
+  type: SET_UNREAD_CHANNEL_MSG_COUNTS,
+  payload: counts,
+});
+
+export const updateUnreadChannelMsgsCounts = (counts) => (dispatch) =>
+  dispatch(setUnreadChannelMsgsCounts(counts));
 
 //Update Following Channels
 const updateFollowingChannelsData = (data) => ({
@@ -214,6 +231,15 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
       .get(`/xchat/get-following-channel/?start=` + start)
       .then((res) => {
         if (res.conversations) {
+          var channels = res.conversations;
+          let unread_counts = 0;
+          if (channels && channels.length > 0) {
+            channels = channels.map(function (el) {
+              unread_counts = unread_counts + el.unread_msg;
+              return channels;
+            });
+            dispatch(setUnreadChannelMsgsCounts(unread_counts));
+          }
           dispatch(getFollowingChannelsSuccess(res.conversations));
         }
         resolve(res);
