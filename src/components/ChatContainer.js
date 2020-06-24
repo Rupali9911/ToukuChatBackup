@@ -115,6 +115,9 @@ class ChatContainer extends Component {
       onMessageSend,
       newMessageText,
       cancelReply,
+      onCameraPress,
+      onGalleryPress,
+      onAttachmentPress,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -225,7 +228,9 @@ class ChatContainer extends Component {
           ) : null}
         </View>
         <ChatInput
-          onAttachmentPress={null}
+          onAttachmentPress={() => onAttachmentPress()}
+          onCameraPress={() => onCameraPress()}
+          onGalleryPress={() => onGalleryPress()}
           onChangeText={(message) => handleMessage(message)}
           onSend={onMessageSend}
           value={newMessageText}
