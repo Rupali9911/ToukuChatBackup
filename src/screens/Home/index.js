@@ -187,12 +187,16 @@ class Home extends Component {
   }
 
   checkIsUserOnline(message) {
-    if (message.text.data.message_details.user_id === this.props.userData.id) {
-      const payload = {
-        type: SocketEvents.CHECK_IS_USER_ONLINE,
-        data: {},
-      };
-      this.SingleSocket.sendMessage(JSON.stringify(payload));
+    if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
+      if (
+        message.text.data.message_details.user_id === this.props.userData.id
+      ) {
+        const payload = {
+          type: SocketEvents.CHECK_IS_USER_ONLINE,
+          data: {},
+        };
+        this.SingleSocket.sendMessage(JSON.stringify(payload));
+      }
     }
   }
 
@@ -235,6 +239,7 @@ class Home extends Component {
           } else {
             userFriends[i].is_online = false;
           }
+          this.getUserFriends();
           break;
         }
       }
