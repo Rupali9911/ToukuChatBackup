@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   TextInput,
@@ -6,8 +6,8 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import {Colors, Icons, Fonts} from '../../constants';
-import {isIphoneX} from '../../utils';
+import { Colors, Icons, Fonts } from '../../constants';
+import { isIphoneX } from '../../utils';
 
 export default class ChatInput extends Component {
   constructor(props) {
@@ -35,7 +35,8 @@ export default class ChatInput extends Component {
           style={chatInput.chatAttachmentContainer}
           onPress={() => {
             onAttachmentPress ? onAttachmentPress : null;
-          }}>
+          }}
+        >
           <Image
             source={Icons.icon_camera_grad}
             style={chatInput.attachmentImage}
@@ -56,10 +57,14 @@ export default class ChatInput extends Component {
           style={chatInput.sendButoonContainer}
           onPress={() => {
             onSend();
-          }}>
+          }}
+        >
           <Image
             source={Icons.icon_send_button}
-            style={[chatInput.sandButtonImage, value != 0 && {tintColor: null}]}
+            style={[
+              chatInput.sandButtonImage,
+              value != 0 && { tintColor: null },
+            ]}
             resizeMode={'contain'}
           />
         </TouchableOpacity>
@@ -73,7 +78,7 @@ const chatInput = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: {flexGrow: 1},
+  messareAreaScroll: { flexGrow: 1 },
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -112,7 +117,7 @@ const chatInput = StyleSheet.create({
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
-    paddingTop: Platform.OS === 'ios' ? 10 : 0,
+    paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 5) : 0,
     paddingBottom: 0,
   },
   sendButoonContainer: {
@@ -121,5 +126,5 @@ const chatInput = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sandButtonImage: {height: '50%', width: '70%', tintColor: Colors.gray},
+  sandButtonImage: { height: '50%', width: '70%', tintColor: Colors.gray },
 });
