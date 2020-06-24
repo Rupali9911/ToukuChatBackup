@@ -243,3 +243,16 @@ export const unSendPersonalMessage = (id, payload) => (dispatch) =>
         reject(err);
       });
   });
+
+//Unsend Personal Message
+export const deletePersonalMessage = (id, payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/delete-personal-message/${id}/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
