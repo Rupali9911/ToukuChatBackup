@@ -151,182 +151,250 @@ class ChatMessageBubble extends Component {
           !isUser ? (
             <View style={styles.talkBubble}>
               <View style={{ marginLeft: 5 }}>
-                <View style={styles.talkBubbleAbsoluteLeft} />
-                <TouchableOpacity
-                  activeOpacity={0.8}
+                <View
                   style={[
-                    {
-                      minHeight: 40,
-                      backgroundColor: Colors.white,
-                      borderRadius: borderRadius,
-                      justifyContent: 'center',
-                      paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
-                      paddingVertical: message.msg_type === 'image' ? 5 : 10,
-                    },
-                    message.msg_type === 'audio' && { minWidth: '100%' },
+                    styles.talkBubbleAbsoluteLeft,
+                    message.is_unsent && { borderRightColor: Colors.gray },
                   ]}
-                  onLongPress={(id) => {
-                    onMessagePress(message.id);
-                  }}
-                  onPress={() =>
-                    message.msg_type === 'doc'
-                      ? this.onDocumentPress(message.message_body)
-                      : null
-                  }
-                >
-                  {message.reply_to &&
-                    this.renderReplyMessage(message.reply_to)}
-                  {message.msg_type === 'image' ? (
-                    <ScalableImage
-                      src={message.message_body}
-                      borderRadius={borderRadius}
-                    />
-                  ) : message.msg_type === 'video' ? (
-                    <VideoPlayerCustom url={message.message_body} />
-                  ) : message.msg_type === 'audio' ? (
-                    <AudioPlayerCustom
-                      audioPlayingId={audioPlayingId}
-                      perviousPlayingAudioId={perviousPlayingAudioId}
-                      onAudioPlayPress={(id) => onAudioPlayPress(id)}
-                      postId={message.id}
-                      url={message.message_body}
-                      isSmall={true}
-                    />
-                  ) : message.msg_type === 'doc' ? (
-                    <Fragment>
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          fontFamily: Fonts.light,
-                          fontWeight: '500',
-                        }}
-                      >
-                        {message.message_body.split('/').pop()}
-                      </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}
-                      >
-                        <FontAwesome
-                          name={'file-o'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
+                />
+                {message.is_unsent ? (
+                  <View
+                    activeOpacity={0.8}
+                    style={[
+                      {
+                        minHeight: 40,
+                        backgroundColor: Colors.gray,
+                        borderRadius: borderRadius,
+                        justifyContent: 'center',
+                        paddingHorizontal: 10,
+                        paddingVertical: 10,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontFamily: Fonts.extralight,
+                      }}
+                    >
+                      {translate('pages.xchat.messageUnsent')}
+                    </Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={[
+                      {
+                        minHeight: 40,
+                        backgroundColor: Colors.white,
+                        borderRadius: borderRadius,
+                        justifyContent: 'center',
+                        paddingHorizontal:
+                          message.msg_type === 'image' ? 5 : 10,
+                        paddingVertical: message.msg_type === 'image' ? 5 : 10,
+                      },
+                      message.msg_type === 'audio' && { minWidth: '100%' },
+                    ]}
+                    onLongPress={(id) => {
+                      onMessagePress(message.id);
+                    }}
+                    onPress={() =>
+                      message.msg_type === 'doc'
+                        ? this.onDocumentPress(message.message_body)
+                        : null
+                    }
+                  >
+                    {message.reply_to &&
+                      this.renderReplyMessage(message.reply_to)}
+                    {message.msg_type === 'image' ? (
+                      <ScalableImage
+                        src={message.message_body}
+                        borderRadius={borderRadius}
+                      />
+                    ) : message.msg_type === 'video' ? (
+                      <VideoPlayerCustom url={message.message_body} />
+                    ) : message.msg_type === 'audio' ? (
+                      <AudioPlayerCustom
+                        audioPlayingId={audioPlayingId}
+                        perviousPlayingAudioId={perviousPlayingAudioId}
+                        onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                        postId={message.id}
+                        url={message.message_body}
+                        isSmall={true}
+                      />
+                    ) : message.msg_type === 'doc' ? (
+                      <Fragment>
                         <Text
                           style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
+                            fontSize: 15,
                             fontFamily: Fonts.light,
+                            fontWeight: '500',
                           }}
                         >
-                          File
+                          {message.message_body.split('/').pop()}
                         </Text>
-                      </View>
-                    </Fragment>
-                  ) : (
-                    <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
-                      {message.message_body}
-                    </Text>
-                  )}
-                </TouchableOpacity>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            marginTop: 5,
+                          }}
+                        >
+                          <FontAwesome
+                            name={'file-o'}
+                            size={15}
+                            color={Colors.black_light}
+                          />
+                          <Text
+                            style={{
+                              color: Colors.dark_gray,
+                              fontSize: 13,
+                              marginLeft: 5,
+                              fontFamily: Fonts.light,
+                            }}
+                          >
+                            File
+                          </Text>
+                        </View>
+                      </Fragment>
+                    ) : (
+                      <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
+                        {message.message_body}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           ) : (
             <View style={styles.talkBubble}>
-              <View style={styles.talkBubbleAbsoluteRight} />
-              <LinearGradient
-                colors={[
-                  Colors.gradient_3,
-                  Colors.gradient_2,
-                  Colors.gradient_1,
-                ]}
+              <View
                 style={[
-                  {
-                    minHeight: 40,
-                    borderRadius: borderRadius,
-                  },
-                  message.msg_type === 'audio' && { minWidth: '100%' },
+                  styles.talkBubbleAbsoluteRight,
+                  message.is_unsent && { borderLeftColor: Colors.gray },
                 ]}
-              >
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
-                    paddingVertical: message.msg_type === 'image' ? 5 : 10,
-                  }}
-                  onLongPress={() => {
-                    onMessagePress(message.id);
-                  }}
-                  onPress={() =>
-                    message.msg_type === 'doc'
-                      ? this.onDocumentPress(message.message_body)
-                      : null
-                  }
-                  activeOpacity={0.8}
+              />
+              {message.is_unsent ? (
+                <View
+                  style={[
+                    {
+                      minHeight: 40,
+                      borderRadius: borderRadius,
+                      backgroundColor: Colors.gray,
+                    },
+                  ]}
                 >
-                  {message.reply_to &&
-                    this.renderReplyMessage(message.reply_to)}
-                  {message.msg_type === 'image' ? (
-                    <ScalableImage
-                      src={message.message_body}
-                      borderRadius={borderRadius}
-                    />
-                  ) : message.msg_type === 'video' ? (
-                    <VideoPlayerCustom url={message.message_body} />
-                  ) : message.msg_type === 'audio' ? (
-                    <AudioPlayerCustom
-                      audioPlayingId={audioPlayingId}
-                      perviousPlayingAudioId={perviousPlayingAudioId}
-                      onAudioPlayPress={(id) => onAudioPlayPress(id)}
-                      postId={message.id}
-                      url={message.message_body}
-                      isSmall={true}
-                    />
-                  ) : message.msg_type === 'doc' ? (
-                    <Fragment>
-                      <Text
-                        style={{
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: '500',
-                        }}
-                      >
-                        {message.message_body.split('/').pop()}
-                      </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}
-                      >
-                        <FontAwesome
-                          name={'file-o'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      paddingHorizontal: 10,
+                      paddingVertical: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontFamily: Fonts.extralight,
+                      }}
+                    >
+                      {translate('pages.xchat.messageUnsent')}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <LinearGradient
+                  colors={[
+                    Colors.gradient_3,
+                    Colors.gradient_2,
+                    Colors.gradient_1,
+                  ]}
+                  style={[
+                    {
+                      minHeight: 40,
+                      borderRadius: borderRadius,
+                    },
+                    message.msg_type === 'audio' && { minWidth: '100%' },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
+                      paddingVertical: message.msg_type === 'image' ? 5 : 10,
+                    }}
+                    onLongPress={() => {
+                      onMessagePress(message.id);
+                    }}
+                    onPress={() =>
+                      message.msg_type === 'doc'
+                        ? this.onDocumentPress(message.message_body)
+                        : null
+                    }
+                    activeOpacity={0.8}
+                  >
+                    {message.reply_to &&
+                      this.renderReplyMessage(message.reply_to)}
+                    {message.msg_type === 'image' ? (
+                      <ScalableImage
+                        src={message.message_body}
+                        borderRadius={borderRadius}
+                      />
+                    ) : message.msg_type === 'video' ? (
+                      <VideoPlayerCustom url={message.message_body} />
+                    ) : message.msg_type === 'audio' ? (
+                      <AudioPlayerCustom
+                        audioPlayingId={audioPlayingId}
+                        perviousPlayingAudioId={perviousPlayingAudioId}
+                        onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                        postId={message.id}
+                        url={message.message_body}
+                        isSmall={true}
+                      />
+                    ) : message.msg_type === 'doc' ? (
+                      <Fragment>
                         <Text
                           style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: '500',
                           }}
                         >
-                          File
+                          {message.message_body.split('/').pop()}
                         </Text>
-                      </View>
-                    </Fragment>
-                  ) : (
-                    <Text style={{ color: Colors.white, fontSize: 15 }}>
-                      {message.message_body}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </LinearGradient>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            marginTop: 5,
+                          }}
+                        >
+                          <FontAwesome
+                            name={'file-o'}
+                            size={15}
+                            color={Colors.black_light}
+                          />
+                          <Text
+                            style={{
+                              color: Colors.dark_gray,
+                              fontSize: 13,
+                              marginLeft: 5,
+                              fontFamily: Fonts.light,
+                            }}
+                          >
+                            File
+                          </Text>
+                        </View>
+                      </Fragment>
+                    ) : (
+                      <Text style={{ color: Colors.white, fontSize: 15 }}>
+                        {message.message_body}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </LinearGradient>
+              )}
             </View>
           )
         }

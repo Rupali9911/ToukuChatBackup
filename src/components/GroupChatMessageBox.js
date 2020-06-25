@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, { Fragment, Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,15 +9,15 @@ import {
 } from 'react-native';
 import GroupChatMessageBubble from './GroupChatMessageBubble';
 
-import {Colors, Icons, Fonts, Images} from '../constants';
+import { Colors, Icons, Fonts, Images } from '../constants';
 import RoundedImage from './RoundedImage';
 import GroupChatMessageImage from './GroupChatMessageImage';
-import {getAvatar} from '../utils';
-import {translate} from '../redux/reducers/languageReducer';
+import { getAvatar } from '../utils';
+import { translate } from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {globalStyles} from '../styles';
+import { globalStyles } from '../styles';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default class GroupChatMessageBox extends Component {
   constructor(props) {
@@ -38,12 +38,12 @@ export default class GroupChatMessageBox extends Component {
       this.isPortrait(this.props.message.message_body);
   }
 
-  _openMenu = () => this.setState({longPressMenu: true});
+  _openMenu = () => this.setState({ longPressMenu: true });
 
-  _closeMenu = () => this.setState({longPressMenu: false});
+  _closeMenu = () => this.setState({ longPressMenu: false });
 
   layoutChange = (event) => {
-    var {x, y, width, height} = event.nativeEvent.layout;
+    var { x, y, width, height } = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -52,7 +52,7 @@ export default class GroupChatMessageBox extends Component {
 
   onMessagePress = (id) => {
     console.log('ChatMessageBox -> onMessagePress -> id', id);
-    this.setState({selectedMessageId: id});
+    this.setState({ selectedMessageId: id });
     this._openMenu();
   };
 
@@ -78,12 +78,14 @@ export default class GroupChatMessageBox extends Component {
           paddingHorizontal: 20,
           paddingVertical: 10,
           marginBottom: 15,
-        }}>
+        }}
+      >
         <Text
           style={{
             fontFamily: Fonts.light,
             fontSize: 14,
-          }}>
+          }}
+        >
           {this.props.translatedMessage}
         </Text>
         <View
@@ -91,20 +93,23 @@ export default class GroupChatMessageBox extends Component {
             flexDirection: 'row',
             alignItems: 'center',
             marginTop: 5,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontFamily: Fonts.extralight,
               fontSize: 12,
               color: Colors.gray_dark,
-            }}>
+            }}
+          >
             {translate('common.translatedMessage')}
           </Text>
           <TouchableOpacity
-            style={{marginLeft: 10}}
+            style={{ marginLeft: 10 }}
             onPress={() => {
               this.props.onMessageTranslateClose();
-            }}>
+            }}
+          >
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
         </View>
@@ -113,7 +118,7 @@ export default class GroupChatMessageBox extends Component {
   };
 
   render() {
-    const {longPressMenu, selectedMessageId, isPortrait} = this.state;
+    const { longPressMenu, selectedMessageId, isPortrait } = this.state;
     const {
       message,
       isUser,
@@ -131,29 +136,32 @@ export default class GroupChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
     } = this.props;
-    return !isUser && message.message_body ? (
+    return !isUser ? (
       <View
         style={[
           styles.container,
           {
             justifyContent: 'flex-start',
           },
-        ]}>
+        ]}
+      >
         <View
           style={{
             alignItems: 'flex-start',
             marginVertical: 5,
-          }}>
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
-            }}>
+            }}
+          >
             <RoundedImage
               source={getAvatar(message.sender_picture)}
               size={50}
               resizeMode={'cover'}
             />
-            <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
+            <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
               <View>
                 <Text
                   style={{
@@ -162,7 +170,8 @@ export default class GroupChatMessageBox extends Component {
                     color: Colors.primary,
                     textAlign: 'left',
                     marginStart: 10,
-                  }}>
+                  }}
+                >
                   {message.sender_display_name}
                 </Text>
                 <GroupChatMessageBubble
@@ -190,7 +199,8 @@ export default class GroupChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
-                }}>
+                }}
+              >
                 <Text style={styles.statusText}>{status}</Text>
                 <Text
                   style={{
@@ -199,7 +209,8 @@ export default class GroupChatMessageBox extends Component {
                     //color: Colors.white,
                     textAlign: 'center',
                     color: Colors.primary,
-                  }}>{`${time.getHours()}:${
+                  }}
+                >{`${time.getHours()}:${
                   time.getMinutes() < 10
                     ? '0' + time.getMinutes()
                     : time.getMinutes()
@@ -213,64 +224,66 @@ export default class GroupChatMessageBox extends Component {
         </View>
       </View>
     ) : (
-      message.message_body && (
+      <View
+        style={[
+          styles.container,
+          {
+            alignItems: 'flex-end',
+            alignSelf: 'flex-end',
+          },
+        ]}
+      >
         <View
-          style={[
-            styles.container,
-            {
-              alignItems: 'flex-end',
-              alignSelf: 'flex-end',
-            },
-          ]}>
+          style={{
+            alignItems: 'flex-end',
+          }}
+        >
           <View
             style={{
-              alignItems: 'flex-end',
-            }}>
+              flexDirection: 'row',
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-              }}>
-              <View
-                style={{
-                  marginHorizontal: '1.5%',
-                  alignItems: 'center',
-                  marginVertical: 15,
-                }}>
-                <Text style={styles.statusText}>{status}</Text>
-                <Text style={styles.statusText}>
-                  {`${time.getHours()}:${
-                    time.getMinutes() < 10
-                      ? '0' + time.getMinutes()
-                      : time.getMinutes()
-                  }`}
-                </Text>
-              </View>
-              <GroupChatMessageBubble
-                message={message}
-                isUser={isUser}
-                onMessageReply={onMessageReply}
-                onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-                longPressMenu={longPressMenu}
-                openMenu={this._openMenu}
-                closeMenu={this._closeMenu}
-                selectedMessageId={selectedMessageId}
-                onMessageTranslate={onMessageTranslate}
-                translatedMessage={translatedMessage}
-                translatedMessageId={translatedMessageId}
-                onDelete={onDelete}
-                onUnSend={onUnSend}
-                onEditMessage={onEditMessage}
-                audioPlayingId={audioPlayingId}
-                perviousPlayingAudioId={perviousPlayingAudioId}
-                onAudioPlayPress={onAudioPlayPress}
-              />
+                marginHorizontal: '1.5%',
+                alignItems: 'center',
+                marginVertical: 15,
+              }}
+            >
+              <Text style={styles.statusText}>{status}</Text>
+              <Text style={styles.statusText}>
+                {`${time.getHours()}:${
+                  time.getMinutes() < 10
+                    ? '0' + time.getMinutes()
+                    : time.getMinutes()
+                }`}
+              </Text>
             </View>
-            {translatedMessageId &&
-              message.msg_id === translatedMessageId &&
-              this.renderTransltedMessage()}
+            <GroupChatMessageBubble
+              message={message}
+              isUser={isUser}
+              onMessageReply={onMessageReply}
+              onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+              longPressMenu={longPressMenu}
+              openMenu={this._openMenu}
+              closeMenu={this._closeMenu}
+              selectedMessageId={selectedMessageId}
+              onMessageTranslate={onMessageTranslate}
+              translatedMessage={translatedMessage}
+              translatedMessageId={translatedMessageId}
+              onDelete={onDelete}
+              onUnSend={onUnSend}
+              onEditMessage={onEditMessage}
+              audioPlayingId={audioPlayingId}
+              perviousPlayingAudioId={perviousPlayingAudioId}
+              onAudioPlayPress={onAudioPlayPress}
+            />
           </View>
+          {translatedMessageId &&
+            message.msg_id === translatedMessageId &&
+            this.renderTransltedMessage()}
         </View>
-      )
+      </View>
     );
   }
 }
