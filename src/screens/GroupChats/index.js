@@ -107,9 +107,10 @@ class GroupChats extends Component {
       isEdited,
     } = this.state;
     const { userData, currentGroup } = this.props;
-
+    // const msg_id = Math.floor(Math.random() * 90000) + 10000;
+    // console.log('ChannelChats -> onMessageSend -> id', msg_id, userData.id);
     let sendmsgdata = {
-      // msg_id: 3122,
+      // msg_id: msg_id,
       sender_id: userData.id,
       group_id: currentGroup.group_id,
       sender_username: userData.username,
@@ -155,6 +156,17 @@ class GroupChats extends Component {
       };
       this.state.conversation.push(sendmsgdata);
       this.props.sendGroupMessage(groupMessage);
+      // .then((res) => {
+      //   console.log('GroupChats -> onMessageSend -> res =------', res);
+      //   // this.getChannelConversations();
+      //   var foundIndex = this.state.conversation.findIndex(
+      //     (x) => x.msg_id == msg_id
+      //   );
+      //   console.log('GroupChats -> onMessageSend -> foundIndex', foundIndex);
+      //   this.state.conversation[foundIndex] = res;
+      //   // this.state.conversations.findIndex()
+      // })
+      // .catch((err) => {});
     }
 
     this.setState({

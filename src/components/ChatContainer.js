@@ -41,11 +41,6 @@ class ChatContainer extends Component {
       );
     }
 
-    let hedaingDate = new Date();
-    setDate = (date) => {
-      hedaingDate = new Date(date);
-    };
-
     getDate = (date) => {
       const today = new Date();
       const yesterday = new Date();
@@ -56,14 +51,16 @@ class ChatContainer extends Component {
       if (yesterday.getDate() === msgDate.getDate()) return 'Yesterday';
       return moment(msgDate).format('MM/DD');
     };
+    const conversationLength = messages.length;
     const msg = messages.map((item, index) => {
       return (
         <Fragment>
-          {hedaingDate.getDate() !== new Date(item.created).getDate() ||
-          index === 0 ? (
+          {(messages[index + 1] &&
+            new Date(item.created).getDate() !==
+              new Date(messages[index + 1].created).getDate()) ||
+          index === conversationLength - 1 ? (
             item.message_body == null ? null : (
               <Fragment>
-                {setDate(item.created)}
                 <View style={chatStyle.messageDateCntainer}>
                   <View style={chatStyle.messageDate}>
                     <Text style={chatStyle.messageDateText}>
@@ -77,7 +74,12 @@ class ChatContainer extends Component {
           <ChatMessageBox
             key={item.id}
             message={item}
-            isUser={item.from_user.id == this.props.userData.id ? true : false}
+            isUser={
+              item.from_user.id == this.props.userData.id ||
+              item.from_user == this.props.userData.id
+                ? true
+                : false
+            }
             time={new Date(item.created)}
             isChannel={this.props.isChannel}
             onMessageReply={(id) => this.props.onMessageReply(id)}

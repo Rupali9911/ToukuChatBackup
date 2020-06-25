@@ -78,9 +78,10 @@ class ChannelChats extends Component {
   onMessageSend = () => {
     const { newMessageText, isEdited } = this.state;
     const { userData, currentChannel } = this.props;
-
+    const id = Math.floor(Math.random() * 90000) + 10000;
+    console.log('ChannelChats -> onMessageSend -> id', id, userData.id);
     let sendmsgdata = {
-      // id: 2808,
+      id: id,
       thumbnail: null,
       from_user: {
         id: userData.id,
@@ -129,7 +130,12 @@ class ChannelChats extends Component {
     this.props
       .sendChannelMessage(messageData)
       .then((res) => {
+        console.log('ChannelChats -> onMessageSend -> res', res);
         // this.getChannelConversations();
+        var foundIndex = this.state.conversations.findIndex((x) => x.id == id);
+        console.log('ChannelChats -> onMessageSend -> foundIndex', foundIndex);
+        this.state.conversations[foundIndex] = res;
+        // this.state.conversations.findIndex()
       })
       .catch((err) => {});
     this.setState({
@@ -140,6 +146,7 @@ class ChannelChats extends Component {
   };
 
   onEdit = (message) => {
+    console.log('ChannelChats -> onEdit -> message', message);
     this.setState({
       newMessageText: message.message_body,
       editMessageId: message.id,

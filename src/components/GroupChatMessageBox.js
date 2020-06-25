@@ -156,10 +156,19 @@ export default class GroupChatMessageBox extends Component {
               flexDirection: 'row',
             }}
           >
-            <RoundedImage
+            {/* <RoundedImage
               source={getAvatar(message.sender_picture)}
               size={50}
               resizeMode={'cover'}
+            /> */}
+            <Image
+              source={getAvatar(message.sender_picture)}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                resizeMode: 'cover',
+              }}
             />
             <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
               <View>
