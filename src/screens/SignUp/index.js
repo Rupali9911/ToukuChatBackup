@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -94,14 +95,14 @@ class SignUp extends Component {
 
     if (phone.length <= 0) {
       Toast.show({
-        title: 'Send SMS',
-        text: 'Please enter your phone number',
+        title: translate('common.sendSMS'),
+        text: translate('pages.register.toastr.enterPhoneNumber'),
         type: 'primary',
       });
     } else if (phone.length > 0 && phone.length < 6) {
       Toast.show({
-        title: 'Send SMS',
-        text: 'Phone number is invalid',
+        title: translate('common.sendSMS'),
+        text: translate('pages.register.toastr.phoneNumberIsInvalid'),
         type: 'primary',
       });
     } else {
@@ -114,28 +115,28 @@ class SignUp extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Send SMS',
-              text: 'We have sent OTP code to your phone number',
+              title: translate('common.sendSMS'),
+              text: translate('pages.register.toastr.sentOTPtoMobile'),
               type: 'positive',
             });
           } else if (res.status === false && res.data.phone != '') {
             Toast.show({
-              title: 'Send SMS',
-              text: 'The phone number is already registered',
+              title: translate('common.sendSMS'),
+              text: 'The phone number is already registered.',
               type: 'primary',
             });
           } else {
             Toast.show({
-              title: 'Send SMS',
-              text: 'Phone number is invalid',
+              title: translate('common.sendSMS'),
+              text: translate('pages.register.toastr.phoneNumberIsInvalid'),
               type: 'primary',
             });
           }
         })
         .catch((err) => {
           Toast.show({
-            title: 'Send SMS',
-            text: 'The phone number is already registered',
+            title: translate('common.sendSMS'),
+            text: 'The phone number is already registered.',
             type: 'primary',
           });
         });
@@ -168,8 +169,8 @@ class SignUp extends Component {
           });
         } else {
           Toast.show({
-            title: 'Send OTP',
-            text: 'Please Enter Phone Number',
+            title: translate('common.register'),
+            text: translate('pages.register.toastr.enterPhoneNumber'),
             type: 'primary',
           });
         }
@@ -260,7 +261,7 @@ class SignUp extends Component {
       isValid = false;
       Toast.show({
         title: 'SignUp Failed',
-        text: 'Please Enter Username',
+        text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'primary',
       });
     } else if (password.length < 6) {
@@ -481,10 +482,14 @@ class SignUp extends Component {
       case 0:
         return (
           <View>
-            <Text style={globalStyles.smallLightText}>
+            <Text
+              style={[
+                globalStyles.smallLightText,
+                {paddingHorizontal: Platform.isPad ? 50 : 20},
+              ]}>
               {translate('common.registerStepOne')}
             </Text>
-            <View style={{marginTop: 50}}>
+            <View style={{marginTop: Platform.isPad ? 200 : 50}}>
               <CountryPhoneInput
                 rightBtnText={'SMS'}
                 onClickSMS={() => this.sendOTP()}
@@ -518,10 +523,14 @@ class SignUp extends Component {
       case 1:
         return (
           <View>
-            <Text style={globalStyles.smallLightText}>
+            <Text
+              style={[
+                globalStyles.smallLightText,
+                {paddingHorizontal: Platform.isPad ? 50 : 20},
+              ]}>
               {translate('common.registerStepTwo')}
             </Text>
-            <View style={{marginTop: 50}}>
+            <View style={{marginTop: Platform.isPad ? 200 : 50}}>
               <Inputfield
                 value={this.state.email}
                 placeholder={translate('common.email')}
@@ -560,10 +569,14 @@ class SignUp extends Component {
       case 2:
         return (
           <View>
-            <Text style={globalStyles.smallLightText}>
+            <Text
+              style={[
+                globalStyles.smallLightText,
+                {paddingHorizontal: Platform.isPad ? 50 : 20},
+              ]}>
               {translate('common.registerStepThree')}
             </Text>
-            <View style={{marginTop: 50}}>
+            <View style={{marginTop: Platform.isPad ? 200 : 50}}>
               <Inputfield
                 value={this.state.username}
                 placeholder={translate('common.username')}
@@ -656,25 +669,28 @@ class SignUp extends Component {
           }
           style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-            contentContainerStyle={{padding: 20}}
+            contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
               style={{
-                paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,
-              }}>
-              <StepIndicator
-                stepCount={3}
-                customStyles={stepIndicatorStyle}
-                currentPosition={currentPosition}
-              />
-            </View>
-            <View
-              style={{
                 flex: 1,
+                maxWidth: Platform.isPad ? '75%' : '100%',
+                alignSelf: 'center',
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
                 marginTop: 20,
               }}>
+              <View
+                style={{
+                  paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,
+                  marginBottom: 20,
+                }}>
+                <StepIndicator
+                  stepCount={3}
+                  customStyles={stepIndicatorStyle}
+                  currentPosition={currentPosition}
+                />
+              </View>
               {this.renderPage(currentPosition)}
             </View>
             <LanguageSelector />

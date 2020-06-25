@@ -299,17 +299,17 @@ class LoginSignUp extends Component {
     console.log('LoginSignUp -> firebaseLineLogin -> firebaseLineLogin');
 
     if (Platform.OS === 'ios') {
-      let arrPermissions = ['profile','openid','email'];
+      let arrPermissions = ['profile', 'openid', 'email'];
       LineLogin.loginWithPermissions(arrPermissions)
         .then((user) => {
           console.log(user);
-            const lineLoginData = {
-                email:user.idToken.email,
-                code: '',
-                access_token:user.accessToken.accessToken,
-                dev_id: '',
-                site_from: 'touku',
-            };
+          const lineLoginData = {
+            email: user.idToken.email,
+            code: '',
+            access_token: user.accessToken.accessToken,
+            dev_id: '',
+            site_from: 'touku',
+          };
           console.log(
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
             lineLoginData,
@@ -351,10 +351,10 @@ class LoginSignUp extends Component {
         .then((user) => {
           console.log(user);
           const lineLoginData = {
-              code: '',
-              access_token:user.accessToken.accessToken,
-              dev_id: '',
-              site_from: 'touku',
+            code: '',
+            access_token: user.accessToken.accessToken,
+            dev_id: '',
+            site_from: 'touku',
           };
           console.log(
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
@@ -402,27 +402,27 @@ class LoginSignUp extends Component {
         console.log('result kakaoLogin', result);
         const kakaoLoginData = {
           code: '',
-            access_token:result.accessToken,
+          access_token: result.accessToken,
           dev_id: '',
           site_from: 'touku',
         };
         console.log('kakao request', kakaoLoginData);
         this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
-            console.log('JWT TOKEN=> ', JSON.stringify(res));
-            if (res.token) {
-                let status = res.status;
-                if (!status) {
-                    this.props.navigation.navigate('SignUp', {
-                        pageNumber: 2,
-                        isSocial: true,
-                    });
-                    return;
-                }
-                await AsyncStorage.setItem('userToken', res.token);
-                await AsyncStorage.removeItem('socialToken');
-                this.props.navigation.navigate('Home');
-                return;
+          console.log('JWT TOKEN=> ', JSON.stringify(res));
+          if (res.token) {
+            let status = res.status;
+            if (!status) {
+              this.props.navigation.navigate('SignUp', {
+                pageNumber: 2,
+                isSocial: true,
+              });
+              return;
             }
+            await AsyncStorage.setItem('userToken', res.token);
+            await AsyncStorage.removeItem('socialToken');
+            this.props.navigation.navigate('Home');
+            return;
+          }
         });
       })
       .catch((err) => {
@@ -449,6 +449,7 @@ class LoginSignUp extends Component {
         <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
             contentContainerStyle={{
+              flex: Platform.isPad ? 1 : 0,
               padding: 20,
               paddingTop:
                 orientation != 'PORTRAIT'
@@ -462,67 +463,82 @@ class LoginSignUp extends Component {
               style={{
                 flex: 1,
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
+                width: Platform.isPad ? '60%' : '100%',
+                alignSelf: 'center',
               }}>
               <Text style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  marginBottom: 25,
-                  marginTop: orientation != 'PORTRAIT' ? 0 : 50,
+                  flex: 1,
+                  justifyContent: Platform.isPad ? 'center' : 'flex-start',
+                  alignItems: 'center',
+                  marginTop:
+                    orientation != 'PORTRAIT' || Platform.isPad ? 0 : 50,
                 }}>
-                <Text style={[globalStyles.smallLightText, {marginEnd: 10}]}>
-                  {translate('pages.welcome.theWorldIsConnected')}
-                </Text>
-                <Text style={globalStyles.smallLightText}>
-                  {translate('pages.welcome.connectedByTouku')}
-                </Text>
-              </View>
-              <Button
-                type={'transparent'}
-                title={translate('common.login')}
-                onPress={() => this.onLoginPress()}
-              />
-              <Button
-                type={'primary'}
-                title={translate('pages.welcome.signUp')}
-                onPress={() => this.onSignUpPress()}
-              />
-              <View style={{marginTop: 30, marginBottom: 10}}>
-                <Text style={globalStyles.smallLightText}>
-                  {translate('pages.welcome.OrLoginWith')}
-                </Text>
-              </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    marginBottom: 25,
+                  }}>
+                  <Text style={[globalStyles.smallLightText, {marginEnd: 10}]}>
+                    {translate('pages.welcome.theWorldIsConnected')}
+                  </Text>
+                  <Text style={globalStyles.smallLightText}>
+                    {translate('pages.welcome.connectedByTouku')}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: Platform.isPad ? '45%' : '100%',
+                  }}>
+                  <Button
+                    type={'transparent'}
+                    title={translate('common.login')}
+                    onPress={() => this.onLoginPress()}
+                  />
+                  <Button
+                    type={'primary'}
+                    title={translate('pages.welcome.signUp')}
+                    onPress={() => this.onSignUpPress()}
+                  />
+                </View>
+                <View style={{marginTop: 30, marginBottom: 10}}>
+                  <Text style={globalStyles.smallLightText}>
+                    {translate('pages.welcome.OrLoginWith')}
+                  </Text>
+                </View>
 
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  marginTop: 10,
-                }}>
-                <SocialLogin
-                  IconSrc={Icons.icon_facebook}
-                  onPress={() => this.firebaseFacebookLogin()}
-                />
-                <SocialLogin
-                  IconSrc={Icons.icon_line}
-                  onPress={() => this.firebaseLineLogin()}
-                />
-                <SocialLogin
-                  IconSrc={Icons.icon_google}
-                  onPress={() => this.firebaseGoogleLogin()}
-                />
-                <SocialLogin
-                  IconSrc={Icons.icon_twitter}
-                  onPress={() => this.firebaseTwitterLogin()}
-                />
-                <SocialLogin
-                  IconSrc={Icons.icon_kakao}
-                  onPress={() => this.kakaoLogin()}
-                />
-               </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    marginTop: 10,
+                  }}>
+                  <SocialLogin
+                    IconSrc={Icons.icon_facebook}
+                    onPress={() => this.firebaseFacebookLogin()}
+                  />
+                  <SocialLogin
+                    IconSrc={Icons.icon_line}
+                    onPress={() => this.firebaseLineLogin()}
+                  />
+                  <SocialLogin
+                    IconSrc={Icons.icon_google}
+                    onPress={() => this.firebaseGoogleLogin()}
+                  />
+                  <SocialLogin
+                    IconSrc={Icons.icon_twitter}
+                    onPress={() => this.firebaseTwitterLogin()}
+                  />
+                  <SocialLogin
+                    IconSrc={Icons.icon_kakao}
+                    onPress={() => this.kakaoLogin()}
+                  />
+                </View>
+              </View>
             </View>
             <LanguageSelector />
           </ScrollView>

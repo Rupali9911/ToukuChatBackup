@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { Fonts, Colors } from '../constants';
+import {StyleSheet, Platform} from 'react-native';
+import {Fonts, Colors} from '../constants';
 
 export const globalStyles = StyleSheet.create({
   container: {
@@ -69,7 +69,7 @@ export const globalStyles = StyleSheet.create({
   },
   //App Logo Text
   logoText: {
-    fontSize: 100,
+    fontSize: Platform.isPad ? 117 : 100,
     fontFamily: Fonts.absolute,
     paddingVertical: 15,
     textAlign: 'center',

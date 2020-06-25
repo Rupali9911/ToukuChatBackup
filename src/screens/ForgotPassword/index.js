@@ -6,6 +6,7 @@ import {
   ImageBackground,
   StyleSheet,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -115,22 +116,22 @@ class ForgotPassword extends Component {
         .forgotUserName(userNameData)
         .then((res) => {
           Toast.show({
-            title: 'Send SMS',
-            text: 'We have sent OTP code to your phone number',
+            title: translate('common.sendSMS'),
+            text: translate('pages.register.toastr.sentOTPtoMobile'),
             type: 'positive',
           });
         })
         .catch((err) => {
           Toast.show({
-            title: 'Send SMS',
+            title: translate('common.sendSMS'),
             text: 'Username Not Exist',
             type: 'primary',
           });
         });
     } else {
       Toast.show({
-        title: 'Send SMS',
-        text: 'Please enter username',
+        title: translate('common.sendSMS'),
+        text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
     }
@@ -190,22 +191,22 @@ class ForgotPassword extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Success',
-              text: 'Password has been changed successfully!',
+              title: translate('pages.resetPassword.resetPassword'),
+              text: translate('pages.resetPassword.toastr.passwordUpdated'),
               type: 'positive',
             });
           } else {
             Toast.show({
-              title: 'Touku',
-              text: 'Enter valid authentication code',
+              title: translate('common.register'),
+              text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
               type: 'primary',
             });
           }
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
-            text: 'Enter valid authentication code',
+            title: translate('common.register'),
+            text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
             type: 'primary',
           });
         });
@@ -226,7 +227,7 @@ class ForgotPassword extends Component {
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-            contentContainerStyle={{padding: 20}}
+            contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
@@ -238,13 +239,20 @@ class ForgotPassword extends Component {
                 style={[
                   globalStyles.bigSemiBoldText,
                   {
+                    fontSize: 30,
                     marginVertical: 50,
                     opacity: 0.8,
                   },
                 ]}>
                 {translate('pages.resetPassword.resetPassword')}
               </Text>
-              <View>
+              <View
+                style={{
+                  flex: 1,
+                  width: Platform.isPad ? '75%' : '100%',
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
                 <Inputfield
                   isRightSideBtn={true}
                   rightBtnText={translate('common.sms')}
