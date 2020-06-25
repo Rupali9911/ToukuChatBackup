@@ -299,11 +299,12 @@ class LoginSignUp extends Component {
     console.log('LoginSignUp -> firebaseLineLogin -> firebaseLineLogin');
 
     if (Platform.OS === 'ios') {
-      let arrPermissions = ['profile'];
+      let arrPermissions = ['profile','openid','email'];
       LineLogin.loginWithPermissions(arrPermissions)
         .then((user) => {
           console.log(user);
             const lineLoginData = {
+                email:user.idToken.email,
                 code: '',
                 access_token:user.accessToken.accessToken,
                 dev_id: '',
