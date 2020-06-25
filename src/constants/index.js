@@ -57,6 +57,8 @@ export const Icons = {
   icon_kakao: require('../../assets/icons/talk.png'),
   icon_telegram: require('../../assets/icons/telegram.png'),
   man_plus_icon: require('../../assets/icons/man_plus_icon.png'),
+  gallery_icon_select: require('../../assets/icons/gallery_icon_select.png'),
+  plus_icon_select: require('../../assets/icons/plus_icon_select.png'),
 };
 
 export const Images = {

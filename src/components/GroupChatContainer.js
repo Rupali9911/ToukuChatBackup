@@ -43,11 +43,6 @@ class GroupChatContainer extends Component {
       );
     }
 
-    let hedaingDate = new Date();
-    setDate = (date) => {
-      hedaingDate = new Date(date);
-    };
-
     getDate = (date) => {
       const today = new Date();
       const yesterday = new Date();
@@ -58,14 +53,17 @@ class GroupChatContainer extends Component {
       if (yesterday.getDate() === msgDate.getDate()) return 'Yesterday';
       return moment(msgDate).format('MM/DD');
     };
+
+    const conversationLength = messages.length;
     const msg = messages.map((item, index) => {
       return (
         <Fragment key={index}>
-          {hedaingDate.getDate() !== new Date(item.timestamp).getDate() ||
-          index === 0 ? (
+          {(messages[index + 1] &&
+            new Date(item.timestamp).getDate() !==
+              new Date(messages[index + 1].timestamp).getDate()) ||
+          index === conversationLength - 1 ? (
             item.message_body == null ? null : (
               <Fragment>
-                {setDate(item.timestamp)}
                 <View style={chatStyle.messageDateCntainer}>
                   <View style={chatStyle.messageDate}>
                     <Text style={chatStyle.messageDateText}>
@@ -104,7 +102,7 @@ class GroupChatContainer extends Component {
       );
     });
 
-    return <Fragment>{msg}</Fragment>;
+    return <Fragment>{msg.reverse()}</Fragment>;
   };
 
   render() {

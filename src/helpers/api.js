@@ -60,11 +60,12 @@ client.interceptors.request.use(
       //   token: basicAuth,
       // });
     }
+    config.headers.Origin = 'touku';
     return config;
   },
   function (error) {
     return Promise.reject(error);
-  },
+  }
 );
 
 // Add a response interceptor
@@ -97,5 +98,5 @@ client.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error);
-  },
+  }
 );

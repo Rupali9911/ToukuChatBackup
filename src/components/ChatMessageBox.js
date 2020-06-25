@@ -151,10 +151,19 @@ export default class ChatMessageBox extends Component {
           }}
         >
           <View style={{ flexDirection: 'row' }}>
-            <RoundedImage
+            {/* <RoundedImage
               source={getAvatar(message.from_user.avatar)}
               size={50}
               resizeMode={'cover'}
+            /> */}
+            <Image
+              source={getAvatar(message.from_user.avatar)}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                resizeMode: 'cover',
+              }}
             />
             <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
               <ChatMessageBubble

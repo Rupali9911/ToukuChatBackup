@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   ImageBackground,
@@ -7,29 +7,29 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import LinearGradient from 'react-native-linear-gradient';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {createFilter} from 'react-native-search-filter';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { createFilter } from 'react-native-search-filter';
 
-import {Images, Colors, Icons, SocketEvents} from '../../constants';
-import {SearchInput} from '../../components/TextInputs';
+import { Images, Colors, Icons, SocketEvents } from '../../constants';
+import { SearchInput } from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import {getAvatar} from '../../utils';
+import { getAvatar } from '../../utils';
 import {
   ChannelListItem,
   FriendListItem,
   GroupListItem,
 } from '../../components/ListItems';
 import NoData from '../../components/NoData';
-import {ListLoader} from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 
-import {globalStyles} from '../../styles';
+import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
 
-import {getUserProfile} from '../../redux/reducers/userReducer';
+import { getUserProfile } from '../../redux/reducers/userReducer';
 import {
   getUserConfiguration,
   updateConfiguration,
@@ -85,7 +85,7 @@ class Chat extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
   }
 
   async componentDidMount() {
@@ -107,11 +107,11 @@ class Chat extends Component {
     // this.getCommonChat();
   }
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   onSearch = async (text) => {
-    await this.setState({searchText: text, commonConversation: []});
+    await this.setState({ searchText: text, commonConversation: [] });
     this.getCommonChat();
   };
 
@@ -144,7 +144,7 @@ class Chat extends Component {
     } = this.props;
     console.log('Chat -> getCommonChat -> userConfig', userConfig);
     const filteredChannels = followingChannels.filter(
-      createFilter(this.state.searchText, ['name']),
+      createFilter(this.state.searchText, ['name'])
     );
     if (filteredChannels.length > 0 && !channelLoading) {
       await this.setState({
@@ -155,7 +155,7 @@ class Chat extends Component {
       });
     }
     const filteredGroups = userGroups.filter(
-      createFilter(this.state.searchText, ['group_name']),
+      createFilter(this.state.searchText, ['group_name'])
     );
     if (filteredGroups.length > 0 && !groupLoading) {
       await this.setState({
@@ -166,7 +166,7 @@ class Chat extends Component {
       });
     }
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username']),
+      createFilter(this.state.searchText, ['username'])
     );
     if (filteredFriends.length > 0 && !friendLoading) {
       await this.setState({
@@ -239,7 +239,7 @@ class Chat extends Component {
   };
 
   sortList = () => {
-    const {commonConversation, sortBy} = this.state;
+    const { commonConversation, sortBy } = this.state;
 
     switch (sortBy) {
       case 'time': {
@@ -263,7 +263,7 @@ class Chat extends Component {
               b.timestamp &&
               new Date(a.timestamp) < new Date(b.timestamp)
             ? 1
-            : -1,
+            : -1
         );
 
         return;
@@ -289,11 +289,11 @@ class Chat extends Component {
               b.timestamp &&
               new Date(a.timestamp) > new Date(b.timestamp)
             ? 1
-            : -1,
+            : -1
         );
 
         commonConversation.sort((a, b) =>
-          a.unread_msg < b.unread_msg ? 1 : -1,
+          a.unread_msg < b.unread_msg ? 1 : -1
         );
         return;
       }
@@ -333,19 +333,18 @@ class Chat extends Component {
             ? 1
             : a.name && b.name && a.name.toUpperCase() > b.name.toUpperCase()
             ? 1
-            : -1,
+            : -1
         );
 
         return;
       }
       default:
-        console.log('Chat -> shotList -> default');
         return;
     }
   };
 
   renderCommonChat = () => {
-    const {commonConversation, isLoading} = this.state;
+    const { commonConversation, isLoading } = this.state;
     this.sortList();
     if (commonConversation.length === 0 && isLoading) {
       return <ListLoader />;
@@ -353,7 +352,7 @@ class Chat extends Component {
       return (
         <FlatList
           data={commonConversation}
-          renderItem={({item, index}) =>
+          renderItem={({ item, index }) =>
             item.chat === 'group' ? (
               <GroupListItem
                 key={index}
@@ -418,11 +417,12 @@ class Chat extends Component {
   };
 
   render() {
-    const {orientation} = this.state;
+    const { orientation } = this.state;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <View style={globalStyles.container}>
           <HomeHeader
             title={translate('pages.xchat.chat')}

@@ -43,7 +43,12 @@ export default class ChatInput extends Component {
               onAttachmentPress();
             }}
           >
-            <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} />
+            {/* <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} /> */}
+            <Image
+              source={Icons.plus_icon_select}
+              style={chatInput.attachmentImage}
+              resizeMode={'contain'}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={chatInput.chatAttachmentButton}
@@ -63,11 +68,16 @@ export default class ChatInput extends Component {
               onGalleryPress();
             }}
           >
-            <FontAwesome5
+            <Image
+              source={Icons.gallery_icon_select}
+              style={chatInput.attachmentImage}
+              resizeMode={'contain'}
+            />
+            {/* <FontAwesome5
               name={'image'}
               size={height * 0.03}
               color={'indigo'}
-            />
+            /> */}
           </TouchableOpacity>
         </View>
         <View style={chatInput.textInputContainer}>
