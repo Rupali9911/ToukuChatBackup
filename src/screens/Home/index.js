@@ -48,7 +48,6 @@ import {
   getMoreFollowingChannels,
   getFollowingChannels,
   setCurrentChannel,
-  updateFollowingChannels,
 } from '../../redux/reducers/channelReducer';
 import {
   getUserGroups,
@@ -74,9 +73,6 @@ class Home extends Component {
       searchText: '',
       showDropdown: false,
       loadMoreVisible: true,
-
-      followingChannelsState: this.props.followingChannels,
-
       channelHeaderCounts: 0,
       groupHeaderCounts: 0,
       friendHeaderCounts: 0,
@@ -122,22 +118,14 @@ class Home extends Component {
 
   getFollowingChannels() {
     this.props.getFollowingChannels().then((res) => {
-      this.setState(
-        {
-          followingChannelsState: this.props.followingChannels,
-        },
-        () => {
-          if (res.conversations.length > 0) {
-            this.handleLoadMoreChannels();
-          }
-          let counts = 0;
-          for (var channel of this.state.followingChannelsState) {
-            counts = counts + channel.unread_msg;
-          }
-          this.setState({channelHeaderCounts: counts});
-          // this.props.updateFollowingChannels(this.state.followingChannelsState);
-        },
-      );
+      // if (res.conversations.length > 0) {
+      //   this.handleLoadMoreChannels();
+      // }
+      let counts = 0;
+      for (var channel of this.props.followingChannels) {
+        counts = counts + channel.unread_msg;
+      }
+      this.setState({channelHeaderCounts: counts});
     });
   }
 
@@ -183,6 +171,8 @@ class Home extends Component {
         this.onNewMessageInFriend(message);
       case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
         this.messageInFollowingChannel(message);
+      case SocketEvents.REMOVE_CHANNEL_MEMBER:
+        this.onRemoveChannelMember(message);
     }
   }
 
@@ -248,11 +238,10 @@ class Home extends Component {
 
   //Message in Following Channel
   messageInFollowingChannel(message) {
-    const {followingChannelsState} = this.state;
-    const {userData} = this.props;
+    const {userData, followingChannels} = this.props;
 
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
-      for (let i of followingChannelsState) {
+      for (let i of followingChannels) {
         if (message.text.data.message_details.channel == i.id) {
           if (message.text.data.message_details.from_user.id == userData.id) {
             this.getFollowingChannels();
@@ -326,14 +315,14 @@ class Home extends Component {
 
   //Read Channel's all messages with socket event
   readAllMessageChannelChat(message) {
-    const {followingChannelsState} = this.state;
+    const {followingChannels} = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT) {
-      for (var i in followingChannelsState) {
+      for (var i in followingChannels) {
         if (
-          followingChannelsState[i].id ==
+          followingChannels[i].id ==
           message.text.data.message_details.channel_id
         ) {
-          followingChannelsState[i].unread_msg =
+          followingChannels[i].unread_msg =
             message.text.data.message_details.read_count;
           this.props.getMissedSocketEventsById(
             message.text.data.socket_event_id,
@@ -342,7 +331,6 @@ class Home extends Component {
           break;
         }
       }
-      // this.setState({followingChannelsState});
     }
   }
 
@@ -372,6 +360,22 @@ class Home extends Component {
           break;
         }
       }
+    }
+  }
+
+  //On Remove Channel Member
+  onRemoveChannelMember(message) {
+    if (
+      message.text.data.type === SocketEvents.REMOVE_MEMBER_FROM_CHANNEL &&
+      message.text.data.message_details.user_id === this.props.userData.id
+    ) {
+      this.getFollowingChannels();
+      // for (var i in this.props.followingChannels) {
+      //   if (message.text.data.message_details.channel_id === i.id) {
+      //     alert('channel unfollowed');
+      //     break;
+      //   }
+      // }
     }
   }
 
@@ -746,7 +750,6 @@ const mapDispatchToProps = {
   setCurrentFriend,
   getUserConfiguration,
   getMissedSocketEventsById,
-  updateFollowingChannels,
   updateUnreadFriendMsgsCounts,
   updateUnreadGroupMsgsCounts,
 };
