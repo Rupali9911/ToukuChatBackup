@@ -6,6 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -107,6 +108,7 @@ class ForgotUserName extends Component {
                 style={[
                   globalStyles.bigSemiBoldText,
                   {
+                    fontSize: 30,
                     marginVertical: 50,
                     opacity: 0.8,
                   },
@@ -116,6 +118,8 @@ class ForgotUserName extends Component {
               <View
                 style={{
                   flex: 1,
+                  width: Platform.isPad ? '75%' : '100%',
+                  alignSelf: 'center',
                   justifyContent: 'center',
                   marginTop: orientation != 'PORTRAIT' ? 0 : -100,
                 }}>
@@ -124,14 +128,14 @@ class ForgotUserName extends Component {
                   placeholder={translate('common.email')}
                   returnKeyType={'done'}
                   onChangeText={(email) => this.setState({email})}
-                  // onSubmitEditing={() => {
-                  //   this.onSubmitPress();
-                  // }}
+                  onSubmitEditing={() => {
+                    this.onSubmitPress();
+                  }}
                 />
 
                 <Button
                   type={'primary'}
-                  title={translate('common.submit')}
+                  title={translate('common.recoverUsernameButton')}
                   onPress={() => this.onSubmitPress()}
                   loading={this.props.loading}
                 />

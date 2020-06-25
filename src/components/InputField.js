@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: 45 / 2,
+    borderRadius: Platform.isPad ? 55 / 2 : 45 / 2,
     backgroundColor: 'rgba(0,0,0,0.3)',
     paddingLeft: 15,
     marginBottom: 15,
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   inputStyle: {
     flex: 1,
     color: Colors.white,
-    fontSize: 13,
+    fontSize: Platform.isPad ? 17 : 13,
     fontFamily: Fonts.light,
     marginHorizontal: 5,
   },
@@ -219,20 +220,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   placeholderStyle: {
-    fontSize: 12,
+    fontSize: Platform.isPad ? 17 : 12,
   },
   rightBtnContainer: {
-    borderTopRightRadius: 45 / 2,
-    borderBottomRightRadius: 45 / 2,
+    borderTopRightRadius: Platform.isPad ? 55 / 2 : 45 / 2,
+    borderBottomRightRadius: Platform.isPad ? 55 / 2 : 45 / 2,
     backgroundColor: Colors.white,
-    height: 45,
+    height: Platform.isPad ? 55 : 45,
     flex: 0.3,
   },
   rightBtnSubContainer: {
-    borderTopRightRadius: 45 / 2,
-    borderBottomRightRadius: 45 / 2,
+    borderTopRightRadius: Platform.isPad ? 55 / 2 : 45 / 2,
+    borderBottomRightRadius: Platform.isPad ? 55 / 2 : 45 / 2,
     backgroundColor: Colors.white,
-    height: 45,
+    height: Platform.isPad ? 55 : 45,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -265,7 +266,7 @@ InputField.propTypes = {
 };
 
 InputField.defaultProps = {
-  height: 45,
+  height: Platform.isPad ? 55 : 45,
   numberOfLines: 1,
   onChangeText: () => null,
   onClearValue: () => null,

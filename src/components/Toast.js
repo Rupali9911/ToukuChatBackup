@@ -50,7 +50,7 @@ class Toast extends Component {
     });
 
     Animated.spring(this.state.toast, {
-      toValue: width - width,
+      toValue: Platform.isPad ? width - width + width * 0.15 : width - width,
       bounciness: 5,
       useNativeDriver: true,
     }).start();
@@ -130,7 +130,10 @@ class Toast extends Component {
           {
             transform: [
               {translateX: this.state.toast},
-              {translateY: orientation != 'PORTRAIT' ? 60 : 100},
+              {
+                translateY:
+                  orientation != 'PORTRAIT' ? (Platform.isPad ? 100 : 60) : 100,
+              },
             ],
           },
         ]}>
@@ -159,10 +162,10 @@ class Toast extends Component {
 const styles = StyleSheet.create({
   toast: {
     position: 'absolute',
-    width: '80%',
+    width: Platform.isPad ? '50%' : '80%',
     alignSelf: 'center',
     borderRadius: 8,
-    minHeight: 90,
+    minHeight: Platform.isPad ? 100 : 90,
     shadowColor: '#ccc',
     alignItems: 'center',
     shadowOffset: {

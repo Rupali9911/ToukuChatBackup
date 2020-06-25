@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
@@ -91,7 +92,7 @@ export default class Button extends Component {
             styles.linearGradient,
             {
               height: height,
-              borderRadius: isRounded ? 45 / 2 : 4,
+              borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
               borderColor: this.getBorderColor(),
               opacity: disabled ? 0.5 : 1,
             },
@@ -148,7 +149,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  height: 45,
+  height: Platform.isPad ? 55 : 45,
   type: 'primary',
   title: 'Submit',
   disabled: false,
