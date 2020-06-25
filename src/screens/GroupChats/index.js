@@ -1,14 +1,14 @@
-import React, {Component, Fragment} from 'react';
-import {ImageBackground, Dimensions, Platform} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import { ImageBackground, Dimensions, Platform } from 'react-native';
+import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {Colors, Fonts, Images, Icons, SocketEvents} from '../../constants';
+import { ChatHeader } from '../../components/Headers';
+import { globalStyles } from '../../styles';
+import { Colors, Fonts, Images, Icons, SocketEvents } from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import {ConfirmationModal} from '../../components/Modals';
+import { ConfirmationModal } from '../../components/Modals';
 import {
   translate,
   translateMessage,
@@ -28,8 +28,9 @@ import {
   unSendGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import {ListLoader} from '../../components/Loaders';
-import {eventService} from '../../utils';
+import { ListLoader } from '../../components/Loaders';
+import { eventService } from '../../utils';
+import ImagePicker from 'react-native-image-picker';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -105,7 +106,7 @@ class GroupChats extends Component {
       repliedMessage,
       isEdited,
     } = this.state;
-    const {userData, currentGroup} = this.props;
+    const { userData, currentGroup } = this.props;
 
     let sendmsgdata = {
       // msg_id: 3122,
@@ -165,7 +166,7 @@ class GroupChats extends Component {
   };
 
   sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+    const { newMessageText, editMessageId } = this.state;
     const data = {
       message_body: newMessageText,
     };
@@ -195,10 +196,10 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const {conversation} = this.state;
+    const { conversation } = this.state;
 
     const repliedMessage = conversation.find(
-      (item) => item.msg_id === messageId,
+      (item) => item.msg_id === messageId
     );
     this.setState({
       isReply: true,
@@ -215,7 +216,7 @@ class GroupChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
 
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
@@ -235,12 +236,12 @@ class GroupChats extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   checkEventTypes(message) {
-    const {currentGroup, userData} = this.props;
-    const {conversation} = this.state;
+    const { currentGroup, userData } = this.props;
+    const { conversation } = this.state;
 
     //New Message in group
     if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_GROUP) {
@@ -307,7 +308,7 @@ class GroupChats extends Component {
   }
 
   markGroupConversationRead() {
-    let data = {group_id: this.props.currentGroup.group_id};
+    let data = { group_id: this.props.currentGroup.group_id };
     this.props.markGroupConversationRead(data);
   }
 
@@ -316,7 +317,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({conversation: res.data});
+          this.setState({ conversation: res.data });
           this.markGroupConversationRead();
         }
       })
@@ -337,7 +338,7 @@ class GroupChats extends Component {
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
-            this.setState({isMyGroup: true});
+            this.setState({ isMyGroup: true });
           }
         }
       })
@@ -361,7 +362,7 @@ class GroupChats extends Component {
   }
 
   handleMessage(message) {
-    this.setState({newMessageText: message});
+    this.setState({ newMessageText: message });
   }
 
   //Leave Group
@@ -451,17 +452,17 @@ class GroupChats extends Component {
   };
 
   onConfirmMessageDelete = () => {
-    this.setState({showMessageDeleteConfirmationModal: false});
+    this.setState({ showMessageDeleteConfirmationModal: false });
     if (this.state.selectedMessageId != null) {
-      let payload = {delete_type: 1};
+      let payload = { delete_type: 1 };
       this.props.unSendGroupMessage(this.state.selectedMessageId, payload);
     }
   };
 
   onConfirmMessageUnSend = () => {
-    this.setState({showMessageUnsendConfirmationModal: false});
+    this.setState({ showMessageUnsendConfirmationModal: false });
     if (this.state.selectedMessageId != null) {
-      let payload = {delete_type: 2};
+      let payload = { delete_type: 2 };
       this.props
         .unSendGroupMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -505,6 +506,54 @@ class GroupChats extends Component {
     });
   };
 
+  onCameraPress = () => {
+    var options = {
+      title: 'Choose Option',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchCamera(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri };
+      }
+      // Same code as in above section!
+    });
+  };
+  onGalleryPress = () => {
+    var options = {
+      title: '',
+      storageOptions: {
+        skipBackup: true,
+        path: '',
+      },
+    };
+    ImagePicker.launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri };
+      }
+      // Same code as in above section!
+    });
+  };
+  onAttachmentPress = () => {
+    console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
+  };
+
   render() {
     const {
       newMessageText,
@@ -520,11 +569,12 @@ class GroupChats extends Component {
       translatedMessage,
       translatedMessageId,
     } = this.state;
-    const {currentGroup, groupLoading} = this.props;
+    const { currentGroup, groupLoading } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}>
+        style={globalStyles.container}
+      >
         <ChatHeader
           title={currentGroup.group_name}
           description={
@@ -558,6 +608,9 @@ class GroupChats extends Component {
             onMessageTranslateClose={this.onMessageTranslateClose}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
+            onCameraPress={() => this.onCameraPress()}
+            onGalleryPress={() => this.onGalleryPress()}
+            onAttachmentPress={() => this.onAttachmentPress()}
           />
         )}
         <ConfirmationModal

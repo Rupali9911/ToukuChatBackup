@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.linecorp.linesdk.LineAccessToken;
+import com.linecorp.linesdk.LineIdToken;
 import com.linecorp.linesdk.LineApiResponse;
 import com.linecorp.linesdk.LineProfile;
 import com.linecorp.linesdk.api.LineApiClient;
@@ -120,6 +121,7 @@ public class LineLogin extends ReactContextBaseJavaModule {
         WritableMap result = Arguments.createMap();
         result.putMap("profile", parseProfile(loginResult.getLineProfile()));
         result.putMap("accessToken", parseAccessToken(loginResult.getLineCredential().getAccessToken()));
+        result.putMap("tokenId", parseIdToken(loginResult.getLineIdToken()));
         return result;
     }
 
@@ -139,6 +141,12 @@ public class LineLogin extends ReactContextBaseJavaModule {
         result.putString("accessToken", accessToken.getTokenString());
         result.putString("expirationDate", Long.toString(accessToken.getExpiresInMillis()));
         return result;
+    }
+
+    private WritableMap parseIdToken(LineIdToken idToken) {
+       WritableMap result = Arguments.createMap();
+       result.putString("email", "");
+       return result;
     }
 
     public class LogoutTask extends AsyncTask<Void, Void, LineApiResponse> {

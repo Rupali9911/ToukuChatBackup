@@ -132,10 +132,13 @@ RCT_EXPORT_METHOD(getUserProfile:(RCTPromiseResolveBlock)resolve
         
         NSDictionary *parsedAccessToken = [self parseAccessToken:[credential accessToken]];
         NSDictionary *parsedProfile = [self parseProfile:profile];
-        
+      NSDictionary *parsedCredential = [self parseCredential:[credential IDToken]];
+      
+      
         [result setValue:parsedAccessToken forKey:@"accessToken"];
         [result setValue:parsedProfile forKey:@"profile"];
-        
+        [result setValue:parsedCredential forKey:@"idToken"];
+    
         loginResolver(result);
     }
 }
@@ -164,6 +167,14 @@ RCT_EXPORT_METHOD(getUserProfile:(RCTPromiseResolveBlock)resolve
     [result setValue:[accessToken accessToken] forKey:@"accessToken"];
     [result setValue:[accessToken estimatedExpiredDate] forKey:@"expirationDate"];
     
+    return result;
+}
+
+- (NSDictionary *)parseCredential:(LineSDKJSONWebToken *)idToken
+{
+    NSMutableDictionary *result = [NSMutableDictionary new];
+  
+    [result setValue:[idToken email]  forKey:@"email"];
     return result;
 }
 

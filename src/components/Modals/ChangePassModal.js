@@ -197,7 +197,7 @@ class ChangePassModal extends Component {
                   onSubmitEditing={() => {
                     this.focusNextField('newpassword');
                   }}
-                  autoCapitalize={false}
+                  autoCapitalize={'none'}
                   secureTextEntry={true}
                   returnKeyType={'next'}
                 />
@@ -233,7 +233,7 @@ class ChangePassModal extends Component {
                   onSubmitEditing={() => {
                     this.focusNextField('confirmpassword');
                   }}
-                  autoCapitalize={false}
+                  autoCapitalize={'none'}
                   secureTextEntry={true}
                   returnKeyType={'next'}
                 />
@@ -266,7 +266,7 @@ class ChangePassModal extends Component {
                   onChangeText={(confirmPassword) =>
                     this.handleConfirmPassword(confirmPassword)
                   }
-                  autoCapitalize={false}
+                  autoCapitalize={'none'}
                   secureTextEntry={true}
                   returnKeyType={'done'}
                 />

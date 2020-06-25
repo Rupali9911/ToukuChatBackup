@@ -17,13 +17,18 @@ class BottomTabItem extends Component {
       routeName,
       unreadFriendMsgsCounts,
       unreadGroupMsgsCounts,
+      unreadChannelMsgsCounts,
     } = this.props;
 
     switch (routeName) {
       case 'Home':
-        return unreadFriendMsgsCounts + unreadGroupMsgsCounts;
+        return 0;
       case 'Chat':
-        return unreadFriendMsgsCounts + unreadGroupMsgsCounts;
+        return (
+          unreadFriendMsgsCounts +
+          unreadGroupMsgsCounts +
+          unreadChannelMsgsCounts
+        );
       case 'Timeline':
         return 0;
       case 'Channel':
@@ -73,6 +78,7 @@ const mapStateToProps = (state) => {
   return {
     unreadFriendMsgsCounts: state.friendReducer.unreadFriendMsgsCounts,
     unreadGroupMsgsCounts: state.groupReducer.unreadGroupMsgsCounts,
+    unreadChannelMsgsCounts: state.channelReducer.unreadChannelMsgsCounts,
   };
 };
 

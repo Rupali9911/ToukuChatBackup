@@ -206,7 +206,7 @@ class ChangeEmailModal extends Component {
                   value={newEmail}
                   onChangeText={(newEmail) => this.handleNewEmail(newEmail)}
                   onSubmitEditing={() => {}}
-                  autoCapitalize={false}
+                  autoCapitalize={'none'}
                   returnKeyType={'done'}
                 />
               </View>
@@ -242,7 +242,7 @@ class ChangeEmailModal extends Component {
                   onSubmitEditing={() => {
                     this.focusNextField('newcode');
                   }}
-                  autoCapitalize={false}
+                  autoCapitalize={'none'}
                   returnKeyType={'next'}
                   keyboardType={'number-pad'}
                 />
@@ -273,7 +273,7 @@ class ChangeEmailModal extends Component {
                   placeholder={translate('common.newEmailVerificationCode')}
                   value={newEmailVerificationCode}
                   onChangeText={(code) => this.handleNewCode(code)}
-                  autoCapitalize={false}
+                  autoCapitalize={'none'}
                   returnKeyType={'done'}
                   keyboardType={'number-pad'}
                 />

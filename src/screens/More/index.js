@@ -14,6 +14,7 @@ import ProfileModal from "../../components/Modals/ProfileModal";
 import {logout} from "../../redux/reducers";
 import WebViewClass from '../../components/WebView';
 import QRCodeClass from "../../components/QRCode";
+import ConfirmationModal from "../../components/Modals/ConfirmationModal";
 
 class More extends Component {
   constructor(props) {
@@ -23,7 +24,8 @@ class More extends Component {
       orientation: 'PORTRAIT',
         isWebViewVisible: false,
         isQRVisible: false,
-        isSupport: false
+        isSupport: false,
+        isLogOutVisible: false,
     };
   }
 
@@ -58,15 +60,26 @@ class More extends Component {
     this.setState({orientation});
   };
 
-    async actionLogout() {
+  updateModalVisibility(){
+      this.setState({isLogOutVisible: !this.state.isLogOutVisible})
+      // this.setState((prevState) => ({
+      //     isLogOutVisible: !prevState.isLogOutVisible,
+      // }));
+  }
+
+  actionLogout() {
+      this.updateModalVisibility()
         this.props.logout().then((res) => {
             this.props.navigation.navigate('Auth');
         });
     }
 
+    actionCancel() {
+        this.updateModalVisibility()
+    }
 
-  render() {
-    const {orientation, isWebViewVisible, isQRVisible, isSupport} = this.state;
+    render() {
+    const {orientation, isWebViewVisible, isQRVisible, isSupport, isLogOutVisible} = this.state;
     const {selectedLanguageItem, navigation} = this.props;
     return (
       <ImageBackground
@@ -145,7 +158,7 @@ class More extends Component {
                 <SettingsItem
                     icon_name={'sign-out-alt'}
                     title={translate('header.logout')}
-                    onPress={() => this.actionLogout()}
+                    onPress={() => this.updateModalVisibility()}
                 />
                 <WebViewClass
                 modalVisible={isWebViewVisible}
@@ -157,8 +170,15 @@ class More extends Component {
                     modalVisible={isQRVisible}
                     closeModal={() => this.setState({isQRVisible: false})}
                 />
-
           </ScrollView>
+            <ConfirmationModal
+                orientation={orientation}
+                visible={isLogOutVisible}
+                onCancel={this.actionCancel.bind(this)}
+                onConfirm={this.actionLogout.bind(this)}
+                title={translate('header.logoTitle')}
+                message={translate('common.logOutAlert')}
+            />
         </View>
       </ImageBackground>
     );

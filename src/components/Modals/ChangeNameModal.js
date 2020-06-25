@@ -140,6 +140,7 @@ class ChangeNameModal extends Component {
                     this.handleDisplayName(displayName)
                   }
                   maxLength={32}
+                  autoCapitalize={'none'}
                   onSubmitEditing={() => {}}
                 />
               </View>
