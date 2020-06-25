@@ -29,7 +29,6 @@
     "react-native": "0.62.2",
     "react-native-aws3": "^0.0.9",
     "react-native-doc-viewer": "^2.7.8",
-    "react-native-document-picker": "^3.5.2",
     "react-native-fbsdk": "^1.1.2",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-image-picker": "^2.3.1",
