@@ -107,10 +107,7 @@ class GroupChats extends Component {
       isEdited,
     } = this.state;
     const { userData, currentGroup } = this.props;
-    // const msg_id = Math.floor(Math.random() * 90000) + 10000;
-    // console.log('ChannelChats -> onMessageSend -> id', msg_id, userData.id);
     let sendmsgdata = {
-      // msg_id: msg_id,
       sender_id: userData.id,
       group_id: currentGroup.group_id,
       sender_username: userData.username,
@@ -144,7 +141,7 @@ class GroupChats extends Component {
         msg_type: 'text',
         reply_to: repliedMessage.msg_id,
       };
-      this.state.conversation.push(sendmsgdata);
+      this.state.conversation.unshift(sendmsgdata);
       this.props.sendGroupMessage(groupMessage);
     } else {
       let groupMessage = {
@@ -154,19 +151,8 @@ class GroupChats extends Component {
         message_body: newMessageText,
         msg_type: 'text',
       };
-      this.state.conversation.push(sendmsgdata);
+      this.state.conversation.unshift(sendmsgdata);
       this.props.sendGroupMessage(groupMessage);
-      // .then((res) => {
-      //   console.log('GroupChats -> onMessageSend -> res =------', res);
-      //   // this.getChannelConversations();
-      //   var foundIndex = this.state.conversation.findIndex(
-      //     (x) => x.msg_id == msg_id
-      //   );
-      //   console.log('GroupChats -> onMessageSend -> foundIndex', foundIndex);
-      //   this.state.conversation[foundIndex] = res;
-      //   // this.state.conversations.findIndex()
-      // })
-      // .catch((err) => {});
     }
 
     this.setState({
@@ -192,7 +178,6 @@ class GroupChats extends Component {
   };
 
   onEdit = (message) => {
-    console.log('GroupChats -> onEdit -> message', message);
     this.setState({
       newMessageText: message.message_body.text,
       editMessageId: message.msg_id,
@@ -270,9 +255,10 @@ class GroupChats extends Component {
           //   conversation.push(message.text.data.message_details);
           //   this.setState({conversation});
           // }
+
           this.getGroupConversation();
         } else {
-          // this.getGroupConversation();
+          this.getGroupConversation();
           // if (!isDuplicate) {
           //   conversation.push(message.text.data.message_details);
           // }
@@ -329,7 +315,15 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          this.setState({ conversation: res.data });
+          let data = res.data;
+          data.sort((a, b) =>
+            a.timestamp &&
+            b.timestamp &&
+            new Date(a.timestamp) < new Date(b.timestamp)
+              ? 1
+              : -1
+          );
+          this.setState({ conversation: data });
           this.markGroupConversationRead();
         }
       })
