@@ -46,11 +46,18 @@ class GroupChatContainer extends Component {
     getDate = (date) => {
       const today = new Date();
       const yesterday = new Date();
-      yesterday.setDate(today.getDate() - 1);
+      yesterday.setDate(yesterday.getDate() - 1);
       const msgDate = new Date(date);
-
-      if (today.getDate() === msgDate.getDate()) return 'Today';
-      if (yesterday.getDate() === msgDate.getDate()) return 'Yesterday';
+      if (
+        today.getDate() === msgDate.getDate() &&
+        today.getMonth() === msgDate.getMonth()
+      )
+        return 'Today';
+      if (
+        yesterday.getDate() === msgDate.getDate() &&
+        yesterday.getMonth() === msgDate.getMonth()
+      )
+        return 'Yesterday';
       return moment(msgDate).format('MM/DD');
     };
 

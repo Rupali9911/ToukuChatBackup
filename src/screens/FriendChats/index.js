@@ -98,10 +98,10 @@ class FriendChats extends Component {
   onMessageSend = () => {
     const { newMessageText, isReply, repliedMessage, isEdited } = this.state;
     const { currentFriend, userData } = this.props;
-    const id = Math.floor(Math.random() * 90000) + 10000;
-    console.log('ChannelChats -> onMessageSend -> id', id, userData.id);
+    // const id = Math.floor(Math.random() * 90000) + 10000;
+    // console.log('ChannelChats -> onMessageSend -> id', id, userData.id);
     let sendmsgdata = {
-      id: id,
+      // id: id,
       thumbnail: null,
       from_user: {
         id: userData.id,
@@ -160,18 +160,17 @@ class FriendChats extends Component {
         to_user: this.props.currentFriend.user_id,
       };
       this.state.conversations.unshift(sendmsgdata);
-      this.props
-        .sendPersonalMessage(data)
-        .then((res) => {
-          console.log('ChannelChats -> onMessageSend -> res', res);
-          // this.getChannelConversations();
-          var foundIndex = this.state.conversations.findIndex(
-            (x) => x.id == id
-          );
-          this.state.conversations[foundIndex] = res;
-          // this.state.conversations.findIndex()
-        })
-        .catch((err) => {});
+      this.props.sendPersonalMessage(data);
+      // .then((res) => {
+      //   console.log('ChannelChats -> onMessageSend -> res', res);
+      //   // this.getChannelConversations();
+      //   var foundIndex = this.state.conversations.findIndex(
+      //     (x) => x.id == id
+      //   );
+      //   this.state.conversations[foundIndex] = res;
+      //   // this.state.conversations.findIndex()
+      // })
+      // .catch((err) => {});
     }
     this.setState({
       newMessageText: '',
