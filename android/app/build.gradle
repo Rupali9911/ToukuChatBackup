@@ -192,6 +192,14 @@ repositories {
         dirs 'libs'
     }
 }
+
+preBuild.doFirst {
+    ant.replaceregexp(match: 'android.support.v4.content', replace: 'androidx.core.content', flags: 'g', byline: true)
+            {
+                fileset(dir: '../../node_modules/react-native-doc-viewer/android/src/main/java/com/reactlibrary/', includes: '*.java')
+            }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion

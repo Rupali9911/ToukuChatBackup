@@ -863,7 +863,8 @@
       "accAccessAssignment": "アカウントアクセスの割り当て",
       "roleInfo": "「{{channelName}}」チャンネルで「{{role}}」の役割が割り当てられました。受け入れますか？",
       "accountAccessSuccess": "あなたは{{channel}}チャンネルの{{role}}になりました",
-      "greetingMessageEmptyField": "あいさつ文または関連ファイルを追加してください"
+      "greetingMessageEmptyField": "あいさつ文または関連ファイルを追加してください",
+      "showPastHistory": "新しいフォロワーの過去の投稿を表示"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",
