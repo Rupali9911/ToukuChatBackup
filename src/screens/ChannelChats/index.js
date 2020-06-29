@@ -78,10 +78,8 @@ class ChannelChats extends Component {
   onMessageSend = () => {
     const { newMessageText, isEdited } = this.state;
     const { userData, currentChannel } = this.props;
-    const id = Math.floor(Math.random() * 90000) + 10000;
-    console.log('ChannelChats -> onMessageSend -> id', id, userData.id);
     let sendmsgdata = {
-      id: id,
+      // id: id,
       thumbnail: null,
       from_user: {
         id: userData.id,
@@ -127,17 +125,7 @@ class ChannelChats extends Component {
       msg_type: 'text',
     };
     this.state.conversations.unshift(sendmsgdata);
-    this.props
-      .sendChannelMessage(messageData)
-      .then((res) => {
-        console.log('ChannelChats -> onMessageSend -> res', res);
-        // this.getChannelConversations();
-        var foundIndex = this.state.conversations.findIndex((x) => x.id == id);
-        console.log('ChannelChats -> onMessageSend -> foundIndex', foundIndex);
-        this.state.conversations[foundIndex] = res;
-        // this.state.conversations.findIndex()
-      })
-      .catch((err) => {});
+    this.props.sendChannelMessage(messageData);
     this.setState({
       newMessageText: '',
       repliedMessage: null,
@@ -146,7 +134,6 @@ class ChannelChats extends Component {
   };
 
   onEdit = (message) => {
-    console.log('ChannelChats -> onEdit -> message', message);
     this.setState({
       newMessageText: message.message_body,
       editMessageId: message.id,
@@ -189,7 +176,7 @@ class ChannelChats extends Component {
       message.text.data.message_details.channel == currentChannel.id
     ) {
       if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
+        this.getChannelConversations();
       } else if (
         message.text.data.message_details.to_user != null &&
         message.text.data.message_details.to_user.id == userData.id

@@ -862,7 +862,8 @@
       "accAccessAssignment": "帐户访问权限分配",
       "roleInfo": "您在“ {{channelName}}”频道上被分配了“ {{role}}”角色。你会接受吗？",
       "accountAccessSuccess": "您现在是{{channel}}频道的{{role}}",
-      "greetingMessageEmptyField": "请添加问候语或相关文件"
+      "greetingMessageEmptyField": "请添加问候语或相关文件",
+      "showPastHistory": "显示新的关注者过去的帖子"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",

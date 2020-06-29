@@ -46,9 +46,16 @@ class ChatContainer extends Component {
       const yesterday = new Date();
       yesterday.setDate(today.getDate() - 1);
       const msgDate = new Date(date);
-
-      if (today.getDate() === msgDate.getDate()) return 'Today';
-      if (yesterday.getDate() === msgDate.getDate()) return 'Yesterday';
+      if (
+        today.getDate() === msgDate.getDate() &&
+        today.getMonth() === today.getMonth()
+      )
+        return 'Today';
+      if (
+        yesterday.getDate() === msgDate.getDate() &&
+        yesterday.getMonth() === msgDate.getMonth()
+      )
+        return 'Yesterday';
       return moment(msgDate).format('MM/DD');
     };
     const conversationLength = messages.length;
@@ -59,7 +66,7 @@ class ChatContainer extends Component {
             new Date(item.created).getDate() !==
               new Date(messages[index + 1].created).getDate()) ||
           index === conversationLength - 1 ? (
-            item.message_body == null ? null : (
+            item.message_body == null && !item.is_unsent ? null : (
               <Fragment>
                 <View style={chatStyle.messageDateCntainer}>
                   <View style={chatStyle.messageDate}>

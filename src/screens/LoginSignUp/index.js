@@ -23,6 +23,7 @@ import {Images, Icons} from '../../constants';
 import {loginSignUpStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
+
 import {
   facebookRegister,
   googleRegister,
@@ -40,6 +41,8 @@ import appleAuth, {
     AppleAuthRequestScope,
     AppleAuthRequestOperation,
 } from '@invertase/react-native-apple-authentication';
+import {getSNSCheck} from '../../redux/reducers/loginReducer';
+import {getParamsFromURL} from '../../utils'
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -54,6 +57,7 @@ class LoginSignUp extends Component {
       orientation: 'PORTRAIT',
       pushData: [],
       loggedIn: false,
+        showSNS: false
     };
   }
 
@@ -74,7 +78,8 @@ class LoginSignUp extends Component {
   }
 
   componentDidMount() {
-    GoogleSignin.configure({
+    this.checkSNSVisibility()
+      GoogleSignin.configure({
       webClientId:
         '185609886814-rderde876lo4143bas6l1oj22qoskrdl.apps.googleusercontent.com',
     });
@@ -103,6 +108,16 @@ class LoginSignUp extends Component {
       });
   };
 
+    checkSNSVisibility(){
+      this.props.getSNSCheck().then((url)=> {
+          const { hide_sns } = getParamsFromURL(url)
+          if (hide_sns === 'true'){
+              this.setState({showSNS: false})
+          }else{
+              this.setState({showSNS: true})
+          }
+      })
+  }
   firebaseGoogleLogin = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -444,10 +459,9 @@ class LoginSignUp extends Component {
       });
   }
 
-  onAppleLogin (){
-      this.onAppleButtonPress()
+  appleLogin (){
+    this.onAppleButtonPress()
   }
-
     async onAppleButtonPress() {
         // 1). start a apple sign-in request
         const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -458,6 +472,7 @@ class LoginSignUp extends Component {
         // 2). if the request was successful, extract the token and nonce
         const { identityToken, nonce } = appleAuthRequestResponse;
 
+        console.log('appleAuthRequestResponse', appleAuthRequestResponse)
         // can be null in some scenarios
         if (identityToken) {
             // 3). create a Firebase `AppleAuthProvider` credential
@@ -466,17 +481,18 @@ class LoginSignUp extends Component {
             // 4). use the created `AppleAuthProvider` credential to start a Firebase auth request,
             //     in this example `signInWithCredential` is used, but you could also call `linkWithCredential`
             //     to link the account to an existing user
-            const userCredential = await firebase.auth().signInWithCredential(appleCredential);
+            const userCredential = await auth.auth().signInWithCredential(appleCredential);
 
             // user is now signed in, any Firebase `onAuthStateChanged` listeners you have will trigger
             console.warn(`Firebase authenticated via Apple, UID: ${userCredential.user.uid}`);
         } else {
             // handle this - retry?
+
         }
     }
 
   render() {
-    const {orientation} = this.state;
+    const {orientation, showSNS} = this.state;
     const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
@@ -542,43 +558,48 @@ class LoginSignUp extends Component {
                     onPress={() => this.onSignUpPress()}
                   />
                 </View>
+                  {
+                      showSNS &&
+                          <View>
                 <View style={{marginTop: 30, marginBottom: 10}}>
                   <Text style={globalStyles.smallLightText}>
                     {translate('pages.welcome.OrLoginWith')}
                   </Text>
                 </View>
+                      <View
+                          style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              marginTop: 10,
+                          }}>
+                          <SocialLogin
+                              IconSrc={Icons.icon_facebook}
+                              onPress={() => this.firebaseFacebookLogin()}
+                          />
+                          <SocialLogin
+                              IconSrc={Icons.icon_line}
+                              onPress={() => this.firebaseLineLogin()}
+                          />
+                          <SocialLogin
+                              IconSrc={Icons.icon_google}
+                              onPress={() => this.firebaseGoogleLogin()}
+                          />
+                          <SocialLogin
+                              IconSrc={Icons.icon_twitter}
+                              onPress={() => this.firebaseTwitterLogin()}
+                          />
+                          <SocialLogin
+                              IconSrc={Icons.icon_kakao}
+                              onPress={() => this.kakaoLogin()}
+                          />
+                          {/*<SocialLogin*/}
+                              {/*IconSrc={Icons.icon_apple}*/}
+                              {/*onPress={() => this.appleLogin()}*/}
+                          {/*/>*/}
+                      </View>
+                          </View>
+                  }
 
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginTop: 10,
-                  }}>
-                  <SocialLogin
-                    IconSrc={Icons.icon_facebook}
-                    onPress={() => this.firebaseFacebookLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_line}
-                    onPress={() => this.firebaseLineLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_google}
-                    onPress={() => this.firebaseGoogleLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_twitter}
-                    onPress={() => this.firebaseTwitterLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_kakao}
-                    onPress={() => this.kakaoLogin()}
-                  />
-                    <SocialLogin
-                    IconSrc={Icons.icon_apple}
-                    onPress={() => this.onAppleLogin()}
-                  />
-                </View>
               </View>
             </View>
             <LanguageSelector />
@@ -613,6 +634,7 @@ const mapDispatchToProps = {
   lineRegister,
   kakaoRegister,
   getAccessCodeKakao,
+    getSNSCheck
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginSignUp);

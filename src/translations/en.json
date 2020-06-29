@@ -861,7 +861,8 @@
       "accAccessAssignment": "Account Access Assignment",
       "roleInfo": "You were assigned the role of \"{{role}}\" on the \"{{channelName}}\" channel. Will you accept?",
       "accountAccessSuccess": "You are now an {{role}} of {{channel}} channel",
-      "greetingMessageEmptyField": "Please add greeting text or relevant file"
+      "greetingMessageEmptyField": "Please add greeting text or relevant file",
+      "showPastHistory": "Show new follower past posts"
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",

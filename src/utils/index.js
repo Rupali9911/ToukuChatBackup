@@ -72,3 +72,14 @@ export const eventService = {
   clearMessages: () => subject.next(),
   getMessage: () => subject.asObservable(),
 };
+
+export function getParamsFromURL (url){
+    let regex = /[?&]([^=#]+)=([^&#]*)/g,
+        params = {},
+        match
+    while ((match = regex.exec(url))) {
+        params[match[1]] = match[2]
+        console.log(match[1], match[2])
+    }
+    return params
+}
