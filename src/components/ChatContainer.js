@@ -127,6 +127,7 @@ class ChatContainer extends Component {
       onCameraPress,
       onGalleryPress,
       onAttachmentPress,
+      sendingImage,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -244,6 +245,7 @@ class ChatContainer extends Component {
           onSend={onMessageSend}
           value={newMessageText}
           placeholder={translate('pages.xchat.enterMessage')}
+          sendingImage={sendingImage}
         />
       </KeyboardAwareScrollView>
     );
