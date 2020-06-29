@@ -136,6 +136,15 @@ export default class GroupChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
     } = this.props;
+
+    if (!message.message_body && !message.is_unsent) {
+      return null;
+    }
+
+    if (message.message_body.text === null) {
+      return null;
+    }
+
     return !isUser ? (
       <View
         style={[

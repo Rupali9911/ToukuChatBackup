@@ -28,7 +28,7 @@ import Toast from '../../components/Toast';
 import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
 import ImagePicker from 'react-native-image-picker';
-
+import S3uploadService from '../../helpers/S3uploadService';
 class FriendChats extends Component {
   constructor(props) {
     super(props);
@@ -42,6 +42,8 @@ class FriendChats extends Component {
       showConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
+      sentMessageType: 'text',
+      uploadImage: { uri: null },
       headerRightIconMenu: [
         {
           id: 1,
@@ -67,6 +69,7 @@ class FriendChats extends Component {
     };
 
     this.SingleSocket = new SingleSocket();
+    this.S3uploadService = new S3uploadService();
   }
 
   UNSAFE_componentWillMount() {
@@ -95,11 +98,29 @@ class FriendChats extends Component {
     this.setState({ orientation });
   };
 
-  onMessageSend = () => {
-    const { newMessageText, isReply, repliedMessage, isEdited } = this.state;
+  onMessageSend = async () => {
+    const {
+      newMessageText,
+      isReply,
+      repliedMessage,
+      isEdited,
+      sentMessageType,
+      uploadImage,
+    } = this.state;
     const { currentFriend, userData } = this.props;
-    // const id = Math.floor(Math.random() * 90000) + 10000;
-    // console.log('ChannelChats -> onMessageSend -> id', id, userData.id);
+
+    if (!newMessageText && !uploadImage.uri) {
+      return;
+    }
+    let msgText = newMessageText;
+    if (sentMessageType !== 'text') {
+      let file = uploadImage.uri;
+      let files = [file];
+      const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+        files
+      );
+      msgText = uploadedImages.image[0].image;
+    }
     let sendmsgdata = {
       // id: id,
       thumbnail: null,
@@ -119,22 +140,20 @@ class FriendChats extends Component {
         is_online: currentFriend.is_online,
         display_name: currentFriend.display_name,
       },
-      message_body: newMessageText,
+      message_body: msgText,
       reply_to: isReply ? repliedMessage : null,
       local_id: null,
       created: moment().format(),
       updated: moment().format(),
-      msg_type: 'text',
+      msg_type: sentMessageType,
       is_read: false,
       is_unsent: false,
       is_edited: false,
       friend: userData.id,
       deleted_for: [],
+      sentMessageType: 'text',
+      uploadImage: { uri: null },
     };
-
-    if (!newMessageText) {
-      return;
-    }
 
     if (isEdited) {
       this.sendEditMessage();
@@ -144,8 +163,8 @@ class FriendChats extends Component {
       let data = {
         friend: this.props.currentFriend.friend,
         local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
-        message_body: newMessageText,
-        msg_type: 'text',
+        message_body: msgText,
+        msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
@@ -155,8 +174,8 @@ class FriendChats extends Component {
       let data = {
         friend: this.props.currentFriend.friend,
         local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
-        message_body: newMessageText,
-        msg_type: 'text',
+        message_body: msgText,
+        msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
       };
       this.state.conversations.unshift(sendmsgdata);
@@ -177,6 +196,8 @@ class FriendChats extends Component {
       isReply: false,
       repliedMessage: null,
       isEdited: false,
+      sentMessageType: 'text',
+      uploadImage: { uri: null },
     });
   };
 
@@ -487,7 +508,11 @@ class FriendChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          uploadImage: source,
+          sentMessageType: 'image',
+        });
       }
       // Same code as in above section!
     });
@@ -508,7 +533,11 @@ class FriendChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          uploadImage: source,
+          sentMessageType: 'image',
+        });
       }
       // Same code as in above section!
     });
@@ -527,6 +556,7 @@ class FriendChats extends Component {
       orientation,
       translatedMessage,
       translatedMessageId,
+      uploadImage,
     } = this.state;
     const { currentFriend, chatsLoading } = this.props;
     return (
@@ -549,7 +579,7 @@ class FriendChats extends Component {
         ) : (
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
-            onMessageSend={this.onMessageSend.bind(this)}
+            onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}
             newMessageText={newMessageText}
             messages={conversations}
@@ -567,6 +597,7 @@ class FriendChats extends Component {
             onCameraPress={() => this.onCameraPress()}
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
+            sendingImage={uploadImage}
           />
         )}
         <ConfirmationModal

@@ -139,6 +139,10 @@ class ChatMessageBubble extends Component {
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
+
+    if (!message.message_body && !message.is_unsent) {
+      return null;
+    }
     return (
       <Menu
         contentStyle={{
