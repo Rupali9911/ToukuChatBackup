@@ -35,6 +35,12 @@ import AsyncStorage from '@react-native-community/async-storage';
 const {RNTwitterSignIn} = NativeModules;
 import KakaoLogins from '@react-native-seoul/kakao-login';
 
+import appleAuth, {
+    AppleButton,
+    AppleAuthRequestScope,
+    AppleAuthRequestOperation,
+} from '@invertase/react-native-apple-authentication';
+
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
   TWITTER_CONSUMER_SECRET: '2R6vK7nCsWIYneFgmlvBQUSbajD1djiYMIFLwwElZMYaa3r6Q8',
@@ -438,6 +444,37 @@ class LoginSignUp extends Component {
       });
   }
 
+  onAppleLogin (){
+      this.onAppleButtonPress()
+  }
+
+    async onAppleButtonPress() {
+        // 1). start a apple sign-in request
+        const appleAuthRequestResponse = await appleAuth.performRequest({
+            requestedOperation: AppleAuthRequestOperation.LOGIN,
+            requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+        });
+
+        // 2). if the request was successful, extract the token and nonce
+        const { identityToken, nonce } = appleAuthRequestResponse;
+
+        // can be null in some scenarios
+        if (identityToken) {
+            // 3). create a Firebase `AppleAuthProvider` credential
+            const appleCredential = auth.auth.AppleAuthProvider.credential(identityToken, nonce);
+
+            // 4). use the created `AppleAuthProvider` credential to start a Firebase auth request,
+            //     in this example `signInWithCredential` is used, but you could also call `linkWithCredential`
+            //     to link the account to an existing user
+            const userCredential = await firebase.auth().signInWithCredential(appleCredential);
+
+            // user is now signed in, any Firebase `onAuthStateChanged` listeners you have will trigger
+            console.warn(`Firebase authenticated via Apple, UID: ${userCredential.user.uid}`);
+        } else {
+            // handle this - retry?
+        }
+    }
+
   render() {
     const {orientation} = this.state;
     const {selectedLanguageItem} = this.props;
@@ -536,6 +573,10 @@ class LoginSignUp extends Component {
                   <SocialLogin
                     IconSrc={Icons.icon_kakao}
                     onPress={() => this.kakaoLogin()}
+                  />
+                    <SocialLogin
+                    IconSrc={Icons.icon_apple}
+                    onPress={() => this.onAppleLogin()}
                   />
                 </View>
               </View>

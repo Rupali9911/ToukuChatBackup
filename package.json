@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@digitalascetic/ngx-pica": "^9.0.0",
+    "@invertase/react-native-apple-authentication": "^1.1.1",
     "@react-native-community/async-storage": "^1.9.0",
     "@react-native-community/google-signin": "^4.0.0",
     "@react-native-community/masked-view": "^0.1.10",

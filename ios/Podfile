@@ -50,8 +50,9 @@ target 'Touku' do
   pod 'Firebase/Analytics'
   pod 'GoogleSignIn'
   pod 'FBSDKLoginKit'
-  pod 'TwitterKit5'
   pod 'LineSDK', '~> 5.0'
+  pod 'TwitterKit5'
+
   # add pods for any other desired Firebase products
   # https://firebase.google.com/docs/ios/setup#available-pods
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
