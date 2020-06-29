@@ -1,5 +1,6 @@
-import {client} from '../../helpers/api';
+import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
 
 export const GET_LOGIN_REQUEST = 'GET_LOGIN_REQUEST';
 export const GET_LOGIN_SUCCESS = 'GET_LOGIN_SUCCESS';
@@ -67,3 +68,18 @@ export const userLogin = (user) => (dispatch) =>
         reject(err);
       });
   });
+
+export const getSNSCheck = () => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        axios.get('https://api.angelium.net/api/native-urls/?module=native_app', { headers: { 'User-Agent': userAgent } })
+            .then(response => {
+                if (response.data.url) {
+                    resolve(response.data.url);
+                }
+            })
+            .catch((error) => {
+                reject(err);
+                console.log('error ' + error);
+            });
+    });
+//https://api.angelium.net/api/native-urls/?module=touku

@@ -44,6 +44,15 @@ import AsyncStorage from '@react-native-community/async-storage';
 import KakaoLogins from '@react-native-seoul/kakao-login';
 const {RNTwitterSignIn} = NativeModules;
 
+import appleAuth, {
+    AppleButton,
+    AppleAuthRequestScope,
+    AppleAuthRequestOperation,
+} from '@invertase/react-native-apple-authentication';
+
+import {getSNSCheck} from '../../redux/reducers/loginReducer';
+import {getParamsFromURL} from '../../utils'
+
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
   TWITTER_CONSUMER_SECRET: '2R6vK7nCsWIYneFgmlvBQUSbajD1djiYMIFLwwElZMYaa3r6Q8',
@@ -64,6 +73,7 @@ class Login extends Component {
       passwordErr: null,
       userNameStatus: 'normal',
       passwordStatus: 'normal',
+        showSNS: false,
     };
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -79,24 +89,9 @@ class Login extends Component {
   }
 
   componentDidMount() {
+      this.checkSNSVisibility()
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
     Orientation.addOrientationListener(this._orientationDidChange);
-
-    // fetch('https://touku.angelium.net/api/jwt/api-token-auth-xana/', {
-    //   method: 'POST',
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     dev_id: '',
-    //     email: 'new.register@angelium.net',
-    //     password: 'Test@123',
-    //     rememberMe: false,
-    //   }),
-    // })
-    //   .then((response) => alert(JSON.stringify(response)))
-    //   .catch((err) => alert(JSON.stringify(err)));
   }
 
   componentWillUnmount() {
@@ -115,6 +110,17 @@ class Login extends Component {
         console.error(error);
       });
   };
+
+    checkSNSVisibility(){
+        this.props.getSNSCheck().then((url)=> {
+            const { hide_sns } = getParamsFromURL(url)
+            if (hide_sns === 'true'){
+                this.setState({showSNS: false})
+            }else{
+                this.setState({showSNS: true})
+            }
+        })
+    }
 
   focusNextField(id) {
     this.inputs[id].focus();
@@ -578,6 +584,38 @@ class Login extends Component {
     this.props.navigation.navigate('NeedSupport');
   }
 
+    appleLogin (){
+        this.onAppleButtonPress()
+    }
+    async onAppleButtonPress() {
+        // 1). start a apple sign-in request
+        const appleAuthRequestResponse = await appleAuth.performRequest({
+            requestedOperation: AppleAuthRequestOperation.LOGIN,
+            requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+        });
+
+        // 2). if the request was successful, extract the token and nonce
+        const { identityToken, nonce } = appleAuthRequestResponse;
+
+        console.log('appleAuthRequestResponse', appleAuthRequestResponse)
+        // can be null in some scenarios
+        if (identityToken) {
+            // 3). create a Firebase `AppleAuthProvider` credential
+            const appleCredential = auth.auth.AppleAuthProvider.credential(identityToken, nonce);
+
+            // 4). use the created `AppleAuthProvider` credential to start a Firebase auth request,
+            //     in this example `signInWithCredential` is used, but you could also call `linkWithCredential`
+            //     to link the account to an existing user
+            const userCredential = await auth.auth().signInWithCredential(appleCredential);
+
+            // user is now signed in, any Firebase `onAuthStateChanged` listeners you have will trigger
+            console.warn(`Firebase authenticated via Apple, UID: ${userCredential.user.uid}`);
+        } else {
+            // handle this - retry?
+
+        }
+    }
+
   render() {
     const {
       isRememberChecked,
@@ -587,6 +625,7 @@ class Login extends Component {
       passwordStatus,
       userNameErr,
       passwordErr,
+        showSNS
     } = this.state;
     return (
       <ImageBackground
@@ -774,38 +813,47 @@ class Login extends Component {
                     </Text>
                   </View>
                 </View>
-                <View style={{marginTop: 25}}>
-                  <Text style={globalStyles.smallLightText}>
-                    {translate('pages.welcome.OrLoginWith')}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginTop: 20,
-                  }}>
-                  <SocialLogin
-                    IconSrc={Icons.icon_facebook}
-                    onPress={() => this.firebaseFacebookLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_line}
-                    onPress={() => this.firebaseLineLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_google}
-                    onPress={() => this.firebaseGoogleLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_twitter}
-                    onPress={() => this.firebaseTwitterLogin()}
-                  />
-                  <SocialLogin
-                    IconSrc={Icons.icon_kakao}
-                    onPress={() => this.kakaoLogin()}
-                  />
-                </View>
+                  {
+                      showSNS &&
+                      <View>
+                          <View style={{marginTop: 25}}>
+                              <Text style={globalStyles.smallLightText}>
+                                  {translate('pages.welcome.OrLoginWith')}
+                              </Text>
+                          </View>
+                          <View
+                              style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'center',
+                                  marginTop: 20,
+                              }}>
+                              <SocialLogin
+                                  IconSrc={Icons.icon_facebook}
+                                  onPress={() => this.firebaseFacebookLogin()}
+                              />
+                              <SocialLogin
+                                  IconSrc={Icons.icon_line}
+                                  onPress={() => this.firebaseLineLogin()}
+                              />
+                              <SocialLogin
+                                  IconSrc={Icons.icon_google}
+                                  onPress={() => this.firebaseGoogleLogin()}
+                              />
+                              <SocialLogin
+                                  IconSrc={Icons.icon_twitter}
+                                  onPress={() => this.firebaseTwitterLogin()}
+                              />
+                              <SocialLogin
+                                  IconSrc={Icons.icon_kakao}
+                                  onPress={() => this.kakaoLogin()}
+                              />
+                              {/*<SocialLogin*/}
+                                  {/*IconSrc={Icons.icon_apple}*/}
+                                  {/*onPress={() => this.appleLogin()}*/}
+                              {/*/>*/}
+                          </View>
+                      </View>
+                  }
               </View>
             </View>
             <LanguageSelector />
@@ -831,6 +879,8 @@ const mapDispatchToProps = {
   googleRegister,
   lineRegister,
   kakaoRegister,
+    getSNSCheck
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
