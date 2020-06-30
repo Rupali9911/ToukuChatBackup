@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
 import * as S3 from 'aws-sdk/clients/s3';
 import moment from 'moment';
-import {environment} from '../constants';
+import { environment } from '../constants';
 import ImageResizer from 'react-native-image-resizer';
-import {RNS3} from 'react-native-aws3';
+import { RNS3 } from 'react-native-aws3';
 
 export default class S3uploadService extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ export default class S3uploadService extends Component {
   }
 
   async uploadImagesOnS3Bucket(files) {
-    const imagesFiles = {image: []};
+    const imagesFiles = { image: [] };
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileName = `image_${moment().valueOf()}_${i + 1}`;
@@ -21,13 +21,13 @@ export default class S3uploadService extends Component {
         file,
         fileName,
         1280,
-        1200,
+        1200
       );
       const originResizedImage_2 = await this.uploadImage(
         file,
         `thumb_${fileName}`,
         360,
-        360,
+        360
       );
       imagesFiles.image.push({
         image: originResizedImage.body.postResponse.location,
@@ -40,6 +40,24 @@ export default class S3uploadService extends Component {
   async uploadImage(file, fileName, width, height) {
     const imageFile = await this.resizeImage(file, width, height);
     return await this.uploadFile(imageFile, fileName, 'image');
+  }
+
+  async uploadAudioOnS3Bucket(files, fileName, fileType) {
+    let audio;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      audio = await this.uploadFile(file, fileName, fileType);
+    }
+    return audio.body.postResponse.location;
+  }
+
+  async uploadApplicationOnS3Bucket(files, fileName, fileType) {
+    let application;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      application = await this.uploadFile(file, fileName, fileType);
+    }
+    return application.body.postResponse.location;
   }
 
   async uploadFile(file, fileName, fileType) {
@@ -69,9 +87,9 @@ export default class S3uploadService extends Component {
       width,
       height,
       'PNG',
-      100,
+      100
     )
-      .then(async ({uri}) => {
+      .then(async ({ uri }) => {
         return await uri;
       })
       .catch((err) => {
