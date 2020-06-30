@@ -6,6 +6,7 @@ import ChannelCategoryModal from './ChannelCategoryModal';
 import BackgroundImgModal from './BackgroundImgModal';
 import ConfirmationModal from './ConfirmationModal';
 import AffilicateModal from './AffilicateModal';
+import UploadSelectModal from './UploadSelectModal';
 
 export {
   ProfileModal,
@@ -16,4 +17,5 @@ export {
   BackgroundImgModal,
   ConfirmationModal,
   AffilicateModal,
+  UploadSelectModal,
 };
