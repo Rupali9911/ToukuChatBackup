@@ -255,7 +255,11 @@ class GroupChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.text.split('/').pop()}
+                          {message.message_body.text
+                            .split('/')
+                            .pop()
+                            .split('%2F')
+                            .pop()}
                         </Text>
                         <View
                           style={{
@@ -397,7 +401,11 @@ class GroupChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.text.split('/').pop()}
+                          {message.message_body.text
+                            .split('/')
+                            .pop()
+                            .split('%2F')
+                            .pop()}
                         </Text>
                         <View
                           style={{

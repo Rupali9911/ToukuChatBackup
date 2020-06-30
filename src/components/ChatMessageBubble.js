@@ -236,7 +236,11 @@ class ChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.split('/').pop()}
+                          {message.message_body
+                            .split('/')
+                            .pop()
+                            .split('%2')
+                            .pop()}
                         </Text>
                         <View
                           style={{
@@ -366,7 +370,11 @@ class ChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.split('/').pop()}
+                          {message.message_body
+                            .split('/')
+                            .pop()
+                            .split('%2F')
+                            .pop()}
                         </Text>
                         <View
                           style={{

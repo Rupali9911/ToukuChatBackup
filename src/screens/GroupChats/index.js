@@ -32,6 +32,7 @@ import { ListLoader } from '../../components/Loaders';
 import { eventService } from '../../utils';
 import ImagePicker from 'react-native-image-picker';
 import S3uploadService from '../../helpers/S3uploadService';
+import DocumentPicker from 'react-native-document-picker';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -49,7 +50,7 @@ class GroupChats extends Component {
       translatedMessageId: null,
       showMessageDeleteConfirmationModal: false,
       sentMessageType: 'text',
-      uploadImage: { uri: null },
+      uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
         {
           id: 1,
@@ -110,22 +111,43 @@ class GroupChats extends Component {
       repliedMessage,
       isEdited,
       sentMessageType,
-      uploadImage,
+      uploadFile,
     } = this.state;
     const { userData, currentGroup } = this.props;
 
-    if (!newMessageText && !uploadImage.uri) {
+    if (!newMessageText && !uploadFile.uri) {
       return;
     }
     let msgText = newMessageText;
-    if (sentMessageType !== 'text') {
-      let file = uploadImage.uri;
+    if (sentMessageType === 'image') {
+      let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files
       );
 
       msgText = uploadedImages.image[0].image;
+    }
+    if (sentMessageType === 'audio') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
+        files,
+        uploadFile.name,
+        uploadFile.type
+      );
+      msgText = uploadedAudio;
+    }
+
+    if (sentMessageType === 'doc') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
+        files,
+        uploadFile.name,
+        uploadFile.type
+      );
+      msgText = uploadedApplication;
     }
     let sendmsgdata = {
       sender_id: userData.id,
@@ -200,7 +222,7 @@ class GroupChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
-      uploadImage: { uri: null },
+      uploadFile: { uri: null, type: null, name: null },
     });
   };
 
@@ -573,7 +595,7 @@ class GroupChats extends Component {
       } else {
         let source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
-          uploadImage: source,
+          uploadFile: source,
           sentMessageType: 'image',
         });
       }
@@ -598,15 +620,54 @@ class GroupChats extends Component {
       } else {
         let source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
-          uploadImage: source,
+          uploadFile: source,
           sentMessageType: 'image',
         });
       }
       // Same code as in above section!
     });
   };
-  onAttachmentPress = () => {
+  onAttachmentPress = async () => {
     console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
+    try {
+      const results = await DocumentPicker.pickMultiple({
+        type: [
+          DocumentPicker.types.plainText,
+          DocumentPicker.types.pdf,
+          DocumentPicker.types.csv,
+          DocumentPicker.types.zip,
+          DocumentPicker.types.audio,
+        ],
+      });
+      for (const res of results) {
+        let fileType = res.type.substr(0, res.type.indexOf('/'));
+        console.log(
+          res.uri,
+          res.type, // mime type
+          res.name,
+          res.size,
+          res.type.substr(0, res.type.indexOf('/'))
+        );
+        let source = { uri: res.uri, type: res.type, name: res.name };
+        if (fileType === 'audio') {
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'audio',
+          });
+        } else if (fileType === 'application') {
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'doc',
+          });
+        }
+      }
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
   };
 
   render() {
@@ -623,7 +684,7 @@ class GroupChats extends Component {
       showMessageDeleteConfirmationModal,
       translatedMessage,
       translatedMessageId,
-      uploadImage,
+      uploadFile,
     } = this.state;
     const { currentGroup, groupLoading } = this.props;
     return (
@@ -667,7 +728,7 @@ class GroupChats extends Component {
             onCameraPress={() => this.onCameraPress()}
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
-            sendingImage={uploadImage}
+            sendingImage={uploadFile}
           />
         )}
         <ConfirmationModal
