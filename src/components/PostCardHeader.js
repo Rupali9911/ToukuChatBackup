@@ -30,9 +30,13 @@ export default class PostCardHeader extends Component {
     };
   }
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => {
+      this.setState({ visible: true });}
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => {
+      this.setState({ visible: false });
+  }
+
   render() {
     const { post, menuItems } = this.props;
     return (
@@ -149,6 +153,7 @@ export default class PostCardHeader extends Component {
                       key={index}
                       onPress={() => {
                         this._closeMenu();
+                        item.onPress(post)
                       }}
                       title={`${item.title}`}
                       titleStyle={{
@@ -168,11 +173,11 @@ export default class PostCardHeader extends Component {
 }
 
 PostCardHeader.propTypes = {
-  value: PropTypes.object,
+  value: PropTypes.object
 };
 
 PostCardHeader.defaultProps = {
-  value: {},
+  value: {}
 };
 
 const styles = StyleSheet.create({

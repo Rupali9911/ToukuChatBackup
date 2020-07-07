@@ -19,18 +19,20 @@ import { isIphoneX } from '../utils';
 const S = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: isIphoneX ? 80 : 56,
+    height: isIphoneX() ? 80 : 56,
     elevation: 2,
   },
   tabButton: {
     flex: 1,
     justifyContent: !isIphoneX ? 'center' : null,
     alignItems: 'center',
-    marginTop: !isIphoneX ? 0 : 8,
+    marginTop:  8,
   },
 });
 
 const TabBarComp = (props) => {
+    const dimen = Dimensions.get('window');
+console.log('dimen.height', isIphoneX())
   const {
     renderIcon,
     getLabelText,

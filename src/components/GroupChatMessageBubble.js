@@ -147,6 +147,11 @@ class GroupChatMessageBubble extends Component {
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
+
+    if (message.message_body.text === null) {
+      return null;
+    }
+
     const msgTime = new Date(message.timestamp);
     const isEditable = new Date(msgTime);
 
@@ -224,7 +229,8 @@ class GroupChatMessageBubble extends Component {
                       Object.keys(message.reply_to).length !== 0 &&
                       message.reply_to.constructor === Object &&
                       this.renderReplyMessage(message.reply_to)}
-                    {message.message_body.type === 'image' ? (
+                    {message.message_body.type === 'image' &&
+                    message.message_body.text !== null ? (
                       <ScalableImage
                         src={message.message_body.text}
                         borderRadius={borderRadius}
@@ -249,7 +255,11 @@ class GroupChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.text.split('/').pop()}
+                          {message.message_body.text
+                            .split('/')
+                            .pop()
+                            .split('%2F')
+                            .pop()}
                         </Text>
                         <View
                           style={{
@@ -365,7 +375,8 @@ class GroupChatMessageBubble extends Component {
                       Object.keys(message.reply_to).length !== 0 &&
                       message.reply_to.constructor === Object &&
                       this.renderReplyMessage(message.reply_to)}
-                    {message.message_body.type === 'image' ? (
+                    {message.message_body.type === 'image' &&
+                    message.message_body.text !== null ? (
                       <ScalableImage
                         src={message.message_body.text}
                         borderRadius={borderRadius}
@@ -390,7 +401,11 @@ class GroupChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.text.split('/').pop()}
+                          {message.message_body.text
+                            .split('/')
+                            .pop()
+                            .split('%2F')
+                            .pop()}
                         </Text>
                         <View
                           style={{

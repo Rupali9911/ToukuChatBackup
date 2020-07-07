@@ -28,6 +28,8 @@ import Toast from '../../components/Toast';
 import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
 import ImagePicker from 'react-native-image-picker';
+import S3uploadService from '../../helpers/S3uploadService';
+import DocumentPicker from 'react-native-document-picker';
 
 class FriendChats extends Component {
   constructor(props) {
@@ -42,6 +44,8 @@ class FriendChats extends Component {
       showConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
+      sentMessageType: 'text',
+      uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
         {
           id: 1,
@@ -59,6 +63,30 @@ class FriendChats extends Component {
             this.props.navigation.navigate('CreateFriendGroup');
           },
         },
+          {
+              id: 3,
+              title: 'Report user',
+              icon: 'user-times',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'User reported',
+                      type: 'positive',
+                  });
+              },
+          },
+          {
+              id: 3,
+              title: 'Block user',
+              icon: 'user-times',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'User blocked',
+                      type: 'positive',
+                  });
+              },
+          },
       ],
       isReply: false,
       repliedMessage: null,
@@ -67,6 +95,7 @@ class FriendChats extends Component {
     };
 
     this.SingleSocket = new SingleSocket();
+    this.S3uploadService = new S3uploadService();
   }
 
   UNSAFE_componentWillMount() {
@@ -95,11 +124,53 @@ class FriendChats extends Component {
     this.setState({ orientation });
   };
 
-  onMessageSend = () => {
-    const { newMessageText, isReply, repliedMessage, isEdited } = this.state;
+  onMessageSend = async () => {
+    const {
+      newMessageText,
+      isReply,
+      repliedMessage,
+      isEdited,
+      sentMessageType,
+      uploadFile,
+    } = this.state;
     const { currentFriend, userData } = this.props;
-    // const id = Math.floor(Math.random() * 90000) + 10000;
-    // console.log('ChannelChats -> onMessageSend -> id', id, userData.id);
+
+    if (!newMessageText && !uploadFile.uri) {
+      return;
+    }
+    let msgText = newMessageText;
+    if (sentMessageType === 'image') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+        files
+      );
+      msgText = uploadedImages.image[0].image;
+    }
+
+    if (sentMessageType === 'audio') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
+        files,
+        uploadFile.name,
+        uploadFile.type
+      );
+      msgText = uploadedAudio;
+    }
+
+    if (sentMessageType === 'doc') {
+      let file = uploadFile.uri;
+      let files = [file];
+      let fileType = uploadFile.type;
+      const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
+        files,
+        uploadFile.name,
+        uploadFile.type
+      );
+      msgText = uploadedApplication;
+    }
+
     let sendmsgdata = {
       // id: id,
       thumbnail: null,
@@ -119,22 +190,19 @@ class FriendChats extends Component {
         is_online: currentFriend.is_online,
         display_name: currentFriend.display_name,
       },
-      message_body: newMessageText,
+      message_body: msgText,
       reply_to: isReply ? repliedMessage : null,
       local_id: null,
       created: moment().format(),
       updated: moment().format(),
-      msg_type: 'text',
+      msg_type: sentMessageType,
       is_read: false,
       is_unsent: false,
       is_edited: false,
       friend: userData.id,
       deleted_for: [],
+      sentMessageType: 'text',
     };
-
-    if (!newMessageText) {
-      return;
-    }
 
     if (isEdited) {
       this.sendEditMessage();
@@ -144,8 +212,8 @@ class FriendChats extends Component {
       let data = {
         friend: this.props.currentFriend.friend,
         local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
-        message_body: newMessageText,
-        msg_type: 'text',
+        message_body: msgText,
+        msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
@@ -155,8 +223,8 @@ class FriendChats extends Component {
       let data = {
         friend: this.props.currentFriend.friend,
         local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
-        message_body: newMessageText,
-        msg_type: 'text',
+        message_body: msgText,
+        msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
       };
       this.state.conversations.unshift(sendmsgdata);
@@ -177,6 +245,8 @@ class FriendChats extends Component {
       isReply: false,
       repliedMessage: null,
       isEdited: false,
+      sentMessageType: 'text',
+      uploadFile: { uri: null, type: null, name: null },
     });
   };
 
@@ -487,7 +557,11 @@ class FriendChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          uploadFile: source,
+          sentMessageType: 'image',
+        });
       }
       // Same code as in above section!
     });
@@ -508,13 +582,56 @@ class FriendChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          uploadFile: source,
+          sentMessageType: 'image',
+        });
       }
       // Same code as in above section!
     });
   };
-  onAttachmentPress = () => {
+  onAttachmentPress = async () => {
     console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
+    try {
+      const results = await DocumentPicker.pickMultiple({
+        type: [
+          DocumentPicker.types.plainText,
+          DocumentPicker.types.pdf,
+          DocumentPicker.types.csv,
+          DocumentPicker.types.zip,
+          DocumentPicker.types.audio,
+        ],
+      });
+      for (const res of results) {
+        let fileType = res.type.substr(0, res.type.indexOf('/'));
+        console.log(
+          res.uri,
+          res.type, // mime type
+          res.name,
+          res.size,
+          res.type.substr(0, res.type.indexOf('/'))
+        );
+        let source = { uri: res.uri, type: res.type, name: res.name };
+        if (fileType === 'audio') {
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'audio',
+          });
+        } else if (fileType === 'application') {
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'doc',
+          });
+        }
+      }
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
   };
 
   render() {
@@ -527,6 +644,7 @@ class FriendChats extends Component {
       orientation,
       translatedMessage,
       translatedMessageId,
+      uploadFile,
     } = this.state;
     const { currentFriend, chatsLoading } = this.props;
     return (
@@ -549,7 +667,7 @@ class FriendChats extends Component {
         ) : (
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
-            onMessageSend={this.onMessageSend.bind(this)}
+            onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}
             newMessageText={newMessageText}
             messages={conversations}
@@ -567,6 +685,7 @@ class FriendChats extends Component {
             onCameraPress={() => this.onCameraPress()}
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
+            sendingImage={uploadFile}
           />
         )}
         <ConfirmationModal

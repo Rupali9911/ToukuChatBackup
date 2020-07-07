@@ -347,3 +347,57 @@ export const getRankingChannel = () => (dispatch) =>
         reject(err);
       });
   });
+
+export const hidePost = (postId) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        let data = {
+            filtered_post: postId
+        }
+        console.log('filtered_post', data)
+        client
+            .patch(`/xchat/report-timeline-content/`, data)
+            .then((res) => {
+                if (res.status) {
+                    resolve(res);
+                }
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+
+export const hideAllPost = (postId) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        let data = {
+            filtered_channel: postId
+        }
+        console.log('filtered_channel', data)
+        client
+            .patch(`/xchat/report-timeline-content/`, data)
+            .then((res) => {
+                if (res.status) {
+                    resolve(res);
+                }
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+
+export const reportPost = (postId) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        let data = {
+            reported_post: postId
+        }
+        console.log('reported_post', data)
+        client
+            .patch(`/xchat/report-timeline-content/`, data)
+            .then((res) => {
+                if (res.status) {
+                    resolve(res);
+                }
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });

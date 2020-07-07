@@ -33,6 +33,7 @@ export default class ChatInput extends Component {
       onSend,
       value,
       placeholder,
+      sendingImage,
     } = this.props;
     return (
       <View style={chatInput.chatInputContainer}>
@@ -92,15 +93,16 @@ export default class ChatInput extends Component {
         </View>
         <TouchableOpacity
           style={chatInput.sendButoonContainer}
+          activeOpacity={value != 0 || sendingImage.uri ? 0 : 1}
           onPress={() => {
-            onSend();
+            value != 0 || sendingImage.uri ? onSend() : null;
           }}
         >
           <Image
             source={Icons.icon_send_button}
             style={[
               chatInput.sandButtonImage,
-              value != 0 && { tintColor: null },
+              (value != 0 || sendingImage.uri) && { tintColor: null },
             ]}
             resizeMode={'contain'}
           />

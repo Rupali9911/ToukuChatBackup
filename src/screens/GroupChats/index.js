@@ -31,6 +31,8 @@ import Toast from '../../components/Toast';
 import { ListLoader } from '../../components/Loaders';
 import { eventService } from '../../utils';
 import ImagePicker from 'react-native-image-picker';
+import S3uploadService from '../../helpers/S3uploadService';
+import DocumentPicker from 'react-native-document-picker';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -47,6 +49,8 @@ class GroupChats extends Component {
       translatedMessage: null,
       translatedMessageId: null,
       showMessageDeleteConfirmationModal: false,
+      sentMessageType: 'text',
+      uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
         {
           id: 1,
@@ -64,6 +68,18 @@ class GroupChats extends Component {
             this.toggleLeaveGroupConfirmationModal();
           },
         },
+          {
+              id: 3,
+              title: 'Report group',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Group reported',
+                      type: 'positive',
+                  });
+              },
+          },
       ],
       headerRightIconMenuIsGroup: [
         {
@@ -90,23 +106,73 @@ class GroupChats extends Component {
             this.toggleLeaveGroupConfirmationModal();
           },
         },
+          {
+              id: 3,
+              title: 'Report group',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Group reported',
+                      type: 'positive',
+                  });
+              },
+          },
       ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
       editMessageId: null,
     };
+    this.S3uploadService = new S3uploadService();
   }
 
-  onMessageSend = () => {
+  onMessageSend = async () => {
     const {
       newMessageText,
       conversation,
       isReply,
       repliedMessage,
       isEdited,
+      sentMessageType,
+      uploadFile,
     } = this.state;
     const { userData, currentGroup } = this.props;
+
+    if (!newMessageText && !uploadFile.uri) {
+      return;
+    }
+    let msgText = newMessageText;
+    if (sentMessageType === 'image') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+        files
+      );
+
+      msgText = uploadedImages.image[0].image;
+    }
+    if (sentMessageType === 'audio') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
+        files,
+        uploadFile.name,
+        uploadFile.type
+      );
+      msgText = uploadedAudio;
+    }
+
+    if (sentMessageType === 'doc') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
+        files,
+        uploadFile.name,
+        uploadFile.type
+      );
+      msgText = uploadedApplication;
+    }
     let sendmsgdata = {
       sender_id: userData.id,
       group_id: currentGroup.group_id,
@@ -114,8 +180,8 @@ class GroupChats extends Component {
       sender_display_name: userData.display_name,
       sender_picture: userData.avatar,
       message_body: {
-        type: 'text',
-        text: newMessageText,
+        type: sentMessageType,
+        text: msgText,
       },
       is_edited: false,
       is_unsent: false,
@@ -124,33 +190,52 @@ class GroupChats extends Component {
       mentions: [],
       read_count: null,
     };
-
-    if (!newMessageText) {
-      return;
-    }
     if (isEdited) {
       this.sendEditMessage();
       return;
     }
     if (isReply) {
-      let groupMessage = {
-        group: this.props.currentGroup.group_id,
-        local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
-        mentions: [],
-        message_body: newMessageText,
-        msg_type: 'text',
-        reply_to: repliedMessage.msg_id,
-      };
+      let groupMessage;
+      if (sentMessageType !== 'text') {
+        groupMessage = {
+          group: this.props.currentGroup.group_id,
+          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          mentions: [],
+          media_url: msgText,
+          msg_type: sentMessageType,
+          reply_to: repliedMessage.msg_id,
+        };
+      } else {
+        groupMessage = {
+          group: this.props.currentGroup.group_id,
+          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          mentions: [],
+          message_body: msgText,
+          msg_type: sentMessageType,
+          reply_to: repliedMessage.msg_id,
+        };
+      }
       this.state.conversation.unshift(sendmsgdata);
       this.props.sendGroupMessage(groupMessage);
     } else {
-      let groupMessage = {
-        group: this.props.currentGroup.group_id,
-        local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
-        mentions: [],
-        message_body: newMessageText,
-        msg_type: 'text',
-      };
+      let groupMessage;
+      if (sentMessageType !== 'text') {
+        groupMessage = {
+          group: this.props.currentGroup.group_id,
+          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          mentions: [],
+          media_url: msgText,
+          msg_type: sentMessageType,
+        };
+      } else {
+        groupMessage = {
+          group: this.props.currentGroup.group_id,
+          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          mentions: [],
+          message_body: msgText,
+          msg_type: sentMessageType,
+        };
+      }
       this.state.conversation.unshift(sendmsgdata);
       this.props.sendGroupMessage(groupMessage);
     }
@@ -160,6 +245,8 @@ class GroupChats extends Component {
       isReply: false,
       repliedMessage: null,
       isEdited: false,
+      sentMessageType: 'text',
+      uploadFile: { uri: null, type: null, name: null },
     });
   };
 
@@ -530,7 +617,11 @@ class GroupChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          uploadFile: source,
+          sentMessageType: 'image',
+        });
       }
       // Same code as in above section!
     });
@@ -551,13 +642,56 @@ class GroupChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = { uri: response.uri };
+        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        this.setState({
+          uploadFile: source,
+          sentMessageType: 'image',
+        });
       }
       // Same code as in above section!
     });
   };
-  onAttachmentPress = () => {
+  onAttachmentPress = async () => {
     console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
+    try {
+      const results = await DocumentPicker.pickMultiple({
+        type: [
+          DocumentPicker.types.plainText,
+          DocumentPicker.types.pdf,
+          DocumentPicker.types.csv,
+          DocumentPicker.types.zip,
+          DocumentPicker.types.audio,
+        ],
+      });
+      for (const res of results) {
+        let fileType = res.type.substr(0, res.type.indexOf('/'));
+        console.log(
+          res.uri,
+          res.type, // mime type
+          res.name,
+          res.size,
+          res.type.substr(0, res.type.indexOf('/'))
+        );
+        let source = { uri: res.uri, type: res.type, name: res.name };
+        if (fileType === 'audio') {
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'audio',
+          });
+        } else if (fileType === 'application') {
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'doc',
+          });
+        }
+      }
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
   };
 
   render() {
@@ -574,6 +708,7 @@ class GroupChats extends Component {
       showMessageDeleteConfirmationModal,
       translatedMessage,
       translatedMessageId,
+      uploadFile,
     } = this.state;
     const { currentGroup, groupLoading } = this.props;
     return (
@@ -599,7 +734,7 @@ class GroupChats extends Component {
         ) : (
           <GroupChatContainer
             handleMessage={(message) => this.handleMessage(message)}
-            onMessageSend={this.onMessageSend.bind(this)}
+            onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}
             newMessageText={newMessageText}
             messages={conversation}
@@ -617,6 +752,7 @@ class GroupChats extends Component {
             onCameraPress={() => this.onCameraPress()}
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
+            sendingImage={uploadFile}
           />
         )}
         <ConfirmationModal

@@ -139,6 +139,10 @@ class ChatMessageBubble extends Component {
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
+
+    if (!message.message_body && !message.is_unsent) {
+      return null;
+    }
     return (
       <Menu
         contentStyle={{
@@ -232,7 +236,11 @@ class ChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.split('/').pop()}
+                          {message.message_body
+                            .split('/')
+                            .pop()
+                            .split('%2')
+                            .pop()}
                         </Text>
                         <View
                           style={{
@@ -362,7 +370,11 @@ class ChatMessageBubble extends Component {
                             fontWeight: '500',
                           }}
                         >
-                          {message.message_body.split('/').pop()}
+                          {message.message_body
+                            .split('/')
+                            .pop()
+                            .split('%2F')
+                            .pop()}
                         </Text>
                         <View
                           style={{

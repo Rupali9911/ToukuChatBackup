@@ -125,6 +125,7 @@ class GroupChatContainer extends Component {
       onCameraPress,
       onGalleryPress,
       onAttachmentPress,
+      sendingImage,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -240,6 +241,7 @@ class GroupChatContainer extends Component {
           onSend={onMessageSend}
           value={newMessageText}
           placeholder={translate('pages.xchat.enterMessage')}
+          sendingImage={sendingImage}
         />
       </KeyboardAwareScrollView>
     );
