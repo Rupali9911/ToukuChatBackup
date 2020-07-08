@@ -20,7 +20,7 @@ import {
   deleteChannelMessage,
 } from '../../redux/reducers/channelReducer';
 import { ListLoader } from '../../components/Loaders';
-import { ConfirmationModal } from '../../components/Modals';
+import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
 import ImagePicker from 'react-native-image-picker';
@@ -40,6 +40,7 @@ class ChannelChats extends Component {
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showSelectModal: false,
       isEdited: false,
       editMessageId: null,
       sentMessageType: 'text',
@@ -123,6 +124,21 @@ class ChannelChats extends Component {
         uploadFile.type
       );
       msgText = uploadedApplication;
+    }
+
+    if (sentMessageType === 'video') {
+      let file = uploadFile.uri;
+      console.log(
+        'ChannelChats -> onMessageSend -> uploadFile.uri',
+        uploadFile.uri
+      );
+      let files = [file];
+      const uploadedApplication = await this.S3uploadService.uploadVideoOnS3Bucket(
+        files
+      );
+      msgText = uploadedApplication;
+      console.log('ChannelChats -> onMessageSend -> msgText', msgText);
+      return;
     }
     let sendmsgdata = {
       // id: id,
@@ -271,7 +287,6 @@ class ChannelChats extends Component {
     };
     ImagePicker.launchCamera(options, (response) => {
       console.log('Response = ', response);
-
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -288,18 +303,18 @@ class ChannelChats extends Component {
       // Same code as in above section!
     });
   };
-  onGalleryPress = async () => {
+  onGalleryPress = async (mediaType) => {
     console.log('ChannelChats -> onGalleryPress -> onGalleryPress');
     var options = {
       title: '',
-      mediaType: 'image',
+      mediaType: mediaType,
       storageOptions: {
         skipBackup: true,
         path: '',
       },
     };
 
-    ImagePicker.launchImageLibrary(options, (response) => {
+    ImagePicker.launchImageLibrary(options, async (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -307,13 +322,31 @@ class ChannelChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        // console.log('ChannelChats -> onGalleryPress -> response', response);
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
-        this.setState({
-          uploadFile: source,
-          sentMessageType: 'image',
-        });
+        console.log(
+          'ChannelChats -> onGalleryPress -> response',
+          response.type
+        );
+        console.log('ChannelChats -> onGalleryPress -> response', response);
+        if (mediaType === 'images') {
+          let fileType = response.type.substr(0, response.type.indexOf('/'));
+          let source = {
+            uri: 'data:image/jpeg;base64,' + response.data,
+            type: fileType,
+            name: response.fileName,
+          };
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'image',
+          });
+        } else {
+          let source = { uri: response.uri, type: null, name: null };
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'video',
+          });
+        }
       }
+      await this.toggleSelectModal();
       // Same code as in above section!
     });
   };
@@ -397,7 +430,7 @@ class ChannelChats extends Component {
             isChannel={true}
             onEditMessage={(msg) => this.onEdit(msg)}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.onGalleryPress()}
+            onGalleryPress={() => this.toggleSelectModal()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />
@@ -428,10 +461,26 @@ class ChannelChats extends Component {
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.youWantToDeleteThisMessage')}
           />
+          <UploadSelectModal
+            visible={this.state.showSelectModal}
+            toggleSelectModal={this.ontoggleSelectModal}
+            onSelect={(mediaType) => this.selectUploadOption(mediaType)}
+          />
         </View>
       );
     }
   }
+
+  toggleSelectModal = () => {
+    this.setState((prevState) => ({
+      showSelectModal: !prevState.showSelectModal,
+    }));
+  };
+
+  selectUploadOption = (mediaType) => {
+    // this.toggleSelectModal();
+    this.onGalleryPress(mediaType);
+  };
 
   // To delete message
   toggleConfirmationModal = () => {
