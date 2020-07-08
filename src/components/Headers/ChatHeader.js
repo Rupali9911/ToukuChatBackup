@@ -76,7 +76,7 @@ export default class ChatHeader extends Component {
         ]}
       >
         <View style={styles.subContainer}>
-          <TouchableOpacity onPress={onBackPress}>
+          <TouchableOpacity onPress={onBackPress} hitSlop={{top: 10, bottom: 10, right: 10, left: 10}} >
             <Image source={Icons.icon_back} style={globalStyles.smallIcon} />
           </TouchableOpacity>
           {type === 'friend' ? (

@@ -89,6 +89,7 @@ class ChatContainer extends Component {
             }
             time={new Date(item.created)}
             isChannel={this.props.isChannel}
+            is_read={item.is_read}
             onMessageReply={(id) => this.props.onMessageReply(id)}
             onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
             onMessageTranslateClose={this.props.onMessageTranslateClose}
@@ -269,13 +270,14 @@ const chatStyle = StyleSheet.create({
   messageDate: {
     backgroundColor: Colors.orange_light,
     paddingVertical: 4,
-    paddingHorizontal: 5,
-    borderRadius: 100,
+      paddingHorizontal: 11,
+      borderRadius: 18,
   },
   messageDateText: {
     color: Colors.white,
     fontFamily: Fonts.medium,
     fontSize: 12,
+      fontWeight: '300'
   },
 });
 

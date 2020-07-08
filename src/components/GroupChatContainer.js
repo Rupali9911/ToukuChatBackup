@@ -86,7 +86,7 @@ class GroupChatContainer extends Component {
             message={item}
             isUser={item.sender_id === this.props.userData.id ? true : false}
             time={new Date(item.timestamp)}
-            // status={item.status}
+            isRead={item.read_count && item.read_count > 0 ? true : false}
             onMessageReply={(id) => this.props.onMessageReply(id)}
             orientation={this.props.orientation}
             onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
@@ -264,14 +264,15 @@ const chatStyle = StyleSheet.create({
   },
   messageDate: {
     backgroundColor: Colors.orange_light,
-    paddingVertical: 4,
-    paddingHorizontal: 5,
-    borderRadius: 100,
+    paddingVertical: 3,
+    paddingHorizontal: 11,
+    borderRadius: 18,
   },
   messageDateText: {
     color: Colors.white,
-    fontFamily: Fonts.medium,
-    fontSize: 12,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+      fontWeight: '300'
   },
 });
 

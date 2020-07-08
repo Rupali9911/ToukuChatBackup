@@ -263,6 +263,7 @@ class ChannelChats extends Component {
     this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
+        console.log('Channel Conversation',res )
         if (res.status === true && res.conversation.length > 0) {
           this.setState({ conversations: res.conversation });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
@@ -396,7 +397,6 @@ class ChannelChats extends Component {
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
-            newMessageText={newMessageText}
             newMessageText={newMessageText}
             messages={conversations}
             orientation={orientation}

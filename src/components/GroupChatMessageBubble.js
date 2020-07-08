@@ -148,9 +148,9 @@ class GroupChatMessageBubble extends Component {
       return null;
     }
 
-    if (message.message_body.text === null) {
-      return null;
-    }
+      if (message.message_body && message.message_body.text && message.message_body.text === null) {
+          return null;
+      }
 
     const msgTime = new Date(message.timestamp);
     const isEditable = new Date(msgTime);
@@ -444,7 +444,6 @@ class GroupChatMessageBubble extends Component {
       >
         {message.message_body && message.message_body.type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             )}
@@ -457,7 +456,6 @@ class GroupChatMessageBubble extends Component {
           />
         )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
           icon={() => (
             <FontAwesome5 name={'language'} size={20} color={Colors.white} />
           )}
@@ -473,7 +471,6 @@ class GroupChatMessageBubble extends Component {
           message.message_body &&
           message.message_body.type === 'text' && (
             <Menu.Item
-              titleStyle={{ color: Colors.white }}
               icon={() => (
                 <FontAwesome5
                   name={'pencil-alt'}
@@ -490,7 +487,6 @@ class GroupChatMessageBubble extends Component {
             />
           )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
           icon={() => (
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
@@ -503,7 +499,6 @@ class GroupChatMessageBubble extends Component {
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5
                 name={'minus-circle'}
@@ -521,7 +516,6 @@ class GroupChatMessageBubble extends Component {
         )}
         {message.message_body && message.message_body.type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
             )}
@@ -535,7 +529,6 @@ class GroupChatMessageBubble extends Component {
         )}
         {message.message_body && message.message_body.type !== 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome name={'download'} size={20} color={Colors.white} />
             )}

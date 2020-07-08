@@ -16,6 +16,8 @@ import { getAvatar } from '../utils';
 import { translate } from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { globalStyles } from '../styles';
+import ChatInput from "./TextInputs/ChatInput";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 const { width, height } = Dimensions.get('window');
 
@@ -123,7 +125,7 @@ export default class GroupChatMessageBox extends Component {
       message,
       isUser,
       time,
-      status,
+        isRead,
       onMessageReply,
       orientation,
       onDelete,
@@ -141,7 +143,7 @@ export default class GroupChatMessageBox extends Component {
       return null;
     }
 
-    if (message.message_body.text === null) {
+    if (message.message_body && message.message_body.text && message.message_body.text === null) {
       return null;
     }
 
@@ -188,6 +190,7 @@ export default class GroupChatMessageBox extends Component {
                     color: Colors.primary,
                     textAlign: 'left',
                     marginStart: 10,
+                      fontWeight: '300'
                   }}
                 >
                   {message.sender_display_name}
@@ -217,17 +220,13 @@ export default class GroupChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
+                    alignSelf: 'flex-end',
+                    paddingBottom: 5
                 }}
               >
-                <Text style={styles.statusText}>{status}</Text>
+                {/*<Text style={styles.statusText}>{status}</Text>*/}
                 <Text
-                  style={{
-                    fontSize: 11,
-                    fontFamily: Fonts.regular,
-                    //color: Colors.white,
-                    textAlign: 'center',
-                    color: Colors.primary,
-                  }}
+                  style={styles.statusText}
                 >{`${time.getHours()}:${
                   time.getMinutes() < 10
                     ? '0' + time.getMinutes()
@@ -266,9 +265,15 @@ export default class GroupChatMessageBox extends Component {
                 marginHorizontal: '1.5%',
                 alignItems: 'center',
                 marginVertical: 15,
+                  alignSelf: 'flex-end',
+                  paddingBottom: 5
               }}
             >
-              <Text style={styles.statusText}>{status}</Text>
+                {
+                    isRead &&
+                    <Text style={styles.statusText}>{translate('pages.xchat.read')}</Text>
+                }
+
               <Text style={styles.statusText}>
                 {`${time.getHours()}:${
                   time.getMinutes() < 10
@@ -314,5 +319,6 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.gradient_1,
     fontFamily: Fonts.light,
+      fontSize: 9
   },
 });
