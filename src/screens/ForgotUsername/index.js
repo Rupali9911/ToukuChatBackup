@@ -89,7 +89,8 @@ class ForgotUserName extends Component {
 
     return (
       <ImageBackground
-        source={Images.image_touku_bg}
+          //source={Images.image_touku_bg}
+          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView

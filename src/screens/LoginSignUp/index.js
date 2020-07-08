@@ -496,7 +496,8 @@ class LoginSignUp extends Component {
     const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
-        source={Images.image_touku_bg}
+          //source={Images.image_touku_bg}
+          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
         style={globalStyles.container}
         resizeMode={'cover'}>
         <SafeAreaView style={globalStyles.safeAreaView}>

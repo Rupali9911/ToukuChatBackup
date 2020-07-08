@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Image } from 'react-native';
+import FastImage from 'react-native-fast-image'
 
 export default class ScalableImage extends Component {
   constructor(props) {
@@ -25,17 +26,28 @@ export default class ScalableImage extends Component {
     const { src, borderRadius } = this.props;
     const { ratio } = this.state;
     return (
-      <Image
-        source={{
-          uri: src,
-        }}
-        style={{
-          width: '100%',
-          aspectRatio: ratio,
-          borderRadius: borderRadius ? borderRadius : 0,
-        }}
-        resizeMode="contain"
-      />
+        <FastImage
+            style={{
+                width: '100%',
+                aspectRatio: ratio,
+                borderRadius: borderRadius ? borderRadius : 0,
+            }}
+            source={{
+                uri: src,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+        />
+      // <Image
+      //   source={{
+      //     uri: src,
+      //   }}
+      //   style={{
+      //     width: '100%',
+      //     aspectRatio: ratio,
+      //     borderRadius: borderRadius ? borderRadius : 0,
+      //   }}
+      //   resizeMode="contain"
+      // />
     );
   }
 }

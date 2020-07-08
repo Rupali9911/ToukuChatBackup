@@ -63,6 +63,30 @@ class FriendChats extends Component {
             this.props.navigation.navigate('CreateFriendGroup');
           },
         },
+          {
+              id: 3,
+              title: 'Report user',
+              icon: 'user-times',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'User reported',
+                      type: 'positive',
+                  });
+              },
+          },
+          {
+              id: 3,
+              title: 'Block user',
+              icon: 'user-times',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'User blocked',
+                      type: 'positive',
+                  });
+              },
+          },
       ],
       isReply: false,
       repliedMessage: null,
@@ -354,6 +378,7 @@ class FriendChats extends Component {
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
+          console.log('getPersonalConversation', res)
           this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
         }

@@ -53,6 +53,19 @@ class ChannelChats extends Component {
             this.props.navigation.navigate('ChannelInfo');
           },
         },
+          {
+              id: 2,
+              title: 'Report Channel',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Channel reported',
+                      type: 'positive',
+                  });
+              },
+          },
+
       ],
     };
     this.S3uploadService = new S3uploadService();
@@ -250,6 +263,7 @@ class ChannelChats extends Component {
     this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
+        console.log('Channel Conversation',res )
         if (res.status === true && res.conversation.length > 0) {
           this.setState({ conversations: res.conversation });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
@@ -383,7 +397,6 @@ class ChannelChats extends Component {
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
-            newMessageText={newMessageText}
             newMessageText={newMessageText}
             messages={conversations}
             orientation={orientation}

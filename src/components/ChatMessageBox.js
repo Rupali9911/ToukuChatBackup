@@ -120,7 +120,7 @@ export default class ChatMessageBox extends Component {
       message,
       isUser,
       time,
-      status,
+        is_read,
       onMessageReply,
       orientation,
       isChannel,
@@ -193,9 +193,11 @@ export default class ChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
+                    alignSelf: 'flex-end',
+                    paddingBottom: 5
                 }}
               >
-                <Text style={styles.statusText}>{status}</Text>
+                {/*<Text style={styles.statusText}>{status}</Text>*/}
                 <Text style={styles.statusText}>{`${time.getHours()}:${
                   time.getMinutes() < 10
                     ? '0' + time.getMinutes()
@@ -232,9 +234,15 @@ export default class ChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
+                    alignSelf: 'flex-end',
+                    paddingBottom: 5
                 }}
               >
-                <Text style={styles.statusText}>{status}</Text>
+                  {
+                      is_read &&
+                      <Text style={styles.statusText}>{translate('pages.xchat.read')}</Text>
+                  }
+
                 <Text style={styles.statusText}>
                   {`${time.getHours()}:${
                     time.getMinutes() < 10
@@ -282,5 +290,6 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.gradient_1,
     fontFamily: Fonts.light,
+      fontSize: 9
   },
 });

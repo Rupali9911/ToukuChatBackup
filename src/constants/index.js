@@ -64,6 +64,7 @@ export const Icons = {
 
 export const Images = {
   image_touku_bg: require('../../assets/images/touku_bg_new.png'),
+  image_touku_bg_phone: require('../../assets/images/touku_bg_phone.png'),
   image_default_profile: require('../../assets/images/default_profile.png'),
   image_home_bg: require('../../assets/images/touku_home_bg.png'),
   image_loading: require('../../assets/images/loading.gif'),
