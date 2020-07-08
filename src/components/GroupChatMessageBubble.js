@@ -148,7 +148,7 @@ class GroupChatMessageBubble extends Component {
       return null;
     }
 
-      if (message.message_body && message.message_body.text && message.message_body.text === null) {
+    if (message.message_body && message.message_body.text && message.message_body.text === null) {
           return null;
       }
 
