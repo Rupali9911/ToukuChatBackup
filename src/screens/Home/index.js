@@ -155,24 +155,38 @@ class Home extends Component {
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
+        break;
       case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
         this.readAllMessageFriendChat(message);
+        break;
       case SocketEvents.CHECK_IS_USER_ONLINE:
-      // this.checkIsUserOnline(message);
+        // this.checkIsUserOnline(message);
+        break;
       case SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT:
         this.readAllMessageChannelChat(message);
+        break;
       case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
         this.readAllMessageGroupChat(message);
+        break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
         this.friendIsTyping(message);
+        break;
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
         this.onNewMessageInGroup(message);
-      case SocketEvents.NEW_MESSAGE_IN_FREIND:
-        this.onNewMessageInFriend(message);
+        break;
       case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
         this.messageInFollowingChannel(message);
+        break;
       case SocketEvents.REMOVE_CHANNEL_MEMBER:
         this.onRemoveChannelMember(message);
+        break;
+      case SocketEvents.NEW_MESSAGE_IN_FREIND:
+      case SocketEvents.NEW_FRIEND_REQUEST:
+      case SocketEvents.FRIEND_REQUEST_ACCEPTED:
+      case SocketEvents.FRIEND_REQUEST_REJECTED:
+      case SocketEvents.UNFRIEND:
+      case SocketEvents.FRIEND_REQUEST_CANCELLED:
+        this.onNewMessageInFriend(message);
     }
   }
 

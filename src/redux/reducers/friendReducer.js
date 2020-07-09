@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
@@ -130,6 +130,13 @@ export const getUserFriends = () => (dispatch) =>
             });
             dispatch(setUnreadFriendMsgsCounts(unread_counts));
           }
+          friends.sort((a, b) =>
+            a.timestamp &&
+            b.timestamp &&
+            new Date(a.timestamp) < new Date(b.timestamp)
+              ? 1
+              : -1
+          );
           dispatch(getUserFriendsSuccess(friends));
         }
         resolve(friends);

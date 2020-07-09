@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import { client } from '../../helpers/api';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
@@ -225,6 +225,14 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
             }
             dispatch(setUnreadChannelMsgsCounts(unread_counts));
           }
+          res.conversations.sort((a, b) =>
+            a.created &&
+            b.created &&
+            new Date(a.last_msg ? a.last_msg.created : a.created) <
+              new Date(b.last_msg ? b.last_msg.created : b.created)
+              ? 1
+              : -1
+          );
           dispatch(getFollowingChannelsSuccess(res.conversations));
         }
         resolve(res);
