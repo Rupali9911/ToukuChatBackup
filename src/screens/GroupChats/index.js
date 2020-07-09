@@ -42,7 +42,6 @@ class GroupChats extends Component {
       newMessageText: '',
       showLeaveGroupConfirmationModal: false,
       showDeleteGroupConfirmationModal: false,
-      showDeleteGroupConfirmationModal: false,
       isMyGroup: false,
       conversation: [],
       selectedMessageId: null,
@@ -68,6 +67,18 @@ class GroupChats extends Component {
             this.toggleLeaveGroupConfirmationModal();
           },
         },
+          {
+              id: 3,
+              title: 'Report group',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Group reported',
+                      type: 'positive',
+                  });
+              },
+          },
       ],
       headerRightIconMenuIsGroup: [
         {
@@ -94,6 +105,18 @@ class GroupChats extends Component {
             this.toggleLeaveGroupConfirmationModal();
           },
         },
+          {
+              id: 3,
+              title: 'Report group',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Group reported',
+                      type: 'positive',
+                  });
+              },
+          },
       ],
       isReply: false,
       repliedMessage: null,
@@ -378,6 +401,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
+          console.log('getGroupConversation', res)
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&
@@ -386,6 +410,7 @@ class GroupChats extends Component {
               ? 1
               : -1
           );
+
           this.setState({ conversation: data });
           this.markGroupConversationRead();
         }

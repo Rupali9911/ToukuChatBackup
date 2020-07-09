@@ -45,7 +45,10 @@ export default class PostCard extends Component {
               paddingVertical: 10,
             }}
           >
-            <PostCardHeader menuItems={menuItems} post={post} />
+            <PostCardHeader
+                menuItems={menuItems}
+                post={post}
+            />
             {post.media.audio && post.media.audio.length ? (
               <View style={{ margin: 10 }}>
                 <AudioPlayerCustom

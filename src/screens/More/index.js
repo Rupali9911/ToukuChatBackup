@@ -42,19 +42,19 @@ class More extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-      this.props.navigation.addListener('willFocus', this.load)
+      //this.props.navigation.addListener('willFocus', this.load)
   }
 
-    load = () => {
-        const {getToukuPoints, setToukuPoints} = this.props
-        getToukuPoints().then((res) => {
-            if (res && res.status === true){
-                setToukuPoints(this.props.userData, res.total_tp).then((res) => {
-                    this.setState({isQRVisible: false})
-                });
-            }
-        })
-    }
+    // load = () => {
+    //     const {getToukuPoints, setToukuPoints} = this.props
+    //     getToukuPoints().then((res) => {
+    //         if (res && res.status === true){
+    //             setToukuPoints(this.props.userData, res.total_tp).then((res) => {
+    //                 this.setState({isQRVisible: false})
+    //             });
+    //         }
+    //     })
+    // }
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -122,12 +122,12 @@ class More extends Component {
                 isInvitation={true}
                 onPressQR={() => this.setState({isQRVisible: true})}
             />
-            <SettingsItem
-                icon_name={'star'}
-              title={translate('pages.xchat.toukuPoints')}
-                isFontAwesome={true}
-                isToukuPoints={true}
-            />
+            {/*<SettingsItem*/}
+                {/*icon_name={'star'}*/}
+              {/*title={translate('pages.xchat.toukuPoints')}*/}
+                {/*isFontAwesome={true}*/}
+                {/*isToukuPoints={true}*/}
+            {/*/>*/}
             <SettingsItem
                 icon_name={'user'}
               title={translate('common.goToXana')}

@@ -19,11 +19,15 @@ import {
   getTrendTimeline,
   getFollowingTimeline,
   getRankingTimeline,
+    hidePost,
+    hideAllPost,
+    reportPost
 } from '../../redux/reducers/timelineReducer';
 
 class Timeline extends Component {
   constructor(props) {
     super(props);
+
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
@@ -35,6 +39,8 @@ class Timeline extends Component {
           icon: Icons.icon_chat,
           action: () => {
             this.setState({ activeTab: 'trend' });
+               this.props.getTrendTimeline().then((res) => {
+              });
           },
         },
         {
@@ -43,6 +49,8 @@ class Timeline extends Component {
           icon: Icons.icon_setting,
           action: () => {
             this.setState({ activeTab: 'following' });
+              this.props.getFollowingTimeline().then((res) => {
+              });
           },
         },
         {
@@ -51,6 +59,8 @@ class Timeline extends Component {
           icon: Icons.icon_timeline,
           action: () => {
             this.setState({ activeTab: 'ranking' });
+              this.props.getRankingTimeline().then((res) => {
+              });
           },
         },
       ],
@@ -60,19 +70,19 @@ class Timeline extends Component {
           id: 1,
           title: translate('pages.xchat.hideThisPost'),
           icon: 'bars',
-          onPress: () => {},
+          onPress: (res) => {this.hidePost(res)},
         },
         {
           id: 1,
           title: translate('pages.xchat.hideAllPost'),
           icon: 'bars',
-          onPress: () => {},
+            onPress: (res) => {this.hideAllPost(res)},
         },
         {
           id: 1,
           title: translate('pages.xchat.reportContent'),
           icon: 'bars',
-          onPress: () => {},
+            onPress: (res) => {this.reportContent(res)},
         },
       ],
     };
@@ -95,6 +105,7 @@ class Timeline extends Component {
     // this.props.getFollowingTimeline();
     // this.props.getRankingTimeline();
     // this.showData();
+
     await this.props.getTrendTimeline().then((res) => {
       this.props.getFollowingTimeline().then((res) => {
         this.props.getRankingTimeline().then((res) => {
@@ -131,6 +142,52 @@ class Timeline extends Component {
   onLayout = () => {
     this.getAspectRatio();
   };
+
+  hidePost(post){
+      const { activeTab } = this.state
+    this.props.hidePost(post.id).then((res) => {
+      console.log('Hide post server response', res)
+        this.refreshContent()
+    })
+  }
+
+  hideAllPost(post){
+    const { activeTab } = this.state
+      this.props.hideAllPost(post.channel_id).then((res) => {
+          console.log('hideAllPost post server response', res)
+          this.refreshContent()
+      })
+  }
+
+  reportContent(post){
+      const { activeTab } = this.state
+      this.props.reportPost(post.id).then((res) => {
+          console.log('reportContent server response', res)
+          this.refreshContent()
+      })
+  }
+
+  refreshContent (){
+      const { activeTab } = this.state
+      if (activeTab === 'trend'){
+          console.log('trend selected')
+          this.props.getTrendTimeline().then((res) => {
+              this.showData();
+          });
+      } else if  (activeTab === 'following'){
+          console.log('following selected')
+          this.props.getFollowingTimeline().then((res) => {
+              this.showData();
+          });
+
+      }else if  (activeTab === 'ranking'){
+          console.log('ranking selected')
+          this.props.getRankingTimeline().then((res) => {
+              this.showData();
+          });
+      }
+  }
+
   render() {
     const { tabBarItem, activeTab, menuItems, posts } = this.state;
     const { trendTimline, followingTimeline, rankingTimeLine } = this.props;
@@ -185,6 +242,9 @@ const mapDispatchToProps = {
   getTrendTimeline,
   getFollowingTimeline,
   getRankingTimeline,
+    hidePost,
+    hideAllPost,
+    reportPost
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);
