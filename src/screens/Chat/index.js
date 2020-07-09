@@ -1,22 +1,14 @@
 import React, { Component } from 'react';
-import {
-  View,
-  ImageBackground,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import { View, ImageBackground, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
-import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { createFilter } from 'react-native-search-filter';
+import { withNavigationFocus } from 'react-navigation';
 
-import { Images, Colors, Icons, SocketEvents } from '../../constants';
+import { Images, SocketEvents } from '../../constants';
 import { SearchInput } from '../../components/TextInputs';
-import RoundedImage from '../../components/RoundedImage';
-import { getAvatar } from '../../utils';
+import { getAvatar, eventService } from '../../utils';
 import {
   ChannelListItem,
   FriendListItem,
@@ -86,6 +78,9 @@ class Chat extends Component {
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
   }
 
   async componentDidMount() {
@@ -99,16 +94,50 @@ class Chat extends Component {
       });
     });
 
-    //   this.props.getFollowingChannels();
-    //   this.props.getUserGroups();
-    //   this.props.getUserFriends();
-    // this.props.getFriendRequests();
-    // this.props.getUserConfiguration();
-    // this.getCommonChat();
+    this.focusListener = this.props.navigation.addListener(
+      'didFocus',
+      async () => this.updateData()
+    );
   }
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
   };
+
+  updateData = async () => {
+    console.log('Chat -> updateData -> updateData');
+    await this.props.getFollowingChannels().then((res) => {
+      this.props.getFriendRequests().then((res) => {
+        this.props.getUserConfiguration().then((res) => {
+          this.getUpdatedCommonChat();
+        });
+      });
+    });
+  };
+
+  checkEventTypes(message) {
+    switch (message.text.data.type) {
+      case SocketEvents.USER_ONLINE_STATUS:
+        console.log('Chat -> checkEventTypes -> setFriendsOnlineStatus');
+        this.updateData();
+        return;
+      case SocketEvents.NEW_MESSAGE_IN_GROUP:
+        console.log('Chat -> checkEventTypes -> onNewMessageInGroup');
+        this.updateData();
+        return;
+      case SocketEvents.NEW_MESSAGE_IN_FREIND:
+        console.log('Chat -> checkEventTypes -> onNewMessageInFriend');
+        this.updateData();
+        return;
+      case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
+        console.log('Chat -> checkEventTypes -> MESSAGE_IN_FOLLOWING_CHANNEL');
+        this.updateData();
+        return;
+      case SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT:
+        console.log('Chat -> checkEventTypes -> READ_ALL_MESSAGE_CHANNEL_CHAT');
+        this.updateData();
+        return;
+    }
+  }
 
   onSearch = async (text) => {
     await this.setState({ searchText: text, commonConversation: [] });
@@ -139,10 +168,7 @@ class Chat extends Component {
       channelLoading,
       groupLoading,
       friendLoading,
-      userChannels,
-      userConfig,
     } = this.props;
-    console.log('Chat -> getCommonChat -> userConfig', userConfig);
     const filteredChannels = followingChannels.filter(
       createFilter(this.state.searchText, ['name'])
     );
@@ -176,6 +202,46 @@ class Chat extends Component {
         ],
       });
     }
+
+    await this.setState({
+      isLoading: false,
+    });
+  }
+
+  async getUpdatedCommonChat() {
+    const {
+      followingChannels,
+      userGroups,
+      userFriends,
+      channelLoading,
+      groupLoading,
+      friendLoading,
+    } = this.props;
+
+    let updatedConversation = [];
+
+    const filteredChannels = await followingChannels.filter(
+      createFilter(this.state.searchText, ['name'])
+    );
+    if (filteredChannels.length > 0 && !channelLoading) {
+      updatedConversation = [...updatedConversation, ...filteredChannels];
+    }
+    const filteredGroups = await userGroups.filter(
+      createFilter(this.state.searchText, ['group_name'])
+    );
+    if (filteredGroups.length > 0 && !groupLoading) {
+      updatedConversation = [...updatedConversation, ...filteredGroups];
+    }
+    const filteredFriends = await userFriends.filter(
+      createFilter(this.state.searchText, ['username'])
+    );
+    if (filteredFriends.length > 0 && !friendLoading) {
+      updatedConversation = [...updatedConversation, ...filteredFriends];
+    }
+
+    await this.setState({
+      commonConversation: updatedConversation,
+    });
 
     await this.setState({
       isLoading: false,
@@ -473,4 +539,7 @@ const mapDispatchToProps = {
   updateConfiguration,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chat);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withNavigationFocus(Chat));

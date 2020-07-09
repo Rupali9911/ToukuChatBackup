@@ -60,6 +60,16 @@ export default class S3uploadService extends Component {
     return application.body.postResponse.location;
   }
 
+  async uploadVideoOnS3Bucket(files) {
+    let video;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileName = `video_${moment().valueOf()}_${i + 1}`;
+      video = await this.uploadFile(file, fileName, 'video/mp4');
+    }
+    return video;
+  }
+
   async uploadFile(file, fileName, fileType) {
     const File = {
       uri: file,
