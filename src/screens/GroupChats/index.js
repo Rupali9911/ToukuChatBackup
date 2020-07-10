@@ -28,7 +28,7 @@ import {
   unSendGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import { ListLoader, UploadLoader } from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 import { eventService } from '../../utils';
 import ImagePicker from 'react-native-image-picker';
 import S3uploadService from '../../helpers/S3uploadService';
@@ -49,7 +49,6 @@ class GroupChats extends Component {
       translatedMessageId: null,
       showMessageDeleteConfirmationModal: false,
       sentMessageType: 'text',
-      sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
         {
@@ -68,18 +67,18 @@ class GroupChats extends Component {
             this.toggleLeaveGroupConfirmationModal();
           },
         },
-        {
-          id: 3,
-          title: translate('pages.xchat.reportGroup'),
-          icon: 'user-slash',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: 'Group reported',
-              type: 'positive',
-            });
+          {
+              id: 3,
+              title: 'Report group',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Group reported',
+                      type: 'positive',
+                  });
+              },
           },
-        },
       ],
       headerRightIconMenuIsGroup: [
         {
@@ -106,18 +105,18 @@ class GroupChats extends Component {
             this.toggleLeaveGroupConfirmationModal();
           },
         },
-        {
-          id: 3,
-          title: translate('pages.xchat.reportGroup'),
-          icon: 'user-slash',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: 'Group reported',
-              type: 'positive',
-            });
+          {
+              id: 3,
+              title: 'Report group',
+              icon: 'user-slash',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'Group reported',
+                      type: 'positive',
+                  });
+              },
           },
-        },
       ],
       isReply: false,
       repliedMessage: null,
@@ -246,7 +245,6 @@ class GroupChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
-      sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
     });
   };
@@ -262,7 +260,6 @@ class GroupChats extends Component {
       isReply: false,
       repliedMessage: null,
       isEdited: false,
-      sendingMedia: false,
     });
   };
 
@@ -404,6 +401,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
+          console.log('getGroupConversation', res)
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&
@@ -419,6 +417,11 @@ class GroupChats extends Component {
       })
       .catch((err) => {
         console.log('GroupChats -> getGroupConversation -> err', err);
+        // Toast.show({
+        //   title: 'Touku',
+        //   text: translate('common.somethingWentWrong'),
+        //   type: 'primary',
+        // });
       });
   }
 
@@ -606,6 +609,8 @@ class GroupChats extends Component {
       },
     };
     ImagePicker.launchCamera(options, (response) => {
+      console.log('Response = ', response);
+
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -642,9 +647,7 @@ class GroupChats extends Component {
         this.setState({
           uploadFile: source,
           sentMessageType: 'image',
-          sendingMedia: true,
         });
-        this.onMessageSend();
       }
       // Same code as in above section!
     });
@@ -675,16 +678,13 @@ class GroupChats extends Component {
           this.setState({
             uploadFile: source,
             sentMessageType: 'audio',
-            sendingMedia: true,
           });
         } else if (fileType === 'application') {
           this.setState({
             uploadFile: source,
             sentMessageType: 'doc',
-            sendingMedia: true,
           });
         }
-        this.onMessageSend();
       }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -710,7 +710,6 @@ class GroupChats extends Component {
       translatedMessage,
       translatedMessageId,
       uploadFile,
-      sendingMedia,
     } = this.state;
     const { currentGroup, groupLoading } = this.props;
     return (
@@ -791,7 +790,6 @@ class GroupChats extends Component {
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
-        {sendingMedia && <UploadLoader />}
       </ImageBackground>
     );
   }

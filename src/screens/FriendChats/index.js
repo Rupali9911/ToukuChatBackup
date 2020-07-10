@@ -10,7 +10,6 @@ import { globalStyles } from '../../styles';
 import { Images, SocketEvents } from '../../constants';
 import { ConfirmationModal } from '../../components/Modals';
 import { ListLoader } from '../../components/Loaders';
-import { UploadLoader } from '../../components/Loaders';
 import {
   translate,
   translateMessage,
@@ -46,7 +45,6 @@ class FriendChats extends Component {
       showMessageDeleteConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       sentMessageType: 'text',
-      sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
         {
@@ -65,30 +63,30 @@ class FriendChats extends Component {
             this.props.navigation.navigate('CreateFriendGroup');
           },
         },
-        {
-          id: 3,
-          title: translate('pages.xchat.reportUser'),
-          icon: 'user-times',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: 'User reported',
-              type: 'positive',
-            });
+          {
+              id: 3,
+              title: 'Report user',
+              icon: 'user-times',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'User reported',
+                      type: 'positive',
+                  });
+              },
           },
-        },
-        {
-          id: 3,
-          title: translate('pages.xchat.blockUser'),
-          icon: 'user-times',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: 'User blocked',
-              type: 'positive',
-            });
+          {
+              id: 3,
+              title: 'Block user',
+              icon: 'user-times',
+              onPress: () => {
+                  Toast.show({
+                      title: 'Touku',
+                      text: 'User blocked',
+                      type: 'positive',
+                  });
+              },
           },
-        },
       ],
       isReply: false,
       repliedMessage: null,
@@ -231,6 +229,16 @@ class FriendChats extends Component {
       };
       this.state.conversations.unshift(sendmsgdata);
       this.props.sendPersonalMessage(data);
+      // .then((res) => {
+      //   console.log('ChannelChats -> onMessageSend -> res', res);
+      //   // this.getChannelConversations();
+      //   var foundIndex = this.state.conversations.findIndex(
+      //     (x) => x.id == id
+      //   );
+      //   this.state.conversations[foundIndex] = res;
+      //   // this.state.conversations.findIndex()
+      // })
+      // .catch((err) => {});
     }
     this.setState({
       newMessageText: '',
@@ -238,7 +246,6 @@ class FriendChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
-      sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
     });
   };
@@ -262,7 +269,6 @@ class FriendChats extends Component {
       isReply: false,
       repliedMessage: null,
       isEdited: false,
-      sendingMedia: false,
     });
   };
 
@@ -312,6 +318,10 @@ class FriendChats extends Component {
           currentFriend.user_id
         ) {
           this.getPersonalConversation();
+          // if (!isDuplicate) {
+          //   conversations.unshift(message.text.data.message_details);
+          //   this.setState({conversations});
+          // }
         }
       }
     }
@@ -322,6 +332,11 @@ class FriendChats extends Component {
         if (
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
+          // var foundIndex = conversations.findIndex(
+          //   (item) => item.id == message.text.data.message_details.id,
+          // );
+          // conversations.splice(foundIndex, 1);
+          // this.setState({conversations});
           this.getPersonalConversation();
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
@@ -329,6 +344,11 @@ class FriendChats extends Component {
           message.text.data.message_details.from_user.id ==
           currentFriend.user_id
         ) {
+          // var foundIndex = conversations.findIndex(
+          //   (item) => item.id == message.text.data.message_details.id,
+          // );
+          // conversations.splice(foundIndex, 1);
+          // this.setState({conversations});
           this.getPersonalConversation();
         }
       }
@@ -358,6 +378,7 @@ class FriendChats extends Component {
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
+          console.log('getPersonalConversation', res)
           this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
         }
@@ -388,6 +409,7 @@ class FriendChats extends Component {
   };
 
   onCancel = () => {
+    console.log('ChannelChats -> onCancel -> onCancel');
     this.toggleConfirmationModal();
   };
 
@@ -399,6 +421,7 @@ class FriendChats extends Component {
     this.props
       .unFriendUser(payload)
       .then((res) => {
+        console.log('FriendChats -> onConfirm -> res', res);
         if (res.status === true) {
           Toast.show({
             title: 'Touku',
@@ -526,6 +549,8 @@ class FriendChats extends Component {
       },
     };
     ImagePicker.launchCamera(options, (response) => {
+      console.log('Response = ', response);
+
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -562,9 +587,7 @@ class FriendChats extends Component {
         this.setState({
           uploadFile: source,
           sentMessageType: 'image',
-          sendingMedia: true,
         });
-        this.onMessageSend();
       }
       // Same code as in above section!
     });
@@ -595,16 +618,13 @@ class FriendChats extends Component {
           this.setState({
             uploadFile: source,
             sentMessageType: 'audio',
-            sendingMedia: true,
           });
         } else if (fileType === 'application') {
           this.setState({
             uploadFile: source,
             sentMessageType: 'doc',
-            sendingMedia: true,
           });
         }
-        this.onMessageSend();
       }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -626,7 +646,6 @@ class FriendChats extends Component {
       translatedMessage,
       translatedMessageId,
       uploadFile,
-      sendingMedia,
     } = this.state;
     const { currentFriend, chatsLoading } = this.props;
     return (
@@ -696,7 +715,6 @@ class FriendChats extends Component {
           title={translate('common.unsend')}
           message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
-        {sendingMedia && <UploadLoader />}
       </ImageBackground>
     );
   }

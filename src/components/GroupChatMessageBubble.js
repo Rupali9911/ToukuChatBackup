@@ -19,7 +19,6 @@ import { Colors, Icons, Fonts, Images } from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
-import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
 let borderRadius = 20;
 
@@ -33,7 +32,7 @@ class GroupChatMessageBubble extends Component {
   }
 
   onCopy = (message) => {
-    Clipboard.setString(message.text);
+    Clipboard.setString(message);
   };
 
   onUnSend = (selectedMessageId) => {
@@ -149,13 +148,9 @@ class GroupChatMessageBubble extends Component {
       return null;
     }
 
-    if (
-      message.message_body &&
-      message.message_body.text &&
-      message.message_body.text === null
-    ) {
-      return null;
-    }
+    if (message.message_body && message.message_body.text && message.message_body.text === null) {
+          return null;
+      }
 
     const msgTime = new Date(message.timestamp);
     const isEditable = new Date(msgTime);
