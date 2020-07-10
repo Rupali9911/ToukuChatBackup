@@ -8,7 +8,7 @@ import HomeHeader from '../../components/HomeHeader';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getToukuPoints} from '../../redux/reducers/configurationReducer';
 import {setToukuPoints} from '../../redux/reducers/userReducer';
-import {Images, Icons, Colors, supportUrl, xanaUrl} from '../../constants';
+import {Images, Icons, Colors, supportUrl, xanaUrl, xanaDeepLink, xanaAppStore} from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from "../../components/Modals/ProfileModal";
 import {logout} from "../../redux/reducers";
@@ -78,6 +78,17 @@ class More extends Component {
         this.updateModalVisibility()
     }
 
+    onPressXana (){
+      //   const supported = await Linking.canOpenURL(xanaDeepLink);
+      //   console.log('supported', supported)
+      // if (supported) {
+      //     Linking.openURL(xanaDeepLink)
+      // }else{
+      //     Linking.openURL(xanaAppStore)
+      // }
+        Linking.openURL(xanaUrl)
+    }
+
     render() {
     const {orientation, isWebViewVisible, isQRVisible, isSupport, isLogOutVisible} = this.state;
     const {selectedLanguageItem, navigation} = this.props;
@@ -133,7 +144,7 @@ class More extends Component {
               title={translate('common.goToXana')}
                 onPress={() => console.log('Create New Group')}
                 isImage={Icons.xana_app}
-                onPress={() => Linking.openURL(supportUrl)}
+                onPress={() => this.onPressXana()}
             />
             <Section />
                 <SettingsItem

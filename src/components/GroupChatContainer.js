@@ -136,9 +136,10 @@ class GroupChatContainer extends Component {
           this.keyboardAwareScrollView = view;
         }}
         keyboardShouldPersistTaps={'always'}
-        onKeyboardDidShow={(contentWidth, contentHeight) => {
-          this.keyboardAwareScrollView.scrollToEnd({ animated: false });
+        onKeyboardWillShow={(contentWidth, contentHeight) => {
+            this.keyboardAwareScrollView.scrollToEnd({ animated: false });
         }}
+        keyboardOpeningTime={1500}
       >
         <View
           style={[

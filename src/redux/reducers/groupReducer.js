@@ -185,6 +185,13 @@ export const getUserGroups = () => (dispatch) =>
             });
             dispatch(setUnreadGroupMsgsCounts(unread_counts));
           }
+          res.conversations.sort((a, b) =>
+            a.timestamp &&
+            b.timestamp &&
+            new Date(a.timestamp) < new Date(b.timestamp)
+              ? 1
+              : -1
+          );
           dispatch(getUserGroupsSuccess(res.conversations));
         }
         resolve(res);
