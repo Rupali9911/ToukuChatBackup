@@ -28,7 +28,6 @@ class GroupChatContainer extends Component {
     this.state = {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
-      closeMenu: false,
     };
   }
 
@@ -53,12 +52,12 @@ class GroupChatContainer extends Component {
         today.getDate() === msgDate.getDate() &&
         today.getMonth() === msgDate.getMonth()
       )
-        return translate('common.today');
+        return 'Today';
       if (
         yesterday.getDate() === msgDate.getDate() &&
         yesterday.getMonth() === msgDate.getMonth()
       )
-        return translate('common.yesterday');
+        return 'Yesterday';
       return moment(msgDate).format('MM/DD');
     };
 
@@ -99,7 +98,6 @@ class GroupChatContainer extends Component {
             onEditMessage={(msg) => this.props.onEditMessage(msg)}
             audioPlayingId={this.state.audioPlayingId}
             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-            closeMenu={this.state.closeMenu}
             onAudioPlayPress={(id) => {
               this.setState({
                 audioPlayingId: id,
@@ -112,22 +110,6 @@ class GroupChatContainer extends Component {
     });
 
     return <Fragment>{msg.reverse()}</Fragment>;
-  };
-
-  closeMenu = () => {
-    if (!this.state.closeMenu) {
-      this.setState({
-        closeMenu: true,
-      });
-    }
-  };
-
-  closeMenuFalse = () => {
-    if (this.state.closeMenu) {
-      this.setState({
-        closeMenu: false,
-      });
-    }
   };
 
   render() {
@@ -155,7 +137,7 @@ class GroupChatContainer extends Component {
         }}
         keyboardShouldPersistTaps={'always'}
         onKeyboardWillShow={(contentWidth, contentHeight) => {
-          this.keyboardAwareScrollView.scrollToEnd({ animated: false });
+            this.keyboardAwareScrollView.scrollToEnd({ animated: false });
         }}
         keyboardOpeningTime={1500}
       >
@@ -184,12 +166,6 @@ class GroupChatContainer extends Component {
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd({ animated: false });
-            }}
-            onScrollBeginDrag={() => {
-              this.closeMenu();
-            }}
-            onScrollEndDrag={() => {
-              this.closeMenuFalse();
             }}
           >
             <View style={chatStyle.messageContainer}>
@@ -297,7 +273,7 @@ const chatStyle = StyleSheet.create({
     color: Colors.white,
     fontFamily: Fonts.regular,
     fontSize: 13,
-    fontWeight: '300',
+      fontWeight: '300'
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,11 +9,15 @@ import {
 } from 'react-native';
 import GroupChatMessageBubble from './GroupChatMessageBubble';
 
-import { Colors, Fonts } from '../constants';
+import { Colors, Icons, Fonts, Images } from '../constants';
 import RoundedImage from './RoundedImage';
+import GroupChatMessageImage from './GroupChatMessageImage';
 import { getAvatar } from '../utils';
 import { translate } from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { globalStyles } from '../styles';
+import ChatInput from "./TextInputs/ChatInput";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,11 +42,7 @@ export default class GroupChatMessageBox extends Component {
 
   _openMenu = () => this.setState({ longPressMenu: true });
 
-  _closeMenu = () => {
-    if (this.state.longPressMenu) {
-      this.setState({ longPressMenu: false });
-    }
-  };
+  _closeMenu = () => this.setState({ longPressMenu: false });
 
   layoutChange = (event) => {
     var { x, y, width, height } = event.nativeEvent.layout;
@@ -53,6 +53,7 @@ export default class GroupChatMessageBox extends Component {
   };
 
   onMessagePress = (id) => {
+    console.log('ChatMessageBox -> onMessagePress -> id', id);
     this.setState({ selectedMessageId: id });
     this._openMenu();
   };
@@ -124,7 +125,7 @@ export default class GroupChatMessageBox extends Component {
       message,
       isUser,
       time,
-      isRead,
+        isRead,
       onMessageReply,
       orientation,
       onDelete,
@@ -136,23 +137,14 @@ export default class GroupChatMessageBox extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
-      closeMenu,
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
 
-    if (
-      message.message_body &&
-      message.message_body.text &&
-      message.message_body.text === null
-    ) {
+    if (message.message_body && message.message_body.text && message.message_body.text === null) {
       return null;
-    }
-
-    if (closeMenu) {
-      this._closeMenu();
     }
 
     return !isUser ? (
@@ -198,7 +190,7 @@ export default class GroupChatMessageBox extends Component {
                     color: Colors.primary,
                     textAlign: 'left',
                     marginStart: 10,
-                    fontWeight: '300',
+                      fontWeight: '300'
                   }}
                 >
                   {message.sender_display_name}
@@ -221,7 +213,6 @@ export default class GroupChatMessageBox extends Component {
                   audioPlayingId={audioPlayingId}
                   perviousPlayingAudioId={perviousPlayingAudioId}
                   onAudioPlayPress={onAudioPlayPress}
-                  closeMenu={closeMenu}
                 />
               </View>
               <View
@@ -229,12 +220,14 @@ export default class GroupChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
-                  alignSelf: 'flex-end',
-                  paddingBottom: 5,
+                    alignSelf: 'flex-end',
+                    paddingBottom: 5
                 }}
               >
                 {/*<Text style={styles.statusText}>{status}</Text>*/}
-                <Text style={styles.statusText}>{`${time.getHours()}:${
+                <Text
+                  style={styles.statusText}
+                >{`${time.getHours()}:${
                   time.getMinutes() < 10
                     ? '0' + time.getMinutes()
                     : time.getMinutes()
@@ -272,15 +265,14 @@ export default class GroupChatMessageBox extends Component {
                 marginHorizontal: '1.5%',
                 alignItems: 'center',
                 marginVertical: 15,
-                alignSelf: 'flex-end',
-                paddingBottom: 5,
+                  alignSelf: 'flex-end',
+                  paddingBottom: 5
               }}
             >
-              {isRead && (
-                <Text style={styles.statusText}>
-                  {translate('pages.xchat.read')}
-                </Text>
-              )}
+                {
+                    isRead &&
+                    <Text style={styles.statusText}>{translate('pages.xchat.read')}</Text>
+                }
 
               <Text style={styles.statusText}>
                 {`${time.getHours()}:${
@@ -327,6 +319,6 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.gradient_1,
     fontFamily: Fonts.light,
-    fontSize: 9,
+      fontSize: 9
   },
 });
