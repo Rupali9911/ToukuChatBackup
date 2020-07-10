@@ -130,8 +130,8 @@ export default class ButtonWithArrow extends Component {
                 borderColor: this.getBorderColor(),
               },
               index === dropDownData.length - 1 && {
-                borderBottomStartRadius: 15,
-                borderBottomEndRadius: 15,
+                borderBottomStartRadius: 16,
+                borderBottomEndRadius: 16,
               },
             ]}
             titleStyle={[

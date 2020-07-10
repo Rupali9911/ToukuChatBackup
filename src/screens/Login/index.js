@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  ImageBackground,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  NativeModules,
-  Platform,
+    View,
+    Text,
+    ScrollView,
+    ImageBackground,
+    StyleSheet,
+    SafeAreaView,
+    TouchableOpacity,
+    Image,
+    NativeModules,
+    Platform, Linking,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -23,7 +23,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Button from '../../components/Button';
 import Inputfield from '../../components/InputField';
 import CheckBox from '../../components/CheckBox';
-import {Colors, Images, Icons} from '../../constants';
+import {Colors, Images, Icons, supportUrl} from '../../constants';
 import {BackHeader} from '../../components/Headers';
 import {loginStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -581,7 +581,8 @@ class Login extends Component {
   }
 
   onNeedSupportClick() {
-    this.props.navigation.navigate('NeedSupport');
+    //this.props.navigation.navigate('NeedSupport');
+      Linking.openURL(supportUrl)
   }
 
     appleLogin (){
