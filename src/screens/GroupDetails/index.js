@@ -108,7 +108,6 @@ class GroupDetails extends Component {
   removeMember = () => {
     console.log('GroupDetails -> removeMember -> removeMember');
   };
-
   static navigationOptions = () => {
     return {
       header: null,

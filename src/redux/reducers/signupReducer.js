@@ -221,7 +221,6 @@ export const userNameCheck = (userName) => (dispatch) =>
     client
       .get(`/check-user-exist/?username=` + userName)
       .then((res) => {
-          console.log('response of username check', res)
         resolve(res);
       })
       .catch((err) => {

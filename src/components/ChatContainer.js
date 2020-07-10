@@ -26,6 +26,7 @@ class ChatContainer extends Component {
     this.state = {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
+      closeMenu: false,
     };
   }
 
@@ -50,12 +51,12 @@ class ChatContainer extends Component {
         today.getDate() === msgDate.getDate() &&
         today.getMonth() === today.getMonth()
       )
-        return 'Today';
+        return translate('common.today');
       if (
         yesterday.getDate() === msgDate.getDate() &&
         yesterday.getMonth() === msgDate.getMonth()
       )
-        return 'Yesterday';
+        return translate('common.yesterday');
       return moment(msgDate).format('MM/DD');
     };
     const conversationLength = messages.length;
@@ -100,6 +101,7 @@ class ChatContainer extends Component {
             onUnSend={(id) => this.props.onUnSendMsg(id)}
             orientation={this.props.orientation}
             audioPlayingId={this.state.audioPlayingId}
+            closeMenu={this.state.closeMenu}
             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
             onAudioPlayPress={(id) => {
               this.setState({
@@ -113,6 +115,22 @@ class ChatContainer extends Component {
     });
 
     return <Fragment>{msg.reverse()}</Fragment>;
+  };
+
+  closeMenu = () => {
+    if (!this.state.closeMenu) {
+      this.setState({
+        closeMenu: true,
+      });
+    }
+  };
+
+  closeMenuFalse = () => {
+    if (this.state.closeMenu) {
+      this.setState({
+        closeMenu: false,
+      });
+    }
   };
 
   render() {
@@ -173,6 +191,12 @@ class ChatContainer extends Component {
             automaticallyAdjustContentInsets
             contentInsetAdjustmentBehavior={'automatic'}
             decelerationRate={'fast'}
+            onScrollBeginDrag={() => {
+              this.closeMenu();
+            }}
+            onScrollEndDrag={() => {
+              this.closeMenuFalse();
+            }}
           >
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
@@ -271,14 +295,14 @@ const chatStyle = StyleSheet.create({
   messageDate: {
     backgroundColor: Colors.orange_light,
     paddingVertical: 4,
-      paddingHorizontal: 11,
-      borderRadius: 18,
+    paddingHorizontal: 11,
+    borderRadius: 18,
   },
   messageDateText: {
     color: Colors.white,
     fontFamily: Fonts.medium,
     fontSize: 12,
-      fontWeight: '300'
+    fontWeight: '300',
   },
 });
 

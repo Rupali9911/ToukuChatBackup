@@ -19,7 +19,7 @@ import {
   editChannelMessage,
   deleteChannelMessage,
 } from '../../redux/reducers/channelReducer';
-import { ListLoader } from '../../components/Loaders';
+import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
@@ -44,6 +44,7 @@ class ChannelChats extends Component {
       isEdited: false,
       editMessageId: null,
       sentMessageType: 'text',
+      sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
         {
@@ -54,19 +55,18 @@ class ChannelChats extends Component {
             this.props.navigation.navigate('ChannelInfo');
           },
         },
-          {
-              id: 2,
-              title: 'Report Channel',
-              icon: 'user-slash',
-              onPress: () => {
-                  Toast.show({
-                      title: 'Touku',
-                      text: 'Channel reported',
-                      type: 'positive',
-                  });
-              },
+        {
+          id: 2,
+          title: 'Report Channel',
+          icon: 'user-slash',
+          onPress: () => {
+            Toast.show({
+              title: 'Touku',
+              text: 'Channel reported',
+              type: 'positive',
+            });
           },
-
+        },
       ],
     };
     this.S3uploadService = new S3uploadService();
@@ -141,16 +141,11 @@ class ChannelChats extends Component {
 
     if (sentMessageType === 'video') {
       let file = uploadFile.uri;
-      console.log(
-        'ChannelChats -> onMessageSend -> uploadFile.uri',
-        uploadFile.uri
-      );
       let files = [file];
       const uploadedApplication = await this.S3uploadService.uploadVideoOnS3Bucket(
         files
       );
       msgText = uploadedApplication;
-      console.log('ChannelChats -> onMessageSend -> msgText', msgText);
       return;
     }
     let sendmsgdata = {
@@ -203,6 +198,7 @@ class ChannelChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
+      sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
     });
   };
@@ -239,6 +235,7 @@ class ChannelChats extends Component {
       newMessageText: '',
       repliedMessage: null,
       isEdited: false,
+      sendingMedia: false,
     });
   };
 
@@ -279,7 +276,6 @@ class ChannelChats extends Component {
     this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
-        console.log('Channel Conversation',res )
         if (res.status === true && res.conversation.length > 0) {
           this.setState({ conversations: res.conversation });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
@@ -312,13 +308,14 @@ class ChannelChats extends Component {
         this.setState({
           uploadFile: source,
           sentMessageType: 'image',
+          sendingMedia: true,
         });
+        this.onMessageSend();
       }
       // Same code as in above section!
     });
   };
   onGalleryPress = async (mediaType) => {
-    console.log('ChannelChats -> onGalleryPress -> onGalleryPress');
     var options = {
       title: '',
       mediaType: mediaType,
@@ -336,11 +333,6 @@ class ChannelChats extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        console.log(
-          'ChannelChats -> onGalleryPress -> response',
-          response.type
-        );
-        console.log('ChannelChats -> onGalleryPress -> response', response);
         if (mediaType === 'images') {
           let fileType = response.type.substr(0, response.type.indexOf('/'));
           let source = {
@@ -351,16 +343,19 @@ class ChannelChats extends Component {
           this.setState({
             uploadFile: source,
             sentMessageType: 'image',
+            sendingMedia: true,
           });
         } else {
           let source = { uri: response.uri, type: null, name: null };
           this.setState({
             uploadFile: source,
             sentMessageType: 'video',
+            sendingMedia: true,
           });
         }
+        this.onMessageSend();
       }
-      await this.toggleSelectModal();
+      // this.toggleSelectModal();
       // Same code as in above section!
     });
   };
@@ -397,6 +392,7 @@ class ChannelChats extends Component {
             sentMessageType: 'doc',
           });
         }
+        this.onMessageSend();
       }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -420,6 +416,7 @@ class ChannelChats extends Component {
       showMessageUnSendConfirmationModal,
       showMessageDeleteConfirmationModal,
       uploadFile,
+      sendingMedia,
     } = this.state;
 
     if (channelLoading && conversations.length <= 0) {
@@ -443,7 +440,7 @@ class ChannelChats extends Component {
             isChannel={true}
             onEditMessage={(msg) => this.onEdit(msg)}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.toggleSelectModal()}
+            onGalleryPress={() => this.onGalleryPress('images')}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />
@@ -479,6 +476,7 @@ class ChannelChats extends Component {
             toggleSelectModal={this.ontoggleSelectModal}
             onSelect={(mediaType) => this.selectUploadOption(mediaType)}
           />
+          {sendingMedia && <UploadLoader />}
         </View>
       );
     }
