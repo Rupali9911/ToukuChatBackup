@@ -203,6 +203,7 @@ class CreateGroupChat extends Component {
 
   renderUserFriends() {
     const {userFriends, friendLoading} = this.props;
+    const {addedFriends} = this.state;
     const filteredFriends = userFriends.filter(
       createFilter(this.state.searchText, ['username']),
     );
@@ -218,6 +219,7 @@ class CreateGroupChat extends Component {
               user={item}
               onAddPress={(isAdded) => this.onAdd(isAdded, item)}
               isRightButton
+             // addedUser={addedFriends}
             />
           )}
           ListFooterComponent={() => (
@@ -329,7 +331,7 @@ class CreateGroupChat extends Component {
               <Button
                 type={'translucent'}
                 title={translate('common.cancel')}
-                onPress={() => this.props.navigation.goBack()}
+                onPress={() => {loading ? null : this.props.navigation.goBack()}}
               />
             </View>
           </KeyboardAwareScrollView>

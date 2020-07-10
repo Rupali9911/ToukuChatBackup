@@ -108,6 +108,7 @@ class GroupDetails extends Component {
   removeMember = () => {
     console.log('GroupDetails -> removeMember -> removeMember');
   };
+
   static navigationOptions = () => {
     return {
       header: null,
@@ -254,7 +255,7 @@ class GroupDetails extends Component {
               memberTitle={
                 this.isMemberCheck(item.user_id)
                   ? this.isMemberCheck(item.user_id).member_type
-                  : 'Add'
+                  : translate('pages.xchat.add')
               }
               isRightDropDown
               dropDownData={

@@ -242,11 +242,11 @@ class SignUp extends Component {
         this.setState({userNameSuggestions: []});
         AsyncStorage.setItem('username', username);
       } else {
-        Toast.show({
-          title: 'SignUp Failed',
-          text: 'User Name Already Exist',
-          type: 'primary',
-        });
+        // Toast.show({
+        //   title: 'SignUp Failed',
+        //   text: 'User Name Already Exist',
+        //   type: 'primary',
+        // });
         this.setState({userNameSuggestions: res.suggestions});
       }
     });

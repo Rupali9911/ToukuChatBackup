@@ -195,6 +195,7 @@ class ForgotPassword extends Component {
               text: translate('pages.resetPassword.toastr.passwordUpdated'),
               type: 'positive',
             });
+              this.props.navigation.goBack()
           } else {
             Toast.show({
               title: translate('common.register'),
