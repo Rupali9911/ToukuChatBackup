@@ -35,8 +35,10 @@ export default class PostCard extends Component {
 
   render() {
     const { menuItems, posts, isTimeline } = this.props;
+      console.log('POST', posts)
     return posts.length ? (
       posts.map((post, index) => {
+          console.log('POST TEXT', post.text)
         return (
           <View
             style={{
@@ -75,8 +77,8 @@ export default class PostCard extends Component {
             ) : null}
             <View style={{ marginHorizontal: '4%', marginVertical: 5 }}>
               <Text style={{ fontFamily: Fonts.light }}>
-                {post.text
-                  ? post.text
+                {post.text && post.text.length > 0
+                  ? post.text[0].text
                   : post.mutlilanguage_message_body
                   ? post.mutlilanguage_message_body.en
                   : ''}

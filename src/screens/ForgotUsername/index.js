@@ -136,7 +136,7 @@ class ForgotUserName extends Component {
 
                 <Button
                   type={'primary'}
-                  title={translate('common.recoverUsernameButton')}
+                  title={translate('pages.xchat.send')}
                   onPress={() => this.onSubmitPress()}
                   loading={this.props.loading}
                 />

@@ -139,9 +139,10 @@ class ChatContainer extends Component {
           this.keyboardAwareScrollView = view;
         }}
         keyboardShouldPersistTaps={'always'}
-        onKeyboardDidShow={(contentWidth, contentHeight) => {
+        onKeyboardWillShow={(contentWidth, contentHeight) => {
           this.keyboardAwareScrollView.scrollToEnd({ animated: false });
         }}
+        keyboardOpeningTime={1500}
       >
         <View
           style={[
