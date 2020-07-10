@@ -11,7 +11,6 @@ import ChatMessageBubble from './ChatMessageBubble';
 import { Colors, Fonts } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
 import RoundedImage from './RoundedImage';
-import ChatMessageImage from './ChatMessageImage';
 import { getAvatar } from '../utils';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const { width } = Dimensions.get('window');
@@ -37,7 +36,11 @@ export default class ChatMessageBox extends Component {
 
   _openMenu = () => this.setState({ longPressMenu: true });
 
-  _closeMenu = () => this.setState({ longPressMenu: false });
+  _closeMenu = () => {
+    if (this.state.longPressMenu) {
+      this.setState({ longPressMenu: false });
+    }
+  };
 
   layoutChange = (event) => {
     var { x, y, width, height } = event.nativeEvent.layout;
@@ -120,7 +123,7 @@ export default class ChatMessageBox extends Component {
       message,
       isUser,
       time,
-        is_read,
+      is_read,
       onMessageReply,
       orientation,
       isChannel,
@@ -133,9 +136,14 @@ export default class ChatMessageBox extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
+      closeMenu,
     } = this.props;
     if (!message.message_body && !message.is_unsent) {
       return null;
+    }
+
+    if (closeMenu) {
+      this._closeMenu();
     }
     return !isUser ? (
       <View
@@ -193,8 +201,8 @@ export default class ChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
-                    alignSelf: 'flex-end',
-                    paddingBottom: 5
+                  alignSelf: 'flex-end',
+                  paddingBottom: 5,
                 }}
               >
                 {/*<Text style={styles.statusText}>{status}</Text>*/}
@@ -234,14 +242,15 @@ export default class ChatMessageBox extends Component {
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
                   marginVertical: 15,
-                    alignSelf: 'flex-end',
-                    paddingBottom: 5
+                  alignSelf: 'flex-end',
+                  paddingBottom: 5,
                 }}
               >
-                  {
-                      is_read &&
-                      <Text style={styles.statusText}>{translate('pages.xchat.read')}</Text>
-                  }
+                {is_read && (
+                  <Text style={styles.statusText}>
+                    {translate('pages.xchat.read')}
+                  </Text>
+                )}
 
                 <Text style={styles.statusText}>
                   {`${time.getHours()}:${
@@ -290,6 +299,6 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.gradient_1,
     fontFamily: Fonts.light,
-      fontSize: 9
+    fontSize: 9,
   },
 });
