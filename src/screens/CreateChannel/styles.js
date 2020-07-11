@@ -4,16 +4,16 @@ const { width, height } = Dimensions.get('window');
 
 export const createChannelStyles = StyleSheet.create({
   mainContainer: {
-    paddingHorizontal: 15,
-    paddingBottom: 50
+    paddingHorizontal: 10,
+    paddingBottom: 50,
   },
   channelImageContainer: {
-    height: height * 0.55,
+    height: height * 0.35,
     marginVertical: 15,
   },
   profileImage: {
-    height: '90%',
-    width: '90%',
+    height: '100%',
+    width: '100%',
     backgroundColor: Colors.gray,
     borderWidth: 3,
     borderColor: '#fff',
@@ -69,14 +69,19 @@ export const createChannelStyles = StyleSheet.create({
   channelInfoContainer: {
     flex: 0.45,
     flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingBottom: 30,
   },
   channelNameInput: {
     height: 50,
     width: '95%',
     fontSize: 25,
+    fontWeight: '300',
     // marginBottom: '5%',
+    includeFontPadding: false,
     color: Colors.white,
     paddingHorizontal: 5,
+    paddingVertical: 0,
   },
   changeChannelContainer: {
     paddingHorizontal: 5,
@@ -183,5 +188,7 @@ export const createChannelStyles = StyleSheet.create({
     fontSize: 18,
     fontFamily: Fonts.medium,
   },
-  buttonContainer: {},
+  buttonContainer: {
+    paddingHorizontal: 5,
+  },
 });
