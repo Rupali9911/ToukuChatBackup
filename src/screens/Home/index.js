@@ -394,16 +394,20 @@ class Home extends Component {
   }
 
   onSearch = (text) => {
-    const {isChannelCollapsed, isGroupCollapsed, isFriendsCollapsed} = this.state
-      if (!isChannelCollapsed) {
-        this.setState({isChannelCollapsed: true})
-      }
-      if (!isGroupCollapsed) {
-        this.setState({isGroupCollapsed: true})
-      }
-      if (!isFriendsCollapsed) {
-        this.setState({isFriendsCollapsed: true})
-      }
+    const {
+      isChannelCollapsed,
+      isGroupCollapsed,
+      isFriendsCollapsed,
+    } = this.state;
+    if (!isChannelCollapsed) {
+      this.setState({ isChannelCollapsed: true });
+    }
+    if (!isGroupCollapsed) {
+      this.setState({ isGroupCollapsed: true });
+    }
+    if (!isFriendsCollapsed) {
+      this.setState({ isFriendsCollapsed: true });
+    }
     this.setState({ searchText: text });
   };
 
