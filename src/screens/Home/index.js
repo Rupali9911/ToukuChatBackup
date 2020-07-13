@@ -547,7 +547,7 @@ class Home extends Component {
           renderItem={({ item, index }) => (
             <FriendListItem
               key={index}
-              title={item.username}
+              title={item.display_name}
               description={
                 item.last_msg
                   ? item.last_msg_type === 'text'
