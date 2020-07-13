@@ -262,13 +262,22 @@ class CreateChannel extends Component {
   };
 
   onAdd = (isAdded, data) => {
+    const { addedFriends } = this.state;
     if (isAdded) {
-      this.state.addedFriends.push(data.user_id);
+      if (!addedFriends.includes(data.user_id)) {
+        this.setState({
+          addedFriends: [...addedFriends, data.user_id],
+        });
+      }
     } else {
       const index = this.state.addedFriends.indexOf(data.user_id);
-      if (index > -1) {
-        this.state.addedFriends.splice(index, 1);
-      }
+
+      const newList = addedFriends
+        .slice(0, index)
+        .concat(addedFriends.slice(index + 1, addedFriends.length));
+      this.setState({
+        addedFriends: newList,
+      });
     }
   };
 
@@ -381,8 +390,9 @@ class CreateChannel extends Component {
 
   renderUserFriends() {
     const { userFriends, friendLoading } = this.props;
+    const { addedFriends } = this.state;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['display_name'])
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -396,6 +406,7 @@ class CreateChannel extends Component {
               user={item}
               onAddPress={(isAdded) => this.onAdd(isAdded, item)}
               isRightButton
+              isSelected={addedFriends.includes(item.user_id)}
             />
           )}
           ListFooterComponent={() => (
@@ -506,6 +517,7 @@ class CreateChannel extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={createChannelStyles.mainContainer}
             showsVerticalScrollIndicator={false}
+            extraHeight={250}
           >
             <LinearGradient
               start={{ x: 0.1, y: 0.7 }}

@@ -158,6 +158,7 @@ class GroupChatContainer extends Component {
           this.keyboardAwareScrollView.scrollToEnd({ animated: false });
         }}
         keyboardOpeningTime={1500}
+        extraHeight={200}
       >
         <View
           style={[
