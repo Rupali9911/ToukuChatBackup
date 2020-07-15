@@ -36,6 +36,7 @@ import {
   editGroup,
   deleteGroup,
   getUserGroups,
+  leaveGroup,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import { ConfirmationModal } from '../../components/Modals';
@@ -56,6 +57,7 @@ class GroupDetails extends Component {
       isManage: false,
       isEdit: false,
       showDeleteGroupConfirmationModal: false,
+      showLeaveGroupConfirmationModal: false,
       filePath: { uri: this.props.currentGroupDetail.group_picture }, //For Image Picker
       memberOption: [
         {
@@ -108,7 +110,6 @@ class GroupDetails extends Component {
   removeMember = () => {
     console.log('GroupDetails -> removeMember -> removeMember');
   };
-
   static navigationOptions = () => {
     return {
       header: null,
@@ -147,7 +148,43 @@ class GroupDetails extends Component {
     }
   }
 
-  onLeaveGroup = () => {};
+  onLeaveGroup = () => {
+    this.toggleLeaveGroupConfirmationModal();
+  };
+
+  toggleLeaveGroupConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showLeaveGroupConfirmationModal: !prevState.showLeaveGroupConfirmationModal,
+    }));
+  };
+
+  onConfirmLeaveGroup = () => {
+    const payload = {
+      group_id: this.props.currentGroup.group_id,
+    };
+    this.props
+      .leaveGroup(payload)
+      .then((res) => {
+        if (res.status === true) {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.success'),
+            type: 'positive',
+          });
+          this.props.getUserGroups();
+          this.props.navigation.popToTop();
+        }
+        this.toggleLeaveGroupConfirmationModal();
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.toggleLeaveGroupConfirmationModal();
+      });
+  };
 
   onUpdateGroup = () => {
     let editData = {
@@ -206,6 +243,12 @@ class GroupDetails extends Component {
     this.toggleDeleteGroupConfirmationModal();
   };
 
+  onCancelPress = () => {
+    this.setState({
+      showLeaveGroupConfirmationModal: false,
+    });
+  };
+
   onConfirmDeleteGroup = () => {
     this.toggleDeleteGroupConfirmationModal();
     this.props
@@ -218,7 +261,7 @@ class GroupDetails extends Component {
             type: 'positive',
           });
           this.props.getUserGroups();
-          this.props.navigation.navigate('Drawer');
+          this.props.navigation.popToTop();
         }
       })
       .catch((err) => {
@@ -305,6 +348,7 @@ class GroupDetails extends Component {
       filePath,
       orientation,
       showDeleteGroupConfirmationModal,
+      showLeaveGroupConfirmationModal,
     } = this.state;
     return (
       <ImageBackground
@@ -576,6 +620,14 @@ class GroupDetails extends Component {
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.toastr.groupWillBeDeleted')}
           />
+          <ConfirmationModal
+            orientation={orientation}
+            visible={showLeaveGroupConfirmationModal}
+            onCancel={this.onCancelPress.bind(this)}
+            onConfirm={this.onConfirmLeaveGroup.bind(this)}
+            title={translate('pages.xchat.toastr.areYouSure')}
+            message={translate('pages.xchat.wantToLeaveText')}
+          />
         </View>
       </ImageBackground>
     );
@@ -599,6 +651,7 @@ const mapDispatchToProps = {
   editGroup,
   deleteGroup,
   getUserGroups,
+  leaveGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);

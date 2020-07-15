@@ -22,7 +22,6 @@ import FriendWithStatus from '../../components/FriendWithStatus';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import {getSearchedFriends, sendFriendRequest, cancelFriendRequest, setIsRequestedParam} from '../../redux/reducers/addFriendReducer'
 import {showToast} from '../../utils'
-import {getUserProfile} from "../../redux/reducers/userReducer";
 
 class AddFriend extends Component {
     constructor(props) {

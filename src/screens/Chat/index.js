@@ -192,7 +192,7 @@ class Chat extends Component {
       });
     }
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['display_name'])
     );
     if (filteredFriends.length > 0 && !friendLoading) {
       await this.setState({
@@ -233,7 +233,7 @@ class Chat extends Component {
       updatedConversation = [...updatedConversation, ...filteredGroups];
     }
     const filteredFriends = await userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['display_name'])
     );
     if (filteredFriends.length > 0 && !friendLoading) {
       updatedConversation = [...updatedConversation, ...filteredFriends];
@@ -454,7 +454,7 @@ class Chat extends Component {
             ) : (
               <FriendListItem
                 key={index}
-                title={item.username}
+                title={item.display_name}
                 description={
                   item.last_msg
                     ? item.last_msg_type === 'text'

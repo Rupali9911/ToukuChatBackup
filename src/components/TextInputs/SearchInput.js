@@ -108,6 +108,15 @@ export default class SearchInput extends Component {
               titleStyle={{ marginLeft: -25 }}
               title={translate('pages.xchat.createChannel')}
             />
+            <Menu.Item
+              icon={() => <Image source={Icons.add_friend} />}
+              onPress={() => {
+                navigation.navigate('AddFriendScreen');
+                this._closeMenu();
+              }}
+              titleStyle={{ marginLeft: -25 }}
+              title={translate('pages.xchat.addFriend')}
+            />
           </Menu>
         ) : null}
       </View>

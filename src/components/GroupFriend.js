@@ -17,6 +17,7 @@ import RoundedImage from './RoundedImage';
 import Button from './Button';
 import ButtonWithArrow from './ButtonWithArrow';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
+import { createFilter } from 'react-native-search-filter';
 
 export default class GroupFriend extends Component {
   constructor(props) {
@@ -27,19 +28,25 @@ export default class GroupFriend extends Component {
   }
 
   componentDidMount() {
+    //  const {addedUser, user} =  this.props
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
+
+    // if (addedUser && addedUser.length > 0 && user){
+    //     let filteredUser = addedUser.filter((user1) => {
+    //         return user1.user_id === user.user_id
+    //     });
+    //     if (filteredUser.length > 0 ){
+    //       this.setState({isAdded: true})
+    //     }else{
+    //         this.setState({isAdded: false})
+    //     }
+    // }
   }
   onAddPress = () => {
-    this.setState(
-      (prevState) => ({
-        isAdded: !prevState.isAdded,
-      }),
-      () => {
-        this.props.onAddPress(this.state.isAdded);
-      }
-    );
+    console.log('GroupFriend -> onAddPress -> onAddPress');
+    this.props.onAddPress(!this.props.isSelected);
   };
 
   onChecked = () => {
@@ -62,9 +69,10 @@ export default class GroupFriend extends Component {
       isMember,
       memberTitle,
       dropDownData,
+      isSelected,
     } = this.props;
     const { isAdded, onChecked } = this.state;
-    console.log('GroupFriend -> render -> isMember', isMember);
+
     return (
       <View style={[styles.container, isCheckBox && { paddingHorizontal: 0 }]}>
         {isCheckBox && (
@@ -126,7 +134,7 @@ export default class GroupFriend extends Component {
           <View style={{ flex: 0.2 }}>
             <Button
               title={translate('pages.xchat.add')}
-              type={isAdded ? 'primary' : 'translucent'}
+              type={isSelected ? 'primary' : 'translucent'}
               height={30}
               onPress={this.onAddPress.bind(this)}
             />
@@ -135,7 +143,11 @@ export default class GroupFriend extends Component {
         {isRightDropDown && (
           <View style={{ flex: 0.3 }}>
             <ButtonWithArrow
-              title={memberTitle === 'member' ? translate('pages.xchat.member') : memberTitle}
+              title={
+                memberTitle === 'member'
+                  ? translate('pages.xchat.member')
+                  : memberTitle
+              }
               type={isMember ? 'primary' : 'translucent'}
               height={30}
               onPress={this.onAddPress.bind(this)}

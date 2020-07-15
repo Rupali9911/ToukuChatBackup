@@ -56,53 +56,68 @@ export default class ConfirmationModal extends Component {
           </View>
           <View
             style={{
-              flex: 0.3,
-              justifyContent: 'space-evenly',
+              flex: 0.5,
+              justifyContent: 'space-around',
               alignItems: 'center',
             }}
           >
-            <Text style={{ fontFamily: Fonts.medium, fontSize: 24 }}>
-              {title}
-            </Text>
-            <Text
+            <View
               style={{
-                fontFamily: Fonts.light,
-                fontSize: 16,
-                color: Colors.black,
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                flex: 0.5,
+                width: '100%',
               }}
             >
-              {message ? message : ''}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 0.2,
-              flexDirection: 'row',
-              paddingHorizontal: '20%',
-            }}
-          >
-            <View style={{ flex: 0.5, marginHorizontal: 5 }}>
-              <Button
-                height={'80%'}
-                title={'Cancel'}
-                type={'secondary'}
-                onPress={onCancel}
-                isRounded={false}
-              />
+              <Text
+                style={{
+                  fontFamily: Fonts.medium,
+                  fontSize: 24,
+                  marginBottom: 10,
+                }}
+              >
+                {title}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: Fonts.light,
+                  fontSize: 16,
+                  color: Colors.black,
+                }}
+              >
+                {message ? message : ''}
+              </Text>
             </View>
             <View
               style={{
+                flexDirection: 'row',
+                paddingHorizontal: '20%',
+                alignItems: 'center',
+                justifyContent: 'space-around',
                 flex: 0.5,
-                marginHorizontal: 5,
               }}
             >
-              <Button
-                height={'80%'}
-                title={'Sure'}
-                type={'primary'}
-                onPress={onConfirm}
-                isRounded={false}
-              />
+              <View style={{ flex: 0.5, marginHorizontal: 5 }}>
+                <Button
+                  title={'Cancel'}
+                  type={'secondary'}
+                  onPress={onCancel}
+                  isRounded={false}
+                />
+              </View>
+              <View
+                style={{
+                  flex: 0.5,
+                  marginHorizontal: 5,
+                }}
+              >
+                <Button
+                  title={'Sure'}
+                  type={'primary'}
+                  onPress={onConfirm}
+                  isRounded={false}
+                />
+              </View>
             </View>
           </View>
         </View>
