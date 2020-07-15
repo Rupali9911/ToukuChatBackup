@@ -86,7 +86,7 @@ class AddFriend extends Component {
 
     renderUserFriends() {
         const { arrFriends } = this.state;
-        const { isLoading } = this.props;
+        const { isLoading, userData } = this.props;
 
         if (arrFriends.length === 0 && isLoading) {
             return <ListLoader />;
@@ -94,10 +94,10 @@ class AddFriend extends Component {
             return (
                 <FlatList
                     data={arrFriends}
-                    renderItem={({ item, index }) => (
+                    renderItem={({ item, index }) => item.id === userData.id ? null : (
                         <FriendWithStatus
-                            user={item}
-                            onButtonAction={() => this.actionOnStatus(item, index)}
+                        user={item}
+                        onButtonAction={() => this.actionOnStatus(item, index)}
                         />
                     )}
                     ListFooterComponent={() => (
@@ -152,6 +152,7 @@ const mapStateToProps = (state) => {
     return {
         isLoading: state.addFriendReducer.loading,
         searchedFriend: state.addFriendReducer.searchedFriend,
+        userData: state.userReducer.userData,
     };
 };
 

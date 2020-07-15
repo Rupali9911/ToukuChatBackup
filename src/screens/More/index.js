@@ -15,6 +15,7 @@ import {logout} from "../../redux/reducers";
 import WebViewClass from '../../components/WebView';
 import QRCodeClass from "../../components/QRCode";
 import ConfirmationModal from "../../components/Modals/ConfirmationModal";
+import AsyncStorage from '@react-native-community/async-storage';
 
 class More extends Component {
   constructor(props) {
@@ -67,7 +68,12 @@ class More extends Component {
       // }));
   }
 
+    clearAsyncStorage = async() => {
+        AsyncStorage.clear();
+    }
+
   actionLogout() {
+      this.clearAsyncStorage()
       this.updateModalVisibility()
         this.props.logout().then((res) => {
             this.props.navigation.navigate('Auth');
