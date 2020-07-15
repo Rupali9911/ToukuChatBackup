@@ -36,6 +36,7 @@ export const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'User-Agent': userAgent,
+    'Origin': 'touku.net',
   },
 });
 

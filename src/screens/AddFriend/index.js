@@ -22,6 +22,7 @@ import FriendWithStatus from '../../components/FriendWithStatus';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import {getSearchedFriends, sendFriendRequest, cancelFriendRequest, setIsRequestedParam} from '../../redux/reducers/addFriendReducer'
 import {showToast} from '../../utils'
+import {getUserProfile} from "../../redux/reducers/userReducer";
 
 class AddFriend extends Component {
     constructor(props) {
@@ -86,7 +87,7 @@ class AddFriend extends Component {
 
     renderUserFriends() {
         const { arrFriends } = this.state;
-        const { isLoading } = this.props;
+        const { isLoading, userData } = this.props;
 
         if (arrFriends.length === 0 && isLoading) {
             return <ListLoader />;
@@ -94,10 +95,10 @@ class AddFriend extends Component {
             return (
                 <FlatList
                     data={arrFriends}
-                    renderItem={({ item, index }) => (
+                    renderItem={({ item, index }) => item.id === userData.id ? null : (
                         <FriendWithStatus
-                            user={item}
-                            onButtonAction={() => this.actionOnStatus(item, index)}
+                        user={item}
+                        onButtonAction={() => this.actionOnStatus(item, index)}
                         />
                     )}
                     ListFooterComponent={() => (
@@ -152,6 +153,7 @@ const mapStateToProps = (state) => {
     return {
         isLoading: state.addFriendReducer.loading,
         searchedFriend: state.addFriendReducer.searchedFriend,
+        userData: state.userReducer.userData,
     };
 };
 

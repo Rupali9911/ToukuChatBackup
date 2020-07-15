@@ -637,6 +637,8 @@ class Login extends Component {
           pointerEvents={this.props.loading ? 'none' : 'auto'}
           style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
+              keyboardShouldPersistTaps={"handled"}
+              behavior={'position'}
             contentContainerStyle={[
               loginStyles.scrollView,
               {flex: Platform.isPad ? 1 : 0},
@@ -758,28 +760,17 @@ class Login extends Component {
                   style={{
                     flexDirection: 'row',
                     marginTop: 15,
-                    justifyContent: 'space-between',
+                      justifyContent: 'center',
                     paddingHorizontal: 5,
                   }}>
-                  <View style={{alignItems: 'flex-start'}}>
-                    <Text
-                      style={[
-                        globalStyles.smallLightText,
-                        {textDecorationLine: 'underline'},
-                      ]}
-                      onPress={() => this.onNeedSupportClick()}>
-                      {translate('pages.xchat.needSupport')}
-                    </Text>
-                  </View>
                   <View
                     style={{
-                      alignItems: 'flex-end',
-                      flexDirection:
-                        this.props.selectedLanguageItem.language_name ===
-                          'ja' && orientation === 'PORTRAIT'
-                          ? 'column'
-                          : 'row',
+                      alignItems: 'center',
+                      flexDirection:'row',
                     }}>
+                      <Text style={globalStyles.smallLightText}>
+                          {translate('common.forgotYour')}
+                      </Text>
                     <Text
                       numberOfLines={1}
                       style={[
@@ -789,7 +780,7 @@ class Login extends Component {
                       onPress={() =>
                         this.props.navigation.navigate('ForgotUsername')
                       }>
-                      {translate('common.username')}
+                      {' ' + translate('common.username')}
                     </Text>
                     <Text
                       numberOfLines={1}
@@ -808,10 +799,7 @@ class Login extends Component {
                       onPress={() =>
                         this.props.navigation.navigate('ForgotPassword')
                       }>
-                      {translate('common.password')}
-                    </Text>
-                    <Text style={globalStyles.smallLightText}>
-                      {' ' + translate('common.forgot')}
+                      {translate('common.password') + '?'}
                     </Text>
                   </View>
                 </View>
@@ -855,7 +843,18 @@ class Login extends Component {
                               {/*/>*/}
                           </View>
                       </View>
+
                   }
+                  <View style={{alignItems: 'center', marginTop: 10}}>
+                      <Text
+                          style={[
+                              globalStyles.smallLightText,
+                              {textDecorationLine: 'underline'},
+                          ]}
+                          onPress={() => this.onNeedSupportClick()}>
+                          {translate('pages.xchat.needSupport')}
+                      </Text>
+                  </View>
               </View>
             </View>
             <LanguageSelector />

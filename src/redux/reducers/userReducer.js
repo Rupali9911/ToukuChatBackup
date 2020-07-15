@@ -183,6 +183,7 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
     client
       .post(`/xchat/line-login-auth/`, socialLoginData)
       .then((res) => {
+          console.log('res', res)
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
           // dispatch(getLoginSuccess(res.token))
@@ -190,6 +191,7 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
+          console.log('err', err)
         reject(err);
       });
   });
@@ -234,6 +236,7 @@ export const getUserProfile = () => (dispatch) =>
     client
       .get(`/profile/`)
       .then((res) => {
+          console.log('profile', res)
         if (res.id) {
           dispatch(setUserData(res));
         }

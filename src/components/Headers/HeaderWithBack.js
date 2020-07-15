@@ -61,6 +61,7 @@ export default class HeaderWithBack extends Component {
           }}>
           {isBack ? (
             <TouchableOpacity
+                hitSlop={{top: 10, bottom: 10, right: 10, left: 10}}
               onPress={onBackPress}
               style={{
                 flex: 1,

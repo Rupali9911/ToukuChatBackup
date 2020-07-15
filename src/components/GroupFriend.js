@@ -17,7 +17,6 @@ import RoundedImage from './RoundedImage';
 import Button from './Button';
 import ButtonWithArrow from './ButtonWithArrow';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
-import {createFilter} from "react-native-search-filter";
 
 export default class GroupFriend extends Component {
   constructor(props) {
@@ -28,22 +27,9 @@ export default class GroupFriend extends Component {
   }
 
   componentDidMount() {
-  //  const {addedUser, user} =  this.props
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
-
-    // if (addedUser && addedUser.length > 0 && user){
-    //     let filteredUser = addedUser.filter((user1) => {
-    //         return user1.user_id === user.user_id
-    //     });
-    //     if (filteredUser.length > 0 ){
-    //       this.setState({isAdded: true})
-    //     }else{
-    //         this.setState({isAdded: false})
-    //     }
-    // }
-
   }
   onAddPress = () => {
     this.setState(
@@ -78,8 +64,7 @@ export default class GroupFriend extends Component {
       dropDownData,
     } = this.props;
     const { isAdded, onChecked } = this.state;
-    console.log('GroupFriend -> render -> isMember', isMember, memberTitle);
-
+    console.log('GroupFriend -> render -> isMember', isMember);
     return (
       <View style={[styles.container, isCheckBox && { paddingHorizontal: 0 }]}>
         {isCheckBox && (
