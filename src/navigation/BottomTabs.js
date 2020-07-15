@@ -1,8 +1,8 @@
 import React from 'react';
-import {Image, View, Text} from 'react-native';
-import {createAppContainer} from 'react-navigation';
-import {createBottomTabNavigator} from 'react-navigation-tabs';
-import {createStackNavigator} from 'react-navigation-stack';
+import { Image, View, Text } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import HomeScreen from '../screens/Home';
 import ChatScreen from '../screens/Chat';
@@ -10,22 +10,23 @@ import CreateGroupChatScreen from '../screens/CreateGroupChat';
 import CreateChannelScreen from '../screens/CreateChannel';
 import TimelineScreen from '../screens/Timeline';
 import ChannelScreen from '../screens/Channel';
-import {Icons, Colors, Fonts} from '../constants';
-import {globalStyles} from '../styles';
-import {isIphoneX} from '../utils';
+import { Icons, Colors, Fonts } from '../constants';
+import { globalStyles } from '../styles';
+import { isIphoneX } from '../utils';
 import MoreScreen from '../screens/More';
-import {translate} from '../redux/reducers/languageReducer';
+import { translate } from '../redux/reducers/languageReducer';
 import AddFriend from '../screens/AddFriend';
 import TabBarComp from '../components/TabBarComp';
-import {BottomTabItem} from '../components/ListItems';
+import { BottomTabItem } from '../components/ListItems';
 
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
+  AddFriendScreen: AddFriend,
 });
 
-HomeTab.navigationOptions = ({navigation}) => {
+HomeTab.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
@@ -42,7 +43,7 @@ const ChatTab = createStackNavigator({
   CreateChannel: CreateChannelScreen,
 });
 
-ChatTab.navigationOptions = ({navigation}) => {
+ChatTab.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
@@ -60,7 +61,7 @@ const MoreTab = createStackNavigator({
   CreateChannel: CreateChannelScreen,
 });
 
-MoreTab.navigationOptions = ({navigation}) => {
+MoreTab.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
@@ -75,7 +76,7 @@ const TimelineTab = createStackNavigator({
   TimelineTab: TimelineScreen,
 });
 
-TimelineTab.navigationOptions = ({navigation}) => {
+TimelineTab.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
@@ -90,7 +91,7 @@ const ChannelTab = createStackNavigator({
   ChannelTab: ChannelScreen,
 });
 
-ChannelTab.navigationOptions = ({navigation}) => {
+ChannelTab.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
@@ -117,13 +118,13 @@ const Tabs = createBottomTabNavigator(
       },
       activeTintColor: Colors.indigo,
       inactiveTintColor: Colors.white,
-      safeAreaInset: {right: 'never', left: 'never', bottom: 'always'},
+      safeAreaInset: { right: 'never', left: 'never', bottom: 'always' },
       // labelStyle: {marginVertical: 5},
       showLabel: false,
     },
-    defaultNavigationOptions: ({navigation}) => ({
-      tabBarIcon: ({focused, horizontal, tintColor}) => {
-        const {routeName} = navigation.state;
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
         if (routeName === 'Home') {
           return (
             <BottomTabItem
@@ -176,7 +177,7 @@ const Tabs = createBottomTabNavigator(
         }
       },
     }),
-  },
+  }
 );
 
 // const TabItem = (props) => {

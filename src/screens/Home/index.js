@@ -32,6 +32,7 @@ import {
   ChannelListItem,
   FriendListItem,
   GroupListItem,
+  FriendRequestListItem,
 } from '../../components/ListItems';
 import NoData from '../../components/NoData';
 import Button from '../../components/Button';
@@ -43,6 +44,13 @@ import {
   getUserProfile,
   getMissedSocketEventsById,
 } from '../../redux/reducers/userReducer';
+
+import {
+  getFriendRequest,
+  acceptFriendRequst,
+  rejectFriendRequst,
+} from '../../redux/reducers/addFriendReducer';
+
 import { getUserConfiguration } from '../../redux/reducers/configurationReducer';
 import {
   getMoreFollowingChannels,
@@ -60,6 +68,7 @@ import {
   setCurrentFriend,
   updateUnreadFriendMsgsCounts,
 } from '../../redux/reducers/friendReducer';
+import Toast from '../../components/Toast';
 
 class Home extends Component {
   constructor(props) {
@@ -104,17 +113,30 @@ class Home extends Component {
     this.props.getUserProfile();
     this.SingleSocket.create({ user_id: this.props.userData.id });
     Orientation.addOrientationListener(this._orientationDidChange);
-
+    this.getFriendRequest();
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
-    this.props.getFriendRequests();
+    // this.props.getFriendRequests();
     this.props.getUserConfiguration();
   }
 
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
   };
+
+  getFriendRequest() {
+    this.props.getFriendRequest().then((res) => {
+      // let counts = 0;
+      // for (let friend of this.props.friendRequest) {
+      //   counts = counts + friend.unread_msg;
+      // }
+      this.props.friendRequest.length;
+      this.setState({
+        friendRequestHeaderCounts: this.props.friendRequest.length,
+      });
+    });
+  }
 
   getFollowingChannels() {
     this.props.getFollowingChannels().then((res) => {
@@ -181,12 +203,14 @@ class Home extends Component {
         this.onRemoveChannelMember(message);
         break;
       case SocketEvents.NEW_MESSAGE_IN_FREIND:
-      case SocketEvents.NEW_FRIEND_REQUEST:
-      case SocketEvents.FRIEND_REQUEST_ACCEPTED:
-      case SocketEvents.FRIEND_REQUEST_REJECTED:
       case SocketEvents.UNFRIEND:
       case SocketEvents.FRIEND_REQUEST_CANCELLED:
         this.onNewMessageInFriend(message);
+      case SocketEvents.NEW_FRIEND_REQUEST:
+      case SocketEvents.FRIEND_REQUEST_ACCEPTED:
+      case SocketEvents.FRIEND_REQUEST_REJECTED:
+        this.getFriendRequest();
+        this.getUserFriends();
     }
   }
 
@@ -575,6 +599,93 @@ class Home extends Component {
     }
   }
 
+  renderFriendRequestList() {
+    const { friendRequestLoading, friendRequest } = this.props;
+    const filteredFriendRequest = friendRequest.filter(
+      createFilter(this.state.searchText, ['from_user_display_name'])
+    );
+    if (filteredFriendRequest.length === 0 && friendRequestLoading) {
+      return <ListLoader />;
+    } else if (filteredFriendRequest.length > 0) {
+      return (
+        <FlatList
+          data={filteredFriendRequest}
+          extraData={this.state}
+          renderItem={({ item, index }) => (
+            <FriendRequestListItem
+              key={index}
+              title={item.from_user_display_name}
+              image={getAvatar(item.from_user_avatar)}
+              date={item.created}
+              onAcceptPress={() => this.onAcceptPress(item)}
+              onRejectPress={() => this.onRejectPress(item)}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
+          // ListFooterComponent={() => (
+          //   <View>{friendLoading ? <ListLoader /> : null}</View>
+          // )}
+          keyExtractor={(item, index) => String(index)}
+        />
+      );
+    } else {
+      return <NoData title={translate('pages.xchat.noFriendFound')} />;
+    }
+  }
+
+  onAcceptPress = (item) => {
+    console.log('onAcceptPress -> onAcceptPress', item);
+    const payload = {
+      channel_name: `friend_request_${item.from_user_id}`,
+      sender_id: item.from_user_id,
+    };
+    this.props
+      .acceptFriendRequst(payload)
+      .then((res) => {
+        if (res.status === true) {
+          Toast.show({
+            title: translate('pages.xchat.toastr.added'),
+            text: translate('pages.xchat.toastr.friendAddedSuccessfully'),
+            type: 'positive',
+          });
+          this.props.getFriendRequest();
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
+  };
+
+  onRejectPress = (item) => {
+    console.log('onRejectPress -> onRejectPress', item);
+    const payload = {
+      sender_id: item.from_user_id,
+    };
+    this.props
+      .rejectFriendRequst(payload)
+      .then((res) => {
+        if (res.status === true) {
+          Toast.show({
+            title: translate('pages.xchat.toastr.rejected'),
+            text: translate('pages.xchat.toastr.friendRequestRejected'),
+            type: 'positive',
+          });
+          this.props.getFriendRequest();
+        }
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
+  };
+
   showDropdown = () => {
     this.setState((prevState) => ({
       showDropdown: !prevState.showDropdown,
@@ -599,6 +710,7 @@ class Home extends Component {
       userGroups,
       userData,
       userConfig,
+      friendRequest,
     } = this.props;
     const filteredChannels = followingChannels.filter(
       createFilter(searchText, ['name'])
@@ -608,6 +720,10 @@ class Home extends Component {
     );
     const filteredFriends = userFriends.filter(
       createFilter(searchText, ['username'])
+    );
+
+    const filteredFriendRequest = friendRequest.filter(
+      createFilter(searchText, ['from_user_display_name'])
     );
     return (
       <ImageBackground
@@ -643,6 +759,28 @@ class Home extends Component {
               </Text>
             </TouchableOpacity>
             <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+              {/* Friend Request */}
+              {filteredFriendRequest.length > 0 && (
+                <Collapse
+                  onToggle={(isColl) =>
+                    this.setState({
+                      isChannelCollapsed: isColl,
+                    })
+                  }
+                  isCollapsed={isChannelCollapsed}
+                >
+                  <CollapseHeader>
+                    <DropdownHeader
+                      title={translate('pages.xchat.friendRequest')}
+                      isCollapsed={isChannelCollapsed}
+                      listcounts={filteredFriendRequest.length}
+                      // badgeCount={channelHeaderCounts}
+                    />
+                  </CollapseHeader>
+                  <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
+                </Collapse>
+              )}
+
               {/* Channels */}
               <Collapse
                 onToggle={(isColl) =>
@@ -771,6 +909,8 @@ const mapStateToProps = (state) => {
     groupLoading: state.groupReducer.loading,
     userFriends: state.friendReducer.userFriends,
     friendLoading: state.friendReducer.loading,
+    friendRequest: state.addFriendReducer.friendRequest,
+    friendRequestLoading: state.addFriendReducer.loading,
   };
 };
 
@@ -788,6 +928,9 @@ const mapDispatchToProps = {
   getMissedSocketEventsById,
   updateUnreadFriendMsgsCounts,
   updateUnreadGroupMsgsCounts,
+  getFriendRequest,
+  acceptFriendRequst,
+  rejectFriendRequst,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
