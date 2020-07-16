@@ -8,12 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import Button from '../Button';
-import RoundedImage from '../RoundedImage';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { getImage } from '../../utils';
+import { Colors, Fonts } from '../../constants';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default class UploadSelectModal extends Component {
@@ -22,9 +17,8 @@ export default class UploadSelectModal extends Component {
     this.state = {};
   }
 
-  send = () => {
-    this.props.toggleBackgroundImgModal();
-    this.props.onSetBackground();
+  send = async (type) => {
+    this.props.onSelect(type);
   };
 
   render() {
@@ -32,8 +26,8 @@ export default class UploadSelectModal extends Component {
     return (
       <Modal
         isVisible={visible}
-        onBackButtonPress={toggleSelectModal}
-        onBackdropPress={toggleSelectModal}
+        onBackButtonPress={() => toggleSelectModal(false)}
+        onBackdropPress={() => toggleSelectModal(false)}
       >
         <SafeAreaView
           style={{
@@ -82,7 +76,7 @@ export default class UploadSelectModal extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                onPress={() => onSelect('images')}
+                onPress={() => this.send('images')}
               >
                 <Text
                   style={{
@@ -101,7 +95,7 @@ export default class UploadSelectModal extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                onPress={() => onSelect('video')}
+                onPress={() => this.send('video')}
               >
                 <Text
                   style={{

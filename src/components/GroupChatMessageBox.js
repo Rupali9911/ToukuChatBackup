@@ -221,7 +221,6 @@ export default class GroupChatMessageBox extends Component {
                   audioPlayingId={audioPlayingId}
                   perviousPlayingAudioId={perviousPlayingAudioId}
                   onAudioPlayPress={onAudioPlayPress}
-                  closeMenu={closeMenu}
                 />
               </View>
               <View
