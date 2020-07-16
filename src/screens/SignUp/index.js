@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  ImageBackground,
-  StyleSheet,
-  SafeAreaView,
-  Image,
-  TouchableOpacity,
-  Platform,
+    View,
+    Text,
+    ScrollView,
+    ImageBackground,
+    StyleSheet,
+    SafeAreaView,
+    Image,
+    TouchableOpacity,
+    Platform, Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -144,6 +144,7 @@ class SignUp extends Component {
   }
 
   onPageChange(position) {
+      Keyboard.dismiss();
     const {phone, countryCode, verifycode, email, emailconfirm} = this.state;
     switch (position) {
       case 1:
@@ -469,13 +470,29 @@ class SignUp extends Component {
         });
       } else {
         Toast.show({
-          title: 'Terms and Conditions',
-          text: 'Please Select Our Terms & Conditions ',
+          title: translate('pages.register.terms&Conditions'),
+          text: translate('pages.register.toastr.termsAndCondition'),
           type: 'primary',
         });
       }
     }
   }
+
+    actionBackPres(){
+        this.props.navigation.goBack()
+    // const {currentPosition} = this.state
+    // if (this.props.navigation.state.params.isSocial) {
+    //     this.props.navigation.goBack()
+    // }else{
+    //   if (currentPosition !== 0) {
+    //     this.setState({currentPosition: currentPosition-1})
+    //   }else{
+    //       this.props.navigation.goBack()
+    //   }
+    // }
+
+  }
+
 
   renderPage(page) {
     switch (page) {
@@ -670,9 +687,11 @@ class SignUp extends Component {
           }
           style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
+              keyboardShouldPersistTaps={"handled"}
+              behavior={'position'}
             contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
             showsVerticalScrollIndicator={false}>
-            <BackHeader onBackPress={() => this.props.navigation.goBack()} />
+            <BackHeader onBackPress={() => this.actionBackPres()} />
             <View
               style={{
                 flex: 1,

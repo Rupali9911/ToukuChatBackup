@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  ImageBackground,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Platform,
+    View,
+    Text,
+    ImageBackground,
+    StyleSheet,
+    SafeAreaView,
+    ScrollView,
+    Platform, Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -54,6 +54,7 @@ class ForgotUserName extends Component {
   };
 
   onSubmitPress() {
+      Keyboard.dismiss();
     const {email} = this.state;
     if (email !== '') {
       let userNameData = {
@@ -94,6 +95,8 @@ class ForgotUserName extends Component {
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
+              keyboardShouldPersistTaps={"handled"}
+              behavior={'position'}
             contentContainerStyle={{
               flex: 1,
               padding: 20,

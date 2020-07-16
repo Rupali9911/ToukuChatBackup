@@ -4,7 +4,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Platform,
+  Platform,Dimensions
 } from 'react-native';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -69,6 +69,8 @@ class LanguageSelector extends Component {
     const {selectedLanguageItem} = this.props;
     if (isChecked) {
       return (
+          <TouchableOpacity activeOpacity={1} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height, position: 'absolute', left: 0, right: 10,}}
+          onPress={() => this.setState({isChecked: false})}>
         <View style={styles.container}>
           <TouchableOpacity
             style={styles.checkedIconContainer}
@@ -92,6 +94,7 @@ class LanguageSelector extends Component {
             </View>
           ))}
         </View>
+          </TouchableOpacity>
       );
     }
     return (
