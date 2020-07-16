@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  ImageBackground,
-  StyleSheet,
-  SafeAreaView,
-  Platform,
+    View,
+    Text,
+    ScrollView,
+    ImageBackground,
+    StyleSheet,
+    SafeAreaView,
+    Platform, Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -90,7 +90,7 @@ class ForgotPassword extends Component {
 
   handlePassword = (password) => {
     this.setState({password});
-    if (password.length <= 0) {
+    if (password.length <= 7 || password.length > 64) {
       this.setState({passwordStatus: 'wrong'});
     } else {
       this.setState({passwordStatus: 'right', passwordErr: null});
@@ -138,6 +138,7 @@ class ForgotPassword extends Component {
   }
 
   onSubmitPress() {
+      Keyboard.dismiss();
     const {userName, authCode, password, newPassword} = this.state;
 
     this.setState({
@@ -174,6 +175,18 @@ class ForgotPassword extends Component {
         newPasswordErr: 'messages.required',
       });
     }
+      if (password.length > 0 && password.length <= 7) {
+          isValid = false;
+          this.setState({
+              passwordErr: 'pages.register.minLengthPassword',
+          });
+      }
+      if (password.length > 64) {
+          isValid = false;
+          this.setState({
+              passwordErr: 'pages.register.maxLengthPassword',
+          });
+      }
     if (password != newPassword) {
       isValid = false;
       this.setState({newPasswordConfirmStatus: 'wrong'});
@@ -229,6 +242,8 @@ class ForgotPassword extends Component {
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
+              keyboardShouldPersistTaps={"handled"}
+              behavior={'position'}
             contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
@@ -319,7 +334,7 @@ class ForgotPassword extends Component {
                   onRef={(ref) => {
                     this.inputs['password'] = ref;
                   }}
-                  placeholder={translate('common.loginPassword')}
+                  placeholder={translate('pages.resetPassword.newLogInPassword')}
                   value={this.state.password}
                   secureTextEntry={true}
                   onChangeText={(password) => this.handlePassword(password)}
@@ -340,10 +355,10 @@ class ForgotPassword extends Component {
                         marginBottom: 5,
                       },
                     ]}>
-                    {translate(passwordErr).replace(
+                    {passwordErr === 'messages.required' ? translate(passwordErr).replace(
                       '[missing {{field}} value]',
-                      translate('common.password'),
-                    )}
+                      translate('common.password')): translate(passwordErr)
+                    }
                   </Text>
                 ) : null}
                 <Inputfield

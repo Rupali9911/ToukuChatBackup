@@ -28,7 +28,7 @@ import {
 import Toast from '../../components/Toast';
 import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import S3uploadService from '../../helpers/S3uploadService';
 import DocumentPicker from 'react-native-document-picker';
 
@@ -517,58 +517,97 @@ class FriendChats extends Component {
     });
   };
 
+  // onCameraPress = () => {
+  //   var options = {
+  //     title: 'Choose Option',
+  //     storageOptions: {
+  //       skipBackup: true,
+  //       path: 'images',
+  //     },
+  //   };
+  //   ImagePicker.launchCamera(options, (response) => {
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //     } else {
+  //       let source = { uri: 'data:image/jpeg;base64,' + response.data };
+  //       this.setState({
+  //         uploadFile: source,
+  //         sentMessageType: 'image',
+  //       });
+  //     }
+  //     // Same code as in above section!
+  //   });
+  // };
+  // onGalleryPress = () => {
+  //   var options = {
+  //     title: '',
+  //     storageOptions: {
+  //       skipBackup: true,
+  //       path: '',
+  //     },
+  //   };
+  //   ImagePicker.launchImageLibrary(options, (response) => {
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //     } else {
+  //       let source = { uri: 'data:image/jpeg;base64,' + response.data };
+  //       this.setState({
+  //         uploadFile: source,
+  //         sentMessageType: 'image',
+  //         sendingMedia: true,
+  //       });
+  //       this.onMessageSend();
+  //     }
+  //     // Same code as in above section!
+  //   });
+  // };
+
   onCameraPress = () => {
-    var options = {
-      title: 'Choose Option',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
-        this.setState({
-          uploadFile: source,
-          sentMessageType: 'image',
-        });
-      }
-      // Same code as in above section!
+    ImagePicker.openCamera({
+      includeBase64: true,
+      mediaType: 'photo',
+    }).then((image) => {
+      let source = { uri: 'data:image/jpeg;base64,' + image.data };
+      this.setState({
+        uploadFile: source,
+        sentMessageType: 'image',
+        sendingMedia: true,
+      });
+      this.onMessageSend();
     });
   };
-  onGalleryPress = () => {
-    var options = {
-      title: '',
-      storageOptions: {
-        skipBackup: true,
-        path: '',
-      },
-    };
-    ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
-        this.setState({
-          uploadFile: source,
-          sentMessageType: 'image',
-          sendingMedia: true,
+  onGalleryPress = async (mediaType) => {
+    if (mediaType === 'images') {
+      ImagePicker.openPicker({
+        multiple: true,
+        mediaType: 'photo',
+        includeBase64: true,
+      }).then(async (images) => {
+        await images.map(async (item, index) => {
+          let source = {
+            uri: 'data:image/jpeg;base64,' + item.data,
+            type: item.mime,
+            name: null,
+          };
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          });
+          await this.onMessageSend();
         });
-        this.onMessageSend();
-      }
-      // Same code as in above section!
-    });
+      });
+    }
   };
+
   onAttachmentPress = async () => {
     console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
     try {
@@ -665,7 +704,7 @@ class FriendChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.onGalleryPress()}
+            onGalleryPress={() => this.onGalleryPress('images')}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />

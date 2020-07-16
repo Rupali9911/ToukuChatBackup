@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
     Image,
     NativeModules,
-    Platform, Linking,
+    Platform, Linking,Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -523,6 +523,7 @@ class Login extends Component {
   };
 
   onLoginPress() {
+      Keyboard.dismiss();
     this.setState({userNameErr: null, passwordErr: null});
     const {username, password, isRememberChecked} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
