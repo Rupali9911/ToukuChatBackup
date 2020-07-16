@@ -23,7 +23,7 @@ import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import S3uploadService from '../../helpers/S3uploadService';
 import DocumentPicker from 'react-native-document-picker';
 
@@ -106,13 +106,8 @@ class ChannelChats extends Component {
     if (!newMessageText && !uploadFile.uri) {
       return;
     }
-    console.log('ChannelChats -> onMessageSend -> uploadFile', uploadFile);
     let msgText = newMessageText;
     if (sentMessageType === 'image') {
-      console.log(
-        'ChannelChats -> onMessageSend -> sentMessageType',
-        sentMessageType
-      );
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
@@ -186,7 +181,6 @@ class ChannelChats extends Component {
       read_by: [],
       deleted_for: [],
     };
-    console.log('ChannelChats -> onMessageSend -> sendmsgdata', sendmsgdata);
 
     if (isEdited) {
       this.sendEditMessage();
@@ -295,79 +289,41 @@ class ChannelChats extends Component {
   }
 
   onCameraPress = () => {
-    var options = {
-      title: 'Choose Option',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      console.log('Response = ', response);
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
-        this.setState({
-          uploadFile: source,
-          sentMessageType: 'image',
-          sendingMedia: true,
-        });
-        this.onMessageSend();
-      }
-      // Same code as in above section!
+    ImagePicker.openCamera({
+      includeBase64: true,
+      mediaType: 'photo',
+    }).then((image) => {
+      let source = { uri: 'data:image/jpeg;base64,' + image.data };
+      this.setState({
+        uploadFile: source,
+        sentMessageType: 'image',
+        sendingMedia: true,
+      });
+      this.onMessageSend();
     });
   };
   onGalleryPress = async (mediaType) => {
-    console.log('ChannelChats -> onGalleryPress -> mediaType', mediaType);
-    var options = {
-      title: '',
-      mediaType: mediaType,
-      storageOptions: {
-        skipBackup: true,
-        path: '',
-      },
-    };
-
-    ImagePicker.launchImageLibrary(options, async (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        if (mediaType === 'images') {
-          // console.log('ChannelChats -> onGalleryPress -> response', response);
-          let fileType = response.type.substr(0, response.type.indexOf('/'));
+    if (mediaType === 'images') {
+      ImagePicker.openPicker({
+        multiple: true,
+        mediaType: 'photo',
+        includeBase64: true,
+      }).then(async (images) => {
+        await images.map(async (item, index) => {
           let source = {
-            uri: 'data:image/jpeg;base64,' + response.data,
-            type: fileType,
-            name: response.fileName,
+            uri: 'data:image/jpeg;base64,' + item.data,
+            type: item.mime,
+            name: null,
           };
           this.setState({
             uploadFile: source,
             sentMessageType: 'image',
             sendingMedia: true,
           });
-        } else {
-          console.log('ChannelChats -> onGalleryPress -> response', response);
-          let source = { uri: response.uri, type: null, name: null };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'video',
-            sendingMedia: true,
-          });
-        }
-        this.onMessageSend();
-      }
-      this.toggleSelectModal(false);
-      // Same code as in above section!
-    });
+          await this.onMessageSend();
+        });
+      });
+    }
   };
   onAttachmentPress = async () => {
     console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
