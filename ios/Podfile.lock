@@ -494,6 +494,15 @@ PODS:
   - RNGoogleSignin (4.0.3):
     - GoogleSignIn (~> 5.0.0)
     - React
+  - RNImageCropPicker (0.32.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.32.2)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.32.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNLocalize (1.4.0):
     - React
   - RNReactNativeDocViewer (1.0.0):
@@ -514,6 +523,7 @@ PODS:
   - SDWebImageWebPCoder (0.4.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.5)
+  - TOCropViewController (2.5.3)
   - TwitterCore (3.2.0)
   - TwitterKit5 (5.2.0):
     - TwitterCore (>= 3.1.0)
@@ -594,6 +604,7 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-community/google-signin`)"
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNReactNativeDocViewer (from `../node_modules/react-native-doc-viewer`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -643,6 +654,7 @@ SPEC REPOS:
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
+    - TOCropViewController
     - TwitterCore
     - TwitterKit5
     - YogaKit
@@ -740,6 +752,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-community/google-signin"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
   RNReactNativeDocViewer:
@@ -839,6 +853,7 @@ SPEC CHECKSUMS:
   RNFBAuth: c292603069a09065a1b4d3336148beff83e4c897
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNGoogleSignin: ccf71ee4b6cfd324fd788a41e457e2043838c0d9
+  RNImageCropPicker: f0557a908758c4a3f83978894ec7227651529b45
   RNLocalize: fc27ee5878ce5a3af73873fb2d8e866e0d1e6d84
   RNReactNativeDocViewer: 571c6ac38483531b8fb521d02a6ba54652ed10a7
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
@@ -848,6 +863,7 @@ SPEC CHECKSUMS:
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   SDWebImage: 112503ec94a5a2a41869503844a15e8d8f1ead5c
   SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8
+  TOCropViewController: 20a14b6a7a098308bf369e7c8d700dc983a974e6
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit5: 64095dfefcf39be2355711ef27112d55e340d90e
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
