@@ -39,7 +39,7 @@ export default class S3uploadService extends Component {
 
   async uploadImage(file, fileName, width, height) {
     const imageFile = await this.resizeImage(file, width, height);
-    return await this.uploadFile(imageFile, fileName, 'image');
+    return await this.uploadFile(imageFile, fileName, 'image/png');
   }
 
   async uploadAudioOnS3Bucket(files, fileName, fileType) {

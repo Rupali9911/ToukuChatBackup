@@ -106,8 +106,13 @@ class ChannelChats extends Component {
     if (!newMessageText && !uploadFile.uri) {
       return;
     }
+    console.log('ChannelChats -> onMessageSend -> uploadFile', uploadFile);
     let msgText = newMessageText;
     if (sentMessageType === 'image') {
+      console.log(
+        'ChannelChats -> onMessageSend -> sentMessageType',
+        sentMessageType
+      );
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
@@ -148,6 +153,7 @@ class ChannelChats extends Component {
       msgText = uploadedApplication;
       return;
     }
+    console.log('ChannelChats -> onMessageSend -> msgText', msgText);
     let sendmsgdata = {
       // id: id,
       thumbnail: null,
@@ -180,6 +186,7 @@ class ChannelChats extends Component {
       read_by: [],
       deleted_for: [],
     };
+    console.log('ChannelChats -> onMessageSend -> sendmsgdata', sendmsgdata);
 
     if (isEdited) {
       this.sendEditMessage();
@@ -316,6 +323,7 @@ class ChannelChats extends Component {
     });
   };
   onGalleryPress = async (mediaType) => {
+    console.log('ChannelChats -> onGalleryPress -> mediaType', mediaType);
     var options = {
       title: '',
       mediaType: mediaType,
@@ -334,6 +342,7 @@ class ChannelChats extends Component {
         console.log('User tapped custom button: ', response.customButton);
       } else {
         if (mediaType === 'images') {
+          // console.log('ChannelChats -> onGalleryPress -> response', response);
           let fileType = response.type.substr(0, response.type.indexOf('/'));
           let source = {
             uri: 'data:image/jpeg;base64,' + response.data,
@@ -346,6 +355,7 @@ class ChannelChats extends Component {
             sendingMedia: true,
           });
         } else {
+          console.log('ChannelChats -> onGalleryPress -> response', response);
           let source = { uri: response.uri, type: null, name: null };
           this.setState({
             uploadFile: source,
@@ -355,7 +365,7 @@ class ChannelChats extends Component {
         }
         this.onMessageSend();
       }
-      // this.toggleSelectModal();
+      this.toggleSelectModal(false);
       // Same code as in above section!
     });
   };
@@ -372,6 +382,7 @@ class ChannelChats extends Component {
         ],
       });
       for (const res of results) {
+        console.log('ChannelChats -> onAttachmentPress -> res', res);
         let fileType = res.type.substr(0, res.type.indexOf('/'));
         console.log(
           res.uri,
@@ -473,7 +484,7 @@ class ChannelChats extends Component {
           />
           <UploadSelectModal
             visible={this.state.showSelectModal}
-            toggleSelectModal={this.ontoggleSelectModal}
+            toggleSelectModal={this.toggleSelectModal}
             onSelect={(mediaType) => this.selectUploadOption(mediaType)}
           />
           {sendingMedia && <UploadLoader />}
@@ -482,10 +493,10 @@ class ChannelChats extends Component {
     }
   }
 
-  toggleSelectModal = () => {
-    this.setState((prevState) => ({
-      showSelectModal: !prevState.showSelectModal,
-    }));
+  toggleSelectModal = (status) => {
+    this.setState({
+      showSelectModal: status,
+    });
   };
 
   selectUploadOption = (mediaType) => {

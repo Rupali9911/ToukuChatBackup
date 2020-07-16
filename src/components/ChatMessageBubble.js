@@ -78,42 +78,44 @@ class ChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (replyMessage) => {
-    return (
-      <View
-        style={{
-          backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
-          padding: 5,
-          width: '100%',
-          borderRadius: 5,
-          marginBottom: 5,
-        }}
-      >
+    if (replyMessage.message) {
+      return (
         <View
           style={{
-            flex: 3,
-            flexDirection: 'row',
-            alignItems: 'center',
+            backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
+            padding: 5,
+            width: '100%',
+            borderRadius: 5,
+            marginBottom: 5,
           }}
         >
-          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-            {replyMessage.sender_id === this.props.userData.id
-              ? 'You'
-              : replyMessage.name}
-          </Text>
+          <View
+            style={{
+              flex: 3,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+              {replyMessage.sender_id === this.props.userData.id
+                ? 'You'
+                : replyMessage.name}
+            </Text>
+          </View>
+          <View
+            style={{
+              flex: 7,
+              justifyContent: 'center',
+              width: '95%',
+            }}
+          >
+            <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+              {replyMessage.message}
+            </Text>
+          </View>
         </View>
-        <View
-          style={{
-            flex: 7,
-            justifyContent: 'center',
-            width: '95%',
-          }}
-        >
-          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-            {replyMessage.message}
-          </Text>
-        </View>
-      </View>
-    );
+      );
+    }
   };
 
   render() {
