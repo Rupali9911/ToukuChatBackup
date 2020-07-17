@@ -81,7 +81,7 @@ export default class Button extends Component {
     return (
       <TouchableOpacity
         disabled={disabled}
-        activeOpacity={0.8}
+        activeOpacity={1}
         onPress={onPress}>
         <LinearGradient
           start={{x: 0.1, y: 0.7}}

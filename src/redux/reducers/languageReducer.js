@@ -4,17 +4,23 @@ import memoize from 'lodash.memoize';
 import { Icons } from '../../constants/index.js';
 import { client } from '../../helpers/api.js';
 import { translationGetters } from '../../screens/Authentication/index.js';
+import { batch } from 'react-redux'
+// const writeJsonFile = require('../../translations/en.json');
 
 let languages = [
-  'en.json?t=1588152637880',
-  'ja.json?t=1588841551420',
-  'ko.json?t=1588841533708',
-  'zh-hans.json?t=1588841569475',
-  'zh-hant.json?t=1588841585244',
+  'en.json?t=' + Date.now(),
+  'ja.json?t=' + Date.now(),
+  'ko.json?t=' + Date.now(),
+  'zh-hans.json?t=' + Date.now(),
+  'zh-hant.json?t=' + Date.now(),
 ];
 
 let languageRequests = languages.map((name) =>
-  fetch(`https://wallet.angelium.net/languages/touku/${name}`)
+  fetch(`https://cdn.angelium.net/lang/touku/${name}`)
+);
+
+let languageRequestsBackend = languages.map((name) =>
+  fetch(`https://cdn.angelium.net/lang/backendMessage/${name}`)
 );
 
 // export const translationGetters = {
@@ -52,6 +58,12 @@ export const SET_JAPAN_LANGUAGE = 'SET_JAPAN_LANGUAGE';
 export const SET_KOREA_LANGUAGE = 'SET_KOREA_LANGUAGE';
 export const SET_CHINA_LANGUAGE = 'SET_CHINA_LANGUAGE';
 export const SET_TAIWAN_LANGUAGE = 'SET_TAIWAN_LANGUAGE';
+
+export const SET_ENGLISH_LANGUAGE_BACKEND = 'SET_ENGLISH_LANGUAGE_BACKEND';
+export const SET_JAPAN_LANGUAGE_BACKEND = 'SET_JAPAN_LANGUAGE_BACKEND';
+export const SET_KOREA_LANGUAGE_BACKEND = 'SET_KOREA_LANGUAGE_BACKEND';
+export const SET_CHINA_LANGUAGE_BACKEND = 'SET_CHINA_LANGUAGE_BACKEND';
+export const SET_TAIWAN_LANGUAGE_BACKEND = 'SET_TAIWAN_LANGUAGE_BACKEND';
 
 const initialState = {
   loading: false,
@@ -124,6 +136,36 @@ export default function (state = initialState, action) {
         tw: action.payload.data,
       };
 
+      case SET_ENGLISH_LANGUAGE_BACKEND:
+      return {
+        ...state,
+        en: {...state.en, "backend": action.payload.data},
+      };
+
+    case SET_JAPAN_LANGUAGE_BACKEND:
+      return {
+        ...state,
+        ja: {...state.ja, "backend": action.payload.data},
+      };
+
+    case SET_KOREA_LANGUAGE_BACKEND:
+      return {
+        ...state,
+        ko: {...state.ko, "backend": action.payload.data},
+      };
+
+    case SET_CHINA_LANGUAGE_BACKEND:
+      return {
+        ...state,
+        ch: {...state.ch, "backend": action.payload.data},
+      };
+
+    case SET_TAIWAN_LANGUAGE_BACKEND:
+      return {
+        ...state,
+        tw: {...state.tw, "backend": action.payload.data},
+      };
+
     default:
       return state;
   }
@@ -158,11 +200,53 @@ export const getAllLanguages = () => (dispatch) =>
           return o;
         });
       }
-      dispatch(setEnglishLanguage(languages[0]));
-      dispatch(setJapanLanguage(languages[1]));
-      dispatch(setKoreaLanguage(languages[2]));
-      dispatch(setChinaLanguage(languages[3]));
-      dispatch(setTaiwanLanguage(languages[4]));
+     // console.log('Languages',JSON.stringify(languages))
+        batch(() => {
+            dispatch(setEnglishLanguage(languages[0]));
+            dispatch(setJapanLanguage(languages[1]));
+            dispatch(setKoreaLanguage(languages[2]));
+            dispatch(setChinaLanguage(languages[3]));
+            dispatch(setTaiwanLanguage(languages[4]));
+        })
+    });
+
+// export const getTranslator = () => (dispatch) =>
+//     new Promise(function (resolve, reject) {
+//         fetch(`https://cdn.angelium.net/lang/backendMessage/ja.json?t=1594981683875`).then((res) => {
+//           console.log('translator response', res)
+//                 resolve(res);
+//             })
+//             .catch((err) => {
+//                 console.log('translator response', err)
+//                 reject(err);
+//             });
+//     });
+
+export const getAllLanguagesBackend = () => (dispatch) =>
+Promise.all(languageRequestsBackend)
+    .then((responses) => {
+        return responses;
+    })
+    .then((responses) => Promise.all(responses.map((r) => r.json())))
+    .then((languages) => {
+        if (languages && languages.length > 0) {
+            languages = languages.map(function (el) {
+                var o = Object.assign(el);
+                // o.selected = false;
+                return o;
+            });
+        }
+         console.log('Languages',JSON.stringify(languages))
+        batch(() => {
+            dispatch(setEnglishLanguageBackend(languages[0]));
+            dispatch(setJapanLanguageBackend(languages[1]));
+            dispatch(setKoreaLanguageBackend(languages[2]));
+            dispatch(setChinaLanguageBackend(languages[3]));
+            dispatch(setTaiwanLanguageBackend(languages[4]));
+        })
+        // (async () => {
+        //     await writeJsonFile('en.json', {foo: true});
+        // })();
     });
 
 export const userLanguage = () => (dispatch) =>
@@ -233,4 +317,39 @@ const setTaiwanLanguage = (data) => ({
   payload: {
     data: data,
   },
+});
+
+const setEnglishLanguageBackend = (data) => ({
+    type: SET_ENGLISH_LANGUAGE_BACKEND,
+    payload: {
+        data: data,
+    },
+});
+
+const setJapanLanguageBackend = (data) => ({
+    type: SET_JAPAN_LANGUAGE_BACKEND,
+    payload: {
+        data: data,
+    },
+});
+
+const setKoreaLanguageBackend = (data) => ({
+    type: SET_KOREA_LANGUAGE_BACKEND,
+    payload: {
+        data: data,
+    },
+});
+
+const setChinaLanguageBackend = (data) => ({
+    type: SET_CHINA_LANGUAGE_BACKEND,
+    payload: {
+        data: data,
+    },
+});
+
+const setTaiwanLanguageBackend = (data) => ({
+    type: SET_TAIWAN_LANGUAGE_BACKEND,
+    payload: {
+        data: data,
+    },
 });

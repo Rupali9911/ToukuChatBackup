@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import SplashScreen from 'react-native-splash-screen';
 import {authenticationStyles} from './styles';
 import {Colors, Images} from '../../constants';
-import {getAllLanguages} from '../../redux/reducers/languageReducer';
+import {getAllLanguages, getAllLanguagesBackend} from '../../redux/reducers/languageReducer';
 import {wait} from '../../utils';
 import {globalStyles} from '../../styles';
 import {store} from '../../redux/store';
@@ -42,6 +42,7 @@ class Authentication extends Component {
 
   componentDidMount() {
     this.props.getAllLanguages();
+    this.props.getAllLanguagesBackend();
     SplashScreen.hide();
   }
 
@@ -70,6 +71,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   getAllLanguages,
+    getAllLanguagesBackend
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Authentication);
