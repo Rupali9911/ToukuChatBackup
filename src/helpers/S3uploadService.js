@@ -60,14 +60,17 @@ export default class S3uploadService extends Component {
     return application.body.postResponse.location;
   }
 
-  async uploadVideoOnS3Bucket(files) {
+  async uploadVideoOnS3Bucket(files, type) {
+    console.log('S3uploadService -> uploadVideoOnS3Bucket -> type', type);
     let video;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileName = `video_${moment().valueOf()}_${i + 1}`;
-      video = await this.uploadFile(file, fileName, 'video/mp4');
+      video = await this.uploadFile(file, fileName, type);
     }
-    return video;
+    console.log('S3uploadService -> uploadVideoOnS3Bucket -> video', video);
+
+    return video.body.postResponse.location;
   }
 
   async uploadFile(file, fileName, fileType) {
@@ -76,6 +79,7 @@ export default class S3uploadService extends Component {
       name: fileName,
       type: fileType,
     };
+    console.log('S3uploadService -> uploadFile -> File', File);
 
     const options = {
       keyPrefix: '/',
@@ -86,9 +90,12 @@ export default class S3uploadService extends Component {
       successActionStatus: 201,
     };
 
-    return await RNS3.put(File, options).then(async (response) => {
-      return await response;
-    });
+    return await RNS3.put(File, options)
+      .progress((e) => console.log(e.percent))
+      .then(async (response) => {
+        console.log('S3uploadService -> uploadFile -> response', response);
+        return await response;
+      });
   }
 
   async resizeImage(file, width, height) {

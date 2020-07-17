@@ -8,7 +8,7 @@ import { ChatHeader } from '../../components/Headers';
 import { globalStyles } from '../../styles';
 import { Colors, Fonts, Images, Icons, SocketEvents } from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import { ConfirmationModal } from '../../components/Modals';
+import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import {
   translate,
   translateMessage,
@@ -49,6 +49,7 @@ class GroupChats extends Component {
       translatedMessageId: null,
       showMessageDeleteConfirmationModal: false,
       sentMessageType: 'text',
+      showSelectModal: false,
       sendingMedia: false,
       uploadFile: { uri: null, type: null, name: null },
       headerRightIconMenu: [
@@ -172,6 +173,16 @@ class GroupChats extends Component {
         uploadFile.type
       );
       msgText = uploadedApplication;
+    }
+
+    if (sentMessageType === 'video') {
+      let file = uploadFile.uri;
+      let files = [file];
+      const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
+        files,
+        uploadFile.type
+      );
+      msgText = uploadedVideo;
     }
     let sendmsgdata = {
       sender_id: userData.id,
@@ -629,6 +640,30 @@ class GroupChats extends Component {
             sentMessageType: 'image',
             sendingMedia: true,
           });
+          this.toggleSelectModal(false);
+          await this.onMessageSend();
+        });
+      });
+    }
+
+    if (mediaType === 'video') {
+      ImagePicker.openPicker({
+        multiple: true,
+        mediaType: 'video',
+      }).then(async (video) => {
+        console.log('ChannelChats -> onGalleryPress -> video', video);
+        await video.map(async (item, index) => {
+          let source = {
+            uri: item.path,
+            type: item.mime,
+            name: null,
+          };
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          });
+          this.toggleSelectModal(false);
           await this.onMessageSend();
         });
       });
@@ -679,6 +714,17 @@ class GroupChats extends Component {
         throw err;
       }
     }
+  };
+
+  toggleSelectModal = (status) => {
+    this.setState({
+      showSelectModal: status,
+    });
+  };
+
+  selectUploadOption = (mediaType) => {
+    // this.toggleSelectModal();
+    this.onGalleryPress(mediaType);
   };
 
   render() {
@@ -738,7 +784,7 @@ class GroupChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.onGalleryPress('images')}
+            onGalleryPress={() => this.toggleSelectModal(true)}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />
@@ -776,6 +822,12 @@ class GroupChats extends Component {
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.messageWillBeUnsent')}
+        />
+
+        <UploadSelectModal
+          visible={this.state.showSelectModal}
+          toggleSelectModal={this.toggleSelectModal}
+          onSelect={(mediaType) => this.selectUploadOption(mediaType)}
         />
         {sendingMedia && <UploadLoader />}
       </ImageBackground>
