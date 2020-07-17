@@ -147,7 +147,6 @@ class Chat extends Component {
   onOpenChannelChats = (item) => {
     this.props.setCurrentChannel(item);
     this.props.navigation.navigate('ChannelChats');
-    console.log('Channel image.....' + JSON.stringify(item));
   };
 
   onOpenGroupChats = (item) => {
