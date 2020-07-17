@@ -99,6 +99,7 @@ export default class ButtonWithArrow extends Component {
 
   render() {
     const {
+      user,
       title,
       onPress,
       loading,
@@ -106,15 +107,10 @@ export default class ButtonWithArrow extends Component {
       height,
       disabled,
       dropDownData,
+      memberType,
     } = this.props;
     const { visible } = this.state;
-
     let renderMenu = (dropDownData) => {
-      console.log(
-        'ButtonWithArrow -> renderMenu -> dropDownData',
-        dropDownData
-      );
-
       return dropDownData.map((item, index) => {
         return (
           <Menu.Item
@@ -143,7 +139,7 @@ export default class ButtonWithArrow extends Component {
             ]}
             title={item.title}
             onPress={() => {
-              item.onPress();
+              item.onPress(user.user_id, memberType);
               this.setState({ visible: false });
             }}
           />
