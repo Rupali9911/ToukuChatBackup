@@ -313,7 +313,7 @@ export const editGroup = (groupId, data) => (dispatch) =>
 export const updateGroupMembers = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .patch(`/xchat/update-group-members/`, data)
+      .post(`/xchat/update-group-members/`, data)
       .then((res) => {
         resolve(res);
       })

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Clipboard,
   Image,
+  Linking,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Menu } from 'react-native-paper';
@@ -116,6 +117,22 @@ class ChatMessageBubble extends Component {
         </View>
       );
     }
+  };
+
+  isContainUrl = (text) => {
+    var urlRE = new RegExp(
+      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+'
+    );
+    const url = text.match(urlRE);
+    return url;
+  };
+
+  openUrl = (text) => {
+    var urlRE = new RegExp(
+      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+'
+    );
+    const url = text.match(urlRE);
+    Linking.openURL(url[0]);
   };
 
   render() {
@@ -267,6 +284,17 @@ class ChatMessageBubble extends Component {
                           </Text>
                         </View>
                       </Fragment>
+                    ) : this.isContainUrl(message.message_body) ? (
+                      <TouchableOpacity
+                        onPress={() => this.openUrl(message.message_body)}
+                        onLongPress={(id) => {
+                          onMessagePress(message.id);
+                        }}
+                      >
+                        <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
+                          {message.message_body}
+                        </Text>
+                      </TouchableOpacity>
                     ) : (
                       <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
                         {message.message_body}
@@ -401,6 +429,17 @@ class ChatMessageBubble extends Component {
                           </Text>
                         </View>
                       </Fragment>
+                    ) : this.isContainUrl(message.message_body) ? (
+                      <TouchableOpacity
+                        onPress={() => this.openUrl(message.message_body)}
+                        onLongPress={(id) => {
+                          onMessagePress(message.id);
+                        }}
+                      >
+                        <Text style={{ color: Colors.white, fontSize: 15 }}>
+                          {message.message_body}
+                        </Text>
+                      </TouchableOpacity>
                     ) : (
                       <Text style={{ color: Colors.white, fontSize: 15 }}>
                         {message.message_body}
