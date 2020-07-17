@@ -52,6 +52,7 @@ import appleAuth, {
 
 import {getSNSCheck} from '../../redux/reducers/loginReducer';
 import {getParamsFromURL} from '../../utils'
+import {store} from "../../redux/store";
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -555,6 +556,8 @@ class Login extends Component {
       this.props
         .userLogin(loginData)
         .then((res) => {
+          console.log('login response', res, res.user.toString())
+          //  console.log('store.getState().languageReducer.en', store.getState().languageReducer.en)
           if (res.token) {
             this.props.getUserProfile().then((res) => {
               if (res.id) {
@@ -565,18 +568,23 @@ class Login extends Component {
           if (res.user) {
             Toast.show({
               title: 'Login Failed',
-              text: 'User Not Exist or Incorrect Password',
+              text: translate(res.user.toString()),
               type: 'primary',
             });
             this.setState({authError: res.user});
           }
         })
         .catch((err) => {
-          Toast.show({
-            title: 'Login Failed',
-            text: 'User Not Exist',
-            type: 'primary',
-          });
+          console.log('err.response.request._response', err.response.request._response.toString())
+            if (err.response.request._response) {
+              let strRes = err.response.request._response.slice(2,-2);
+                console.log('strRes', strRes.toString())
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(strRes.toString()),
+                    type: 'primary',
+                });
+            }
         });
     }
   }

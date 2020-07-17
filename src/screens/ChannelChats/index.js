@@ -142,13 +142,12 @@ class ChannelChats extends Component {
     if (sentMessageType === 'video') {
       let file = uploadFile.uri;
       let files = [file];
-      const uploadedApplication = await this.S3uploadService.uploadVideoOnS3Bucket(
-        files
+      const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
+        files,
+        uploadFile.type
       );
-      msgText = uploadedApplication;
-      return;
+      msgText = uploadedVideo;
     }
-    console.log('ChannelChats -> onMessageSend -> msgText', msgText);
     let sendmsgdata = {
       // id: id,
       thumbnail: null,
@@ -320,6 +319,30 @@ class ChannelChats extends Component {
             sentMessageType: 'image',
             sendingMedia: true,
           });
+          this.toggleSelectModal(false);
+          await this.onMessageSend();
+        });
+      });
+    }
+
+    if (mediaType === 'video') {
+      ImagePicker.openPicker({
+        multiple: true,
+        mediaType: 'video',
+      }).then(async (video) => {
+        console.log('ChannelChats -> onGalleryPress -> video', video);
+        await video.map(async (item, index) => {
+          let source = {
+            uri: item.path,
+            type: item.mime,
+            name: null,
+          };
+          this.setState({
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          });
+          this.toggleSelectModal(false);
           await this.onMessageSend();
         });
       });
@@ -407,7 +430,7 @@ class ChannelChats extends Component {
             isChannel={true}
             onEditMessage={(msg) => this.onEdit(msg)}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.onGalleryPress('images')}
+            onGalleryPress={() => this.toggleSelectModal(true)}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />

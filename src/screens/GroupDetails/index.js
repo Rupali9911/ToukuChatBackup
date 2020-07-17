@@ -20,9 +20,9 @@ import { red } from 'color-name';
 
 import { groupDetailStyles } from './styles';
 import { globalStyles } from '../../styles';
-import { getImage } from '../../utils';
+import { getImage, eventService } from '../../utils';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import { Images, Icons, Colors, Fonts } from '../../constants';
+import { Images, Icons, Colors, Fonts, SocketEvents } from '../../constants';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import Button from '../../components/Button';
 import GroupFriend from '../../components/GroupFriend';
@@ -37,6 +37,11 @@ import {
   deleteGroup,
   getUserGroups,
   leaveGroup,
+  updateGroupMembers,
+  getGroupDetail,
+  setCurrentGroupMembers,
+  setCurrentGroupDetail,
+  getGroupMembers,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import { ConfirmationModal } from '../../components/Modals';
@@ -62,36 +67,36 @@ class GroupDetails extends Component {
       memberOption: [
         {
           title: translate('pages.xchat.admin'),
-          onPress: () => {
-            this.setAdmin();
+          onPress: (id, type) => {
+            this.setAdmin(id, type);
           },
         },
         {
           title: translate('pages.xchat.remove'),
-          onPress: () => {
-            this.removeMember();
+          onPress: (id, type) => {
+            this.removeMember(id, type);
           },
         },
       ],
       adminOption: [
         {
           title: translate('pages.xchat.remove'),
-          onPress: () => {
-            this.removeMember();
+          onPress: (id, type) => {
+            this.removeMember(id, type);
           },
         },
       ],
       addOption: [
         {
           title: translate('pages.xchat.admin'),
-          onPress: () => {
-            this.setAdmin();
+          onPress: (id, type) => {
+            this.setAdmin(id, type);
           },
         },
         {
           title: translate('pages.xchat.member'),
-          onPress: () => {
-            this.setMember();
+          onPress: (id, type) => {
+            this.setMember(id, type);
           },
         },
       ],
@@ -99,27 +104,11 @@ class GroupDetails extends Component {
     };
   }
 
-  setAdmin = () => {
-    console.log('GroupDetails -> setAdmin -> setAdmin');
-  };
-
-  setMember = () => {
-    console.log('GroupDetails -> setMember -> setMember');
-  };
-
-  removeMember = () => {
-    console.log('GroupDetails -> removeMember -> removeMember');
-  };
   static navigationOptions = () => {
     return {
       header: null,
     };
   };
-
-  componentWillMount() {
-    const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
-  }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -133,20 +122,101 @@ class GroupDetails extends Component {
     }
   }
 
+  UNSAFE_componentWillMount() {
+    const initial = Orientation.getInitialOrientation();
+    this.setState({ orientation: initial });
+
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
+  }
+
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
   };
 
-  onAddFriend(isAdded, item) {
-    if (isAdded) {
-      this.state.addedFriends.push(item.user_id);
-    } else {
-      const index = this.state.addedFriends.indexOf(item.user_id);
-      if (index > -1) {
-        this.state.addedFriends.splice(index, 1);
-      }
+  checkEventTypes(message) {
+    switch (message.text.data.type) {
+      case SocketEvents.ADD_GROUP_MEMBER:
+      case SocketEvents.REMOVE_GROUP_MEMBER:
+      case SocketEvents.GROUP_MEMBER_TO_ADMIN:
+        this.getGroupMembers();
     }
   }
+
+  setAdmin = (id, type) => {
+    const { currentGroup } = this.props;
+    let addAdminData;
+    if (type === 'add') {
+      addAdminData = {
+        group_id: currentGroup.group_id,
+        members: [id],
+        update_type: 1,
+        user_type: 1,
+      };
+    } else {
+      addAdminData = {
+        group_id: currentGroup.group_id,
+        members: [id],
+        update_type: 3,
+      };
+    }
+    this.udateGroup(addAdminData);
+  };
+
+  setMember = (id, type) => {
+    const { currentGroup } = this.props;
+    let addMemberData = {
+      group_id: currentGroup.group_id,
+      members: [id],
+      update_type: 1,
+      user_type: 2,
+    };
+    this.udateGroup(addMemberData);
+  };
+
+  removeMember = (id, type) => {
+    const { currentGroup } = this.props;
+    let removeData;
+    if (type === 'admin') {
+      removeData = {
+        group_id: currentGroup.group_id,
+        members: [id],
+        update_type: 2,
+        user_type: 1,
+      };
+    } else {
+      removeData = {
+        group_id: currentGroup.group_id,
+        members: [id],
+        update_type: 2,
+        user_type: 2,
+      };
+    }
+    this.udateGroup(removeData);
+  };
+
+  udateGroup = (data) => {
+    this.props.updateGroupMembers(data).then((res) => {
+      Toast.show({
+        title: translate('pages.xchat.groupDetails'),
+        text: translate('pages.xchat.toastr.groupUpdatedSuccessfully'),
+        type: 'positive',
+      });
+    });
+  };
+
+  getGroupMembers = () => {
+    const { currentGroup } = this.props;
+    this.props
+      .getGroupMembers(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupMembers(res.results);
+      })
+      .catch((err) => {});
+  };
+
+  onAddFriend(isAdded, item) {}
 
   onLeaveGroup = () => {
     this.toggleLeaveGroupConfirmationModal();
@@ -306,7 +376,12 @@ class GroupDetails extends Component {
                   ? this.isMemberCheck(item.user_id).member_type == 'member'
                     ? memberOption
                     : adminOption
-                  : adminOption
+                  : addOption
+              }
+              memberType={
+                this.isMemberCheck(item.user_id)
+                  ? this.isMemberCheck(item.user_id).member_type
+                  : 'add'
               }
             />
           )}
@@ -322,19 +397,9 @@ class GroupDetails extends Component {
 
   isMemberCheck = (userId) => {
     const { currentGroupMembers } = this.props;
-    let memeber = currentGroupMembers.find((member) => member.id === userId);
-    // if (memeber) {
-    //   this.setState({
-    //     dropDownData:
-    //       memeber.member_type == 'member'
-    //         ? this.state.memberOption
-    //         : this.state.addOption,
-    //   });
-    // } else {
-    //   this.setState({
-    //     dropDownData: this.state.addOption,
-    //   });
-    // }
+    let memeber = currentGroupMembers.find((member) => {
+      return member.id === userId;
+    });
     return memeber;
   };
 
@@ -652,6 +717,11 @@ const mapDispatchToProps = {
   deleteGroup,
   getUserGroups,
   leaveGroup,
+  updateGroupMembers,
+  getGroupMembers,
+  getGroupDetail,
+  setCurrentGroupDetail,
+  setCurrentGroupMembers,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);

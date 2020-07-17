@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Clipboard,
+  Linking,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Menu, Divider } from 'react-native-paper';
@@ -126,6 +127,22 @@ class GroupChatMessageBubble extends Component {
         </View>
       );
     }
+  };
+
+  isContainUrl = (text) => {
+    var urlRE = new RegExp(
+      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+'
+    );
+    const url = text.match(urlRE);
+    return url;
+  };
+
+  openUrl = (text) => {
+    var urlRE = new RegExp(
+      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+'
+    );
+    const url = text.match(urlRE);
+    Linking.openURL(url[0]);
   };
 
   render() {
@@ -291,13 +308,19 @@ class GroupChatMessageBubble extends Component {
                           </Text>
                         </View>
                       </Fragment>
-                    ) : (
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          fontFamily: Fonts.light,
+                    ) : this.isContainUrl(message.message_body.text) ? (
+                      <TouchableOpacity
+                        onPress={() => this.openUrl(message.message_body.text)}
+                        onLongPress={(msg_id) => {
+                          onMessagePress(message.msg_id);
                         }}
                       >
+                        <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
+                          {message.message_body.text}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
                         {message.message_body.text}
                       </Text>
                     )}
@@ -437,6 +460,17 @@ class GroupChatMessageBubble extends Component {
                           </Text>
                         </View>
                       </Fragment>
+                    ) : this.isContainUrl(message.message_body.text) ? (
+                      <TouchableOpacity
+                        onPress={() => this.openUrl(message.message_body.text)}
+                        onLongPress={(msg_id) => {
+                          onMessagePress(message.msg_id);
+                        }}
+                      >
+                        <Text style={{ color: 'white', fontSize: 15 }}>
+                          {message.message_body.text}
+                        </Text>
+                      </TouchableOpacity>
                     ) : (
                       <Text style={{ color: 'white', fontSize: 15 }}>
                         {message.message_body.text}

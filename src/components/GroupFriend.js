@@ -45,7 +45,6 @@ export default class GroupFriend extends Component {
     // }
   }
   onAddPress = () => {
-    console.log('GroupFriend -> onAddPress -> onAddPress');
     this.props.onAddPress(!this.props.isSelected);
   };
 
@@ -70,6 +69,7 @@ export default class GroupFriend extends Component {
       memberTitle,
       dropDownData,
       isSelected,
+      memberType,
     } = this.props;
     const { isAdded, onChecked } = this.state;
 
@@ -143,12 +143,14 @@ export default class GroupFriend extends Component {
         {isRightDropDown && (
           <View style={{ flex: 0.3 }}>
             <ButtonWithArrow
+              user={user}
               title={
                 memberTitle === 'member'
                   ? translate('pages.xchat.member')
                   : memberTitle
               }
               type={isMember ? 'primary' : 'translucent'}
+              memberType={memberType}
               height={30}
               onPress={this.onAddPress.bind(this)}
               dropDownData={dropDownData}
