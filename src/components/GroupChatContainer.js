@@ -97,6 +97,9 @@ class GroupChatContainer extends Component {
             onDelete={(id) => this.props.onDelete(id)}
             onUnSend={(id) => this.props.onUnSendMsg(id)}
             onEditMessage={(msg) => this.props.onEditMessage(msg)}
+            onDownloadMessage={(msg) => {
+              this.props.onDownloadMessage(msg);
+            }}
             audioPlayingId={this.state.audioPlayingId}
             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
             closeMenu={this.state.closeMenu}

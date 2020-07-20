@@ -1,8 +1,16 @@
 import React, { Component, Fragment } from 'react';
-import { ImageBackground, Dimensions, Platform } from 'react-native';
+import {
+  ImageBackground,
+  Dimensions,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
+import RNFetchBlob from 'rn-fetch-blob';
+import DocumentPicker from 'react-native-document-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import { ChatHeader } from '../../components/Headers';
 import { globalStyles } from '../../styles';
@@ -30,9 +38,7 @@ import {
 import Toast from '../../components/Toast';
 import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { eventService } from '../../utils';
-import ImagePicker from 'react-native-image-crop-picker';
 import S3uploadService from '../../helpers/S3uploadService';
-import DocumentPicker from 'react-native-document-picker';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -277,6 +283,62 @@ class GroupChats extends Component {
     });
   };
 
+  onDownload = async (message) => {
+    if (Platform.OS === 'android') {
+      const isRequestPermission = await this.requestStoragePermission();
+      if (!isRequestPermission) {
+        return;
+      }
+    }
+
+    let fileName = message.message_body.text
+      .split('/')
+      .pop()
+      .split('%2F')
+      .pop();
+    if (message.message_body.type === 'image') {
+      fileName = `${fileName}.jpg`;
+    }
+    if (message.message_body.type === 'video') {
+      fileName = `${fileName}.mp4`;
+    }
+
+    let dirs = RNFetchBlob.fs.dirs;
+    RNFetchBlob.config({
+      path: `${dirs.DownloadDir}/${fileName}`,
+      fileCache: true,
+    })
+      .fetch('GET', message.message_body.text, {})
+      .then((res) => {
+        console.log('The file saved to ', res.path());
+      });
+  };
+
+  requestStoragePermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ]).then((result) => {
+        if (
+          result['android.permission.READ_EXTERNAL_STORAGE'] &&
+          result['android.permission.WRITE_EXTERNAL_STORAGE'] === 'granted'
+        ) {
+          return true;
+        } else if (
+          result['android.permission.READ_EXTERNAL_STORAGE'] ||
+          result['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            'never_ask_again'
+        ) {
+          return false;
+        }
+      });
+
+      return granted;
+    } catch (err) {
+      console.warn(err);
+    }
+  };
   onEdit = (message) => {
     this.setState({
       newMessageText: message.message_body.text,
@@ -780,6 +842,7 @@ class GroupChats extends Component {
             onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onEditMessage={(msg) => this.onEdit(msg)}
+            onDownloadMessage={(msg) => this.onDownload(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}

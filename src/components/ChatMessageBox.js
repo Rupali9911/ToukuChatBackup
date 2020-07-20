@@ -133,6 +133,7 @@ export default class ChatMessageBox extends Component {
       translatedMessage,
       translatedMessageId,
       onEditMessage,
+      onDownloadMessage,
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
@@ -188,6 +189,7 @@ export default class ChatMessageBox extends Component {
                 isChannel={isChannel}
                 onMessageTranslate={onMessageTranslate}
                 onEditMessage={onEditMessage}
+                onDownloadMessage={onDownloadMessage}
                 translatedMessage={translatedMessage}
                 translatedMessageId={translatedMessageId}
                 onDelete={onDelete}
@@ -272,6 +274,7 @@ export default class ChatMessageBox extends Component {
                 isChannel={isChannel}
                 onMessageTranslate={onMessageTranslate}
                 onEditMessage={onEditMessage}
+                onDownloadMessage={onDownloadMessage}
                 translatedMessage={translatedMessage}
                 translatedMessageId={translatedMessageId}
                 onDelete={onDelete}
