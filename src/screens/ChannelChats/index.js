@@ -1,8 +1,16 @@
 import React, { Component, Fragment } from 'react';
-import { ImageBackground, View } from 'react-native';
+import {
+  ImageBackground,
+  View,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
+import DocumentPicker from 'react-native-document-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import { ChatHeader } from '../../components/Headers';
 import { globalStyles } from '../../styles';
@@ -23,9 +31,7 @@ import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
-import ImagePicker from 'react-native-image-crop-picker';
 import S3uploadService from '../../helpers/S3uploadService';
-import DocumentPicker from 'react-native-document-picker';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -93,6 +99,39 @@ class ChannelChats extends Component {
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
   };
+
+  checkEventTypes(message) {
+    const { currentChannel, userData } = this.props;
+
+    if (
+      message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        this.getChannelConversations();
+      }
+    }
+
+    if (
+      message.text.data.type ==
+        SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        this.getChannelConversations();
+      }
+    }
+  }
 
   onMessageSend = async () => {
     const {
@@ -239,38 +278,58 @@ class ChannelChats extends Component {
     });
   };
 
-  checkEventTypes(message) {
-    const { currentChannel, userData } = this.props;
-
-    if (
-      message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        this.getChannelConversations();
+  onDownload = async (message) => {
+    if (Platform.OS === 'android') {
+      const isRequestPermission = await this.requestStoragePermission();
+      if (!isRequestPermission) {
+        return;
       }
     }
 
-    if (
-      message.text.data.type ==
-        SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        this.getChannelConversations();
-      }
+    let fileName = message.message_body.split('/').pop().split('%2F').pop();
+    if (message.msg_type === 'image') {
+      fileName = `${fileName}.jpg`;
     }
-  }
+    if (message.msg_type === 'video') {
+      fileName = `${fileName}.mp4`;
+    }
+
+    let dirs = RNFetchBlob.fs.dirs;
+    RNFetchBlob.config({
+      path: `${dirs.DownloadDir}/${fileName}`,
+      fileCache: true,
+    })
+      .fetch('GET', message.message_body, {})
+      .then((res) => {
+        console.log('The file saved to ', res.path());
+      });
+  };
+
+  requestStoragePermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ]).then((result) => {
+        if (
+          result['android.permission.READ_EXTERNAL_STORAGE'] &&
+          result['android.permission.WRITE_EXTERNAL_STORAGE'] === 'granted'
+        ) {
+          return true;
+        } else if (
+          result['android.permission.READ_EXTERNAL_STORAGE'] ||
+          result['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            'never_ask_again'
+        ) {
+          return false;
+        }
+      });
+
+      return granted;
+    } catch (err) {
+      console.warn(err);
+    }
+  };
 
   getChannelConversations() {
     this.props
@@ -429,6 +488,7 @@ class ChannelChats extends Component {
             translatedMessageId={translatedMessageId}
             isChannel={true}
             onEditMessage={(msg) => this.onEdit(msg)}
+            onDownloadMessage={(msg) => this.onDownload(msg)}
             onCameraPress={() => this.onCameraPress()}
             onGalleryPress={() => this.toggleSelectModal(true)}
             onAttachmentPress={() => this.onAttachmentPress()}

@@ -122,11 +122,14 @@ class ForgotPassword extends Component {
           });
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('common.sendSMS'),
-            text: 'Username Not Exist',
-            type: 'primary',
-          });
+            if (err.response.request._response) {
+                let errMessage = JSON.parse(err.response.request._response)
+                Toast.show({
+                    title: translate('common.sendSMS'),
+                    text: translate(errMessage.message.toString()),
+                    type: 'primary',
+                });
+            }
         });
     } else {
       Toast.show({

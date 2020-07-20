@@ -159,6 +159,7 @@ class GroupChatMessageBubble extends Component {
       onDelete,
       onUnSend,
       onEditMessage,
+      onDownloadMessage,
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
@@ -574,6 +575,7 @@ class GroupChatMessageBubble extends Component {
               <FontAwesome name={'download'} size={20} color={Colors.white} />
             )}
             onPress={() => {
+              onDownloadMessage(message);
               closeMenu();
             }}
             title={translate('pages.setting.download')}
