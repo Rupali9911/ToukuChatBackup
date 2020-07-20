@@ -64,22 +64,25 @@ class ForgotUserName extends Component {
         .recoverUserName(userNameData)
         .then((res) => {
           Toast.show({
-            title: 'Send Email',
-            text: 'We have sent an email to your registered email id',
+            title: translate('pages.xchat.recoverUsername'),
+            text: translate('pages.xchat.toastr.recoverUsernameMessage'),
             type: 'positive',
           });
         })
         .catch((err) => {
-          Toast.show({
-            title: 'Touku',
-            text: 'Email Not Found',
-            type: 'primary',
-          });
+            if (err.response.request._response) {
+                let errMessage = JSON.parse(err.response.request._response)
+                Toast.show({
+                    title: 'Touku',
+                    text: translate(errMessage.message.toString()),
+                    type: 'primary',
+                });
+            }
         });
     } else {
       Toast.show({
         title: 'Touku',
-        text: 'Enter valid email address',
+        text: translate('pages.register.toastr.enterEmailAddress'),
         type: 'primary',
       });
     }

@@ -148,6 +148,7 @@ class ChatMessageBubble extends Component {
       selectedMessageId,
       onMessageTranslate,
       onEditMessage,
+      onDownloadMessage,
       onDelete,
       onUnSend,
       audioPlayingId,
@@ -549,6 +550,7 @@ class ChatMessageBubble extends Component {
               <FontAwesome name={'download'} size={20} color={Colors.white} />
             )}
             onPress={() => {
+              onDownloadMessage(message);
               closeMenu();
             }}
             title={translate('pages.setting.download')}

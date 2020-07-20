@@ -95,6 +95,9 @@ class ChatContainer extends Component {
             onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
             onMessageTranslateClose={this.props.onMessageTranslateClose}
             onEditMessage={(msg) => this.props.onEditMessage(msg)}
+            onDownloadMessage={(msg) => {
+              this.props.onDownloadMessage(msg);
+            }}
             translatedMessage={this.props.translatedMessage}
             translatedMessageId={this.props.translatedMessageId}
             onDelete={(id) => this.props.onDelete(id)}

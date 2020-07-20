@@ -133,6 +133,7 @@ export default class GroupChatMessageBox extends Component {
       translatedMessage,
       translatedMessageId,
       onEditMessage,
+      onDownloadMessage,
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
@@ -218,6 +219,7 @@ export default class GroupChatMessageBox extends Component {
                   onDelete={onDelete}
                   onUnSend={onUnSend}
                   onEditMessage={onEditMessage}
+                  onDownloadMessage={onDownloadMessage}
                   audioPlayingId={audioPlayingId}
                   perviousPlayingAudioId={perviousPlayingAudioId}
                   onAudioPlayPress={onAudioPlayPress}
@@ -304,6 +306,7 @@ export default class GroupChatMessageBox extends Component {
               onDelete={onDelete}
               onUnSend={onUnSend}
               onEditMessage={onEditMessage}
+              onDownloadMessage={onDownloadMessage}
               audioPlayingId={audioPlayingId}
               perviousPlayingAudioId={perviousPlayingAudioId}
               onAudioPlayPress={onAudioPlayPress}

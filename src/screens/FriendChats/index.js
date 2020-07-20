@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { ImageBackground } from 'react-native';
+import { ImageBackground, PermissionsAndroid, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
+import DocumentPicker from 'react-native-document-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import { ChatHeader } from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
@@ -28,9 +31,7 @@ import {
 import Toast from '../../components/Toast';
 import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
-import ImagePicker from 'react-native-image-crop-picker';
 import S3uploadService from '../../helpers/S3uploadService';
-import DocumentPicker from 'react-native-document-picker';
 
 class FriendChats extends Component {
   constructor(props) {
@@ -513,6 +514,59 @@ class FriendChats extends Component {
     });
   };
 
+  onDownload = async (message) => {
+    if (Platform.OS === 'android') {
+      const isRequestPermission = await this.requestStoragePermission();
+      if (!isRequestPermission) {
+        return;
+      }
+    }
+
+    let fileName = message.message_body.split('/').pop().split('%2F').pop();
+    if (message.msg_type === 'image') {
+      fileName = `${fileName}.jpg`;
+    }
+    if (message.msg_type === 'video') {
+      fileName = `${fileName}.mp4`;
+    }
+
+    let dirs = RNFetchBlob.fs.dirs;
+    RNFetchBlob.config({
+      path: `${dirs.DownloadDir}/${fileName}`,
+      fileCache: true,
+    })
+      .fetch('GET', message.message_body, {})
+      .then((res) => {
+        console.log('The file saved to ', res.path());
+      });
+  };
+
+  requestStoragePermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ]).then((result) => {
+        if (
+          result['android.permission.READ_EXTERNAL_STORAGE'] &&
+          result['android.permission.WRITE_EXTERNAL_STORAGE'] === 'granted'
+        ) {
+          return true;
+        } else if (
+          result['android.permission.READ_EXTERNAL_STORAGE'] ||
+          result['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            'never_ask_again'
+        ) {
+          return false;
+        }
+      });
+
+      return granted;
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   onEdit = (message) => {
     this.setState({
       newMessageText: message.message_body,
@@ -693,6 +747,7 @@ class FriendChats extends Component {
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
             onEditMessage={(msg) => this.onEdit(msg)}
+            onDownloadMessage={(msg) => this.onDownload(msg)}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={() => this.onCameraPress()}
