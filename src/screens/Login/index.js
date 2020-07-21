@@ -591,7 +591,7 @@ class Login extends Component {
                 }
             }
           }
-        });
+        );
     }
   }
 
