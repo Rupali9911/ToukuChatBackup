@@ -19,6 +19,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { createFilter } from 'react-native-search-filter';
 import { Badge } from 'react-native-paper';
+import { withNavigationFocus } from 'react-navigation';
 
 import { homeStyles } from './styles';
 import { globalStyles } from '../../styles';
@@ -119,6 +120,16 @@ class Home extends Component {
     this.getUserFriends();
     // this.props.getFriendRequests();
     this.props.getUserConfiguration();
+
+    this.focusListener = this.props.navigation.addListener(
+      'didFocus',
+      async () => {
+        this.getFriendRequest();
+        this.getFollowingChannels();
+        this.getUserGroups();
+        this.getUserFriends();
+      }
+    );
   }
 
   _orientationDidChange = (orientation) => {
@@ -932,4 +943,7 @@ const mapDispatchToProps = {
   rejectFriendRequst,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withNavigationFocus(Home));
