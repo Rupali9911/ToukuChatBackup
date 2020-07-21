@@ -296,10 +296,16 @@ class GroupChats extends Component {
       .pop()
       .split('%2F')
       .pop();
-    if (message.message_body.type === 'image') {
+    if (
+      message.message_body.type === 'image' &&
+      fileName.lastIndexOf('.') === -1
+    ) {
       fileName = `${fileName}.jpg`;
     }
-    if (message.message_body.type === 'video') {
+    if (
+      message.message_body.type === 'video' &&
+      fileName.lastIndexOf('.') === -1
+    ) {
       fileName = `${fileName}.mp4`;
     }
 
@@ -310,6 +316,9 @@ class GroupChats extends Component {
     })
       .fetch('GET', message.message_body.text, {})
       .then((res) => {
+        if (Platform.OS === 'ios') {
+          RNFetchBlob.ios.openDocument(res.data);
+        }
         console.log('The file saved to ', res.path());
       });
   };

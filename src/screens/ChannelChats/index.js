@@ -287,10 +287,10 @@ class ChannelChats extends Component {
     }
 
     let fileName = message.message_body.split('/').pop().split('%2F').pop();
-    if (message.msg_type === 'image') {
+    if (message.msg_type === 'image' && fileName.lastIndexOf('.') === -1) {
       fileName = `${fileName}.jpg`;
     }
-    if (message.msg_type === 'video') {
+    if (message.msg_type === 'video' && fileName.lastIndexOf('.') === -1) {
       fileName = `${fileName}.mp4`;
     }
 
@@ -301,6 +301,9 @@ class ChannelChats extends Component {
     })
       .fetch('GET', message.message_body, {})
       .then((res) => {
+        if (Platform.OS === 'ios') {
+          RNFetchBlob.ios.openDocument(res.data);
+        }
         console.log('The file saved to ', res.path());
       });
   };
