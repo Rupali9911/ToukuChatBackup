@@ -99,7 +99,7 @@ class SignUp extends Component {
         text: translate('pages.register.toastr.enterPhoneNumber'),
         type: 'primary',
       });
-    } else if (phone.length > 0 && phone.length < 6) {
+    } else if (phone.length > 0 && phone.length < 8) {
       Toast.show({
         title: translate('common.sendSMS'),
         text: translate('pages.register.toastr.phoneNumberIsInvalid'),
@@ -113,6 +113,7 @@ class SignUp extends Component {
       this.props
         .userSendOTP(signUpData)
         .then((res) => {
+          console.log('Response of signup', res)
           if (res.status === true) {
             Toast.show({
               title: translate('common.sendSMS'),
@@ -122,7 +123,7 @@ class SignUp extends Component {
           } else if (res.status === false && res.data.phone != '') {
             Toast.show({
               title: translate('common.sendSMS'),
-              text: 'The phone number is already registered.',
+              text: translate('backend.common.PhoneNumberAlreadRegistered'),
               type: 'primary',
             });
           } else {
@@ -134,11 +135,34 @@ class SignUp extends Component {
           }
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('common.sendSMS'),
-            text: 'The phone number is already registered.',
-            type: 'primary',
-          });
+            if (err.response) {
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    console.log(errMessage.non_field_errors)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('common.sendSMS'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('common.sendSMS'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.phone) {
+                        Toast.show({
+                            title: translate('common.sendSMS'),
+                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
+                            type: 'primary',
+                        });
+                    }
+
+                }
+            }
         });
     }
   }
@@ -155,6 +179,7 @@ class SignUp extends Component {
           };
 
           this.props.userVerifyOTP(verifyData).then((res) => {
+            console.log('userVerifyOTP response', res)
             if (res.status === true) {
               AsyncStorage.setItem('phoneData', JSON.stringify(verifyData));
               this.setState({
@@ -162,18 +187,26 @@ class SignUp extends Component {
               });
             } else {
               Toast.show({
-                title: 'Verify OTP',
-                text: 'Please Enter Valid OTP',
+                title: translate('common.register'),
+                text: translate('pages.register.toastr.enterCorrectOTP'),
                 type: 'primary',
               });
             }
           });
         } else {
-          Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.toastr.enterPhoneNumber'),
-            type: 'primary',
-          });
+            if (phone === ''){
+                Toast.show({
+                    title: translate('common.register'),
+                    text: translate('pages.register.toastr.enterPhoneNumber'),
+                    type: 'warning',
+                });
+            }else{
+                Toast.show({
+                    title: translate('common.register'),
+                    text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
+                    type: 'warning',
+                });
+            }
         }
 
         break;
@@ -183,29 +216,30 @@ class SignUp extends Component {
 
         let isValid = true;
 
+        console.log('email', email)
         if (email.length <= 0) {
           isValid = false;
           this.setState({emailStatus: 'wrong'});
           Toast.show({
-            title: 'Check Email',
-            text: 'Please Enter Email Address',
-            type: 'primary',
+            title: translate('common.register'),
+            text: translate('pages.register.toastr.enterEmailAddress'),
+            type: 'warning',
           });
         } else if (reg.test(email) === false) {
           isValid = false;
           this.setState({emailStatus: 'wrong'});
           Toast.show({
-            title: 'Check Email',
-            text: 'Please Enter Valid Email Address',
-            type: 'primary',
+            title: translate('common.register'),
+            text: translate('common.emailMustBeValid'),
+            type: 'warning',
           });
         } else if (this.state.email != this.state.emailconfirm) {
           isValid = false;
           this.setState({emailConfirmStatus: 'wrong'});
           Toast.show({
-            title: 'Check Email',
-            text: 'Email Address Not Matched',
-            type: 'primary',
+              title: translate('common.register'),
+              text: translate('pages.register.toastr.confirmEmailDoNotMatch'),
+              type: 'warning',
           });
         }
         if (isValid) {
@@ -219,8 +253,8 @@ class SignUp extends Component {
                 });
               } else {
                 Toast.show({
-                  title: 'SignUp Failed',
-                  text: 'User Already Exist',
+                  title: translate('common.register'),
+                  text: translate('pages.register.toastr.emailExist'),
                   type: 'primary',
                 });
               }
@@ -261,23 +295,37 @@ class SignUp extends Component {
     if (username.length <= 0) {
       isValid = false;
       Toast.show({
-        title: 'SignUp Failed',
+        title: translate('common.register'),
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
-        type: 'primary',
+        type: 'warning',
       });
-    } else if (password.length < 6) {
+    } else if (password.length <= 0) {
+        isValid = false;
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.passwordPattern'),
+            type: 'warning',
+        });
+    }else if (password.length < 8) {
       isValid = false;
       Toast.show({
-        title: 'SignUp Failed',
-        text: 'Please Enter Atleast 6 Characters Password',
-        type: 'primary',
+        title: translate('common.register'),
+        text: translate('pages.register.minLengthPassword'),
+        type: 'warning',
+      });
+    }else if (password.length > 64) {
+      isValid = false;
+      Toast.show({
+        title: translate('common.register'),
+        text: translate('pages.register.maxLengthPassword'),
+        type: 'warning',
       });
     } else if (password != passwordConfirm) {
       isValid = false;
       Toast.show({
-        title: 'SignUp Failed',
-        text: 'Password Not Matched',
-        type: 'primary',
+        title: translate('common.register'),
+        text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
+        type: 'warning',
       });
     }
     if (isValid) {
@@ -288,6 +336,7 @@ class SignUp extends Component {
         let email = await AsyncStorage.getItem('email');
         let keys = ['phoneData', 'email'];
         this.props.userNameCheck(username).then((res) => {
+          console.log('userNameCheck response',res)
           if (res.status === false) {
             // AsyncStorage.setItem('username', username);
 
@@ -309,6 +358,7 @@ class SignUp extends Component {
             this.props
               .userRegister(registerData)
               .then((res) => {
+                  console.log('userRegister response',res)
                 if (res.token) {
                   AsyncStorage.multiRemove(keys);
                   this.props.getUserProfile().then((res) => {
@@ -319,31 +369,32 @@ class SignUp extends Component {
                 }
                 if (res.user) {
                   Toast.show({
-                    title: 'SignUp Failed',
+                    title: translate('common.register'),
                     text: 'User Already Registered',
                     type: 'primary',
                   });
                 }
               })
               .catch((err) => {
+                  console.log('userRegister response',err)
                 Toast.show({
-                  title: 'SignUp Failed',
+                  title: translate('common.register'),
                   text: 'Something Went Wrong',
                   type: 'primary',
                 });
               });
           } else {
             Toast.show({
-              title: 'SignUp Failed',
-              text: 'User Name Already Exist',
+              title: translate('common.register'),
+              text: translate('pages.register.toastr.usrenameExist'),
               type: 'primary',
             });
           }
         });
       } else {
         Toast.show({
-          title: 'Terms and Conditions',
-          text: 'Please Select Our Terms & Conditions ',
+          title: translate('common.register'),
+          text: translate('pages.register.toastr.termsAndCondition'),
           type: 'primary',
         });
       }
@@ -403,7 +454,7 @@ class SignUp extends Component {
 
   handlePassword = (password) => {
     this.setState({password});
-    if (password.length < 6) {
+    if (password.length < 8 || password.length > 64) {
       this.setState({passwordStatus: 'wrong'});
     } else {
       this.setState({passwordStatus: 'right'});
@@ -440,11 +491,11 @@ class SignUp extends Component {
 
     if (username.length <= 0) {
       isValid = false;
-      Toast.show({
-        title: 'SignUp Failed',
-        text: 'Please Enter Username',
-        type: 'primary',
-      });
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.setting.toastr.pleaseEnterUsername'),
+            type: 'warning',
+        });
     }
     if (isValid) {
       if (isAgreeWithTerms) {

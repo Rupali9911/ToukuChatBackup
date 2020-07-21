@@ -85,7 +85,7 @@ export default class CountryPhoneInput extends Component {
           onChangePhoneNumber={(number) =>
             this.onChangePhoneNumber(number, countryCode)
           }
-          initialCountry={'us'}
+          initialCountry={'jp'}
           onSelectCountry={(tag) => this.onSelectCountry(tag)}
           value={countryCode}
           style={{flex: 1}}
