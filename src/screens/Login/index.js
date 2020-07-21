@@ -561,11 +561,9 @@ class Login extends Component {
       this.props
         .userLogin(loginData)
         .then((res) => {
-          console.log('Login -> onLoginPress -> res', res);
-          // console.log('login response', res, res.user.toString());
-          //  console.log('store.getState().languageReducer.en', store.getState().languageReducer.en)
           if (res.token) {
             this.props.getUserProfile().then((res) => {
+              console.log('getUserProfile', res)
               if (res.id) {
                 this.props.navigation.navigate('Chat');
               }
@@ -581,15 +579,16 @@ class Login extends Component {
           }
         })
         .catch((err) => {
-          if (err.response) {
-            if (err.response.request._response) {
-              let strRes = err.response.request._response.slice(2, -2);
-              console.log('strRes', strRes.toString());
-              Toast.show({
-                title: 'Login Failed',
-                text: translate(strRes.toString()),
-                type: 'primary',
-              });
+            if (err.response) {
+                if (err.response.request._response) {
+                    let strRes = err.response.request._response.slice(2, -2);
+                    console.log('strRes', strRes.toString())
+                    Toast.show({
+                        title: 'Login Failed',
+                        text: translate(strRes.toString()),
+                        type: 'primary',
+                    });
+                }
             }
           }
         });
