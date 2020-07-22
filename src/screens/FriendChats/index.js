@@ -186,7 +186,6 @@ class FriendChats extends Component {
     }
 
     let sendmsgdata = {
-      // id: id,
       thumbnail: null,
       from_user: {
         id: userData.id,
@@ -205,7 +204,16 @@ class FriendChats extends Component {
         display_name: currentFriend.display_name,
       },
       message_body: msgText,
-      reply_to: isReply ? repliedMessage : null,
+      reply_to: isReply
+        ? {
+            display_name: repliedMessage.from_user.display_name,
+            id: repliedMessage.id,
+            message: repliedMessage.message_body,
+            msg_type: repliedMessage.msg_type,
+            name: repliedMessage.from_user.username,
+            sender_id: repliedMessage.from_user.id,
+          }
+        : null,
       local_id: null,
       created: moment().format(),
       updated: moment().format(),
