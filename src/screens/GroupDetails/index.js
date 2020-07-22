@@ -136,27 +136,36 @@ class GroupDetails extends Component {
   };
 
   checkEventTypes(message) {
+    const { currentGroupDetail } = this.props;
     switch (message.text.data.type) {
-      case SocketEvents.ADD_GROUP_MEMBER:
-      case SocketEvents.REMOVE_GROUP_MEMBER:
-      case SocketEvents.GROUP_MEMBER_TO_ADMIN:
-        this.getGroupMembers();
+      case SocketEvents.ADD_GROUP_MEMBER: {
+        this.getGroupMembers(message.text.data.message_details.group_id);
+        break;
+      }
+      case SocketEvents.REMOVE_GROUP_MEMBER: {
+        this.getGroupMembers(message.text.data.message_details.group_id);
+        break;
+      }
+      case SocketEvents.GROUP_MEMBER_TO_ADMIN: {
+        this.getGroupMembers(message.text.data.message_details.group_id);
+        break;
+      }
     }
   }
 
   setAdmin = (id, type) => {
-    const { currentGroup } = this.props;
+    const { currentGroupDetail } = this.props;
     let addAdminData;
     if (type === 'add') {
       addAdminData = {
-        group_id: currentGroup.group_id,
+        group_id: currentGroupDetail.id,
         members: [id],
         update_type: 1,
         user_type: 1,
       };
     } else {
       addAdminData = {
-        group_id: currentGroup.group_id,
+        group_id: currentGroupDetail.id,
         members: [id],
         update_type: 3,
       };
@@ -165,9 +174,9 @@ class GroupDetails extends Component {
   };
 
   setMember = (id, type) => {
-    const { currentGroup } = this.props;
+    const { currentGroupDetail } = this.props;
     let addMemberData = {
-      group_id: currentGroup.group_id,
+      group_id: currentGroupDetail.id,
       members: [id],
       update_type: 1,
       user_type: 2,
@@ -176,18 +185,18 @@ class GroupDetails extends Component {
   };
 
   removeMember = (id, type) => {
-    const { currentGroup } = this.props;
+    const { currentGroupDetail } = this.props;
     let removeData;
     if (type === 'admin') {
       removeData = {
-        group_id: currentGroup.group_id,
+        group_id: currentGroupDetail.id,
         members: [id],
         update_type: 2,
         user_type: 1,
       };
     } else {
       removeData = {
-        group_id: currentGroup.group_id,
+        group_id: currentGroupDetail.id,
         members: [id],
         update_type: 2,
         user_type: 2,
@@ -206,10 +215,9 @@ class GroupDetails extends Component {
     });
   };
 
-  getGroupMembers = () => {
-    const { currentGroup } = this.props;
+  getGroupMembers = (id) => {
     this.props
-      .getGroupMembers(this.props.currentGroup.group_id)
+      .getGroupMembers(id)
       .then((res) => {
         this.props.setCurrentGroupMembers(res.results);
       })
@@ -344,10 +352,10 @@ class GroupDetails extends Component {
   };
 
   renderUserFriends() {
-    const { userFriends, friendLoading } = this.props;
+    const { userFriends, friendLoading, currentGroupMembers } = this.props;
     const { memberOption, adminOption, addOption } = this.state;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['display_name'])
     );
 
     if (

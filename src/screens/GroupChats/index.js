@@ -203,7 +203,17 @@ class GroupChats extends Component {
       is_edited: false,
       is_unsent: false,
       timestamp: moment().format(),
-      reply_to: {},
+      reply_to: isReply
+        ? {
+            display_name: repliedMessage.sender_display_name,
+            id: repliedMessage.msg_id,
+            mentions: repliedMessage.mentions,
+            message: repliedMessage.message_body.text,
+            msg_type: repliedMessage.message_body.type,
+            name: repliedMessage.sender_username,
+            sender_id: repliedMessage.sender_id,
+          }
+        : null,
       mentions: [],
       read_count: null,
     };
@@ -911,6 +921,7 @@ const mapStateToProps = (state) => {
   return {
     currentGroup: state.groupReducer.currentGroup,
     groupLoading: state.groupReducer.loading,
+    currentGroupDetail: state.groupReducer.currentGroupDetail,
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
   };
