@@ -337,7 +337,7 @@ class ForgotPassword extends Component {
                   onRef={(ref) => {
                     this.inputs['password'] = ref;
                   }}
-                  placeholder={translate('pages.resetPassword.newLogInPassword')}
+                  placeholder={translate('pages.setting.newPassword')}
                   value={this.state.password}
                   secureTextEntry={true}
                   onChangeText={(password) => this.handlePassword(password)}
@@ -369,7 +369,7 @@ class ForgotPassword extends Component {
                     this.inputs['newPassword'] = ref;
                   }}
                   placeholder={translate(
-                    'pages.resetPassword.newLogInPassword',
+                    'pages.setting.confirmPassword',
                   )}
                   value={this.state.newPassword}
                   secureTextEntry={true}

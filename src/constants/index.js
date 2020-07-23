@@ -34,6 +34,7 @@ export const Icons = {
   icon_channel_new: require('../../assets/icons/Channel_new.png'),
   icon_channel_select: require('../../assets/icons/channel_select.png'),
   icon_message: require('../../assets/icons/message.png'),
+  icon_warning: require('../../assets/icons/warning.png'),
   icon_scenario: require('../../assets/icons/scenario.png'),
   icon_camera: require('../../assets/icons/camera.png'),
   icon_pencil: require('../../assets/icons/pencil.png'),

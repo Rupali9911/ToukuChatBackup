@@ -32,16 +32,16 @@ export default class ConfirmationModal extends Component {
       <Modal isVisible={visible}>
         <View
           style={{
-            minHeight: orientation === 'PORTRAIT' ? '35%' : '80%',
+            height: orientation === 'PORTRAIT' ? '35%' : '80%',
             backgroundColor: Colors.white,
             borderRadius: 5,
+            paddingVertical: '5%',
           }}
         >
           <View
             style={{
               flex: 0.5,
               alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             <Image
@@ -92,12 +92,16 @@ export default class ConfirmationModal extends Component {
               style={{
                 flexDirection: 'row',
                 paddingHorizontal: '20%',
-                alignItems: 'center',
-                justifyContent: 'space-around',
+                alignItems: 'flex-end',
                 flex: 0.5,
               }}
             >
-              <View style={{ flex: 0.5, marginHorizontal: 5 }}>
+              <View
+                style={{
+                  flex: 0.5,
+                  marginHorizontal: 5,
+                }}
+              >
                 <Button
                   title={'Cancel'}
                   type={'secondary'}

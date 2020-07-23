@@ -13,6 +13,7 @@ export default class ChannelCategoryModal extends Component {
   renderChannelCategory(category) {
     return (
       <FlatList
+          keyExtractor={(item, index) => index.toString()}
         data={category}
         renderItem={({ item, index }) => (
           <TouchableOpacity
