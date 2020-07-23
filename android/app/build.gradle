@@ -152,9 +152,9 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('release.keystore')
+            storeFile file('upload-keystore.jks')
             storePassword 'android'
-            keyAlias 'androidreleasekey'
+            keyAlias 'newalias'
             keyPassword 'android'
         }
     }
