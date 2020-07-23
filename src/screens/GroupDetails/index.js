@@ -367,6 +367,7 @@ class GroupDetails extends Component {
     } else if (filteredFriends.length > 0) {
       return (
         <FlatList
+            keyExtractor={(item, index) => index.toString()}
           data={filteredFriends}
           renderItem={({ item, index }) => (
             <GroupFriend

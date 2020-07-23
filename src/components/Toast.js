@@ -105,7 +105,7 @@ class Toast extends Component {
       case 'positive':
         return Icons.icon_tick_circle;
       default:
-        return Icons.icon_message;
+        return Icons.icon_warning;
     }
   }
 

@@ -400,6 +400,9 @@ class CreateChannel extends Component {
     } else if (filteredFriends.length > 0) {
       return (
         <FlatList
+            keyboardShouldPersistTaps={'handled'}
+            behavior={'position'}
+            keyExtractor={(item, index) => index.toString()}
           data={filteredFriends}
           renderItem={({ item, index }) => (
             <GroupFriend
@@ -515,9 +518,15 @@ class CreateChannel extends Component {
             title="Create New Channel"
           />
           <KeyboardAwareScrollView
+              scrollEnabled
+              enableOnAndroid={true}
+              keyboardShouldPersistTaps={"handled"}
+              extraScrollHeight={100}
+              extraHeight={100}
+              behavior={"position"}
+
             contentContainerStyle={createChannelStyles.mainContainer}
             showsVerticalScrollIndicator={false}
-            extraHeight={250}
           >
             <LinearGradient
               start={{ x: 0.1, y: 0.7 }}

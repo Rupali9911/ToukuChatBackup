@@ -93,6 +93,7 @@ class AddFriend extends Component {
         } else if (arrFriends.length > 0) {
             return (
                 <FlatList
+                    keyExtractor={(item, index) => index.toString()}
                     data={arrFriends}
                     renderItem={({ item, index }) => item.id === userData.id ? null : (
                         <FriendWithStatus

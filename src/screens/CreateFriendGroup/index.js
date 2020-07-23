@@ -130,6 +130,7 @@ class CreateFriendGroup extends Component {
     return (
       <FlatList
         data={recent}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => (
           <GroupFriend
             user={item}
@@ -162,6 +163,7 @@ class CreateFriendGroup extends Component {
       return (
         <FlatList
           data={filteredFriends}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => (
             <GroupFriend
               user={item}

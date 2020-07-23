@@ -225,6 +225,9 @@ class CreateGroupChat extends Component {
     } else if (filteredFriends.length > 0) {
       return (
         <FlatList
+            keyboardShouldPersistTaps={'handled'}
+            behavior={'position'}
+            keyExtractor={(item, index) => index.toString()}
           data={filteredFriends}
           renderItem={({ item, index }) => (
             <GroupFriend
@@ -264,9 +267,15 @@ class CreateGroupChat extends Component {
             title={translate('pages.xchat.createNewGroup')}
           />
           <KeyboardAwareScrollView
+              scrollEnabled
+              enableOnAndroid={true}
+              keyboardShouldPersistTaps={"handled"}
+              extraScrollHeight={100}
+              extraHeight={100}
+              behavior={"position"}
+
             contentContainerStyle={createGroupStyles.mainContainer}
             showsVerticalScrollIndicator={false}
-            extraHeight={250}
           >
             <View style={createGroupStyles.imageContainer}>
               <View style={createGroupStyles.imageView}>
