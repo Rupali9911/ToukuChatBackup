@@ -1,0 +1,8 @@
+{
+  "react-native": {
+    "messaging_android_headless_task_timeout": 30000,
+    "messaging_android_notification_channel_id": "ToukuLite",
+    "messaging_android_notification_color": "@color/appIcon",
+    "messaging_auto_init_enabled": true
+  }
+}
