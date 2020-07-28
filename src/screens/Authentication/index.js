@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
+    Linking,
+    AppState,
+    Alert
 } from 'react-native';
 import {connect} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -31,13 +34,13 @@ class Authentication extends Component {
   constructor() {
     super();
     this.authenticateUser();
+      this.state = {
+      }
   }
 
   authenticateUser = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
-    // wait(1000).then(() => {
     this.props.navigation.navigate(userToken ? 'App' : 'Auth');
-    // });
   };
 
   componentDidMount() {
@@ -48,7 +51,7 @@ class Authentication extends Component {
     })
   }
 
-  render() {
+    render() {
     return (
       // <ImageBackground
       //   source={Images.image_touku_bg}

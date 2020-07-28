@@ -334,6 +334,7 @@ class SignUp extends Component {
         let parsedData = JSON.parse(userPhoneData);
         // let username = await AsyncStorage.getItem('username');
         let email = await AsyncStorage.getItem('email');
+        let fcmToken = await AsyncStorage.getItem('fcmToken');
         let keys = ['phoneData', 'email'];
         this.props.userNameCheck(username).then((res) => {
           console.log('userNameCheck response',res)
@@ -354,6 +355,7 @@ class SignUp extends Component {
               site_from: 'touku',
               user_language: 1,
               username: username,
+              dev_id: fcmToken,
             };
             this.props
               .userRegister(registerData)

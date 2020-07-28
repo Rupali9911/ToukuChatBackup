@@ -153,12 +153,12 @@ class Login extends Component {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       this.setState({ userInfo: userInfo, loggedIn: true });
-
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
       const googleLoginData = {
         code: userInfo.idToken,
         access_token_secret: userInfo.idToken,
         site_from: 'touku',
-        dev_id: '',
+          dev_id: fcmToken,
       };
       this.props.googleRegister(googleLoginData).then(async (res) => {
         console.log('JWT TOKEN=> ', JSON.stringify(res));
@@ -235,7 +235,7 @@ class Login extends Component {
     const facebookCredential = auth.FacebookAuthProvider.credential(
       data.accessToken
     );
-
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
     auth()
       .signInWithCredential(facebookCredential)
       .then((res) => {
@@ -246,7 +246,7 @@ class Login extends Component {
           access_token_secret: data.accessToken,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
-          dev_id: '',
+          dev_id: fcmToken,
         };
         console.log(
           'LoginSignUp -> firebaseFacebookLogin -> facebookLoginData',
@@ -311,6 +311,7 @@ class Login extends Component {
     );
 
     // Sign-in the user with the credential
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
     return auth()
       .signInWithCredential(twitterCredential)
       .then((res) => {
@@ -320,7 +321,7 @@ class Login extends Component {
           access_token_secret: authTokenSecret,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
-          dev_id: '',
+          dev_id: fcmToken,
           username: userName,
         };
 
@@ -357,7 +358,7 @@ class Login extends Component {
 
   async firebaseLineLogin() {
     console.log('LoginSignUp -> firebaseLineLogin -> firebaseLineLogin');
-
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
     if (Platform.OS === 'ios') {
       let arrPermissions = ['profile', 'openid', 'email'];
       LineLogin.loginWithPermissions(arrPermissions)
@@ -367,7 +368,7 @@ class Login extends Component {
             email: user.idToken.email,
             code: '',
             access_token: user.accessToken.accessToken,
-            dev_id: '',
+            dev_id: fcmToken,
             site_from: 'touku',
           };
           console.log(
@@ -413,7 +414,7 @@ class Login extends Component {
           const lineLoginData = {
             code: '',
             access_token: user.accessToken.accessToken,
-            dev_id: '',
+            dev_id: fcmToken,
             site_from: 'touku',
           };
           console.log(
@@ -455,15 +456,16 @@ class Login extends Component {
     }
   }
 
-  kakaoLogin() {
+  async kakaoLogin() {
     console.log('kakaoLogin');
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
     KakaoLogins.login()
       .then((result) => {
         console.log('result kakaoLogin', result);
         const kakaoLoginData = {
           code: '',
           access_token: result.accessToken,
-          dev_id: '',
+          dev_id: fcmToken,
           site_from: 'touku',
         };
         console.log('kakao request', kakaoLoginData);
@@ -528,7 +530,7 @@ class Login extends Component {
     }
   };
 
-  onLoginPress() {
+  async onLoginPress() {
     Keyboard.dismiss();
     this.setState({ userNameErr: null, passwordErr: null });
     const { username, password, isRememberChecked } = this.state;
@@ -552,8 +554,9 @@ class Login extends Component {
     }
 
     if (isValid) {
+        let fcmToken = await AsyncStorage.getItem('fcmToken');
       let loginData = {
-        dev_id: '',
+        dev_id: fcmToken,
         email: username,
         password: password,
         rememberMe: true,
