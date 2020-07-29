@@ -51,6 +51,7 @@ const getLoginFailure = () => ({
 //Login User
 export const userLogin = (user) => (dispatch) =>
   new Promise(function (resolve, reject) {
+      console.log('User Login request', user)
     dispatch(getLoginRequest());
     client
       .post(`/jwt/api-token-auth-xana/`, user)

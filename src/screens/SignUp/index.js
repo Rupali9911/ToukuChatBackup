@@ -76,6 +76,8 @@ class SignUp extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+
+    console.log('invitationCode on SignUp', this.props.navigation.state.params.invitationCode)
   }
 
   componentWillUnmount() {
@@ -335,7 +337,10 @@ class SignUp extends Component {
         // let username = await AsyncStorage.getItem('username');
         let email = await AsyncStorage.getItem('email');
         let fcmToken = await AsyncStorage.getItem('fcmToken');
-        let keys = ['phoneData', 'email'];
+        let invitationCode = await AsyncStorage.getItem('invitationCode');
+        let invitationCodeProps = this.props.navigation.state.params.invitationCode
+
+        let keys = ['phoneData', 'email', 'invitationCode'];
         this.props.userNameCheck(username).then((res) => {
           console.log('userNameCheck response',res)
           if (res.status === false) {
@@ -346,7 +351,7 @@ class SignUp extends Component {
               confirm_password: passwordConfirm,
               email: email,
               first_name: '',
-              invitation_code: '',
+              invitation_code: invitationCodeProps ? invitationCodeProps : invitationCode ? invitationCode : '' ,
               isAgree: isAgreeWithTerms,
               last_name: '',
               otp_code: parsedData.code,
@@ -489,6 +494,7 @@ class SignUp extends Component {
 
   async onSocialSignUp() {
     const {username, email, isAgreeWithTerms} = this.state;
+      let invitationCode = await AsyncStorage.getItem('invitationCode');
     let isValid = true;
 
     if (username.length <= 0) {
@@ -505,18 +511,19 @@ class SignUp extends Component {
         if (this.props.navigation.state.params.pageNumber === 1) {
           registrationData = JSON.stringify({
             username: username,
-            invitation_code: '',
+            invitation_code: invitationCode ? invitationCode : '',
             email: email,
           });
         } else {
           registrationData = JSON.stringify({
             username: username,
-            invitation_code: '',
+            invitation_code: invitationCode ? invitationCode : '',
           });
         }
         this.props.socialRegistration(registrationData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
+            AsyncStorage.removeItem('invitationCode')
             this.props.navigation.navigate('Chat');
             return;
           }

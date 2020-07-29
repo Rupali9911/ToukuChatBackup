@@ -10,6 +10,7 @@ import InternetInfo from './src/components/InternetInfo';
 import {CLEAR_BADGE_COUNT, socket, userAgent} from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from "@react-native-community/async-storage";
+import {loginUrl, registerUrl, channelUrl} from './src/constants/index'
 
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
@@ -33,8 +34,7 @@ export default class App extends Component {
         appState: AppState.currentState,
     };
       this.notif = new NotifService(
-          this.onRegister.bind(this),
-          this.onNotif.bind(this),
+          //this.onNotif.bind(this),
       );
   }
 
@@ -42,10 +42,22 @@ export default class App extends Component {
       this.createNotificationListeners();
       this.addListener()
       this.checkNotificationPermission();
+      this.getInitialLinking()
 
   }
     componentWillUnmount () {
         this.removeListeners()
+    }
+
+    getInitialLinking(){
+        console.log('getInitialLinking calld')
+        Linking.getInitialURL().then((url) => {
+            if (url) {
+                setTimeout(() => {
+                    this.handleOpenURL({url})
+                }, 3000)
+            }
+        })
     }
 
     addListener(){
@@ -56,9 +68,9 @@ export default class App extends Component {
     removeListeners(){
         AppState.removeEventListener('change', this._handleAppStateChange)
         Linking.removeEventListener('url', this.handleOpenURL);
-        // this.closedAppNotificationListener.remove()
-        // this.backgroundNotificationListener.remove()
-        // this.onMessageListener.remove()
+        this.backgroundNotificationListener
+        this.closedAppNotificationListener
+        this.onMessageListener
     }
 
     _handleAppStateChange = (nextAppState) => {
@@ -78,20 +90,25 @@ export default class App extends Component {
 
     handleOpenURL= async (event) => {
         console.log('Deep linking Url', event.url);
-
-        // let url = event.url
-        // if (url.indexOf(Constant.DEEPLINK.toLowerCase()) > -1) {
-        //     let suffixUrl = Platform.OS === 'ios' ? url.split('touku://')[1].trim() : url.split('touku://touku')[1].trim()
-        //     if( suffixUrl != ''){
-        //         url = Environment + suffixUrl
-        //         console.log('suffixUrl', url)
-        //     }
-        // }
+        let url = event.url
+        if (url.indexOf(loginUrl) > -1 || url.indexOf(channelUrl) > -1 ) {
+            setTimeout(() => {
+                NavigationService.navigate('Login', { url: event.url });
+            }, 1000 );
+        }else if (url.indexOf(registerUrl) > -1) {
+            let suffixUrl = event.url.split(registerUrl)[1].trim()
+            let invitationCode = suffixUrl.split('/').length > 0 ? suffixUrl.split('/')[0].trim() : suffixUrl
+            await AsyncStorage.setItem('invitationCode', invitationCode);
+            setTimeout(() => {
+                NavigationService.navigate('SignUp', { pageNumber: 0,
+                    isSocial: false, invitationCode: invitationCode });
+            }, 1000 );
+        }
     }
 
     clearBatchCount= async () =>{
         const userAndFcmToken = await AsyncStorage.multiGet(["userToken", "fcmToken"])
-        if (userAndFcmToken[0][1]) {
+        if (userAndFcmToken[0][1] && userAndFcmToken[1][1]) {
             let result = await fetch('https://api.angelium.net/api/xchat/reset-badge-count/',
                 {
                     method: 'POST',
@@ -139,7 +156,6 @@ export default class App extends Component {
         const enabled =
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
         if (enabled) {
             console.log('Authorization status:', authStatus);
             await this.getToken();
@@ -161,7 +177,6 @@ export default class App extends Component {
 
         // When a user receives a push notification and the app is in foreground
         this.onMessageListener = messaging().onMessage(async remoteMessage => {
-            console.log('remoteMessage foreground', remoteMessage)
             this.onMessageReceived(remoteMessage)
         });
     }
@@ -178,15 +193,15 @@ export default class App extends Component {
         }
     }
 
-    onRegister(token) {
-        console.log('Token from local notification library', token)
-        // this.setState({registerToken: token.token, fcmRegistered: true});
-    }
+    // onRegister(tokenObj) {
+    //     console.log('tokenObj from local notification library', tokenObj)
+    //     // this.setState({registerToken: token.token, fcmRegistered: true});
+    // }
 
-    onNotif(notif) {
-        console.log('Notification from local notification library', notif)
-       // Alert.alert(notif.title, notif.message);
-    }
+    // onNotif(notif) {
+    //     console.log('Notification from local notification library', notif)
+    //    // Alert.alert(notif.title, notif.message);
+    // }
 
 
   render() {

@@ -10,11 +10,11 @@ class NotificationHandler {
   }
 
   onRegister(token) {
-    console.log('NotificationHandler:', token);
-
-    if (typeof this._onRegister === 'function') {
-      this._onRegister(token);
-    }
+  //  console.log('NotificationHandler Token:', token);
+    //
+    // if (typeof this._onRegister === 'function') {
+    //   this._onRegister(token);
+    // }
   }
 
   onAction(notification) {
@@ -31,7 +31,7 @@ class NotificationHandler {
   onRegistrationError(err) {
     console.log(err);
   }
-  
+
   attachRegister(handler) {
     this._onRegister = handler;
   }
@@ -45,7 +45,7 @@ const handler = new NotificationHandler();
 
 PushNotification.configure({
   // (optional) Called when Token is generated (iOS and Android)
-  onRegister: handler.onRegister.bind(handler),
+ // onRegister: handler.onRegister.bind(handler),
 
   // (required) Called when a remote or local notification is opened or received
   onNotification: handler.onNotification.bind(handler),
@@ -72,7 +72,7 @@ PushNotification.configure({
    * - Specified if permissions (ios) and token (android and ios) will requested or not,
    * - if not, you must call PushNotificationsHandler.requestPermissions() later
    */
-  requestPermissions: true,
+  requestPermissions: false,
 });
 
 export default handler;

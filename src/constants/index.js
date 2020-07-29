@@ -156,6 +156,8 @@ export const languageArray = [
 
 export const supportUrl = 'https://www.touku.net/#/support/';
 export const registerUrl = 'https://www.touku.net/#/register/';
+export const loginUrl = 'https://www.touku.net/#/login/';
+export const channelUrl = 'https://www.touku.net/#/channels/';
 export const xanaUrl = 'https://www.xanawallet.net/#/login';
 export const xanaDeepLink = 'xana://';
 export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
