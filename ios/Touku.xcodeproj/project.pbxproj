@@ -962,7 +962,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.Touku;
 				PRODUCT_NAME = "TOUKU Lite";
-				PROVISIONING_PROFILE_SPECIFIER = Touku_Native_Dev_AppleSignin;
+				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -997,7 +997,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.Touku;
 				PRODUCT_NAME = "TOUKU Lite";
-				PROVISIONING_PROFILE_SPECIFIER = Touku_Native_Dev_AppleSignin;
+				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

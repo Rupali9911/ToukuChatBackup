@@ -13,6 +13,7 @@
 #import <KakaoOpenSDK/KakaoOpenSDK.h>
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import <React/RCTLinkingManager.h>
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>
@@ -88,7 +89,9 @@ static void InitializeFlipper(UIApplication *application) {
       return [KOSession handleOpenURL:url];
   }
   
-  return handled || handledT || handledL;
+  BOOL handleLinking = [RCTLinkingManager application:application openURL:url options:options];
+  
+  return handled || handledT || handledL || handleLinking;
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
@@ -97,7 +100,11 @@ static void InitializeFlipper(UIApplication *application) {
     if ([KOSession isKakaoAccountLoginCallback:url]) {
         return [KOSession handleOpenURL:url];
     }
-    return false;
+  
+  BOOL handleLinking = [RCTLinkingManager application:application openURL:url
+  sourceApplication:sourceApplication annotation:annotation];
+  
+    return handleLinking || false;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -151,6 +158,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
  [RNCPushNotificationIOS didReceiveLocalNotification:notification];
 }
 
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
+{
+  return [RCTLinkingManager
+            application:application
+            continueUserActivity:userActivity
+            restorationHandler:restorationHandler
+         ];
+}
 
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

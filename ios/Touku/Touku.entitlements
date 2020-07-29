@@ -8,5 +8,11 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:touku.net</string>
+		<string>applinks:touku.angelium.net</string>
+		<string>applinks:www.touku.net</string>
+	</array>
 </dict>
 </plist>
