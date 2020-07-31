@@ -297,7 +297,7 @@ const chatStyle = StyleSheet.create({
     marginVertical: 15,
   },
   messageDate: {
-    backgroundColor: Colors.orange_light,
+    backgroundColor: Colors.orange_header,
     paddingVertical: 4,
     paddingHorizontal: 11,
     borderRadius: 18,
@@ -305,7 +305,7 @@ const chatStyle = StyleSheet.create({
   messageDateText: {
     color: Colors.white,
     fontFamily: Fonts.medium,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '300',
   },
 });

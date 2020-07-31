@@ -98,6 +98,7 @@ export const Colors = {
   black_light: '#0a1f44',
   foorter_gradient_1: 'rgba(255, 137, 96, 0.68)',
   foorter_gradient_2: 'rgba(255, 98, 165, 0.68)',
+    orange_header: 'rgba(255,107,0,00.40)'
 };
 
 export const Fonts = {

@@ -170,10 +170,11 @@ export default class ChatMessageBox extends Component {
             <Image
               source={getAvatar(message.from_user.avatar)}
               style={{
-                width: 50,
-                height: 50,
-                borderRadius: 25,
+                width: 40,
+                height: 40,
+                borderRadius: 20,
                 resizeMode: 'cover',
+                  marginTop: 15
               }}
             />
             <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
@@ -226,7 +227,7 @@ export default class ChatMessageBox extends Component {
       <View>
         <View
           style={[
-            styles.container,
+            styles.containerSelf,
             {
               alignItems: 'flex-end',
               alignSelf: 'flex-end',
@@ -299,6 +300,10 @@ const styles = StyleSheet.create({
     maxWidth: width * 0.65,
     paddingHorizontal: '3%',
   },
+    containerSelf: {
+        maxWidth: width * 0.75,
+        paddingHorizontal: '3%',
+    },
   statusText: {
     color: Colors.gradient_1,
     fontFamily: Fonts.light,

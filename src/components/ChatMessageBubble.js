@@ -455,7 +455,6 @@ class ChatMessageBubble extends Component {
       >
         {message.msg_type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             )}
@@ -469,7 +468,6 @@ class ChatMessageBubble extends Component {
         )}
         {!isChannel && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             )}
@@ -483,7 +481,6 @@ class ChatMessageBubble extends Component {
         )}
         {isUser && isEditable > new Date() && message.msg_type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5
                 name={'pencil-alt'}
@@ -500,7 +497,6 @@ class ChatMessageBubble extends Component {
           />
         )}
         <Menu.Item
-          titleStyle={{ color: Colors.white }}
           icon={() => (
             <FontAwesome name={'trash'} size={20} color={Colors.white} />
           )}
@@ -513,7 +509,6 @@ class ChatMessageBubble extends Component {
         />
         {isUser && isEditable > new Date() && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5
                 name={'minus-circle'}
@@ -531,7 +526,6 @@ class ChatMessageBubble extends Component {
         )}
         {message.msg_type === 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
             )}
@@ -545,7 +539,6 @@ class ChatMessageBubble extends Component {
         )}
         {message.msg_type !== 'text' && (
           <Menu.Item
-            titleStyle={{ color: Colors.white }}
             icon={() => (
               <FontAwesome name={'download'} size={20} color={Colors.white} />
             )}

@@ -84,7 +84,7 @@ export default class ChatHeader extends Component {
               <View style={{ marginHorizontal: 10 }}>
                 <RoundedImage size={40} source={getAvatar(image)} />
               </View>
-              <Text style={globalStyles.normalRegularText}>{title}</Text>
+              <Text style={globalStyles.normalRegularText15}>{title}</Text>
             </View>
           ) : (
             <View style={styles.subContainer}>
@@ -108,7 +108,7 @@ export default class ChatHeader extends Component {
                   ]}
                   style={styles.squareImage}
                 >
-                  <Text style={globalStyles.normalRegularText}>
+                  <Text style={globalStyles.normalRegularText15}>
                     {title.charAt(0).toUpperCase()}
                     {/* {secondUpperCase} */}
                   </Text>
@@ -118,9 +118,10 @@ export default class ChatHeader extends Component {
                 style={{
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
+                    width: '80%'
                 }}
               >
-                <Text numberOfLines={1} style={globalStyles.normalRegularText}>
+                <Text numberOfLines={1} style={globalStyles.normalRegularText15}>
                   {title}
                 </Text>
                 <Text numberOfLines={1} style={globalStyles.smallRegularText}>
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
   subContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   squareImage: {
     width: 40,

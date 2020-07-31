@@ -116,6 +116,7 @@ export default class PostCardHeader extends Component {
             }
             type={'primary'}
             height={'80%'}
+            fontType={'smallRegularText'}
           />
 
           <Menu

@@ -31,6 +31,7 @@ import {
   lineRegister,
   kakaoRegister,
   getAccessCodeKakao,
+    appleRegister
 } from '../../redux/reducers/userReducer';
 import AsyncStorage from '@react-native-community/async-storage';
 const {RNTwitterSignIn} = NativeModules;
@@ -157,7 +158,7 @@ class LoginSignUp extends Component {
           }
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
-          this.props.navigation.navigate('Home');
+          this.props.navigation.navigate('Chat');
           return;
         }
         if (res.user) {
@@ -240,7 +241,7 @@ class LoginSignUp extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Chat');
             return;
           }
           if (res.user) {
@@ -308,7 +309,7 @@ class LoginSignUp extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Chat');
             return;
           }
           if (res.user) {
@@ -360,7 +361,7 @@ class LoginSignUp extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Home');
+              this.props.navigation.navigate('Chat');
               return;
             }
             if (res.user) {
@@ -406,7 +407,7 @@ class LoginSignUp extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Home');
+              this.props.navigation.navigate('Chat');
               return;
             }
             if (res.user) {
@@ -446,7 +447,7 @@ class LoginSignUp extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Chat');
             return;
           }
         });
@@ -480,19 +481,48 @@ class LoginSignUp extends Component {
         console.log('appleAuthRequestResponse', appleAuthRequestResponse)
         // can be null in some scenarios
         if (identityToken) {
-            // 3). create a Firebase `AppleAuthProvider` credential
-            const appleCredential = auth.auth.AppleAuthProvider.credential(identityToken, nonce);
+            // // 3). create a Firebase `AppleAuthProvider` credential
+            // const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+            //
+            // console.log("Apple credential:", appleCredential);
 
-            // 4). use the created `AppleAuthProvider` credential to start a Firebase auth request,
-            //     in this example `signInWithCredential` is used, but you could also call `linkWithCredential`
-            //     to link the account to an existing user
-            const userCredential = await auth.auth().signInWithCredential(appleCredential);
+            // // 4). use the created `AppleAuthProvider` credential to start a Firebase auth request,
+            // //     in this example `signInWithCredential` is used, but you could also call `linkWithCredential`
+            // //     to link the account to an existing user
+            // const userCredential = await auth().signInWithCredential(appleCredential);
+            //
+            // // user is now signed in, any Firebase `onAuthStateChanged` listeners you have will trigger
+            // console.warn(`Firebase authenticated via Apple, UID: ${userCredential.user.uid}`);
+            //
+            // console.log('Firebase response for apple', userCredential)
 
-            // user is now signed in, any Firebase `onAuthStateChanged` listeners you have will trigger
-            console.warn(`Firebase authenticated via Apple, UID: ${userCredential.user.uid}`);
+            let fcmToken = await AsyncStorage.getItem('fcmToken');
+            const appleLoginData = {
+                id_token: identityToken,
+                dev_id: fcmToken,
+                site_from: 'touku',
+            };
+            console.log('appleLogin request', appleLoginData);
+
+            this.props.appleRegister(appleLoginData).then(async (res) => {
+                console.log('JWT TOKEN=> ', JSON.stringify(res));
+                if (res.token) {
+                    let status = res.status;
+                    if (!status) {
+                        this.props.navigation.navigate('SignUp', {
+                            pageNumber: 2,
+                            isSocial: true,
+                        });
+                        return;
+                    }
+                    await AsyncStorage.setItem('userToken', res.token);
+                    await AsyncStorage.removeItem('socialToken');
+                    this.props.navigation.navigate('Chat');
+                    return;
+                }
+            });
         } else {
             // handle this - retry?
-
         }
     }
 
@@ -579,6 +609,10 @@ class LoginSignUp extends Component {
                               marginTop: 10,
                           }}>
                           <SocialLogin
+                              IconSrc={Icons.icon_apple}
+                              onPress={() => this.appleLogin()}
+                          />
+                          <SocialLogin
                               IconSrc={Icons.icon_facebook}
                               onPress={() => this.firebaseFacebookLogin()}
                           />
@@ -598,10 +632,7 @@ class LoginSignUp extends Component {
                               IconSrc={Icons.icon_kakao}
                               onPress={() => this.kakaoLogin()}
                           />
-                          {/*<SocialLogin*/}
-                              {/*IconSrc={Icons.icon_apple}*/}
-                              {/*onPress={() => this.appleLogin()}*/}
-                          {/*/>*/}
+
                       </View>
                           </View>
                   }
@@ -640,7 +671,8 @@ const mapDispatchToProps = {
   lineRegister,
   kakaoRegister,
   getAccessCodeKakao,
-    getSNSCheck
+    getSNSCheck,
+    appleRegister
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginSignUp);

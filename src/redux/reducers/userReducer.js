@@ -210,6 +210,22 @@ export const kakaoRegister = (socialLoginData) => (dispatch) =>
             });
     });
 
+export const appleRegister = (socialLoginData) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        client
+            .post(`/xchat/apple-login-auth/`, socialLoginData)
+            .then((res) => {
+                if (res.token) {
+                    AsyncStorage.setItem('socialToken', res.token);
+                    // dispatch(getLoginSuccess(res.token))
+                }
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+
 export const getAccessCodeKakao = () => (dispatch) =>
     new Promise(function (resolve, reject) {
         client

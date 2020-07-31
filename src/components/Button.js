@@ -76,6 +76,17 @@ export default class Button extends Component {
     }
   }
 
+    getFont() {
+        switch (this.props.fontType) {
+            case 'normalRegularText':
+                return globalStyles.normalRegularText;
+            case 'smallRegularText':
+                return globalStyles.smallLightText;
+            default:
+                return globalStyles.normalRegularText;
+        }
+    }
+
   render() {
     const {title, onPress, loading, isRounded, height, disabled} = this.props;
     return (
@@ -107,7 +118,7 @@ export default class Button extends Component {
           ) : (
             <Text
               style={[
-                globalStyles.normalRegularText,
+                this.getFont(),
                 {color: this.getTitleColor(), paddingHorizontal: 10},
               ]}>
               {title}
@@ -146,6 +157,7 @@ Button.propTypes = {
    * Callbacks
    */
   onPress: PropTypes.func,
+    fontType: PropTypes.oneOf(['normalRegularText', 'smallRegularText']),
 };
 
 Button.defaultProps = {
@@ -156,4 +168,5 @@ Button.defaultProps = {
   loading: false,
   isRounded: true,
   onPress: null,
+    fontType: 'normalRegularText'
 };
