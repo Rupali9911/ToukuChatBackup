@@ -159,7 +159,7 @@ class Login extends Component {
         code: userInfo.idToken,
         access_token_secret: userInfo.idToken,
         site_from: 'touku',
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
       };
       this.props.googleRegister(googleLoginData).then(async (res) => {
         console.log('JWT TOKEN=> ', JSON.stringify(res));
@@ -247,7 +247,7 @@ class Login extends Component {
           access_token_secret: data.accessToken,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
         };
         console.log(
           'LoginSignUp -> firebaseFacebookLogin -> facebookLoginData',
@@ -322,7 +322,7 @@ class Login extends Component {
           access_token_secret: authTokenSecret,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
           username: userName,
         };
 
@@ -369,7 +369,7 @@ class Login extends Component {
             email: user.idToken.email,
             code: '',
             access_token: user.accessToken.accessToken,
-            dev_id: fcmToken,
+            dev_id: fcmToken ? fcmToken : '',
             site_from: 'touku',
           };
           console.log(
@@ -415,7 +415,7 @@ class Login extends Component {
           const lineLoginData = {
             code: '',
             access_token: user.accessToken.accessToken,
-            dev_id: fcmToken,
+            dev_id: fcmToken ? fcmToken : '',
             site_from: 'touku',
           };
           console.log(
@@ -466,7 +466,7 @@ class Login extends Component {
         const kakaoLoginData = {
           code: '',
           access_token: result.accessToken,
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
           site_from: 'touku',
         };
         console.log('kakao request', kakaoLoginData);
@@ -474,7 +474,15 @@ class Login extends Component {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
+              let isEmail = res.email_required;
             if (!status) {
+                if (isEmail) {
+                    this.props.navigation.navigate('SignUp', {
+                        pageNumber: 1,
+                        isSocial: true,
+                    });
+                    return;
+                }
               this.props.navigation.navigate('SignUp', {
                 pageNumber: 2,
                 isSocial: true,
@@ -557,7 +565,7 @@ class Login extends Component {
     if (isValid) {
         let fcmToken = await AsyncStorage.getItem('fcmToken');
       let loginData = {
-        dev_id: fcmToken,
+        dev_id: fcmToken ? fcmToken : '',
         email: username,
         password: password,
         rememberMe: true,
@@ -581,21 +589,7 @@ class Login extends Component {
             });
             this.setState({ authError: res.user });
           }
-        })
-        .catch((err) => {
-            if (err.response) {
-                if (err.response.request._response) {
-                    let strRes = err.response.request._response.slice(2, -2);
-                    console.log('strRes', strRes.toString())
-                    Toast.show({
-                        title: 'Login Failed',
-                        text: translate(strRes.toString()),
-                        type: 'primary',
-                    });
-                }
-            }
-          }
-        );
+        });
     }
   }
 
@@ -638,7 +632,7 @@ class Login extends Component {
             let fcmToken = await AsyncStorage.getItem('fcmToken');
             const appleLoginData = {
                 id_token: identityToken,
-                dev_id: fcmToken,
+                dev_id: fcmToken ? fcmToken : '',
                 site_from: 'touku',
             };
             console.log('appleLogin request', appleLoginData);
@@ -647,7 +641,15 @@ class Login extends Component {
                 console.log('JWT TOKEN=> ', JSON.stringify(res));
                 if (res.token) {
                     let status = res.status;
+                    let isEmail = res.email_required;
                     if (!status) {
+                        if (isEmail) {
+                            this.props.navigation.navigate('SignUp', {
+                                pageNumber: 1,
+                                isSocial: true,
+                            });
+                            return;
+                        }
                         this.props.navigation.navigate('SignUp', {
                             pageNumber: 2,
                             isSocial: true,

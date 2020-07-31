@@ -44,6 +44,7 @@ import appleAuth, {
 } from '@invertase/react-native-apple-authentication';
 import {getSNSCheck} from '../../redux/reducers/loginReducer';
 import {getParamsFromURL} from '../../utils'
+import Toast from "../../components/Toast";
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -135,7 +136,7 @@ class LoginSignUp extends Component {
         access_token_secret: userInfo.idToken,
         // username: firebaseUserCredential.additionalUserInfo.profile.email,
         site_from: 'touku',
-        dev_id: fcmToken,
+        dev_id: fcmToken ? fcmToken : '',
       };
       this.props.googleRegister(googleLoginData).then(async (res) => {
         console.log('JWT TOKEN=> ', JSON.stringify(res));
@@ -214,7 +215,7 @@ class LoginSignUp extends Component {
           access_token_secret: data.accessToken,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
         };
         console.log(
           'LoginSignUp -> firebaseFacebookLogin -> facebookLoginData',
@@ -226,13 +227,13 @@ class LoginSignUp extends Component {
             let status = res.status;
             let isEmail = res.email_required;
             if (!status) {
-              // if (isEmail) {
-              //   this.props.navigation.navigate('SignUp', {
-              //     pageNumber: 1,
-              //     isSocial: true,
-              //   });
-              //   return;
-              // }
+              if (isEmail) {
+                this.props.navigation.navigate('SignUp', {
+                  pageNumber: 1,
+                  isSocial: true,
+                });
+                return;
+              }
               this.props.navigation.navigate('SignUp', {
                 pageNumber: 2,
                 isSocial: true,
@@ -253,6 +254,7 @@ class LoginSignUp extends Component {
   }
 
   async firebaseTwitterLogin() {
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
     RNTwitterSignIn.init(
       TwitterKeys.TWITTER_CONSUMER_KEY,
       TwitterKeys.TWITTER_CONSUMER_SECRET,
@@ -274,7 +276,6 @@ class LoginSignUp extends Component {
     console.log('TWITTER TOKEN:-- ', authToken);
 
     // Sign-in the user with the credential
-      let fcmToken = await AsyncStorage.getItem('fcmToken');
     auth()
       .signInWithCredential(twitterCredential)
       .then((res) => {
@@ -284,10 +285,10 @@ class LoginSignUp extends Component {
           access_token_secret: authTokenSecret,
           // username: result.additionalUserInfo.username,
           site_from: 'touku',
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
           username: userName,
         };
-
+          console.log('twitterLoginData==> ', twitterLoginData);
         this.props.twitterRegister(twitterLoginData).then(async (res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
@@ -333,7 +334,7 @@ class LoginSignUp extends Component {
             email: user.idToken.email,
             code: '',
             access_token: user.accessToken.accessToken,
-            dev_id: fcmToken,
+            dev_id: fcmToken ? fcmToken : '',
             site_from: 'touku',
           };
           console.log(
@@ -367,7 +368,7 @@ class LoginSignUp extends Component {
             if (res.user) {
               // alert('something went wrong!');
             }
-          });
+          })
         })
         .catch((err) => {
           console.log(err);
@@ -379,7 +380,7 @@ class LoginSignUp extends Component {
           const lineLoginData = {
             code: '',
             access_token: user.accessToken.accessToken,
-            dev_id: fcmToken,
+            dev_id: fcmToken ? fcmToken : '',
             site_from: 'touku',
           };
           console.log(
@@ -430,7 +431,7 @@ class LoginSignUp extends Component {
         const kakaoLoginData = {
           code: '',
           access_token: result.accessToken,
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
           site_from: 'touku',
         };
         console.log('kakao request', kakaoLoginData);
@@ -438,7 +439,15 @@ class LoginSignUp extends Component {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
+            let isEmail = res.email_required;
             if (!status) {
+                if (isEmail) {
+                    this.props.navigation.navigate('SignUp', {
+                        pageNumber: 1,
+                        isSocial: true,
+                    });
+                    return;
+                }
               this.props.navigation.navigate('SignUp', {
                 pageNumber: 2,
                 isSocial: true,
@@ -499,7 +508,7 @@ class LoginSignUp extends Component {
             let fcmToken = await AsyncStorage.getItem('fcmToken');
             const appleLoginData = {
                 id_token: identityToken,
-                dev_id: fcmToken,
+                dev_id: fcmToken ? fcmToken : '',
                 site_from: 'touku',
             };
             console.log('appleLogin request', appleLoginData);
@@ -508,7 +517,15 @@ class LoginSignUp extends Component {
                 console.log('JWT TOKEN=> ', JSON.stringify(res));
                 if (res.token) {
                     let status = res.status;
+                    let isEmail = res.email_required;
                     if (!status) {
+                        if (isEmail) {
+                            this.props.navigation.navigate('SignUp', {
+                                pageNumber: 1,
+                                isSocial: true,
+                            });
+                            return;
+                        }
                         this.props.navigation.navigate('SignUp', {
                             pageNumber: 2,
                             isSocial: true,
