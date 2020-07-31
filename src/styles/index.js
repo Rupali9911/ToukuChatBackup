@@ -68,7 +68,7 @@ export const globalStyles = StyleSheet.create({
 
   //Weight black text
   regularWeightedText: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '500',
     fontFamily: Fonts.regular,
     color: Colors.black_light,

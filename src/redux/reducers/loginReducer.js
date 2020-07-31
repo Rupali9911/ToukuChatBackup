@@ -1,6 +1,8 @@
 import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
+import Toast from "../../components/Toast";
+import {translate} from "./languageReducer";
 
 export const GET_LOGIN_REQUEST = 'GET_LOGIN_REQUEST';
 export const GET_LOGIN_SUCCESS = 'GET_LOGIN_SUCCESS';
@@ -66,7 +68,15 @@ export const userLogin = (user) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getLoginFailure());
-        reject(err);
+          if (err.response) {
+              if (err.response.data) {
+                  Toast.show({
+                      title: 'Login Failed',
+                      text: translate(err.response.data.toString()),
+                      type: 'primary',
+                  });
+              }
+          }
       });
   });
 

@@ -67,6 +67,7 @@ class SignUp extends Component {
 
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
+      global.timeout = null
   }
 
   UNSAFE_componentWillMount() {
@@ -122,6 +123,7 @@ class SignUp extends Component {
               text: translate('pages.register.toastr.sentOTPtoMobile'),
               type: 'positive',
             });
+              this.inputs['verifycode'].focus();
           } else if (res.status === false && res.data.phone != '') {
             Toast.show({
               title: translate('common.sendSMS'),
@@ -433,8 +435,30 @@ class SignUp extends Component {
       isValid = false;
       this.setState({emailStatus: 'wrong'});
     }
+      if (this.state.emailconfirm.length > 0 && email != this.state.emailconfirm) {
+          this.setState({emailConfirmStatus: 'wrong'});
+      }
+
+      if (this.state.emailconfirm.length > 0 && email === this.state.emailconfirm) {
+          this.setState({emailConfirmStatus: 'right'});
+      }
+
     if (isValid) {
-      this.setState({emailStatus: 'right'});
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+            this.props
+                .userEmailCheck(email)
+                .then((res) => {
+                    if (res.status === false) {
+                        this.setState({emailStatus: 'right'});
+                    } else {
+                        this.setState({emailStatus: 'wrong'});
+                    }
+                })
+                .catch((err) => {
+                    this.setState({emailStatus: 'wrong'});
+                });
+        }, 500)
     }
   };
 
@@ -477,6 +501,10 @@ class SignUp extends Component {
     }
   };
 
+    selectSuggestedUserName(username){
+        this.setState({username: username})
+    }
+
   showSuggestions = () => {
     if (this.state.userNameSuggestions.length > 0) {
       const suggestions = this.state.userNameSuggestions.map((item, index) => {
@@ -485,8 +513,17 @@ class SignUp extends Component {
       return (
         <View style={{marginBottom: 15, flexDirection: 'row'}}>
           <Text style={globalStyles.smallRegularText}>
-            Suggestions: {suggestions}
+              {translate('pages.register.suggestions')}:
           </Text>
+            { suggestions.map((item, index) => {
+                return (
+                    <TouchableOpacity style={{width: 50, height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
+                        <Text style={globalStyles.smallRegularText}>
+                            {item}
+                        </Text>
+                    </TouchableOpacity>
+                );
+            })}
         </View>
       );
     } else return null;
@@ -655,6 +692,9 @@ class SignUp extends Component {
             </Text>
             <View style={{marginTop: Platform.isPad ? 200 : 50}}>
               <Inputfield
+                  ref={(input) => {
+                      this.username = input;
+                  }}
                 value={this.state.username}
                 placeholder={translate('common.username')}
                 returnKeyType={'done'}

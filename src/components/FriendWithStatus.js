@@ -45,7 +45,7 @@ class FriendWithStatus extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.subContainer}>
-                    <RoundedImage source={getAvatar(user.profile_picture)} size={50} />
+                    <RoundedImage source={getAvatar(user.profile_picture)} size={35} />
                     <Text
                         style={[
                             globalStyles.regularWeightedText,
@@ -57,8 +57,9 @@ class FriendWithStatus extends Component {
                 title={user.is_requested === true ? translate('pages.xchat.cancelRequest'): user.is_friend === true
                 ? translate('pages.xchat.friend') : translate('pages.xchat.add')}
                 type={user.is_requested === true ? 'translucent' : 'primary'}
-                height={30}
+                height={25}
                 onPress={this.onButtonAction.bind(this)}
+                fontType={'smallRegularText'}
              />
             </View>
         );

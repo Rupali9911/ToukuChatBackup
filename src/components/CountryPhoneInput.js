@@ -49,6 +49,8 @@ export default class CountryPhoneInput extends Component {
   };
 
   onChangePhoneNumber(number, countryCode) {
+
+    console.log('Number and code', number, countryCode)
     this.onChangeText(number);
 
     this.setState({countryCode}, () => {
@@ -94,7 +96,7 @@ export default class CountryPhoneInput extends Component {
           autoFormat={true}
           offset={0}
           textProps={{
-            placeholder: countryCode,
+            placeholder: '',
             maxLength: 13,
             placeholderTextColor: 'white',
             opacity: 0.8,
