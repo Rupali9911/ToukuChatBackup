@@ -159,18 +159,23 @@ class More extends Component {
                     isLanguage={true}
                     scrollToBottom={() => this.scrollView.scrollToEnd({animated: false})}
                 />
-                <SettingsItem
-                    icon_name={'comments'}
-                    title={translate('pages.xchat.channelModeText')}
-                    isImage={Icons.channel_mode}
-                    isChannelMode={true}
-                />
+                {/*<SettingsItem*/}
+                    {/*icon_name={'comments'}*/}
+                    {/*title={translate('pages.xchat.channelModeText')}*/}
+                    {/*isImage={Icons.channel_mode}*/}
+                    {/*isChannelMode={true}*/}
+                {/*/>*/}
                 <SettingsItem
                     icon_name={'comments'}
                     title={translate('pages.xchat.customerSupport')}
                     isFontAwesome={true}
                     isCustomerSupport={true}
                     onPress={() => Linking.openURL(supportUrl)}
+                />
+                <SettingsItem
+                    icon_name={'code-branch'}
+                    title={translate('pages.setting.version')}
+                    isVersion={true}
                 />
                 <SettingsItem
                     icon_name={'sign-out-alt'}

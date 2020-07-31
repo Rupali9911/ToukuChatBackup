@@ -44,6 +44,13 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
+    normalRegularText15: {
+        fontSize: 15,
+        fontFamily: Fonts.regular,
+        color: Colors.white,
+        textAlign: 'center',
+        fontWeight: '400'
+    },
 
   //Semi Bold Txts
   bigSemiBoldText: {

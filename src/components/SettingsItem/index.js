@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity, Clipboard} from 'react-native';
 import PropTypes from 'prop-types';
 import {globalStyles} from '../../styles';
-import {Icons, Colors, Fonts, languageArray} from '../../constants';
+import {Icons, Colors, Fonts, languageArray, registerUrl} from '../../constants';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {Menu} from "react-native-paper";
@@ -12,6 +12,7 @@ import {connect} from 'react-redux';
 import {showToast} from '../../utils'
 import SwitchCustom from '../SwitchCustom'
 import Toast from "../Toast";
+import { version } from '../../../package';
 
 class SettingsItem extends Component {
   constructor(props) {
@@ -53,7 +54,8 @@ class SettingsItem extends Component {
   }
 
   copyCode(){
-      Clipboard.setString(this.props.userData.invitation_code)
+      let invitationLink = registerUrl + this.props.userData.invitation_code
+      Clipboard.setString(invitationLink)
       showToast(translate('pages.setting.referralLink'), translate('pages.setting.toastr.linkCopiedSuccessfully'), 'positive' )
   }
 
@@ -81,7 +83,7 @@ class SettingsItem extends Component {
 
 render() {
       const {title, icon_name,
-          onPress, isImage, isFontAwesome, isLanguage, isChannelMode, userData, isInvitation, isToukuPoints, isCustomerSupport} = this.props;
+          onPress, isImage, isFontAwesome, isLanguage, isChannelMode, userData, isInvitation, isToukuPoints, isCustomerSupport, isVersion} = this.props;
    const {isLanguageSelected, arrLanguage, selectedLanguage, channelMode} = this.state
 
     const conditionalRender = ()=>{
@@ -173,6 +175,11 @@ render() {
                 <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>Chat</Text>
             </View>
             }
+            {isVersion &&
+            <View style={styles.vwRightInv}>
+                <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>{version}</Text>
+            </View>
+            }
 
         </View>
       </TouchableOpacity>
@@ -259,6 +266,7 @@ SettingsItem.defaultProps = {
     isInvitation: false,
     isToukuPoints: false,
     isCustomerSupport: false,
+    isVersion: false,
 };
 
 const mapStateToProps = (state) => {
