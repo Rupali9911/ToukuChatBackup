@@ -103,7 +103,7 @@ class More extends Component {
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <View style={globalStyles.container}>
-          <HomeHeader title={translate('common.settings')} />
+          <HomeHeader title={translate('common.setting')} />
             <ScrollView
                 ref={ref => {this.scrollView = ref}}>
             <Section />
@@ -119,12 +119,12 @@ class More extends Component {
                 onPress={() => navigation.navigate('CreateGroupChat')}
                 isImage={Icons.icon_create_group_chat}
             />
-            <SettingsItem
-                icon_name={'user'}
-              title={translate('pages.xchat.createChannel')}
-                onPress={() => navigation.navigate('CreateChannel')}
-                isImage={Icons.icon_create_new_channel}
-            />
+            {/*<SettingsItem*/}
+                {/*icon_name={'user'}*/}
+              {/*title={translate('pages.xchat.createChannel')}*/}
+                {/*onPress={() => navigation.navigate('CreateChannel')}*/}
+                {/*isImage={Icons.icon_create_new_channel}*/}
+            {/*/>*/}
             <Section />
             <SettingsItem
                 icon_name={'user'}
@@ -134,7 +134,7 @@ class More extends Component {
             />
             <SettingsItem
                 icon_name={'id-card'}
-              title={translate('pages.xchat.invitation')}
+              title={translate('pages.xchat.urlForAddingAFriend')}
                 isFontAwesome={true}
                 isInvitation={true}
                 onPressQR={() => this.setState({isQRVisible: true})}

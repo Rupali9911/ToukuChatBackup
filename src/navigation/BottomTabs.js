@@ -146,8 +146,8 @@ const Tabs = createBottomTabNavigator(
         } else if (routeName === 'More') {
           return (
             <BottomTabItem
-              source={focused ? Icons.icon_more_select : Icons.icon_more}
-              title={translate('pages.xchat.more')}
+              source={focused ? Icons.icon_setting_tab_select : Icons.icon_setting_tab}
+              title={translate('common.setting')}
               titleColor={focused ? Colors.indigo : Colors.white}
               routeName={'More'}
             />

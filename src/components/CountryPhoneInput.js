@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 import {Colors, Icons, Fonts} from '../constants';
 import {globalStyles} from '../styles';
+import {translate} from "../redux/reducers/languageReducer";
 export default class CountryPhoneInput extends Component {
   constructor(props) {
     super(props);
@@ -26,6 +27,7 @@ export default class CountryPhoneInput extends Component {
     this.setState({
       countryCode: '+' + this.phone.getCountryCode(),
     });
+    console.log('this.phone.getCountryCode()', this.phone.getCountryCode())
   }
   onSubmitEditing() {
     this.props.onSubmitEditing();
