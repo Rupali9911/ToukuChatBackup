@@ -742,6 +742,22 @@ class SignUp extends Component {
                   />
                 </React.Fragment>
               )}
+                <TouchableOpacity
+                    style={signUpStyles.termsContainer}
+                    activeOpacity={1}
+                    onPress={() => this.onCheckRememberMe()}>
+                    <CheckBox
+                        onCheck={() => this.onCheckRememberMe()}
+                        isChecked={this.state.isAgreeWithTerms}
+                    />
+                    <Text
+                        style={[
+                            globalStyles.smallLightText,
+                            {textDecorationLine: 'underline'},
+                        ]}>
+                        {translate('pages.register.iAgreeToTheTerms&Conditions')}
+                    </Text>
+                </TouchableOpacity>
               <Button
                 type={'primary'}
                 title={translate('common.signUp')}
@@ -752,22 +768,6 @@ class SignUp extends Component {
                 }
                 loading={this.props.loading}
               />
-              <TouchableOpacity
-                style={signUpStyles.termsContainer}
-                activeOpacity={1}
-                onPress={() => this.onCheckRememberMe()}>
-                <CheckBox
-                  onCheck={() => this.onCheckRememberMe()}
-                  isChecked={this.state.isAgreeWithTerms}
-                />
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {textDecorationLine: 'underline'},
-                  ]}>
-                  {translate('pages.register.iAgreeToTheTerms&Conditions')}
-                </Text>
-              </TouchableOpacity>
             </View>
           </View>
         );

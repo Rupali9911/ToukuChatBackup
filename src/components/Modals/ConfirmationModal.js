@@ -12,6 +12,7 @@ import { Menu, Divider } from 'react-native-paper';
 import { Colors, Fonts, Images, Icons } from '../../constants';
 import Button from '../Button';
 import Feather from 'react-native-vector-icons/Feather';
+import {translate} from "../../redux/reducers/languageReducer";
 
 export default class ConfirmationModal extends Component {
   constructor(props) {
@@ -103,7 +104,7 @@ export default class ConfirmationModal extends Component {
                 }}
               >
                 <Button
-                  title={'Cancel'}
+                  title={translate('common.cancel')}
                   type={'secondary'}
                   onPress={onCancel}
                   isRounded={false}
@@ -116,7 +117,7 @@ export default class ConfirmationModal extends Component {
                 }}
               >
                 <Button
-                  title={'Sure'}
+                  title={translate('pages.xchat.toastr.sure')}
                   type={'primary'}
                   onPress={onConfirm}
                   isRounded={false}

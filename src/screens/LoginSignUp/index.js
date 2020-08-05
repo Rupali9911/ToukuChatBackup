@@ -589,10 +589,10 @@ class LoginSignUp extends Component {
                     justifyContent: 'center',
                     marginBottom: 25,
                   }}>
-                  <Text style={[globalStyles.smallLightText, {marginEnd: 10}]}>
+                  <Text style={[selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText, {marginEnd: 10}]}>
                     {translate('pages.welcome.theWorldIsConnected')}
                   </Text>
-                  <Text style={globalStyles.smallLightText}>
+                  <Text style={selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText}>
                     {translate('pages.welcome.connectedByTouku')}
                   </Text>
                 </View>
@@ -604,18 +604,20 @@ class LoginSignUp extends Component {
                     type={'transparent'}
                     title={translate('common.login')}
                     onPress={() => this.onLoginPress()}
+                    fontType={selectedLanguageItem.language_name === 'ja' ? 'bigSemiBoldText' : ''}
                   />
                   <Button
                     type={'primary'}
                     title={translate('pages.welcome.signUp')}
                     onPress={() => this.onSignUpPress()}
+                    fontType={selectedLanguageItem.language_name === 'ja' ? 'bigSemiBoldText' : ''}
                   />
                 </View>
                   {
                       showSNS &&
                           <View>
                 <View style={{marginTop: 30, marginBottom: 10}}>
-                  <Text style={globalStyles.smallLightText}>
+                  <Text style={selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText}>
                     {translate('pages.welcome.OrLoginWith')}
                   </Text>
                 </View>

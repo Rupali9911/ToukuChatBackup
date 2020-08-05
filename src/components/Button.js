@@ -82,6 +82,8 @@ export default class Button extends Component {
                 return globalStyles.normalRegularText;
             case 'smallRegularText':
                 return globalStyles.smallLightText;
+                case 'bigSemiBoldText':
+                return globalStyles.bigSemiBoldText;
             default:
                 return globalStyles.normalRegularText;
         }
@@ -119,7 +121,7 @@ export default class Button extends Component {
             <Text
               style={[
                 this.getFont(),
-                {color: this.getTitleColor(), paddingHorizontal: 10},
+                {color: this.getTitleColor(), padding: 10},
               ]}>
               {title}
             </Text>

@@ -68,9 +68,9 @@ export const SET_TAIWAN_LANGUAGE_BACKEND = 'SET_TAIWAN_LANGUAGE_BACKEND';
 const initialState = {
   loading: false,
   selectedLanguageItem: {
-    language_id: 1,
-    language_name: 'en',
-    icon: Icons.icon_flag_america,
+    language_id: 2,
+    language_name: 'ja',
+    icon: Icons.icon_flag_japan,
     selected: true,
   },
   en: require('../../translations/en.json'),
@@ -200,7 +200,7 @@ export const getAllLanguages = () => (dispatch) =>
           return o;
         });
       }
-     // console.log('Languages',JSON.stringify(languages))
+      console.log('Languages',JSON.stringify(languages))
         batch(() => {
             dispatch(setEnglishLanguage(languages[0]));
             dispatch(setJapanLanguage(languages[1]));
