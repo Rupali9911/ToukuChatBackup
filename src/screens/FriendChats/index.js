@@ -33,6 +33,7 @@ import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
 import S3uploadService from '../../helpers/S3uploadService';
 
+let uuid = require('react-native-uuid')
 class FriendChats extends Component {
   constructor(props) {
     super(props);
@@ -184,7 +185,6 @@ class FriendChats extends Component {
       );
       msgText = uploadedVideo;
     }
-
     let sendmsgdata = {
       // id: id,
       thumbnail: null,
@@ -215,7 +215,7 @@ class FriendChats extends Component {
             sender_id: repliedMessage.from_user.id,
           }
         : null,
-      local_id: null,
+      local_id: uuid.v4(),
       created: moment().format(),
       updated: moment().format(),
       msg_type: sentMessageType,
@@ -227,6 +227,7 @@ class FriendChats extends Component {
       sentMessageType: 'text',
     };
 
+    console.log('sendmsgdata', sendmsgdata)
     if (isEdited) {
       this.sendEditMessage();
       return;
@@ -234,7 +235,7 @@ class FriendChats extends Component {
     if (isReply) {
       let data = {
         friend: this.props.currentFriend.friend,
-        local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
+        local_id: uuid.v4(),
         message_body: msgText,
         msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
@@ -245,7 +246,7 @@ class FriendChats extends Component {
     } else {
       let data = {
         friend: this.props.currentFriend.friend,
-        local_id: 'c2d0eebe-cc42-41aa-8ad2-997a3d3a6355',
+        local_id: uuid.v4(),
         message_body: msgText,
         msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,

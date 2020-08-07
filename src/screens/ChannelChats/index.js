@@ -32,6 +32,7 @@ import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
+let uuid = require('react-native-uuid')
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -226,7 +227,7 @@ class ChannelChats extends Component {
     }
     let messageData = {
       channel: this.props.currentChannel.id,
-      local_id: '45da06d9-0bc6-4031-b9ba-2cfff1e72013',
+      local_id: uuid.v4(),
       message_body: msgText,
       msg_type: sentMessageType,
     };

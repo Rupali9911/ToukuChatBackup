@@ -139,6 +139,7 @@ export default class ChatMessageBox extends Component {
       onAudioPlayPress,
       closeMenu,
     } = this.props;
+
     if (!message.message_body && !message.is_unsent) {
       return null;
     }

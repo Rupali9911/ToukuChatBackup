@@ -12,6 +12,13 @@ export const globalStyles = StyleSheet.create({
   },
 
   //Light Texts for the App
+    smallLightText10: {
+        fontSize: 10,
+        fontFamily: Fonts.light,
+        color: Colors.white,
+        textAlign: 'center',
+    },
+
   smallLightText: {
     fontSize: 13,
     fontFamily: Fonts.light,

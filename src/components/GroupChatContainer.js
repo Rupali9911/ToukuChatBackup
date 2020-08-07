@@ -33,6 +33,7 @@ class GroupChatContainer extends Component {
   }
 
   renderMessage = (messages) => {
+      const {memberCount} = this.props;
     if (!messages || !messages.length) {
       return (
         <NoData
@@ -88,6 +89,7 @@ class GroupChatContainer extends Component {
             isUser={item.sender_id === this.props.userData.id ? true : false}
             time={new Date(item.timestamp)}
             isRead={item.read_count && item.read_count > 0 ? true : false}
+            memberCount={memberCount}
             onMessageReply={(id) => this.props.onMessageReply(id)}
             orientation={this.props.orientation}
             onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
@@ -147,6 +149,7 @@ class GroupChatContainer extends Component {
       onGalleryPress,
       onAttachmentPress,
       sendingImage,
+        memberCount,
     } = this.props;
     return (
       <KeyboardAwareScrollView

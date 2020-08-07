@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { addFriendStyles } from './styles';
 import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import { Images, Icons, Colors, Fonts } from '../../constants';
+import {Images, Icons, Colors, Fonts, SocketEvents} from '../../constants';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -21,7 +21,9 @@ import {ListLoader} from '../../components/Loaders';
 import FriendWithStatus from '../../components/FriendWithStatus';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import {getSearchedFriends, sendFriendRequest, cancelFriendRequest, setIsRequestedParam} from '../../redux/reducers/addFriendReducer'
-import {showToast} from '../../utils'
+import {eventService, showToast} from '../../utils'
+
+let searchedText = ''
 
 class AddFriend extends Component {
     constructor(props) {
@@ -42,17 +44,57 @@ class AddFriend extends Component {
     UNSAFE_componentWillMount() {
         const initial = Orientation.getInitialOrientation();
         this.setState({ orientation: initial });
+
+        this.events = eventService.getMessage().subscribe((message) => {
+            this.checkEventTypes(message);
+        });
     }
 
     componentDidMount() {
         Orientation.addOrientationListener(this._orientationDidChange);
     }
 
+    componentWillUnmount() {
+        this.events.unsubscribe();
+        searchedText= ''
+    }
+
+    checkEventTypes(message) {
+        console.log('Socket message', message, message.text.data.message_details)
+        if (message.text.data.type == SocketEvents.UNFRIEND || message.text.data.type == SocketEvents.NEW_FRIEND_REQUEST ||
+            message.text.data.type == SocketEvents.FRIEND_REQUEST_ACCEPTED || message.text.data.type == SocketEvents.FRIEND_REQUEST_REJECTED ||
+            message.text.data.type == SocketEvents.FRIEND_REQUEST_CANCELLED) {
+            if (searchedText && searchedText.length !== 0) {
+                   this.props.getSearchedFriends(searchedText).then((res) => {
+                        this.setState({arrFriends: res})
+                    });
+            }
+        }
+
+        //
+        // if (
+        //     message.text.data.type ==
+        //     SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL &&
+        //     message.text.data.message_details.channel == currentChannel.id
+        // ) {
+        //     if (message.text.data.message_details.from_user.id == userData.id) {
+        //         this.getChannelConversations();
+        //     } else if (
+        //         message.text.data.message_details.to_user != null &&
+        //         message.text.data.message_details.to_user.id == userData.id
+        //     ) {
+        //         this.getChannelConversations();
+        //     }
+        // }
+    }
+
     _orientationDidChange = (orientation) => {
         this.setState({ orientation });
     };
 
+
     searchFriends = (txt) => {
+        searchedText = txt
         const {getSearchedFriends} = this.props
         clearTimeout(timeout)
         if (txt && txt.length !== 0) {

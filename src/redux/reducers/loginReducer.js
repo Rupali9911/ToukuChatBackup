@@ -70,11 +70,20 @@ export const userLogin = (user) => (dispatch) =>
         dispatch(getLoginFailure());
           if (err.response) {
               if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
+                  if (err.response.data.indexOf('Server Error') > -1){
+                      Toast.show({
+                          title: 'Login Failed',
+                          text: translate('common.somethingWentWrong'),
+                          type: 'primary',
+                      });
+                  } else{
+                      Toast.show({
+                          title: 'Login Failed',
+                          text: translate(err.response.data.toString()),
+                          type: 'primary',
+                      });
+                  }
+
               }
           }
       });

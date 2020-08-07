@@ -73,7 +73,7 @@ class ForgotUserName extends Component {
             if (err.response.request._response) {
                 let errMessage = JSON.parse(err.response.request._response)
                 Toast.show({
-                    title: 'Touku',
+                    title: translate('pages.xchat.reconfirmUserName'),
                     text: translate(errMessage.message.toString()),
                     type: 'primary',
                 });
@@ -142,7 +142,7 @@ class ForgotUserName extends Component {
 
                 <Button
                   type={'primary'}
-                  title={translate('pages.xchat.send')}
+                  title={translate('common.recoverUsernameButton')}
                   onPress={() => this.onSubmitPress()}
                   loading={this.props.loading}
                 />

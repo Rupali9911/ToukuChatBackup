@@ -90,7 +90,7 @@ export default class Button extends Component {
     }
 
   render() {
-    const {title, onPress, loading, isRounded, height, disabled} = this.props;
+    const {title, onPress, loading, isRounded, height, disabled, fontType} = this.props;
     return (
       <TouchableOpacity
         disabled={disabled}
@@ -121,7 +121,7 @@ export default class Button extends Component {
             <Text
               style={[
                 this.getFont(),
-                {color: this.getTitleColor(), padding: 10},
+                {color: this.getTitleColor(), paddingHorizontal: fontType === 'bigSemiBoldText' ? 0 : 10, padding: fontType === 'bigSemiBoldText' ? 10 : 0},
               ]}>
               {title}
             </Text>

@@ -696,7 +696,7 @@ class SignUp extends Component {
                       this.username = input;
                   }}
                 value={this.state.username}
-                placeholder={translate('common.username')}
+                placeholder={translate('common.enterUsername')}
                 returnKeyType={'done'}
                 onChangeText={(username) => this.checkUserName(username)}
                 // onChangeText={(username) => this.setState({ username })}

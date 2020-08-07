@@ -51,11 +51,9 @@ export default class CountryPhoneInput extends Component {
   };
 
   onChangePhoneNumber(number, countryCode) {
-
-    console.log('Number and code', number, countryCode)
     this.onChangeText(number);
 
-    this.setState({countryCode}, () => {
+    this.setState({countryCode: countryCode}, () => {
       this.props.onChangePhoneNumber(number, countryCode);
     });
   }
@@ -69,6 +67,7 @@ export default class CountryPhoneInput extends Component {
   onPressConfirm = () => {
     // this.props.onPressConfirm();
   };
+
 
   render() {
     const {isFocus, countryCode} = this.state;
