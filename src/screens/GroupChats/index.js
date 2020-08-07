@@ -39,6 +39,7 @@ import Toast from '../../components/Toast';
 import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { eventService } from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
+let uuid = require('react-native-uuid')
 
 class GroupChats extends Component {
   constructor(props) {
@@ -226,7 +227,7 @@ class GroupChats extends Component {
       if (sentMessageType !== 'text') {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          local_id: uuid.v4(),
           mentions: [],
           media_url: msgText,
           msg_type: sentMessageType,
@@ -235,7 +236,7 @@ class GroupChats extends Component {
       } else {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          local_id: uuid.v4(),
           mentions: [],
           message_body: msgText,
           msg_type: sentMessageType,
@@ -249,7 +250,7 @@ class GroupChats extends Component {
       if (sentMessageType !== 'text') {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          local_id: uuid.v4(),
           mentions: [],
           media_url: msgText,
           msg_type: sentMessageType,
@@ -257,7 +258,7 @@ class GroupChats extends Component {
       } else {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: '5aa71daf-d684-4534-a2a7-4259b93ef158',
+          local_id: uuid.v4(),
           mentions: [],
           message_body: msgText,
           msg_type: sentMessageType,
@@ -848,6 +849,7 @@ class GroupChats extends Component {
           <ListLoader />
         ) : (
           <GroupChatContainer
+              memberCount={currentGroup.total_members}
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}

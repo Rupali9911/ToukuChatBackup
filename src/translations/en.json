@@ -138,7 +138,14 @@
     "setEmail":"Set Email",
     "setPassword":"Set Password",
     "dragAndDrop":"Drag and drop",
-    "clickHere":"or click here"
+    "clickHere":"or click here",
+    "loginFailed":"Login Failed",
+    "followup":"Follow up",
+    "resolve":"Resolve",
+    "auth/web-storage-unsupported":"This browser is not supported or 3rd party cookies and data may be disabled",
+    "or":"Or",
+    "continueWithApple":"Continue with Apple",
+    "usernameText":"username"
   },
   "messages":{
     "required":"{{field}} is required"
@@ -216,7 +223,8 @@
       },
       "reEnterLoginPassword":"Re-enter log in password",
       "suggestions":"Suggestions",
-      "usernameExists":"Username already exists"
+      "usernameExists":"Username already exists",
+      "oldAndNewPasswordIsSameText":"Old password and new password should not be same"
     },
     "resetPassword":{
       "changePassword":"Change Password",
@@ -231,7 +239,10 @@
         "redirectResetPassword":"The user with same email already exists. if you forgot password, please reset your password.",
         "passwordUpdated":"Password successfully updated."
       },
-      "newLogInPassword":"Re-enter login password"
+      "newLogInPassword":"Re-enter login password",
+      "changePasswordButton":"Change Password",
+      "newLogInPasswordFromReset":"New Login Password",
+      "reEnterLogInPasswordFromReset":"Re-enter login password"
     },
     "setting":{
       "angel":"ANGEL",
@@ -626,7 +637,7 @@
         "AddedToNewChannel":"You have been added to new channel",
         "pleaseEnterVIPFeeAndReward":"Please enter VIP fee per month and reward percentage",
         "channelModeToastr":"You will now receive notifications of channels message only!",
-        "composeScenaioScheduleSuccessfully":"Compose scenaio scheduled successfully",
+        "composeScenaioScheduleSuccessfully":"Compose scenario scheduled successfully",
         "adminAddedSuccessfully":"Admin added successfully",
         "selectedMemberWillBeAdminToWriter":"Selected member will be writer",
         "addMemberSuccessfully":"Member added successfully!",
@@ -641,7 +652,13 @@
         "":"",
         "notMoreThan5Mb":"Image file size should not be more than 5 MB.",
         "setEmail":"set Email",
-        "setEmailText":"It seems you have not setup email for touku yet, Please click 'Set Email' to set email now, otherwise click 'Cancel'"
+        "setEmailText":"It seems you have not setup email for touku yet, Please click 'Set Email' to set email now, otherwise click 'Cancel'",
+        "addToNewChannelUsingInvitationLink":"you have joined a new channel using invitation link",
+        "pleaseEnterNote":"Please enter note.",
+        "noteCreatedSuccessfully":"Note save successfully",
+        "nameUpdatedSuccessfully":"Name updated successfully",
+        "pleaseEnterName":"Please enter name ",
+        "whenTheChannelModeGetsTurnedOn":"The users screen and the notification for users will be hidden when the channel mode gets turned on"
       },
       "totalMessages":"Total messages",
       "toukuPoints":"Touku Points",
@@ -921,7 +938,47 @@
       "password":"password?",
       "username":"username",
       "goToTouku":"Go to Touku",
-      "incorrectDateOrTime":"Please enter correct date and time"
+      "incorrectDateOrTime":"Please enter correct date and time",
+      "whatIsLoginBonus":"What is login bonus?",
+      "autoResponse":"Auto Response",
+      "viewProfileDetail":"View Profile Detail",
+      "notes":"Notes",
+      "addTags":"Add tags",
+      "noNotesFound":"No notes found.",
+      "notesFoundText":"Click \"+\" in the top right to create one.",
+      "createResponse":"Create response",
+      "addNote":"Add Note",
+      "pinThisChat":"Pin this chat",
+      "unPinThisChat":"Unpin this chat",
+      "sucessFullyPined":"Chat successfully pined",
+      "addNoteText":"You can use notes to help keep track of users. Notes are for internal use only.",
+      "sucessFullyUnPined":"Chat successfully unpinned",
+      "pinThisChannel":"Pin this channel",
+      "unPinThisChannel":"Unpin this channel",
+      "pinThisGroup":"Pin this Group",
+      "unPinThisGroup":"Unpin this Group",
+      "on":"On",
+      "off":"Off",
+      "scheduling":"Scheduling",
+      "useScheduling":"Use scheduling",
+      "startTime":"Start time",
+      "endTime":"End time",
+      "everyDay":"Everyday",
+      "useKeywords":"Use keywords",
+      "editName":"Edit Name",
+      "enterName":"Enter name",
+      "deleteNote":"Delete Note",
+      "deleteNoteText":"Are you sure you want to delete this note?",
+      "userDisplayName":"User's display name",
+      "saveResponse":"Save response",
+      "gamePlatformText":"The game platform will be opening in August",
+      "startEarningText":"Start earning point and get ready!",
+      "seeYouTomorrow":"See you tomorrow!",
+      "youOwn":"You Own",
+      "editNote":"Edit Note",
+      "reconfirmUserName":"Touku",
+      "manual":"Manual",
+      "day":"Day"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",
@@ -937,14 +994,15 @@
       "findOutAllTheNewWayText":"Find out about all the ways you can share your channel and gain more followers. Inviting your channel can be as simple as scanning a QR code or tapping a button. You can then message followers with special information or promotions to grab their attention. More followers makes for a more active account!",
       "gainFriends":"Gain friends",
       "reachOutSocialMediaText":"Reach out by social media and email",
-      "directLink":" Direct Link",
+      "directLink":"Invitation To Channel",
       "copyThisLinkToShareSocialText":"Copy this link to share it via social media, email and more to direct users to your account.",
       "qrCode":"QR code",
       "usersCanScanThisImageText":"Users can scan this image with a QR code reader to find your account. download the image or copy HTML tag to share it via social media, email and more.",
       "addButtonToYourSite":"Add a button to your website",
       "button":"Butoon",
       "usersCanClickOrTabThisButtonText":"User can click or tab this button to friend your account copy the HTML tag to add it to website, blogs, ans more",
-      "invitationPage":"Invitation"
+      "invitationPage":"Invitation",
+      "linkViaLp":"Invitation Via LP"
     },
     "changeDisplayName":"Change Display Name"
   },
@@ -959,7 +1017,8 @@
     "pleaseEnterYourPassword":"Please enter your password",
     "pleaseEnterYourConfirmPassword":"Please enter your confirm password",
     "confirmPasswordDoNotMatch":"Confirm password do not match",
-    "unableToLoginTryLater":"Unable to login. Please try again later."
+    "unableToLoginTryLater":"Unable to login. Please try again later.",
+    "auth/web-storage-unsupported":"This browser is not supported or 3rd party cookies and data may be disabled"
   },
   "seo":{
     "seoName":"TOUKU",

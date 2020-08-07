@@ -291,7 +291,7 @@ class ChangePassModal extends Component {
 
               <Button
                 isRounded={false}
-                title={translate('pages.resetPassword.changePassword')}
+                title={translate('pages.resetPassword.changePasswordButton')}
                 onPress={this.onChangePasswordPress.bind(this)}
                 loading={loading}
               />

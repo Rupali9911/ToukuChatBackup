@@ -138,7 +138,14 @@
     "setEmail":"设定电子邮件",
     "setPassword":"设置密码",
     "dragAndDrop":"拖放",
-    "clickHere":"或点击这里"
+    "clickHere":"或点击这里",
+    "loginFailed":"登录失败",
+    "followup":"跟进",
+    "resolve":"解决",
+    "auth/web-storage-unsupported":"不支持此浏览器，或者第三方Cookie和数据可能被禁用",
+    "or":"要么",
+    "continueWithApple":"继续苹果",
+    "usernameText":"输入用户名"
   },
   "messages":{
     "required":"规定的（必填）"
@@ -216,7 +223,8 @@
       },
       "reEnterLoginPassword":"重新输入登录密码",
       "suggestions":"意见建议",
-      "usernameExists":"此用户名已存在"
+      "usernameExists":"此用户名已存在",
+      "oldAndNewPasswordIsSameText":"旧密码和新密码不能相同"
     },
     "resetPassword":{
       "changePassword":"更改密码",
@@ -231,7 +239,10 @@
         "redirectResetPassword":"具有相同电子邮件的用户已存在。如果忘记密码，请重新设置密码。",
         "passwordUpdated":"密码已成功更新。"
       },
-      "newLogInPassword":"新登录密码"
+      "newLogInPassword":"新登录密码",
+      "changePasswordButton":"更改密码",
+      "newLogInPasswordFromReset":"登录密码",
+      "reEnterLogInPasswordFromReset":"新登录密码"
     },
     "setting":{
       "angel":"天使",
@@ -641,7 +652,13 @@
         "":"",
         "notMoreThan5Mb":"图片文件大小不得超过5 MB。",
         "setEmail":"设置电子邮件",
-        "setEmailText":"似乎您尚未为touku设置电子邮件，请单击“设置电子邮件”以立即设置电子邮件，否则单击“取消”"
+        "setEmailText":"似乎您尚未为touku设置电子邮件，请单击“设置电子邮件”以立即设置电子邮件，否则单击“取消”",
+        "addToNewChannelUsingInvitationLink":"您已使用邀请链接加入了一个新频道",
+        "pleaseEnterNote":"请输入注释。",
+        "noteCreatedSuccessfully":"注意保存成功",
+        "nameUpdatedSuccessfully":"名称更新成功",
+        "pleaseEnterName":"请输入姓名",
+        "whenTheChannelModeGetsTurnedOn":"频道模式打开时，用户屏幕和用户通知将被隐藏"
       },
       "totalMessages":"消息总数",
       "toukuPoints":"Touku积分",
@@ -664,7 +681,7 @@
       "recoverUsername":"恢复用户名",
       "forgotYourUsername":"忘了您的用户名？重置",
       "youGotBonus":"您得到奖金了！",
-      "congratulations":"祝贺您！",
+      "congratulations":"恭喜你！",
       "iGotATalkPoint":"您有touku积分",
       "recoverUsernameText":"输入您的电子邮件并重置您的用户名",
       "senderName":"发件人姓名",
@@ -915,14 +932,54 @@
       "betterLuck":"下次好运！",
       "seeDetail":"查看更多细节",
       "reportUser":"简体",
-      "blockUser":"博克用户",
+      "blockUser":"阻止用户",
       "reportGroup":"报告团",
       "deleteThisPost":"删除这篇文章",
       "forgot":"忘记",
       "password":"密码？",
       "username":"用户名",
       "goToTouku":"去Touku",
-      "incorrectDateOrTime":"请输入正确的日期和时间"
+      "incorrectDateOrTime":"请输入正确的日期和时间",
+      "whatIsLoginBonus":"什么是登录红利？",
+      "autoResponse":"自动回应",
+      "viewProfileDetail":"查看个人资料详细信息",
+      "notes":"笔记",
+      "addTags":"添加标签",
+      "noNotesFound":"找不到笔记。",
+      "notesFoundText":"单击右上角的“ +”创建一个。",
+      "createResponse":"建立回应",
+      "addNote":"加注",
+      "pinThisChat":"固定此聊天",
+      "unPinThisChat":"取消固定此聊天",
+      "sucessFullyPined":"聊天已成功固定",
+      "addNoteText":"您可以使用注释来帮助跟踪用户。 注释仅供内部使用。",
+      "sucessFullyUnPined":"聊天已成功取消固定",
+      "pinThisChannel":"固定此频道",
+      "unPinThisChannel":"取消固定此频道",
+      "pinThisGroup":"将此群组固定",
+      "unPinThisGroup":"取消固定该组",
+      "on":"上",
+      "off":"关",
+      "scheduling":"排程",
+      "useScheduling":"使用时间表",
+      "startTime":"开始时间",
+      "endTime":"时间结束",
+      "everyDay":"每天",
+      "useKeywords":"使用关键字",
+      "editName":"编辑名称",
+      "enterName":"输入名字",
+      "deleteNote":"删除记事",
+      "deleteNoteText":"你确定要删除这条笔记么？",
+      "userDisplayName":"用户的显示名称",
+      "saveResponse":"保存回复",
+      "gamePlatformText":"游戏平台将于八月开放",
+      "startEarningText":"开始赚钱并做好准备！",
+      "seeYouTomorrow":"明天见！",
+      "youOwn":"您的资产",
+      "editNote":"编辑笔记",
+      "reconfirmUserName":"重新确认用户名",
+      "manual":"手册",
+      "day":"天"
     },
     "welcome":{
       "theWorldIsConnected":"世界相连",
@@ -945,7 +1002,8 @@
       "addButtonToYourSite":"在您的网站上添加一个按钮",
       "button":"纽扣",
       "usersCanClickOrTabThisButtonText":"用户可以单击或选中此按钮与您的朋友成为朋友，复制HTML标签以将其添加到网站，博客，其他",
-      "invitationPage":"邀请函"
+      "invitationPage":"邀请函",
+      "linkViaLp":"通过LP邀请"
     },
     "changeDisplayName":"更改显示名称"
   },
@@ -960,7 +1018,8 @@
     "pleaseEnterYourPassword":"请输入您的密码",
     "pleaseEnterYourConfirmPassword":"请输入您的确认密码",
     "confirmPasswordDoNotMatch":"确认密码不匹配",
-    "unableToLoginTryLater":"Unable to login. Please try again later."
+    "unableToLoginTryLater":"Unable to login. Please try again later.",
+    "auth/web-storage-unsupported":"不支持此浏览器，或者第三方Cookie和数据可能被禁用"
   },
   "seo":{
     "seoName":"TOUKU",

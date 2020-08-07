@@ -678,6 +678,11 @@ class Login extends Component {
       passwordErr,
       showSNS,
     } = this.state;
+
+    const {
+        selectedLanguageItem
+    } = this.props
+
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -740,7 +745,7 @@ class Login extends Component {
                 >
                   <Inputfield
                     value={this.state.username}
-                    placeholder={translate('common.usernameEmail')}
+                    placeholder={translate('common.usernameOrEmail')}
                     returnKeyType={'next'}
                     onChangeText={(username) => this.handleUserName(username)}
                     onSubmitEditing={() => {
@@ -762,7 +767,7 @@ class Login extends Component {
                     >
                       {translate(userNameErr).replace(
                         '[missing {{field}} value]',
-                        translate('common.usernameEmail')
+                        translate('common.usernameOrEmail')
                       )}
                     </Text>
                   ) : null}
@@ -824,49 +829,96 @@ class Login extends Component {
                     paddingHorizontal: 5,
                   }}
                 >
-                  <View
-                    style={{
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    <Text style={globalStyles.smallLightText}>
-                      {translate('common.forgotYour')}
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      style={[
-                        globalStyles.smallLightText,
-                        { textDecorationLine: 'underline' },
-                      ]}
-                      onPress={() =>
-                        this.props.navigation.navigate('ForgotUsername')
-                      }
-                    >
-                      {' ' + translate('common.username')}
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      style={[
-                        globalStyles.smallLightText,
-                        { marginHorizontal: 5 },
-                      ]}
-                    >
-                      {translate('pages.setting.or')}
-                    </Text>
-                    <Text
-                      numberOfLines={1}
-                      style={[
-                        globalStyles.smallLightText,
-                        { textDecorationLine: 'underline' },
-                      ]}
-                      onPress={() =>
-                        this.props.navigation.navigate('ForgotPassword')
-                      }
-                    >
-                      {translate('common.password') + '?'}
-                    </Text>
-                  </View>
+                    {selectedLanguageItem.language_name === 'ja' ? (
+                                <View
+                                    style={{
+                                        alignItems: 'center',
+                                        flexDirection: 'row',
+                                    }}
+                                >
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            globalStyles.smallLightText10,
+                                            { textDecorationLine: 'underline' },
+                                        ]}
+                                        onPress={() =>
+                                            this.props.navigation.navigate('ForgotUsername')
+                                        }
+                                    >
+                                        {' ' + translate('pages.xchat.username')}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            globalStyles.smallLightText10,
+                                            { marginHorizontal: 5 },
+                                        ]}
+                                    >
+                                        {translate('pages.setting.or').toLowerCase()}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            globalStyles.smallLightText10,
+                                            { textDecorationLine: 'underline' },
+                                        ]}
+                                        onPress={() =>
+                                            this.props.navigation.navigate('ForgotPassword')
+                                        }
+                                    >
+                                        {translate('pages.xchat.password')}
+                                    </Text>
+                                    <Text style={globalStyles.smallLightText10}>
+                                        {translate('pages.xchat.forgot')}
+                                    </Text>
+                                </View>
+                        ) : (
+                                <View
+                                    style={{
+                                        alignItems: 'center',
+                                        flexDirection: 'row',
+                                    }}
+                                >
+                                    <Text style={globalStyles.smallLightText}>
+                                        {translate('pages.xchat.forgot')}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            globalStyles.smallLightText,
+                                            { textDecorationLine: 'underline' },
+                                        ]}
+                                        onPress={() =>
+                                            this.props.navigation.navigate('ForgotUsername')
+                                        }
+                                    >
+                                        {' ' + translate('pages.xchat.username')}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            globalStyles.smallLightText,
+                                            { marginHorizontal: 5 },
+                                        ]}
+                                    >
+                                        {translate('pages.setting.or').toLowerCase()}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            globalStyles.smallLightText,
+                                            { textDecorationLine: 'underline' },
+                                        ]}
+                                        onPress={() =>
+                                            this.props.navigation.navigate('ForgotPassword')
+                                        }
+                                    >
+                                        {translate('pages.xchat.password')}
+                                    </Text>
+                                </View>
+                        )
+                    }
                 </View>
                 {showSNS && (
                   <View>

@@ -138,6 +138,7 @@ export default class GroupChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
       closeMenu,
+        memberCount
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -279,7 +280,7 @@ export default class GroupChatMessageBox extends Component {
             >
               {isRead && (
                 <Text style={styles.statusText}>
-                  {translate('pages.xchat.read')}
+                    {message.read_count && message.read_count >= memberCount-1 ? translate('pages.xchat.read') : translate('pages.xchat.read')+ ' - ' + message.read_count}
                 </Text>
               )}
 
