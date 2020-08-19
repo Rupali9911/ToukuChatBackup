@@ -10,10 +10,13 @@ import {
 import Modal from 'react-native-modal';
 import { Colors, Fonts } from '../../constants';
 import LinearGradient from 'react-native-linear-gradient';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import { connect } from 'react-redux';
 
-export default class UploadSelectModal extends Component {
+class UploadSelectModal extends Component {
   constructor(props) {
     super(props);
+      setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {};
   }
 
@@ -34,7 +37,7 @@ export default class UploadSelectModal extends Component {
             // flex: '10%',
             height: '20%',
             alignSelf: 'center',
-            width: '40%',
+            width: '60%',
           }}
         >
           <View
@@ -64,8 +67,7 @@ export default class UploadSelectModal extends Component {
                   fontSize: 18,
                   fontFamily: Fonts.extrabold,
                 }}
-              >
-                Upload Type
+              >{translate('pages.xchat.uploadType')}
               </Text>
             </LinearGradient>
             <View style={{ flex: 0.7 }}>
@@ -85,7 +87,7 @@ export default class UploadSelectModal extends Component {
                     fontFamily: Fonts.medium,
                   }}
                 >
-                  Image
+                    {translate('pages.xchat.image')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -104,7 +106,7 @@ export default class UploadSelectModal extends Component {
                     fontFamily: Fonts.medium,
                   }}
                 >
-                  Video
+                    {translate('pages.xchat.videoForUploadType')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -114,3 +116,14 @@ export default class UploadSelectModal extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    };
+};
+
+const mapDispatchToProps = {
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UploadSelectModal);

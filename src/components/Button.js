@@ -11,8 +11,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import {Colors, Fonts} from '../constants';
 import {globalStyles} from '../styles';
+import { connect } from 'react-redux';
 
-export default class Button extends Component {
+class Button extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -121,7 +122,7 @@ export default class Button extends Component {
             <Text
               style={[
                 this.getFont(),
-                {color: this.getTitleColor(), paddingHorizontal: fontType === 'bigSemiBoldText' ? 0 : 10, padding: fontType === 'bigSemiBoldText' ? 10 : 0},
+                {color: this.getTitleColor(), padding: this.props.selectedLanguageItem.language_name === 'ja' ? height > 30 ? 10 : 5 : 0},
               ]}>
               {title}
             </Text>
@@ -172,3 +173,15 @@ Button.defaultProps = {
   onPress: null,
     fontType: 'normalRegularText'
 };
+
+const mapStateToProps = (state) => {
+    return {
+        selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    };
+};
+
+const mapDispatchToProps = {
+
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Button);

@@ -151,11 +151,17 @@ export default class ChatHeader extends Component {
                   <Menu.Item
                     key={index}
                     icon={() => (
+                        !item.isLocalIcon ?
                       <FontAwesome5
                         name={item.icon}
                         size={16}
                         color={Colors.black}
                       />
+                            :
+                            <Image
+                                source={item.icon}
+                                style={globalStyles.smallIcon}
+                            />
                     )}
                     onPress={() => {
                       item.onPress();

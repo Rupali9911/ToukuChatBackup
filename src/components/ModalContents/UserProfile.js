@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Platform,
-  ImageBackground,
+    StyleSheet,
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    TextInput,
+    ScrollView,
+    Platform,
+    ImageBackground, ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
@@ -26,7 +26,10 @@ import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
 import {updateConfiguration} from '../../redux/reducers/configurationReducer';
-import {uploadAvatar} from '../../redux/reducers/userReducer';
+import {getUserProfile, uploadAvatar} from '../../redux/reducers/userReducer';
+import AsyncStorage from "@react-native-community/async-storage";
+import Toast from "../ToastModal";
+import Modal from "react-native-modal";
 
 class UserProfile extends Component {
   constructor(props) {
@@ -64,36 +67,38 @@ class UserProfile extends Component {
     ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
+          console.log('response.error', response.error)
       } else {
-        let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        console.log('response from picker', response)
+        let source = {uri: response.uri};
         this.setState({
+            uploadImageLoading: true,
           profileImagePath: source,
         });
 
-        // let file = source.uri;
-        // let files = [file];
-        // const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
-        //   files,
-        // );
-        const responseblob = await fetch(source.uri);
-        const blob = await responseblob.blob();
+          const userAndSocialToken = await AsyncStorage.multiGet(["userToken", "socialToken"])
+        let jwtToken = ''
+          if (userAndSocialToken[0][1]){
+            jwtToken = `JWT ${userAndSocialToken[0][1]}`
+          } else{
+              jwtToken = `JWT ${userAndSocialToken[1][1]}`
+          }
 
-        // console.log('Blob generated...', JSON.stringify(blob));
+        this.props.uploadAvatar(response.uri, jwtToken).then((res) => {
+            console.log('uploadAvatar response final')
+            this.props.getUserProfile()
+            this.setState({uploadImageLoading: false});
+            Toast.show({
+                title: 'Touku',
+                text: translate('pages.setting.toastr.userImageChanged'),
+                type: 'positive',
+            })
 
-        let avatarData = {
-          avatar_thumbnail: blob._data.blobId,
-          avatar: blob._data.blobId,
-          // avatar: uploadedImages.image[0].image,
-          // avatar_thumbnail: uploadedImages.image[0].thumbnail,
-        };
-
-        // this.props.uploadAvatar(avatarData);
-        // .then((res) => {
-        //   alert(JSON.stringify(res));
-        // })
-        // .catch((err) => {
-        //   alert(JSON.stringify(err));
-        // });
+         // alert(JSON.stringify(res));
+        })
+        .catch((err) => {
+          //alert(JSON.stringify(err));
+        });
       }
     });
   }
@@ -128,6 +133,11 @@ class UserProfile extends Component {
         };
 
         this.props.updateConfiguration(bgData).then((res) => {
+            Toast.show({
+                title: 'Touku',
+                text: translate('pages.setting.toastr.userImageChanged'),
+                type: 'positive',
+            })
           this.setState({uploadLoading: false});
         });
       }
@@ -143,6 +153,7 @@ class UserProfile extends Component {
       backgroundImagePath,
       profileImagePath,
       uploadLoading,
+        uploadImageLoading
     } = this.state;
     return (
       <View style={styles.Wrapper}>
@@ -200,11 +211,29 @@ class UserProfile extends Component {
           </LinearGradient>
 
           <View style={{alignSelf: 'center', marginTop: -40}}>
+              {uploadImageLoading ? (
+                  <View
+                      style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: 80,
+                          width: 80,
+                          backgroundColor: '#e9eef1',
+                          borderRadius: 40,
+                          borderWidth: 0.5
+                      }}>
+                      <ActivityIndicator
+                          color={Colors.primary}
+                          size={'small'}
+                      />
+                  </View>
+              ) : (
             <RoundedImage
               size={80}
               source={getAvatar(profileImagePath.uri)}
               clickable={true}
             />
+              )}
             <View style={styles.centerBottomView}>
               <View
                 style={[
@@ -265,7 +294,6 @@ class UserProfile extends Component {
               {userData.username}
             </Text>
           </View>
-
           <ProfileItem
             title={translate('common.password')}
             value={'*********'}
@@ -292,6 +320,13 @@ class UserProfile extends Component {
             editable={false}
           />
         </KeyboardAwareScrollView>
+          <View style={{position:'absolute', width: '100%', top: 0}}>
+              <Toast
+                  ref={c => {
+                      if (c) Toast.toastInstance = c;
+                  }}
+              />
+          </View>
         <ChangePassModal
           visible={isChangePassModalVisible}
           onRequestClose={() =>
@@ -422,6 +457,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   updateConfiguration,
   uploadAvatar,
+    getUserProfile,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

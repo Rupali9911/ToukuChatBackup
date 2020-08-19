@@ -10,7 +10,7 @@ import {globalStyles} from '../../styles';
 import Button from '../Button';
 import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
-import Toast from '../Toast';
+import Toast from '../ToastModal';
 import {changePassword, getUserProfile} from '../../redux/reducers/userReducer';
 import {ClickableImage} from '../ImageComponents';
 
@@ -118,7 +118,9 @@ class ChangePassModal extends Component {
       this.props
         .changePassword(changePassData)
         .then((res) => {
-          this.props.onRequestClose();
+            setTimeout(() => {
+                this.props.onRequestClose();
+            }, 2000);
           if (res.status === true) {
             Toast.show({
               title: translate('pages.resetPassword.changePassword'),
@@ -155,6 +157,7 @@ class ChangePassModal extends Component {
     } = this.state;
 
     return (
+
       <Modal
         isVisible={visible}
         animationIn="fadeIn"
@@ -167,6 +170,9 @@ class ChangePassModal extends Component {
         onBackButtonPress={this.onRequestClose.bind(this)}
         onBackdropPress={this.onRequestClose.bind(this)}
         style={styles.modalBackground}>
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={{flex: 1, width: '80%'}} contentContainerStyle={{flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center'}}>
         <View style={styles.Wrapper}>
           <LinearGradient
             start={{x: 0.1, y: 0.7}}
@@ -185,7 +191,7 @@ class ChangePassModal extends Component {
               onPress={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+
             <View style={{padding: 15}}>
               <View style={styles.inputContainer}>
                 <TextInput
@@ -296,9 +302,18 @@ class ChangePassModal extends Component {
                 loading={loading}
               />
             </View>
-          </KeyboardAwareScrollView>
+
         </View>
+        </KeyboardAwareScrollView>
+          <View style={{position:'absolute', width: '100%', top: 0}}>
+              <Toast
+                  ref={c => {
+                      if (c) Toast.toastInstance = c;
+                  }}
+              />
+          </View>
       </Modal>
+
     );
   }
 }
@@ -309,10 +324,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 0,
-    display: 'flex',
+    display: 'flex'
   },
   Wrapper: {
-    width: '80%',
+    width:'100%',
     backgroundColor: Colors.white,
     display: 'flex',
     elevation: 4,

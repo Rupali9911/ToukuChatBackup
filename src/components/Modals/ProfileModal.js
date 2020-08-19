@@ -47,6 +47,7 @@ export default class ProfileModal extends Component {
     const {visible} = this.state;
     return (
       <Modal
+          coverScreen={false}
         isVisible={visible}
         animationIn="fadeIn"
         animationOut="fadeOut"

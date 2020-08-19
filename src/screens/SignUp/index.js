@@ -44,6 +44,7 @@ class SignUp extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       currentPosition: this.props.navigation.state.params.pageNumber,
+      //currentPosition: 2,
       isAgreeWithTerms: false,
 
       //Page 1
@@ -63,6 +64,11 @@ class SignUp extends Component {
       emailConfirmStatus: 'normal',
       passwordStatus: 'normal',
       passwordConfirmStatus: 'normal',
+
+        userNameErr: 'messages.required',
+        passwordErr: 'messages.required',
+        confirmPasswordErr: null,
+        userNameStatus: 'normal',
     };
 
     this.focusNextField = this.focusNextField.bind(this);
@@ -272,20 +278,27 @@ class SignUp extends Component {
   }
 
   checkUserName(username) {
+      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+      let isValid = true;
+
+      if (username.length <= 0) {
+          isValid = false;
+          this.setState({
+              userNameStatus: 'wrong',
+              userNameErr: 'messages.required',
+          });
+      }
+      if (isValid) {
+          this.setState({ userNameStatus: 'right', userNameErr: null });
+      }
+
     this.setState({username});
-    // if (username.length <= 1) {
-    //   return;
-    // }
     this.props.userNameCheck(username).then((res) => {
       if (res.status === false) {
         this.setState({userNameSuggestions: []});
         AsyncStorage.setItem('username', username);
       } else {
-        // Toast.show({
-        //   title: 'SignUp Failed',
-        //   text: 'User Name Already Exist',
-        //   type: 'primary',
-        // });
         this.setState({userNameSuggestions: res.suggestions});
       }
     });
@@ -298,33 +311,50 @@ class SignUp extends Component {
 
     if (username.length <= 0) {
       isValid = false;
+        this.setState({
+            userNameStatus: 'wrong',
+            userNameErr: 'messages.required',
+        });
       Toast.show({
         title: translate('common.register'),
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
-    } else if (password.length <= 0) {
+    } else  if (password.length <= 0) {
+        isValid = false;
+        this.setState({
+            passwordStatus: 'wrong',
+            passwordErr: 'messages.required',
+        });
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('toastr.pleaseEnterYourPassword'),
+            type: 'warning',
+        });
+    }else if (password.length < 8 ) {
+        isValid = false;
+        this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.minLengthPassword'),
+            type: 'warning',
+        });
+    }else if (password.length > 64) {
+        isValid = false;
+        this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.maxLengthPassword'),
+            type: 'warning',
+        });
+    }else if (passwordConfirm.length <= 0) {
         isValid = false;
         Toast.show({
             title: translate('common.register'),
-            text: translate('pages.register.passwordPattern'),
+            text: translate('toastr.pleaseEnterYourConfirmPassword'),
             type: 'warning',
         });
-    }else if (password.length < 8) {
-      isValid = false;
-      Toast.show({
-        title: translate('common.register'),
-        text: translate('pages.register.minLengthPassword'),
-        type: 'warning',
-      });
-    }else if (password.length > 64) {
-      isValid = false;
-      Toast.show({
-        title: translate('common.register'),
-        text: translate('pages.register.maxLengthPassword'),
-        type: 'warning',
-      });
-    } else if (password != passwordConfirm) {
+    }else if (password != passwordConfirm) {
       isValid = false;
       Toast.show({
         title: translate('common.register'),
@@ -484,21 +514,30 @@ class SignUp extends Component {
   };
 
   handlePassword = (password) => {
-    this.setState({password});
-    if (password.length < 8 || password.length > 64) {
-      this.setState({passwordStatus: 'wrong'});
+      this.setState({password});
+      if (password.length <= 0) {
+          this.setState({passwordStatus: 'wrong', passwordErr: 'messages.required'});
+      }else if (password.length < 8 ) {
+      this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+    }else if (password.length > 64) {
+      this.setState({passwordStatus: 'wrong', passwordErr: 'maxLengthFailed'});
     } else {
-      this.setState({passwordStatus: 'right'});
+      this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
   handleConfirmPassword = (passwordConfirm) => {
     this.setState({passwordConfirm});
-    if (this.state.password != passwordConfirm) {
-      this.setState({passwordConfirmStatus: 'wrong'});
-    } else {
-      this.setState({passwordConfirmStatus: 'right'});
-    }
+      if (passwordConfirm.length <= 0) {
+          this.setState({
+              passwordConfirmStatus: 'wrong',
+              confirmPasswordErr: 'messages.required',
+          });
+      } else if (this.state.password != passwordConfirm) {
+          this.setState({passwordConfirmStatus: 'wrong',confirmPasswordErr: 'matchFailed'});
+      } else {
+          this.setState({passwordConfirmStatus: 'right', confirmPasswordErr: null});
+      }
   };
 
     selectSuggestedUserName(username){
@@ -508,22 +547,35 @@ class SignUp extends Component {
   showSuggestions = () => {
     if (this.state.userNameSuggestions.length > 0) {
       const suggestions = this.state.userNameSuggestions.map((item, index) => {
-        return `'${item}' `;
+        return `${item}`;
       });
       return (
-        <View style={{marginBottom: 15, flexDirection: 'row'}}>
-          <Text style={globalStyles.smallRegularText}>
+        <View style={{marginBottom: 15, flexDirection: 'column', marginStart: 10,}}>
+            <Text
+                style={[
+                    globalStyles.smallLightText,
+                    {
+                        textAlign: 'left',
+                        marginBottom: 5,
+                    },
+                ]}
+            >
+                {translate('pages.register.toastr.usrenameExist')}
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+          <Text style={globalStyles.smallLightText}>
               {translate('pages.register.suggestions')}:
           </Text>
             { suggestions.map((item, index) => {
                 return (
-                    <TouchableOpacity style={{width: 50, height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
-                        <Text style={globalStyles.smallRegularText}>
-                            {item}
+                    <TouchableOpacity style={{width: 70, height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
+                        <Text style={[globalStyles.smallLightText,{textDecorationLine: 'underline'}]}>
+                            {item + '  '}
                         </Text>
                     </TouchableOpacity>
                 );
             })}
+            </View>
         </View>
       );
     } else return null;
@@ -592,6 +644,7 @@ class SignUp extends Component {
 
 
   renderPage(page) {
+      const {userNameErr, passwordErr, confirmPasswordErr} = this.state
     switch (page) {
       case 0:
         return (
@@ -702,12 +755,28 @@ class SignUp extends Component {
                 // onChangeText={(username) => this.setState({ username })}
                 onSubmitEditing={() => {
                   this.password.focus();
-                  // this.checkUserName(this.state.username);
+                  this.checkUserName(this.state.username);
                 }}
                 isSuggestions={
                   this.state.userNameSuggestions.length ? true : false
                 }
               />
+                {userNameErr !== null ? (
+                    <Text
+                        style={[
+                            globalStyles.smallLightText,
+                            {
+                                textAlign: 'left',
+                                marginTop: -10,
+                                marginStart: 10,
+                                marginBottom: 5,
+                            },
+                        ]}
+                    >
+                        {translate('pages.register.minLengthUserName')}
+                    </Text>
+                ) : null}
+
               {this.showSuggestions()}
               {!this.props.navigation.state.params.isSocial && (
                 <React.Fragment>
@@ -722,9 +791,28 @@ class SignUp extends Component {
                     onSubmitEditing={() => {
                       this.passwordConfirm.focus();
                     }}
-                    secureTextEntry={true}
                     status={this.state.passwordStatus}
+                    isEyeIcon={true}
                   />
+                    {passwordErr !== null ? (
+                        <Text
+                            style={[
+                                globalStyles.smallLightText,
+                                {
+                                    textAlign: 'left',
+                                    marginTop: -10,
+                                    marginStart: 10,
+                                    marginBottom: 5,
+                                },
+                            ]}
+                        >
+                            {passwordErr === 'messages.required' ? translate(passwordErr).replace(
+                                '[missing {{field}} value]',
+                                translate('pages.register.loginPassword')): passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')
+                                :  translate('pages.register.maxLengthPassword')}
+
+                        </Text>
+                    ) : null}
                   <Inputfield
                     ref={(input) => {
                       this.passwordConfirm = input;
@@ -737,9 +825,28 @@ class SignUp extends Component {
                     onChangeText={(passwordConfirm) =>
                       this.handleConfirmPassword(passwordConfirm)
                     }
-                    secureTextEntry={true}
+                    // secureTextEntry={true}
                     status={this.state.passwordConfirmStatus}
+                    isEyeIcon={true}
                   />
+                    {confirmPasswordErr !== null ? (
+                        <Text
+                            style={[
+                                globalStyles.smallLightText,
+                                {
+                                    textAlign: 'left',
+                                    marginTop: -10,
+                                    marginStart: 10,
+                                    marginBottom: 5,
+                                },
+                            ]}
+                        >
+                            {confirmPasswordErr === 'messages.required' ? translate(confirmPasswordErr).replace(
+                                '[missing {{field}} value]',
+                                translate('pages.register.repeatLoginPassword')):
+                                translate('pages.register.toastr.confirmLoginPasswordDoNotMatch')}
+                                </Text>
+                    ) : null}
                 </React.Fragment>
               )}
                 <TouchableOpacity

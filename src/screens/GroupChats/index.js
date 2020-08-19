@@ -90,8 +90,17 @@ class GroupChats extends Component {
         },
       ],
       headerRightIconMenuIsGroup: [
+          {
+              id: 1,
+              title: translate('pages.xchat.inviteFriends'),
+              icon: Icons.man_plus_icon_black,
+              isLocalIcon: true,
+              onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {isInvite: true});
+              },
+          },
         {
-          id: 1,
+          id: 2,
           title: translate('pages.xchat.groupDetails'),
           icon: 'bars',
           onPress: () => {
@@ -99,7 +108,7 @@ class GroupChats extends Component {
           },
         },
         {
-          id: 2,
+          id: 3,
           title: translate('pages.xchat.deleteGroup'),
           icon: 'trash',
           onPress: () => {
@@ -107,7 +116,7 @@ class GroupChats extends Component {
           },
         },
         {
-          id: 2,
+          id: 4,
           title: translate('pages.xchat.leave'),
           icon: 'user-slash',
           onPress: () => {
@@ -115,7 +124,7 @@ class GroupChats extends Component {
           },
         },
         {
-          id: 3,
+          id: 5,
           title: translate('pages.xchat.reportGroup'),
           icon: 'user-slash',
           onPress: () => {
