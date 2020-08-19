@@ -8,7 +8,7 @@ import {
     SafeAreaView,
     Image,
     TouchableOpacity,
-    Platform, Keyboard,
+    Platform, Keyboard, Linking,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -19,7 +19,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
-import {Icons, Colors, Images} from '../../constants';
+import {Icons, Colors, Images, termsUrl} from '../../constants';
 import {BackHeader} from '../../components/Headers';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -448,6 +448,10 @@ class SignUp extends Component {
     });
   }
 
+    onTermsAndCondition() {
+        Linking.openURL(termsUrl);
+    }
+
   onChangePhoneNumber(phone, code) {
     this.setState({phone, countryCode: code});
   }
@@ -849,14 +853,15 @@ class SignUp extends Component {
                     ) : null}
                 </React.Fragment>
               )}
-                <TouchableOpacity
-                    style={signUpStyles.termsContainer}
-                    activeOpacity={1}
-                    onPress={() => this.onCheckRememberMe()}>
+                <View
+                    style={signUpStyles.termsContainer}>
+                    <TouchableOpacity  onPress={() => this.onCheckRememberMe()} activeOpacity={1}>
                     <CheckBox
                         onCheck={() => this.onCheckRememberMe()}
                         isChecked={this.state.isAgreeWithTerms}
                     />
+                    </TouchableOpacity>
+                    <TouchableOpacity  onPress={() => this.onTermsAndCondition()} activeOpacity={1}>
                     <Text
                         style={[
                             globalStyles.smallLightText,
@@ -864,7 +869,8 @@ class SignUp extends Component {
                         ]}>
                         {translate('pages.register.iAgreeToTheTerms&Conditions')}
                     </Text>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
               <Button
                 type={'primary'}
                 title={translate('common.signUp')}

@@ -19,7 +19,7 @@ import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
 import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import Button from '../../components/Button';
-import {Images, Icons} from '../../constants';
+import {Images, Icons, Colors} from '../../constants';
 import {loginSignUpStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
 import {globalStyles} from '../../styles';
@@ -45,6 +45,8 @@ import appleAuth, {
 import {getSNSCheck} from '../../redux/reducers/loginReducer';
 import {getParamsFromURL} from '../../utils'
 import Toast from "../../components/Toast";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -628,10 +630,10 @@ class LoginSignUp extends Component {
                               justifyContent: 'center',
                               marginTop: 10,
                           }}>
-                          <SocialLogin
-                              IconSrc={Icons.icon_apple}
-                              onPress={() => this.appleLogin()}
-                          />
+                          {/*<SocialLogin*/}
+                              {/*IconSrc={Icons.icon_apple}*/}
+                              {/*onPress={() => this.appleLogin()}*/}
+                          {/*/>*/}
                           <SocialLogin
                               IconSrc={Icons.icon_facebook}
                               onPress={() => this.firebaseFacebookLogin()}
@@ -654,8 +656,19 @@ class LoginSignUp extends Component {
                           />
 
                       </View>
-                          </View>
-                  }
+                                  <Text style={[{marginTop: 10},selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
+                                      {translate('common.or')}
+                                  </Text>
+                              <TouchableOpacity onPress={() => this.appleLogin()}
+                                                style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', opacity: 0.5, height: 50, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
+                                 <View style={{flexDirection: 'row'}}>
+                                     <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
+                                  <Text style={selectedLanguageItem.language_name === 'ja' ? [globalStyles.normalLightText, {color: 'black', margin: 5}] : [globalStyles.smallLightText, {color: 'black', margin: 5}]}>
+                                      {translate('common.continueWithApple')}
+                                  </Text>
+                                 </View>
+                              </TouchableOpacity>
+                          </View>}
 
               </View>
             </View>

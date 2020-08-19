@@ -59,6 +59,7 @@ import appleAuth, {
 import { getSNSCheck } from '../../redux/reducers/loginReducer';
 import { getParamsFromURL } from '../../utils';
 import { store } from '../../redux/store';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -921,7 +922,7 @@ class Login extends Component {
                         )
                     }
                 </View>
-                {showSNS && (
+                {showSNS &&
                   <View>
                     <View style={{ marginTop: 25 }}>
                       <Text style={globalStyles.smallLightText}>
@@ -935,10 +936,10 @@ class Login extends Component {
                         marginTop: 20,
                       }}
                     >
-                        <SocialLogin
-                            IconSrc={Icons.icon_apple}
-                            onPress={() => this.appleLogin()}
-                        />
+                        {/*<SocialLogin*/}
+                            {/*IconSrc={Icons.icon_apple}*/}
+                            {/*onPress={() => this.appleLogin()}*/}
+                        {/*/>*/}
                       <SocialLogin
                         IconSrc={Icons.icon_facebook}
                         onPress={() => this.firebaseFacebookLogin()}
@@ -960,8 +961,19 @@ class Login extends Component {
                         onPress={() => this.kakaoLogin()}
                       />
                     </View>
-                  </View>
-                )}
+                      <Text style={[{marginTop: 10},selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
+                          {translate('common.or')}
+                      </Text>
+                      <TouchableOpacity onPress={() => this.appleLogin()}
+                                        style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', opacity: 0.5, height: 50, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
+                          <View style={{flexDirection: 'row'}}>
+                              <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
+                              <Text style={selectedLanguageItem.language_name === 'ja' ? [globalStyles.normalLightText, {color: 'black', margin: 5}] : [globalStyles.smallLightText, {color: 'black', margin: 5}]}>
+                                  {translate('common.continueWithApple')}
+                              </Text>
+                          </View>
+                      </TouchableOpacity>
+                  </View>}
                 <View style={{ alignItems: 'center', marginTop: 10 }}>
                   <Text
                     style={[
