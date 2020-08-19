@@ -589,10 +589,11 @@ class LoginSignUp extends Component {
                     justifyContent: 'center',
                     marginBottom: 25,
                   }}>
-                  <Text style={[selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText, {marginEnd: 10}]}>
+                  <Text style={[selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText,
+                      {marginEnd: 10, padding: selectedLanguageItem.language_name === 'ja' ? 5 : 0}]}>
                     {translate('pages.welcome.theWorldIsConnected')}
                   </Text>
-                  <Text style={selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText}>
+                  <Text style={[selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
                     {translate('pages.welcome.connectedByTouku')}
                   </Text>
                 </View>

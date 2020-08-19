@@ -778,7 +778,8 @@ class Login extends Component {
                     value={this.state.password}
                     placeholder={translate('common.loginPassword')}
                     returnKeyType={'done'}
-                    secureTextEntry={true}
+                    //secureTextEntry={true}
+                    isEyeIcon={true}
                     onChangeText={(password) => this.handlePassword(password)}
                     onSubmitEditing={() => {}}
                     status={'normal'}

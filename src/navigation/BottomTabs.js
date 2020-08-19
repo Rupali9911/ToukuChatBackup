@@ -147,7 +147,7 @@ const Tabs = createBottomTabNavigator(
           return (
             <BottomTabItem
               source={focused ? Icons.icon_setting_tab_select : Icons.icon_setting_tab}
-              title={translate('common.setting')}
+              title={translate('pages.xchat.more')}
               titleColor={focused ? Colors.indigo : Colors.white}
               routeName={'More'}
             />

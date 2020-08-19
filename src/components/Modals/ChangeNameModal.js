@@ -21,7 +21,7 @@ import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {updateConfiguration} from '../../redux/reducers/configurationReducer';
-import Toast from '../Toast';
+import Toast from '../ToastModal';
 import {ClickableImage} from '../ImageComponents';
 
 class ChangeNameModal extends Component {
@@ -51,17 +51,22 @@ class ChangeNameModal extends Component {
         .updateConfiguration(configuration)
         .then((res) => {
           if (res.status === true) {
-            this.props.onRequestClose();
             Toast.show({
               title: translate('pages.changeDisplayName'),
               text: translate('pages.setting.toastr.nameUpdatedSuccessfully'),
               type: 'positive',
-            });
+            })
+              setTimeout(() => {
+                  this.props.onRequestClose();
+              }, 2000);
+
             this.props.getUserProfile();
           }
         })
         .catch((err) => {
-          this.props.onRequestClose();
+            setTimeout(() => {
+                this.props.onRequestClose();
+            }, 2000);
           Toast.show({
             title: translate('pages.changeDisplayName'),
             text: translate('common.somethingWentWrong'),
@@ -123,7 +128,7 @@ class ChangeNameModal extends Component {
               onPress={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+
             <View style={{padding: 15}}>
               <Text
                 style={{
@@ -165,7 +170,13 @@ class ChangeNameModal extends Component {
                 loading={loading}
               />
             </View>
-          </KeyboardAwareScrollView>
+        </View>
+        <View style={{position:'absolute', width: '100%', top: 0}}>
+            <Toast
+                ref={c => {
+                    if (c) Toast.toastInstance = c;
+                }}
+            />
         </View>
       </Modal>
     );

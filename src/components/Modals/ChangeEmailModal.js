@@ -17,7 +17,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
-import Toast from '../Toast';
+import Toast from '../ToastModal';
 import {translate} from '../../redux/reducers/languageReducer';
 import {
   changeEmailSendOtp,
@@ -310,6 +310,13 @@ class ChangeEmailModal extends Component {
             </View>
           </KeyboardAwareScrollView>
         </View>
+          <View style={{position:'absolute', width: '100%', top: 0}}>
+              <Toast
+                  ref={c => {
+                      if (c) Toast.toastInstance = c;
+                  }}
+              />
+          </View>
       </Modal>
     );
   }

@@ -721,6 +721,7 @@ class Home extends Component {
       userData,
       userConfig,
       friendRequest,
+        selectedLanguageItem
     } = this.props;
     const filteredChannels = followingChannels.filter(
       createFilter(searchText, ['name'])
@@ -785,6 +786,7 @@ class Home extends Component {
                       isCollapsed={isChannelCollapsed}
                       listcounts={filteredFriendRequest.length}
                       // badgeCount={channelHeaderCounts}
+                      selectedLanguageItem={selectedLanguageItem}
                     />
                   </CollapseHeader>
                   <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
@@ -806,6 +808,7 @@ class Home extends Component {
                     isCollapsed={isChannelCollapsed}
                     listcounts={filteredChannels.length}
                     badgeCount={channelHeaderCounts}
+                    selectedLanguageItem={selectedLanguageItem}
                   />
                 </CollapseHeader>
                 <CollapseBody>{this.renderUserChannels()}</CollapseBody>
@@ -826,6 +829,7 @@ class Home extends Component {
                     isCollapsed={isGroupCollapsed}
                     listcounts={filteredGroups.length}
                     badgeCount={groupHeaderCounts}
+                    selectedLanguageItem={selectedLanguageItem}
                   />
                 </CollapseHeader>
                 <CollapseBody>{this.renderUserGroups()}</CollapseBody>
@@ -846,6 +850,7 @@ class Home extends Component {
                     isCollapsed={isFriendsCollapsed}
                     listcounts={filteredFriends.length}
                     badgeCount={friendHeaderCounts}
+                    selectedLanguageItem={selectedLanguageItem}
                   />
                 </CollapseHeader>
                 <CollapseBody>{this.renderUserFriends()}</CollapseBody>
@@ -859,7 +864,7 @@ class Home extends Component {
 }
 
 const DropdownHeader = (props) => {
-  const { title, listcounts, badgeCount, isCollapsed } = props;
+  const { title, listcounts, badgeCount, isCollapsed, selectedLanguageItem } = props;
   return (
     <LinearGradient
       start={{ x: 0.1, y: 0.7 }}

@@ -120,6 +120,10 @@ class GroupDetails extends Component {
         this.setState({ isMyGroup: true });
       }
     }
+
+    if (this.props.navigation.state.params && this.props.navigation.state.params.isInvite) {
+        this.setState({ isManage: true });
+    }
   }
 
   UNSAFE_componentWillMount() {

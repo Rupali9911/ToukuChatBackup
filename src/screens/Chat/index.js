@@ -83,7 +83,7 @@ class Chat extends Component {
     });
   }
 
-  async componentDidMount() {
+    async componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getUserChannels();
     await this.props.getFollowingChannels().then((res) => {

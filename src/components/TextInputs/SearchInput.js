@@ -56,7 +56,7 @@ export default class SearchInput extends Component {
           <Image source={Icons.icon_search} style={styles.iconSearch} />
           <TextInput
             style={styles.inputStyle}
-            placeholder={placeholder || 'Search'}
+            placeholder={placeholder || translate('pages.xchat.search')}
             // placeholderTextColor={Colors.gray}
             onChangeText={onChangeText}
             ref={(input) => (this.textInput = input)}
@@ -99,15 +99,15 @@ export default class SearchInput extends Component {
               }}
               title={translate('pages.xchat.createNewGroup')}
             />
-            <Menu.Item
-              icon={() => <Image source={Icons.icon_create_new_channel} />}
-              onPress={() => {
-                navigation.navigate('CreateChannel');
-                this._closeMenu();
-              }}
-              titleStyle={{ marginLeft: -25 }}
-              title={translate('pages.xchat.createChannel')}
-            />
+            {/*<Menu.Item*/}
+              {/*icon={() => <Image source={Icons.icon_create_new_channel} />}*/}
+              {/*onPress={() => {*/}
+                {/*navigation.navigate('CreateChannel');*/}
+                {/*this._closeMenu();*/}
+              {/*}}*/}
+              {/*titleStyle={{ marginLeft: -25 }}*/}
+              {/*title={translate('pages.xchat.createChannel')}*/}
+            {/*/>*/}
             <Menu.Item
               icon={() => <Image source={Icons.add_friend} />}
               onPress={() => {

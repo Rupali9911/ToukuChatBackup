@@ -13,12 +13,14 @@ import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 import {Colors, Icons, Fonts} from '../constants';
 import {globalStyles} from '../styles';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 export default class InputField extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isFocus: false,
+        showEyeIcon: true
     };
   }
 
@@ -52,6 +54,10 @@ export default class InputField extends Component {
       this.setState({isFocus: false});
     }
   };
+
+    onHidePassword= (text) => {
+        this.setState({showEyeIcon: !this.state.showEyeIcon})
+    }
 
   renderInputStatus() {
     switch (this.props.status) {
@@ -94,10 +100,11 @@ export default class InputField extends Component {
       isSuggestions,
       rightBtnText,
       loading,
+        isEyeIcon,
       ...rest
     } = this.props;
 
-    const {isFocus} = this.state;
+    const {isFocus, showEyeIcon} = this.state;
     return (
       <View
         style={
@@ -150,7 +157,7 @@ export default class InputField extends Component {
           returnKeyType={returnKeyType}
           keyboardType={keyboardType}
           maxLength={maxLength}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={isEyeIcon ?  showEyeIcon ? true : false : secureTextEntry}
           onFocus={() => this.onFocus()}
           onBlur={() => this.onBlur()}
           numberOfLines={numberOfLines}
@@ -179,17 +186,11 @@ export default class InputField extends Component {
         ) : (
           <View>{this.renderInputStatus()}</View>
         )}
-
-        {/* <View>
-              {isFocus ? (
-                <TouchableOpacity activeOpacity={0.8} onPress={onClearValue}>
-                  <Image
-                    source={Icons.icon_circle_cross}
-                    style={globalStyles.iconStyle}
-                  />
+              {isEyeIcon ? (
+                <TouchableOpacity style={{marginRight: 10}} activeOpacity={0.8} onPress={this.onHidePassword.bind(this)}>
+                    <FontAwesome5 name={showEyeIcon ? 'eye': 'eye-slash'} size={15} color={Colors.white} />
                 </TouchableOpacity>
               ) : null}
-            </View> */}
       </View>
     );
   }
@@ -263,6 +264,7 @@ InputField.propTypes = {
   onSubmitEditing: PropTypes.func,
   onChangeText: PropTypes.func,
   onClearValue: PropTypes.func,
+  isEyeIcon: PropTypes.bool,
 };
 
 InputField.defaultProps = {
@@ -279,4 +281,5 @@ InputField.defaultProps = {
   isIconRight: false,
   loading: false,
   status: 'normal',
+    isEyeIcon: false,
 };

@@ -1,8 +1,9 @@
-import {client} from '../../helpers/api';
+import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 import {KAKAO_API_KEY} from '../../helpers/api'
 import Toast from "../../components/Toast";
 import {translate} from "./languageReducer";
+import axios from 'axios';
 
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
@@ -17,6 +18,7 @@ export const GET_CHANGE_NAME_FAIL = 'GET_CHANGE_NAME_FAIL';
 export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
 export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
 export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
+let uuid = require('react-native-uuid')
 
 const initialState = {
   loading: false,
@@ -306,6 +308,7 @@ export const getUserProfile = () => (dispatch) =>
     client
       .get(`/profile/`)
       .then((res) => {
+          console.log('getUserProfile response', res)
         if (res.id) {
           dispatch(setUserData(res));
         }
@@ -316,20 +319,58 @@ export const getUserProfile = () => (dispatch) =>
       });
   });
 
-export const uploadAvatar = (data) => (dispatch) =>
-  new Promise(function (resolve, reject) {
-    dispatch(getUploadAvatarRequest());
-    client
-      .post(`/avatar-upload/`, data)
-      .then((res) => {
-        dispatch(getUploadAvatarSuccess());
-        resolve(res);
-      })
-      .catch((err) => {
-        dispatch(getUploadAvatarFailure());
-        reject(err);
-      });
-  });
+export const uploadAvatar = (data, token) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        dispatch(getUploadAvatarRequest());
+        // client
+        //   .post(`/avatar-upload/`, data)
+        //   .then((res) => {
+        //     dispatch(getUploadAvatarSuccess());
+        //     resolve(res);
+        //   })
+        //   .catch((err) => {
+        //     dispatch(getUploadAvatarFailure());
+        //     reject(err);
+        //   });
+
+        let name = uuid.v4()
+         let formData = new FormData();
+         formData.append('avatar_thumbnail', {
+             uri: data.replace('file://', ''),
+             mineType: 'image/jpeg',
+             fileType: 'image/jpg',
+             type: 'image/jpg',
+             name: name + '.jpg'
+         });
+         formData.append('avatar', {
+             uri: data.replace('file://', ''),
+             mineType: 'image/jpeg',
+             fileType: 'image/jpg',
+             type: 'image/jpg',
+             name: name + '.jpg'
+         });
+
+        setTimeout(() => {
+
+         console.log('Token and Form Data', token, formData)
+         axios.post("https://api-touku.angelium.net/api/avatar-upload/",formData, {headers: {
+                 'Content-Type': 'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
+                 'User-Agent': userAgent,
+                 'Origin': 'touku',
+                 'Authorization': token,
+             },
+         }).then((resp) => {
+             console.log('uploadAvatar API responser', resp);
+             dispatch(getUploadAvatarSuccess());
+             resolve(resp);
+         }).catch(err => {
+             console.log('uploadAvatar API response',err.response);
+             dispatch(getUploadAvatarFailure());
+             reject(err);
+         });
+        }, 1000);
+});
+
 
 export const changeNameDetails = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
