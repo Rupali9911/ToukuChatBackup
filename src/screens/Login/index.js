@@ -186,10 +186,15 @@ class Login extends Component {
           this.props.navigation.navigate('Chat');
           return;
         }
-        if (res.user) {
-          // alert('something went wrong!');
+        if (res.error) {
+            Toast.show({
+                title: 'Login Failed',
+                text: translate(res.error.toString()),
+                type: 'primary',
+            });
         }
       });
+
     } catch (error) {
       // alert(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -200,6 +205,7 @@ class Login extends Component {
         // alert('play services not available or outdated');
       } else {
         // alert('some other error happened');
+
       }
     }
   };
@@ -278,9 +284,13 @@ class Login extends Component {
             this.props.navigation.navigate('Chat');
             return;
           }
-          if (res.user) {
-            // alert('something went wrong!');
-          }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
       })
       .catch((err) => {});
@@ -351,9 +361,13 @@ class Login extends Component {
             this.props.navigation.navigate('Chat');
             return;
           }
-          if (res.user) {
-            // alert('something went wrong!');
-          }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
       });
   }
@@ -401,9 +415,13 @@ class Login extends Component {
               this.props.navigation.navigate('Chat');
               return;
             }
-            if (res.user) {
-              // alert('something went wrong!');
-            }
+              if (res.error) {
+                  Toast.show({
+                      title: 'Login Failed',
+                      text: translate(res.error.toString()),
+                      type: 'primary',
+                  });
+              }
           });
         })
         .catch((err) => {
@@ -447,9 +465,13 @@ class Login extends Component {
               this.props.navigation.navigate('Chat');
               return;
             }
-            if (res.user) {
-              // alert('something went wrong!');
-            }
+              if (res.error) {
+                  Toast.show({
+                      title: 'Login Failed',
+                      text: translate(res.error.toString()),
+                      type: 'primary',
+                  });
+              }
           });
         })
         .catch((err) => {
@@ -495,6 +517,13 @@ class Login extends Component {
             this.props.navigation.navigate('Home');
             return;
           }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
       })
       .catch((err) => {
@@ -582,6 +611,7 @@ class Login extends Component {
               }
             });
           }
+
           if (res.user) {
             Toast.show({
               title: 'Login Failed',
@@ -590,6 +620,13 @@ class Login extends Component {
             });
             this.setState({ authError: res.user });
           }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
     }
   }
@@ -661,6 +698,13 @@ class Login extends Component {
                     await AsyncStorage.removeItem('socialToken');
                     this.props.navigation.navigate('Chat');
                     return;
+                }
+                if (res.error) {
+                    Toast.show({
+                        title: 'Login Failed',
+                        text: translate(res.error.toString()),
+                        type: 'primary',
+                    });
                 }
             });
         } else {

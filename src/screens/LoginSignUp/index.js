@@ -164,9 +164,13 @@ class LoginSignUp extends Component {
           this.props.navigation.navigate('Chat');
           return;
         }
-        if (res.user) {
-          // alert('something went wrong!');
-        }
+          if (res.error) {
+              Toast.show({
+                  title: 'Login Failed',
+                  text: translate(res.error.toString()),
+                  type: 'primary',
+              });
+          }
       });
     } catch (error) {
       // alert(error);
@@ -247,9 +251,13 @@ class LoginSignUp extends Component {
             this.props.navigation.navigate('Chat');
             return;
           }
-          if (res.user) {
-            // alert('something went wrong!');
-          }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
       })
       .catch((err) => {});
@@ -315,9 +323,13 @@ class LoginSignUp extends Component {
             this.props.navigation.navigate('Chat');
             return;
           }
-          if (res.user) {
-            // alert('something went wrong!');
-          }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
       });
   }
@@ -367,9 +379,13 @@ class LoginSignUp extends Component {
               this.props.navigation.navigate('Chat');
               return;
             }
-            if (res.user) {
-              // alert('something went wrong!');
-            }
+              if (res.error) {
+                  Toast.show({
+                      title: 'Login Failed',
+                      text: translate(res.error.toString()),
+                      type: 'primary',
+                  });
+              }
           })
         })
         .catch((err) => {
@@ -413,9 +429,13 @@ class LoginSignUp extends Component {
               this.props.navigation.navigate('Chat');
               return;
             }
-            if (res.user) {
-              // alert('something went wrong!');
-            }
+              if (res.error) {
+                  Toast.show({
+                      title: 'Login Failed',
+                      text: translate(res.error.toString()),
+                      type: 'primary',
+                  });
+              }
           });
         })
         .catch((err) => {
@@ -461,6 +481,13 @@ class LoginSignUp extends Component {
             this.props.navigation.navigate('Chat');
             return;
           }
+            if (res.error) {
+                Toast.show({
+                    title: 'Login Failed',
+                    text: translate(res.error.toString()),
+                    type: 'primary',
+                });
+            }
         });
       })
       .catch((err) => {
@@ -538,6 +565,13 @@ class LoginSignUp extends Component {
                     await AsyncStorage.removeItem('socialToken');
                     this.props.navigation.navigate('Chat');
                     return;
+                }
+                if (res.error) {
+                    Toast.show({
+                        title: 'Login Failed',
+                        text: translate(res.error.toString()),
+                        type: 'primary',
+                    });
                 }
             });
         } else {

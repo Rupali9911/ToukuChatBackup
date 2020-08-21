@@ -115,9 +115,6 @@ class ForgotPassword extends Component {
       this.props
         .forgotUserName(userNameData)
         .then((res) => {
-          console.log('res', res)
-            // let message = JSON.parse(res.message)
-             console.log('message', res.message)
           Toast.show({
             title: translate('common.sendSMS'),
             text: translate(res.message),

@@ -37,11 +37,17 @@ class ChangeEmailModal extends Component {
   get initialState() {
     return {
       newEmail: '',
+        repeatEmail: '',
       oldEmailVerificationCode: '',
-      newEmailVerificationCode: '',
+     // newEmailVerificationCode: '',
       newEmailErr: null,
       oldEmailVerificationCodeErr: null,
-      newEmailVerificationCodeErr: null,
+     // newEmailVerificationCodeErr: null,
+
+
+        emailStatus: true,
+        repeatEmailStatus: true,
+        sendCodeStatus: false
     };
   }
 
@@ -51,12 +57,45 @@ class ChangeEmailModal extends Component {
 
   handleNewEmail(newEmail) {
     this.setState({newEmail});
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
     if (newEmail.trim() === '') {
-      this.setState({newEmailErr: 'messages.required'});
-    } else {
-      this.setState({newEmailErr: null});
+      this.setState({emailStatus: true});
+    } else if (reg.test(newEmail) === false) {
+      this.setState({emailStatus: false});
+    }else{
+        this.setState({emailStatus: true});
     }
+
+      if (this.state.repeatEmail.trim() === '') {
+          this.setState({repeatEmailStatus: false});
+      } else if (this.state.repeatEmail !== this.state.newEmail) {
+          this.setState({repeatEmailStatus: false});
+      }else{
+          this.setState({repeatEmailStatus: true});
+      }
   }
+
+    handleRepeatEmail(repeatEmail) {
+        this.setState({repeatEmail});
+        if (repeatEmail.trim() === '') {
+            this.setState({repeatEmailStatus: true});
+        } else if (repeatEmail !== this.state.newEmail) {
+            this.setState({repeatEmailStatus: false});
+        }else{
+            this.setState({repeatEmailStatus: true});
+        }
+
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        if (this.state.newEmail.trim() === '') {
+            this.setState({emailStatus: false});
+        } else if (reg.test(this.state.newEmail) === false) {
+            this.setState({emailStatus: false});
+        }else{
+            this.setState({emailStatus: true});
+        }
+    }
 
   handleOldCode(oldEmailVerificationCode) {
     this.setState({oldEmailVerificationCode});
@@ -67,14 +106,14 @@ class ChangeEmailModal extends Component {
     }
   }
 
-  handleNewCode(newEmailVerificationCode) {
-    this.setState({newEmailVerificationCode});
-    if (newEmailVerificationCode.trim() === '') {
-      this.setState({newEmailVerificationCodeErr: 'messages.required'});
-    } else {
-      this.setState({newEmailVerificationCodeErr: null});
-    }
-  }
+  // handleNewCode(newEmailVerificationCode) {
+  //   this.setState({newEmailVerificationCode});
+  //   if (newEmailVerificationCode.trim() === '') {
+  //     this.setState({newEmailVerificationCodeErr: 'messages.required'});
+  //   } else {
+  //     this.setState({newEmailVerificationCodeErr: null});
+  //   }
+  // }
 
   onRequestClose = () => {
     this.props.onRequestClose();
@@ -82,17 +121,21 @@ class ChangeEmailModal extends Component {
   };
 
   onSendCodePress() {
-    if (this.state.newEmail.trim() === '') {
-      this.setState({newEmailErr: 'messages.required'});
-    } else {
-      this.setState({newEmailErr: null});
+    // if (this.state.newEmail.trim() === '') {
+    //   this.setState({newEmailErr: 'messages.required'});
+    // } else {
+    //  this.setState({newEmailErr: null});
+      let userEmail = this.props.userData.email
       let newEmailData = {
-        email: this.state.newEmail,
+        //email: this.state.newEmail,
+        email: userEmail,
       };
+      console.log('newEmailData', newEmailData)
       this.props
         .changeEmailSendOtp(newEmailData)
         .then((res) => {
           if (res.status === true) {
+            this.setState({sendCodeStatus: true})
             Toast.show({
               title: translate('common.sendEmailOTP'),
               text: translate('pages.xchat.toastr.sentOTPToEmailText'),
@@ -101,71 +144,126 @@ class ChangeEmailModal extends Component {
           }
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('common.sendEmailOTP'),
-            text: 'Please try again.',
-            type: 'primary',
-          });
+            if (err.response) {
+                if (err.response.data) {
+                    console.log('err.response.data', err.response.data)
+                    Toast.show({
+                        title: translate('common.sendEmailOTP'),
+                        text: translate(err.response.data.toString()),
+                        type: 'primary',
+                    });
+                }
+            }
+          // Toast.show({
+          //   title: translate('common.sendEmailOTP'),
+          //   text: 'Please try again.',
+          //   type: 'primary',
+          // });
         });
-    }
+   // }
   }
 
   onSubmitData = () => {
     const {
       newEmail,
       oldEmailVerificationCode,
-      newEmailVerificationCode,
+      //newEmailVerificationCode,
+        sendCodeStatus,
+        repeatEmail
     } = this.state;
     let isValid = true;
 
+      if (oldEmailVerificationCode.trim() === '') {
+          isValid = false;
+          if (sendCodeStatus) {
+              Toast.show({
+                  title: translate('pages.xchat.changeEmail'),
+                  text: translate('pages.xchat.toastr.enterOldEmailCode'),
+                  type: 'primary',
+              });
+          }else{
+              Toast.show({
+                  title: translate('pages.xchat.changeEmail'),
+                  text: translate('pages.xchat.toastr.sendNotSubmitted'),
+                  type: 'primary',
+              });
+          }
+          return
+          // this.setState({oldEmailVerificationCodeErr: 'messages.required'});
+      }
+
+    console.log('newEmail', newEmail.trim() === '')
     if (newEmail.trim() === '') {
       isValid = false;
-      this.setState({newEmailErr: 'messages.required'});
+        Toast.show({
+            title: translate('pages.xchat.changeEmail'),
+            text: translate('pages.xchat.toastr.enterEmailText'),
+            type: 'primary',
+        });
+        return
     }
 
-    if (oldEmailVerificationCode.trim() === '') {
-      isValid = false;
-      this.setState({oldEmailVerificationCodeErr: 'messages.required'});
-    }
-    if (newEmailVerificationCode.trim() === '') {
-      isValid = false;
-      this.setState({newEmailVerificationCodeErr: 'messages.required'});
-    }
+      if (repeatEmail.trim() === '') {
+          isValid = false;
+          Toast.show({
+              title: translate('pages.xchat.changeEmail'),
+              text: translate('pages.xchat.reEnterNewEmailAddress'),
+              type: 'primary',
+          });
+          return
+      }
+    // if (newEmailVerificationCode.trim() === '') {
+    //   isValid = false;
+    //   this.setState({newEmailVerificationCodeErr: 'messages.required'});
+    // }
 
     if (isValid) {
       let changeEmailData = {
-        new_code: newEmailVerificationCode,
+        code: oldEmailVerificationCode,
         new_email: newEmail,
-        old_code: oldEmailVerificationCode,
       };
       this.props
         .changeEmail(changeEmailData)
         .then((res) => {
-          Toast.show({
-            title: translate('pages.xchat.changeEmail'),
-            text: translate('pages.xchat.toastr.emailUpdatedSuccessfully'),
-            type: 'positive',
-          });
+            Toast.show({
+                title: translate('pages.xchat.changeEmail'),
+                text: translate('pages.xchat.toastr.emailUpdatedSuccessfully'),
+                type: 'positive',
+            });
+            setTimeout(() => {
+                this.props.onRequestClose();
+            }, 2000);
+
+            this.props.getUserProfile();
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('pages.xchat.changeEmail'),
-            text: translate('common.somethingWentWrong'),
-            type: 'primary',
-          });
+            if (err.response) {
+                if (err.response.data) {
+                    console.log('err.response.data', err.response.data)
+                    Toast.show({
+                        title: translate('pages.xchat.changeEmail'),
+                        text: translate(err.response.data.message.toString()),
+                        type: 'primary',
+                    });
+                }
+            }
         });
     }
   };
 
   render() {
-    const {visible} = this.props;
+    const {visible, userData} = this.props;
     const {
       newEmail,
       oldEmailVerificationCode,
-      newEmailVerificationCode,
+     // newEmailVerificationCode,
       newEmailErr,
       oldEmailVerificationCodeErr,
       newEmailVerificationCodeErr,
+        repeatEmail,
+        emailStatus,
+        repeatEmailStatus,
+        sendCodeStatus
     } = this.state;
     return (
       <Modal
@@ -201,36 +299,37 @@ class ChangeEmailModal extends Component {
           <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
             <View style={{padding: 15}}>
               <View style={styles.inputContainer}>
-                <TextInput
-                  placeholder={translate('pages.xchat.enterNewemail')}
-                  value={newEmail}
-                  onChangeText={(newEmail) => this.handleNewEmail(newEmail)}
-                  onSubmitEditing={() => {}}
-                  autoCapitalize={'none'}
-                  returnKeyType={'done'}
-                />
+                {/*<TextInput*/}
+                  {/*placeholder={translate('pages.xchat.enterNewemail')}*/}
+                  {/*value={newEmail}*/}
+                  {/*onChangeText={(newEmail) => this.handleNewEmail(newEmail)}*/}
+                  {/*onSubmitEditing={() => {}}*/}
+                  {/*autoCapitalize={'none'}*/}
+                  {/*returnKeyType={'done'}*/}
+                {/*/>*/}
+                  <Text>{userData.email}</Text>
               </View>
-              {newEmailErr !== null ? (
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {
-                      color: Colors.danger,
-                      textAlign: 'left',
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
-                  ]}>
-                  {translate(newEmailErr).replace(
-                    '[missing {{field}} value]',
-                    translate('common.email'),
-                  )}
-                </Text>
-              ) : null}
+              {/*{newEmailErr !== null ? (*/}
+                {/*<Text*/}
+                  {/*style={[*/}
+                    {/*globalStyles.smallLightText,*/}
+                    {/*{*/}
+                      {/*color: Colors.danger,*/}
+                      {/*textAlign: 'left',*/}
+                      {/*marginStart: 10,*/}
+                      {/*marginBottom: 5,*/}
+                    {/*},*/}
+                  {/*]}>*/}
+                  {/*{translate(newEmailErr).replace(*/}
+                    {/*'[missing {{field}} value]',*/}
+                    {/*translate('common.email'),*/}
+                  {/*)}*/}
+                {/*</Text>*/}
+              {/*) : null}*/}
 
               <Button
                 isRounded={false}
-                title={translate('common.sendCode')}
+                title={sendCodeStatus ? translate('common.resend') : translate('common.sendCode')}
                 onPress={() => this.onSendCodePress()}
               />
 
@@ -247,65 +346,87 @@ class ChangeEmailModal extends Component {
                   keyboardType={'number-pad'}
                 />
               </View>
-              {oldEmailVerificationCodeErr !== null ? (
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {
-                      color: Colors.danger,
-                      textAlign: 'left',
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
-                  ]}>
-                  {translate(oldEmailVerificationCodeErr).replace(
-                    '[missing {{field}} value]',
-                    translate('common.oldEmailVerificationCode'),
-                  )}
-                </Text>
-              ) : null}
+              {/*{oldEmailVerificationCodeErr !== null ? (*/}
+                {/*<Text*/}
+                  {/*style={[*/}
+                    {/*globalStyles.smallLightText,*/}
+                    {/*{*/}
+                      {/*color: Colors.danger,*/}
+                      {/*textAlign: 'left',*/}
+                      {/*marginStart: 10,*/}
+                      {/*marginBottom: 5,*/}
+                    {/*},*/}
+                  {/*]}>*/}
+                  {/*{translate(oldEmailVerificationCodeErr).replace(*/}
+                    {/*'[missing {{field}} value]',*/}
+                    {/*translate('common.oldEmailVerificationCode'),*/}
+                  {/*)}*/}
+                {/*</Text>*/}
+              {/*) : null}*/}
 
               <View style={styles.inputContainer}>
-                <TextInput
-                  ref={(ref) => {
-                    this.inputs['newcode'] = ref;
-                  }}
-                  placeholder={translate('common.newEmailVerificationCode')}
-                  value={newEmailVerificationCode}
-                  onChangeText={(code) => this.handleNewCode(code)}
+                {/*<TextInput*/}
+                  {/*ref={(ref) => {*/}
+                    {/*this.inputs['newcode'] = ref;*/}
+                  {/*}}*/}
+                  {/*placeholder={translate('common.newEmailVerificationCode')}*/}
+                  {/*value={newEmailVerificationCode}*/}
+                  {/*onChangeText={(code) => this.handleNewCode(code)}*/}
+                  {/*autoCapitalize={'none'}*/}
+                  {/*returnKeyType={'done'}*/}
+                  {/*keyboardType={'number-pad'}*/}
+                {/*/>*/}
+              {/*</View>*/}
+              {/*{newEmailVerificationCodeErr !== null ? (*/}
+                {/*<Text*/}
+                  {/*style={[*/}
+                    {/*globalStyles.smallLightText,*/}
+                    {/*{*/}
+                      {/*color: Colors.danger,*/}
+                      {/*textAlign: 'left',*/}
+                      {/*marginStart: 10,*/}
+                      {/*marginBottom: 5,*/}
+                    {/*},*/}
+                  {/*]}>*/}
+                  {/*{translate(newEmailVerificationCodeErr).replace(*/}
+                    {/*'[missing {{field}} value]',*/}
+                    {/*translate('common.newEmailVerificationCode'),*/}
+                  {/*)}*/}
+                {/*</Text>*/}
+              {/*) : null}*/}
+
+                  <TextInput
+                  placeholder={translate('pages.xchat.enterNewemail')}
+                  value={newEmail}
+                  onChangeText={(newEmail) => this.handleNewEmail(newEmail)}
+                  onSubmitEditing={() => {}}
                   autoCapitalize={'none'}
                   returnKeyType={'done'}
-                  keyboardType={'number-pad'}
-                />
-              </View>
-              {newEmailVerificationCodeErr !== null ? (
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {
-                      color: Colors.danger,
-                      textAlign: 'left',
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
-                  ]}>
-                  {translate(newEmailVerificationCodeErr).replace(
-                    '[missing {{field}} value]',
-                    translate('common.newEmailVerificationCode'),
-                  )}
-                </Text>
-              ) : null}
+                  />
 
+              </View>
+                <View style={styles.inputContainer}>
+                <TextInput
+                    placeholder={translate('pages.xchat.reEnterNewEmailAddress')}
+                    value={repeatEmail}
+                    onChangeText={(repeatEmail) => this.handleRepeatEmail(repeatEmail)}
+                    onSubmitEditing={() => {}}
+                    autoCapitalize={'none'}
+                    returnKeyType={'done'}
+                />
+                </View>
               <Button
                 isRounded={false}
                 title={translate('common.submit')}
                 onPress={this.onSubmitData.bind(this)}
+                disabled={(emailStatus && repeatEmailStatus) === false}
               />
               <Button
                 isRounded={false}
                 type={'secondary'}
                 title={translate('common.cancel')}
                 onPress={this.onRequestClose.bind(this)}
+
               />
             </View>
           </KeyboardAwareScrollView>

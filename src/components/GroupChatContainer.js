@@ -190,7 +190,9 @@ class GroupChatContainer extends Component {
               this.scrollView = view;
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd({ animated: false });
+              if(this.props.translatedMessageId){}else{
+                this.scrollView.scrollToEnd({ animated: false });
+              }
             }}
             onScrollBeginDrag={() => {
               this.closeMenu();
