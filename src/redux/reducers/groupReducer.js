@@ -18,14 +18,24 @@ export const GET_GROUP_CONVERSATION_FAIL = 'GET_GROUP_CONVERSATION_FAIL';
 
 export const SET_UNREAD_GROUP_MSG_COUNTS = 'SET_UNREAD_GROUP_MSG_COUNTS';
 
+export const SET_GROUP_CONVERSATION = "SET_GROUP_CONVERSATION";
+export const RESET_GROUP_CONVERSATION = "RESET_GROUP_CONVERSATION";
+
+export const DELETE_GROUP_MESSAGE = "DELETE_GROUP_MESSAGE";
+
 const initialState = {
   loading: false,
   userGroups: [],
   currentGroup: {},
   currentGroupDetail: {},
   currentGroupMembers: [],
+  chatGroupConversation: [],
   unreadGroupMsgsCounts: 0,
 };
+
+import {
+  setGroupChatConversation
+} from '../../storage/Service';
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -114,6 +124,26 @@ export default function (state = initialState, action) {
         unreadGroupMsgsCounts: action.payload,
       };
 
+    case SET_GROUP_CONVERSATION:
+      return {
+        ...state,
+        chatGroupConversation: action.payload,
+      };
+
+    case RESET_GROUP_CONVERSATION:
+      return {
+        ...state,
+        chatGroupConversation: [],
+      };
+
+    case DELETE_GROUP_MESSAGE:
+      return {
+        ...state,
+        chatGroupConversation : state.chatGroupConversation.filter(
+          (item) => item.msg_id !== action.payload
+        ),
+      };
+
     default:
       return state;
   }
@@ -167,6 +197,11 @@ const getUserGroupsSuccess = (data) => ({
 
 const getUserGroupsFailure = () => ({
   type: GET_USER_GROUP_FAIL,
+});
+
+const deleteMessage = (data) => ({
+  type: DELETE_GROUP_MESSAGE,
+  payload: data,
 });
 
 export const getUserGroups = () => (dispatch) =>
@@ -268,12 +303,23 @@ const getGroupConversationFailure = () => ({
   type: GET_GROUP_CONVERSATION_FAIL,
 });
 
+export const setGroupConversation = (data) => ({
+  type: SET_GROUP_CONVERSATION,
+  payload: data,
+});
+
+export const resetGroupConversation = () => ({
+  type: RESET_GROUP_CONVERSATION,
+});
+
 export const getGroupConversation = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getGroupConversationRequest());
+    console.log('groupId',groupId);
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
+        setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
         resolve(res);
       })
@@ -388,6 +434,7 @@ export const unSendGroupMessage = (id, payload) => (dispatch) =>
       .post(`/xchat/delete-group-message/${id}/`, payload)
       .then((res) => {
         resolve(res);
+        dispatch(deleteMessage(id));
       })
       .catch((err) => {
         reject(err);

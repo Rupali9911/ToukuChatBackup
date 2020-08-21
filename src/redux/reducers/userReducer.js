@@ -176,7 +176,7 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
               if (err.response.data) {
                   Toast.show({
                       title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
+                      text: translate(err.response.error.toString()),
                       type: 'primary',
                   });
               }
@@ -407,7 +407,7 @@ export const changePassword = (data) => (dispatch) =>
 export const changeEmailSendOtp = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .post(`/change/send-email-otp/`, data)
+      .post(`/xchat/send-email-otp/`, data)
       .then((res) => {
         resolve(res);
       })
@@ -419,7 +419,7 @@ export const changeEmailSendOtp = (data) => (dispatch) =>
 export const changeEmail = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .post(`/change/change_email/`, data)
+      .post(`/xchat/change-email/`, data)
       .then((res) => {
         resolve(res);
       })

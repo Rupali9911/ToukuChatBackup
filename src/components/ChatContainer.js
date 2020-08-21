@@ -90,6 +90,7 @@ class ChatContainer extends Component {
             }
             time={new Date(item.created)}
             isChannel={this.props.isChannel}
+            currentChannel={this.props.currentChannel}
             is_read={item.is_read}
             onMessageReply={(id) => this.props.onMessageReply(id)}
             onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
@@ -150,6 +151,7 @@ class ChatContainer extends Component {
       onGalleryPress,
       onAttachmentPress,
       sendingImage,
+      currentChannel
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -190,7 +192,11 @@ class ChatContainer extends Component {
               this.scrollView = view;
             }}
             onContentSizeChange={() => {
-              this.scrollView.scrollToEnd({ animated: false });
+              if(this.props.translatedMessageId){
+
+              }else{
+                this.scrollView.scrollToEnd({ animated: false });
+              }
             }}
             automaticallyAdjustContentInsets
             contentInsetAdjustmentBehavior={'automatic'}
@@ -313,6 +319,7 @@ const chatStyle = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
+    currentChannel: state.channelReducer.currentChannel,
   };
 };
 

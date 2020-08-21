@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
+import Realm from 'realm';
 import {
   AccordionList,
   Collapse,
@@ -130,6 +131,12 @@ class Home extends Component {
         this.getUserFriends();
       }
     );
+
+    // Get on-disk location of the default Realm
+    Realm.open({}).then(realm => {
+      console.log("Realm is located at: " + realm.path);
+    });
+
   }
 
   _orientationDidChange = (orientation) => {
@@ -209,6 +216,9 @@ class Home extends Component {
         break;
       case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
         this.messageInFollowingChannel(message);
+        break;
+      case SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.getFollowingChannels(message);
         break;
       case SocketEvents.REMOVE_CHANNEL_MEMBER:
         this.onRemoveChannelMember(message);
@@ -477,7 +487,18 @@ class Home extends Component {
   renderUserChannels() {
     const { followingChannels, channelLoading } = this.props;
     const { loadMoreVisible } = this.state;
-    const filteredChannels = followingChannels.filter(
+
+    const sortChannels = followingChannels;
+    sortChannels.sort((a, b) =>
+      a.created &&
+        b.created &&
+        new Date(a.last_msg ? a.last_msg.updated : a.created) <
+        new Date(b.last_msg ? b.last_msg.updated : b.created)
+        ? 1
+        : -1
+    )
+
+    const filteredChannels = sortChannels.filter(
       createFilter(this.state.searchText, ['name'])
     );
 
@@ -500,7 +521,7 @@ class Home extends Component {
                     : item.last_msg.msg_type
                   : ''
               }
-              date={item.created}
+              date={item.last_msg?item.last_msg.created:item.created}
               image={item.channel_picture}
               onPress={() => this.onOpenChannelChats(item)}
               unreadCount={item.unread_msg}

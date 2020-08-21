@@ -27,11 +27,21 @@ import {
   markFriendMsgsRead,
   unSendPersonalMessage,
   deletePersonalMessage,
+  setFriendConversation,
+  addNewSendMessage,
+  resetFriendConversation,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import { eventService } from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
 import S3uploadService from '../../helpers/S3uploadService';
+import {
+  getFriendChatConversationById,
+  getFriendChatConversation,
+  updateFriendMessageById,
+  deleteFriendMessageById,
+  setFriendMessageUnsend,
+} from '../../storage/Service';
 
 let uuid = require('react-native-uuid')
 class FriendChats extends Component {
@@ -101,6 +111,7 @@ class FriendChats extends Component {
 
     this.SingleSocket = new SingleSocket();
     this.S3uploadService = new S3uploadService();
+    this.props.resetFriendConversation();
   }
 
   UNSAFE_componentWillMount() {
@@ -118,7 +129,7 @@ class FriendChats extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.getPersonalConversation();
+    this.getPersonalConversationInitial();
 
     this.SingleSocket.create({ user_id: this.props.userData.id });
 
@@ -136,6 +147,7 @@ class FriendChats extends Component {
       repliedMessage,
       isEdited,
       sentMessageType,
+      editMessageId,
       uploadFile,
     } = this.state;
     const { currentFriend, userData } = this.props;
@@ -185,8 +197,8 @@ class FriendChats extends Component {
       );
       msgText = uploadedVideo;
     }
+
     let sendmsgdata = {
-      // id: id,
       thumbnail: null,
       from_user: {
         id: userData.id,
@@ -227,8 +239,8 @@ class FriendChats extends Component {
       sentMessageType: 'text',
     };
 
-    console.log('sendmsgdata', sendmsgdata)
     if (isEdited) {
+      updateFriendMessageById(editMessageId,newMessageText,sentMessageType);
       this.sendEditMessage();
       return;
     }
@@ -356,8 +368,76 @@ class FriendChats extends Component {
       }
     }
 
-    //Unsend Message in Friend
+    //DELETE_MESSAGE_IN_FRIEND
     if (message.text.data.type == SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        if (
+          message.text.data.message_details.to_user.id == currentFriend.user_id
+        ) {
+          deleteFriendMessageById(message.text.data.message_details.id);
+          this.markFriendMsgsRead();
+          let chat = getFriendChatConversationById(
+            this.props.currentFriend.friend
+          );
+          this.props.setFriendConversation(chat);
+        }
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        if (
+          message.text.data.message_details.from_user.id ==
+          currentFriend.user_id
+        ) {
+          deleteFriendMessageById(message.text.data.message_details.id);
+          this.getPersonalConversation();
+        }
+      }
+    }
+
+    //MESSAGE_EDITED_IN_FRIEND
+    if (message.text.data.type == SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        if (
+          message.text.data.message_details.to_user.id == currentFriend.user_id
+        ) {
+          let editMessageId = message.text.data.message_details.id;
+          let newMessageText = message.text.data.message_details.message_body;
+          let messageType = message.text.data.message_details.msg_type;
+          updateFriendMessageById(editMessageId,newMessageText,messageType);
+          this.getPersonalConversation();
+        }
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        if (
+          message.text.data.message_details.from_user.id ==
+          currentFriend.user_id
+        ) {
+          let editMessageId = message.text.data.message_details.id;
+          let newMessageText = message.text.data.message_details.message_body;
+          let messageType = message.text.data.message_details.msg_type;
+          updateFriendMessageById(editMessageId,newMessageText,messageType);
+          this.getPersonalConversation();
+        }
+      }
+    }
+
+    //READ_ALL_MESSAGE_FRIEND_CHAT
+    if (message.text.data.type == SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
+      if (message.text.data.message_details.from_user == userData.id) {
+        if (
+          message.text.data.message_details.to_user == currentFriend.user_id
+        ) {
+          this.getPersonalConversation();
+        }
+      } else if (message.text.data.message_details.to_user == userData.id) {
+        if (
+          message.text.data.message_details.from_user ==
+          currentFriend.user_id
+        ) {
+          this.getPersonalConversation();
+        }
+      }
+    }
+
+    //PINED_FRIEND
+    if (message.text.data.type == SocketEvents.PINED_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         if (
           message.text.data.message_details.to_user.id == currentFriend.user_id
@@ -373,15 +453,71 @@ class FriendChats extends Component {
         }
       }
     }
+
+    //UNPINED_FRIEND
+    if (message.text.data.type == SocketEvents.UNPINED_FRIEND) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        if (
+          message.text.data.message_details.to_user.id == currentFriend.user_id
+        ) {
+          this.getPersonalConversation();
+        }
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        if (
+          message.text.data.message_details.from_user.id ==
+          currentFriend.user_id
+        ) {
+          this.getPersonalConversation();
+        }
+      }
+    }
+
   }
 
-  getPersonalConversation() {
-    this.props
+  getPersonalConversation = async () => {
+    await this.props
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({ conversations: res.conversation });
+          // this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
+          let chat = getFriendChatConversationById(
+            this.props.currentFriend.friend
+          );
+          let conversations = [];
+          chat.map((item, index) => {
+            conversations = [...conversations, item];
+          });
+          this.props.setFriendConversation(conversations);
+        }
+      });
+  }
+
+  getPersonalConversationInitial = async () => {
+
+    let chat = getFriendChatConversationById(this.props.currentFriend.friend);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+      this.props.setFriendConversation(conversations);
+    }
+
+    await this.props
+      .getPersonalConversation(this.props.currentFriend.friend)
+      .then((res) => {
+        if (res.status === true && res.conversation.length > 0) {
+          // this.setState({ conversations: res.conversation });
+          this.markFriendMsgsRead();
+          let chat = getFriendChatConversationById(
+            this.props.currentFriend.friend
+          );
+          let conversations = [];
+          chat.map((item, index) => {
+            conversations = [...conversations, item];
+          });
+          this.props.setFriendConversation(conversations);
         }
       });
   }
@@ -460,7 +596,11 @@ class FriendChats extends Component {
       let payload = {
         friend: this.props.currentFriend.friend,
       };
-      this.props.deletePersonalMessage(this.state.selectedMessageId, payload);
+      this.props.deletePersonalMessage(this.state.selectedMessageId, payload)
+      .then((res) => {
+        deleteFriendMessageById(this.state.selectedMessageId);
+        this.getPersonalConversation();
+      });
     }
   };
 
@@ -475,6 +615,7 @@ class FriendChats extends Component {
         friend: this.props.currentFriend.friend,
         is_unsent: true,
       };
+      setFriendMessageUnsend(this.state.selectedMessageId);
       this.props
         .unSendPersonalMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -726,7 +867,7 @@ class FriendChats extends Component {
       uploadFile,
       sendingMedia,
     } = this.state;
-    const { currentFriend, chatsLoading } = this.props;
+    const { currentFriend, chatsLoading, chatFriendConversation } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -742,7 +883,7 @@ class FriendChats extends Component {
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
         />
-        {chatsLoading && conversations.length <= 0 ? (
+        {chatsLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />
         ) : (
           <ChatContainer
@@ -750,7 +891,7 @@ class FriendChats extends Component {
             onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}
             newMessageText={newMessageText}
-            messages={conversations}
+            messages={chatFriendConversation}
             orientation={this.state.orientation}
             repliedMessage={this.state.repliedMessage}
             isReply={this.state.isReply}
@@ -813,6 +954,7 @@ const mapStateToProps = (state) => {
     chatsLoading: state.friendReducer.loading,
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    chatFriendConversation: state.friendReducer.chatFriendConversation,
   };
 };
 
@@ -826,6 +968,9 @@ const mapDispatchToProps = {
   markFriendMsgsRead,
   unSendPersonalMessage,
   deletePersonalMessage,
+  setFriendConversation,
+  addNewSendMessage,
+  resetFriendConversation,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

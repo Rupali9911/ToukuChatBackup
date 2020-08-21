@@ -182,6 +182,8 @@ export const SocketEvents = {
   UNFRIEND: 'Unfriend',
   FRIEND_REQUEST_CANCELLED: 'Friend request cancelled',
   READ_ALL_MESSAGE_FRIEND_CHAT: 'Read all message friend chat',
+  PINED_FRIEND: 'pined friend',
+    UNPINED_FRIEND: 'unpined friend',
   // Thread actions
   MESSAGE_IN_THREAD: 'Message in thread',
   MULTIPLE_MESSAGE_IN_THREAD: 'Multiple message in thread',
@@ -233,6 +235,8 @@ export const SocketEvents = {
   DELETE_MESSAGE_IN_GROUP: 'Delete message in group',
   UNSENT_MESSAGE_FROM_GROUP: 'Unsent message from group',
   READ_ALL_MESSAGE_GROUP_CHAT: 'Read all message group chat',
+  PINED_GROUP: 'pined group',
+    UNPINED_GROUP: 'unpined group',
   TP_POINT_ACTION: 'Tp point action',
   TP_POINT_ADD: 'Tp point add',
   TP_POINT_DEDUCT: 'Tp point deduct',
@@ -242,4 +246,7 @@ export const SocketEvents = {
   UPDATE_USER_PROFILE: 'Update user profile',
   // UPDATE_CHANNEL_MODE NOT ALLOWED FOR PUSH NOTIFICATION
   UPDATE_CHANNEL_MODE: 'Update configration channel mode',
+  PINED_CHANNEL: 'pined channel',
+  UNPINED_CHANNEL: 'unpined channel',
+
 };

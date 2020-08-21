@@ -138,6 +138,7 @@ export default class ChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
       closeMenu,
+      currentChannel
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -169,7 +170,7 @@ export default class ChatMessageBox extends Component {
               resizeMode={'cover'}
             /> */}
             <Image
-              source={getAvatar(message.from_user.avatar)}
+              source={isChannel?getAvatar(currentChannel.channel_picture):getAvatar(message.from_user.avatar)}
               style={{
                 width: 40,
                 height: 40,

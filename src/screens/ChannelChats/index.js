@@ -26,13 +26,21 @@ import {
   sendChannelMessage,
   editChannelMessage,
   deleteChannelMessage,
+  resetChannelConversation,
+  setChannelConversation,
+  addNewSendMessage,
 } from '../../redux/reducers/channelReducer';
 import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
 import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
-let uuid = require('react-native-uuid')
+import {
+  getChannelChatConversationById,
+  updateMessageById,
+  deleteMessageById,
+  setMessageUnsend,
+} from '../../storage/Service';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -77,6 +85,7 @@ class ChannelChats extends Component {
       ],
     };
     this.S3uploadService = new S3uploadService();
+    this.props.resetChannelConversation();
   }
 
   UNSAFE_componentWillMount() {
@@ -94,16 +103,17 @@ class ChannelChats extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.getChannelConversations();
+    this.getChannelConversationsInitial();
   }
 
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
   };
 
-  checkEventTypes(message) {
+  async checkEventTypes(message) {
     const { currentChannel, userData } = this.props;
 
+    //MESSAGE_IN_FOLLOWING_CHANNEL
     if (
       message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
       message.text.data.message_details.channel == currentChannel.id
@@ -118,9 +128,48 @@ class ChannelChats extends Component {
       }
     }
 
+    //DELETE_MESSAGE_IN_FOLLOWING_CHANNEL
     if (
       message.text.data.type ==
         SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        deleteMessageById(message.text.data.message_details.id);
+        let chat = getChannelChatConversationById(
+          this.props.currentChannel.id
+        );
+        console.log('chat',chat.length);
+        this.props.setChannelConversation(chat);
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        deleteMessageById(message.text.data.message_details.id);
+        let chat = getChannelChatConversationById(
+          this.props.currentChannel.id
+        );
+        console.log('chat',chat.length);
+        this.props.setChannelConversation(chat);
+      }
+    }
+
+    //MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+    if (
+      message.text.data.type ==
+      SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
+      message.text.data.message_details.map((item) => {
+        if (item.channel === currentChannel.id) {
+          this.getChannelConversations();
+        }
+      });
+    }
+
+    // MESSAGE_IN_THREAD
+    if (
+      message.text.data.type ==
+        SocketEvents.MESSAGE_IN_THREAD &&
       message.text.data.message_details.channel == currentChannel.id
     ) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -132,6 +181,174 @@ class ChannelChats extends Component {
         this.getChannelConversations();
       }
     }
+
+    // MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
+    if (
+      message.text.data.type ==
+        SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user == userData.id) {
+        let editMessageId = message.text.data.message_details.id;
+        let msgText = message.text.data.message_details.message_body;
+        let msgType = message.text.data.message_details.msg_type;
+        console.log(editMessageId,msgText,msgType);
+        updateMessageById(editMessageId, msgText, msgType);
+        this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    // MESSAGE_EDITED_IN_THREAD
+    if (
+      message.text.data.type ==
+        SocketEvents.MESSAGE_EDITED_IN_THREAD &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    // DELETE_MESSAGE_IN_THREAD
+    if (
+      message.text.data.type ==
+        SocketEvents.DELETE_MESSAGE_IN_THREAD &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL
+    if (
+      message.text.data.type ==
+        SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user == userData.id) {
+        setMessageUnsend(message.text.data.message_details.id);
+        this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //UNSENT_MESSAGE_IN_THREAD
+    if (
+      message.text.data.type ==
+        SocketEvents.UNSENT_MESSAGE_IN_THREAD &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //MULTIPLE_MESSAGE_IN_THREAD
+    if (
+      message.text.data.type ==
+        SocketEvents.MULTIPLE_MESSAGE_IN_THREAD &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //ADD_CHANNEL_ADMIN
+    if (
+      message.text.data.type ==
+        SocketEvents.ADD_CHANNEL_ADMIN &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //READ_ALL_MESSAGE_CHANNEL_SUBCHAT
+    if (
+      message.text.data.type ==
+        SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //PINED_CHANNEL
+    if (
+      message.text.data.type ==
+        SocketEvents.PINED_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+    //UNPINED_CHANNEL
+    if (
+      message.text.data.type ==
+        SocketEvents.UNPINED_CHANNEL &&
+      message.text.data.message_details.channel == currentChannel.id
+    ) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getChannelConversations();
+      } else if (
+        message.text.data.message_details.to_user != null &&
+        message.text.data.message_details.to_user.id == userData.id
+      ) {
+        // this.getChannelConversations();
+      }
+    }
+
+
   }
 
   onMessageSend = async () => {
@@ -140,6 +357,7 @@ class ChannelChats extends Component {
       isEdited,
       sentMessageType,
       uploadFile,
+      editMessageId,
     } = this.state;
     const { userData, currentChannel } = this.props;
 
@@ -189,7 +407,6 @@ class ChannelChats extends Component {
       msgText = uploadedVideo;
     }
     let sendmsgdata = {
-      // id: id,
       thumbnail: null,
       from_user: {
         id: userData.id,
@@ -222,6 +439,7 @@ class ChannelChats extends Component {
     };
 
     if (isEdited) {
+      updateMessageById(editMessageId, msgText, sentMessageType);
       this.sendEditMessage();
       return;
     }
@@ -231,6 +449,8 @@ class ChannelChats extends Component {
       message_body: msgText,
       msg_type: sentMessageType,
     };
+    // console.log('ChannelChats -> onMessageSend -> sendmsgdata', sendmsgdata);
+    this.props.addNewSendMessage(sendmsgdata);
     this.state.conversations.unshift(sendmsgdata);
     this.props.sendChannelMessage(messageData);
     this.setState({
@@ -335,16 +555,51 @@ class ChannelChats extends Component {
     }
   };
 
-  getChannelConversations() {
-    this.props
+  getChannelConversations = async () => {
+    await this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           this.setState({ conversations: res.conversation });
           this.props.readAllChannelMessages(this.props.currentChannel.id);
+          let chat = getChannelChatConversationById(
+            this.props.currentChannel.id
+          );
+          let conversations = [];
+          chat.map((item, index) => {
+            conversations = [...conversations, item];
+          });
+          this.props.setChannelConversation(conversations);
         }
       });
-  }
+  };
+
+  getChannelConversationsInitial = async () => {
+    let chat = getChannelChatConversationById(this.props.currentChannel.id);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+      this.props.setChannelConversation(conversations);
+    }
+    await this.props
+      .getChannelConversations(this.props.currentChannel.id)
+      .then((res) => {
+        if (res.status === true && res.conversation.length > 0) {
+          this.setState({ conversations: res.conversation });
+          this.props.readAllChannelMessages(this.props.currentChannel.id);
+          let chat = getChannelChatConversationById(
+            this.props.currentChannel.id
+          );
+          let conversations = [];
+          chat.map((item, index) => {
+            conversations = [...conversations, item];
+          });
+          this.props.setChannelConversation(conversations);
+        }
+      });
+  };
 
   handleMessage(message) {
     this.setState({ newMessageText: message });
@@ -457,7 +712,7 @@ class ChannelChats extends Component {
   };
 
   renderConversations() {
-    const { channelLoading } = this.props;
+    const { channelLoading, chatConversation } = this.props;
     const {
       conversations,
       newMessageText,
@@ -471,8 +726,11 @@ class ChannelChats extends Component {
       uploadFile,
       sendingMedia,
     } = this.state;
-
-    if (channelLoading && conversations.length <= 0) {
+    if (!this.props.chatConversation) {
+      return null;
+    }
+    console.log('chatConversation',chatConversation.length);
+    if (channelLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
       return (
@@ -481,7 +739,7 @@ class ChannelChats extends Component {
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
             newMessageText={newMessageText}
-            messages={conversations}
+            messages={chatConversation}
             orientation={orientation}
             repliedMessage={repliedMessage}
             onDelete={(id) => this.onDeletePressed(id)}
@@ -586,7 +844,12 @@ class ChannelChats extends Component {
       let payload = {
         deleted_for: [this.props.userData.id],
       };
-      this.props.deleteChannelMessage(this.state.selectedMessageId, payload);
+      deleteMessageById(this.state.selectedMessageId);
+      this.props
+        .deleteChannelMessage(this.state.selectedMessageId, payload)
+        .then((res) => {
+          this.getChannelConversations();
+        });
     }
   };
 
@@ -597,6 +860,7 @@ class ChannelChats extends Component {
       this.props
         .editChannelMessage(this.state.selectedMessageId, payload)
         .then((res) => {
+          setMessageUnsend(this.state.selectedMessageId);
           this.getChannelConversations();
           Toast.show({
             title: 'Touku',
@@ -649,7 +913,7 @@ class ChannelChats extends Component {
           navigation={this.props.navigation}
           image={currentChannel.channel_picture}
         />
-        {this.renderConversations()}
+        {this.props.chatConversation && this.renderConversations()}
       </ImageBackground>
     );
   }
@@ -661,6 +925,7 @@ const mapStateToProps = (state) => {
     channelLoading: state.channelReducer.loading,
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    chatConversation: state.channelReducer.chatConversation,
   };
 };
 
@@ -671,6 +936,9 @@ const mapDispatchToProps = {
   translateMessage,
   editChannelMessage,
   deleteChannelMessage,
+  setChannelConversation,
+  resetChannelConversation,
+  addNewSendMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

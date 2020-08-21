@@ -1,4 +1,8 @@
 import { client } from '../../helpers/api';
+import {
+  setChannelChatConversation,
+  getChannelChatConversation,
+} from '../../storage/Service';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
 
@@ -31,11 +35,18 @@ export const GET_CHANNEL_CONVERSATION_FAIL = 'GET_CHANNEL_CONVERSATION_FAIL';
 
 export const SET_UNREAD_CHANNEL_MSG_COUNTS = 'SET_UNREAD_CHANNEL_MSG_COUNTS';
 
+export const GET_CHANNEL_CONVERSATION = 'GET_CHANNEL_CONVERSATION';
+export const SET_CHANNEL_CONVERSATION = 'SET_CHANNEL_CONVERSATION';
+export const RESET_CHANNEL_CONVERSATION = 'RESET_CHANNEL_CONVERSATION';
+export const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE';
+export const Delete_Message = 'Delete_Message';
+
 const initialState = {
   loading: false,
   userChannels: [],
   followingChannels: [],
   currentChannel: {},
+  chatConversation: [],
   unreadChannelMsgsCounts: 0,
 };
 
@@ -162,7 +173,28 @@ export default function (state = initialState, action) {
         ...state,
         unreadChannelMsgsCounts: action.payload,
       };
-
+    case SET_CHANNEL_CONVERSATION:
+      return {
+        ...state,
+        chatConversation: action.payload,
+      };
+    case RESET_CHANNEL_CONVERSATION:
+      return {
+        ...state,
+        chatConversation: [],
+      };
+    case ADD_NEW_MESSAGE:
+      return {
+        ...state,
+        chatConversation: [action.payload, ...state.chatConversation],
+      };
+    case Delete_Message:
+      return {
+        ...state,
+        chatConversation: state.chatConversation.filter(
+          (item) => item.id !== action.payload
+        ),
+      };
     default:
       return state;
   }
@@ -225,14 +257,14 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
             }
             dispatch(setUnreadChannelMsgsCounts(unread_counts));
           }
-          res.conversations.sort((a, b) =>
-            a.created &&
-            b.created &&
-            new Date(a.last_msg ? a.last_msg.created : a.created) <
-              new Date(b.last_msg ? b.last_msg.created : b.created)
-              ? 1
-              : -1
-          );
+          // res.conversations.sort((a, b) =>
+          //   a.created &&
+          //   b.created &&
+          //   new Date(a.last_msg ? a.last_msg.updated : a.created) <
+          //     new Date(b.last_msg ? b.last_msg.updated : b.created)
+          //     ? 1
+          //     : -1
+          // );
           dispatch(getFollowingChannelsSuccess(res.conversations));
         }
         resolve(res);
@@ -382,12 +414,33 @@ const getChannelConversationsFailure = () => ({
   type: GET_CHANNEL_CONVERSATION_FAIL,
 });
 
+export const setChannelConversation = (data) => ({
+  type: SET_CHANNEL_CONVERSATION,
+  payload: data,
+});
+
+export const resetChannelConversation = () => ({
+  type: RESET_CHANNEL_CONVERSATION,
+});
+
+export const addNewSendMessage = (data) => ({
+  type: ADD_NEW_MESSAGE,
+  payload: data,
+});
+
+const deleteMessage = (data) => ({
+  type: Delete_Message,
+  payload: data,
+});
+
 export const getChannelConversations = (id, limit = 30) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getChannelConversationsRequest());
+    console.log('id-',id,',limit-',limit)
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + limit)
-      .then((res) => {
+      .then(async (res) => {
+        setChannelChatConversation(res.conversation);
         dispatch(getChannelConversationsSuccess());
         resolve(res);
       })
@@ -468,6 +521,7 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       .then((res) => {
         // alert(JSON.stringify(res));
         resolve(res);
+        dispatch(deleteMessage(id));
       })
       .catch((err) => {
         reject(err);
