@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+    TextInput
 } from 'react-native';
 import PhoneInput from 'react-native-phone-input';
 import PropTypes from 'prop-types';
@@ -18,6 +19,7 @@ export default class CountryPhoneInput extends Component {
     this.state = {
       isFocus: false,
       countryCode: null,
+        number: ''
     };
   }
   componentDidMount() {
@@ -32,15 +34,16 @@ export default class CountryPhoneInput extends Component {
   onSubmitEditing() {
     this.props.onSubmitEditing();
   }
-  focus() {
-    this.textInput.focus();
-  }
-  onFocus() {
-    this.setState({isFocus: true});
-  }
-  onBlur() {
-    this.setState({isFocus: false});
-  }
+
+  // focus() {
+  //   this.textInput.focus();
+  // }
+  // onFocus() {
+  //   this.setState({isFocus: true});
+  // }
+  // onBlur() {
+  //   this.setState({isFocus: false});
+  // }
 
   onChangeText = (text) => {
     if (text.length > 0) {
@@ -58,6 +61,18 @@ export default class CountryPhoneInput extends Component {
     });
   }
 
+    onChangeNumber= (text) => {
+       const {countryCode} = this.state
+         console.log('onChangeNumber', text )
+         if (text.includes(countryCode)){
+           let txt = text.replace(countryCode, '')
+            this.setState({number: txt, countryCode: countryCode}, () => {
+                this.props.onChangePhoneNumber(countryCode + txt, countryCode);
+            });
+        }
+         this.onChangeText(text);
+    };
+
   onSelectCountry(tag) {
     this.setState({
       countryCode: '+' + this.phone.getCountryCode(),
@@ -70,8 +85,9 @@ export default class CountryPhoneInput extends Component {
 
 
   render() {
-    const {isFocus, countryCode} = this.state;
+    const {isFocus, countryCode, number} = this.state;
     const {value, onPressConfirm, loading} = this.props;
+    let placeholder = countryCode + 'Enter number here'
     return (
       <View
         style={[
@@ -96,6 +112,7 @@ export default class CountryPhoneInput extends Component {
           textStyle={{color: 'white'}}
           autoFormat={true}
           offset={0}
+          allowZeroAfterCountryCode={false}
           textProps={{
             placeholder: '',
             maxLength: 13,
@@ -103,6 +120,16 @@ export default class CountryPhoneInput extends Component {
             opacity: 0.8,
           }}
           onPressConfirm={this.onPressConfirm.bind(this)}
+          // textComponent={() => (
+          //             <TextInput
+          //                 keyboardType="phone-pad"
+          //                 onChangeText={this.onChangeNumber.bind(this)}
+          //                 placeholder= {placeholder}
+          //                 value={countryCode + number}
+          //                 color= 'white'
+          //                 opacity={0.8}
+          //             />
+          // )}
         />
         <TouchableOpacity
           activeOpacity={0.6}
