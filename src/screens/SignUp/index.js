@@ -371,6 +371,8 @@ class SignUp extends Component {
         let fcmToken = await AsyncStorage.getItem('fcmToken');
         let invitationCode = await AsyncStorage.getItem('invitationCode');
         let invitationCodeProps = this.props.navigation.state.params.invitationCode
+          let channelDataJson = await AsyncStorage.getItem('channelData');
+          let channelData = JSON.parse(channelDataJson);
 
         let keys = ['phoneData', 'email', 'invitationCode'];
         this.props.userNameCheck(username).then((res) => {
@@ -403,6 +405,13 @@ class SignUp extends Component {
                   this.props.getUserProfile().then((res) => {
                     if (res.id) {
                       this.props.navigation.navigate('Chat');
+
+                      if (channelData) {
+                            this.props.setCurrentChannel(channelData)
+                            setTimeout(() => {
+                                this.props.navigation.navigate('ChannelInfo');
+                            }, 1000 );
+                        }
                     }
                   });
                 }
@@ -588,6 +597,8 @@ class SignUp extends Component {
   async onSocialSignUp() {
     const {username, email, isAgreeWithTerms} = this.state;
       let invitationCode = await AsyncStorage.getItem('invitationCode');
+      let channelDataJson = await AsyncStorage.getItem('channelData');
+      let channelData = JSON.parse(channelDataJson);
     let isValid = true;
 
     if (username.length <= 0) {
@@ -618,6 +629,13 @@ class SignUp extends Component {
           if (res.token) {
             AsyncStorage.removeItem('invitationCode')
             this.props.navigation.navigate('Chat');
+
+              if (channelData) {
+                  this.props.setCurrentChannel(channelData)
+                  setTimeout(() => {
+                      this.props.navigation.navigate('ChannelInfo');
+                  }, 1000 );
+              }
             return;
           }
         });

@@ -10,11 +10,12 @@ import InternetInfo from './src/components/InternetInfo';
 import {CLEAR_BADGE_COUNT, socket, userAgent} from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from "@react-native-community/async-storage";
-import {loginUrl, registerUrl, channelUrl} from './src/constants/index'
+import {loginUrl, registerUrl, channelUrl, DEEPLINK, Environment} from './src/constants/index'
 
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
+import {setCurrentChannel} from "./src/redux/reducers/channelReducer";
 
 // function app() {
 //     console.log('UserEffect Called')
@@ -75,6 +76,16 @@ export default class App extends Component {
 
     _handleAppStateChange = (nextAppState) => {
         console.log('nextAppState', nextAppState)
+        if (nextAppState === 'inactive'){
+            let fCount = store.getState().friendReducer.unreadFriendMsgsCounts
+            let gCount = store.getState().groupReducer.unreadGroupMsgsCounts
+            let cCount = store.getState().channelReducer.unreadChannelMsgsCounts
+            let totalCount = fCount + gCount + cCount
+            console.log('_handleAppStateChange', store)
+            if (totalCount) {
+                PushNotificationIOS.setApplicationIconBadgeNumber(totalCount)
+            }
+        }
         if (this.state.appState.match(/background/) && nextAppState === 'active') {
 
         }else  if (nextAppState === 'inactive') {
@@ -91,7 +102,16 @@ export default class App extends Component {
     handleOpenURL= async (event) => {
         console.log('Deep linking Url', event.url);
         let url = event.url
-        if (url.indexOf(loginUrl) > -1 || url.indexOf(channelUrl) > -1 ) {
+
+        if (url.indexOf(DEEPLINK.toLowerCase()) > -1) {
+            let suffixUrlDeep = Platform.OS === 'ios' ? url.split('touku://')[1].trim() : url.split('touku://touku')[1].trim()
+            if( suffixUrlDeep != ''){
+                url = Environment + suffixUrlDeep
+                console.log('suffixUrlDeep', url)
+            }
+        }
+
+        if (url.indexOf(loginUrl) > -1) {
             setTimeout(() => {
                 NavigationService.navigate('Login', { url: event.url });
             }, 1000 );
@@ -103,6 +123,27 @@ export default class App extends Component {
                 NavigationService.navigate('SignUp', { pageNumber: 0,
                     isSocial: false, invitationCode: invitationCode });
             }, 1000 );
+        }else if (url.indexOf(channelUrl) > -1){
+            let suffixUrl = url.split(channelUrl)[1].trim()
+            console.log('suffixUrl', suffixUrl)
+            let channelId = suffixUrl.split('/').length > 0 ? suffixUrl.split('/')[0].trim() : suffixUrl
+            console.log('channelId', channelId)
+            //await AsyncStorage.setItem('invitationCode', invitationCode);
+            const userToken = await AsyncStorage.getItem('userToken');
+            let data = {
+                'id' : channelId
+            }
+            if (userToken){
+                store.dispatch(setCurrentChannel(data))
+                setTimeout(() => {
+                    NavigationService.navigate('ChannelInfo');
+                }, 1000 );
+            } else{
+                await AsyncStorage.setItem('channelData', JSON.stringify(data));
+                setTimeout(() => {
+                    NavigationService.navigate('Login', { url: event.url });
+                }, 1000 );
+            }
         }
     }
 
@@ -177,7 +218,7 @@ export default class App extends Component {
 
         // When a user receives a push notification and the app is in foreground
         this.onMessageListener = messaging().onMessage(async remoteMessage => {
-            this.onMessageReceived(remoteMessage)
+           // this.onMessageReceived(remoteMessage)
         });
     }
 

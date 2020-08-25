@@ -167,6 +167,8 @@ export const channelUrl = 'https://www.touku.net/#/channels/';
 export const xanaUrl = 'https://www.xanawallet.net/#/login';
 export const xanaDeepLink = 'xana://';
 export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
+export const DEEPLINK = 'touku://'
+export const Environment = 'https://www.touku.net/'
 
 export const SocketEvents = {
   // Friend actions

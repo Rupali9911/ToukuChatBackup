@@ -28,6 +28,7 @@ import {
   followChannel,
 } from '../../redux/reducers/channelReducer';
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
+import AsyncStorage from "@react-native-community/async-storage";
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -44,7 +45,7 @@ class ChannelInfo extends Component {
           id: 1,
           title: 'chat',
           icon: Icons.icon_chat,
-          action: () => this.props.navigation.goBack(),
+          action: () => this.OnBackAction(),
         },
         {
           id: 2,
@@ -61,6 +62,11 @@ class ChannelInfo extends Component {
       ],
     };
   }
+
+    async OnBackAction(){
+        await AsyncStorage.removeItem('channelData')
+            this.props.navigation.goBack()
+    }
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();

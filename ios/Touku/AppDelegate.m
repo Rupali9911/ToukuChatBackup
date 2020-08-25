@@ -107,15 +107,15 @@ static void InitializeFlipper(UIApplication *application) {
     return handleLinking || false;
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-    [KOSession handleDidBecomeActive];
-}
-
--(void)applicationDidEnterBackground:(UIApplication *)application{
-  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-}
+//- (void)applicationDidBecomeActive:(UIApplication *)application
+//{
+//  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+//    [KOSession handleDidBecomeActive];
+//}
+//
+//-(void)applicationDidEnterBackground:(UIApplication *)application{
+//  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+//}
     
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
