@@ -60,6 +60,8 @@ import { getSNSCheck } from '../../redux/reducers/loginReducer';
 import { getParamsFromURL } from '../../utils';
 import { store } from '../../redux/store';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import {setCurrentChannel} from "../../redux/reducers/channelReducer";
+import NavigationService from "../../navigation/NavigationService";
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -184,6 +186,15 @@ class Login extends Component {
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
           this.props.navigation.navigate('Chat');
+
+            let channelDataJson = await AsyncStorage.getItem('channelData');
+            let channelData = JSON.parse(channelDataJson);
+            if (channelData) {
+                this.props.setCurrentChannel(channelData)
+                setTimeout(() => {
+                    this.props.navigation.navigate('ChannelInfo');
+                }, 1000 );
+            }
           return;
         }
         if (res.error) {
@@ -282,6 +293,15 @@ class Login extends Component {
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
             this.props.navigation.navigate('Chat');
+
+              let channelDataJson = await AsyncStorage.getItem('channelData');
+              let channelData = JSON.parse(channelDataJson);
+              if (channelData) {
+                  this.props.setCurrentChannel(channelData)
+                  setTimeout(() => {
+                      this.props.navigation.navigate('ChannelInfo');
+                  }, 1000 );
+              }
             return;
           }
             if (res.error) {
@@ -359,6 +379,15 @@ class Login extends Component {
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
             this.props.navigation.navigate('Chat');
+
+              let channelDataJson = await AsyncStorage.getItem('channelData');
+              let channelData = JSON.parse(channelDataJson);
+              if (channelData) {
+                  this.props.setCurrentChannel(channelData)
+                  setTimeout(() => {
+                      this.props.navigation.navigate('ChannelInfo');
+                  }, 1000 );
+              }
             return;
           }
             if (res.error) {
@@ -413,6 +442,15 @@ class Login extends Component {
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
               this.props.navigation.navigate('Chat');
+
+                let channelDataJson = await AsyncStorage.getItem('channelData');
+                let channelData = JSON.parse(channelDataJson);
+                if (channelData) {
+                    this.props.setCurrentChannel(channelData)
+                    setTimeout(() => {
+                        this.props.navigation.navigate('ChannelInfo');
+                    }, 1000 );
+                }
               return;
             }
               if (res.error) {
@@ -463,6 +501,15 @@ class Login extends Component {
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
               this.props.navigation.navigate('Chat');
+
+                let channelDataJson = await AsyncStorage.getItem('channelData');
+                let channelData = JSON.parse(channelDataJson);
+                if (channelData) {
+                    this.props.setCurrentChannel(channelData)
+                    setTimeout(() => {
+                        this.props.navigation.navigate('ChannelInfo');
+                    }, 1000 );
+                }
               return;
             }
               if (res.error) {
@@ -594,6 +641,8 @@ class Login extends Component {
 
     if (isValid) {
         let fcmToken = await AsyncStorage.getItem('fcmToken');
+        let channelDataJson = await AsyncStorage.getItem('channelData');
+        let channelData = JSON.parse(channelDataJson);
       let loginData = {
         dev_id: fcmToken ? fcmToken : '',
         email: username,
@@ -608,6 +657,13 @@ class Login extends Component {
               console.log('getUserProfile', res)
               if (res.id) {
                 this.props.navigation.navigate('Chat');
+
+                if (channelData) {
+                  this.props.setCurrentChannel(channelData)
+                    setTimeout(() => {
+                        this.props.navigation.navigate('ChannelInfo');
+                    }, 1000 );
+                }
               }
             });
           }
@@ -697,6 +753,15 @@ class Login extends Component {
                     await AsyncStorage.setItem('userToken', res.token);
                     await AsyncStorage.removeItem('socialToken');
                     this.props.navigation.navigate('Chat');
+
+                    let channelDataJson = await AsyncStorage.getItem('channelData');
+                    let channelData = JSON.parse(channelDataJson);
+                    if (channelData) {
+                        this.props.setCurrentChannel(channelData)
+                        setTimeout(() => {
+                            this.props.navigation.navigate('ChannelInfo');
+                        }, 1000 );
+                    }
                     return;
                 }
                 if (res.error) {
@@ -1055,7 +1120,8 @@ const mapDispatchToProps = {
   lineRegister,
   kakaoRegister,
   getSNSCheck,
-    appleRegister
+    appleRegister,
+    setCurrentChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

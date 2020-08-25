@@ -236,7 +236,7 @@ Promise.all(languageRequestsBackend)
                 return o;
             });
         }
-          console.log('Backend messages',JSON.stringify(languages[0]))
+         // console.log('Backend messages',JSON.stringify(languages[0]))
         batch(() => {
             dispatch(setEnglishLanguageBackend(languages[0]));
             dispatch(setJapanLanguageBackend(languages[1]));

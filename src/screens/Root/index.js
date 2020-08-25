@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import {View, ViewPropTypes, Text} from 'react-native';
+import {View, ViewPropTypes, Text, AppState} from 'react-native';
 import PropTypes from 'prop-types';
 import Toast from '../../components/Toast';
 import {ProfileModal} from '../../components/Modals';
 import SingleSocket from '../../helpers/SingleSocket';
+import connect from "react-redux";
 
 class Root extends Component {
-  render() {
+
+    render() {
     return (
       <View ref={(c) => (this._root = c)} style={{flex: 1}} {...this.props}>
         {this.props.children}
@@ -33,13 +35,14 @@ class Root extends Component {
   }
 }
 
-Root.propTypes = {
-  ...ViewPropTypes,
-  style: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.number,
-    PropTypes.array,
-  ]),
-};
-
 export default Root;
+
+
+Root.propTypes = {
+    ...ViewPropTypes,
+    style: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.number,
+        PropTypes.array,
+    ]),
+};
