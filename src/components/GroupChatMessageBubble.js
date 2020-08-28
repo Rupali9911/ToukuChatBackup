@@ -22,6 +22,7 @@ import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
+import ImageView from "react-native-image-viewing";
 let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
@@ -30,8 +31,20 @@ class GroupChatMessageBubble extends Component {
     this.state = {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
+        showImage: false,
+        images: null
     };
   }
+    hideImage(){
+        console.log('hideImage called')
+        this.setState({showImage: false})
+    }
+    onImagePress= (url) => {
+        let images = [{
+            uri: url
+        }]
+        this.setState({showImage: true, images: images})
+    }
 
   onCopy = (message) => {
     Clipboard.setString(message.text);
@@ -89,8 +102,9 @@ class GroupChatMessageBubble extends Component {
 
   renderReplyMessage = (replyMessage) => {
     if (replyMessage.message) {
-      return (
-        <View
+    return (
+        <TouchableOpacity
+          onPress={()=>{console.log('Reply On press')}}
           style={{
             backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
             padding: 5,
@@ -124,7 +138,7 @@ class GroupChatMessageBubble extends Component {
               {replyMessage.message}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       );
     }
   };
@@ -165,8 +179,9 @@ class GroupChatMessageBubble extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
+      onReplyPress
     } = this.props;
-
+      const {showImage, images} = this.state
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
@@ -184,6 +199,7 @@ class GroupChatMessageBubble extends Component {
 
     isEditable.setDate(isEditable.getDate() + 1);
     return (
+        <View>
       <Menu
         contentStyle={{
           backgroundColor: Colors.gradient_3,
@@ -249,13 +265,15 @@ class GroupChatMessageBubble extends Component {
                     onPress={() =>
                       message.message_body.type === 'doc'
                         ? this.onDocumentPress(message.message_body.text)
-                        : null
+                          : message.message_body.type === 'image' ? this.onImagePress(message.message_body.text) : null
                     }
                   >
                     {message.reply_to &&
-                      Object.keys(message.reply_to).length !== 0 &&
-                      message.reply_to.constructor === Object &&
-                      this.renderReplyMessage(message.reply_to)}
+                      // Object.keys(message.reply_to).length !== 0 &&
+                      // message.reply_to.constructor === Object &&
+                      this.renderReplyMessage(message.reply_to)
+                      }
+
                     {message.message_body.type === 'image' &&
                     message.message_body.text !== null ? (
                       <ScalableImage
@@ -318,9 +336,11 @@ class GroupChatMessageBubble extends Component {
                           onMessagePress(message.msg_id);
                         }}
                       >
+                        <HyperLink linkStyle={{color: Colors.link_color}}>
                         <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
                           {message.message_body.text}
                         </Text>
+                        </HyperLink>
                       </TouchableOpacity>
                     ) : (
                       <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
@@ -400,14 +420,19 @@ class GroupChatMessageBubble extends Component {
                     onPress={() =>
                       message.message_body.type === 'doc'
                         ? this.onDocumentPress(message.message_body.text)
-                        : null
+                          : message.message_body.type === 'image' ? this.onImagePress(message.message_body.text) : null
                     }
                     activeOpacity={0.8}
                   >
-                    {message.reply_to &&
-                      Object.keys(message.reply_to).length !== 0 &&
-                      message.reply_to.constructor === Object &&
-                      this.renderReplyMessage(message.reply_to)}
+                    {
+                    (message.reply_to
+                      // &&
+                      // Object.keys(message.reply_to).length !== 0 &&
+                      // message.reply_to.constructor === Object
+                      ) &&
+                      this.renderReplyMessage(message.reply_to)
+                      }
+
                     {message.message_body.type === 'image' &&
                     message.message_body.text !== null ? (
                       <ScalableImage
@@ -470,9 +495,11 @@ class GroupChatMessageBubble extends Component {
                           onMessagePress(message.msg_id);
                         }}
                       >
+                        <HyperLink linkStyle={{color: Colors.link_color}}>
                         <Text style={{ color: 'white', fontSize: 15 }}>
                           {message.message_body.text}
                         </Text>
+                        </HyperLink>
                       </TouchableOpacity>
                     ) : (
                       <Text style={{ color: 'white', fontSize: 15 }}>
@@ -585,6 +612,13 @@ class GroupChatMessageBubble extends Component {
           />
         )}
       </Menu>
+            <ImageView
+                images={images}
+                imageIndex={0}
+                visible={showImage}
+                onRequestClose={() => this.hideImage(false)}
+            />
+        </View>
     );
   }
 }

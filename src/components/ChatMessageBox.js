@@ -10,9 +10,11 @@ import {
 import ChatMessageBubble from './ChatMessageBubble';
 import { Colors, Fonts } from '../constants';
 import { translate } from '../redux/reducers/languageReducer';
+import { globalStyles } from '../styles';
 import RoundedImage from './RoundedImage';
 import { getAvatar } from '../utils';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import LinearGradient from 'react-native-linear-gradient';
 const { width } = Dimensions.get('window');
 
 export default class ChatMessageBox extends Component {
@@ -169,6 +171,25 @@ export default class ChatMessageBox extends Component {
               size={50}
               resizeMode={'cover'}
             /> */}
+            {(isChannel && (currentChannel.channel_picture==null || currentChannel.channel_picture==''))?
+            (
+              <LinearGradient
+                start={{ x: 0.1, y: 0.7 }}
+                end={{ x: 0.5, y: 0.2 }}
+                locations={[0.1, 0.6, 1]}
+                colors={[
+                  Colors.gradient_1,
+                  Colors.gradient_2,
+                  Colors.gradient_3,
+                ]}
+                style={styles.squareImage}
+              >
+                <Text style={globalStyles.normalRegularText15}>
+                  {currentChannel.name.charAt(0).toUpperCase()}
+                  {/* {secondUpperCase} */}
+                </Text>
+              </LinearGradient>
+            ):
             <Image
               source={isChannel?getAvatar(currentChannel.channel_picture):getAvatar(message.from_user.avatar)}
               style={{
@@ -178,7 +199,7 @@ export default class ChatMessageBox extends Component {
                 resizeMode: 'cover',
                   marginTop: 15
               }}
-            />
+            />}
             <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
               <ChatMessageBubble
                 message={message}
@@ -310,5 +331,13 @@ const styles = StyleSheet.create({
     color: Colors.gradient_1,
     fontFamily: Fonts.light,
     fontSize: 9,
+  },
+  squareImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 10,
   },
 });

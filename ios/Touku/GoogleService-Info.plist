@@ -3,11 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3.apps.googleusercontent.com</string>
+	<string>185609886814-eh72sfl2cb0em7opkh052bek3qrs651d.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>185609886814-vods6kv70oeva9gvi2igmjd79fb2fjvv.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.185609886814-eh72sfl2cb0em7opkh052bek3qrs651d</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCfWYmfW7ht2awx3Mv9RsUug_G8NDARIIA</string>
 	<key>GCM_SENDER_ID</key>
@@ -15,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.reactjs.native.example.Touku</string>
+	<string>com.angelium.touku.app</string>
 	<key>PROJECT_ID</key>
 	<string>angelium-71cf5</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:185609886814:ios:83cd5d5529a5cf9aa1a8cf</string>
+	<string>1:185609886814:ios:5a546011d8064973a1a8cf</string>
 	<key>DATABASE_URL</key>
 	<string>https://angelium-71cf5.firebaseio.com</string>
 </dict>

@@ -41,6 +41,8 @@ import {
   deleteMessageById,
   setMessageUnsend,
 } from '../../storage/Service';
+import uuid from 'react-native-uuid';
+
 
 class ChannelChats extends Component {
   constructor(props) {

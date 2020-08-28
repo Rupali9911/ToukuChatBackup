@@ -69,8 +69,17 @@ import {
   getFriendRequests,
   setCurrentFriend,
   updateUnreadFriendMsgsCounts,
+  getUserFriendsSuccess,
+  setUserFriends
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
+
+import {
+  getGroups,
+  updateChannelUnReadCountById,
+  removeUserFriends,
+  handleRequestAccept
+} from '../../storage/Service';
 
 class Home extends Component {
   constructor(props) {
@@ -156,6 +165,28 @@ class Home extends Component {
     });
   }
 
+  getFollowingChannelsInitial() {
+    var channels = getChannels();
+    if (channels.length) {
+      var array = []
+      channels.map((item, index) => {
+        array = [...array, item];
+      });
+      console.log('channels', array);
+      dispatch(getFollowingChannelsSuccess(array));
+    }
+    this.props.getFollowingChannels().then((res) => {
+      // if (res.conversations.length > 0) {
+      //   this.handleLoadMoreChannels();
+      // }
+      let counts = 0;
+      for (var channel of this.props.followingChannels) {
+        counts = counts + channel.unread_msg;
+      }
+      this.setState({ channelHeaderCounts: counts });
+    });
+  }
+
   getFollowingChannels() {
     this.props.getFollowingChannels().then((res) => {
       // if (res.conversations.length > 0) {
@@ -192,6 +223,7 @@ class Home extends Component {
   }
 
   checkEventTypes(message) {
+    // console.log('event_call',message);
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
@@ -224,11 +256,25 @@ class Home extends Component {
         this.onRemoveChannelMember(message);
         break;
       case SocketEvents.NEW_MESSAGE_IN_FREIND:
+        this.onNewMessageInFriend(message);
+        break;
+      case SocketEvents.EDIT_GROUP_DETAIL:
+        this.getUserGroups(message);
+        break;
       case SocketEvents.UNFRIEND:
+        removeUserFriends(message.text.data.message_details.user_id);
+        setUserFriends();
+        break;
       case SocketEvents.FRIEND_REQUEST_CANCELLED:
         this.onNewMessageInFriend(message);
+        break;
       case SocketEvents.NEW_FRIEND_REQUEST:
+        this.getFriendRequest();
+        break;
       case SocketEvents.FRIEND_REQUEST_ACCEPTED:
+        handleRequestAccept(message.text.data.message_details.conversation);
+        setUserFriends();
+        break;
       case SocketEvents.FRIEND_REQUEST_REJECTED:
         this.getFriendRequest();
         this.getUserFriends();
@@ -381,8 +427,9 @@ class Home extends Component {
           followingChannels[i].id ==
           message.text.data.message_details.channel_id
         ) {
-          followingChannels[i].unread_msg =
-            message.text.data.message_details.read_count;
+          // followingChannels[i].unread_msg =
+          //   message.text.data.message_details.read_count;
+          updateChannelUnReadCountById(message.text.data.message_details.channel_id,message.text.data.message_details.read_count)
           this.props.getMissedSocketEventsById(
             message.text.data.socket_event_id
           );
@@ -534,7 +581,7 @@ class Home extends Component {
           //   </View>
           // )}
           keyExtractor={(item, index) => String(index)}
-          onEndReached={this.handleLoadMoreChannels.bind(this)}
+          // onEndReached={this.handleLoadMoreChannels.bind(this)}
           onEndReachedThreshold={1}
         />
       );

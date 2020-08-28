@@ -37,13 +37,13 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.185609886814-optu0lnvd7squd5vr1oj0t3do5qg91g3</string>
+				<string>com.googleusercontent.apps.185609886814-eh72sfl2cb0em7opkh052bek3qrs651d</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>line3rdp.org.reactjs.native.example.Touku</string>
+				<string>line3rdp.com.angelium.touku.app</string>
 			</array>
 		</dict>
 		<dict>
@@ -127,7 +127,7 @@
 	<key>NSDownloadsFolderUsageDescription</key>
 	<string>App requires to access your download folder to download files</string>
 	<key>NSFileProviderDomainUsageDescription</key>
-	<string>App requires to access your flis to documents files</string>
+	<string>App requires to access your file to documents files</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App requires to access your location for better user experience</string>
 	<key>NSPhotoLibraryUsageDescription</key>

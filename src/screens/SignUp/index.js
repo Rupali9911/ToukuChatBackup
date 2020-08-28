@@ -293,7 +293,7 @@ class SignUp extends Component {
           this.setState({ userNameStatus: 'right', userNameErr: null });
       }
 
-    this.setState({username});
+    this.setState({username: username.replace(/\s/g, '')});
     this.props.userNameCheck(username).then((res) => {
       if (res.status === false) {
         this.setState({userNameSuggestions: []});
@@ -308,8 +308,9 @@ class SignUp extends Component {
     const {username, password, passwordConfirm, isAgreeWithTerms} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     let isValid = true;
+    let regex = /^[a-zA-Z0-9- ]*$/
 
-    if (username.length <= 0) {
+      if (username.length <= 0) {
       isValid = false;
         this.setState({
             userNameStatus: 'wrong',
@@ -320,7 +321,14 @@ class SignUp extends Component {
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
-    } else  if (password.length <= 0) {
+    } else if(regex.test(username) == false) {
+          isValid =  false
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.enterValueInEnglish'),
+              type: 'primary',
+          });
+      }else  if (password.length <= 0) {
         isValid = false;
         this.setState({
             passwordStatus: 'wrong',
@@ -421,15 +429,21 @@ class SignUp extends Component {
                     text: 'User Already Registered',
                     type: 'primary',
                   });
+                }else if (res.message) {
+                    Toast.show({
+                        title: translate('common.register'),
+                        text: res.message,
+                        type: 'primary',
+                    });
                 }
               })
               .catch((err) => {
                   console.log('userRegister response',err)
-                Toast.show({
-                  title: translate('common.register'),
-                  text: 'Something Went Wrong',
-                  type: 'primary',
-                });
+                  Toast.show({
+                      title: translate('common.register'),
+                      text: translate('common.somethingWentWrong'),
+                      type: 'primary',
+                  });
               });
           } else {
             Toast.show({
@@ -601,6 +615,16 @@ class SignUp extends Component {
       let channelData = JSON.parse(channelDataJson);
     let isValid = true;
 
+    let regex = /^[a-zA-Z0-9- ]*$/
+      if(regex.test(username) == false) {
+          isValid =  false
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.enterValueInEnglish'),
+              type: 'primary',
+          });
+      }
+
     if (username.length <= 0) {
       isValid = false;
         Toast.show({
@@ -637,8 +661,41 @@ class SignUp extends Component {
                   }, 1000 );
               }
             return;
+          }else if (res.message) {
+              Toast.show({
+                  title: translate('common.register'),
+                  text: res.message,
+                  type: 'primary',
+              });
           }
-        });
+        })
+            .catch((err) => {
+                    if (err.response) {
+                        if (err.response.data) {
+                            console.log('err.response.data', err.response.data)
+                            if (err.response.data.message) {
+                                Toast.show({
+                                    title: translate('common.register'),
+                                    text: translate(err.response.data.message.toString()),
+                                    type: 'primary',
+                                });
+                            }else{
+                                Toast.show({
+                                    title: translate('common.register'),
+                                    text: translate('common.somethingWentWrong'),
+                                    type: 'primary',
+                                });
+                            }
+                        }else{
+                            Toast.show({
+                                title: translate('common.register'),
+                                text: translate('common.somethingWentWrong'),
+                                type: 'primary',
+                            });
+                        }
+                    }
+                }
+            )
       } else {
         Toast.show({
           title: translate('pages.register.terms&Conditions'),

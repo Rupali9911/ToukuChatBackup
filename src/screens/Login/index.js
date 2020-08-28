@@ -1031,70 +1031,74 @@ class Login extends Component {
                         )
                     }
                 </View>
-                {showSNS &&
-                  <View>
+              </View>
+                <View>
                     <View style={{ marginTop: 25 }}>
-                      <Text style={globalStyles.smallLightText}>
-                        {translate('pages.welcome.OrLoginWith')}
-                      </Text>
+                        <Text style={globalStyles.smallLightText}>
+                            {translate('pages.welcome.OrLoginWith')}
+                        </Text>
                     </View>
                     <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        marginTop: 20,
-                      }}
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            marginTop: 20,
+                        }}
                     >
                         {/*<SocialLogin*/}
-                            {/*IconSrc={Icons.icon_apple}*/}
-                            {/*onPress={() => this.appleLogin()}*/}
+                        {/*IconSrc={Icons.icon_apple}*/}
+                        {/*onPress={() => this.appleLogin()}*/}
                         {/*/>*/}
-                      <SocialLogin
-                        IconSrc={Icons.icon_facebook}
-                        onPress={() => this.firebaseFacebookLogin()}
-                      />
-                      <SocialLogin
-                        IconSrc={Icons.icon_line}
-                        onPress={() => this.firebaseLineLogin()}
-                      />
-                      <SocialLogin
-                        IconSrc={Icons.icon_google}
-                        onPress={() => this.firebaseGoogleLogin()}
-                      />
-                      <SocialLogin
-                        IconSrc={Icons.icon_twitter}
-                        onPress={() => this.firebaseTwitterLogin()}
-                      />
-                      <SocialLogin
-                        IconSrc={Icons.icon_kakao}
-                        onPress={() => this.kakaoLogin()}
-                      />
+                        <SocialLogin
+                            IconSrc={Icons.icon_facebook}
+                            onPress={() => this.firebaseFacebookLogin()}
+                        />
+                        <SocialLogin
+                            IconSrc={Icons.icon_line}
+                            onPress={() => this.firebaseLineLogin()}
+                        />
+                        <SocialLogin
+                            IconSrc={Icons.icon_google}
+                            onPress={() => this.firebaseGoogleLogin()}
+                        />
+                        <SocialLogin
+                            IconSrc={Icons.icon_twitter}
+                            onPress={() => this.firebaseTwitterLogin()}
+                        />
+                        <SocialLogin
+                            IconSrc={Icons.icon_kakao}
+                            onPress={() => this.kakaoLogin()}
+                        />
                     </View>
-                      <Text style={[{marginTop: 10},selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
-                          {translate('common.or')}
-                      </Text>
-                      <TouchableOpacity onPress={() => this.appleLogin()}
-                                        style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', opacity: 0.5, height: 50, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
-                          <View style={{flexDirection: 'row'}}>
-                              <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
-                              <Text style={selectedLanguageItem.language_name === 'ja' ? [globalStyles.normalLightText, {color: 'black', margin: 5}] : [globalStyles.smallLightText, {color: 'black', margin: 5}]}>
-                                  {translate('common.continueWithApple')}
-                              </Text>
-                          </View>
-                      </TouchableOpacity>
-                  </View>}
-                <View style={{ alignItems: 'center', marginTop: 10 }}>
-                  <Text
-                    style={[
-                      globalStyles.smallLightText,
-                      { textDecorationLine: 'underline' },
-                    ]}
-                    onPress={() => this.onNeedSupportClick()}
-                  >
-                    {translate('pages.xchat.needSupport')}
-                  </Text>
+                    {
+                        Platform.OS === 'ios' &&
+                        <View style={{alignSelf: 'center', width: '80%'}}>
+                            <Text style={[{marginTop: 10},selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
+                                {translate('common.or')}
+                            </Text>
+                            <TouchableOpacity onPress={() => this.appleLogin()}
+                                              style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', height: 44, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
+                                <View style={{flexDirection: 'row'}}>
+                                    <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
+                                    <Text style={selectedLanguageItem.language_name === 'en' || selectedLanguageItem.language_name === 'ko'? globalStyles.normalRegularText17 : [globalStyles.normalRegularText17, { paddingTop: 8}]}>
+                                        {translate('common.continueWithApple')}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </View>
-              </View>
+                <View style={{ alignItems: 'center', marginTop: 10 }}>
+                    <Text
+                        style={[
+                            globalStyles.smallLightText,
+                            { textDecorationLine: 'underline' },
+                        ]}
+                        onPress={() => this.onNeedSupportClick()}
+                    >
+                        {translate('pages.xchat.needSupport')}
+                    </Text>
+                </View>
             </View>
             <LanguageSelector />
           </KeyboardAwareScrollView>

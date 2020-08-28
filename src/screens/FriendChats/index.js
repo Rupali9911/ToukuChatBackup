@@ -43,7 +43,8 @@ import {
   setFriendMessageUnsend,
 } from '../../storage/Service';
 
-let uuid = require('react-native-uuid')
+// let uuid = require('react-native-uuid')
+import uuid from 'react-native-uuid';
 class FriendChats extends Component {
   constructor(props) {
     super(props);

@@ -145,13 +145,12 @@ class More extends Component {
                 {/*isFontAwesome={true}*/}
                 {/*isToukuPoints={true}*/}
             {/*/>*/}
-            <SettingsItem
-                icon_name={'user'}
-              title={translate('common.goToXana')}
-                onPress={() => console.log('Create New Group')}
-                isImage={Icons.xana_app}
-                onPress={() => this.onPressXana()}
-            />
+            {/*<SettingsItem*/}
+                {/*icon_name={'user'}*/}
+              {/*title={translate('common.goToXana')}*/}
+                {/*isImage={Icons.xana_app}*/}
+                {/*onPress={() => this.onPressXana()}*/}
+            {/*/>*/}
             <Section />
                 <SettingsItem
                     icon_name={'language'}

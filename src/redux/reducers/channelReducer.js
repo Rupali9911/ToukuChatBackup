@@ -1,5 +1,7 @@
 import { client } from '../../helpers/api';
 import {
+  setChannels,
+  getChannels,
   setChannelChatConversation,
   getChannelChatConversation,
 } from '../../storage/Service';
@@ -241,39 +243,104 @@ const getFollowingChannelsFailure = () => ({
 export const getFollowingChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelsRequest());
-    client
+    recursionFollowingChannels(start).then((res)=>{
+      let channels = getChannels();
+      if(channels.length){
+        let array = []
+        let counts = 0;
+        channels.map((item,index)=>{
+          counts = counts + item.unread_msg;
+          array = [...array, item];
+        });
+        dispatch(setUnreadChannelMsgsCounts(counts))
+        dispatch(getFollowingChannelsSuccess(array));
+      }else{
+        dispatch(getFollowingChannelsFailure());
+      }
+      resolve(res);
+    }).catch((err)=>{
+      dispatch(getFollowingChannelsFailure());
+      reject(err);
+    });
+
+    // client
+    //   .get(`/xchat/get-following-channel/?start=` + start)
+    //   .then((res) => {
+    //     if (res.conversations) {
+    //       // console.log('channels_response',res.conversations);
+    //       var channels = res.conversations;
+    //       let unread_counts = 0;
+    //       if (channels && channels.length > 0) {
+    //          channels = channels.map(function (el) {
+    //           unread_counts = unread_counts + el.unread_msg;
+    //            return channels;
+    //         });
+    //         console.log(res.load_more);
+    //         if (res.load_more) {
+    //           console.log('getFollowingChannels',getFollowingChannels);
+    //           getFollowingChannels(start + 20);
+    //         }
+    //         // dispatch(setUnreadChannelMsgsCounts(unread_counts));
+    //         setChannels(res.conversations);
+
+    //         if(!res.load_more){
+    //           // dispatch(getFollowingChannelsSuccess(res.conversations));
+    //           console.log('resolve');
+    //           resolve(res);
+    //         }
+
+    //       }else{
+    //         // dispatch(getFollowingChannelsSuccess(res.conversations));
+    //         console.log('resolve');
+    //         resolve(res);
+    //       }
+    //       // res.conversations.sort((a, b) =>
+    //       //   a.created &&
+    //       //   b.created &&
+    //       //   new Date(a.last_msg ? a.last_msg.updated : a.created) <
+    //       //     new Date(b.last_msg ? b.last_msg.updated : b.created)
+    //       //     ? 1
+    //       //     : -1
+    //       // );
+
+    //       // console.log('length',res.conversations.length);
+    //       // dispatch(getFollowingChannelsSuccess(res.conversations));
+    //     }else{
+    //       // dispatch(getFollowingChannelsSuccess(res.conversations));
+    //       console.log('resolve');
+    //       resolve(res);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     dispatch(getFollowingChannelsFailure());
+    //     reject(err);
+    //   });
+
+  });
+
+export const recursionFollowingChannels = (start = 0) =>
+  getChannel(start).then((res)=>{
+    if(res.load_more){
+      return recursionFollowingChannels(start+20).then(res=>res);
+    }else{
+      return res;
+    }
+  }).catch(err=>err);
+
+const getChannel = (start) => new Promise ((resolve,reject)=>{
+  client
       .get(`/xchat/get-following-channel/?start=` + start)
       .then((res) => {
         if (res.conversations) {
-          var channels = res.conversations;
-          let unread_counts = 0;
-          if (channels && channels.length > 0) {
-            channels = channels.map(function (el) {
-              unread_counts = unread_counts + el.unread_msg;
-              return channels;
-            });
-            if (channels.length >= 20) {
-              getFollowingChannels(start + 20);
-            }
-            dispatch(setUnreadChannelMsgsCounts(unread_counts));
-          }
-          // res.conversations.sort((a, b) =>
-          //   a.created &&
-          //   b.created &&
-          //   new Date(a.last_msg ? a.last_msg.updated : a.created) <
-          //     new Date(b.last_msg ? b.last_msg.updated : b.created)
-          //     ? 1
-          //     : -1
-          // );
-          dispatch(getFollowingChannelsSuccess(res.conversations));
+            setChannels(res.conversations);
         }
         resolve(res);
       })
       .catch((err) => {
-        dispatch(getFollowingChannelsFailure());
         reject(err);
       });
-  });
+
+})
 
 export const getMoreFollowingChannels = (start) => (dispatch) =>
   new Promise(function (resolve, reject) {

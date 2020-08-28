@@ -58,7 +58,11 @@ class UserProfile extends Component {
 
   onUserImageCameraPress() {
     var options = {
-      title: 'Choose Option',
+        title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -105,7 +109,11 @@ class UserProfile extends Component {
 
   chooseBackgroundImage = async () => {
     var options = {
-      title: 'Choose Option',
+        title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',

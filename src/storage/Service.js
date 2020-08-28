@@ -7,6 +7,10 @@ import {
   ChatConversationGroup,
   MessageBody,
   ReplyTo,
+  Channels,
+  ChannelLastConversation,
+  Groups,
+  GroupsLastConversation
 } from './Schema';
 
 const DB_SCHEMAS = [
@@ -17,7 +21,12 @@ const DB_SCHEMAS = [
   ChatConversationGroup,
   MessageBody,
   ReplyTo,
+  Channels,
+  ChannelLastConversation,
+  Groups,
+  GroupsLastConversation
 ];
+
 const DB_SCHEMA_VERSION = 1;
 exports.DB_SCHEMAS = DB_SCHEMAS;
 exports.DB_SCHEMA_VERSION = DB_SCHEMA_VERSION;
@@ -244,3 +253,167 @@ export const setGroupMessageUnsend = (id) => {
     );
   });
 };
+
+
+//Channels List
+export const setChannels = (channels) => {
+  // console.log('realm insert data',channels);
+  for (let item of channels) {
+    var obj = realm.objects('channels').filtered('id=' + item.id);
+    if (obj.length > 0) {
+      realm.write(() => {
+        realm.create(
+          'channels', {
+            id: item.id,
+            name: item.name,
+            unread_msg: item.unread_msg,
+            total_members: item.total_members,
+            description: item.description,
+            chat: item.chat,
+            channel_picture: item.channel_picture,
+            last_msg: item.last_msg,
+            is_pined: item.is_pined,
+            created: item.created,
+          },
+          'modified'
+        );
+      });
+    } else {
+      realm.write(() => {
+        realm.create('channels', {
+          id: item.id,
+          name: item.name,
+          unread_msg: item.unread_msg,
+          total_members: item.total_members,
+          description: item.description,
+          chat: item.chat,
+          channel_picture: item.channel_picture,
+          last_msg: item.last_msg,
+          is_pined: item.is_pined,
+          created: item.created,
+        });
+      });
+    }
+  }
+};
+
+export const getChannels = () => {
+  return realm.objects('channels')
+  .sorted('last_msg.updated', { ascending: false });
+};
+
+export const getChannelsById = (id) => {
+  return realm
+    .objects('channels')
+    .sorted('created', { ascending: true })
+    .filtered(`id == ${id}`);
+};
+
+export const updateChannelUnReadCountById = (id, unread_msg) => {
+  realm.write(() => {
+    realm.create(
+      'chat_conversation_group',
+      { msg_id: id, unread_msg: unread_msg },
+      'modified'
+    );
+  });
+};
+
+//Groups List
+export const setGroups = (channels) => {
+  // console.log('realm insert data',channels);
+  var checkObject = {};
+  for (let item of channels) {
+    var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
+    if (obj.length > 0) {
+      // alert('matching friend');
+    } else {
+      realm.write(() => {
+        realm.create('groups', {
+          group_id: item.group_id,
+          group_name: item.group_name,
+          unread_msg: item.unread_msg,
+          total_members: item.total_members,
+          description: item.description,
+          chat: item.chat,
+          group_picture: item.group_picture,
+          last_msg: item.last_msg,
+          last_msg_id: item.last_msg_id?item.last_msg_id:null,
+          timestamp: item.timestamp,
+          event: item.event,
+          no_msgs: item.no_msgs,
+          is_pined: item.is_pined,
+          sender_id: item.sender_id?item.sender_id:null,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          mentions: (item.mentions instanceof Object)?[]:item.mentions,
+          reply_to: item.reply_to
+        });
+      });
+    }
+  }
+};
+
+export const getGroups = () => {
+  return realm.objects('groups')
+  .sorted('timestamp', { ascending: false });
+};
+
+export const getGroupsById = (id) => {
+  return realm
+    .objects('groups')
+    .sorted('timestamp', { ascending: true })
+    .filtered(`id == ${id}`);
+};
+
+
+// User friends
+
+export const getLocalUserFriends = () => {
+  return realm.objects('user_friends')
+  .sorted('timestamp', { ascending: false });
+}
+
+export const handleRequestAccept = (item) => {
+  var obj = realm.objects('user_friends').filtered('user_id=' + item.user_id);
+  if (obj.length > 0) {
+    realm.write(() => {
+      realm.create(
+        'user_friends',
+        { user_id: item.user_id, unread_msg: 1 },
+        'modified'
+      );
+    });
+  } else {
+    realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: item.user_id,
+          friend: item.friend,
+          unread_msg: 1,
+          last_msg_id: item.last_msg_id,
+          username: item.username,
+          avatar: item.avatar,
+          profile_picture: item.profile_picture,
+          background_image: item.background_image,
+          last_msg: item.last_msg ? item.last_msg : '',
+          last_msg_type: item.last_msg_type,
+          display_name: item.display_name,
+          isChecked: false,
+          is_online: item.is_online,
+          is_typing: false,
+          timestamp: item.timestamp,
+        }
+      );
+    });
+  }
+}
+
+export const removeUserFriends = (id) => {
+  var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
+
+  realm.write(() => {
+    realm.delete(user);
+  });
+}

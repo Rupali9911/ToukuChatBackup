@@ -12,6 +12,14 @@ export const globalStyles = StyleSheet.create({
   },
 
   //Light Texts for the App
+    normalRegularText17: {
+        fontSize: 19,
+        fontFamily: Fonts.arialRegular,
+        textAlign: 'center',
+        color: 'black',
+        marginLeft: 10
+    },
+
     smallLightText10: {
         fontSize: 10,
         fontFamily: Fonts.light,

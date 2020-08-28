@@ -129,6 +129,7 @@ export default class GroupChatMessageBox extends Component {
       orientation,
       onDelete,
       onUnSend,
+      onReplyPress,
       onMessageTranslate,
       translatedMessage,
       translatedMessageId,
@@ -224,6 +225,7 @@ export default class GroupChatMessageBox extends Component {
                   audioPlayingId={audioPlayingId}
                   perviousPlayingAudioId={perviousPlayingAudioId}
                   onAudioPlayPress={onAudioPlayPress}
+                  onReplyPress={onReplyPress}
                 />
               </View>
               <View
@@ -311,6 +313,7 @@ export default class GroupChatMessageBox extends Component {
               audioPlayingId={audioPlayingId}
               perviousPlayingAudioId={perviousPlayingAudioId}
               onAudioPlayPress={onAudioPlayPress}
+              onReplyPress={onReplyPress}
             />
           </View>
           {translatedMessageId &&

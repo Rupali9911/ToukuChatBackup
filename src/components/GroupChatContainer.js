@@ -102,6 +102,9 @@ class GroupChatContainer extends Component {
             onDownloadMessage={(msg) => {
               this.props.onDownloadMessage(msg);
             }}
+            onReplyPress={()=>{
+              this.scrollView && this.scrollView.scrollTo(index);
+            }}
             audioPlayingId={this.state.audioPlayingId}
             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
             closeMenu={this.state.closeMenu}

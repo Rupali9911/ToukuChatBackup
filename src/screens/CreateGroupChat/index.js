@@ -46,7 +46,6 @@ class CreateGroupChat extends Component {
       searchText: '',
       addedFriends: [],
       groupNameErr: null,
-
       groupImagePath: { uri: null }, //For Image Picker
       loading: false,
     };
@@ -76,7 +75,11 @@ class CreateGroupChat extends Component {
 
   chooseFile = () => {
     var options = {
-      title: 'Choose Option',
+      title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',

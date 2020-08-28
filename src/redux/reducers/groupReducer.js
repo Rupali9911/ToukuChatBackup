@@ -34,7 +34,8 @@ const initialState = {
 };
 
 import {
-  setGroupChatConversation
+  setGroupChatConversation,
+  setGroups
 } from '../../storage/Service';
 
 export default function (state = initialState, action) {
@@ -227,6 +228,7 @@ export const getUserGroups = () => (dispatch) =>
               ? 1
               : -1
           );
+          setGroups(res.conversations);
           dispatch(getUserGroupsSuccess(res.conversations));
         }
         resolve(res);

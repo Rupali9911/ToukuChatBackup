@@ -1,5 +1,7 @@
 import {client} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
+import Toast from "../../components/Toast";
+import {translate} from "./languageReducer";
 
 export const GET_SEND_OTP_REQUEST = 'GET_SEND_OTP_REQUEST';
 export const GET_SEND_OTP_SUCCESS = 'GET_SEND_OTP_SUCCESS';
@@ -263,4 +265,5 @@ export const socialRegistration = (socialRegistrationData) => (dispatch) =>
       .catch((err) => {
         reject(err);
       });
+
   });
