@@ -14,7 +14,10 @@ export const UPDATE_CHANNEL_MODE_FAIL = 'UPDATE_CHANNEL_MODE_FAIL';
 
 const initialState = {
   loading: false,
-  userConfig: {},
+  userConfig: {
+      display_name: '',
+      background_image: ''
+  },
 };
 
 export default function (state = initialState, action) {

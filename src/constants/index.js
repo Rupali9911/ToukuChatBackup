@@ -102,7 +102,8 @@ export const Colors = {
   black_light: '#0a1f44',
   foorter_gradient_1: 'rgba(255, 137, 96, 0.68)',
   foorter_gradient_2: 'rgba(255, 98, 165, 0.68)',
-    orange_header: 'rgba(255,107,0,00.40)'
+    orange_header: 'rgba(255,107,0,00.40)',
+    link_color: 'blue' //
 };
 
 export const Fonts = {
@@ -116,6 +117,7 @@ export const Fonts = {
   extralight: 'Poppins-ExtraLight',
   extrabold: 'Poppins-ExtraBold',
   absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
+    arialRegular: 'Arial',
 };
 
 export const environment = {

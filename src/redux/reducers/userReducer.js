@@ -176,7 +176,7 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
               if (err.response.data) {
                   Toast.show({
                       title: 'Login Failed',
-                      text: translate(err.response.error.toString()),
+                      text: translate(err.response.data.toString()),
                       type: 'primary',
                   });
               }

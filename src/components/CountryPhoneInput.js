@@ -12,14 +12,17 @@ import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
 import {Colors, Icons, Fonts} from '../constants';
 import {globalStyles} from '../styles';
-import {translate} from "../redux/reducers/languageReducer";
-export default class CountryPhoneInput extends Component {
+import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
+import {connect} from 'react-redux';
+
+class CountryPhoneInput extends Component {
   constructor(props) {
     super(props);
+      setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       isFocus: false,
       countryCode: null,
-        number: ''
+        number: '',
     };
   }
   componentDidMount() {
@@ -35,15 +38,18 @@ export default class CountryPhoneInput extends Component {
     this.props.onSubmitEditing();
   }
 
-  // focus() {
-  //   this.textInput.focus();
-  // }
-  // onFocus() {
-  //   this.setState({isFocus: true});
-  // }
-  // onBlur() {
-  //   this.setState({isFocus: false});
-  // }
+  focus() {
+    console.log('focus called')
+    this.textInput.focus();
+  }
+  onFocus() {
+      console.log('onFocus called')
+      this.setState({isFocus: true});
+  }
+  onBlur() {
+      console.log('onBlur called')
+    this.setState({isFocus: false});
+  }
 
   onChangeText = (text) => {
     if (text.length > 0) {
@@ -54,11 +60,23 @@ export default class CountryPhoneInput extends Component {
   };
 
   onChangePhoneNumber(number, countryCode) {
+    console.log('Numbera nd Country Code', number, countryCode)
     this.onChangeText(number);
 
-    this.setState({countryCode: countryCode}, () => {
-      this.props.onChangePhoneNumber(number, countryCode);
-    });
+    // this.setState({countryCode: countryCode}, () => {
+    //   this.props.onChangePhoneNumber(number, countryCode);
+    // });
+
+      if (number.includes(countryCode)){
+          let txt = number.replace(countryCode, '')
+          txt =  txt.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/, '')
+          if (!txt.startsWith('0')) {
+              this.setState({number: txt, countryCode: countryCode}, () => {
+                  this.props.onChangePhoneNumber(countryCode + txt, countryCode);
+              });
+           }
+      }
+
   }
 
     onChangeNumber= (text) => {
@@ -70,7 +88,7 @@ export default class CountryPhoneInput extends Component {
                 this.props.onChangePhoneNumber(countryCode + txt, countryCode);
             });
         }
-         this.onChangeText(text);
+        this.onChangeText(text);
     };
 
   onSelectCountry(tag) {
@@ -87,7 +105,7 @@ export default class CountryPhoneInput extends Component {
   render() {
     const {isFocus, countryCode, number} = this.state;
     const {value, onPressConfirm, loading} = this.props;
-    let placeholder = countryCode + 'Enter number here'
+    let placeholder = countryCode + ' Enter number here'
     return (
       <View
         style={[
@@ -97,6 +115,13 @@ export default class CountryPhoneInput extends Component {
             borderWidth: isFocus ? 1 : 0,
           },
         ]}>
+          {number.length === 0 &&
+          <Text disabled = {true}
+                                      selectable={false}
+                                      style={{position: 'absolute', color: 'white', left: '28%', opacity: 0.8}}>
+              {translate('pages.register.phoneNumberTextForPlaceholder')}</Text>
+          }
+
         <PhoneInput
           ref={(ref) => {
             this.phone = ref;
@@ -106,16 +131,16 @@ export default class CountryPhoneInput extends Component {
           }
           initialCountry={'jp'}
           onSelectCountry={(tag) => this.onSelectCountry(tag)}
-          value={countryCode}
+          value={countryCode + number}
           style={{flex: 1}}
           flagStyle={{height: 30, width: 30, borderRadius: 15}}
           textStyle={{color: 'white'}}
-          autoFormat={true}
+         autoFormat={true}
           offset={0}
           allowZeroAfterCountryCode={false}
           textProps={{
             placeholder: '',
-            maxLength: 13,
+            maxLength: 14,
             placeholderTextColor: 'white',
             opacity: 0.8,
           }}
@@ -232,3 +257,14 @@ CountryPhoneInput.defaultProps = {
   isIconRight: false,
   loading: false,
 };
+
+const mapStateToProps = (state) => {
+    return {
+        selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    };
+};
+
+const mapDispatchToProps = {
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CountryPhoneInput);

@@ -1,5 +1,6 @@
 import React, { Fragment, Component } from 'react';
 import {
+  Animated,
   View,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
+import ImageView from "react-native-image-viewing";
 let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
@@ -30,7 +32,44 @@ class GroupChatMessageBubble extends Component {
     this.state = {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
+        showImage: false,
+        images: null,
+        animation : new Animated.Value(1),
     };
+  }
+    hideImage(){
+        console.log('hideImage called')
+        this.setState({showImage: false})
+    }
+    onImagePress= (url) => {
+        let images = [{
+            uri: url
+        }]
+        this.setState({showImage: true, images: images})
+    }
+
+  startAnimation=()=>{
+    this.animInterval = setInterval(()=>{
+      Animated.timing(this.state.animation, {
+        toValue : 0,
+        timing : 400,
+        useNativeDriver: true,
+      }).start(()=>{
+        Animated.timing(this.state.animation,{
+          toValue : 1,
+          duration : 400,
+          useNativeDriver: true,
+        }).start();
+      })
+    },800);
+  }
+
+  callBlinkAnimation = () => {
+    setTimeout(()=>{
+      clearInterval(this.animInterval);
+    },3200);
+    this.startAnimation();
+    console.log('animation start');
   }
 
   onCopy = (message) => {
@@ -88,43 +127,47 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (replyMessage) => {
+    // console.log('reply_render',replyMessage.message);
     if (replyMessage.message) {
-      return (
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
+        }}
+        style={{
+          backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
+          padding: 5,
+          width: '100%',
+          borderRadius: 5,
+          marginBottom: 5,
+        }}
+      >
         <View
           style={{
-            backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
-            padding: 5,
-            width: '100%',
-            borderRadius: 5,
-            marginBottom: 5,
+            flex: 3,
+            flexDirection: 'row',
+            alignItems: 'center',
           }}
         >
-          <View
-            style={{
-              flex: 3,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-              {replyMessage.sender_id === this.props.userData.id
-                ? 'You'
-                : replyMessage.display_name}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 7,
-              justifyContent: 'center',
-              width: '95%',
-              marginTop: 5,
-            }}
-          >
-            <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-              {replyMessage.message}
-            </Text>
-          </View>
+          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+            {replyMessage.sender_id === this.props.userData.id
+              ? 'You'
+              : replyMessage.display_name}
+          </Text>
         </View>
+        <View
+          style={{
+            flex: 7,
+            justifyContent: 'center',
+            width: '95%',
+            marginTop: 5,
+          }}
+        >
+          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+            {replyMessage.message}
+          </Text>
+        </View>
+      </TouchableOpacity>
       );
     }
   };
@@ -166,7 +209,7 @@ class GroupChatMessageBubble extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
     } = this.props;
-
+      const {showImage, images} = this.state
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
@@ -183,7 +226,13 @@ class GroupChatMessageBubble extends Component {
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
+
+    const animatedStyle ={
+      opacity : this.state.animation
+    }
+
     return (
+        <View>
       <Menu
         contentStyle={{
           backgroundColor: Colors.gradient_3,
@@ -193,7 +242,7 @@ class GroupChatMessageBubble extends Component {
         onDismiss={closeMenu}
         anchor={
           !isUser ? (
-            <View style={styles.talkBubble}>
+            <Animated.View style={[styles.talkBubble,animatedStyle]}>
               <View style={{ marginLeft: 5 }}>
                 <View
                   style={[
@@ -249,13 +298,15 @@ class GroupChatMessageBubble extends Component {
                     onPress={() =>
                       message.message_body.type === 'doc'
                         ? this.onDocumentPress(message.message_body.text)
-                        : null
+                          : message.message_body.type === 'image' ? this.onImagePress(message.message_body.text) : null
                     }
                   >
                     {message.reply_to &&
-                      Object.keys(message.reply_to).length !== 0 &&
-                      message.reply_to.constructor === Object &&
-                      this.renderReplyMessage(message.reply_to)}
+                      // Object.keys(message.reply_to).length !== 0 &&
+                      // message.reply_to.constructor === Object &&
+                      this.renderReplyMessage(message.reply_to)
+                      }
+
                     {message.message_body.type === 'image' &&
                     message.message_body.text !== null ? (
                       <ScalableImage
@@ -318,9 +369,11 @@ class GroupChatMessageBubble extends Component {
                           onMessagePress(message.msg_id);
                         }}
                       >
+                        <HyperLink linkStyle={{color: Colors.link_color}}>
                         <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
                           {message.message_body.text}
                         </Text>
+                        </HyperLink>
                       </TouchableOpacity>
                     ) : (
                       <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
@@ -330,9 +383,9 @@ class GroupChatMessageBubble extends Component {
                   </TouchableOpacity>
                 )}
               </View>
-            </View>
+            </Animated.View>
           ) : (
-            <View style={styles.talkBubble}>
+            <Animated.View style={[styles.talkBubble,animatedStyle]}>
               <View
                 style={[
                   styles.talkBubbleAbsoluteRight,
@@ -400,14 +453,19 @@ class GroupChatMessageBubble extends Component {
                     onPress={() =>
                       message.message_body.type === 'doc'
                         ? this.onDocumentPress(message.message_body.text)
-                        : null
+                          : message.message_body.type === 'image' ? this.onImagePress(message.message_body.text) : null
                     }
                     activeOpacity={0.8}
                   >
-                    {message.reply_to &&
-                      Object.keys(message.reply_to).length !== 0 &&
-                      message.reply_to.constructor === Object &&
-                      this.renderReplyMessage(message.reply_to)}
+                    {
+                    (message.reply_to
+                      // &&
+                      // Object.keys(message.reply_to).length !== 0 &&
+                      // message.reply_to.constructor === Object
+                      ) &&
+                      this.renderReplyMessage(message.reply_to)
+                      }
+
                     {message.message_body.type === 'image' &&
                     message.message_body.text !== null ? (
                       <ScalableImage
@@ -470,9 +528,11 @@ class GroupChatMessageBubble extends Component {
                           onMessagePress(message.msg_id);
                         }}
                       >
+                        <HyperLink linkStyle={{color: Colors.link_color}}>
                         <Text style={{ color: 'white', fontSize: 15 }}>
                           {message.message_body.text}
                         </Text>
+                        </HyperLink>
                       </TouchableOpacity>
                     ) : (
                       <Text style={{ color: 'white', fontSize: 15 }}>
@@ -482,7 +542,7 @@ class GroupChatMessageBubble extends Component {
                   </TouchableOpacity>
                 </LinearGradient>
               )}
-            </View>
+            </Animated.View>
           )
         }
       >
@@ -585,6 +645,13 @@ class GroupChatMessageBubble extends Component {
           />
         )}
       </Menu>
+            <ImageView
+                images={images}
+                imageIndex={0}
+                visible={showImage}
+                onRequestClose={() => this.hideImage(false)}
+            />
+        </View>
     );
   }
 }

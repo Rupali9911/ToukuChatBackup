@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Keyboard,
+  FlatList,
 } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -135,6 +136,16 @@ class GroupChatContainer extends Component {
     }
   };
 
+  searchItemIndex = (data, id,idx) => {
+    var result = idx;
+    data.map((item,index)=>{
+      if(item.msg_id===id){
+        result = index;
+      }
+    })
+    return result;
+  }
+
   render() {
     const {
       orientation,
@@ -181,7 +192,113 @@ class GroupChatContainer extends Component {
             },
           ]}
         >
-          <ScrollView
+          <Fragment>
+            <FlatList
+              style={{marginBottom:20}}
+              contentContainerStyle={[
+                chatStyle.messareAreaScroll,
+                isReply && { paddingBottom: '20%' },
+              ]}
+              ref={(view) => {
+                this.scrollView = view;
+              }}
+              onContentSizeChange={(contentWidth, contentHeight) => {
+                if(this.props.translatedMessageId){}else{
+                  // this.scrollView.scrollToEnd({ animated: false });
+                }
+              }}
+              onScrollBeginDrag={() => {
+                this.closeMenu();
+              }}
+              onScrollEndDrag={() => {
+                this.closeMenuFalse();
+              }}
+              data={messages}
+              inverted={true}
+              renderItem={({item,index})=>{
+                getDate = (date) => {
+                  const today = new Date();
+                  const yesterday = new Date();
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  const msgDate = new Date(date);
+                  if (
+                    today.getDate() === msgDate.getDate() &&
+                    today.getMonth() === msgDate.getMonth()
+                  )
+                    return translate('common.today');
+                  if (
+                    yesterday.getDate() === msgDate.getDate() &&
+                    yesterday.getMonth() === msgDate.getMonth()
+                  )
+                    return translate('common.yesterday');
+                  return moment(msgDate).format('MM/DD');
+                };
+
+                const conversationLength = messages.length;
+                return <Fragment key={index}>
+                  <GroupChatMessageBox
+                    ref={(view)=>{
+                      this[`message_box_${item.msg_id}`] = view;
+                    }}
+                    key={item.msg_id}
+                    message={item}
+                    isUser={item.sender_id === this.props.userData.id ? true : false}
+                    time={new Date(item.timestamp)}
+                    isRead={item.read_count && item.read_count > 0 ? true : false}
+                    memberCount={memberCount}
+                    onMessageReply={(id) => this.props.onMessageReply(id)}
+                    orientation={this.props.orientation}
+                    onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+                    onMessageTranslateClose={this.props.onMessageTranslateClose}
+                    translatedMessage={this.props.translatedMessage}
+                    translatedMessageId={this.props.translatedMessageId}
+                    onDelete={(id) => this.props.onDelete(id)}
+                    onUnSend={(id) => this.props.onUnSendMsg(id)}
+                    onEditMessage={(msg) => this.props.onEditMessage(msg)}
+                    onDownloadMessage={(msg) => {
+                      this.props.onDownloadMessage(msg);
+                    }}
+                    audioPlayingId={this.state.audioPlayingId}
+                    perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                    closeMenu={this.state.closeMenu}
+                    onAudioPlayPress={(id) => {
+                      this.setState({
+                        audioPlayingId: id,
+                        perviousPlayingAudioId: this.state.audioPlayingId,
+                      });
+                    }}
+                    onReplyPress={(id)=>{
+                      this.scrollView.scrollToIndex({animated:true,index:this.searchItemIndex(messages,id,index)});
+                      this[`message_box_${id}`] && this[`message_box_${id}`].callBlinking(id);
+                    }}
+                  />
+                  {(messages[index + 1] &&
+                    new Date(item.timestamp).getDate() !==
+                    new Date(messages[index + 1].timestamp).getDate()) ||
+                    index === conversationLength - 1 ? (
+                      item.message_body == null ? null : (
+                        <Fragment>
+                          <View style={chatStyle.messageDateCntainer}>
+                            <View style={chatStyle.messageDate}>
+                              <Text style={chatStyle.messageDateText}>
+                                {getDate(item.timestamp)}
+                              </Text>
+                            </View>
+                          </View>
+                        </Fragment>
+                      )
+                    ) : null}
+                </Fragment>
+              }}
+              ListEmptyComponent={()=><NoData
+                title={translate('pages.xchat.startANewConversationHere')}
+                source={Images.image_conversation}
+                imageColor={Colors.primary}
+                imageAvailable
+              />}
+              />
+          </Fragment>
+          {/* <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
               isReply && { paddingBottom: '20%' },
@@ -204,7 +321,7 @@ class GroupChatContainer extends Component {
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
-          </ScrollView>
+          </ScrollView> */}
           {isReply ? (
             <View
               style={{

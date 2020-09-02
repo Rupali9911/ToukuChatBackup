@@ -144,7 +144,7 @@
     "resolve":"解决",
     "auth/web-storage-unsupported":"不支持此浏览器，或者第三方Cookie和数据可能被禁用",
     "or":"要么",
-    "continueWithApple":"继续苹果",
+    "continueWithApple":"使用Apple登录",
     "usernameText":"输入用户名",
     "resetPasswordToaster":"重置密码"
   },
@@ -991,7 +991,11 @@
       "image":"图片",
       "videoForUploadType":"视频",
       "reEnterNewEmailAddress":"重新输入新的电子邮件地址",
-      "tableHeaderTextFree":"自由"
+      "tableHeaderTextFree":"自由",
+      "chooseOption": "选择选项",
+      "takePhoto": "拍照",
+      "chooseFromLibrary": "从图书馆挑选",
+      "cancelChooseOption": "取消"
     },
     "welcome":{
       "theWorldIsConnected":"世界相连",

@@ -48,6 +48,7 @@ import {
   updateGroupMessageById,
   setGroupMessageUnsend
 } from '../../storage/Service';
+import uuid from 'react-native-uuid';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -444,7 +445,7 @@ class GroupChats extends Component {
     const { currentGroup, userData } = this.props;
     const { conversation } = this.state;
 
-    console.log('event_msg', JSON.stringify(message));
+    // console.log('event_msg', JSON.stringify(message));
 
     //New Message in group
     if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_GROUP) {
@@ -497,14 +498,16 @@ class GroupChats extends Component {
     //REMOVE_GROUP_MEMBER
     if (message.text.data.type == SocketEvents.REMOVE_GROUP_MEMBER) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
-        this.getGroupConversation();
+        this.getGroupDetail();
+        this.getGroupMembers();
       }
     }
 
     //ADD_GROUP_MEMBER
     if (message.text.data.type == SocketEvents.ADD_GROUP_MEMBER) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
-        this.getGroupConversation();
+        this.getGroupDetail();
+        this.getGroupMembers();
       }
     }
 
@@ -527,6 +530,12 @@ class GroupChats extends Component {
         if (message.text.data.message_details.group_id == currentGroup.group_id) {
           this.getGroupConversation();
         }
+      }
+
+      //EDIT_GROUP_DETAIL
+      if(message.text.data.type == SocketEvents.EDIT_GROUP_DETAIL) {
+        console.log('get update detail');
+        this.getGroupDetail();
       }
 
   }
@@ -617,6 +626,7 @@ class GroupChats extends Component {
     this.props
       .getGroupDetail(this.props.currentGroup.group_id)
       .then((res) => {
+        console.log('group_detail',JSON.stringify(res));
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
@@ -929,16 +939,16 @@ class GroupChats extends Component {
       uploadFile,
       sendingMedia,
     } = this.state;
-    const { chatGroupConversation, currentGroup, groupLoading } = this.props;
+    const { chatGroupConversation, currentGroup, currentGroupDetail, groupLoading } = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
         style={globalStyles.container}
       >
         <ChatHeader
-          title={currentGroup.group_name}
+          title={currentGroupDetail.name}
           description={
-            currentGroup.total_members + ' ' + translate('pages.xchat.members')
+            currentGroupDetail.total_members + ' ' + translate('pages.xchat.members')
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={
@@ -946,13 +956,13 @@ class GroupChats extends Component {
               ? this.state.headerRightIconMenuIsGroup
               : this.state.headerRightIconMenu
           }
-          image={currentGroup.group_picture}
+          image={currentGroupDetail.group_picture}
         />
         {groupLoading && chatGroupConversation.length <= 0 ? (
           <ListLoader />
         ) : (
           <GroupChatContainer
-              memberCount={currentGroup.total_members}
+              memberCount={currentGroupDetail.total_members}
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}

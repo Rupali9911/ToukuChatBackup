@@ -127,7 +127,7 @@
 	<key>NSDownloadsFolderUsageDescription</key>
 	<string>App requires to access your download folder to download files</string>
 	<key>NSFileProviderDomainUsageDescription</key>
-	<string>App requires to access your flis to documents files</string>
+	<string>App requires to access your file to documents files</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App requires to access your location for better user experience</string>
 	<key>NSPhotoLibraryUsageDescription</key>

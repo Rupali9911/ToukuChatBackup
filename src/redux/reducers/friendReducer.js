@@ -3,7 +3,9 @@ import Realm from 'realm';
 import {
   setFriendChatConversation,
   getFriendChatConversation,
+  getLocalUserFriends
 } from '../../storage/Service';
+import { dispatch } from 'rxjs/internal/observable/pairs';
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
 export const GET_USER_FRIENDS_FAIL = 'GET_USER_FRIENDS_FAIL';
@@ -165,6 +167,55 @@ export const addNewSendMessage = (data) => ({
 const deleteMessage = (data) => ({
   type: Delete_Message,
   payload: data,
+});
+
+export const setUserFriends = () => (dispatch) =>
+new Promise(function (resolve, reject) {
+  dispatch(getUserFriendsRequest());
+        var result = getLocalUserFriends();
+
+        var friends = [];
+
+        result.map(item=>{
+          var item2 = {
+            avatar: item.avatar,
+            background_image: item.background_image,
+            display_name: item.display_name,
+            friend: item.friend,
+            isChecked: item.isChecked,
+            is_online: item.is_online,
+            is_typing: item.is_typing,
+            last_msg: item.last_msg,
+            last_msg_id: item.last_msg_id,
+            last_msg_type: item.last_msg_type,
+            profile_picture: item.profile_picture,
+            timestamp: item.timestamp,
+            unread_msg: item.unread_msg,
+            user_id: item.user_id,
+            username: item.username
+          };
+          friends.push(item2);
+        })
+
+        let unread_counts = 0;
+        if (friends && friends.length > 0) {
+          friends.map(function (el) {
+            unread_counts = unread_counts + el.unread_msg;
+            // var o = Object.assign({}, el);
+            // o.isChecked = false;
+            // o.is_typing = false;
+            // return o;
+          });
+          dispatch(setUnreadFriendMsgsCounts(unread_counts));
+        }
+        friends.sort((a, b) =>
+          a.timestamp &&
+          b.timestamp &&
+          new Date(a.timestamp) < new Date(b.timestamp)
+            ? 1
+            : -1
+        );
+        dispatch(getUserFriendsSuccess(friends));
 });
 
 export const getUserFriends = () => (dispatch) =>

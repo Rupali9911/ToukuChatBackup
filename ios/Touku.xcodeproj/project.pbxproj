@@ -16,6 +16,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		149717F605C84A72897C900E /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23C4F935A6724A5B9AEB335A /* Poppins-Black.ttf */; };
 		16FA8A0862C542FA95886D1B /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 028C3FF996284225975C54DA /* Poppins-Regular.ttf */; };
+		18AAD4BC24FF7B0B002FCD5C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18AAD4BB24FF7B0B002FCD5C /* GoogleService-Info.plist */; };
+		18CA6F6924F6A8AB00E76F3B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186DF23124F67F4700CAAECA /* InfoPlist.strings */; };
 		18DC280024EEC0BF002341DD /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18DC27FE24EEC0BF002341DD /* Info.plist */; };
 		18DC280424EEC0F4002341DD /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DC280124EEC0F4002341DD /* LaunchScreen.xib */; };
 		18DC280524EEC57E002341DD /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DC280124EEC0F4002341DD /* LaunchScreen.xib */; };
@@ -28,7 +30,6 @@
 		3593266C0E1E4761B807B4F2 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B03D9ACDE154749AC55000F /* Poppins-Light.ttf */; };
 		36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */; };
 		88774A6424766CBD0074E14A /* LineLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 88774A6224766CBC0074E14A /* LineLoginManager.m */; };
-		8890C7A12472929B007645F4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8890C7A02472929B007645F4 /* GoogleService-Info.plist */; };
 		913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 47C8CE34CF284AE3AEA97A75 /* Poppins-Thin.ttf */; };
 		AB161FA85CE4C10DA6B2CE95 /* libPods-Touku.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16EE21BF8996C5FD7D300A42 /* libPods-Touku.a */; };
 		B29F713048FF4A5A9A86E624 /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C76BD82576B411094635396 /* Poppins-ExtraBold.ttf */; };
@@ -72,7 +73,11 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Touku/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Touku/main.m; sourceTree = "<group>"; };
 		16EE21BF8996C5FD7D300A42 /* libPods-Touku.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Touku.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		186DF22B24F67ED800CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = Touku/ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		186DF23024F67F4700CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		188571DF24A2380E00146462 /* Touku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Touku.entitlements; path = Touku/Touku.entitlements; sourceTree = "<group>"; };
+		18AA3EBE24F6A55F005594FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		18AAD4BB24FF7B0B002FCD5C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		18DC27FE24EEC0BF002341DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Touku/Info.plist; sourceTree = "<group>"; };
 		18DC280224EEC0F4002341DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Touku/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		1C76BD82576B411094635396 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -90,7 +95,6 @@
 		88774A6224766CBC0074E14A /* LineLoginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LineLoginManager.m; path = Touku/LineLoginManager.m; sourceTree = "<group>"; };
 		88774A6324766CBC0074E14A /* LineLoginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LineLoginManager.h; path = Touku/LineLoginManager.h; sourceTree = "<group>"; };
 		888829CABEAF4D12992F8D7B /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
-		8890C7A02472929B007645F4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Touku/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8E9B76A2040096448D699F18 /* Pods-Touku.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.release.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.release.xcconfig"; sourceTree = "<group>"; };
 		9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "The-Absolute.otf"; path = "../assets/fonts/The-Absolute.otf"; sourceTree = "<group>"; };
 		9BD2028C405B430FBC4333E4 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
@@ -163,7 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				188571DF24A2380E00146462 /* Touku.entitlements */,
-				8890C7A02472929B007645F4 /* GoogleService-Info.plist */,
+				18AAD4BB24FF7B0B002FCD5C /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				88774A6324766CBC0074E14A /* LineLoginManager.h */,
@@ -173,6 +177,7 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				18DC280124EEC0F4002341DD /* LaunchScreen.xib */,
 				18DC27FE24EEC0BF002341DD /* Info.plist */,
+				186DF23124F67F4700CAAECA /* InfoPlist.strings */,
 			);
 			name = Touku;
 			sourceTree = "<group>";
@@ -397,6 +402,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -442,6 +448,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18DC280524EEC57E002341DD /* LaunchScreen.xib in Resources */,
+				18CA6F6924F6A8AB00E76F3B /* InfoPlist.strings in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				149717F605C84A72897C900E /* Poppins-Black.ttf in Resources */,
 				0212AA3FD7954544BA5DE26D /* Poppins-Bold.ttf in Resources */,
@@ -453,7 +460,7 @@
 				2BF9154176944AB6AE627EA4 /* Poppins-SemiBold.ttf in Resources */,
 				913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */,
 				36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */,
-				8890C7A12472929B007645F4 /* GoogleService-Info.plist in Resources */,
+				18AAD4BC24FF7B0B002FCD5C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,7 +494,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -853,10 +860,21 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		186DF23124F67F4700CAAECA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				186DF23024F67F4700CAAECA /* ja */,
+				18AA3EBE24F6A55F005594FE /* en */,
+			);
+			name = InfoPlist.strings;
+			path = Touku;
+			sourceTree = "<group>";
+		};
 		18DC280124EEC0F4002341DD /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				18DC280224EEC0F4002341DD /* Base */,
+				186DF22B24F67ED800CAAECA /* ja */,
 			);
 			name = LaunchScreen.xib;
 			sourceTree = "<group>";
@@ -957,7 +975,7 @@
 				INFOPLIST_FILE = Touku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 2.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -965,7 +983,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.Touku;
 				PRODUCT_NAME = "TOUKU Lite";
-				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev_19August;
+				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev_2Sept2020;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -992,7 +1010,7 @@
 				INFOPLIST_FILE = Touku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 2.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1000,7 +1018,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.Touku;
 				PRODUCT_NAME = "TOUKU Lite";
-				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev_19August;
+				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev_2Sept2020;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

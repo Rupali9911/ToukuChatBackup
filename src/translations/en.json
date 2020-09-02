@@ -990,7 +990,11 @@
       "image":"Image",
       "videoForUploadType":"Video",
       "reEnterNewEmailAddress":"Re-enter new email address",
-      "tableHeaderTextFree":"Free"
+      "tableHeaderTextFree":"Free",
+      "chooseOption": "Choose Option",
+      "takePhoto": "Take Photo",
+      "chooseFromLibrary": "Choose from library",
+      "cancelChooseOption": "Cancel"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",

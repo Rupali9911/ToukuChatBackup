@@ -86,13 +86,17 @@ class Chat extends Component {
   async componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getUserChannels();
-    await this.props.getFollowingChannels().then((res) => {
-      this.props.getFriendRequests().then((res) => {
-        this.props.getUserConfiguration().then((res) => {
-          this.getCommonChat();
-        });
-      });
-    });
+    // await this.props.getFollowingChannels().then((res) => {
+    //   this.props.getFriendRequests().then((res) => {
+    //     this.props.getUserConfiguration().then((res) => {
+    //       this.getCommonChat();
+    //     });
+    //   });
+    // });
+
+      this.props.getUserConfiguration()
+
+    this.getCommonChat();
 
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
@@ -107,33 +111,40 @@ class Chat extends Component {
     console.log('Chat -> updateData -> updateData');
     await this.props.getFollowingChannels().then((res) => {
       this.props.getFriendRequests().then((res) => {
-        this.props.getUserConfiguration().then((res) => {
+       // this.props.getUserConfiguration().then((res) => {
           this.getUpdatedCommonChat();
-        });
+       // });
       });
     });
   };
 
+  updateGroupData = async()=>{
+    await this.props.getUserGroups().then((res) => {
+          this.getUpdatedCommonChat();
+    });
+  }
+
   checkEventTypes(message) {
+    console.log(JSON.stringify(message));
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
-        console.log('Chat -> checkEventTypes -> setFriendsOnlineStatus');
+        // console.log('Chat -> checkEventTypes -> setFriendsOnlineStatus');
         this.updateData();
         return;
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
-        console.log('Chat -> checkEventTypes -> onNewMessageInGroup');
+        // console.log('Chat -> checkEventTypes -> onNewMessageInGroup');
         this.updateData();
         return;
       case SocketEvents.NEW_MESSAGE_IN_FREIND:
-        console.log('Chat -> checkEventTypes -> onNewMessageInFriend');
+        // console.log('Chat -> checkEventTypes -> onNewMessageInFriend');
         this.updateData();
         return;
       case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
-        console.log('Chat -> checkEventTypes -> MESSAGE_IN_FOLLOWING_CHANNEL');
+        // console.log('Chat -> checkEventTypes -> MESSAGE_IN_FOLLOWING_CHANNEL');
         this.updateData();
         return;
       case SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT:
-        console.log('Chat -> checkEventTypes -> READ_ALL_MESSAGE_CHANNEL_CHAT');
+        // console.log('Chat -> checkEventTypes -> READ_ALL_MESSAGE_CHANNEL_CHAT');
         this.updateData();
         return;
     }

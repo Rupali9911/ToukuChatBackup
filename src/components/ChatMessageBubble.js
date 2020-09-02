@@ -7,6 +7,7 @@ import {
   Clipboard,
   Image,
   Linking,
+    Modal
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Menu } from 'react-native-paper';
@@ -21,16 +22,35 @@ import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import Toast from '../components/Toast';
+import HyperLink from 'react-native-hyperlink';
+import ImageViewer from 'react-native-image-zoom-viewer';
+import ImageView from "react-native-image-viewing";
+
 let borderRadius = 20;
+
 class ChatMessageBubble extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showImage: false,
+        images: null
+    };
   }
 
   onCopy = (message) => {
     Clipboard.setString(message);
   };
+
+    hideImage(){
+      console.log('hideImage called')
+      this.setState({showImage: false})
+    }
+    onImagePress= (url) => {
+        let images = [{
+            uri: url
+        }]
+        this.setState({showImage: true, images: images})
+    }
 
   onDocumentPress = (url) => {
     if (Platform.OS === 'ios') {
@@ -81,7 +101,10 @@ class ChatMessageBubble extends Component {
   renderReplyMessage = (replyMessage) => {
     if (replyMessage.message) {
       return (
-        <View
+        <TouchableOpacity
+          onPress={()=>{
+            this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
+          }}
           style={{
             backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
             padding: 5,
@@ -114,7 +137,7 @@ class ChatMessageBubble extends Component {
               {replyMessage.message}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       );
     }
   };
@@ -155,6 +178,7 @@ class ChatMessageBubble extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
     } = this.props;
+    const {showImage, images} = this.state
     const msgTime = new Date(message.created);
     const isEditable = new Date(msgTime);
 
@@ -164,6 +188,7 @@ class ChatMessageBubble extends Component {
       return null;
     }
     return (
+        <View>
       <Menu
         contentStyle={{
           backgroundColor: Colors.gradient_3,
@@ -226,14 +251,14 @@ class ChatMessageBubble extends Component {
                     onPress={() =>
                       message.msg_type === 'doc'
                         ? this.onDocumentPress(message.message_body)
-                        : null
+                        : message.msg_type === 'image' ? this.onImagePress(message.thumbnail === '' ? message.message_body : message.thumbnail) : null
                     }
                   >
                     {message.reply_to &&
                       this.renderReplyMessage(message.reply_to)}
                     {message.msg_type === 'image' ? (
                       <ScalableImage
-                        src={message.message_body}
+                        src={message.thumbnail === '' ? message.message_body : message.thumbnail}
                         borderRadius={borderRadius}
                       />
                     ) : message.msg_type === 'video' ? (
@@ -292,9 +317,11 @@ class ChatMessageBubble extends Component {
                           onMessagePress(message.id);
                         }}
                       >
-                        <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
-                          {message.message_body}
-                        </Text>
+                        <HyperLink linkStyle={{ color: Colors.link_color }}>
+                          <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
+                            {message.message_body}
+                          </Text>
+                        </HyperLink>
                       </TouchableOpacity>
                     ) : (
                       <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
@@ -370,7 +397,7 @@ class ChatMessageBubble extends Component {
                     onPress={() =>
                       message.msg_type === 'doc'
                         ? this.onDocumentPress(message.message_body)
-                        : null
+                          : message.msg_type === 'image' ? this.onImagePress(message.thumbnail === '' ? message.message_body : message.thumbnail) : null
                     }
                     activeOpacity={0.8}
                   >
@@ -378,7 +405,7 @@ class ChatMessageBubble extends Component {
                       this.renderReplyMessage(message.reply_to)}
                     {message.msg_type === 'image' ? (
                       <ScalableImage
-                        src={message.message_body}
+                        src={message.thumbnail === '' ? message.message_body : message.thumbnail}
                         borderRadius={borderRadius}
                       />
                     ) : message.msg_type === 'video' ? (
@@ -437,9 +464,11 @@ class ChatMessageBubble extends Component {
                           onMessagePress(message.id);
                         }}
                       >
+                        <HyperLink linkStyle={{color: Colors.link_color}}>
                         <Text style={{ color: Colors.white, fontSize: 15 }}>
                           {message.message_body}
                         </Text>
+                        </HyperLink>
                       </TouchableOpacity>
                     ) : (
                       <Text style={{ color: Colors.white, fontSize: 15 }}>
@@ -551,6 +580,13 @@ class ChatMessageBubble extends Component {
           />
         )}
       </Menu>
+            <ImageView
+                images={images}
+                imageIndex={0}
+                visible={showImage}
+                onRequestClose={() => this.hideImage(false)}
+            />
+        </View>
     );
   }
 }

@@ -90,7 +90,7 @@ export const ChatConversationFriend = {
     is_edited: 'bool?',
     is_read: 'bool?',
     is_unsent: 'bool?',
-    local_id: { type: 'int?', default: 0 },
+    local_id: 'string?',
     message_body: 'string?',
     msg_type: 'string?',
     reply_to: {
@@ -139,6 +139,7 @@ export const ChatConversationGroup = {
 
 export const UserFriends = {
   name: 'user_friends',
+  primaryKey: 'user_id',
   properties: {
     user_id: { type: 'int', default: 0 },
     friend: { type: 'int', default: 0 },
@@ -157,3 +158,101 @@ export const UserFriends = {
     timestamp: 'string',
   },
 };
+
+export const Channels = {
+  name: 'channels',
+  primaryKey: 'id',
+  properties: {
+    id: { type: 'int', default: 0 },
+    name: 'string?',
+    unread_msg: { type: 'int?', default: 0 },
+    total_members: { type: 'int?', default: 0 },
+    description: 'string?',
+    chat: 'string?',
+    channel_picture: 'string?',
+    last_msg: {
+      type: 'object?',
+      objectType: 'channel_last_conversation',
+      default: null,
+    },
+    is_pined: 'bool',
+    created: 'string?',
+  },
+};
+
+export const ChannelLastConversation = {
+  name: 'channel_last_conversation',
+  properties: {
+    bonus_message: 'bool?',
+    channel: { type: 'int', default: 0 },
+    created: 'string?',
+    deleted_for: 'int?[]',
+    from_user: 'int?',
+    greeting: 'int?',
+    hyperlink: 'string?',
+    id: { type: 'int', default: 0 },
+    is_edited: 'bool?',
+    is_multilanguage: 'bool?',
+    is_read: 'bool?',
+    is_unsent: 'bool?',
+    message_body: 'string?',
+    msg_type: 'string?',
+    // mutlilanguage_message_body: [Object],
+    read_by: 'int?[]',
+    read_by_in_replies: 'int?[]',
+    // replies_is_read: null,
+    reply_to: {
+      type: 'object?',
+      objectType: 'reply_to',
+      default: null,
+    },
+    schedule_post: 'int?',
+    subchat: 'int?',
+    thumbnail: 'string?',
+    to_user: 'int?',
+    updated: 'string?',
+  },
+};
+
+export const Groups = {
+  name: 'groups',
+  primaryKey: 'group_id',
+  properties: {
+    group_id: { type: 'int', default: 0 },
+    group_name: 'string?',
+    unread_msg: { type: 'int?', default: 0 },
+    total_members: { type: 'int?', default: 0 },
+    description: 'string?',
+    chat: 'string?',
+    group_picture: 'string?',
+    last_msg: {
+      type: 'object?',
+      objectType: 'groups_last_conversation',
+      default: null,
+    },
+    last_msg_id: { type: 'int?', default: null },
+    timestamp: 'string',
+    event: 'string',
+    no_msgs: 'bool',
+    is_pined: 'bool',
+    sender_id: { type: 'int?' },
+    sender_username: 'string?',
+    sender_display_name: 'string?',
+    mentions:'string?[]',
+    reply_to: {
+      type: 'object?',
+      objectType: 'reply_to',
+      default: null,
+    },
+  },
+};
+
+export const GroupsLastConversation = {
+  name: 'groups_last_conversation',
+  properties: {
+    type: 'string?',
+    text: 'string?'
+  },
+};
+
+

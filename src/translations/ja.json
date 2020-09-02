@@ -144,7 +144,7 @@
     "resolve":"解決する",
     "auth/web-storage-unsupported":"このブラウザはサポートされていないか、サードパーティのCookieとデータが無効になっている可能性があります",
     "or":"または",
-    "continueWithApple":"アップルで続行",
+    "continueWithApple":"Appleでサインイン",
     "usernameText":"ユーザーネームを入力",
     "resetPasswordToaster":"認証コードを送信"
   },
@@ -992,7 +992,11 @@
       "image":"画像",
       "videoForUploadType":"動画",
       "reEnterNewEmailAddress":"新しいメールアドレスを再入力してください",
-      "tableHeaderTextFree":"フリー"
+      "tableHeaderTextFree":"フリー",
+      "chooseOption": "オプションを選択",
+      "takePhoto": "写真を撮る",
+      "chooseFromLibrary": "ライブラリーから画像を選択",
+      "cancelChooseOption": "戻る"
     },
     "welcome":{
       "theWorldIsConnected":"世界が繋がる",

@@ -36,6 +36,11 @@ export default class GroupChatMessageBox extends Component {
       this.isPortrait(this.props.message.message_body);
   }
 
+  callBlinking = (id) => {
+    console.log('buuble_box',this[`bubble_box_${id}`],id);
+    this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
+  }
+
   _openMenu = () => this.setState({ longPressMenu: true });
 
   _closeMenu = () => {
@@ -138,7 +143,8 @@ export default class GroupChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
       closeMenu,
-        memberCount
+        memberCount,
+        onReplyPress
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -206,6 +212,9 @@ export default class GroupChatMessageBox extends Component {
                   {message.sender_display_name}
                 </Text>
                 <GroupChatMessageBubble
+                  ref={(view)=>{
+                    this[`bubble_box_${message.msg_id}`] = view;
+                  }}
                   message={message}
                   isUser={isUser}
                   onMessageReply={onMessageReply}
@@ -224,6 +233,7 @@ export default class GroupChatMessageBox extends Component {
                   audioPlayingId={audioPlayingId}
                   perviousPlayingAudioId={perviousPlayingAudioId}
                   onAudioPlayPress={onAudioPlayPress}
+                  onReplyPress={onReplyPress}
                 />
               </View>
               <View
@@ -293,6 +303,10 @@ export default class GroupChatMessageBox extends Component {
               </Text>
             </View>
             <GroupChatMessageBubble
+              ref={(view)=>{
+                console.log(`bubble_box_${message.msg_id}`);
+                this[`bubble_box_${message.msg_id}`] = view;
+              }}
               message={message}
               isUser={isUser}
               onMessageReply={onMessageReply}

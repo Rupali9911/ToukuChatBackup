@@ -45,6 +45,8 @@ import {
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import { ConfirmationModal } from '../../components/Modals';
+import S3uploadService from '../../helpers/S3uploadService';
+import { ActivityIndicator } from 'react-native-paper';
 
 const { width, height } = Dimensions.get('window');
 
@@ -102,6 +104,8 @@ class GroupDetails extends Component {
       ],
       dropDownData: null,
     };
+
+    this.S3uploadService = new S3uploadService();
   }
 
   static navigationOptions = () => {
@@ -268,7 +272,7 @@ class GroupDetails extends Component {
       });
   };
 
-  onUpdateGroup = () => {
+  onUpdateGroup = (group_picture,group_picture_thumb) => {
     let editData = {
       group_id: 310,
       name: this.state.groupName,
@@ -279,6 +283,14 @@ class GroupDetails extends Component {
       sub_genre: '',
       greeting_text: '',
     };
+
+    console.log('editData',group_picture_thumb);
+
+    if(group_picture_thumb){
+      editData['group_picture'] = group_picture;
+      editData['group_picture_thumb'] = group_picture_thumb;
+    }
+
 
     this.props
       .editGroup(this.props.currentGroupDetail.id, editData)
@@ -294,22 +306,46 @@ class GroupDetails extends Component {
 
   chooseFile = () => {
     var options = {
-      title: 'Choose Option',
+        title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, (response) => {
+    ImagePicker.showImagePicker(options, async(response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
         // let source = response;
         // You can also display the image using data:
-        let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+        let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
-          filePath: source,
+          uploadLoading: true,
+          backgroundImagePath: source,
         });
+
+        let file = source.uri;
+        let files = [file];
+        const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+          files,
+        );
+
+        let bgData = {
+          // background_image: uploadedImages.image[0].image,
+          background_image: uploadedImages.image[0].thumbnail,
+        };
+
+        image = uploadedImages.image[0].image
+        thumbnail = uploadedImages.image[0].thumbnail
+
+        this.onUpdateGroup(image,thumbnail);
+        this.setState({filePath: source});
+
       }
     });
   };
@@ -707,6 +743,7 @@ class GroupDetails extends Component {
             message={translate('pages.xchat.wantToLeaveText')}
           />
         </View>
+
       </ImageBackground>
     );
   }

@@ -217,7 +217,11 @@ class CreateChannel extends Component {
 
   chooseChannelImage = () => {
     var options = {
-      title: 'Choose Option',
+        title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -240,7 +244,11 @@ class CreateChannel extends Component {
 
   chooseChannelBgImage = () => {
     var options = {
-      title: 'Choose Option',
+        title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',

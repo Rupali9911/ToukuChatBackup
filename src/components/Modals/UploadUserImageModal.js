@@ -35,7 +35,11 @@ class UploadUserImageModal extends Component {
 
   chooseFile = () => {
     var options = {
-      title: 'Choose Option',
+        title: translate('pages.xchat.chooseOption'),
+        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
+        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',

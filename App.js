@@ -81,21 +81,28 @@ export default class App extends Component {
             let gCount = store.getState().groupReducer.unreadGroupMsgsCounts
             let cCount = store.getState().channelReducer.unreadChannelMsgsCounts
             let totalCount = fCount + gCount + cCount
-            console.log('_handleAppStateChange', store)
-            if (totalCount) {
-                PushNotificationIOS.setApplicationIconBadgeNumber(totalCount)
-            }
+            console.log('_handleAppStateChange', totalCount)
+            PushNotificationIOS.setApplicationIconBadgeNumber(totalCount)
         }
-        if (this.state.appState.match(/background/) && nextAppState === 'active') {
+        // if (this.state.appState.match(/background/) && nextAppState === 'active') {
+        //     console.log('From background to active')
+        //     setTimeout(() => {
+        //         this.clearBatchCount()
+        //     }, 2000)
+        // }
 
-        }else  if (nextAppState === 'inactive') {
+        if (this.state.appState.match(/background/) && nextAppState === 'active' || this.state.appState.match(/unknown/) && nextAppState === 'active') {
+            console.log('From background to active or unknown to active')
             this.clearBatchCount()
         }
-        if (nextAppState === 'active') {
-            setTimeout(() => {
-                this.clearBatchCount()
-            }, 2000)
-        }
+        // else  if (nextAppState === 'inactive') {
+        //     this.clearBatchCount()
+        // }
+        // if (nextAppState === 'active') {
+        //     setTimeout(() => {
+        //         this.clearBatchCount()
+        //     }, 2000)
+        // }
         this.setState({appState: nextAppState})
     };
 
