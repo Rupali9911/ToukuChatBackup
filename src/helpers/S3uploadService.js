@@ -20,8 +20,8 @@ export default class S3uploadService extends Component {
       const originResizedImage = await this.uploadImage(
         file,
         fileName,
-        1280,
-        1200
+        800,
+        800
       );
       const originResizedImage_2 = await this.uploadImage(
         file,
@@ -103,8 +103,8 @@ export default class S3uploadService extends Component {
       file,
       width,
       height,
-      'PNG',
-      100
+      'JPEG',
+      30
     )
       .then(async ({ uri }) => {
         return await uri;

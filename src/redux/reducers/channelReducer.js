@@ -240,6 +240,20 @@ const getFollowingChannelsFailure = () => ({
   type: GET_FOLLOWING_CHANNELS_FAIL,
 });
 
+export const getLocalFollowingChannels = () => (dispatch) => {
+  let channels = getChannels();
+  if (channels.length) {
+    let array = []
+    let counts = 0;
+    channels.map((item, index) => {
+      counts = counts + item.unread_msg;
+      array = [...array, item];
+    });
+    dispatch(setUnreadChannelMsgsCounts(counts))
+    dispatch(getFollowingChannelsSuccess(array));
+  }
+}
+
 export const getFollowingChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelsRequest());

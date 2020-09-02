@@ -35,7 +35,8 @@ const initialState = {
 
 import {
   setGroupChatConversation,
-  setGroups
+  setGroups,
+  getGroups
 } from '../../storage/Service';
 
 export default function (state = initialState, action) {
@@ -205,6 +206,32 @@ const deleteMessage = (data) => ({
   payload: data,
 });
 
+export const getLocalUserGroups = () => (dispatch) => {
+  var groups = getGroups();
+  var array = [];
+  groups.map((item, index) => {
+    array = [...array, item];
+  });
+  array.sort((a, b) =>
+            a.timestamp &&
+            b.timestamp &&
+            new Date(a.timestamp) < new Date(b.timestamp)
+              ? 1
+              : -1
+          );
+
+  let unread_counts = 0;
+  if (groups && groups.length > 0) {
+    groups = groups.map(function (el) {
+      unread_counts = unread_counts + el.unread_msg;
+      return groups;
+    });
+    dispatch(setUnreadGroupMsgsCounts(unread_counts));
+  }
+
+  dispatch(getUserGroupsSuccess(array));
+}
+
 export const getUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserGroupsRequest());
@@ -313,6 +340,19 @@ export const setGroupConversation = (data) => ({
 export const resetGroupConversation = () => ({
   type: RESET_GROUP_CONVERSATION,
 });
+
+export const getLocalGroupConversation = (groupId) => (dispatch) => {
+  let chat = getGroupChatConversationById(groupId);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+
+      // this.setState({ conversation: conversations });
+      dispatch(setGroupConversation(conversations));
+    }
+}
 
 export const getGroupConversation = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {

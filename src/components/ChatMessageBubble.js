@@ -101,7 +101,10 @@ class ChatMessageBubble extends Component {
   renderReplyMessage = (replyMessage) => {
     if (replyMessage.message) {
       return (
-        <View
+        <TouchableOpacity
+          onPress={()=>{
+            this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
+          }}
           style={{
             backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
             padding: 5,
@@ -134,7 +137,7 @@ class ChatMessageBubble extends Component {
               {replyMessage.message}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       );
     }
   };
@@ -248,14 +251,14 @@ class ChatMessageBubble extends Component {
                     onPress={() =>
                       message.msg_type === 'doc'
                         ? this.onDocumentPress(message.message_body)
-                        : message.msg_type === 'image' ? this.onImagePress(message.message_body) : null
+                        : message.msg_type === 'image' ? this.onImagePress(message.thumbnail === '' ? message.message_body : message.thumbnail) : null
                     }
                   >
                     {message.reply_to &&
                       this.renderReplyMessage(message.reply_to)}
                     {message.msg_type === 'image' ? (
                       <ScalableImage
-                        src={message.message_body}
+                        src={message.thumbnail === '' ? message.message_body : message.thumbnail}
                         borderRadius={borderRadius}
                       />
                     ) : message.msg_type === 'video' ? (
@@ -394,7 +397,7 @@ class ChatMessageBubble extends Component {
                     onPress={() =>
                       message.msg_type === 'doc'
                         ? this.onDocumentPress(message.message_body)
-                          : message.msg_type === 'image' ? this.onImagePress(message.message_body) : null
+                          : message.msg_type === 'image' ? this.onImagePress(message.thumbnail === '' ? message.message_body : message.thumbnail) : null
                     }
                     activeOpacity={0.8}
                   >
@@ -402,7 +405,7 @@ class ChatMessageBubble extends Component {
                       this.renderReplyMessage(message.reply_to)}
                     {message.msg_type === 'image' ? (
                       <ScalableImage
-                        src={message.message_body}
+                        src={message.thumbnail === '' ? message.message_body : message.thumbnail}
                         borderRadius={borderRadius}
                       />
                     ) : message.msg_type === 'video' ? (

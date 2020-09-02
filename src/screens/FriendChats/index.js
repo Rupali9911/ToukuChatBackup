@@ -157,13 +157,16 @@ class FriendChats extends Component {
       return;
     }
     let msgText = newMessageText;
+    let imgThumb = ''
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files
       );
+      console.log('uploadedImages', uploadedImages)
       msgText = uploadedImages.image[0].image;
+        imgThumb = uploadedImages.image[0].thumbnail;
     }
 
     if (sentMessageType === 'audio') {
@@ -200,7 +203,7 @@ class FriendChats extends Component {
     }
 
     let sendmsgdata = {
-      thumbnail: null,
+      thumbnail: imgThumb,
       from_user: {
         id: userData.id,
         email: userData.email,

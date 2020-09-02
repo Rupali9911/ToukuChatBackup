@@ -90,7 +90,7 @@ export const ChatConversationFriend = {
     is_edited: 'bool?',
     is_read: 'bool?',
     is_unsent: 'bool?',
-    local_id: { type: 'int?', default: 0 },
+    local_id: 'string?',
     message_body: 'string?',
     msg_type: 'string?',
     reply_to: {

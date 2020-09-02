@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {
+  FlatList,
   View,
   Text,
   StyleSheet,
@@ -137,6 +138,16 @@ class ChatContainer extends Component {
     }
   };
 
+  searchItemIndex = (data, id,idx) => {
+    var result = idx;
+    data.map((item,index)=>{
+      if(item.id===id){
+        result = index;
+      }
+    })
+    return result;
+  }
+
   render() {
     const {
       orientation,
@@ -183,7 +194,122 @@ class ChatContainer extends Component {
             },
           ]}
         >
-          <ScrollView
+          <Fragment>
+            <FlatList
+              style={{marginBottom:20}}
+              contentContainerStyle={[
+                chatStyle.messareAreaScroll,
+                isReply && { paddingBottom: '20%' },
+              ]}
+              ref={(view) => {
+                this.scrollView = view;
+              }}
+              onContentSizeChange={() => {
+                if (this.props.translatedMessageId) {
+
+                } else {
+                  // this.scrollView.scrollToEnd();
+                }
+              }}
+              getItemLayout={(data, index) => (
+                {length: 200, offset: 200 * index, index}
+              )}
+              automaticallyAdjustContentInsets
+              contentInsetAdjustmentBehavior={'automatic'}
+              decelerationRate={'fast'}
+              onScrollBeginDrag={() => {
+                this.closeMenu();
+              }}
+              onScrollEndDrag={() => {
+                this.closeMenuFalse();
+              }}
+              data={messages}
+              inverted={true}
+              renderItem={({ item, index }) => {
+                getDate = (date) => {
+                  const today = new Date();
+                  const yesterday = new Date();
+                  yesterday.setDate(today.getDate() - 1);
+                  const msgDate = new Date(date);
+                  if (
+                    today.getDate() === msgDate.getDate() &&
+                    today.getMonth() === today.getMonth()
+                  )
+                    return translate('common.today');
+                  if (
+                    yesterday.getDate() === msgDate.getDate() &&
+                    yesterday.getMonth() === msgDate.getMonth()
+                  )
+                    return translate('common.yesterday');
+                  return moment(msgDate).format('MM/DD');
+                };
+                const conversationLength = messages.length;
+                return <Fragment>
+                  <ChatMessageBox
+                    key={item.id}
+                    message={item}
+                    isUser={
+                      item.from_user.id == this.props.userData.id ||
+                        item.from_user == this.props.userData.id
+                        ? true
+                        : false
+                    }
+                    time={new Date(item.created)}
+                    isChannel={this.props.isChannel}
+                    currentChannel={this.props.currentChannel}
+                    is_read={item.is_read}
+                    onMessageReply={(id) => this.props.onMessageReply(id)}
+                    onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+                    onMessageTranslateClose={this.props.onMessageTranslateClose}
+                    onEditMessage={(msg) => this.props.onEditMessage(msg)}
+                    onDownloadMessage={(msg) => {
+                      this.props.onDownloadMessage(msg);
+                    }}
+                    translatedMessage={this.props.translatedMessage}
+                    translatedMessageId={this.props.translatedMessageId}
+                    onDelete={(id) => this.props.onDelete(id)}
+                    onUnSend={(id) => this.props.onUnSendMsg(id)}
+                    orientation={this.props.orientation}
+                    audioPlayingId={this.state.audioPlayingId}
+                    closeMenu={this.state.closeMenu}
+                    perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                    onAudioPlayPress={(id) => {
+                      this.setState({
+                        audioPlayingId: id,
+                        perviousPlayingAudioId: this.state.audioPlayingId,
+                      });
+                    }}
+                    onReplyPress={(id)=>{
+                      this.scrollView.scrollToIndex({animated:true,index:this.searchItemIndex(messages,id,index)});
+                    }}
+                  />
+                  {(messages[index + 1] &&
+                    new Date(item.created).getDate() !==
+                    new Date(messages[index + 1].created).getDate()) ||
+                    index === conversationLength - 1 ? (
+                      item.message_body == null && !item.is_unsent ? null : (
+                        <Fragment>
+                          <View style={chatStyle.messageDateCntainer}>
+                            <View style={chatStyle.messageDate}>
+                              <Text style={chatStyle.messageDateText}>
+                                {getDate(item.created)}
+                              </Text>
+                            </View>
+                          </View>
+                        </Fragment>
+                      )
+                    ) : null}
+                </Fragment>
+              }}
+              ListEmptyComponent={() => <NoData
+                title={translate('pages.xchat.startANewConversationHere')}
+                source={Images.image_conversation}
+                imageColor={Colors.primary}
+                imageAvailable
+              />}
+            />
+          </Fragment>
+          {/* <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
               isReply && { paddingBottom: '20%' },
@@ -211,7 +337,7 @@ class ChatContainer extends Component {
             <View style={chatStyle.messageContainer}>
               {this.renderMessage(messages)}
             </View>
-          </ScrollView>
+          </ScrollView> */}
           {isReply ? (
             <View
               style={{

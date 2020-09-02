@@ -1,4 +1,4 @@
-import {client, userAgent} from '../../helpers/api';
+import { client, userAgent } from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import Toast from "../../components/Toast";

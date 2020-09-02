@@ -16,6 +16,7 @@ import WebViewClass from '../../components/WebView';
 import QRCodeClass from "../../components/QRCode";
 import ConfirmationModal from "../../components/Modals/ConfirmationModal";
 import AsyncStorage from '@react-native-community/async-storage';
+import {resetData} from '../../storage/Service';
 
 class More extends Component {
   constructor(props) {
@@ -77,6 +78,7 @@ class More extends Component {
       this.updateModalVisibility()
         this.props.logout().then((res) => {
             this.props.navigation.navigate('Auth');
+            resetData();
         });
     }
 

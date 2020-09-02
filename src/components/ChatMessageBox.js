@@ -140,7 +140,8 @@ export default class ChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
       closeMenu,
-      currentChannel
+      currentChannel,
+      onReplyPress
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -221,6 +222,7 @@ export default class ChatMessageBox extends Component {
                 audioPlayingId={audioPlayingId}
                 perviousPlayingAudioId={perviousPlayingAudioId}
                 onAudioPlayPress={onAudioPlayPress}
+                onReplyPress={onReplyPress}
               />
               <View
                 style={{

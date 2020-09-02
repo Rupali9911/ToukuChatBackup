@@ -16,6 +16,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		149717F605C84A72897C900E /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23C4F935A6724A5B9AEB335A /* Poppins-Black.ttf */; };
 		16FA8A0862C542FA95886D1B /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 028C3FF996284225975C54DA /* Poppins-Regular.ttf */; };
+		18AAD4BC24FF7B0B002FCD5C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18AAD4BB24FF7B0B002FCD5C /* GoogleService-Info.plist */; };
 		18CA6F6924F6A8AB00E76F3B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186DF23124F67F4700CAAECA /* InfoPlist.strings */; };
 		18DC280024EEC0BF002341DD /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18DC27FE24EEC0BF002341DD /* Info.plist */; };
 		18DC280424EEC0F4002341DD /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DC280124EEC0F4002341DD /* LaunchScreen.xib */; };
@@ -29,7 +30,6 @@
 		3593266C0E1E4761B807B4F2 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B03D9ACDE154749AC55000F /* Poppins-Light.ttf */; };
 		36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */; };
 		88774A6424766CBD0074E14A /* LineLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 88774A6224766CBC0074E14A /* LineLoginManager.m */; };
-		8890C7A12472929B007645F4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8890C7A02472929B007645F4 /* GoogleService-Info.plist */; };
 		913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 47C8CE34CF284AE3AEA97A75 /* Poppins-Thin.ttf */; };
 		AB161FA85CE4C10DA6B2CE95 /* libPods-Touku.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16EE21BF8996C5FD7D300A42 /* libPods-Touku.a */; };
 		B29F713048FF4A5A9A86E624 /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C76BD82576B411094635396 /* Poppins-ExtraBold.ttf */; };
@@ -67,7 +67,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ToukuTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToukuTests.m; sourceTree = "<group>"; };
 		028C3FF996284225975C54DA /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* TOUKU.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TOUKU.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* TOUKU Lite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TOUKU Lite.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Touku/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Touku/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Touku/Images.xcassets; sourceTree = "<group>"; };
@@ -77,6 +77,7 @@
 		186DF23024F67F4700CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		188571DF24A2380E00146462 /* Touku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Touku.entitlements; path = Touku/Touku.entitlements; sourceTree = "<group>"; };
 		18AA3EBE24F6A55F005594FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		18AAD4BB24FF7B0B002FCD5C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		18DC27FE24EEC0BF002341DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Touku/Info.plist; sourceTree = "<group>"; };
 		18DC280224EEC0F4002341DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Touku/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		1C76BD82576B411094635396 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -94,7 +95,6 @@
 		88774A6224766CBC0074E14A /* LineLoginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LineLoginManager.m; path = Touku/LineLoginManager.m; sourceTree = "<group>"; };
 		88774A6324766CBC0074E14A /* LineLoginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LineLoginManager.h; path = Touku/LineLoginManager.h; sourceTree = "<group>"; };
 		888829CABEAF4D12992F8D7B /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
-		8890C7A02472929B007645F4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Touku/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8E9B76A2040096448D699F18 /* Pods-Touku.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.release.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.release.xcconfig"; sourceTree = "<group>"; };
 		9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "The-Absolute.otf"; path = "../assets/fonts/The-Absolute.otf"; sourceTree = "<group>"; };
 		9BD2028C405B430FBC4333E4 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
@@ -167,7 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				188571DF24A2380E00146462 /* Touku.entitlements */,
-				8890C7A02472929B007645F4 /* GoogleService-Info.plist */,
+				18AAD4BB24FF7B0B002FCD5C /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				88774A6324766CBC0074E14A /* LineLoginManager.h */,
@@ -223,7 +223,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* TOUKU.app */,
+				13B07F961A680F5B00A75B9A /* TOUKU Lite.app */,
 				00E356EE1AD99517003FC87E /* ToukuTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* Touku-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* Touku-tvOSTests.xctest */,
@@ -323,7 +323,7 @@
 			);
 			name = Touku;
 			productName = Touku;
-			productReference = 13B07F961A680F5B00A75B9A /* TOUKU.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* TOUKU Lite.app */;
 			productType = "com.apple.product-type.application";
 		};
 		2D02E47A1E0B4A5D006451C7 /* Touku-tvOS */ = {
@@ -460,7 +460,7 @@
 				2BF9154176944AB6AE627EA4 /* Poppins-SemiBold.ttf in Resources */,
 				913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */,
 				36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */,
-				8890C7A12472929B007645F4 /* GoogleService-Info.plist in Resources */,
+				18AAD4BC24FF7B0B002FCD5C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -887,7 +887,7 @@
 			baseConfigurationReference = CD0D203CD62EA685B39FA7F0 /* Pods-Touku-ToukuTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -923,7 +923,7 @@
 			baseConfigurationReference = 44E3D66DD62797312B99BB45 /* Pods-Touku-ToukuTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
@@ -958,9 +958,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Touku/Touku.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -975,15 +975,15 @@
 				INFOPLIST_FILE = Touku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.7;
+				MARKETING_VERSION = 2.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.angelium.touku.app;
-				PRODUCT_NAME = TOUKU;
-				PROVISIONING_PROFILE_SPECIFIER = Touku_AppStore_25August;
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.Touku;
+				PRODUCT_NAME = "TOUKU Lite";
+				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev_2Sept2020;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -998,9 +998,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Touku/Touku.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1010,15 +1010,15 @@
 				INFOPLIST_FILE = Touku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.7;
+				MARKETING_VERSION = 2.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.angelium.touku.app;
-				PRODUCT_NAME = TOUKU;
-				PROVISIONING_PROFILE_SPECIFIER = Touku_AppStore_25August;
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.Touku;
+				PRODUCT_NAME = "TOUKU Lite";
+				PROVISIONING_PROFILE_SPECIFIER = ToukuLite_Dev_2Sept2020;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

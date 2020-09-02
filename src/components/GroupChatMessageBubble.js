@@ -1,5 +1,6 @@
 import React, { Fragment, Component } from 'react';
 import {
+  Animated,
   View,
   StyleSheet,
   Text,
@@ -32,7 +33,8 @@ class GroupChatMessageBubble extends Component {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
         showImage: false,
-        images: null
+        images: null,
+        animation : new Animated.Value(1),
     };
   }
     hideImage(){
@@ -45,6 +47,30 @@ class GroupChatMessageBubble extends Component {
         }]
         this.setState({showImage: true, images: images})
     }
+
+  startAnimation=()=>{
+    this.animInterval = setInterval(()=>{
+      Animated.timing(this.state.animation, {
+        toValue : 0,
+        timing : 400,
+        useNativeDriver: true,
+      }).start(()=>{
+        Animated.timing(this.state.animation,{
+          toValue : 1,
+          duration : 400,
+          useNativeDriver: true,
+        }).start();
+      })
+    },800);
+  }
+
+  callBlinkAnimation = () => {
+    setTimeout(()=>{
+      clearInterval(this.animInterval);
+    },3200);
+    this.startAnimation();
+    console.log('animation start');
+  }
 
   onCopy = (message) => {
     Clipboard.setString(message.text);
@@ -101,44 +127,47 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (replyMessage) => {
+    // console.log('reply_render',replyMessage.message);
     if (replyMessage.message) {
     return (
-        <TouchableOpacity
-          onPress={()=>{console.log('Reply On press')}}
+      <TouchableOpacity
+        onPress={() => {
+          this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
+        }}
+        style={{
+          backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
+          padding: 5,
+          width: '100%',
+          borderRadius: 5,
+          marginBottom: 5,
+        }}
+      >
+        <View
           style={{
-            backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
-            padding: 5,
-            width: '100%',
-            borderRadius: 5,
-            marginBottom: 5,
+            flex: 3,
+            flexDirection: 'row',
+            alignItems: 'center',
           }}
         >
-          <View
-            style={{
-              flex: 3,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-              {replyMessage.sender_id === this.props.userData.id
-                ? 'You'
-                : replyMessage.display_name}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 7,
-              justifyContent: 'center',
-              width: '95%',
-              marginTop: 5,
-            }}
-          >
-            <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-              {replyMessage.message}
-            </Text>
-          </View>
-        </TouchableOpacity>
+          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+            {replyMessage.sender_id === this.props.userData.id
+              ? 'You'
+              : replyMessage.display_name}
+          </Text>
+        </View>
+        <View
+          style={{
+            flex: 7,
+            justifyContent: 'center',
+            width: '95%',
+            marginTop: 5,
+          }}
+        >
+          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+            {replyMessage.message}
+          </Text>
+        </View>
+      </TouchableOpacity>
       );
     }
   };
@@ -179,7 +208,6 @@ class GroupChatMessageBubble extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
-      onReplyPress
     } = this.props;
       const {showImage, images} = this.state
     if (!message.message_body && !message.is_unsent) {
@@ -198,6 +226,11 @@ class GroupChatMessageBubble extends Component {
     const isEditable = new Date(msgTime);
 
     isEditable.setDate(isEditable.getDate() + 1);
+
+    const animatedStyle ={
+      opacity : this.state.animation
+    }
+
     return (
         <View>
       <Menu
@@ -209,7 +242,7 @@ class GroupChatMessageBubble extends Component {
         onDismiss={closeMenu}
         anchor={
           !isUser ? (
-            <View style={styles.talkBubble}>
+            <Animated.View style={[styles.talkBubble,animatedStyle]}>
               <View style={{ marginLeft: 5 }}>
                 <View
                   style={[
@@ -350,9 +383,9 @@ class GroupChatMessageBubble extends Component {
                   </TouchableOpacity>
                 )}
               </View>
-            </View>
+            </Animated.View>
           ) : (
-            <View style={styles.talkBubble}>
+            <Animated.View style={[styles.talkBubble,animatedStyle]}>
               <View
                 style={[
                   styles.talkBubbleAbsoluteRight,
@@ -509,7 +542,7 @@ class GroupChatMessageBubble extends Component {
                   </TouchableOpacity>
                 </LinearGradient>
               )}
-            </View>
+            </Animated.View>
           )
         }
       >
