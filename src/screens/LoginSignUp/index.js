@@ -161,7 +161,7 @@ class LoginSignUp extends Component {
           }
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
-          this.props.navigation.navigate('Chat');
+          this.props.navigation.navigate('App');
           return;
         }
           if (res.error) {
@@ -248,7 +248,7 @@ class LoginSignUp extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('App');
             return;
           }
             if (res.error) {
@@ -320,7 +320,7 @@ class LoginSignUp extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('App');
             return;
           }
             if (res.error) {
@@ -376,7 +376,7 @@ class LoginSignUp extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Chat');
+              this.props.navigation.navigate('App');
               return;
             }
               if (res.error) {
@@ -426,7 +426,7 @@ class LoginSignUp extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Chat');
+              this.props.navigation.navigate('App');
               return;
             }
               if (res.error) {
@@ -478,7 +478,7 @@ class LoginSignUp extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('App');
             return;
           }
             if (res.error) {
@@ -563,7 +563,7 @@ class LoginSignUp extends Component {
                     }
                     await AsyncStorage.setItem('userToken', res.token);
                     await AsyncStorage.removeItem('socialToken');
-                    this.props.navigation.navigate('Chat');
+                    this.props.navigation.navigate('App');
                     return;
                 }
                 if (res.error) {

@@ -66,7 +66,7 @@ class SignUp extends Component {
       passwordConfirmStatus: 'normal',
 
         userNameErr: 'messages.required',
-        passwordErr: 'messages.required',
+        passwordErr: 'minLengthFailed',
         confirmPasswordErr: null,
         userNameStatus: 'normal',
     };
@@ -330,13 +330,17 @@ class SignUp extends Component {
           });
       }else  if (password.length <= 0) {
         isValid = false;
+        // this.setState({
+        //     passwordStatus: 'wrong',
+        //     passwordErr: 'messages.required',
+        // });
         this.setState({
             passwordStatus: 'wrong',
-            passwordErr: 'messages.required',
+            passwordErr: 'minLengthFailed',
         });
         Toast.show({
             title: translate('common.register'),
-            text: translate('toastr.pleaseEnterYourPassword'),
+            text: translate('pages.register.minLengthPassword'),
             type: 'warning',
         });
     }else if (password.length < 8 ) {
@@ -412,7 +416,7 @@ class SignUp extends Component {
                   AsyncStorage.multiRemove(keys);
                   this.props.getUserProfile().then((res) => {
                     if (res.id) {
-                      this.props.navigation.navigate('Chat');
+                      this.props.navigation.navigate('App');
 
                       if (channelData) {
                             this.props.setCurrentChannel(channelData)
@@ -543,7 +547,8 @@ class SignUp extends Component {
   handlePassword = (password) => {
       this.setState({password});
       if (password.length <= 0) {
-          this.setState({passwordStatus: 'wrong', passwordErr: 'messages.required'});
+          //this.setState({passwordStatus: 'wrong', passwordErr: 'messages.required'});
+          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthPassword'});
       }else if (password.length < 8 ) {
       this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
     }else if (password.length > 64) {
@@ -641,18 +646,20 @@ class SignUp extends Component {
             username: username,
             invitation_code: invitationCode ? invitationCode : '',
             email: email,
+              site_from: 'touku',
           });
         } else {
           registrationData = JSON.stringify({
             username: username,
             invitation_code: invitationCode ? invitationCode : '',
+              site_from: 'touku',
           });
         }
         this.props.socialRegistration(registrationData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             AsyncStorage.removeItem('invitationCode')
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('App');
 
               if (channelData) {
                   this.props.setCurrentChannel(channelData)
@@ -663,7 +670,7 @@ class SignUp extends Component {
             return;
           }else if (res.message) {
               Toast.show({
-                  title: translate('common.register'),
+                  title: translate('pages.register.toastr.RegisterFailed'),
                   text: res.message,
                   type: 'primary',
               });
@@ -675,20 +682,20 @@ class SignUp extends Component {
                             console.log('err.response.data', err.response.data)
                             if (err.response.data.message) {
                                 Toast.show({
-                                    title: translate('common.register'),
+                                    title: translate('pages.register.toastr.RegisterFailed'),
                                     text: translate(err.response.data.message.toString()),
                                     type: 'primary',
                                 });
                             }else{
                                 Toast.show({
-                                    title: translate('common.register'),
+                                    title: translate('pages.register.toastr.RegisterFailed'),
                                     text: translate('common.somethingWentWrong'),
                                     type: 'primary',
                                 });
                             }
                         }else{
                             Toast.show({
-                                title: translate('common.register'),
+                                title: translate('pages.register.toastr.RegisterFailed'),
                                 text: translate('common.somethingWentWrong'),
                                 type: 'primary',
                             });
@@ -885,9 +892,11 @@ class SignUp extends Component {
                                 },
                             ]}
                         >
-                            {passwordErr === 'messages.required' ? translate(passwordErr).replace(
-                                '[missing {{field}} value]',
-                                translate('pages.register.loginPassword')): passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')
+                            {/*{passwordErr === 'messages.required' ? translate(passwordErr).replace(*/}
+                                {/*'[missing {{field}} value]',*/}
+                                {/*translate('pages.register.loginPassword')): passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')*/}
+                                {/*:  translate('pages.register.maxLengthPassword')}*/}
+                                {passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')
                                 :  translate('pages.register.maxLengthPassword')}
 
                         </Text>

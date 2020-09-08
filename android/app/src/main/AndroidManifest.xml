@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-  package="com.toukuApp">
+  package="com.touku">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -11,17 +11,16 @@
 
     <application
       tools:replace="android:allowBackup"
-      android:name="com.toukuApp.MainApplication"
+      android:name="com.touku.MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="true"
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="true">
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <meta-data tools:replace="android:value" android:name="com.kakao.sdk.AppKey" android:value="39152cc4df634359df4920277d99b009"/>
       <activity
-        android:name="com.toukuApp.MainActivity"
+        android:name="com.touku.MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
         android:launchMode="singleTask"
@@ -30,13 +29,13 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
-          <intent-filter android:label="TOUKU Lite">
+          <intent-filter android:label="TOUKU">
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
               <data android:scheme="https" android:host="www.touku.net" />
               <data android:scheme="https" android:host="touku.angelium.net" />
-              <data android:scheme="toukuLite" android:host="toukuLite" />
+              <data android:scheme="touku" android:host="touku" />
           </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />

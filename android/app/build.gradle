@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.toukuApp"
+        applicationId "com.touku"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 22

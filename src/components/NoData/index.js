@@ -11,15 +11,15 @@ export default class NoData extends Component {
   }
 
   render() {
-    const {title, imageAvailable, source, imageColor} = this.props;
+    const {title, imageAvailable, source, imageColor, style, textStyle} = this.props;
     return (
       <View
-        style={{
+        style={[{
           flex: 1,
           padding: 15,
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        },style]}>
         {imageAvailable ? (
           <Image
             source={source}
@@ -34,7 +34,7 @@ export default class NoData extends Component {
         <Text
           style={[
             globalStyles.smallRegularText,
-            {color: Colors.gray_dark, marginTop: 10},
+            {color: Colors.gray_dark, marginTop: 10},textStyle
           ]}>
           {title}
         </Text>

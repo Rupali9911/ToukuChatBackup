@@ -256,3 +256,15 @@ export const GroupsLastConversation = {
 };
 
 
+export const FriendRequest = {
+  name: 'friend_reuqest',
+  primaryKey: 'from_user_id',
+  properties: {
+    from_user_id: { type: 'int', default: 0 },
+    from_user_display_name: 'string?',
+    from_user_username: 'string?',
+    from_user_avatar: 'string?',
+    created: 'string?'
+  },
+};
+

@@ -36,6 +36,7 @@ import { eventService } from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
+  setChannelChatConversation,
   getChannelChatConversationById,
   updateMessageById,
   deleteMessageById,
@@ -121,12 +122,18 @@ class ChannelChats extends Component {
       message.text.data.message_details.channel == currentChannel.id
     ) {
       if (message.text.data.message_details.from_user.id == userData.id) {
-        this.getChannelConversations();
+        // this.getChannelConversations();
+        setChannelChatConversation([message.text.data.message_details]);
+        this.getLocalChannelConversations();
+        this.props.readAllChannelMessages(this.props.currentChannel.id);
       } else if (
         message.text.data.message_details.to_user != null &&
         message.text.data.message_details.to_user.id == userData.id
       ) {
-        this.getChannelConversations();
+        // this.getChannelConversations();
+        setChannelChatConversation([message.text.data.message_details]);
+        this.getLocalChannelConversations();
+        this.props.readAllChannelMessages(this.props.currentChannel.id);
       }
     }
 
@@ -163,26 +170,26 @@ class ChannelChats extends Component {
     ) {
       message.text.data.message_details.map((item) => {
         if (item.channel === currentChannel.id) {
-          this.getChannelConversations();
+          // this.getChannelConversations();
         }
       });
     }
 
-    // MESSAGE_IN_THREAD
-    if (
-      message.text.data.type ==
-        SocketEvents.MESSAGE_IN_THREAD &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        this.getChannelConversations();
-      }
-    }
+    // // MESSAGE_IN_THREAD
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.MESSAGE_IN_THREAD &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     this.getChannelConversations();
+    //   }
+    // }
 
     // MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
     if (
@@ -196,12 +203,20 @@ class ChannelChats extends Component {
         let msgType = message.text.data.message_details.msg_type;
         console.log(editMessageId,msgText,msgType);
         updateMessageById(editMessageId, msgText, msgType);
-        this.getChannelConversations();
+        // this.getChannelConversations();
+        this.getLocalChannelConversations();
       } else if (
         message.text.data.message_details.to_user != null &&
         message.text.data.message_details.to_user.id == userData.id
       ) {
         // this.getChannelConversations();
+        let editMessageId = message.text.data.message_details.id;
+        let msgText = message.text.data.message_details.message_body;
+        let msgType = message.text.data.message_details.msg_type;
+        console.log(editMessageId,msgText,msgType);
+        updateMessageById(editMessageId, msgText, msgType);
+        // this.getChannelConversations();
+        this.getLocalChannelConversations();
       }
     }
 
@@ -245,12 +260,15 @@ class ChannelChats extends Component {
     ) {
       if (message.text.data.message_details.from_user == userData.id) {
         setMessageUnsend(message.text.data.message_details.id);
-        this.getChannelConversations();
+        // this.getChannelConversations();
+        this.getLocalChannelConversations();
       } else if (
         message.text.data.message_details.to_user != null &&
         message.text.data.message_details.to_user.id == userData.id
       ) {
         // this.getChannelConversations();
+        setMessageUnsend(message.text.data.message_details.id);
+        this.getLocalChannelConversations();
       }
     }
 
@@ -556,6 +574,17 @@ class ChannelChats extends Component {
       console.warn(err);
     }
   };
+
+  getLocalChannelConversations = () => {
+    let chat = getChannelChatConversationById(this.props.currentChannel.id);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+      this.props.setChannelConversation(conversations);
+    }
+  }
 
   getChannelConversations = async () => {
     await this.props

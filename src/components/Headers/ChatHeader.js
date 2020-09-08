@@ -40,7 +40,6 @@ export default class ChatHeader extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
   }
-
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
   };

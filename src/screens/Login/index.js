@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
   Linking,
   Keyboard,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import {
   GoogleSignin,
@@ -157,6 +157,7 @@ class Login extends Component {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       this.setState({ userInfo: userInfo, loggedIn: true });
+        console.log('userInfo', userInfo)
       let fcmToken = await AsyncStorage.getItem('fcmToken');
       const googleLoginData = {
         code: userInfo.idToken,
@@ -164,6 +165,7 @@ class Login extends Component {
         site_from: 'touku',
           dev_id: fcmToken ? fcmToken : '',
       };
+      console.log('googleLoginData', googleLoginData)
       this.props.googleRegister(googleLoginData).then(async (res) => {
         console.log('JWT TOKEN=> ', JSON.stringify(res));
         if (res.token) {
@@ -185,7 +187,7 @@ class Login extends Component {
           }
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
-          this.props.navigation.navigate('Chat');
+          this.props.navigation.navigate('App');
 
             let channelDataJson = await AsyncStorage.getItem('channelData');
             let channelData = JSON.parse(channelDataJson);
@@ -292,7 +294,7 @@ class Login extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('App');
 
               let channelDataJson = await AsyncStorage.getItem('channelData');
               let channelData = JSON.parse(channelDataJson);
@@ -356,7 +358,7 @@ class Login extends Component {
           dev_id: fcmToken ? fcmToken : '',
           username: userName,
         };
-
+          console.log('twitterLoginData', twitterLoginData)
         this.props.twitterRegister(twitterLoginData).then(async (res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
@@ -378,7 +380,7 @@ class Login extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Chat');
+            this.props.navigation.navigate('App');
 
               let channelDataJson = await AsyncStorage.getItem('channelData');
               let channelData = JSON.parse(channelDataJson);
@@ -441,7 +443,7 @@ class Login extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Chat');
+              this.props.navigation.navigate('App');
 
                 let channelDataJson = await AsyncStorage.getItem('channelData');
                 let channelData = JSON.parse(channelDataJson);
@@ -500,7 +502,7 @@ class Login extends Component {
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('Chat');
+              this.props.navigation.navigate('App');
 
                 let channelDataJson = await AsyncStorage.getItem('channelData');
                 let channelData = JSON.parse(channelDataJson);
@@ -649,41 +651,39 @@ class Login extends Component {
         password: password,
         rememberMe: true,
       };
-      this.props
-        .userLogin(loginData)
-        .then((res) => {
-          if (res.token) {
-            this.props.getUserProfile().then((res) => {
-              console.log('getUserProfile', res)
-              if (res.id) {
-                this.props.navigation.navigate('Chat');
+      this.props.userLogin(loginData).then((res) => {
+        if (res.token) {
+          this.props.getUserProfile().then((res) => {
+            console.log('getUserProfile', res);
+            if (res.id) {
+              this.props.navigation.navigate('App');
 
-                if (channelData) {
-                  this.props.setCurrentChannel(channelData)
-                    setTimeout(() => {
-                        this.props.navigation.navigate('ChannelInfo');
-                    }, 1000 );
-                }
+              if (channelData) {
+                this.props.setCurrentChannel(channelData);
+                setTimeout(() => {
+                  this.props.navigation.navigate('ChannelInfo');
+                }, 1000);
               }
-            });
-          }
-
-          if (res.user) {
-            Toast.show({
-              title: 'Login Failed',
-              text: translate(res.user.toString()),
-              type: 'primary',
-            });
-            this.setState({ authError: res.user });
-          }
-            if (res.error) {
-                Toast.show({
-                    title: 'Login Failed',
-                    text: translate(res.error.toString()),
-                    type: 'primary',
-                });
             }
-        });
+          });
+        }
+
+        if (res.user) {
+          Toast.show({
+            title: 'Login Failed',
+            text: translate(res.user.toString()),
+            type: 'primary',
+          });
+          this.setState({authError: res.user});
+        }
+        if (res.error) {
+          Toast.show({
+            title: 'Login Failed',
+            text: translate(res.error.toString()),
+            type: 'primary',
+          });
+        }
+      });
     }
   }
 
@@ -752,7 +752,7 @@ class Login extends Component {
                     }
                     await AsyncStorage.setItem('userToken', res.token);
                     await AsyncStorage.removeItem('socialToken');
-                    this.props.navigation.navigate('Chat');
+                    this.props.navigation.navigate('App');
 
                     let channelDataJson = await AsyncStorage.getItem('channelData');
                     let channelData = JSON.parse(channelDataJson);

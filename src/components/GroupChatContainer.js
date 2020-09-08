@@ -233,7 +233,6 @@ class GroupChatContainer extends Component {
                     return translate('common.yesterday');
                   return moment(msgDate).format('MM/DD');
                 };
-
                 const conversationLength = messages.length;
                 return <Fragment key={index}>
                   <GroupChatMessageBox
@@ -295,6 +294,8 @@ class GroupChatContainer extends Component {
                 source={Images.image_conversation}
                 imageColor={Colors.primary}
                 imageAvailable
+                style={{transform: [{ rotate: '180deg' }]}}
+                textStyle={{transform:[{rotateY:"180deg"}]}}
               />}
               />
           </Fragment>

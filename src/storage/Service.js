@@ -10,7 +10,8 @@ import {
   Channels,
   ChannelLastConversation,
   Groups,
-  GroupsLastConversation
+  GroupsLastConversation,
+  FriendRequest
 } from './Schema';
 
 const DB_SCHEMAS = [
@@ -24,7 +25,8 @@ const DB_SCHEMAS = [
   Channels,
   ChannelLastConversation,
   Groups,
-  GroupsLastConversation
+  GroupsLastConversation,
+  FriendRequest
 ];
 
 const DB_SCHEMA_VERSION = 1;
@@ -33,7 +35,7 @@ exports.DB_SCHEMA_VERSION = DB_SCHEMA_VERSION;
 const realm = new Realm({
   path: 'ToukuDB.realm',
   schema: DB_SCHEMAS,
-  schemaVersion: DB_SCHEMA_VERSION,
+  schemaVersion: DB_SCHEMA_VERSION
 });
 
 export const resetData = () => {
@@ -47,7 +49,34 @@ export const setChannelChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm.objects('chat_conversation').filtered('id =' + item.id);
     if (obj.length > 0) {
-      // alert('matching friend');
+      realm.write(() => {
+        realm.create('chat_conversation', {
+          bonus_message: item.bonus_message,
+          channel: item.channel,
+          created: item.created,
+          deleted_for: item.deleted_for,
+          from_user: item.from_user,
+          greeting: item.greeting,
+          hyperlink: item.hyperlink,
+          id: item.id,
+          is_edited: item.is_edited,
+          is_multilanguage: item.is_multilanguage,
+          is_read: item.is_read,
+          is_unsent: item.is_unsent,
+          message_body: item.message_body,
+          msg_type: item.msg_type,
+          // mutlilanguage_message_body: [Object],
+          read_by: item.read_by,
+          read_by_in_replies: item.read_by_in_replies,
+          // replies_is_read: null,
+          reply_to: item.reply_to,
+          schedule_post: item.schedule_post ? item.schedule_post : 0,
+          subchat: item.subchat,
+          thumbnail: item.thumbnail ? item.thumbnail : null,
+          to_user: item.to_user,
+          updated: item.updated,
+        },'modified');
+      });
     } else {
       realm.write(() => {
         realm.create('chat_conversation', {
@@ -88,7 +117,7 @@ export const getChannelChatConversation = () => {
 export const getChannelChatConversationById = (id) => {
   return realm
     .objects('chat_conversation')
-    .sorted('updated', { ascending: true })
+    .sorted('created', { ascending: true })
     .filtered(`channel == ${id}`);
 };
 
@@ -102,16 +131,16 @@ export const updateMessageById = (id, text, type) => {
   });
 };
 
-export const deleteMessageById = (id) => {
+export const deleteMessageById = async(id) => {
   var message = realm.objects('chat_conversation').filtered(`id == ${id}`);
 
-  realm.write(() => {
+  await realm.write(() => {
     realm.delete(message);
   });
 };
 
-export const setMessageUnsend = (id) => {
-  realm.write(() => {
+export const setMessageUnsend = async(id) => {
+  await realm.write(() => {
     realm.create(
       'chat_conversation',
       { id: id, message_body: '', is_unsent: true },
@@ -126,27 +155,48 @@ export const setFriendChatConversation = (conversation) => {
     var obj = realm
       .objects('chat_conversation_friend')
       .filtered('id =' + item.id);
-    if (obj.length > 0) {
-    } else {
-      realm.write(() => {
-        realm.create('chat_conversation_friend', {
-          created: item.created,
-          deleted_for: item.deleted_for,
-          friend: item.friend,
-          from_user: item.from_user,
-          id: item.id,
-          is_edited: item.is_edited,
-          is_read: item.is_read,
-          is_unsent: item.is_unsent,
-          local_id: item.local_id,
-          message_body: item.message_body,
-          msg_type: item.msg_type,
-          reply_to: item.reply_to,
-          thumbnail: item.thumbnail,
-          to_user: item.to_user,
-          updated: item.updated,
+    if (item.id) {
+      if (obj.length > 0) {
+        realm.write(() => {
+          realm.create('chat_conversation_friend', {
+            created: item.created,
+            deleted_for: item.deleted_for,
+            friend: item.friend,
+            from_user: item.from_user,
+            id: item.id,
+            is_edited: item.is_edited,
+            is_read: item.is_read,
+            is_unsent: item.is_unsent,
+            local_id: item.local_id,
+            message_body: item.message_body,
+            msg_type: item.msg_type,
+            reply_to: item.reply_to,
+            thumbnail: item.thumbnail,
+            to_user: item.to_user,
+            updated: item.updated,
+          }, 'modified');
         });
-      });
+      } else {
+        realm.write(() => {
+          realm.create('chat_conversation_friend', {
+            created: item.created,
+            deleted_for: item.deleted_for,
+            friend: item.friend,
+            from_user: item.from_user,
+            id: item.id,
+            is_edited: item.is_edited,
+            is_read: item.is_read,
+            is_unsent: item.is_unsent,
+            local_id: item.local_id,
+            message_body: item.message_body,
+            msg_type: item.msg_type,
+            reply_to: item.reply_to,
+            thumbnail: item.thumbnail,
+            to_user: item.to_user,
+            updated: item.updated,
+          });
+        });
+      }
     }
   }
 };
@@ -158,7 +208,7 @@ export const getFriendChatConversation = () => {
 export const getFriendChatConversationById = (id) => {
   return realm
     .objects('chat_conversation_friend')
-    .sorted('updated', { ascending: true })
+    .sorted('created', { ascending: true })
     .filtered(`friend == ${id}`);
 };
 
@@ -172,12 +222,12 @@ export const updateFriendMessageById = (id, text, type) => {
   });
 };
 
-export const deleteFriendMessageById = (id) => {
+export const deleteFriendMessageById = async (id) => {
   var message = realm
     .objects('chat_conversation_friend')
     .filtered(`id == ${id}`);
 
-  realm.write(() => {
+  await realm.write(() => {
     realm.delete(message);
   });
 };
@@ -191,6 +241,23 @@ export const setFriendMessageUnsend = (id) => {
     );
   });
 };
+
+export const updateAllFriendMessageRead = (friend) => {
+   var results = realm
+      .objects('chat_conversation_friend')
+      .sorted('created', { ascending: true })
+      .filtered(`friend == ${friend}`);
+
+  for(let chat of results){
+    realm.write(() => {
+      realm.create(
+        'chat_conversation_friend',
+        { id: chat.id, is_read: true },
+        'modified'
+      );
+    });
+  }
+}
 
 //Group Services
 export const setGroupChatConversation = (conversation) => {
@@ -315,8 +382,8 @@ export const getChannelsById = (id) => {
     .filtered(`id == ${id}`);
 };
 
-export const updateChannelLastMsg = (id, message, unreadCount) => {
-
+export const updateChannelLastMsgWithOutCount = (id, message) => {
+  console.log('last_msg_update');
   var last_msg = {
     bonus_message: message.bonus_message,
     channel: message.channel,
@@ -342,40 +409,102 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
     updated: message.updated,
   }
 
+    realm.write(() => {
+      realm.create(
+        'channels',
+        {
+          id: id,
+          last_msg: last_msg
+        },
+        'modified'
+      );
+    });
+}
+
+export const updateChannelLastMsg = (id, message, unreadCount) => {
+  console.log('last_msg_update');
+  var last_msg = {
+    bonus_message: message.bonus_message,
+    channel: message.channel,
+    created: message.created,
+    deleted_for: message.deleted_for,
+    from_user: message.from_user.id,
+    greeting: message.greeting,
+    hyperlink: message.hyperlink,
+    id: message.id,
+    is_edited: message.is_edited,
+    is_multilanguage: message.is_multilanguage,
+    is_read: message.is_read,
+    is_unsent: message.is_unsent,
+    message_body: message.message_body,
+    msg_type: message.msg_type,
+    read_by: message.read_by,
+    read_by_in_replies: message.read_by_in_replies,
+    reply_to: message.reply_to,
+    schedule_post: message.schedule_post,
+    subchat: message.subchat,
+    thumbnail: message.thumbnail,
+    to_user: message.to_user?message.to_user.id:null,
+    updated: message.updated,
+  }
+
+  var channel = realm.objects('channels').filtered(`id == ${id}`);
+  var array = []
+  for(let c of channel){
+    array = [...array,c];
+  }
+
+  if(array.length>0 && array[0].last_msg.id!=message.id){
+    realm.write(() => {
+      realm.create(
+        'channels',
+        {
+          id: id,
+          last_msg: last_msg,
+          unread_msg: unreadCount
+        },
+        'modified'
+      );
+    });
+  }
+}
+
+export const updateChannelTotalMember = (id,total_member) => {
   realm.write(() => {
     realm.create(
       'channels',
-      {
-        id: id,
-        last_msg: last_msg
-      },
+      { id: id, total_member: total_member },
       'modified'
     );
   });
-}
-
-export const updateChannelTotalMember = (id) => {
-
 }
 
 export const updateChannelUnReadCountById = (id, unread_msg) => {
   realm.write(() => {
     realm.create(
-      'chat_conversation_group',
-      { msg_id: id, unread_msg: unread_msg },
+      'channels',
+      { id: id, unread_msg: unread_msg },
       'modified'
     );
   });
 };
 
+export const deleteChannelById = (id) => {
+  var message = realm.objects('channels').filtered(`id == ${id}`);
+
+  realm.write(() => {
+    realm.delete(message);
+  });
+}
+
 //Groups List
-export const setGroups = (channels) => {
+export const setGroups = async (channels) => {
   // console.log('realm insert data',channels);
   var checkObject = {};
   for (let item of channels) {
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
-      realm.write(() => {
+      await realm.write(() => {
         realm.create('groups', {
           group_id: item.group_id,
           group_name: item.group_name,
@@ -398,7 +527,7 @@ export const setGroups = (channels) => {
         },'modified');
       });
     } else {
-      realm.write(() => {
+      await realm.write(() => {
         realm.create('groups', {
           group_id: item.group_id,
           group_name: item.group_name,
@@ -433,8 +562,23 @@ export const getGroupsById = (id) => {
   return realm
     .objects('groups')
     .sorted('timestamp', { ascending: true })
-    .filtered(`id == ${id}`);
+    .filtered(`group_id == ${id}`);
 };
+
+export const UpdateGroupDetail = (id,group_name,group_picture,total_members) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        group_name: group_name,
+        group_picture: group_picture,
+        total_members: total_members
+      },
+      'modified'
+    );
+  });
+}
 
 export const updateLastMsgGroups = (id, message, unreadCount) => {
   let last_msg = {
@@ -540,7 +684,6 @@ export const removeUserFriends = (id) => {
 
 export const updateFriendsUnReadCount = (id,unreadCount) => {
   var user = realm.objects('user_friends').filtered(`friend == ${id}`);
-
   var items = [];
   user.map(item=>{
     items.push(item);
@@ -558,8 +701,26 @@ export const updateFriendsUnReadCount = (id,unreadCount) => {
   });
 }
 
-export const updateFriendLastMsg = (message) => {
-  var user = realm.objects('user_friends').filtered(`user_id == ${message.from_user.id}`);
+export const updateFriendLastMsgWithoutCount = async (id,message) => {
+  // var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
+
+    await realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: id,
+          last_msg_id: message.id,
+          last_msg: message.message_body ? message.message_body : '',
+          last_msg_type: message.msg_type,
+          timestamp: message.created,
+        },
+        'modified'
+      );
+    });
+}
+
+export const updateFriendLastMsg = (id,message) => {
+  var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
 
   var items = [];
   user.map(item=>{
@@ -571,7 +732,7 @@ export const updateFriendLastMsg = (message) => {
       realm.create(
         'user_friends',
         {
-          user_id: message.from_user.id,
+          user_id: id,
           unread_msg: items[0].unread_msg+1,
           last_msg_id: message.id,
           last_msg: message.message_body ? message.message_body : '',
@@ -583,3 +744,6 @@ export const updateFriendLastMsg = (message) => {
     });
   }
 }
+
+
+

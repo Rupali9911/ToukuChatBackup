@@ -18,10 +18,10 @@ export const GET_GROUP_CONVERSATION_FAIL = 'GET_GROUP_CONVERSATION_FAIL';
 
 export const SET_UNREAD_GROUP_MSG_COUNTS = 'SET_UNREAD_GROUP_MSG_COUNTS';
 
-export const SET_GROUP_CONVERSATION = "SET_GROUP_CONVERSATION";
-export const RESET_GROUP_CONVERSATION = "RESET_GROUP_CONVERSATION";
+export const SET_GROUP_CONVERSATION = 'SET_GROUP_CONVERSATION';
+export const RESET_GROUP_CONVERSATION = 'RESET_GROUP_CONVERSATION';
 
-export const DELETE_GROUP_MESSAGE = "DELETE_GROUP_MESSAGE";
+export const DELETE_GROUP_MESSAGE = 'DELETE_GROUP_MESSAGE';
 
 const initialState = {
   loading: false,
@@ -36,7 +36,7 @@ const initialState = {
 import {
   setGroupChatConversation,
   setGroups,
-  getGroups
+  getGroups,
 } from '../../storage/Service';
 
 export default function (state = initialState, action) {
@@ -141,8 +141,8 @@ export default function (state = initialState, action) {
     case DELETE_GROUP_MESSAGE:
       return {
         ...state,
-        chatGroupConversation : state.chatGroupConversation.filter(
-          (item) => item.msg_id !== action.payload
+        chatGroupConversation: state.chatGroupConversation.filter(
+          (item) => item.msg_id !== action.payload,
         ),
       };
 
@@ -206,19 +206,18 @@ const deleteMessage = (data) => ({
   payload: data,
 });
 
-export const getLocalUserGroups = () => (dispatch) => {
+export const getLocalUserGroups = () => (dispatch) =>
+new Promise(function(resolve,reject){
   var groups = getGroups();
   var array = [];
   groups.map((item, index) => {
     array = [...array, item];
   });
   array.sort((a, b) =>
-            a.timestamp &&
-            b.timestamp &&
-            new Date(a.timestamp) < new Date(b.timestamp)
-              ? 1
-              : -1
-          );
+    a.timestamp && b.timestamp && new Date(a.timestamp) < new Date(b.timestamp)
+      ? 1
+      : -1,
+  );
 
   let unread_counts = 0;
   if (groups && groups.length > 0) {
@@ -228,9 +227,9 @@ export const getLocalUserGroups = () => (dispatch) => {
     });
     dispatch(setUnreadGroupMsgsCounts(unread_counts));
   }
-
   dispatch(getUserGroupsSuccess(array));
-}
+  resolve();
+});
 
 export const getUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -253,7 +252,7 @@ export const getUserGroups = () => (dispatch) =>
             b.timestamp &&
             new Date(a.timestamp) < new Date(b.timestamp)
               ? 1
-              : -1
+              : -1,
           );
           setGroups(res.conversations);
           dispatch(getUserGroupsSuccess(res.conversations));
@@ -343,21 +342,21 @@ export const resetGroupConversation = () => ({
 
 export const getLocalGroupConversation = (groupId) => (dispatch) => {
   let chat = getGroupChatConversationById(groupId);
-    if (chat.length) {
-      let conversations = [];
-      chat.map((item, index) => {
-        conversations = [...conversations, item];
-      });
+  if (chat.length) {
+    let conversations = [];
+    chat.map((item, index) => {
+      conversations = [...conversations, item];
+    });
 
-      // this.setState({ conversation: conversations });
-      dispatch(setGroupConversation(conversations));
-    }
-}
+    // this.setState({ conversation: conversations });
+    dispatch(setGroupConversation(conversations));
+  }
+};
 
 export const getGroupConversation = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getGroupConversationRequest());
-    console.log('groupId',groupId);
+    console.log('groupId', groupId);
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
@@ -425,7 +424,7 @@ export const getGroupDetail = (groupId) => (dispatch) =>
 
 //Get Group Members
 export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
-  dispatch
+  dispatch,
 ) =>
   new Promise(function (resolve, reject) {
     client
@@ -435,7 +434,7 @@ export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
           '/?limit=' +
           limit +
           '&offset=' +
-          offset
+          offset,
       )
       .then((res) => {
         resolve(res);

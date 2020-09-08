@@ -43,6 +43,7 @@ import { eventService } from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 
 import {
+  setGroupChatConversation,
   getGroupChatConversationById,
   deleteGroupMessageById,
   updateGroupMessageById,
@@ -398,9 +399,10 @@ class GroupChats extends Component {
   };
 
   onReply = (messageId) => {
-    const { conversation } = this.state;
+    // const { conversation } = this.state;
+    const {chatGroupConversation} = this.props;
 
-    const repliedMessage = conversation.find(
+    const repliedMessage = chatGroupConversation.find(
       (item) => item.msg_id === messageId
     );
     this.setState({
@@ -457,14 +459,13 @@ class GroupChats extends Component {
       });
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
         this.markGroupConversationRead();
-        if (message.text.data.message_details.sender_id != userData.id) {
-          this.getGroupConversation();
-        } else {
-          this.getGroupConversation();
-          // if (!isDuplicate) {
-          //   conversation.push(message.text.data.message_details);
-          // }
-        }
+        setGroupChatConversation([message.text.data.message_details]);
+        this.getLocalGroupConversation();
+        // if (message.text.data.message_details.sender_id != userData.id) {
+        //   this.getGroupConversation();
+        // } else {
+        //   this.getGroupConversation();
+        // }
       }
     }
 
@@ -472,7 +473,8 @@ class GroupChats extends Component {
     if (message.text.data.type == SocketEvents.MESSAGE_EDIT_FROM_GROUP) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
         updateGroupMessageById(message.text.data.message_details.msg_id,message.text.data.message_details.message_body);
-        this.getGroupConversation();
+        // this.getGroupConversation();
+        this.getLocalGroupConversation();
       }
     }
 
@@ -480,7 +482,8 @@ class GroupChats extends Component {
     if (message.text.data.type == SocketEvents.UNSENT_MESSAGE_FROM_GROUP) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
         setGroupMessageUnsend(message.text.data.message_details.msg_id);
-        this.getGroupConversation();
+        // this.getGroupConversation();
+        this.getLocalGroupConversation();
       }
     }
 
@@ -514,21 +517,21 @@ class GroupChats extends Component {
     //READ_COUNT_IN_GROUP
     if (message.text.data.type == SocketEvents.READ_COUNT_IN_GROUP) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
-        this.getGroupConversation();
+        // this.getGroupConversation();
       }
     }
 
     //PINED_GROUP
     if (message.text.data.type == SocketEvents.PINED_GROUP) {
       if (message.text.data.message_details.group_id == currentGroup.group_id) {
-        this.getGroupConversation();
+        // this.getGroupConversation();
       }
     }
 
       //UNPINED_GROUP
       if (message.text.data.type == SocketEvents.UNPINED_GROUP) {
         if (message.text.data.message_details.group_id == currentGroup.group_id) {
-          this.getGroupConversation();
+          // this.getGroupConversation();
         }
       }
 
@@ -543,6 +546,17 @@ class GroupChats extends Component {
   markGroupConversationRead() {
     let data = { group_id: this.props.currentGroup.group_id };
     this.props.markGroupConversationRead(data);
+  }
+
+  getLocalGroupConversation = () => {
+    let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+      this.props.setGroupConversation(conversations);
+    }
   }
 
   getGroupConversation = async () => {

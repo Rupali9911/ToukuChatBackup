@@ -1,6 +1,6 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import AsyncStorage from '@react-native-community/async-storage';
-import { GoogleSignin } from '@react-native-community/google-signin';
+import {GoogleSignin} from '@react-native-community/google-signin';
 
 import userReducer from './userReducer';
 import loginReducer from './loginReducer';
@@ -13,6 +13,7 @@ import friendReducer from './friendReducer';
 import configurationReducer from './configurationReducer';
 import addFriendReducer from './addFriendReducer';
 import timelineReducer from './timelineReducer';
+import commonReducer from './commonReducer';
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
@@ -28,6 +29,7 @@ const allReducers = combineReducers({
   configurationReducer: configurationReducer,
   addFriendReducer: addFriendReducer,
   timelineReducer: timelineReducer,
+  commonReducer: commonReducer,
 });
 
 export const logout = (user) => (dispatch, getState) =>

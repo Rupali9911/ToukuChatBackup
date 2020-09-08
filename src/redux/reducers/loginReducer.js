@@ -90,16 +90,19 @@ export const userLogin = (user) => (dispatch) =>
   });
 
 export const getSNSCheck = () => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        axios.get('https://api.angelium.net/api/native-urls/?module=native_app', { headers: { 'User-Agent': userAgent } })
-            .then(response => {
-                if (response.data.url) {
-                    resolve(response.data.url);
-                }
-            })
-            .catch((error) => {
-                reject(err);
-                console.log('error ' + error);
-            });
-    });
+  new Promise(function (resolve, reject) {
+    axios
+      .get('https://api.angelium.net/api/native-urls/?module=native_app', {
+        headers: { 'User-Agent': userAgent },
+      })
+      .then((response) => {
+        if (response.data.url) {
+          resolve(response.data.url);
+        }
+      })
+      .catch((error) => {
+        reject(err);
+        console.log('error ' + error);
+      });
+  });
 //https://api.angelium.net/api/native-urls/?module=touku

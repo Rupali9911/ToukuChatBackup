@@ -111,6 +111,7 @@ const Tabs = createBottomTabNavigator(
     More: MoreTab,
   },
   {
+    initialRouteName: 'Chat',
     tabBarComponent: TabBarComp,
     tabBarOptions: {
       tabStyle: {

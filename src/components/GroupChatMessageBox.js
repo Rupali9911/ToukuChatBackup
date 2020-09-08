@@ -325,6 +325,7 @@ export default class GroupChatMessageBox extends Component {
               audioPlayingId={audioPlayingId}
               perviousPlayingAudioId={perviousPlayingAudioId}
               onAudioPlayPress={onAudioPlayPress}
+              onReplyPress={onReplyPress}
             />
           </View>
           {translatedMessageId &&

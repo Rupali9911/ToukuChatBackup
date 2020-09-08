@@ -72,6 +72,30 @@ class GroupChatMessageBubble extends Component {
     console.log('animation start');
   }
 
+  startAnimation=()=>{
+    this.animInterval = setInterval(()=>{
+      Animated.timing(this.state.animation, {
+        toValue : 0,
+        timing : 400,
+        useNativeDriver: true,
+      }).start(()=>{
+        Animated.timing(this.state.animation,{
+          toValue : 1,
+          duration : 400,
+          useNativeDriver: true,
+        }).start();
+      })
+    },800);
+  }
+
+  callBlinkAnimation = () => {
+    setTimeout(()=>{
+      clearInterval(this.animInterval);
+    },3200);
+    this.startAnimation();
+    console.log('animation start');
+  }
+
   onCopy = (message) => {
     Clipboard.setString(message.text);
   };

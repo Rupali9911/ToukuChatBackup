@@ -70,11 +70,13 @@ class More extends Component {
   }
 
     clearAsyncStorage = async() => {
-        AsyncStorage.clear();
+        let fcmToken = await AsyncStorage.getItem('fcmToken');
+        await AsyncStorage.clear();
+        await AsyncStorage.setItem('fcmToken', fcmToken);
     }
 
-  actionLogout() {
-      this.clearAsyncStorage()
+  actionLogout = async() => {
+      await this.clearAsyncStorage()
       this.updateModalVisibility()
         this.props.logout().then((res) => {
             this.props.navigation.navigate('Auth');

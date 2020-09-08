@@ -119,17 +119,17 @@ export default class App extends Component {
         }
 
         if (url.indexOf(loginUrl) > -1) {
-            setTimeout(() => {
+            //setTimeout(() => {
                 NavigationService.navigate('Login', { url: event.url });
-            }, 1000 );
+           // }, 1000 );
         }else if (url.indexOf(registerUrl) > -1) {
             let suffixUrl = event.url.split(registerUrl)[1].trim()
             let invitationCode = suffixUrl.split('/').length > 0 ? suffixUrl.split('/')[0].trim() : suffixUrl
             await AsyncStorage.setItem('invitationCode', invitationCode);
-            setTimeout(() => {
+            //setTimeout(() => {
                 NavigationService.navigate('SignUp', { pageNumber: 0,
                     isSocial: false, invitationCode: invitationCode });
-            }, 1000 );
+           // }, 1000 );
         }else if (url.indexOf(channelUrl) > -1){
             let suffixUrl = url.split(channelUrl)[1].trim()
             console.log('suffixUrl', suffixUrl)
@@ -141,15 +141,23 @@ export default class App extends Component {
                 'id' : channelId
             }
             if (userToken){
-                store.dispatch(setCurrentChannel(data))
-                setTimeout(() => {
-                    NavigationService.navigate('ChannelInfo');
-                }, 1000 );
+                console.log('NavigationService.getCurrentRoute()', NavigationService.getCurrentRoute())
+                let route = NavigationService.getCurrentRoute()
+                let routeName = route.routeName
+                if (routeName && (routeName === 'ChannelInfo' || routeName === 'ChannelChats')){
+                    NavigationService.popToTop()
+                }
+                    // setTimeout(() => {
+                    //     console.log('Chat item',data)
+                        store.dispatch(setCurrentChannel(data))
+                        NavigationService.navigate('ChannelInfo');
+                    // }, 1000 );
+
             } else{
                 await AsyncStorage.setItem('channelData', JSON.stringify(data));
-                setTimeout(() => {
+               // setTimeout(() => {
                     NavigationService.navigate('Login', { url: event.url });
-                }, 1000 );
+               // }, 1000 );
             }
         }
     }

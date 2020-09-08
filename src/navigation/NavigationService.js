@@ -1,4 +1,6 @@
 import {NavigationActions, StackActions} from 'react-navigation';
+import {useRoute} from '@react-navigation/native';
+
 
 let navigator;
 
@@ -51,6 +53,13 @@ function popToTop() {
   navigator.dispatch(StackActions.popToTop());
 }
 
+function getCurrentRoute() {
+    let route = navigator.state.nav
+    while(route.routes) {
+        route = route.routes[route.index]
+    }
+    return route
+}
 // add other navigation functions that you need and export them
 
 export default {
@@ -60,4 +69,5 @@ export default {
   pop,
   popToTop,
   setTopLevelNavigator,
+    getCurrentRoute
 };
