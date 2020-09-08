@@ -151,6 +151,10 @@ const setFiendRequest = (data) => ({
   },
 });
 
+export const setFriendRequest = (data) => (dispatch) => {
+  dispatch(setFiendRequest(data))
+}
+
 export const getFriendRequest = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
@@ -160,7 +164,8 @@ export const getFriendRequest = () => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        dispatch(getUserGroupsFailure());
+        console.log(err);
+        // dispatch(getUserGroupsFailure());
         reject(err);
       });
   });

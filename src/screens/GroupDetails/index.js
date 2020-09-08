@@ -291,7 +291,6 @@ class GroupDetails extends Component {
       editData['group_picture_thumb'] = group_picture_thumb;
     }
 
-
     this.props
       .editGroup(this.props.currentGroupDetail.id, editData)
       .then((res) => {

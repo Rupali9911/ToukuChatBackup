@@ -216,6 +216,7 @@ new Promise(function (resolve, reject) {
             : -1
         );
         dispatch(getUserFriendsSuccess(friends));
+        resolve();
 });
 
 export const getUserFriends = () => (dispatch) =>
@@ -251,6 +252,25 @@ export const getUserFriends = () => (dispatch) =>
               .filtered('user_id =' + item.user_id);
             if (obj.length > 0) {
               // alert('matching friend');
+              realm.write(() => {
+                realm.create('user_friends', {
+                  user_id: item.user_id,
+                  friend: item.friend,
+                  unread_msg: item.unread_msg,
+                  last_msg_id: item.last_msg_id,
+                  username: item.username,
+                  avatar: item.avatar,
+                  profile_picture: item.profile_picture,
+                  background_image: item.background_image,
+                  last_msg: item.last_msg ? item.last_msg : '',
+                  last_msg_type: item.last_msg_type,
+                  display_name: item.display_name,
+                  isChecked: false,
+                  is_online: item.is_online,
+                  is_typing: false,
+                  timestamp: item.timestamp,
+                },'modified');
+              });
             } else {
               realm.write(() => {
                 realm.create('user_friends', {

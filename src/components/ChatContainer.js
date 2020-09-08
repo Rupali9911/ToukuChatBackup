@@ -306,6 +306,8 @@ class ChatContainer extends Component {
                 source={Images.image_conversation}
                 imageColor={Colors.primary}
                 imageAvailable
+                style={{transform: [{ rotate: '180deg' }]}}
+                textStyle={{transform:[{rotateY:"180deg"}]}}
               />}
             />
           </Fragment>

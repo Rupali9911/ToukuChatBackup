@@ -103,7 +103,8 @@ export const Colors = {
   foorter_gradient_1: 'rgba(255, 137, 96, 0.68)',
   foorter_gradient_2: 'rgba(255, 98, 165, 0.68)',
     orange_header: 'rgba(255,107,0,00.40)',
-    link_color: 'blue' //
+    link_color: 'blue',
+    off_white: '#e2dccd'
 };
 
 export const Fonts = {

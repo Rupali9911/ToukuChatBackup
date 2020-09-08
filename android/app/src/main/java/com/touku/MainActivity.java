@@ -1,4 +1,4 @@
-package com.toukuApp;
+package com.touku;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

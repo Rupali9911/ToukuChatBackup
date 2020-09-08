@@ -51,6 +51,7 @@ import {
   getFriendRequest,
   acceptFriendRequst,
   rejectFriendRequst,
+  setFriendRequest
 } from '../../redux/reducers/addFriendReducer';
 
 import { getUserConfiguration } from '../../redux/reducers/configurationReducer';
@@ -77,14 +78,25 @@ import {
 import Toast from '../../components/Toast';
 
 import {
+  updateMessageById,
+  deleteMessageById,
+  setMessageUnsend,
   getChannelsById,
+  getChannelChatConversationById,
   setChannelChatConversation,
   updateChannelLastMsg,
   updateFriendsUnReadCount,
   setFriendChatConversation,
   updateFriendLastMsg,
+  updateFriendMessageById,
+  getLocalUserFriend,
+  updateFriendLastMsgWithoutCount,
+  deleteFriendMessageById,
+  setFriendMessageUnsend,
   getLocalUserFriends,
   getGroups,
+  setGroups,
+  UpdateGroupDetail,
   getGroupsById,
   updateLastMsgGroups,
   updateUnReadCount,
@@ -94,7 +106,11 @@ import {
   setGroupChatConversation,
   updateChannelUnReadCountById,
   removeUserFriends,
-  handleRequestAccept
+  handleRequestAccept,
+  getLocalFriendRequest,
+  deleteChannelById,
+  updateChannelTotalMember,
+  updateChannelLastMsgWithOutCount
 } from '../../storage/Service';
 
 class Home extends Component {
@@ -109,6 +125,7 @@ class Home extends Component {
       searchText: '',
       showDropdown: false,
       loadMoreVisible: true,
+      friendRequestHeaderCounts: 0,
       channelHeaderCounts: 0,
       groupHeaderCounts: 0,
       friendHeaderCounts: 0,
@@ -146,22 +163,19 @@ class Home extends Component {
     this.getUserFriends();
     // this.props.getFriendRequests();
     this.props.getUserConfiguration();
-
-    this.focusListener = this.props.navigation.addListener(
-      'didFocus',
-      async () => {
-        this.getFriendRequest();
-        this.getFollowingChannels();
-        this.getUserGroups();
-        this.getUserFriends();
-      }
-    );
-
+    // this.focusListener = this.props.navigation.addListener(
+    //   'didFocus',
+    //   async () => {
+    //     this.getFriendRequest();
+    //     this.getFollowingChannels();
+    //     this.getUserGroups();
+    //     this.getUserFriends();
+    //   }
+    // );
     // Get on-disk location of the default Realm
     Realm.open({}).then(realm => {
       console.log("Realm is located at: " + realm.path);
     });
-
   }
 
   _orientationDidChange = (orientation) => {
@@ -175,6 +189,7 @@ class Home extends Component {
       //   counts = counts + friend.unread_msg;
       // }
       this.props.friendRequest.length;
+      console.log('friendRequest',this.props.friendRequest);
       this.setState({
         friendRequestHeaderCounts: this.props.friendRequest.length,
       });
@@ -204,7 +219,7 @@ class Home extends Component {
   }
 
   getFollowingChannels() {
-    this.props.getFollowingChannels().then((res) => {
+    // this.props.getFollowingChannels().then((res) => {
       // if (res.conversations.length > 0) {
       //   this.handleLoadMoreChannels();
       // }
@@ -213,29 +228,38 @@ class Home extends Component {
         counts = counts + channel.unread_msg;
       }
       this.setState({ channelHeaderCounts: counts });
-    });
+    // });
   }
 
   getUserGroups() {
-    this.props.getUserGroups().then((res) => {
-      if (res.conversations && res.conversations.length > 0) {
+    // this.props.getUserGroups().then((res) => {
+      // if (res.conversations && res.conversations.length > 0) {
         let counts = 0;
         for (let group of this.props.userGroups) {
           counts = counts + group.unread_msg;
         }
         this.setState({ groupHeaderCounts: counts });
-      }
-    });
+      // }
+    // });
   }
 
   getUserFriends() {
-    this.props.getUserFriends().then((res) => {
+    // this.props.getUserFriends().then((res) => {
       let counts = 0;
       for (let friend of this.props.userFriends) {
         counts = counts + friend.unread_msg;
       }
       this.setState({ friendHeaderCounts: counts });
-    });
+    // });
+  }
+
+  getLocalRequest(){
+    var result = getLocalFriendRequest();
+    var requests = [];
+    for(let i of result){
+      requests = [...requests,i];
+    }
+    this.props.setFriendRequest(requests);
   }
 
   setChannelHeaderCount(){
@@ -268,21 +292,61 @@ class Home extends Component {
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
         break;
-      case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
-        this.readAllMessageFriendChat(message);
-        break;
       case SocketEvents.CHECK_IS_USER_ONLINE:
-        // this.checkIsUserOnline(message);
+        this.checkIsUserOnline(message);
         break;
       case SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT:
         this.readAllMessageChannelChat(message);
         break;
-      case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
-        this.readAllMessageGroupChat(message);
+      case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.messageInFollowingChannel(message);
+        break;
+      case SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
+        // this.getFollowingChannels(message);
+        this.multipleMessageInFollowingChannel(message);
+        break;
+      case SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL:
+        this.messageUpdateInFollowingChannel(message);
+        break;
+      case SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.messageDeleteInFollowingChannel(message);
+        break;
+      case SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.messageUnsentInFollowingChannel(message);
+        break;
+      case SocketEvents.REMOVE_CHANNEL_MEMBER:
+        this.onRemoveChannelMember(message);
+        break;
+        case SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT:
+          this.onChannelMemberRemoveCount(message);
+          break;
+      case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
+        this.readAllMessageFriendChat(message);
         break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
         this.friendIsTyping(message);
         break;
+      case SocketEvents.NEW_MESSAGE_IN_FREIND:
+        this.onNewMessageInFriend(message);
+        break;
+      case SocketEvents.MESSAGE_EDITED_IN_FRIEND:
+        this.onEditMessageInFriend(message);
+        break;
+      case SocketEvents.DELETE_MESSAGE_IN_FRIEND:
+        // this.onDeleteMessageInFriend(message);
+        break;
+      case SocketEvents.UNSENT_MESSAGE_IN_FRIEND:
+        this.onUnsentMessageInFriend(message);
+        break;
+      case SocketEvents.UNFRIEND:
+        removeUserFriends(message.text.data.message_details.user_id);
+        console.log('get local freinds')
+        this.props.setUserFriends();
+        break;
+      case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
+        this.readAllMessageGroupChat(message);
+        break;
+
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
         this.onNewMessageInGroup(message);
         break;
@@ -292,36 +356,23 @@ class Home extends Component {
       case SocketEvents.UNSENT_MESSAGE_FROM_GROUP:
         this.UnsentMessageFromGroup(message);
         break;
-      case SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL:
-        this.messageInFollowingChannel(message);
-        break;
-      case SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
-        // this.getFollowingChannels(message);
-        break;
-      case SocketEvents.REMOVE_CHANNEL_MEMBER:
-        this.onRemoveChannelMember(message);
-        break;
-      case SocketEvents.NEW_MESSAGE_IN_FREIND:
-        this.onNewMessageInFriend(message);
-        break;
       case SocketEvents.EDIT_GROUP_DETAIL:
-        this.getUserGroups(message);
-        break;
-      case SocketEvents.UNFRIEND:
-        removeUserFriends(message.text.data.message_details.user_id);
-        console.log('get local freinds')
-        this.props.setUserFriends();
+        // this.getUserGroups(message);
+        this.onUpdateGroupDetail(message);
         break;
       case SocketEvents.FRIEND_REQUEST_CANCELLED:
-        this.onNewMessageInFriend(message);
+        // this.onNewMessageInFriend(message);
+        this.getFriendRequest();
         break;
       case SocketEvents.NEW_FRIEND_REQUEST:
-        this.getFriendRequest();
+        // this.getFriendRequest();
+        this.onNewFriendRequest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_ACCEPTED:
         handleRequestAccept(message.text.data.message_details.conversation);
         console.log('get local freinds')
         this.props.setUserFriends();
+        this.setFriendHeaderCount();
         break;
       case SocketEvents.FRIEND_REQUEST_REJECTED:
         this.getFriendRequest();
@@ -382,7 +433,7 @@ class Home extends Component {
           } else {
             userFriends[i].is_online = false;
           }
-          this.getUserFriends();
+          // this.getUserFriends();
           break;
         }
       }
@@ -406,8 +457,9 @@ class Home extends Component {
               channels.push(item);
             })
             setChannelChatConversation([message.text.data.message_details]);
-            updateChannelLastMsg(message.text.data.message_details.channel,message.text.data.message_details,channels[0].unread_msg+1);
+            updateChannelLastMsg(message.text.data.message_details.channel,message.text.data.message_details,channels[0].unread_msg);
             this.props.getLocalFollowingChannels();
+            this.setChannelHeaderCount();
             break;
           } else if (
             message.text.data.message_details.to_user != null &&
@@ -424,12 +476,115 @@ class Home extends Component {
             setChannelChatConversation([message.text.data.message_details]);
             updateChannelLastMsg(message.text.data.message_details.channel,message.text.data.message_details,channels[0].unread_msg+1);
             this.props.getLocalFollowingChannels();
+            this.setChannelHeaderCount();
             break;
           }
           break;
         }
       }
     }
+  }
+
+  //Multiple Message in Following Channel
+  multipleMessageInFollowingChannel(message) {
+    const { userData, followingChannels } = this.props;
+    if (message.text.data.type === SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL) {
+      for (let item of message.text.data.message_details){
+        console.log('item',item);
+        for (let i of followingChannels) {
+          if (item.channel == i.id) {
+              var result = getChannelsById(item.channel);
+              var channels = [];
+              result.map(item=>{
+                channels.push(item);
+              })
+              setChannelChatConversation([item]);
+              updateChannelLastMsg(item.channel,item,channels[0].unread_msg+1);
+              this.props.getLocalFollowingChannels();
+              this.setChannelHeaderCount();
+              break;
+          }
+        }
+      }
+    }
+  }
+
+  messageUpdateInFollowingChannel(message){
+    const { userData, followingChannels } = this.props;
+    if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL) {
+      for (let i of followingChannels) {
+        if (message.text.data.message_details.channel == i.id) {
+              var result = getChannelsById(message.text.data.message_details.channel);
+              var channels = [];
+              result.map(item=>{
+                channels.push(item);
+              })
+              updateMessageById(message.text.data.message_details.id,message.text.data.message_details.message_body);
+              if(channels[0].last_msg.id==message.text.data.message_details.id){
+                console.log('updateasdasdasd');
+                updateChannelLastMsgWithOutCount(message.text.data.message_details.channel,message.text.data.message_details);
+              }
+              this.props.getLocalFollowingChannels();
+              this.setChannelHeaderCount();
+              break;
+        }
+      }
+    }
+  }
+
+  messageDeleteInFollowingChannel(message){
+    const { userData, followingChannels } = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL) {
+      var result = getChannelsById(message.text.data.message_details.channel);
+      var channels = [];
+      result.map(item => {
+        channels.push(item);
+      })
+      deleteMessageById(message.text.data.message_details.id);
+      if (channels[0].last_msg.id == message.text.data.message_details.id) {
+        var chats = getChannelChatConversationById(message.text.data.message_details.channel);
+        var array = []
+        for(let chat of chats){
+          array = [...array,chat];
+        }
+        console.log('updated_last_messgae',JSON.stringify(array[0]));
+        updateChannelLastMsgWithOutCount(message.text.data.message_details.channel, array[0]);
+      }
+      this.props.getLocalFollowingChannels();
+      this.setChannelHeaderCount();
+    }
+  }
+
+  messageUnsentInFollowingChannel(message){
+    const { userData, followingChannels } = this.props;
+    if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL) {
+      var result = getChannelsById(message.text.data.message_details.channel);
+      var channels = [];
+      result.map(item => {
+        channels.push(item);
+      })
+      setMessageUnsend(message.text.data.message_details.id);
+      if (channels[0].last_msg.id == message.text.data.message_details.id) {
+        var chats = getChannelChatConversationById(message.text.data.message_details.channel);
+        var array = []
+        for(let chat of chats){
+          array = [...array,chat];
+        }
+        console.log('updated_last_messgae',JSON.stringify(array[0]));
+        updateChannelLastMsgWithOutCount(message.text.data.message_details.channel, array[0]);
+      }
+      this.props.getLocalFollowingChannels();
+      this.setChannelHeaderCount();
+    }
+  }
+
+  onNewFriendRequest = (message) => {
+    const { friendRequest } = this.props;
+
+    if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
+      this.getFriendRequest();
+    }
+
   }
 
   //New Message in Friend
@@ -440,13 +595,141 @@ class Home extends Component {
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         // this.getUserFriends();
+        setFriendChatConversation([message.text.data.message_details]);
+        updateFriendLastMsg(message.text.data.message_details.to_user.id,message.text.data.message_details);
+        this.props.setUserFriends();
+        this.setFriendHeaderCount();
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
-        updateFriendLastMsg(message.text.data.message_details);
+        updateFriendLastMsg(message.text.data.message_details.from_user.id,message.text.data.message_details);
         // this.getUserFriends();
         this.props.setUserFriends();
         this.setFriendHeaderCount();
       }
+    }
+  }
+
+  //Edit Message in Friend
+  onEditMessageInFriend(message) {
+    const { userFriends } = this.props;
+    const { userData } = this.props;
+
+    if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getUserFriends();
+        let editMessageId = message.text.data.message_details.id;
+        let newMessageText = message.text.data.message_details.message_body;
+        let messageType = message.text.data.message_details.msg_type;
+        updateFriendMessageById(editMessageId, newMessageText, messageType);
+
+        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
+
+        var array = []
+
+        for(let u of users){
+          array = [...array, u];
+        }
+
+        if(array.length>0 && array[0].last_msg_id == message.text.data.message_details.id){
+          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id,message.text.data.message_details);
+          this.props.setUserFriends();
+        }
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        let editMessageId = message.text.data.message_details.id;
+        let newMessageText = message.text.data.message_details.message_body;
+        let messageType = message.text.data.message_details.msg_type;
+        updateFriendMessageById(editMessageId, newMessageText, messageType);
+
+        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
+
+        var array = []
+
+        for(let u of users){
+          array = [...array, u];
+        }
+
+        console.log('array',JSON.stringify(array[0]));
+        if(array.length>0 && array[0].last_msg_id == message.text.data.message_details.id){
+          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id,message.text.data.message_details);
+          this.props.setUserFriends();
+        }
+      }
+    }
+  }
+
+  onDeleteMessageInFriend(message) {
+    const { userData } = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
+        var array = []
+        for (let u of users) {
+          array = [...array, u];
+        }
+        deleteFriendMessageById(message.text.data.message_details.id);
+        if (array[0].last_msg.id == message.text.data.message_details.id) {
+          var chats = getFriendChatConversationById(message.text.data.message_details.channel);
+          var array = []
+          for (let chat of chats) {
+            array = [...array, chat];
+          }
+          console.log('updated_last_messgae', JSON.stringify(array[0]));
+          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id, message.text.data.message_details);
+        }
+        this.props.getLocalFollowingChannels();
+        this.setChannelHeaderCount();
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
+        var array = []
+        for (let u of users) {
+          array = [...array, u];
+        }
+        deleteFriendMessageById(message.text.data.message_details.id);
+        if (array[0].last_msg.id == message.text.data.message_details.id) {
+          var chats = getFriendChatConversationById(message.text.data.message_details.channel);
+          var array = []
+          for (let chat of chats) {
+            array = [...array, chat];
+          }
+          console.log('updated_last_messgae', JSON.stringify(array[0]));
+          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id, message.text.data.message_details);
+        }
+        this.props.getLocalFollowingChannels();
+        this.setChannelHeaderCount();
+      }
+    }
+  }
+
+  //Unsent message on friend
+  onUnsentMessageInFriend(message){
+    const { userFriends } = this.props;
+    const { userData } = this.props;
+
+    if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
+      if (message.text.data.message_details.from_user.id == userData.id) {
+        // this.getUserFriends();
+        setFriendMessageUnsend(message.text.data.message_details.id);
+        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
+        var array = []
+        for (let u of users) {
+          array = [...array, u];
+        }
+        if (array[0].last_msg.id == message.text.data.message_details.id) {
+          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id, message.text.data.message_details);
+        }
+      } else if (message.text.data.message_details.to_user.id == userData.id) {
+        setFriendMessageUnsend(message.text.data.message_details.id);
+        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
+        var array = []
+        for (let u of users) {
+          array = [...array, u];
+        }
+        if (array[0].last_msg.id == message.text.data.message_details.id) {
+          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id, message.text.data.message_details);
+        }
+      }
+      this.props.getLocalFollowingChannels();
+      this.setChannelHeaderCount();
     }
   }
 
@@ -457,7 +740,6 @@ class Home extends Component {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
           // this.getUserGroups();
-
           var item = message.text.data.message_details.unread_msg.filter((item)=>{
             return item.user__id===this.props.userData.id;
           })
@@ -551,6 +833,23 @@ class Home extends Component {
     }
   }
 
+  onUpdateGroupDetail(message){
+    const {userGroups} = this.props;
+    if (message.text.data.type === SocketEvents.EDIT_GROUP_DETAIL) {
+      for (let i of userGroups) {
+        if (i.group_id === message.text.data.message_details.id) {
+          UpdateGroupDetail(
+            message.text.data.message_details.id,
+            message.text.data.message_details.name,
+            message.text.data.message_details.group_picture,
+            message.text.data.message_details.members.length
+            );
+          this.props.getLocalUserGroups();
+        }
+      }
+    }
+  }
+
   //Read Channel's all messages with socket event
   readAllMessageChannelChat(message) {
     const { followingChannels } = this.props;
@@ -568,6 +867,7 @@ class Home extends Component {
           );
           // this.getFollowingChannels();
           this.props.getLocalFollowingChannels();
+          this.setChannelHeaderCount();
           break;
         }
       }
@@ -601,7 +901,6 @@ class Home extends Component {
           // this.getUserFriends();
           this.props.setUserFriends();
           this.setFriendHeaderCount();
-
           break;
         }
       }
@@ -614,13 +913,27 @@ class Home extends Component {
       message.text.data.type === SocketEvents.REMOVE_MEMBER_FROM_CHANNEL &&
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
-      this.getFollowingChannels();
+      // this.getFollowingChannels();
       // for (var i in this.props.followingChannels) {
       //   if (message.text.data.message_details.channel_id === i.id) {
       //     alert('channel unfollowed');
       //     break;
       //   }
       // }
+      deleteChannelById(message.text.data.message_details.channel_id);
+      this.props.getLocalFollowingChannels();
+      this.setChannelHeaderCount();
+    }
+  }
+
+  onChannelMemberRemoveCount(){
+    if (
+      message.text.data.type === SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
+      message.text.data.message_details.user_id === this.props.userData.id
+    ) {
+      updateChannelTotalMember(message.text.data.message_details.channel_id);
+      this.props.getLocalFollowingChannels();
+      this.setChannelHeaderCount();
     }
   }
 
@@ -919,6 +1232,7 @@ class Home extends Component {
       channelHeaderCounts,
       groupHeaderCounts,
       friendHeaderCounts,
+      friendRequestHeaderCounts
     } = this.state;
 
     const {
@@ -992,7 +1306,7 @@ class Home extends Component {
                       title={translate('pages.xchat.friendRequest')}
                       isCollapsed={isChannelCollapsed}
                       listcounts={filteredFriendRequest.length}
-                      // badgeCount={channelHeaderCounts}
+                      badgeCount={friendRequest.length}
                       selectedLanguageItem={selectedLanguageItem}
                     />
                   </CollapseHeader>
@@ -1156,6 +1470,7 @@ const mapDispatchToProps = {
   getLocalUserGroups,
   getLocalFollowingChannels,
   setUserFriends,
+  setFriendRequest
 };
 
 export default connect(

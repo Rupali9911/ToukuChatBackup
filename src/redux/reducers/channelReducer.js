@@ -240,7 +240,8 @@ const getFollowingChannelsFailure = () => ({
   type: GET_FOLLOWING_CHANNELS_FAIL,
 });
 
-export const getLocalFollowingChannels = () => (dispatch) => {
+export const getLocalFollowingChannels = () => (dispatch) =>
+new Promise(function(resolve,reject){
   let channels = getChannels();
   if (channels.length) {
     let array = []
@@ -252,7 +253,8 @@ export const getLocalFollowingChannels = () => (dispatch) => {
     dispatch(setUnreadChannelMsgsCounts(counts))
     dispatch(getFollowingChannelsSuccess(array));
   }
-}
+  resolve();
+});
 
 export const getFollowingChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -521,6 +523,7 @@ export const getChannelConversations = (id, limit = 30) => (dispatch) =>
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + limit)
       .then(async (res) => {
+        console.log('res_channel_conversation',res);
         setChannelChatConversation(res.conversation);
         dispatch(getChannelConversationsSuccess());
         resolve(res);

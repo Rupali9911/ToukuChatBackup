@@ -19,6 +19,7 @@ const persistConfig = {
     'groupReducer',
     'friendReducer',
     'configurationReducer',
+    'commonReducer'
   ],
 };
 

@@ -18,7 +18,7 @@ class BottomTabItem extends Component {
       unreadFriendMsgsCounts,
       unreadGroupMsgsCounts,
       unreadChannelMsgsCounts,
-      friendRequestCount
+      friendRequestCount,
     } = this.props;
 
     switch (routeName) {

@@ -186,7 +186,7 @@ export default class ChatMessageBox extends Component {
                 style={styles.squareImage}
               >
                 <Text style={globalStyles.normalRegularText15}>
-                  {currentChannel.name.charAt(0).toUpperCase()}
+                  {currentChannel.name && currentChannel.name.charAt(0).toUpperCase()}
                   {/* {secondUpperCase} */}
                 </Text>
               </LinearGradient>
@@ -308,6 +308,7 @@ export default class ChatMessageBox extends Component {
                 audioPlayingId={audioPlayingId}
                 perviousPlayingAudioId={perviousPlayingAudioId}
                 onAudioPlayPress={onAudioPlayPress}
+                onReplyPress={onReplyPress}
               />
             </View>
             {translatedMessageId &&
