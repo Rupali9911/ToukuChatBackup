@@ -70,8 +70,12 @@ import {
   deleteFriendMessageById,
   setFriendMessageUnsend,
   getLocalUserFriends,
+  updateFriendOnlineStatus,
+  updateFriendTypingStatus,
   getGroups,
   setGroups,
+  deleteGroupById,
+  deleteAllGroupMessageByGroupId,
   UpdateGroupDetail,
   getGroupsById,
   updateLastMsgGroups,
@@ -150,6 +154,10 @@ class Chat extends Component {
       });
     });
 
+    // Realm.open({}).then(realm => {
+    //   console.log("Realm is located at: " + realm.path);
+    // });
+
     // this.props.getUserChannels();
     // await this.props.getFollowingChannels().then((res) => {
     //   this.props.getFriendRequests().then((res) => {
@@ -206,6 +214,9 @@ class Chat extends Component {
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
+        break;
+      case SocketEvents.FRIEND_TYPING_MESSAGE:
+        this.setFriendsTypingStatus(message);
         break;
       case SocketEvents.CHECK_IS_USER_ONLINE:
         // this.checkIsUserOnline(message);
@@ -269,8 +280,23 @@ class Chat extends Component {
       case SocketEvents.MESSAGE_EDIT_FROM_GROUP:
         this.editMessageFromGroup(message);
         break;
+      case SocketEvents.DELETE_MESSAGE_IN_GROUP:
+        this.onDeleteMessageInGroup(message);
+        break;
       case SocketEvents.UNSENT_MESSAGE_FROM_GROUP:
         this.UnsentMessageFromGroup(message);
+        break;
+      case SocketEvents.CREATE_NEW_GROUP:
+        this.onCreateNewGroup(message);
+        break;
+      case SocketEvents.DELETE_GROUP:
+        this.onDeleteGroup(message);
+        break;
+      case SocketEvents.ADD_GROUP_MEMBER:
+        this.onAddGroupMember(message);
+        break;
+      case SocketEvents.REMOVE_GROUP_MEMBER:
+        this.onRemoveGroupMember(message);
         break;
       case SocketEvents.EDIT_GROUP_DETAIL:
         this.onUpdateGroupDetail(message);
@@ -287,18 +313,41 @@ class Chat extends Component {
           userFriends[i].user_id == message.text.data.message_details.user_id
         ) {
           if (message.text.data.message_details.status === 'online') {
-            userFriends[i].is_online = true;
+            updateFriendOnlineStatus(message.text.data.message_details.user_id,true);
           } else {
-            userFriends[i].is_online = false;
+            updateFriendOnlineStatus(message.text.data.message_details.user_id,false);
           }
-          // this.props.getUserFriends().then((res) => {
+          this.props.setUserFriends().then((res) => {
             this.props.setCommonChatConversation();
-          // });
+          });
           break;
         }
       }
     }
   }
+
+  //Set Friend's typing status with socket event
+  setFriendsTypingStatus(message) {
+    const {userFriends} = this.props;
+    if (message.text.data.type === SocketEvents.FRIEND_TYPING_MESSAGE) {
+      for (var i in userFriends) {
+        if (
+          userFriends[i].user_id == message.text.data.message_details.sender_user_id
+        ) {
+          if (message.text.data.message_details.status === 'typing') {
+            updateFriendTypingStatus(message.text.data.message_details.sender_user_id,true);
+          } else {
+            updateFriendTypingStatus(message.text.data.message_details.sender_user_id,false);
+          }
+          this.props.setUserFriends().then((res) => {
+            this.props.setCommonChatConversation();
+          });
+          break;
+        }
+      }
+    }
+  }
+
   //Read Friend's all messages with socket event
   readAllMessageFriendChat(message) {
     const {userFriends} = this.props;
@@ -839,6 +888,82 @@ class Chat extends Component {
         this.props.setCommonChatConversation();
       });
     }
+  }
+
+  onDeleteMessageInGroup(message){
+    const {userGroups,userData} = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_GROUP) {
+      for (let i of userGroups) {
+
+      }
+    }
+  }
+
+  onCreateNewGroup(message){
+    const {userGroups,userData} = this.props;
+    if (message.text.data.type === SocketEvents.CREATE_NEW_GROUP) {
+      for(let id of message.text.data.message_details.members){
+        if(id == userData.id){
+          var item = message.text.data.message_details;
+          var group = {
+            group_id: item.id,
+            group_name: item.name,
+            unread_msg: 0,
+            total_members: item.members.length,
+            description: item.description,
+            chat: 'group',
+            group_picture: item.group_picture,
+            last_msg: null,
+            last_msg_id: null,
+            timestamp: item.timestamp,
+            event: `group_${item.id}`,
+            no_msgs: true,    
+            is_pined: false,
+            sender_id: null,
+            sender_username: null,
+            sender_display_name: null,
+            mentions: null,
+            reply_to: null
+          }
+          setGroups([group]);
+          this.props.getLocalUserGroups().then((res) => {
+            this.props.setCommonChatConversation();
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  onDeleteGroup(message){
+    const {userGroups,userData} = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_GROUP) {
+      for (let i of userGroups) {
+        if (i.group_id === message.text.data.message_details.group_id) {
+          deleteGroupById(message.text.data.message_details.group_id);
+          deleteAllGroupMessageByGroupId(message.text.data.message_details.group_id);
+          this.props.getLocalUserGroups().then((res) => {
+            this.props.setCommonChatConversation();
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  onAddGroupMember(message){
+    const {userGroups,userData} = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_GROUP) {
+      for (let i of userGroups) {
+        if (i.group_id === message.text.data.message_details.group_id) {
+          
+        }
+      }
+    }
+  }
+
+  onRemoveGroupMember(message){
+
   }
 
   onUpdateGroupDetail(message){

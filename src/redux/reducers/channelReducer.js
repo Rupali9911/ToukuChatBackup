@@ -611,3 +611,15 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
         reject(err);
       });
   });
+
+  export const getLoginBonusOfChannel = () => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xigolo_payment/login_jackpot/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
