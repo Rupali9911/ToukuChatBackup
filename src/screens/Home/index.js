@@ -144,13 +144,13 @@ class Home extends Component {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
 
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
+    // this.events = eventService.getMessage().subscribe((message) => {
+    //   this.checkEventTypes(message);
+    // });
   }
 
   componentWillUnmount() {
-    this.events.unsubscribe();
+    // this.events.unsubscribe();
   }
 
   async componentDidMount() {
@@ -162,7 +162,7 @@ class Home extends Component {
     this.getUserGroups();
     this.getUserFriends();
     // this.props.getFriendRequests();
-    this.props.getUserConfiguration();
+    // this.props.getUserConfiguration();
     // this.focusListener = this.props.navigation.addListener(
     //   'didFocus',
     //   async () => {

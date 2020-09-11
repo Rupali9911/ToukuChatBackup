@@ -975,7 +975,7 @@
       "deleteNoteText":"このメモを削除してもよろしいですか？",
       "userDisplayName":"ユーザーの表示名",
       "saveResponse":"回答を保存",
-      "gamePlatformText":"ポイントが使えるゲームサイトが 8月オープンします",
+      "gamePlatformText":"ポイントが使えるゲームがオープンするまで",
       "startEarningText":"それまでポイントを貯めましょう！",
       "seeYouTomorrow":"また明日トライしてね！",
       "youOwn":"あなたの保有量 ",
@@ -996,7 +996,8 @@
       "chooseOption": "オプションを選択",
       "takePhoto": "写真を撮る",
       "chooseFromLibrary": "ライブラリーから画像を選択",
-      "cancelChooseOption": "戻る"
+      "cancelChooseOption": "戻る",
+      "bonusText": "ゲームがプレイできるようになったときの無料ボーナスポイントを貯めてください！"
     },
     "welcome":{
       "theWorldIsConnected":"世界が繋がる",
