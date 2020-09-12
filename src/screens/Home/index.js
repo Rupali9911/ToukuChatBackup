@@ -150,7 +150,7 @@ class Home extends Component {
   }
 
   componentWillUnmount() {
-    this.events.unsubscribe();
+     this.events.unsubscribe();
   }
 
   async componentDidMount() {
@@ -162,7 +162,7 @@ class Home extends Component {
     this.getUserGroups();
     this.getUserFriends();
     // this.props.getFriendRequests();
-    this.props.getUserConfiguration();
+    // this.props.getUserConfiguration();
     // this.focusListener = this.props.navigation.addListener(
     //   'didFocus',
     //   async () => {

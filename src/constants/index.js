@@ -76,6 +76,7 @@ export const Images = {
   image_gallery: require('../../assets/images/gallery.png'),
   image_loader: require('../../assets/images/loader.gif'),
   image_conversation: require('../../assets/images/conversation.png'),
+  image_bonus_bg: require('../../assets/images/bonus_bg.png')
 };
 
 export const Colors = {
@@ -108,6 +109,7 @@ export const Colors = {
 };
 
 export const Fonts = {
+  beba_regular: 'BebasNeue-Regular',
   regular: 'Poppins-Regular',
   medium: 'Poppins-Medium',
   thin: 'Poppins-Thin',
@@ -255,3 +257,17 @@ export const SocketEvents = {
   UNPINED_CHANNEL: 'unpined channel',
 
 };
+
+
+export const closeBoxImage = [
+  {key: 1, value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png', class: '_sm', imgClass: 'animated.delay-5s'},
+  {key: 2, value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png', class: '_lg', imgClass: ''} ,
+  {key: 3, value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png', class: '_md', imgClass: 'animated.delay-5s'},
+];
+
+export const openBoxImage = {
+  open_box: 'https://cdn.angelium.net/touku/assets/images/bonus/open_box.png',
+  less_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/lessgold.png',
+  mid_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/midgold@3x.png',
+  full_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/full_gold.png'
+}
