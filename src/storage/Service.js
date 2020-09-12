@@ -720,10 +720,10 @@ export const updateFriendTypingStatus = (id, status) => {
   });
 }
 
-export const removeUserFriends = (id) => {
+export const removeUserFriends = async (id) => {
   var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
 
-  realm.write(() => {
+  await realm.write(() => {
     realm.delete(user);
   });
 }

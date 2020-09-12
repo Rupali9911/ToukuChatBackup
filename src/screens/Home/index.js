@@ -144,13 +144,13 @@ class Home extends Component {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
 
-    // this.events = eventService.getMessage().subscribe((message) => {
-    //   this.checkEventTypes(message);
-    // });
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
   }
 
   componentWillUnmount() {
-    // this.events.unsubscribe();
+    this.events.unsubscribe();
   }
 
   async componentDidMount() {
@@ -267,7 +267,8 @@ class Home extends Component {
       for (var channel of this.props.followingChannels) {
         counts = counts + channel.unread_msg;
       }
-      this.setState({ channelHeaderCounts: counts });
+      // this.setState({ channelHeaderCounts: counts });
+      return counts;
   }
 
   setFriendHeaderCount(){
@@ -346,7 +347,6 @@ class Home extends Component {
       case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
         this.readAllMessageGroupChat(message);
         break;
-
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
         this.onNewMessageInGroup(message);
         break;
