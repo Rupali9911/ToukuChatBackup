@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { ImageBackground, PermissionsAndroid, Platform } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {ImageBackground, PermissionsAndroid, Platform} from 'react-native';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 
-import { ChatHeader } from '../../components/Headers';
+import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import { globalStyles } from '../../styles';
-import { Images, SocketEvents } from '../../constants';
-import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
-import { ListLoader } from '../../components/Loaders';
-import { UploadLoader } from '../../components/Loaders';
+import {globalStyles} from '../../styles';
+import {Images, SocketEvents} from '../../constants';
+import {ConfirmationModal, UploadSelectModal} from '../../components/Modals';
+import {ListLoader} from '../../components/Loaders';
+import {UploadLoader} from '../../components/Loaders';
 import {
   translate,
   translateMessage,
@@ -32,7 +32,7 @@ import {
   resetFriendConversation,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
-import { eventService } from '../../utils';
+import {eventService} from '../../utils';
 import SingleSocket from '../../helpers/SingleSocket';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
@@ -42,7 +42,8 @@ import {
   updateFriendMessageById,
   deleteFriendMessageById,
   setFriendMessageUnsend,
-  updateAllFriendMessageRead
+  updateAllFriendMessageRead,
+  realm,
 } from '../../storage/Service';
 
 // let uuid = require('react-native-uuid')
@@ -63,7 +64,7 @@ class FriendChats extends Component {
       sentMessageType: 'text',
       sendingMedia: false,
       showSelectModal: false,
-      uploadFile: { uri: null, type: null, name: null },
+      uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
         {
           id: 1,
@@ -119,28 +120,29 @@ class FriendChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
+    // this.events = eventService.getMessage().subscribe((message) => {
+    //   this.checkEventTypes(message);
+    // });
   }
 
   componentWillUnmount() {
-    this.events.unsubscribe();
+    // this.events.unsubscribe();
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getPersonalConversationInitial();
+    this.markFriendMsgsRead();
 
-    this.SingleSocket.create({ user_id: this.props.userData.id });
+    // this.SingleSocket.create({user_id: this.props.userData.id});
 
     // alert(JSON.stringify(this.props.userData));
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   onMessageSend = async () => {
@@ -153,22 +155,22 @@ class FriendChats extends Component {
       editMessageId,
       uploadFile,
     } = this.state;
-    const { currentFriend, userData } = this.props;
+    const {currentFriend, userData} = this.props;
 
     if (!newMessageText && !uploadFile.uri) {
       return;
     }
     let msgText = newMessageText;
-    let imgThumb = ''
+    let imgThumb = '';
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
-        files
+        files,
       );
-      console.log('uploadedImages', uploadedImages)
+      console.log('uploadedImages', uploadedImages);
       msgText = uploadedImages.image[0].image;
-        imgThumb = uploadedImages.image[0].thumbnail;
+      imgThumb = uploadedImages.image[0].thumbnail;
     }
 
     if (sentMessageType === 'audio') {
@@ -177,7 +179,7 @@ class FriendChats extends Component {
       const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
         files,
         uploadFile.name,
-        uploadFile.type
+        uploadFile.type,
       );
       msgText = uploadedAudio;
     }
@@ -189,7 +191,7 @@ class FriendChats extends Component {
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
         uploadFile.name,
-        uploadFile.type
+        uploadFile.type,
       );
       msgText = uploadedApplication;
     }
@@ -199,7 +201,7 @@ class FriendChats extends Component {
       let files = [file];
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
-        uploadFile.type
+        uploadFile.type,
       );
       msgText = uploadedVideo;
     }
@@ -246,7 +248,7 @@ class FriendChats extends Component {
     };
 
     if (isEdited) {
-      updateFriendMessageById(editMessageId,newMessageText,sentMessageType);
+      updateFriendMessageById(editMessageId, newMessageText, sentMessageType);
       this.sendEditMessage();
       return;
     }
@@ -279,12 +281,12 @@ class FriendChats extends Component {
       isEdited: false,
       sentMessageType: 'text',
       sendingMedia: false,
-      uploadFile: { uri: null, type: null, name: null },
+      uploadFile: {uri: null, type: null, name: null},
     });
   };
 
   sendEditMessage = () => {
-    const { newMessageText, editMessageId } = this.state;
+    const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -310,7 +312,9 @@ class FriendChats extends Component {
     // const { conversations } = this.state;
     const {chatFriendConversation} = this.props;
 
-    const repliedMessage = chatFriendConversation.find((item) => item.id === messageId);
+    const repliedMessage = chatFriendConversation.find(
+      (item) => item.id === messageId,
+    );
     this.setState({
       isReply: true,
       repliedMessage: repliedMessage,
@@ -325,8 +329,8 @@ class FriendChats extends Component {
   };
 
   checkEventTypes(message) {
-    const { currentFriend, userData } = this.props;
-    const { conversations } = this.state;
+    const {currentFriend, userData} = this.props;
+    const {conversations} = this.state;
 
     var valueArr = conversations.map(function (item) {
       return item.id;
@@ -335,113 +339,113 @@ class FriendChats extends Component {
       return valueArr.indexOf(item) != idx;
     });
 
-    //New Message in Friend
-    if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_FREIND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        if (
-          message.text.data.message_details.to_user.id == currentFriend.user_id
-        ) {
-          // if (!isDuplicate) {
-          //   conversations.unshift(message.text.data.message_details);
-          //   this.setState({conversations});
-          // }
-          // this.getPersonalConversation();
-          setFriendChatConversation([message.text.data.message_details]);
-          this.getLocalFriendConversation();
-          this.markFriendMsgsRead();
-        }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
-        if (
-          message.text.data.message_details.from_user.id ==
-          currentFriend.user_id
-        ) {
-          // this.getPersonalConversation();
-          setFriendChatConversation([message.text.data.message_details]);
-          this.getLocalFriendConversation();
-          this.markFriendMsgsRead();
-        }
-      }
-    }
+    // //New Message in Friend
+    // if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_FREIND) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //     ) {
+    //       // if (!isDuplicate) {
+    //       //   conversations.unshift(message.text.data.message_details);
+    //       //   this.setState({conversations});
+    //       // }
+    //       // this.getPersonalConversation();
+    //       setFriendChatConversation([message.text.data.message_details]);
+    //       this.getLocalFriendConversation();
+    //       this.markFriendMsgsRead();
+    //     }
+    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.from_user.id ==
+    //       currentFriend.user_id
+    //     ) {
+    //       // this.getPersonalConversation();
+    //       setFriendChatConversation([message.text.data.message_details]);
+    //       this.getLocalFriendConversation();
+    //       this.markFriendMsgsRead();
+    //     }
+    //   }
+    // }
 
-    //Unsend Message in Friend
-    if (message.text.data.type == SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        if (
-          message.text.data.message_details.to_user.id == currentFriend.user_id
-        ) {
-          // this.getPersonalConversation();
-          setFriendMessageUnsend(message.text.data.message_details.id);
-          this.getLocalFriendConversation();
-        }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
-        if (
-          message.text.data.message_details.from_user.id ==
-          currentFriend.user_id
-        ) {
-          // this.getPersonalConversation();
-          setFriendMessageUnsend(message.text.data.message_details.id);
-          this.getLocalFriendConversation();
-        }
-      }
-    }
+    // Unsend Message in Friend
+    // if (message.text.data.type == SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //     ) {
+    //       // this.getPersonalConversation();
+    //       setFriendMessageUnsend(message.text.data.message_details.id);
+    //       this.getLocalFriendConversation();
+    //     }
+    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.from_user.id ==
+    //       currentFriend.user_id
+    //     ) {
+    //       // this.getPersonalConversation();
+    //       setFriendMessageUnsend(message.text.data.message_details.id);
+    //       this.getLocalFriendConversation();
+    //     }
+    //   }
+    // }
 
-    //DELETE_MESSAGE_IN_FRIEND
-    if (message.text.data.type == SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        if (
-          message.text.data.message_details.to_user.id == currentFriend.user_id
-        ) {
-          deleteFriendMessageById(message.text.data.message_details.id);
-          let chat = getFriendChatConversationById(
-            this.props.currentFriend.friend
-          );
-          this.props.setFriendConversation(chat);
-        }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
-        if (
-          message.text.data.message_details.from_user.id ==
-          currentFriend.user_id
-        ) {
-          deleteFriendMessageById(message.text.data.message_details.id);
-          let chat = getFriendChatConversationById(
-            this.props.currentFriend.friend
-          );
-          this.props.setFriendConversation(chat);
-        }
-      }
-    }
+    // DELETE_MESSAGE_IN_FRIEND
+    // if (message.text.data.type == SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //     ) {
+    //       deleteFriendMessageById(message.text.data.message_details.id);
+    //       let chat = getFriendChatConversationById(
+    //         this.props.currentFriend.friend,
+    //       );
+    //       this.props.setFriendConversation(chat);
+    //     }
+    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.from_user.id ==
+    //       currentFriend.user_id
+    //     ) {
+    //       deleteFriendMessageById(message.text.data.message_details.id);
+    //       let chat = getFriendChatConversationById(
+    //         this.props.currentFriend.friend,
+    //       );
+    //       this.props.setFriendConversation(chat);
+    //     }
+    //   }
+    // }
 
-    //MESSAGE_EDITED_IN_FRIEND
-    if (message.text.data.type == SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        if (
-          message.text.data.message_details.to_user.id == currentFriend.user_id
-        ) {
-          let editMessageId = message.text.data.message_details.id;
-          let newMessageText = message.text.data.message_details.message_body;
-          let messageType = message.text.data.message_details.msg_type;
-          updateFriendMessageById(editMessageId,newMessageText,messageType);
-          this.getLocalFriendConversation();
-        }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
-        if (
-          message.text.data.message_details.from_user.id ==
-          currentFriend.user_id
-        ) {
-          let editMessageId = message.text.data.message_details.id;
-          let newMessageText = message.text.data.message_details.message_body;
-          let messageType = message.text.data.message_details.msg_type;
-          updateFriendMessageById(editMessageId,newMessageText,messageType);
-          this.getLocalFriendConversation();
-        }
-      }
-    }
+    // MESSAGE_EDITED_IN_FRIEND
+    // if (message.text.data.type == SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //     ) {
+    //       let editMessageId = message.text.data.message_details.id;
+    //       let newMessageText = message.text.data.message_details.message_body;
+    //       let messageType = message.text.data.message_details.msg_type;
+    //       updateFriendMessageById(editMessageId, newMessageText, messageType);
+    //       this.getLocalFriendConversation();
+    //     }
+    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //     if (
+    //       message.text.data.message_details.from_user.id ==
+    //       currentFriend.user_id
+    //     ) {
+    //       let editMessageId = message.text.data.message_details.id;
+    //       let newMessageText = message.text.data.message_details.message_body;
+    //       let messageType = message.text.data.message_details.msg_type;
+    //       updateFriendMessageById(editMessageId, newMessageText, messageType);
+    //       this.getLocalFriendConversation();
+    //     }
+    //   }
+    // }
 
     //READ_ALL_MESSAGE_FRIEND_CHAT
     if (message.text.data.type == SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       if (message.text.data.message_details.read_by == userData.id) {
-          // this.getPersonalConversation();
-          updateAllFriendMessageRead(message.text.data.message_details.friend_id);
+        // this.getPersonalConversation();
+        updateAllFriendMessageRead(message.text.data.message_details.friend_id);
       }
     }
 
@@ -480,7 +484,6 @@ class FriendChats extends Component {
         }
       }
     }
-
   }
 
   getPersonalConversation = async () => {
@@ -489,9 +492,9 @@ class FriendChats extends Component {
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           // this.setState({ conversations: res.conversation });
-          this.markFriendMsgsRead();
+          // this.markFriendMsgsRead();
           let chat = getFriendChatConversationById(
-            this.props.currentFriend.friend
+            this.props.currentFriend.friend,
           );
           let conversations = [];
           chat.map((item, index) => {
@@ -500,7 +503,7 @@ class FriendChats extends Component {
           this.props.setFriendConversation(conversations);
         }
       });
-  }
+  };
 
   getLocalFriendConversation = () => {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
@@ -511,10 +514,9 @@ class FriendChats extends Component {
       });
       this.props.setFriendConversation(conversations);
     }
-  }
+  };
 
   getPersonalConversationInitial = async () => {
-
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
@@ -531,7 +533,7 @@ class FriendChats extends Component {
           // this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
           let chat = getFriendChatConversationById(
-            this.props.currentFriend.friend
+            this.props.currentFriend.friend,
           );
           let conversations = [];
           chat.map((item, index) => {
@@ -540,14 +542,14 @@ class FriendChats extends Component {
           this.props.setFriendConversation(conversations);
         }
       });
-  }
+  };
 
   markFriendMsgsRead() {
     this.props.markFriendMsgsRead(this.props.currentFriend.friend);
   }
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
     // friend
     const payload = {
       type: SocketEvents.FRIEND_TYPING_MESSAGE,
@@ -562,7 +564,7 @@ class FriendChats extends Component {
   }
 
   toggleConfirmationModal = () => {
-    this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
+    this.setState({showConfirmationModal: !this.state.showConfirmationModal});
   };
 
   onCancel = () => {
@@ -616,20 +618,21 @@ class FriendChats extends Component {
       let payload = {
         friend: this.props.currentFriend.friend,
       };
-      this.props.deletePersonalMessage(this.state.selectedMessageId, payload)
-      .then((res) => {
-        deleteFriendMessageById(this.state.selectedMessageId);
-        this.getPersonalConversation();
-      });
+      this.props
+        .deletePersonalMessage(this.state.selectedMessageId, payload)
+        .then((res) => {
+          deleteFriendMessageById(this.state.selectedMessageId);
+          this.getPersonalConversation();
+        });
     }
   };
 
   onCancelUnSend = () => {
-    this.setState({ showMessageUnSendConfirmationModal: false });
+    this.setState({showMessageUnSendConfirmationModal: false});
   };
 
   onConfirmUnSend = () => {
-    this.setState({ showMessageUnSendConfirmationModal: false });
+    this.setState({showMessageUnSendConfirmationModal: false});
     if (this.state.selectedMessageId != null) {
       let payload = {
         friend: this.props.currentFriend.friend,
@@ -761,7 +764,7 @@ class FriendChats extends Component {
       includeBase64: true,
       mediaType: 'photo',
     }).then((image) => {
-      let source = { uri: 'data:image/jpeg;base64,' + image.data };
+      let source = {uri: 'data:image/jpeg;base64,' + image.data};
       this.setState({
         uploadFile: source,
         sentMessageType: 'image',
@@ -836,9 +839,9 @@ class FriendChats extends Component {
           res.type, // mime type
           res.name,
           res.size,
-          res.type.substr(0, res.type.indexOf('/'))
+          res.type.substr(0, res.type.indexOf('/')),
         );
-        let source = { uri: res.uri, type: res.type, name: res.name };
+        let source = {uri: res.uri, type: res.type, name: res.name};
         if (fileType === 'audio') {
           this.setState({
             uploadFile: source,
@@ -887,12 +890,11 @@ class FriendChats extends Component {
       uploadFile,
       sendingMedia,
     } = this.state;
-    const { currentFriend, chatsLoading, chatFriendConversation } = this.props;
+    const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentFriend.username}
           description={

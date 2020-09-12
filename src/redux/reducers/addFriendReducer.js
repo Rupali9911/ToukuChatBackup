@@ -5,6 +5,10 @@ import {
   CANCEL_FRIEND_REQUEST,
 } from '../../helpers/api';
 
+import {
+  setFriendRequests
+} from '../../storage/Service';
+
 export const SET_SEARCHED_FRIEND = 'SET_SEARCHED_FRIEND';
 
 export const GET_SEARCHED_FRIENDS_REQUEST = 'GET_SEARCHED_FRIENDS_REQUEST';
@@ -160,6 +164,7 @@ export const getFriendRequest = () => (dispatch) =>
     client
       .get(`/xchat/list-friend-request/`)
       .then((res) => {
+        setFriendRequests(res);
         dispatch(setFiendRequest(res));
         resolve(res);
       })

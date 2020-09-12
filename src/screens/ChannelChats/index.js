@@ -53,6 +53,8 @@ import {
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import bonusImage from '../../../assets/images/bonus_bg.png'
+
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -1051,13 +1053,12 @@ class ChannelChats extends Component {
           transparent
           onRequestClose={()=>this.setState({bonusModal:false})}>
           <View style={styles.bonusModalContainer}>
-            <ImageBackground source={Images.image_bonus_bg} resizeMode={'cover'} style={styles.bonusBgContainer}>
+            <ImageBackground source={bonusImage} resizeMode={'cover'} style={styles.bonusBgContainer}>
               <View style={{flex:1}}>
                 <Text style={styles.bonusTextHeading}>{this.state.jackpotData?translate('pages.xchat.seeYouTomorrow'):translate('pages.xchat.loginBonusText')}</Text>
                 <Text style={styles.bonusTitleText}>{translate('pages.xchat.jackPot')} <Text style={{fontSize:30,fontWeight:'bold'}}>{this.state.bonusXP}</Text> <Text style={{fontSize:15,fontFamily: Fonts.regular,fontWeight:'300'}}>{"XP"}</Text></Text>
                 {this.state.assetXPValue?<Text style={styles.bonusTitleText}>{translate('pages.xchat.youOwn')} <Text style={{fontSize:30,fontWeight:'bold'}}>{this.state.assetXPValue.XP+""}</Text> <Text style={{fontSize:15,fontFamily: Fonts.regular,fontWeight:'300'}}>{"XP"}</Text></Text>:null}
                 <View style={styles.bonusImageContainer}>
-                    
                     <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(1)}} style={{ marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
                       <View style={{flex:1,alignItems:'center'}}>
                         <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==1)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[0]):closeBoxImage[0].value}} resizeMode={'contain'}/>
@@ -1108,21 +1109,21 @@ const styles = StyleSheet.create({
   },
   bonusBgContainer: {
     flex:1,
-    margin:20, 
-    borderRadius:30, 
-    alignItems:'center', 
+    margin:20,
+    borderRadius:30,
+    alignItems:'center',
     overflow: 'hidden'
   },
   bonusTextHeading: {
     marginTop:34,
-    // marginBottom:PixelRatio.getPixelSizeForLayoutSize(10), 
+    // marginBottom:PixelRatio.getPixelSizeForLayoutSize(10),
     textAlign:'center',
     fontSize:32,
     fontWeight:'300',
     color:'#ffd300',
     fontFamily: Fonts.regular
   },
-  bonusTitleText: { 
+  bonusTitleText: {
     textAlign:'center',
     fontSize:22,
     fontWeight:'300',
@@ -1130,7 +1131,7 @@ const styles = StyleSheet.create({
     fontFamily:Fonts.beba_regular
   },
   bonusImageContainer: {
-    flex:1, 
+    flex:1,
     justifyContent:'space-evenly',
     marginBottom:20,
     marginTop:20

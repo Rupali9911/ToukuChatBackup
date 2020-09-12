@@ -43,6 +43,7 @@ import {
   getLocalUserGroups,
   updateUnreadGroupMsgsCounts,
 } from '../../redux/reducers/groupReducer';
+import {getFriendRequest} from '../../redux/reducers/addFriendReducer'; 
 import {
   getUserFriends,
   getFriendRequests,
@@ -50,6 +51,7 @@ import {
   updateUnreadFriendMsgsCounts,
   getUserFriendsSuccess,
   setUserFriends,
+  setFriendConversation,
 } from '../../redux/reducers/friendReducer';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -90,7 +92,8 @@ import {
   getLocalFriendRequest,
   deleteChannelById,
   updateChannelTotalMember,
-  updateChannelLastMsgWithOutCount
+  updateChannelLastMsgWithOutCount,
+  getFriendChatConversationById,
 } from '../../storage/Service';
 
 class Chat extends Component {
@@ -145,6 +148,7 @@ class Chat extends Component {
     // this.getUserFriends();
     // this.setCommonConversation();
     this.props.getUserConfiguration();
+    this.props.getFriendRequest();
 
     this.props.getFollowingChannels().then((res) => {
       this.props.getUserGroups().then((res) => {
@@ -244,7 +248,7 @@ class Chat extends Component {
         this.onRemoveChannelMember(message);
         break;
       case SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT:
-        this.onChannelMemberRemoveCount(message);
+        // this.onChannelMemberRemoveCount(message);
         break;
       case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
         this.readAllMessageFriendChat(message);
@@ -259,7 +263,7 @@ class Chat extends Component {
         this.onEditMessageInFriend(message);
         break;
       case SocketEvents.DELETE_MESSAGE_IN_FRIEND:
-        // this.onDeleteMessageInFriend(message);
+        this.onDeleteMessageInFriend(message);
         break;
       case SocketEvents.UNSENT_MESSAGE_IN_FRIEND:
         this.onUnsentMessageInFriend(message);
@@ -313,9 +317,15 @@ class Chat extends Component {
           userFriends[i].user_id == message.text.data.message_details.user_id
         ) {
           if (message.text.data.message_details.status === 'online') {
-            updateFriendOnlineStatus(message.text.data.message_details.user_id,true);
+            updateFriendOnlineStatus(
+              message.text.data.message_details.user_id,
+              true,
+            );
           } else {
-            updateFriendOnlineStatus(message.text.data.message_details.user_id,false);
+            updateFriendOnlineStatus(
+              message.text.data.message_details.user_id,
+              false,
+            );
           }
           this.props.setUserFriends().then((res) => {
             this.props.setCommonChatConversation();
@@ -332,12 +342,19 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.FRIEND_TYPING_MESSAGE) {
       for (var i in userFriends) {
         if (
-          userFriends[i].user_id == message.text.data.message_details.sender_user_id
+          userFriends[i].user_id ==
+          message.text.data.message_details.sender_user_id
         ) {
           if (message.text.data.message_details.status === 'typing') {
-            updateFriendTypingStatus(message.text.data.message_details.sender_user_id,true);
+            updateFriendTypingStatus(
+              message.text.data.message_details.sender_user_id,
+              true,
+            );
           } else {
-            updateFriendTypingStatus(message.text.data.message_details.sender_user_id,false);
+            updateFriendTypingStatus(
+              message.text.data.message_details.sender_user_id,
+              false,
+            );
           }
           this.props.setUserFriends().then((res) => {
             this.props.setCommonChatConversation();
@@ -624,96 +641,130 @@ class Chat extends Component {
 
   //Multiple Message in Following Channel
   multipleMessageInFollowingChannel(message) {
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL) {
-      for (let item of message.text.data.message_details){
-        console.log('item',item);
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
+      for (let item of message.text.data.message_details) {
+        console.log('item', item);
         for (let i of followingChannels) {
           if (item.channel == i.id) {
-              var result = getChannelsById(item.channel);
-              var channels = [];
-              result.map(item=>{
-                channels.push(item);
-              })
-              setChannelChatConversation([item]);
-              updateChannelLastMsg(item.channel,item,channels[0].unread_msg+1);
-              this.props.getLocalFollowingChannels().then(()=>{
-                this.props.setCommonChatConversation();
-              });
-              break;
+            var result = getChannelsById(item.channel);
+            var channels = [];
+            result.map((item) => {
+              channels.push(item);
+            });
+            setChannelChatConversation([item]);
+            updateChannelLastMsg(
+              item.channel,
+              item,
+              channels[0].unread_msg + 1,
+            );
+            this.props.getLocalFollowingChannels().then(() => {
+              this.props.setCommonChatConversation();
+            });
+            break;
           }
         }
       }
     }
   }
 
-  messageUpdateInFollowingChannel(message){
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL) {
+  messageUpdateInFollowingChannel(message) {
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
+    ) {
       for (let i of followingChannels) {
         if (message.text.data.message_details.channel == i.id) {
-              var result = getChannelsById(message.text.data.message_details.channel);
-              var channels = [];
-              result.map(item=>{
-                channels.push(item);
-              })
-              updateMessageById(message.text.data.message_details.id,message.text.data.message_details.message_body);
-              if(channels[0].last_msg.id==message.text.data.message_details.id){
-                console.log('updateasdasdasd');
-                updateChannelLastMsgWithOutCount(message.text.data.message_details.channel,message.text.data.message_details);
-              }
-              this.props.getLocalFollowingChannels().then(()=>{
-                this.props.setCommonChatConversation();
-              });
-              break;
+          var result = getChannelsById(
+            message.text.data.message_details.channel,
+          );
+          var channels = [];
+          result.map((item) => {
+            channels.push(item);
+          });
+          updateMessageById(
+            message.text.data.message_details.id,
+            message.text.data.message_details.message_body,
+          );
+          if (channels[0].last_msg.id == message.text.data.message_details.id) {
+            console.log('updateasdasdasd');
+            updateChannelLastMsgWithOutCount(
+              message.text.data.message_details.channel,
+              message.text.data.message_details,
+            );
+          }
+          this.props.getLocalFollowingChannels().then(() => {
+            this.props.setCommonChatConversation();
+          });
+          break;
         }
       }
     }
   }
 
-  messageDeleteInFollowingChannel(message){
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL) {
+  messageDeleteInFollowingChannel(message) {
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
       var result = getChannelsById(message.text.data.message_details.channel);
       var channels = [];
-      result.map(item => {
+      result.map((item) => {
         channels.push(item);
-      })
+      });
       deleteMessageById(message.text.data.message_details.id);
       if (channels[0].last_msg.id == message.text.data.message_details.id) {
-        var chats = getChannelChatConversationById(message.text.data.message_details.channel);
-        var array = []
-        for(let chat of chats){
-          array = [...array,chat];
+        var chats = getChannelChatConversationById(
+          message.text.data.message_details.channel,
+        );
+        var array = [];
+        for (let chat of chats) {
+          array = [...array, chat];
         }
-        console.log('updated_last_messgae',JSON.stringify(array[0]));
-        updateChannelLastMsgWithOutCount(message.text.data.message_details.channel, array[0]);
+        console.log('updated_last_messgae', JSON.stringify(array[0]));
+        updateChannelLastMsgWithOutCount(
+          message.text.data.message_details.channel,
+          array[0],
+        );
       }
-      this.props.getLocalFollowingChannels().then(()=>{
+      this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
     }
   }
 
-  messageUnsentInFollowingChannel(message){
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL) {
+  messageUnsentInFollowingChannel(message) {
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
       var result = getChannelsById(message.text.data.message_details.channel);
       var channels = [];
-      result.map(item => {
+      result.map((item) => {
         channels.push(item);
-      })
+      });
       setMessageUnsend(message.text.data.message_details.id);
       if (channels[0].last_msg.id == message.text.data.message_details.id) {
-        var chats = getChannelChatConversationById(message.text.data.message_details.channel);
-        var array = []
-        for(let chat of chats){
-          array = [...array,chat];
+        var chats = getChannelChatConversationById(
+          message.text.data.message_details.channel,
+        );
+        var array = [];
+        for (let chat of chats) {
+          array = [...array, chat];
         }
-        console.log('updated_last_messgae',JSON.stringify(array[0]));
-        updateChannelLastMsgWithOutCount(message.text.data.message_details.channel, array[0]);
+        console.log('updated_last_messgae', JSON.stringify(array[0]));
+        updateChannelLastMsgWithOutCount(
+          message.text.data.message_details.channel,
+          array[0],
+        );
       }
-      this.props.getLocalFollowingChannels().then(()=>{
+      this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
     }
@@ -740,113 +791,210 @@ class Chat extends Component {
 
   //New Message in Friend
   onNewMessageInFriend(message) {
-    const {userFriends} = this.props;
-    const {userData} = this.props;
+    const {userFriends, currentFriend, userData} = this.props;
+    console.log(
+      'onNewMessageInFriend -> onNewMessageInFriend currentFriend',
+      currentFriend,
+    );
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         // this.getUserFriends();
+        setFriendChatConversation([message.text.data.message_details]);
+        updateFriendLastMsg(
+          message.text.data.message_details.to_user.id,
+          message.text.data.message_details,
+        );
+        this.props.setUserFriends().then((res) => {
+          this.props.setCommonChatConversation();
+        });
+
+        if (
+          currentFriend &&
+          message.text.data.message_details.to_user.id == currentFriend.user_id
+        ) {
+          this.getLocalFriendConversation();
+        }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
-        updateFriendLastMsg(message.text.data.message_details.from_user.id,message.text.data.message_details);
+        updateFriendLastMsg(
+          message.text.data.message_details.from_user.id,
+          message.text.data.message_details,
+        );
         // this.getUserFriends();
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
         });
+        if (
+          currentFriend &&
+          message.text.data.message_details.from_user.id ==
+            currentFriend.user_id
+        ) {
+          this.getLocalFriendConversation();
+        }
       }
     }
   }
 
+  getLocalFriendConversation = () => {
+    let chat = getFriendChatConversationById(this.props.currentFriend.friend);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+      this.props.setFriendConversation(conversations);
+    }
+  };
+
   //Edit Message in Friend
   onEditMessageInFriend(message) {
-    const { userFriends } = this.props;
-    const { userData } = this.props;
+    const {userFriends, currentFriend, userData} = this.props;
 
-    if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getUserFriends();
-        let editMessageId = message.text.data.message_details.id;
-        let newMessageText = message.text.data.message_details.message_body;
-        let messageType = message.text.data.message_details.msg_type;
-        updateFriendMessageById(editMessageId, newMessageText, messageType);
+    if (message.text.data.message_details.from_user.id == userData.id) {
+      // this.getUserFriends();
+      let editMessageId = message.text.data.message_details.id;
+      let newMessageText = message.text.data.message_details.message_body;
+      let messageType = message.text.data.message_details.msg_type;
+      updateFriendMessageById(editMessageId, newMessageText, messageType);
+      if (
+        currentFriend &&
+        message.text.data.message_details.to_user.id == currentFriend.user_id
+      ) {
+        this.getLocalFriendConversation();
+      }
+      var users = getLocalUserFriend(
+        message.text.data.message_details.to_user.id,
+      );
 
-        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
+      var array = [];
 
-        var array = []
+      for (let u of users) {
+        array = [...array, u];
+      }
 
-        for(let u of users){
-          array = [...array, u];
-        }
+      if (
+        array.length > 0 &&
+        array[0].last_msg_id == message.text.data.message_details.id
+      ) {
+        updateFriendLastMsgWithoutCount(
+          message.text.data.message_details.to_user.id,
+          message.text.data.message_details,
+        );
+        this.props.setUserFriends().then((res) => {
+          this.props.setCommonChatConversation();
+        });
+      }
+    } else if (message.text.data.message_details.to_user.id == userData.id) {
+      let editMessageId = message.text.data.message_details.id;
+      let newMessageText = message.text.data.message_details.message_body;
+      let messageType = message.text.data.message_details.msg_type;
+      updateFriendMessageById(editMessageId, newMessageText, messageType);
+      if (
+        currentFriend &&
+        message.text.data.message_details.from_user.id == currentFriend.user_id
+      ) {
+        this.getLocalFriendConversation();
+      }
+      var users = getLocalUserFriend(
+        message.text.data.message_details.from_user.id,
+      );
 
-        if(array.length>0 && array[0].last_msg_id == message.text.data.message_details.id){
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id,message.text.data.message_details);
-          this.props.setUserFriends().then((res) => {
-            this.props.setCommonChatConversation();
-          });
-        }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
-        let editMessageId = message.text.data.message_details.id;
-        let newMessageText = message.text.data.message_details.message_body;
-        let messageType = message.text.data.message_details.msg_type;
-        updateFriendMessageById(editMessageId, newMessageText, messageType);
+      var array = [];
 
-        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
+      for (let u of users) {
+        array = [...array, u];
+      }
 
-        var array = []
-
-        for(let u of users){
-          array = [...array, u];
-        }
-
-        console.log('array',JSON.stringify(array[0]));
-        if(array.length>0 && array[0].last_msg_id == message.text.data.message_details.id){
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id,message.text.data.message_details);
-          this.props.setUserFriends().then((res) => {
-            this.props.setCommonChatConversation();
-          });
-        }
+      console.log('array', JSON.stringify(array[0]));
+      if (
+        array.length > 0 &&
+        array[0].last_msg_id == message.text.data.message_details.id
+      ) {
+        updateFriendLastMsgWithoutCount(
+          message.text.data.message_details.from_user.id,
+          message.text.data.message_details,
+        );
+        this.props.setUserFriends().then((res) => {
+          this.props.setCommonChatConversation();
+        });
       }
     }
   }
 
   onDeleteMessageInFriend(message) {
-    const { userData } = this.props;
+    const {userFriends, currentFriend, userData} = this.props;
+    console.log('onDeleteMessageInFriend -> currentFriend', currentFriend);
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
-        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
-        var array = []
-        for (let u of users) {
-          array = [...array, u];
-        }
-        deleteFriendMessageById(message.text.data.message_details.id);
-        if (array[0].last_msg.id == message.text.data.message_details.id) {
-          var chats = getFriendChatConversationById(message.text.data.message_details.channel);
-          var array = []
-          for (let chat of chats) {
-            array = [...array, chat];
-          }
-          console.log('updated_last_messgae', JSON.stringify(array[0]));
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id, message.text.data.message_details);
+        // var users = getLocalUserFriend(
+        //   message.text.data.message_details.to_user.id,
+        // );
+        // var array = [];
+        // for (let u of users) {
+        //   array = [...array, u];
+        // }
+        // deleteFriendMessageById(message.text.data.message_details.id);
+        // if (array[0].last_msg.id == message.text.data.message_details.id) {
+        //   var chats = getFriendChatConversationById(
+        //     message.text.data.message_details.channel,
+        //   );
+        //   var array = [];
+        //   for (let chat of chats) {
+        //     array = [...array, chat];
+        //   }
+        //   console.log('updated_last_messgae', JSON.stringify(array[0]));
+        //   updateFriendLastMsgWithoutCount(
+        //     message.text.data.message_details.to_user.id,
+        //     message.text.data.message_details,
+        //   );
+        // }
+
+        if (
+          currentFriend &&
+          message.text.data.message_details.to_user.id == currentFriend.user_id
+        ) {
+          deleteFriendMessageById(message.text.data.message_details.id);
+          let friendChat = getFriendChatConversationById(currentFriend.friend);
+          this.props.setFriendConversation(friendChat);
         }
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
         });
       } else if (message.text.data.message_details.to_user.id == userData.id) {
-        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
-        var array = []
-        for (let u of users) {
-          array = [...array, u];
+        // var users = getLocalUserFriend(
+        //   message.text.data.message_details.from_user.id,
+        // );
+        // var array = [];
+        // for (let u of users) {
+        //   array = [...array, u];
+        // }
+        // deleteFriendMessageById(message.text.data.message_details.id);
+        // if (array[0].last_msg.id == message.text.data.message_details.id) {
+        //   var chats = getFriendChatConversationById(
+        //     message.text.data.message_details.channel,
+        //   );
+        //   var array = [];
+        //   for (let chat of chats) {
+        //     array = [...array, chat];
+        //   }
+        //   console.log('updated_last_messgae', JSON.stringify(array[0]));
+        //   updateFriendLastMsgWithoutCount(
+        //     message.text.data.message_details.from_user.id,
+        //     message.text.data.message_details,
+        //   );
+        // }
+
+        if (
+          currentFriend &&
+          message.text.data.message_details.from_user.id ==
+            currentFriend.user_id
+        ) {
+          deleteFriendMessageById(message.text.data.message_details.id);
+          let friendChat = getFriendChatConversationById(currentFriend.friend);
+          this.props.setFriendConversation(friendChat);
         }
-        deleteFriendMessageById(message.text.data.message_details.id);
-        if (array[0].last_msg.id == message.text.data.message_details.id) {
-          var chats = getFriendChatConversationById(message.text.data.message_details.channel);
-          var array = []
-          for (let chat of chats) {
-            array = [...array, chat];
-          }
-          console.log('updated_last_messgae', JSON.stringify(array[0]));
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id, message.text.data.message_details);
-        }
+
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
         });
@@ -855,33 +1003,55 @@ class Chat extends Component {
   }
 
   //Unsent message on friend
-  onUnsentMessageInFriend(message){
-    const { userFriends } = this.props;
-    const { userData } = this.props;
+  onUnsentMessageInFriend(message) {
+    const {userFriends, currentFriend, userData} = this.props;
 
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         // this.getUserFriends();
         setFriendMessageUnsend(message.text.data.message_details.id);
-        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
-        var array = []
+        var users = getLocalUserFriend(
+          message.text.data.message_details.to_user.id,
+        );
+        var array = [];
         for (let u of users) {
           array = [...array, u];
         }
         if (array[0].last_msg_id == message.text.data.message_details.id) {
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id, message.text.data.message_details);
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.to_user.id,
+            message.text.data.message_details,
+          );
+        }
+        if (
+          currentFriend &&
+          message.text.data.message_details.to_user.id == currentFriend.user_id
+        ) {
+          this.getLocalFriendConversation();
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendMessageUnsend(message.text.data.message_details.id);
-        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
-        var array = []
+        var users = getLocalUserFriend(
+          message.text.data.message_details.from_user.id,
+        );
+        var array = [];
         for (let u of users) {
           array = [...array, u];
         }
 
         if (array[0].last_msg_id == message.text.data.message_details.id) {
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.from_user.id,
+            message.text.data.message_details,
+          );
+        }
 
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id, message.text.data.message_details);
+        if (
+          currentFriend &&
+          message.text.data.message_details.from_user.id ==
+            currentFriend.user_id
+        ) {
+          this.getLocalFriendConversation();
         }
       }
       this.props.setUserFriends().then(() => {
@@ -890,20 +1060,19 @@ class Chat extends Component {
     }
   }
 
-  onDeleteMessageInGroup(message){
-    const {userGroups,userData} = this.props;
+  onDeleteMessageInGroup(message) {
+    const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_GROUP) {
       for (let i of userGroups) {
-
       }
     }
   }
 
-  onCreateNewGroup(message){
-    const {userGroups,userData} = this.props;
+  onCreateNewGroup(message) {
+    const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.CREATE_NEW_GROUP) {
-      for(let id of message.text.data.message_details.members){
-        if(id == userData.id){
+      for (let id of message.text.data.message_details.members) {
+        if (id == userData.id) {
           var item = message.text.data.message_details;
           var group = {
             group_id: item.id,
@@ -917,14 +1086,14 @@ class Chat extends Component {
             last_msg_id: null,
             timestamp: item.timestamp,
             event: `group_${item.id}`,
-            no_msgs: true,    
+            no_msgs: true,
             is_pined: false,
             sender_id: null,
             sender_username: null,
             sender_display_name: null,
             mentions: null,
-            reply_to: null
-          }
+            reply_to: null,
+          };
           setGroups([group]);
           this.props.getLocalUserGroups().then((res) => {
             this.props.setCommonChatConversation();
@@ -935,13 +1104,15 @@ class Chat extends Component {
     }
   }
 
-  onDeleteGroup(message){
-    const {userGroups,userData} = this.props;
+  onDeleteGroup(message) {
+    const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
           deleteGroupById(message.text.data.message_details.group_id);
-          deleteAllGroupMessageByGroupId(message.text.data.message_details.group_id);
+          deleteAllGroupMessageByGroupId(
+            message.text.data.message_details.group_id,
+          );
           this.props.getLocalUserGroups().then((res) => {
             this.props.setCommonChatConversation();
           });
@@ -951,22 +1122,19 @@ class Chat extends Component {
     }
   }
 
-  onAddGroupMember(message){
-    const {userGroups,userData} = this.props;
+  onAddGroupMember(message) {
+    const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
-          
         }
       }
     }
   }
 
-  onRemoveGroupMember(message){
+  onRemoveGroupMember(message) {}
 
-  }
-
-  onUpdateGroupDetail(message){
+  onUpdateGroupDetail(message) {
     const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.EDIT_GROUP_DETAIL) {
       for (let i of userGroups) {
@@ -975,8 +1143,8 @@ class Chat extends Component {
             message.text.data.message_details.id,
             message.text.data.message_details.name,
             message.text.data.message_details.group_picture,
-            message.text.data.message_details.members.length
-            );
+            message.text.data.message_details.members.length,
+          );
           this.props.getLocalUserGroups().then((res) => {
             this.props.setCommonChatConversation();
           });
@@ -1094,9 +1262,9 @@ class Chat extends Component {
   // }
 
   shotListBy = (sortBy) => {
-      this.setState({
-          sortBy: sortBy,
-      });
+    this.setState({
+      sortBy: sortBy,
+    });
     switch (sortBy) {
       case 'time': {
         let sortData = {
@@ -1381,6 +1549,7 @@ const mapStateToProps = (state) => {
     friendLoading: state.friendReducer.loading,
     userConfig: state.configurationReducer.userConfig,
     commonChat: state.commonReducer.commonChat,
+    currentFriend: state.friendReducer.currentFriend,
   };
 };
 
@@ -1404,6 +1573,8 @@ const mapDispatchToProps = {
   getLocalUserGroups,
   getLocalFollowingChannels,
   setUserFriends,
+  setFriendConversation,
+  getFriendRequest
 };
 
 export default connect(
