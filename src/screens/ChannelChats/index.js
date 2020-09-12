@@ -4,6 +4,11 @@ import {
   View,
   PermissionsAndroid,
   Platform,
+  StyleSheet,
+  Text,
+  Modal,
+  Image,
+  PixelRatio
 } from 'react-native';
 import { connect } from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -11,10 +16,10 @@ import moment from 'moment';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFetchBlob from 'rn-fetch-blob';
-
+import { Avatar } from 'react-native-paper';
 import { ChatHeader } from '../../components/Headers';
 import { globalStyles } from '../../styles';
-import { Images, SocketEvents } from '../../constants';
+import { Images, SocketEvents, Fonts, closeBoxImage, openBoxImage } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {
   translate,
@@ -29,6 +34,10 @@ import {
   resetChannelConversation,
   setChannelConversation,
   addNewSendMessage,
+  getLoginBonusOfChannel,
+  checkLoginBonusOfChannel,
+  selectLoginJackpotOfChannel,
+  assetXPValueOfChannel
 } from '../../redux/reducers/channelReducer';
 import { ListLoader, UploadLoader } from '../../components/Loaders';
 import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
@@ -43,6 +52,8 @@ import {
   setMessageUnsend,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import bonusImage from '../../../assets/images/bonus_bg.png'
 
 
 class ChannelChats extends Component {
@@ -55,6 +66,11 @@ class ChannelChats extends Component {
       selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
+      bonusModal: false,
+      bonusXP: 0,
+      selectedKey: null,
+      jackpotData: null,
+      assetXPValue: null,
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
@@ -107,6 +123,10 @@ class ChannelChats extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getChannelConversationsInitial();
+    if(this.props.currentChannel.id==355){
+      this.checkHasLoginBonus();
+    }
+    // this.getLoginBonus();
   }
 
   _orientationDidChange = (orientation) => {
@@ -575,6 +595,88 @@ class ChannelChats extends Component {
     }
   };
 
+  checkHasLoginBonus = () => {
+    this.props.checkLoginBonusOfChannel().then((res)=>{
+      console.log('checkLoginBonusOfChannel',res);
+      if(res && !res.status){
+        this.getLoginBonus();
+      }
+    }).catch((err)=>{
+      console.log('checkLoginBonusOfChannel_error',err);
+    })
+  }
+
+  getLoginBonus = () => {
+    this.props.getLoginBonusOfChannel().then((res)=>{
+      console.log('getLoginBonusOfChannel',res);
+      if(res){
+        this.setState({bonusXP:res.amount,bonusModal:true});
+      }
+    }).catch((err)=>{
+      console.log('getLoginBonusOfChannel_error',err);
+    })
+  }
+
+  selectedLoginBonus = (key) => {
+    this.props.selectLoginJackpotOfChannel({picked_option: key}).then((res)=>{
+      if(res){
+        console.log('jackpotData',res);
+        this.setState({jackpotData:res.data});
+        this.getAssetXpValue();
+      }
+    }).catch((err)=>{
+      console.log('err',err);
+    })
+  }
+
+  getAssetXpValue = () => {
+    this.props.assetXPValueOfChannel().then((res)=>{
+      if(res){
+        console.log('asset_xp',res);
+        if(res && res.data)
+        this.setState({assetXPValue:res.data});
+      }
+    }).catch((err)=>{
+      console.log('err',err);
+    });
+  }
+
+  checkImageWithAmount = (amount) => {
+    if (amount === 0) {
+      return openBoxImage.open_box;
+    } else if (amount >= 10 && amount <= 100) {
+      return openBoxImage.less_gold;
+    } else if (amount >= 100 && amount <= 1000) {
+      return openBoxImage.mid_gold;
+    } else if (amount >= 1000) {
+      return openBoxImage.full_gold;
+    }
+  }
+
+  getAmountValue = (jackpotData) => {
+    var array = [];
+      if(jackpotData.picked_option==1){
+        array = [
+          parseInt(jackpotData.picked_amount),
+          parseInt(jackpotData.missed1_amount),
+          parseInt(jackpotData.missed2_amount)
+        ]
+      }else if(jackpotData.picked_option==2){
+        array = [
+          parseInt(jackpotData.missed1_amount),
+          parseInt(jackpotData.picked_amount),
+          parseInt(jackpotData.missed2_amount)
+        ]
+      }else if(jackpotData.picked_option==3){
+        array = [
+          parseInt(jackpotData.missed1_amount),
+          parseInt(jackpotData.missed2_amount),
+          parseInt(jackpotData.picked_amount)
+        ]
+      }
+      return array;
+  }
+
   getLocalChannelConversations = () => {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
@@ -945,10 +1047,105 @@ class ChannelChats extends Component {
           image={currentChannel.channel_picture}
         />
         {this.props.chatConversation && this.renderConversations()}
+
+        <Modal
+          visible={this.state.bonusModal}
+          transparent
+          onRequestClose={()=>this.setState({bonusModal:false})}>
+          <View style={styles.bonusModalContainer}>
+            <ImageBackground source={bonusImage} resizeMode={'cover'} style={styles.bonusBgContainer}>
+              <View style={{flex:1}}>
+                <Text style={styles.bonusTextHeading}>{this.state.jackpotData?translate('pages.xchat.seeYouTomorrow'):translate('pages.xchat.loginBonusText')}</Text>
+                <Text style={styles.bonusTitleText}>{translate('pages.xchat.jackPot')} <Text style={{fontSize:30,fontWeight:'bold'}}>{this.state.bonusXP}</Text> <Text style={{fontSize:15,fontFamily: Fonts.regular,fontWeight:'300'}}>{"XP"}</Text></Text>
+                {this.state.assetXPValue?<Text style={styles.bonusTitleText}>{translate('pages.xchat.youOwn')} <Text style={{fontSize:30,fontWeight:'bold'}}>{this.state.assetXPValue.XP+""}</Text> <Text style={{fontSize:15,fontFamily: Fonts.regular,fontWeight:'300'}}>{"XP"}</Text></Text>:null}
+                <View style={styles.bonusImageContainer}>
+
+                    <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(1)}} style={{ marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
+                      <View style={{flex:1,alignItems:'center'}}>
+                        <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==1)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[0]):closeBoxImage[0].value}} resizeMode={'contain'}/>
+                      </View>
+                      {this.state.jackpotData?<View style={{flex:1, borderBottomWidth:1,borderBottomColor:'#fff'}}>
+                        <Text style={{textAlign:'right', color:(this.state.jackpotData && this.state.jackpotData.picked_option==1)?'#dbf875':'#fff',fontSize:29}}>{this.getAmountValue(this.state.jackpotData)[0]+""} XP</Text>
+                      </View>:null}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(2)}} style={{  marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
+                      <View style={{flex:1,alignItems:'center'}}>
+                        <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==2)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[1]):closeBoxImage[1].value}} resizeMode={'contain'}/>
+                      </View>
+                      {this.state.jackpotData?<View style={{flex:1, borderBottomWidth:1,borderBottomColor:'#fff'}}>
+                        <Text style={{textAlign:'right', color:(this.state.jackpotData && this.state.jackpotData.picked_option==2)?'#dbf875':'#fff',fontSize:29}}>{this.getAmountValue(this.state.jackpotData)[1]+""} XP</Text>
+                      </View>:null}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(3)}} style={{  marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
+                      <View style={{flex:1,alignItems:'center'}}>
+                        <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==3)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[2]):closeBoxImage[2].value}} resizeMode={'contain'}/>
+                      </View>
+                      {this.state.jackpotData?<View style={{flex:1, borderBottomWidth:1,borderBottomColor:'#fff'}}>
+                        <Text style={{textAlign:'right', color:(this.state.jackpotData && this.state.jackpotData.picked_option==3)?'#dbf875':'#fff',fontSize:29, fontFamily:Fonts.beba_regular}}>{this.getAmountValue(this.state.jackpotData)[2]+""} XP</Text>
+                      </View>:null}
+                    </TouchableOpacity>
+
+                </View>
+              </View>
+              <Text style={{textAlign:'center',fontSize:14,fontWeight:'300',color:'#fff'}}>{translate('pages.xchat.gamePlatformText')}</Text>
+              <TouchableOpacity style={{margin:25}} onPress={()=>{this.setState({bonusModal:false})}}>
+                <Avatar.Icon size={50} icon="close" color={'#fff'} style={{backgroundColor:'#e2b2ac'}}/>
+              </TouchableOpacity>
+            </ImageBackground>
+          </View>
+        </Modal>
+
       </ImageBackground>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  bonusModalContainer: {
+    flex:1,
+    backgroundColor:'#00000080',
+    paddingTop:40
+  },
+  bonusBgContainer: {
+    flex:1,
+    margin:20,
+    borderRadius:30,
+    alignItems:'center',
+    overflow: 'hidden'
+  },
+  bonusTextHeading: {
+    marginTop:34,
+    // marginBottom:PixelRatio.getPixelSizeForLayoutSize(10),
+    textAlign:'center',
+    fontSize:32,
+    fontWeight:'300',
+    color:'#ffd300',
+    fontFamily: Fonts.regular
+  },
+  bonusTitleText: {
+    textAlign:'center',
+    fontSize:22,
+    fontWeight:'300',
+    color:'#fff',
+    fontFamily:Fonts.beba_regular
+  },
+  bonusImageContainer: {
+    flex:1,
+    justifyContent:'space-evenly',
+    marginBottom:20,
+    marginTop:20
+  },
+  bonusImage: {
+    width:PixelRatio.getPixelSizeForLayoutSize(50),
+    height:PixelRatio.getPixelSizeForLayoutSize(50)
+  },
+  bonusImageZoom: {
+    width: PixelRatio.getPixelSizeForLayoutSize(70),
+    height: PixelRatio.getPixelSizeForLayoutSize(70)
+  }
+});
 
 const mapStateToProps = (state) => {
   return {
@@ -970,6 +1167,10 @@ const mapDispatchToProps = {
   setChannelConversation,
   resetChannelConversation,
   addNewSendMessage,
+  getLoginBonusOfChannel,
+  checkLoginBonusOfChannel,
+  selectLoginJackpotOfChannel,
+  assetXPValueOfChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

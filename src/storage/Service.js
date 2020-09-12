@@ -317,6 +317,16 @@ export const deleteGroupMessageById = (id) => {
   });
 };
 
+export const deleteAllGroupMessageByGroupId = (group_id) => {
+  var results = realm
+    .objects('chat_conversation_group')
+    .filtered(`group_id == ${group_id}`);
+
+  realm.write(() => {
+    realm.delete(results);
+  });
+}
+
 export const setGroupMessageUnsend = (id) => {
   realm.write(() => {
     realm.create(
@@ -565,6 +575,15 @@ export const getGroupsById = (id) => {
     .filtered(`group_id == ${id}`);
 };
 
+
+export const deleteGroupById = (id) => {
+  var message = realm.objects('groups').filtered(`group_id == ${id}`);
+
+  realm.write(() => {
+    realm.delete(message);
+  });
+}
+
 export const UpdateGroupDetail = (id,group_name,group_picture,total_members) => {
   realm.write(() => {
     realm.create(
@@ -672,6 +691,33 @@ export const handleRequestAccept = (item) => {
       );
     });
   }
+}
+
+export const updateFriendOnlineStatus = (id, status) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {
+        user_id: id,
+        is_online: status
+      },
+      'modified'
+    );
+  });
+}
+
+export const updateFriendTypingStatus = (id, status) => {
+  console.log('status_typing_u[date',status);
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {
+        user_id: id,
+        is_typing: status
+      },
+      'modified'
+    );
+  });
 }
 
 export const removeUserFriends = (id) => {

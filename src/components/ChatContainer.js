@@ -211,12 +211,12 @@ class ChatContainer extends Component {
                   // this.scrollView.scrollToEnd();
                 }
               }}
-              getItemLayout={(data, index) => (
-                {length: 200, offset: 200 * index, index}
-              )}
+              // getItemLayout={(data, index) => (
+              //   {length: 250, offset: 250 * index, index}
+              // )}
               automaticallyAdjustContentInsets
               contentInsetAdjustmentBehavior={'automatic'}
-              decelerationRate={'fast'}
+              decelerationRate={'normal'}
               onScrollBeginDrag={() => {
                 this.closeMenu();
               }}

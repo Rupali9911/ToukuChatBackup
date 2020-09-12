@@ -72,7 +72,7 @@
 	<key>KAKAO_APP_KEY</key>
 	<string>39152cc4df634359df4920277d99b009</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>twitter</string>
@@ -134,6 +134,7 @@
 	<string>App requires to access your photo library to show image on profile and send via chat</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>BebasNeue-Regular.ttf</string>
 		<string>Poppins-Black.ttf</string>
 		<string>Poppins-Bold.ttf</string>
 		<string>Poppins-ExtraBold.ttf</string>
@@ -160,6 +161,7 @@
 		<string>Octicons.ttf</string>
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
+		<string>Arial.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

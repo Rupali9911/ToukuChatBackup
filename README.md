@@ -20,3 +20,16 @@
      width="150px"
      height="300px"
      style="float: left; margin-right: 5px; width:200px"/>
+
+### Phone field customisation
+- Update onChangePhoneNumber from ./node_modules/react-native-phone-input/lib/index.js to 
+ 
+ onChangePhoneNumber(number) {
+      this.props.onChangePhoneNumber(number);
+    // const actionAfterSetState = this.props.onChangePhoneNumber
+    //   ? () => {
+    //       this.props.onChangePhoneNumber(number);
+    //     }
+    //   : null;
+    // this.updateFlagAndFormatNumber(number, actionAfterSetState);
+  }

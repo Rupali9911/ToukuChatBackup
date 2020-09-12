@@ -207,6 +207,9 @@ class GroupChatContainer extends Component {
                   // this.scrollView.scrollToEnd({ animated: false });
                 }
               }}
+              // getItemLayout={(data, index) => (
+              //   {length: 250, offset: 250 * index, index}
+              // )}
               onScrollBeginDrag={() => {
                 this.closeMenu();
               }}

@@ -611,3 +611,51 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
         reject(err);
       });
   });
+
+  export const getLoginBonusOfChannel = () => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`xigolo_payment/login_jackpot/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+  export const checkLoginBonusOfChannel = () => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`xigolo_payment/user_login_jackpot/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+  export const selectLoginJackpotOfChannel = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`xigolo_payment/select_login_jackpot/`,payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+  export const assetXPValueOfChannel = () => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`asset-xp-value/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
