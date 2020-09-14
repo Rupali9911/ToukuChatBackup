@@ -37,14 +37,19 @@ import {
   getMoreFollowingChannels,
   getLocalFollowingChannels,
 } from '../../redux/reducers/channelReducer';
-import { setFriendRequest } from '../../redux/reducers/addFriendReducer';
+import {setFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
   getUserGroups,
   setCurrentGroup,
   getLocalUserGroups,
   updateUnreadGroupMsgsCounts,
+  setGroupConversation,
+  setCurrentGroupMembers,
+  getGroupMembers,
+  setCurrentGroupDetail,
+  getGroupDetail,
 } from '../../redux/reducers/groupReducer';
-import {getFriendRequest} from '../../redux/reducers/addFriendReducer'; 
+import {getFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
   getUserFriends,
   getFriendRequests,
@@ -97,6 +102,7 @@ import {
   updateChannelTotalMember,
   updateChannelLastMsgWithOutCount,
   getFriendChatConversationById,
+  getGroupChatConversationById,
 } from '../../storage/Service';
 
 class Chat extends Component {
@@ -510,7 +516,7 @@ class Chat extends Component {
 
   //New Message in Group
   onNewMessageInGroup(message) {
-    const {userGroups} = this.props;
+    const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -536,11 +542,17 @@ class Chat extends Component {
           break;
         }
       }
+      if (
+        currentGroup &&
+        message.text.data.message_details.group_id == currentGroup.group_id
+      ) {
+        this.getLocalGroupConversation();
+      }
     }
   }
 
   editMessageFromGroup(message) {
-    const {userGroups} = this.props;
+    const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.MESSAGE_EDIT_FROM_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -568,11 +580,21 @@ class Chat extends Component {
           break;
         }
       }
+      if (
+        currentGroup &&
+        message.text.data.message_details.group_id == currentGroup.group_id
+      ) {
+        updateGroupMessageById(
+          message.text.data.message_details.msg_id,
+          message.text.data.message_details.message_body,
+        );
+        this.getLocalGroupConversation();
+      }
     }
   }
 
   UnsentMessageFromGroup(message) {
-    const {userGroups} = this.props;
+    const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_FROM_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -596,6 +618,12 @@ class Chat extends Component {
           });
           break;
         }
+      }
+      if (
+        currentGroup &&
+        message.text.data.message_details.group_id == currentGroup.group_id
+      ) {
+        this.getLocalGroupConversation();
       }
     }
   }
@@ -790,10 +818,8 @@ class Chat extends Component {
     }
   }
 
-  onAddChannelMemmber(message){
-    if (
-      message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER
-    ) {
+  onAddChannelMemmber(message) {
+    if (message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER) {
       setChannels([message.text.data.message_details]);
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
@@ -820,13 +846,14 @@ class Chat extends Component {
     }
   }
 
-  onChannelMemberRemoveCount(){
+  onChannelMemberRemoveCount() {
     if (
-      message.text.data.type === SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
+      message.text.data.type ===
+        SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       updateChannelTotalMember(message.text.data.message_details.channel_id);
-      this.props.getLocalFollowingChannels().then(()=>{
+      this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
     }
@@ -1104,10 +1131,18 @@ class Chat extends Component {
   }
 
   onDeleteMessageInGroup(message) {
-    const {userGroups, userData} = this.props;
+    const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_GROUP) {
       for (let i of userGroups) {
       }
+    }
+    if (
+      currentGroup &&
+      message.text.data.message_details.group_id == currentGroup.group_id
+    ) {
+      deleteGroupMessageById(message.text.data.message_details.msg_id);
+      let chat = getGroupChatConversationById(currentGroup.group_id);
+      this.props.setGroupConversation(chat);
     }
   }
 
@@ -1166,21 +1201,35 @@ class Chat extends Component {
   }
 
   onAddGroupMember(message) {
-    const {userGroups, userData} = this.props;
+    const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
         }
       }
     }
+    if (
+      currentGroup &&
+      message.text.data.message_details.group_id == currentGroup.group_id
+    ) {
+      this.getGroupDetail();
+      this.getGroupMembers();
+    }
   }
 
   onRemoveGroupMember(message) {
-
+    const {currentGroup} = this.props;
+    if (
+      currentGroup &&
+      message.text.data.message_details.group_id == currentGroup.group_id
+    ) {
+      this.getGroupDetail();
+      this.getGroupMembers();
+    }
   }
 
   onUpdateGroupDetail(message) {
-    const {userGroups} = this.props;
+    const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.EDIT_GROUP_DETAIL) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.id) {
@@ -1195,27 +1244,35 @@ class Chat extends Component {
           });
         }
       }
+      if (
+        currentGroup &&
+        message.text.data.message_details.group_id == currentGroup.group_id
+      ) {
+        this.getGroupDetail();
+      }
     }
   }
 
   onNewFriendRequest = (message) => {
-    const { friendRequest } = this.props;
+    const {friendRequest} = this.props;
     if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
       setFriendRequests([message.text.data.message_details]);
       this.props.setFriendRequest();
     }
-  }
+  };
 
   onAcceptFriendReuqest = (message) => {
-    if(message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED){
-      deleteFriendRequest(message.text.data.message_details.conversation.user_id);
+    if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
+      deleteFriendRequest(
+        message.text.data.message_details.conversation.user_id,
+      );
       this.props.setFriendRequest();
       handleRequestAccept(message.text.data.message_details.conversation);
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
     }
-  }
+  };
 
   onSearch = async (text) => {
     await this.setState({searchText: text, commonConversation: []});
@@ -1324,6 +1381,41 @@ class Chat extends Component {
   //     isLoading: false,
   //   });
   // }
+
+  getGroupDetail() {
+    this.props
+      .getGroupDetail(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupDetail(res);
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
+  }
+
+  getGroupMembers() {
+    this.props
+      .getGroupMembers(this.props.currentGroup.group_id)
+      .then((res) => {
+        this.props.setCurrentGroupMembers(res.results);
+      })
+      .catch((err) => {});
+  }
+
+  getLocalGroupConversation = () => {
+    let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
+    if (chat.length) {
+      let conversations = [];
+      chat.map((item, index) => {
+        conversations = [...conversations, item];
+      });
+      this.props.setGroupConversation(conversations);
+    }
+  };
 
   shotListBy = (sortBy) => {
     this.setState({
@@ -1614,6 +1706,7 @@ const mapStateToProps = (state) => {
     userConfig: state.configurationReducer.userConfig,
     commonChat: state.commonReducer.commonChat,
     currentFriend: state.friendReducer.currentFriend,
+    currentGroup: state.groupReducer.currentGroup,
   };
 };
 
@@ -1639,7 +1732,12 @@ const mapDispatchToProps = {
   setUserFriends,
   setFriendConversation,
   getFriendRequest,
-  setFriendRequest
+  setFriendRequest,
+  setGroupConversation,
+  setCurrentGroupMembers,
+  getGroupMembers,
+  setCurrentGroupDetail,
+  getGroupDetail,
 };
 
 export default connect(
