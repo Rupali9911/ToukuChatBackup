@@ -6,7 +6,7 @@ import Toast from '../components/Toast';
 import SingleSocket from './SingleSocket';
 
 /* switch this for testing on staging or production */
-export const staging = true;
+export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -29,9 +29,8 @@ export const GET_TOUKU_POINTS = apiRoot + '/xchat/get-total-tp/';
 export const GET_SEARCHED_FRIEND = apiRoot + '/xchat/search-contacts/';
 export const SEND_FRIEND_REQUEST = apiRoot + '/xchat/send-friend-request/';
 export const CANCEL_FRIEND_REQUEST = apiRoot + '/xchat/cancel-sent-request/';
-export const CLEAR_BADGE_COUNT = 'https://api-angelium.net/api/xchat/reset-badge-count/'
-
-
+export const CLEAR_BADGE_COUNT =
+  'https://api-angelium.net/api/xchat/reset-badge-count/';
 
 export const client = axios.create({
   baseURL: apiRoot,
@@ -39,7 +38,7 @@ export const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'User-Agent': userAgent,
-    'Origin': 'touku.net',
+    Origin: 'touku.net',
   },
 });
 
@@ -69,7 +68,7 @@ client.interceptors.request.use(
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add a response interceptor
@@ -102,5 +101,5 @@ client.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );
