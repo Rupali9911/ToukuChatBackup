@@ -136,7 +136,7 @@ class FriendChats extends Component {
     this.getPersonalConversationInitial();
     this.markFriendMsgsRead();
 
-    this.SingleSocket.create({user_id: this.props.userData.id});
+    // this.SingleSocket.create({user_id: this.props.userData.id});
 
     // alert(JSON.stringify(this.props.userData));
   }

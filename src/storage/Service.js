@@ -644,7 +644,6 @@ export const setGroupLastMessageUnsend = (id) => {
 
 
 // User friends
-
 export const getLocalUserFriends = () => {
   return realm.objects('user_friends')
   .sorted('timestamp', { ascending: false });
@@ -720,10 +719,10 @@ export const updateFriendTypingStatus = (id, status) => {
   });
 }
 
-export const removeUserFriends = (id) => {
+export const removeUserFriends = async (id) => {
   var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
 
-  realm.write(() => {
+  await realm.write(() => {
     realm.delete(user);
   });
 }
@@ -789,6 +788,42 @@ export const updateFriendLastMsg = (id,message) => {
       );
     });
   }
+}
+
+
+//Friend Request
+export const setFriendRequests = (requests) => {
+  for (let item of requests) {
+    var obj = realm.objects('friend_reuqest').filtered('from_user_id=' + item.from_user_id);
+    if (obj.length > 0) {
+      // update schema if require
+    } else {
+       realm.write(() => {
+        realm.create('friend_reuqest', {
+          from_user_id: item.from_user_id,
+          from_user_display_name: item.from_user_display_name,
+          from_user_username: item.from_user_username,
+          from_user_avatar: item.from_user_avatar,
+          created: item.created
+        });
+      });
+    }
+  }
+}
+
+export const getFreindRequests = (id) => {
+  return realm
+  .objects('friend_reuqest')
+  .sorted('created', { ascending: true })
+  .filtered(`from_user_id == ${id}`);
+}
+
+export const deleteFriendRequest = async (id) => {
+  var user = realm.objects('friend_reuqest').filtered(`from_user_id == ${id}`);
+
+  await realm.write(() => {
+    realm.delete(user);
+  });
 }
 
 

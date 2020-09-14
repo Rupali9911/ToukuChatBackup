@@ -43,6 +43,7 @@ import {
   getLocalUserGroups,
   updateUnreadGroupMsgsCounts,
 } from '../../redux/reducers/groupReducer';
+import {getFriendRequest} from '../../redux/reducers/addFriendReducer'; 
 import {
   getUserFriends,
   getFriendRequests,
@@ -147,6 +148,7 @@ class Chat extends Component {
     // this.getUserFriends();
     // this.setCommonConversation();
     this.props.getUserConfiguration();
+    this.props.getFriendRequest();
 
     this.props.getFollowingChannels().then((res) => {
       this.props.getUserGroups().then((res) => {
@@ -1572,6 +1574,7 @@ const mapDispatchToProps = {
   getLocalFollowingChannels,
   setUserFriends,
   setFriendConversation,
+  getFriendRequest
 };
 
 export default connect(

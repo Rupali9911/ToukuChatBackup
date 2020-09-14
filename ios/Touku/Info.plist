@@ -72,7 +72,7 @@
 	<key>KAKAO_APP_KEY</key>
 	<string>39152cc4df634359df4920277d99b009</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>twitter</string>
@@ -161,6 +161,7 @@
 		<string>Octicons.ttf</string>
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
+		<string>Arial.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

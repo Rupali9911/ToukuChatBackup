@@ -144,20 +144,21 @@ class Home extends Component {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
 
-    // this.events = eventService.getMessage().subscribe((message) => {
-    //   this.checkEventTypes(message);
-    // });
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
   }
 
   componentWillUnmount() {
-    // this.events.unsubscribe();
+     this.events.unsubscribe();
   }
 
   async componentDidMount() {
     this.props.getUserProfile();
-    this.SingleSocket.create({ user_id: this.props.userData.id });
+    // this.SingleSocket.create({ user_id: this.props.userData.id });
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.getFriendRequest();
+    // this.getFriendRequest();
+    this.getLocalRequest();
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
@@ -254,7 +255,7 @@ class Home extends Component {
   }
 
   getLocalRequest(){
-    var result = getLocalFriendRequest();
+    var result = getFriendRequests();
     var requests = [];
     for(let i of result){
       requests = [...requests,i];
@@ -267,7 +268,8 @@ class Home extends Component {
       for (var channel of this.props.followingChannels) {
         counts = counts + channel.unread_msg;
       }
-      this.setState({ channelHeaderCounts: counts });
+      // this.setState({ channelHeaderCounts: counts });
+      return counts;
   }
 
   setFriendHeaderCount(){
@@ -275,7 +277,8 @@ class Home extends Component {
       for (let friend of this.props.userFriends) {
         counts = counts + friend.unread_msg;
       }
-      this.setState({ friendHeaderCounts: counts });
+      // this.setState({ friendHeaderCounts: counts });
+      return counts;
   }
 
   setGroupHeaderCount(){
@@ -283,7 +286,8 @@ class Home extends Component {
     for (let group of this.props.userGroups) {
       counts = counts + group.unread_msg;
     }
-    this.setState({ groupHeaderCounts: counts });
+    // this.setState({ groupHeaderCounts: counts });
+    return counts;
   }
 
   checkEventTypes(message) {
@@ -346,7 +350,6 @@ class Home extends Component {
       case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
         this.readAllMessageGroupChat(message);
         break;
-
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
         this.onNewMessageInGroup(message);
         break;
@@ -1328,7 +1331,7 @@ class Home extends Component {
                     title={translate('pages.xchat.channels')}
                     isCollapsed={isChannelCollapsed}
                     listcounts={filteredChannels.length}
-                    badgeCount={channelHeaderCounts}
+                    badgeCount={this.setChannelHeaderCount()}
                     selectedLanguageItem={selectedLanguageItem}
                   />
                 </CollapseHeader>
@@ -1349,7 +1352,7 @@ class Home extends Component {
                     title={translate('pages.xchat.groups')}
                     isCollapsed={isGroupCollapsed}
                     listcounts={filteredGroups.length}
-                    badgeCount={groupHeaderCounts}
+                    badgeCount={this.setGroupHeaderCount()}
                     selectedLanguageItem={selectedLanguageItem}
                   />
                 </CollapseHeader>
@@ -1370,7 +1373,7 @@ class Home extends Component {
                     title={translate('pages.xchat.friends')}
                     isCollapsed={isFriendsCollapsed}
                     listcounts={filteredFriends.length}
-                    badgeCount={friendHeaderCounts}
+                    badgeCount={this.setFriendHeaderCount()}
                     selectedLanguageItem={selectedLanguageItem}
                   />
                 </CollapseHeader>
