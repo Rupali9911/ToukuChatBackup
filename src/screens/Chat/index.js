@@ -37,6 +37,7 @@ import {
   getMoreFollowingChannels,
   getLocalFollowingChannels,
 } from '../../redux/reducers/channelReducer';
+import { setFriendRequest } from '../../redux/reducers/addFriendReducer';
 import {
   getUserGroups,
   setCurrentGroup,
@@ -76,6 +77,8 @@ import {
   updateFriendTypingStatus,
   getGroups,
   setGroups,
+  deleteFriendRequest,
+  setChannels,
   deleteGroupById,
   deleteAllGroupMessageByGroupId,
   UpdateGroupDetail,
@@ -89,7 +92,7 @@ import {
   updateChannelUnReadCountById,
   removeUserFriends,
   handleRequestAccept,
-  getLocalFriendRequest,
+  getLocalFriendRequests,
   deleteChannelById,
   updateChannelTotalMember,
   updateChannelLastMsgWithOutCount,
@@ -244,11 +247,14 @@ class Chat extends Component {
       case SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL:
         this.messageUnsentInFollowingChannel(message);
         break;
+      case SocketEvents.ADD_CHANNEL_MEMBER:
+        this.onAddChannelMemmber(message);
+        break;
       case SocketEvents.REMOVE_CHANNEL_MEMBER:
         this.onRemoveChannelMember(message);
         break;
       case SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT:
-        // this.onChannelMemberRemoveCount(message);
+        this.onChannelMemberRemoveCount(message);
         break;
       case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
         this.readAllMessageFriendChat(message);
@@ -304,6 +310,20 @@ class Chat extends Component {
         break;
       case SocketEvents.EDIT_GROUP_DETAIL:
         this.onUpdateGroupDetail(message);
+        break;
+      case SocketEvents.FRIEND_REQUEST_CANCELLED:
+        deleteFriendRequest(message.text.data.message_details.user_id);
+        this.props.setFriendRequest();
+        break;
+      case SocketEvents.NEW_FRIEND_REQUEST:
+        this.onNewFriendRequest(message);
+        break;
+      case SocketEvents.FRIEND_REQUEST_ACCEPTED:
+        this.onAcceptFriendReuqest(message);
+        break;
+      case SocketEvents.FRIEND_REQUEST_REJECTED:
+        deleteFriendRequest(message.text.data.message_details.user_id);
+        this.props.setFriendRequest();
         break;
     }
   }
@@ -770,6 +790,17 @@ class Chat extends Component {
     }
   }
 
+  onAddChannelMemmber(message){
+    if (
+      message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER
+    ) {
+      setChannels([message.text.data.message_details]);
+      this.props.getLocalFollowingChannels().then((res) => {
+        this.props.setCommonChatConversation();
+      });
+    }
+  }
+
   //On Remove Channel Member
   onRemoveChannelMember(message) {
     if (
@@ -777,7 +808,7 @@ class Chat extends Component {
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       deleteChannelById(message.text.data.message_details.channel_id);
-      this.props.getFollowingChannels().then((res) => {
+      this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
       // for (var i in this.props.followingChannels) {
@@ -786,6 +817,18 @@ class Chat extends Component {
       //     break;
       //   }
       // }
+    }
+  }
+
+  onChannelMemberRemoveCount(){
+    if (
+      message.text.data.type === SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
+      message.text.data.message_details.user_id === this.props.userData.id
+    ) {
+      updateChannelTotalMember(message.text.data.message_details.channel_id);
+      this.props.getLocalFollowingChannels().then(()=>{
+        this.props.setCommonChatConversation();
+      });
     }
   }
 
@@ -1132,7 +1175,9 @@ class Chat extends Component {
     }
   }
 
-  onRemoveGroupMember(message) {}
+  onRemoveGroupMember(message) {
+
+  }
 
   onUpdateGroupDetail(message) {
     const {userGroups} = this.props;
@@ -1150,6 +1195,25 @@ class Chat extends Component {
           });
         }
       }
+    }
+  }
+
+  onNewFriendRequest = (message) => {
+    const { friendRequest } = this.props;
+    if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
+      setFriendRequests([message.text.data.message_details]);
+      this.props.setFriendRequest();
+    }
+  }
+
+  onAcceptFriendReuqest = (message) => {
+    if(message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED){
+      deleteFriendRequest(message.text.data.message_details.conversation.user_id);
+      this.props.setFriendRequest();
+      handleRequestAccept(message.text.data.message_details.conversation);
+      this.props.setUserFriends().then(() => {
+        this.props.setCommonChatConversation();
+      });
     }
   }
 
@@ -1574,7 +1638,8 @@ const mapDispatchToProps = {
   getLocalFollowingChannels,
   setUserFriends,
   setFriendConversation,
-  getFriendRequest
+  getFriendRequest,
+  setFriendRequest
 };
 
 export default connect(

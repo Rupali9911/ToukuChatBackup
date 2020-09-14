@@ -110,7 +110,8 @@ import {
   getLocalFriendRequest,
   deleteChannelById,
   updateChannelTotalMember,
-  updateChannelLastMsgWithOutCount
+  updateChannelLastMsgWithOutCount,
+  getLocalFriendRequests
 } from '../../storage/Service';
 
 class Home extends Component {
@@ -144,13 +145,13 @@ class Home extends Component {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
 
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
+    // this.events = eventService.getMessage().subscribe((message) => {
+    //   this.checkEventTypes(message);
+    // });
   }
 
   componentWillUnmount() {
-     this.events.unsubscribe();
+    //  this.events.unsubscribe();
   }
 
   async componentDidMount() {
@@ -255,12 +256,7 @@ class Home extends Component {
   }
 
   getLocalRequest(){
-    var result = getFriendRequests();
-    var requests = [];
-    for(let i of result){
-      requests = [...requests,i];
-    }
-    this.props.setFriendRequest(requests);
+    this.props.setFriendRequest();
   }
 
   setChannelHeaderCount(){
@@ -365,21 +361,21 @@ class Home extends Component {
         break;
       case SocketEvents.FRIEND_REQUEST_CANCELLED:
         // this.onNewMessageInFriend(message);
-        this.getFriendRequest();
+        // this.getFriendRequest();
         break;
       case SocketEvents.NEW_FRIEND_REQUEST:
         // this.getFriendRequest();
-        this.onNewFriendRequest(message);
+        // this.onNewFriendRequest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_ACCEPTED:
-        handleRequestAccept(message.text.data.message_details.conversation);
-        console.log('get local freinds')
-        this.props.setUserFriends();
-        this.setFriendHeaderCount();
+        // handleRequestAccept(message.text.data.message_details.conversation);
+        // console.log('get local freinds')
+        // this.props.setUserFriends();
+        // this.setFriendHeaderCount();
         break;
       case SocketEvents.FRIEND_REQUEST_REJECTED:
-        this.getFriendRequest();
-        this.getUserFriends();
+        // this.getFriendRequest();
+        // this.getUserFriends();
     }
   }
 

@@ -811,7 +811,7 @@ export const setFriendRequests = (requests) => {
   }
 }
 
-export const getFreindRequests = (id) => {
+export const getLocalFriendRequests = (id) => {
   return realm
   .objects('friend_reuqest')
   .sorted('created', { ascending: true })
