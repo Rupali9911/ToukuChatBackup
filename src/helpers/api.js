@@ -6,7 +6,7 @@ import Toast from '../components/Toast';
 import SingleSocket from './SingleSocket';
 
 /* switch this for testing on staging or production */
-export const staging = false;
+export const staging = true;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
