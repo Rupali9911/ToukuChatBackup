@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   ImageBackground,
   View,
@@ -8,18 +8,24 @@ import {
   Text,
   Modal,
   Image,
-  PixelRatio
+  PixelRatio,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFetchBlob from 'rn-fetch-blob';
-import { Avatar } from 'react-native-paper';
-import { ChatHeader } from '../../components/Headers';
-import { globalStyles } from '../../styles';
-import { Images, SocketEvents, Fonts, closeBoxImage, openBoxImage } from '../../constants';
+import {Avatar} from 'react-native-paper';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
+import {
+  Images,
+  SocketEvents,
+  Fonts,
+  closeBoxImage,
+  openBoxImage,
+} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {
   translate,
@@ -37,11 +43,11 @@ import {
   getLoginBonusOfChannel,
   checkLoginBonusOfChannel,
   selectLoginJackpotOfChannel,
-  assetXPValueOfChannel
+  assetXPValueOfChannel,
 } from '../../redux/reducers/channelReducer';
-import { ListLoader, UploadLoader } from '../../components/Loaders';
-import { ConfirmationModal, UploadSelectModal } from '../../components/Modals';
-import { eventService } from '../../utils';
+import {ListLoader, UploadLoader} from '../../components/Loaders';
+import {ConfirmationModal, UploadSelectModal} from '../../components/Modals';
+import {eventService} from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
@@ -52,9 +58,8 @@ import {
   setMessageUnsend,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import bonusImage from '../../../assets/images/bonus_bg.png'
-
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import bonusImage from '../../../assets/images/bonus_bg.png';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -79,7 +84,7 @@ class ChannelChats extends Component {
       editMessageId: null,
       sentMessageType: 'text',
       sendingMedia: false,
-      uploadFile: { uri: null, type: null, name: null },
+      uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
         {
           id: 1,
@@ -109,91 +114,91 @@ class ChannelChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
+    // this.events = eventService.getMessage().subscribe((message) => {
+    //   this.checkEventTypes(message);
+    // });
   }
 
   componentWillUnmount() {
-    this.events.unsubscribe();
+    // this.events.unsubscribe();
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getChannelConversationsInitial();
-    if(this.props.currentChannel.id==355){
+    if (this.props.currentChannel.id == 355) {
       this.checkHasLoginBonus();
     }
     // this.getLoginBonus();
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   async checkEventTypes(message) {
-    const { currentChannel, userData } = this.props;
+    const {currentChannel, userData} = this.props;
 
     //MESSAGE_IN_FOLLOWING_CHANNEL
-    if (
-      message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-        setChannelChatConversation([message.text.data.message_details]);
-        this.getLocalChannelConversations();
-        this.props.readAllChannelMessages(this.props.currentChannel.id);
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-        setChannelChatConversation([message.text.data.message_details]);
-        this.getLocalChannelConversations();
-        this.props.readAllChannelMessages(this.props.currentChannel.id);
-      }
-    }
+    // if (
+    //   message.text.data.type == SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //     setChannelChatConversation([message.text.data.message_details]);
+    //     this.getLocalChannelConversations();
+    //     this.props.readAllChannelMessages(this.props.currentChannel.id);
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //     setChannelChatConversation([message.text.data.message_details]);
+    //     this.getLocalChannelConversations();
+    //     this.props.readAllChannelMessages(this.props.currentChannel.id);
+    //   }
+    // }
 
     //DELETE_MESSAGE_IN_FOLLOWING_CHANNEL
-    if (
-      message.text.data.type ==
-        SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        deleteMessageById(message.text.data.message_details.id);
-        let chat = getChannelChatConversationById(
-          this.props.currentChannel.id
-        );
-        console.log('chat',chat.length);
-        this.props.setChannelConversation(chat);
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        deleteMessageById(message.text.data.message_details.id);
-        let chat = getChannelChatConversationById(
-          this.props.currentChannel.id
-        );
-        console.log('chat',chat.length);
-        this.props.setChannelConversation(chat);
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     deleteMessageById(message.text.data.message_details.id);
+    //     let chat = getChannelChatConversationById(
+    //       this.props.currentChannel.id
+    //     );
+    //     console.log('chat',chat.length);
+    //     this.props.setChannelConversation(chat);
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     deleteMessageById(message.text.data.message_details.id);
+    //     let chat = getChannelChatConversationById(
+    //       this.props.currentChannel.id
+    //     );
+    //     console.log('chat',chat.length);
+    //     this.props.setChannelConversation(chat);
+    //   }
+    // }
 
     //MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
-    if (
-      message.text.data.type ==
-      SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
-    ) {
-      message.text.data.message_details.map((item) => {
-        if (item.channel === currentChannel.id) {
-          // this.getChannelConversations();
-        }
-      });
-    }
+    // if (
+    //   message.text.data.type ==
+    //   SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+    // ) {
+    //   message.text.data.message_details.map((item) => {
+    //     if (item.channel === currentChannel.id) {
+    //       // this.getChannelConversations();
+    //     }
+    //   });
+    // }
 
     // // MESSAGE_IN_THREAD
     // if (
@@ -212,183 +217,181 @@ class ChannelChats extends Component {
     // }
 
     // MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
-    if (
-      message.text.data.type ==
-        SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user == userData.id) {
-        let editMessageId = message.text.data.message_details.id;
-        let msgText = message.text.data.message_details.message_body;
-        let msgType = message.text.data.message_details.msg_type;
-        console.log(editMessageId,msgText,msgType);
-        updateMessageById(editMessageId, msgText, msgType);
-        // this.getChannelConversations();
-        this.getLocalChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-        let editMessageId = message.text.data.message_details.id;
-        let msgText = message.text.data.message_details.message_body;
-        let msgType = message.text.data.message_details.msg_type;
-        console.log(editMessageId,msgText,msgType);
-        updateMessageById(editMessageId, msgText, msgType);
-        // this.getChannelConversations();
-        this.getLocalChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user == userData.id) {
+    //     let editMessageId = message.text.data.message_details.id;
+    //     let msgText = message.text.data.message_details.message_body;
+    //     let msgType = message.text.data.message_details.msg_type;
+    //     console.log(editMessageId,msgText,msgType);
+    //     updateMessageById(editMessageId, msgText, msgType);
+    //     // this.getChannelConversations();
+    //     this.getLocalChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //     let editMessageId = message.text.data.message_details.id;
+    //     let msgText = message.text.data.message_details.message_body;
+    //     let msgType = message.text.data.message_details.msg_type;
+    //     console.log(editMessageId,msgText,msgType);
+    //     updateMessageById(editMessageId, msgText, msgType);
+    //     // this.getChannelConversations();
+    //     this.getLocalChannelConversations();
+    //   }
+    // }
 
     // MESSAGE_EDITED_IN_THREAD
-    if (
-      message.text.data.type ==
-        SocketEvents.MESSAGE_EDITED_IN_THREAD &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.MESSAGE_EDITED_IN_THREAD &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     // DELETE_MESSAGE_IN_THREAD
-    if (
-      message.text.data.type ==
-        SocketEvents.DELETE_MESSAGE_IN_THREAD &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.DELETE_MESSAGE_IN_THREAD &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     //UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL
-    if (
-      message.text.data.type ==
-        SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user == userData.id) {
-        setMessageUnsend(message.text.data.message_details.id);
-        // this.getChannelConversations();
-        this.getLocalChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-        setMessageUnsend(message.text.data.message_details.id);
-        this.getLocalChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user == userData.id) {
+    //     setMessageUnsend(message.text.data.message_details.id);
+    //     // this.getChannelConversations();
+    //     this.getLocalChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //     setMessageUnsend(message.text.data.message_details.id);
+    //     this.getLocalChannelConversations();
+    //   }
+    // }
 
     //UNSENT_MESSAGE_IN_THREAD
-    if (
-      message.text.data.type ==
-        SocketEvents.UNSENT_MESSAGE_IN_THREAD &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.UNSENT_MESSAGE_IN_THREAD &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     //MULTIPLE_MESSAGE_IN_THREAD
-    if (
-      message.text.data.type ==
-        SocketEvents.MULTIPLE_MESSAGE_IN_THREAD &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.MULTIPLE_MESSAGE_IN_THREAD &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     //ADD_CHANNEL_ADMIN
-    if (
-      message.text.data.type ==
-        SocketEvents.ADD_CHANNEL_ADMIN &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.ADD_CHANNEL_ADMIN &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     //READ_ALL_MESSAGE_CHANNEL_SUBCHAT
-    if (
-      message.text.data.type ==
-        SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     //PINED_CHANNEL
-    if (
-      message.text.data.type ==
-        SocketEvents.PINED_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.PINED_CHANNEL &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
 
     //UNPINED_CHANNEL
-    if (
-      message.text.data.type ==
-        SocketEvents.UNPINED_CHANNEL &&
-      message.text.data.message_details.channel == currentChannel.id
-    ) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
-        // this.getChannelConversations();
-      } else if (
-        message.text.data.message_details.to_user != null &&
-        message.text.data.message_details.to_user.id == userData.id
-      ) {
-        // this.getChannelConversations();
-      }
-    }
-
-
+    // if (
+    //   message.text.data.type ==
+    //     SocketEvents.UNPINED_CHANNEL &&
+    //   message.text.data.message_details.channel == currentChannel.id
+    // ) {
+    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    //     // this.getChannelConversations();
+    //   } else if (
+    //     message.text.data.message_details.to_user != null &&
+    //     message.text.data.message_details.to_user.id == userData.id
+    //   ) {
+    //     // this.getChannelConversations();
+    //   }
+    // }
   }
 
   onMessageSend = async () => {
@@ -399,7 +402,7 @@ class ChannelChats extends Component {
       uploadFile,
       editMessageId,
     } = this.state;
-    const { userData, currentChannel } = this.props;
+    const {userData, currentChannel} = this.props;
 
     if (!newMessageText && !uploadFile.uri) {
       return;
@@ -409,7 +412,7 @@ class ChannelChats extends Component {
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
-        files
+        files,
       );
       msgText = uploadedImages.image[0].image;
     }
@@ -420,7 +423,7 @@ class ChannelChats extends Component {
       const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
         files,
         uploadFile.name,
-        uploadFile.type
+        uploadFile.type,
       );
       msgText = uploadedAudio;
     }
@@ -432,7 +435,7 @@ class ChannelChats extends Component {
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
         uploadFile.name,
-        uploadFile.type
+        uploadFile.type,
       );
       msgText = uploadedApplication;
     }
@@ -442,7 +445,7 @@ class ChannelChats extends Component {
       let files = [file];
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
-        uploadFile.type
+        uploadFile.type,
       );
       msgText = uploadedVideo;
     }
@@ -499,7 +502,7 @@ class ChannelChats extends Component {
       isEdited: false,
       sentMessageType: 'text',
       sendingMedia: false,
-      uploadFile: { uri: null, type: null, name: null },
+      uploadFile: {uri: null, type: null, name: null},
     });
   };
 
@@ -519,7 +522,7 @@ class ChannelChats extends Component {
   };
 
   sendEditMessage = () => {
-    const { newMessageText, editMessageId } = this.state;
+    const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -596,50 +599,61 @@ class ChannelChats extends Component {
   };
 
   checkHasLoginBonus = () => {
-    this.props.checkLoginBonusOfChannel().then((res)=>{
-      console.log('checkLoginBonusOfChannel',res);
-      if(res && !res.status){
-        this.getLoginBonus();
-      }
-    }).catch((err)=>{
-      console.log('checkLoginBonusOfChannel_error',err);
-    })
-  }
+    this.props
+      .checkLoginBonusOfChannel()
+      .then((res) => {
+        console.log('checkLoginBonusOfChannel', res);
+        if (res && !res.status) {
+          this.getLoginBonus();
+        }
+      })
+      .catch((err) => {
+        console.log('checkLoginBonusOfChannel_error', err);
+      });
+  };
 
   getLoginBonus = () => {
-    this.props.getLoginBonusOfChannel().then((res)=>{
-      console.log('getLoginBonusOfChannel',res);
-      if(res){
-        this.setState({bonusXP:res.amount,bonusModal:true});
-      }
-    }).catch((err)=>{
-      console.log('getLoginBonusOfChannel_error',err);
-    })
-  }
+    this.props
+      .getLoginBonusOfChannel()
+      .then((res) => {
+        console.log('getLoginBonusOfChannel', res);
+        if (res) {
+          this.setState({bonusXP: res.amount, bonusModal: true});
+        }
+      })
+      .catch((err) => {
+        console.log('getLoginBonusOfChannel_error', err);
+      });
+  };
 
   selectedLoginBonus = (key) => {
-    this.props.selectLoginJackpotOfChannel({picked_option: key}).then((res)=>{
-      if(res){
-        console.log('jackpotData',res);
-        this.setState({jackpotData:res.data});
-        this.getAssetXpValue();
-      }
-    }).catch((err)=>{
-      console.log('err',err);
-    })
-  }
+    this.props
+      .selectLoginJackpotOfChannel({picked_option: key})
+      .then((res) => {
+        if (res) {
+          console.log('jackpotData', res);
+          this.setState({jackpotData: res.data});
+          this.getAssetXpValue();
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
 
   getAssetXpValue = () => {
-    this.props.assetXPValueOfChannel().then((res)=>{
-      if(res){
-        console.log('asset_xp',res);
-        if(res && res.data)
-        this.setState({assetXPValue:res.data});
-      }
-    }).catch((err)=>{
-      console.log('err',err);
-    });
-  }
+    this.props
+      .assetXPValueOfChannel()
+      .then((res) => {
+        if (res) {
+          console.log('asset_xp', res);
+          if (res && res.data) this.setState({assetXPValue: res.data});
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
 
   checkImageWithAmount = (amount) => {
     if (amount === 0) {
@@ -651,31 +665,31 @@ class ChannelChats extends Component {
     } else if (amount >= 1000) {
       return openBoxImage.full_gold;
     }
-  }
+  };
 
   getAmountValue = (jackpotData) => {
     var array = [];
-      if(jackpotData.picked_option==1){
-        array = [
-          parseInt(jackpotData.picked_amount),
-          parseInt(jackpotData.missed1_amount),
-          parseInt(jackpotData.missed2_amount)
-        ]
-      }else if(jackpotData.picked_option==2){
-        array = [
-          parseInt(jackpotData.missed1_amount),
-          parseInt(jackpotData.picked_amount),
-          parseInt(jackpotData.missed2_amount)
-        ]
-      }else if(jackpotData.picked_option==3){
-        array = [
-          parseInt(jackpotData.missed1_amount),
-          parseInt(jackpotData.missed2_amount),
-          parseInt(jackpotData.picked_amount)
-        ]
-      }
-      return array;
-  }
+    if (jackpotData.picked_option == 1) {
+      array = [
+        parseInt(jackpotData.picked_amount),
+        parseInt(jackpotData.missed1_amount),
+        parseInt(jackpotData.missed2_amount),
+      ];
+    } else if (jackpotData.picked_option == 2) {
+      array = [
+        parseInt(jackpotData.missed1_amount),
+        parseInt(jackpotData.picked_amount),
+        parseInt(jackpotData.missed2_amount),
+      ];
+    } else if (jackpotData.picked_option == 3) {
+      array = [
+        parseInt(jackpotData.missed1_amount),
+        parseInt(jackpotData.missed2_amount),
+        parseInt(jackpotData.picked_amount),
+      ];
+    }
+    return array;
+  };
 
   getLocalChannelConversations = () => {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
@@ -686,17 +700,17 @@ class ChannelChats extends Component {
       });
       this.props.setChannelConversation(conversations);
     }
-  }
+  };
 
   getChannelConversations = async () => {
     await this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({ conversations: res.conversation });
+          this.setState({conversations: res.conversation});
           this.props.readAllChannelMessages(this.props.currentChannel.id);
           let chat = getChannelChatConversationById(
-            this.props.currentChannel.id
+            this.props.currentChannel.id,
           );
           let conversations = [];
           chat.map((item, index) => {
@@ -720,10 +734,10 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({ conversations: res.conversation });
+          this.setState({conversations: res.conversation});
           this.props.readAllChannelMessages(this.props.currentChannel.id);
           let chat = getChannelChatConversationById(
-            this.props.currentChannel.id
+            this.props.currentChannel.id,
           );
           let conversations = [];
           chat.map((item, index) => {
@@ -735,7 +749,7 @@ class ChannelChats extends Component {
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
   }
 
   onCameraPress = () => {
@@ -743,7 +757,7 @@ class ChannelChats extends Component {
       includeBase64: true,
       mediaType: 'photo',
     }).then((image) => {
-      let source = { uri: 'data:image/jpeg;base64,' + image.data };
+      let source = {uri: 'data:image/jpeg;base64,' + image.data};
       this.setState({
         uploadFile: source,
         sentMessageType: 'image',
@@ -819,9 +833,9 @@ class ChannelChats extends Component {
           res.type, // mime type
           res.name,
           res.size,
-          res.type.substr(0, res.type.indexOf('/'))
+          res.type.substr(0, res.type.indexOf('/')),
         );
-        let source = { uri: res.uri, type: res.type, name: res.name };
+        let source = {uri: res.uri, type: res.type, name: res.name};
         if (fileType === 'audio') {
           this.setState({
             uploadFile: source,
@@ -845,7 +859,7 @@ class ChannelChats extends Component {
   };
 
   renderConversations() {
-    const { channelLoading, chatConversation } = this.props;
+    const {channelLoading, chatConversation} = this.props;
     const {
       conversations,
       newMessageText,
@@ -862,12 +876,12 @@ class ChannelChats extends Component {
     if (!this.props.chatConversation) {
       return null;
     }
-    console.log('chatConversation',chatConversation.length);
+    console.log('chatConversation', chatConversation.length);
     if (channelLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
       return (
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
@@ -972,7 +986,7 @@ class ChannelChats extends Component {
   };
 
   onConfirmDeleteMessage = () => {
-    this.setState({ showMessageDeleteConfirmationModal: false });
+    this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedMessageId != null) {
       let payload = {
         deleted_for: [this.props.userData.id],
@@ -987,9 +1001,9 @@ class ChannelChats extends Component {
   };
 
   onConfirmUnSend = () => {
-    this.setState({ showMessageUnSendConfirmationModal: false });
+    this.setState({showMessageUnSendConfirmationModal: false});
     if (this.state.selectedMessageId != null) {
-      let payload = { message_body: '', is_unsent: true };
+      let payload = {message_body: '', is_unsent: true};
       this.props
         .editChannelMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -1028,12 +1042,11 @@ class ChannelChats extends Component {
   };
 
   render() {
-    const { currentChannel } = this.props;
+    const {currentChannel} = this.props;
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <ChatHeader
           title={currentChannel.name}
           description={
@@ -1051,51 +1064,234 @@ class ChannelChats extends Component {
         <Modal
           visible={this.state.bonusModal}
           transparent
-          onRequestClose={()=>this.setState({bonusModal:false})}>
+          onRequestClose={() => this.setState({bonusModal: false})}>
           <View style={styles.bonusModalContainer}>
-            <ImageBackground source={bonusImage} resizeMode={'cover'} style={styles.bonusBgContainer}>
-              <View style={{flex:1}}>
-                <Text style={styles.bonusTextHeading}>{this.state.jackpotData?translate('pages.xchat.seeYouTomorrow'):translate('pages.xchat.loginBonusText')}</Text>
-                <Text style={styles.bonusTitleText}>{translate('pages.xchat.jackPot')} <Text style={{fontSize:30,fontWeight:'bold'}}>{this.state.bonusXP}</Text> <Text style={{fontSize:15,fontFamily: Fonts.regular,fontWeight:'300'}}>{"XP"}</Text></Text>
-                {this.state.assetXPValue?<Text style={styles.bonusTitleText}>{translate('pages.xchat.youOwn')} <Text style={{fontSize:30,fontWeight:'bold'}}>{this.state.assetXPValue.XP+""}</Text> <Text style={{fontSize:15,fontFamily: Fonts.regular,fontWeight:'300'}}>{"XP"}</Text></Text>:null}
+            <ImageBackground
+              source={bonusImage}
+              resizeMode={'cover'}
+              style={styles.bonusBgContainer}>
+              <View style={{flex: 1}}>
+                <Text style={styles.bonusTextHeading}>
+                  {this.state.jackpotData
+                    ? translate('pages.xchat.seeYouTomorrow')
+                    : translate('pages.xchat.loginBonusText')}
+                </Text>
+                <Text style={styles.bonusTitleText}>
+                  {translate('pages.xchat.jackPot')}{' '}
+                  <Text style={{fontSize: 30, fontWeight: 'bold'}}>
+                    {this.state.bonusXP}
+                  </Text>{' '}
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontFamily: Fonts.regular,
+                      fontWeight: '300',
+                    }}>
+                    {'XP'}
+                  </Text>
+                </Text>
+                {this.state.assetXPValue ? (
+                  <Text style={styles.bonusTitleText}>
+                    {translate('pages.xchat.youOwn')}{' '}
+                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>
+                      {this.state.assetXPValue.XP + ''}
+                    </Text>{' '}
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontFamily: Fonts.regular,
+                        fontWeight: '300',
+                      }}>
+                      {'XP'}
+                    </Text>
+                  </Text>
+                ) : null}
                 <View style={styles.bonusImageContainer}>
-                    <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(1)}} style={{ marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
-                      <View style={{flex:1,alignItems:'center'}}>
-                        <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==1)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[0]):closeBoxImage[0].value}} resizeMode={'contain'}/>
+                  <TouchableOpacity
+                    disabled={this.state.jackpotData}
+                    onPress={() => {
+                      this.selectedLoginBonus(1);
+                    }}
+                    style={{
+                      marginHorizontal: 10,
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                      <Image
+                        style={
+                          this.state.jackpotData &&
+                          this.state.jackpotData.picked_option == 1
+                            ? styles.bonusImageZoom
+                            : styles.bonusImage
+                        }
+                        source={{
+                          uri: this.state.jackpotData
+                            ? this.checkImageWithAmount(
+                                this.getAmountValue(this.state.jackpotData)[0],
+                              )
+                            : closeBoxImage[0].value,
+                        }}
+                        resizeMode={'contain'}
+                      />
+                    </View>
+                    {this.state.jackpotData ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#fff',
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'right',
+                            color:
+                              this.state.jackpotData &&
+                              this.state.jackpotData.picked_option == 1
+                                ? '#dbf875'
+                                : '#fff',
+                            fontSize: 29,
+                          }}>
+                          {this.getAmountValue(this.state.jackpotData)[0] + ''}{' '}
+                          XP
+                        </Text>
                       </View>
-                      {this.state.jackpotData?<View style={{flex:1, borderBottomWidth:1,borderBottomColor:'#fff'}}>
-                        <Text style={{textAlign:'right', color:(this.state.jackpotData && this.state.jackpotData.picked_option==1)?'#dbf875':'#fff',fontSize:29}}>{this.getAmountValue(this.state.jackpotData)[0]+""} XP</Text>
-                      </View>:null}
-                    </TouchableOpacity>
+                    ) : null}
+                  </TouchableOpacity>
 
-                    <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(2)}} style={{  marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
-                      <View style={{flex:1,alignItems:'center'}}>
-                        <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==2)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[1]):closeBoxImage[1].value}} resizeMode={'contain'}/>
+                  <TouchableOpacity
+                    disabled={this.state.jackpotData}
+                    onPress={() => {
+                      this.selectedLoginBonus(2);
+                    }}
+                    style={{
+                      marginHorizontal: 10,
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                      <Image
+                        style={
+                          this.state.jackpotData &&
+                          this.state.jackpotData.picked_option == 2
+                            ? styles.bonusImageZoom
+                            : styles.bonusImage
+                        }
+                        source={{
+                          uri: this.state.jackpotData
+                            ? this.checkImageWithAmount(
+                                this.getAmountValue(this.state.jackpotData)[1],
+                              )
+                            : closeBoxImage[1].value,
+                        }}
+                        resizeMode={'contain'}
+                      />
+                    </View>
+                    {this.state.jackpotData ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#fff',
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'right',
+                            color:
+                              this.state.jackpotData &&
+                              this.state.jackpotData.picked_option == 2
+                                ? '#dbf875'
+                                : '#fff',
+                            fontSize: 29,
+                          }}>
+                          {this.getAmountValue(this.state.jackpotData)[1] + ''}{' '}
+                          XP
+                        </Text>
                       </View>
-                      {this.state.jackpotData?<View style={{flex:1, borderBottomWidth:1,borderBottomColor:'#fff'}}>
-                        <Text style={{textAlign:'right', color:(this.state.jackpotData && this.state.jackpotData.picked_option==2)?'#dbf875':'#fff',fontSize:29}}>{this.getAmountValue(this.state.jackpotData)[1]+""} XP</Text>
-                      </View>:null}
-                    </TouchableOpacity>
+                    ) : null}
+                  </TouchableOpacity>
 
-                    <TouchableOpacity disabled={this.state.jackpotData} onPress={()=>{this.selectedLoginBonus(3)}} style={{  marginHorizontal:10, justifyContent:'center', flexDirection:'row',alignItems:'center'}}>
-                      <View style={{flex:1,alignItems:'center'}}>
-                        <Image style={(this.state.jackpotData && this.state.jackpotData.picked_option==3)?styles.bonusImageZoom:styles.bonusImage} source={{uri:this.state.jackpotData?this.checkImageWithAmount(this.getAmountValue(this.state.jackpotData)[2]):closeBoxImage[2].value}} resizeMode={'contain'}/>
+                  <TouchableOpacity
+                    disabled={this.state.jackpotData}
+                    onPress={() => {
+                      this.selectedLoginBonus(3);
+                    }}
+                    style={{
+                      marginHorizontal: 10,
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                      <Image
+                        style={
+                          this.state.jackpotData &&
+                          this.state.jackpotData.picked_option == 3
+                            ? styles.bonusImageZoom
+                            : styles.bonusImage
+                        }
+                        source={{
+                          uri: this.state.jackpotData
+                            ? this.checkImageWithAmount(
+                                this.getAmountValue(this.state.jackpotData)[2],
+                              )
+                            : closeBoxImage[2].value,
+                        }}
+                        resizeMode={'contain'}
+                      />
+                    </View>
+                    {this.state.jackpotData ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#fff',
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'right',
+                            color:
+                              this.state.jackpotData &&
+                              this.state.jackpotData.picked_option == 3
+                                ? '#dbf875'
+                                : '#fff',
+                            fontSize: 29,
+                            fontFamily: Fonts.beba_regular,
+                          }}>
+                          {this.getAmountValue(this.state.jackpotData)[2] + ''}{' '}
+                          XP
+                        </Text>
                       </View>
-                      {this.state.jackpotData?<View style={{flex:1, borderBottomWidth:1,borderBottomColor:'#fff'}}>
-                        <Text style={{textAlign:'right', color:(this.state.jackpotData && this.state.jackpotData.picked_option==3)?'#dbf875':'#fff',fontSize:29, fontFamily:Fonts.beba_regular}}>{this.getAmountValue(this.state.jackpotData)[2]+""} XP</Text>
-                      </View>:null}
-                    </TouchableOpacity>
-
+                    ) : null}
+                  </TouchableOpacity>
                 </View>
               </View>
-              <Text style={{textAlign:'center',fontSize:14,fontWeight:'300',color:'#fff'}}>{translate('pages.xchat.gamePlatformText')}</Text>
-              <TouchableOpacity style={{margin:25}} onPress={()=>{this.setState({bonusModal:false})}}>
-                <Avatar.Icon size={50} icon="close" color={'#fff'} style={{backgroundColor:'#e2b2ac'}}/>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 14,
+                  fontWeight: '300',
+                  color: '#fff',
+                }}>
+                {translate('pages.xchat.gamePlatformText')}
+              </Text>
+              <TouchableOpacity
+                style={{margin: 25}}
+                onPress={() => {
+                  this.setState({bonusModal: false});
+                }}>
+                <Avatar.Icon
+                  size={50}
+                  icon="close"
+                  color={'#fff'}
+                  style={{backgroundColor: '#e2b2ac'}}
+                />
               </TouchableOpacity>
             </ImageBackground>
           </View>
         </Modal>
-
       </ImageBackground>
     );
   }
@@ -1103,47 +1299,47 @@ class ChannelChats extends Component {
 
 const styles = StyleSheet.create({
   bonusModalContainer: {
-    flex:1,
-    backgroundColor:'#00000080',
-    paddingTop:40
+    flex: 1,
+    backgroundColor: '#00000080',
+    paddingTop: 40,
   },
   bonusBgContainer: {
-    flex:1,
-    margin:20,
-    borderRadius:30,
-    alignItems:'center',
-    overflow: 'hidden'
+    flex: 1,
+    margin: 20,
+    borderRadius: 30,
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   bonusTextHeading: {
-    marginTop:34,
+    marginTop: 34,
     // marginBottom:PixelRatio.getPixelSizeForLayoutSize(10),
-    textAlign:'center',
-    fontSize:32,
-    fontWeight:'300',
-    color:'#ffd300',
-    fontFamily: Fonts.regular
+    textAlign: 'center',
+    fontSize: 32,
+    fontWeight: '300',
+    color: '#ffd300',
+    fontFamily: Fonts.regular,
   },
   bonusTitleText: {
-    textAlign:'center',
-    fontSize:22,
-    fontWeight:'300',
-    color:'#fff',
-    fontFamily:Fonts.beba_regular
+    textAlign: 'center',
+    fontSize: 22,
+    fontWeight: '300',
+    color: '#fff',
+    fontFamily: Fonts.beba_regular,
   },
   bonusImageContainer: {
-    flex:1,
-    justifyContent:'space-evenly',
-    marginBottom:20,
-    marginTop:20
+    flex: 1,
+    justifyContent: 'space-evenly',
+    marginBottom: 20,
+    marginTop: 20,
   },
   bonusImage: {
-    width:PixelRatio.getPixelSizeForLayoutSize(50),
-    height:PixelRatio.getPixelSizeForLayoutSize(50)
+    width: PixelRatio.getPixelSizeForLayoutSize(50),
+    height: PixelRatio.getPixelSizeForLayoutSize(50),
   },
   bonusImageZoom: {
     width: PixelRatio.getPixelSizeForLayoutSize(70),
-    height: PixelRatio.getPixelSizeForLayoutSize(70)
-  }
+    height: PixelRatio.getPixelSizeForLayoutSize(70),
+  },
 });
 
 const mapStateToProps = (state) => {
@@ -1169,7 +1365,7 @@ const mapDispatchToProps = {
   getLoginBonusOfChannel,
   checkLoginBonusOfChannel,
   selectLoginJackpotOfChannel,
-  assetXPValueOfChannel
+  assetXPValueOfChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);
