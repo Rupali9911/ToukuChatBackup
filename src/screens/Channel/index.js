@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
@@ -7,21 +7,21 @@ import {
   ScrollView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
-import { globalStyles } from '../../styles';
+import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {Images, Icons, Colors, Fonts} from '../../constants';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import TabBar from '../../components/TabBar';
 import PostCard from '../../components/PostCard';
 import {
-    getTrendChannel,
-    getFollowingChannel,
-    getRankingChannel,
-    hidePost,
-    hideAllPost,
-    reportPost,
+  getTrendChannel,
+  getFollowingChannel,
+  getRankingChannel,
+  hidePost,
+  hideAllPost,
+  reportPost,
 } from '../../redux/reducers/timelineReducer';
 
 class Channel extends Component {
@@ -31,19 +31,18 @@ class Channel extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       activeTab: 'trend',
-        refreshData: false,
-        trendChannel: [],
-        followingChannel: [],
-        rankingChannel: [],
+      refreshData: false,
+      trendChannel: [],
+      followingChannel: [],
+      rankingChannel: [],
       tabBarItem: [
         {
           id: 1,
           title: 'trend',
           icon: Icons.icon_chat,
           action: () => {
-            this.setState({ activeTab: 'trend' });
-               this.props.getTrendChannel().then((res) => {
-              });
+            this.setState({activeTab: 'trend'});
+            this.props.getTrendChannel().then((res) => {});
           },
         },
         {
@@ -51,9 +50,8 @@ class Channel extends Component {
           title: 'following',
           icon: Icons.icon_setting,
           action: () => {
-            this.setState({ activeTab: 'following' });
-              this.props.getFollowingChannel().then((res) => {
-              });
+            this.setState({activeTab: 'following'});
+            this.props.getFollowingChannel().then((res) => {});
           },
         },
         {
@@ -61,33 +59,38 @@ class Channel extends Component {
           title: 'ranking',
           icon: Icons.icon_timeline,
           action: () => {
-            this.setState({ activeTab: 'ranking' });
-              this.props.getRankingChannel().then((res) => {
-              });
+            this.setState({activeTab: 'ranking'});
+            this.props.getRankingChannel().then((res) => {});
           },
         },
       ],
       visible: false,
-        menuItems: [
-            {
-                id: 1,
-                title: translate('pages.xchat.hideThisPost'),
-                icon: 'bars',
-                onPress: (res) => {this.hidePost(res)},
-            },
-            {
-                id: 1,
-                title: translate('pages.xchat.hideAllPost'),
-                icon: 'bars',
-                onPress: (res) => {this.hideAllPost(res)},
-            },
-            {
-                id: 1,
-                title: translate('pages.xchat.reportContent'),
-                icon: 'bars',
-                onPress: (res) => {this.reportContent(res)},
-            },
-        ],
+      menuItems: [
+        {
+          id: 1,
+          title: translate('pages.xchat.hideThisPost'),
+          icon: 'bars',
+          onPress: (res) => {
+            this.hidePost(res);
+          },
+        },
+        {
+          id: 1,
+          title: translate('pages.xchat.hideAllPost'),
+          icon: 'bars',
+          onPress: (res) => {
+            this.hideAllPost(res);
+          },
+        },
+        {
+          id: 1,
+          title: translate('pages.xchat.reportContent'),
+          icon: 'bars',
+          onPress: (res) => {
+            this.reportContent(res);
+          },
+        },
+      ],
     };
   }
 
@@ -99,7 +102,7 @@ class Channel extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   async componentDidMount() {
@@ -118,18 +121,23 @@ class Channel extends Component {
     });
   }
 
-    componentWillReceiveProps(nextProps) {
-        const { trendChannel, followingChannel, rankingChannel } = this.props
-        if (nextProps.trendChannel !== trendChannel ||
-            nextProps.followingChannel !== followingChannel ||
-            nextProps.rankingChannel !== rankingChannel) {
-            this.setState({ trendChannel: nextProps.trendChannel, followingChannel: nextProps.followingChannel,
-                rankingChannel: nextProps.rankingChannel})
-        }
+  componentWillReceiveProps(nextProps) {
+    const {trendChannel, followingChannel, rankingChannel} = this.props;
+    if (
+      nextProps.trendChannel !== trendChannel ||
+      nextProps.followingChannel !== followingChannel ||
+      nextProps.rankingChannel !== rankingChannel
+    ) {
+      this.setState({
+        trendChannel: nextProps.trendChannel,
+        followingChannel: nextProps.followingChannel,
+        rankingChannel: nextProps.rankingChannel,
+      });
     }
+  }
 
   showData() {
-    const { trendChannel, followingChannel, rankingChannel } = this.props;
+    const {trendChannel, followingChannel, rankingChannel} = this.props;
     // console.log(
     //   'Timeline -> showData -> trendChannel ============>>>>>>>>>>>>>>>',
     //   trendChannel.map((item) => console.log(item.media.audio))
@@ -137,12 +145,12 @@ class Channel extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => this.setState({visible: true});
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => this.setState({visible: false});
 
   getAspectRatio = () => {
     Image.getSize(
@@ -151,7 +159,7 @@ class Channel extends Component {
         this.setState({
           ratio: height / width,
         });
-      }
+      },
     );
   };
 
@@ -159,89 +167,96 @@ class Channel extends Component {
     this.getAspectRatio();
   };
 
-    hidePost(post){
-        const { activeTab } = this.state
-        console.log('post', post)
-        this.props.hidePost(post.id).then((res) => {
-            console.log('Hide post server response', res)
-            this.refreshContent()
-        })
-    }
+  hidePost(post) {
+    const {activeTab} = this.state;
+    console.log('post', post);
+    this.props.hidePost(post.id).then((res) => {
+      console.log('Hide post server response', res);
+      this.refreshContent();
+    });
+  }
 
-    hideAllPost(post){
-        const { activeTab } = this.state
-        console.log('post', post)
-        this.props.hideAllPost(post.channel_id).then((res) => {
-            console.log('hideAllPost post server response', res)
-            this.refreshContent()
-        })
-    }
+  hideAllPost(post) {
+    const {activeTab} = this.state;
+    console.log('post', post);
+    this.props.hideAllPost(post.channel_id).then((res) => {
+      console.log('hideAllPost post server response', res);
+      this.refreshContent();
+    });
+  }
 
-    reportContent(post){
-        const { activeTab } = this.state
-        console.log('post', post)
-        this.props.reportPost(post.id).then((res) => {
-            console.log('reportContent server response', res)
-            this.refreshContent()
-        })
-    }
+  reportContent(post) {
+    const {activeTab} = this.state;
+    console.log('post', post);
+    this.props.reportPost(post.id).then((res) => {
+      console.log('reportContent server response', res);
+      this.refreshContent();
+    });
+  }
 
-    refreshContent (){
-        const { activeTab } = this.state
-        if (activeTab === 'trend'){
-            console.log('trend selected')
-            this.props.getTrendChannel().then((res) => {
-                this.showData();
-            });
-        } else if  (activeTab === 'following'){
-            console.log('following selected')
-            this.props.getFollowingChannel().then((res) => {
-                this.showData();
-            });
-
-        }else if  (activeTab === 'ranking'){
-            console.log('ranking selected')
-            this.props.getRankingChannel().then((res) => {
-                this.showData();
-            });
-        }
+  refreshContent() {
+    const {activeTab} = this.state;
+    if (activeTab === 'trend') {
+      console.log('trend selected');
+      this.props.getTrendChannel().then((res) => {
+        this.showData();
+      });
+    } else if (activeTab === 'following') {
+      console.log('following selected');
+      this.props.getFollowingChannel().then((res) => {
+        this.showData();
+      });
+    } else if (activeTab === 'ranking') {
+      console.log('ranking selected');
+      this.props.getRankingChannel().then((res) => {
+        this.showData();
+      });
     }
+  }
 
   render() {
-    const { tabBarItem, activeTab, menuItems, posts, trendChannel, followingChannel, rankingChannel } = this.state;
+    const {
+      tabBarItem,
+      activeTab,
+      menuItems,
+      posts,
+      trendChannel,
+      followingChannel,
+      rankingChannel,
+    } = this.state;
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+      // <ImageBackground
+      //   source={Images.image_home_bg}
+      //   style={globalStyles.container}
+      // >
+      <View style={globalStyles.container}>
+        <HomeHeader title={translate('pages.xchat.channel')} />
         <View style={globalStyles.container}>
-          <HomeHeader title={translate('pages.xchat.channel')} />
-          <View style={globalStyles.container}>
-            <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
-            <ScrollView>
-              {activeTab === 'trend' ? (
-                <PostCard
-                  menuItems={menuItems}
-                  posts={trendChannel}
-                  isTimeline={false}
-                />
-              ) : activeTab === 'following' ? (
-                <PostCard
-                  menuItems={menuItems}
-                  posts={followingChannel}
-                  isTimeline={false}
-                />
-              ) : (
-                <PostCard
-                  menuItems={menuItems}
-                  posts={rankingChannel}
-                  isTimeline={false}
-                />
-              )}
-            </ScrollView>
-          </View>
+          <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
+          <ScrollView>
+            {activeTab === 'trend' ? (
+              <PostCard
+                menuItems={menuItems}
+                posts={trendChannel}
+                isTimeline={false}
+              />
+            ) : activeTab === 'following' ? (
+              <PostCard
+                menuItems={menuItems}
+                posts={followingChannel}
+                isTimeline={false}
+              />
+            ) : (
+              <PostCard
+                menuItems={menuItems}
+                posts={rankingChannel}
+                isTimeline={false}
+              />
+            )}
+          </ScrollView>
         </View>
-      </ImageBackground>
+      </View>
+      // </ImageBackground>
     );
   }
 }
@@ -260,9 +275,9 @@ const mapDispatchToProps = {
   getTrendChannel,
   getFollowingChannel,
   getRankingChannel,
-    hidePost,
-    hideAllPost,
-    reportPost
+  hidePost,
+  hideAllPost,
+  reportPost,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Channel);

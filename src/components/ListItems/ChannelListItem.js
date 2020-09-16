@@ -1,14 +1,14 @@
-import React, { Component, Fragment } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, {Component, Fragment} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Badge, Divider } from 'react-native-paper';
+import {Badge, Divider} from 'react-native-paper';
 
 import RoundedImage from '../RoundedImage';
-import { globalStyles } from '../../styles';
-import { Colors } from '../../constants';
-import { getImage } from '../../utils';
+import {globalStyles} from '../../styles';
+import {Colors} from '../../constants';
+import {getImage} from '../../utils';
 
 export default class ChannelListItem extends Component {
   constructor(props) {
@@ -17,14 +17,7 @@ export default class ChannelListItem extends Component {
   }
 
   render() {
-    const {
-      title,
-      description,
-      date,
-      image,
-      onPress,
-      unreadCount,
-    } = this.props;
+    const {title, description, date, image, onPress, unreadCount} = this.props;
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
@@ -33,21 +26,19 @@ export default class ChannelListItem extends Component {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={onPress}
-          style={styles.container}
-        >
+          style={styles.container}>
           <View style={styles.firstView}>
             {image === null || image === '' || typeof image === undefined ? (
               <LinearGradient
-                start={{ x: 0.1, y: 0.7 }}
-                end={{ x: 0.5, y: 0.2 }}
+                start={{x: 0.1, y: 0.7}}
+                end={{x: 0.5, y: 0.2}}
                 locations={[0.1, 0.6, 1]}
                 colors={[
                   Colors.gradient_1,
                   Colors.gradient_2,
                   Colors.gradient_3,
                 ]}
-                style={styles.squareImage}
-              >
+                style={styles.squareImage}>
                 <Text style={globalStyles.normalRegularText}>
                   {title.charAt(0).toUpperCase()}
                   {/* {secondUpperCase} */}
@@ -61,23 +52,21 @@ export default class ChannelListItem extends Component {
               />
             )}
             <View style={styles.secondView}>
-              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+              <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Text
                   numberOfLines={1}
                   style={[
                     globalStyles.smallRegularText,
-                    { color: Colors.black },
-                  ]}
-                >
+                    {color: Colors.black},
+                  ]}>
                   {title}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={[
                     globalStyles.smallLightText,
-                    { color: Colors.gray_dark },
-                  ]}
-                >
+                    {color: Colors.gray_dark},
+                  ]}>
                   {description}
                 </Text>
               </View>
@@ -86,9 +75,8 @@ export default class ChannelListItem extends Component {
                   numberOfLines={1}
                   style={[
                     globalStyles.smallLightText,
-                    { color: Colors.gray_dark },
-                  ]}
-                >
+                    {color: Colors.gray_dark},
+                  ]}>
                   {moment(date).format('MM/DD')}
                 </Text>
                 {unreadCount !== 0 && unreadCount != null && (
@@ -100,8 +88,7 @@ export default class ChannelListItem extends Component {
                         color: Colors.white,
                         fontSize: 11,
                       },
-                    ]}
-                  >
+                    ]}>
                     {unreadCount}
                   </Badge>
                 )}

@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -34,8 +34,8 @@ export const Icons = {
   icon_channel: require('../../assets/icons/channel.png'),
   icon_channel_new: require('../../assets/icons/Channel_new.png'),
   icon_channel_select: require('../../assets/icons/channel_select.png'),
-    icon_setting_tab: require('../../assets/icons/setting_tab.png'),
-    icon_setting_tab_select: require('../../assets/icons/setting_selected.png'),
+  icon_setting_tab: require('../../assets/icons/setting_tab.png'),
+  icon_setting_tab_select: require('../../assets/icons/setting_selected.png'),
   icon_message: require('../../assets/icons/message.png'),
   icon_warning: require('../../assets/icons/warning.png'),
   icon_scenario: require('../../assets/icons/scenario.png'),
@@ -76,7 +76,9 @@ export const Images = {
   image_gallery: require('../../assets/images/gallery.png'),
   image_loader: require('../../assets/images/loader.gif'),
   image_conversation: require('../../assets/images/conversation.png'),
-  image_bonus_bg: require('../../assets/images/bonus_bg.png')
+  image_bonus_bg: require('../../assets/images/bonus_bg.png'),
+  header_bg: require('../../assets/images/header_bg.png'),
+  header_bg_small: require('../../assets/images/header_bg_small.png'),
 };
 
 export const Colors = {
@@ -101,11 +103,19 @@ export const Colors = {
   gradient_4: '#ff8960',
   gradient_5: '#ff62a5',
   black_light: '#0a1f44',
-  foorter_gradient_1: 'rgba(255, 137, 96, 0.68)',
-  foorter_gradient_2: 'rgba(255, 98, 165, 0.68)',
-    orange_header: 'rgba(255,107,0,00.40)',
-    link_color: 'blue',
-    off_white: '#e2dccd'
+  foorter_gradient_1: 'rgba(233,	150,	15, 0.68)',
+  foorter_gradient_2: 'rgba(255,	28,	124, 0.68)',
+  foorter_gradient_3: 'rgba(95,	18,	164, 0.68)',
+  orange_header: 'rgba(255,107,0,00.40)',
+  link_color: 'blue',
+  off_white: '#e2dccd',
+  yellow: '#fff700',
+  header_gradient_1: 'rgba(233,150,15,0.79)',
+  header_gradient_2: 'rgba(245,81,72,0.79)',
+  header_gradient_3: 'rgba(95,18,164,0.79)',
+  pink_chat: '#ffdaec',
+  dark_pink: '#e13887',
+  light_pink: '#FFEDEE',
 };
 
 export const Fonts = {
@@ -120,7 +130,7 @@ export const Fonts = {
   extralight: 'Poppins-ExtraLight',
   extrabold: 'Poppins-ExtraBold',
   absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
-    arialRegular: 'Arial',
+  arialRegular: 'Arial',
 };
 
 export const environment = {
@@ -172,8 +182,8 @@ export const channelUrl = 'https://www.touku.net/#/channels/';
 export const xanaUrl = 'https://www.xanawallet.net/#/login';
 export const xanaDeepLink = 'xana://';
 export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
-export const DEEPLINK = 'touku://'
-export const Environment = 'https://www.touku.net/'
+export const DEEPLINK = 'touku://';
+export const Environment = 'https://www.touku.net/';
 
 export const SocketEvents = {
   // Friend actions
@@ -190,7 +200,7 @@ export const SocketEvents = {
   FRIEND_REQUEST_CANCELLED: 'Friend request cancelled',
   READ_ALL_MESSAGE_FRIEND_CHAT: 'Read all message friend chat',
   PINED_FRIEND: 'pined friend',
-    UNPINED_FRIEND: 'unpined friend',
+  UNPINED_FRIEND: 'unpined friend',
   // Thread actions
   MESSAGE_IN_THREAD: 'Message in thread',
   MULTIPLE_MESSAGE_IN_THREAD: 'Multiple message in thread',
@@ -243,7 +253,7 @@ export const SocketEvents = {
   UNSENT_MESSAGE_FROM_GROUP: 'Unsent message from group',
   READ_ALL_MESSAGE_GROUP_CHAT: 'Read all message group chat',
   PINED_GROUP: 'pined group',
-    UNPINED_GROUP: 'unpined group',
+  UNPINED_GROUP: 'unpined group',
   TP_POINT_ACTION: 'Tp point action',
   TP_POINT_ADD: 'Tp point add',
   TP_POINT_DEDUCT: 'Tp point deduct',
@@ -255,19 +265,32 @@ export const SocketEvents = {
   UPDATE_CHANNEL_MODE: 'Update configration channel mode',
   PINED_CHANNEL: 'pined channel',
   UNPINED_CHANNEL: 'unpined channel',
-
 };
 
-
 export const closeBoxImage = [
-  {key: 1, value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png', class: '_sm', imgClass: 'animated.delay-5s'},
-  {key: 2, value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png', class: '_lg', imgClass: ''} ,
-  {key: 3, value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png', class: '_md', imgClass: 'animated.delay-5s'},
+  {
+    key: 1,
+    value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png',
+    class: '_sm',
+    imgClass: 'animated.delay-5s',
+  },
+  {
+    key: 2,
+    value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png',
+    class: '_lg',
+    imgClass: '',
+  },
+  {
+    key: 3,
+    value: 'https://cdn.angelium.net/touku/assets/images/bonus/close@3x.png',
+    class: '_md',
+    imgClass: 'animated.delay-5s',
+  },
 ];
 
 export const openBoxImage = {
   open_box: 'https://cdn.angelium.net/touku/assets/images/bonus/open_box.png',
   less_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/lessgold.png',
   mid_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/midgold@3x.png',
-  full_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/full_gold.png'
-}
+  full_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/full_gold.png',
+};

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   FlatList,
   View,
@@ -9,17 +9,17 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import moment from 'moment';
-import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {ScrollView} from 'react-native-gesture-handler';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
-import { translate } from '../redux/reducers/languageReducer';
-import { Colors, Fonts, Images, Icons } from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
+import {Colors, Fonts, Images, Icons} from '../constants';
 import NoData from './NoData';
-const { height } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 class ChatContainer extends Component {
   constructor(props) {
@@ -138,15 +138,15 @@ class ChatContainer extends Component {
     }
   };
 
-  searchItemIndex = (data, id,idx) => {
+  searchItemIndex = (data, id, idx) => {
     var result = idx;
-    data.map((item,index)=>{
-      if(item.id===id){
+    data.map((item, index) => {
+      if (item.id === id) {
         result = index;
       }
-    })
+    });
     return result;
-  }
+  };
 
   render() {
     const {
@@ -162,11 +162,11 @@ class ChatContainer extends Component {
       onGalleryPress,
       onAttachmentPress,
       sendingImage,
-      currentChannel
+      currentChannel,
     } = this.props;
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{flex: 1}}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
@@ -174,11 +174,10 @@ class ChatContainer extends Component {
         }}
         keyboardShouldPersistTaps={'always'}
         onKeyboardWillShow={(contentWidth, contentHeight) => {
-          this.keyboardAwareScrollView.scrollToEnd({ animated: false });
+          this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
         keyboardOpeningTime={1500}
-        extraHeight={200}
-      >
+        extraHeight={200}>
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -192,21 +191,19 @@ class ChatContainer extends Component {
                   ? height * 0.01
                   : height * 0.03,
             },
-          ]}
-        >
+          ]}>
           <Fragment>
             <FlatList
-              style={{marginBottom:20}}
+              style={{marginBottom: 20}}
               contentContainerStyle={[
                 chatStyle.messareAreaScroll,
-                isReply && { paddingBottom: '20%' },
+                isReply && {paddingBottom: '20%'},
               ]}
               ref={(view) => {
                 this.scrollView = view;
               }}
               onContentSizeChange={() => {
                 if (this.props.translatedMessageId) {
-
                 } else {
                   // this.scrollView.scrollToEnd();
                 }
@@ -225,7 +222,7 @@ class ChatContainer extends Component {
               }}
               data={messages}
               inverted={true}
-              renderItem={({ item, index }) => {
+              renderItem={({item, index}) => {
                 getDate = (date) => {
                   const today = new Date();
                   const yesterday = new Date();
@@ -244,48 +241,56 @@ class ChatContainer extends Component {
                   return moment(msgDate).format('MM/DD');
                 };
                 const conversationLength = messages.length;
-                return <Fragment>
-                  <ChatMessageBox
-                    key={item.id}
-                    message={item}
-                    isUser={
-                      item.from_user.id == this.props.userData.id ||
+                return (
+                  <Fragment>
+                    <ChatMessageBox
+                      key={item.id}
+                      message={item}
+                      isUser={
+                        item.from_user.id == this.props.userData.id ||
                         item.from_user == this.props.userData.id
-                        ? true
-                        : false
-                    }
-                    time={new Date(item.created)}
-                    isChannel={this.props.isChannel}
-                    currentChannel={this.props.currentChannel}
-                    is_read={item.is_read}
-                    onMessageReply={(id) => this.props.onMessageReply(id)}
-                    onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
-                    onMessageTranslateClose={this.props.onMessageTranslateClose}
-                    onEditMessage={(msg) => this.props.onEditMessage(msg)}
-                    onDownloadMessage={(msg) => {
-                      this.props.onDownloadMessage(msg);
-                    }}
-                    translatedMessage={this.props.translatedMessage}
-                    translatedMessageId={this.props.translatedMessageId}
-                    onDelete={(id) => this.props.onDelete(id)}
-                    onUnSend={(id) => this.props.onUnSendMsg(id)}
-                    orientation={this.props.orientation}
-                    audioPlayingId={this.state.audioPlayingId}
-                    closeMenu={this.state.closeMenu}
-                    perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-                    onAudioPlayPress={(id) => {
-                      this.setState({
-                        audioPlayingId: id,
-                        perviousPlayingAudioId: this.state.audioPlayingId,
-                      });
-                    }}
-                    onReplyPress={(id)=>{
-                      this.scrollView.scrollToIndex({animated:true,index:this.searchItemIndex(messages,id,index)});
-                    }}
-                  />
-                  {(messages[index + 1] &&
-                    new Date(item.created).getDate() !==
-                    new Date(messages[index + 1].created).getDate()) ||
+                          ? true
+                          : false
+                      }
+                      time={new Date(item.created)}
+                      isChannel={this.props.isChannel}
+                      currentChannel={this.props.currentChannel}
+                      is_read={item.is_read}
+                      onMessageReply={(id) => this.props.onMessageReply(id)}
+                      onMessageTranslate={(msg) =>
+                        this.props.onMessageTranslate(msg)
+                      }
+                      onMessageTranslateClose={
+                        this.props.onMessageTranslateClose
+                      }
+                      onEditMessage={(msg) => this.props.onEditMessage(msg)}
+                      onDownloadMessage={(msg) => {
+                        this.props.onDownloadMessage(msg);
+                      }}
+                      translatedMessage={this.props.translatedMessage}
+                      translatedMessageId={this.props.translatedMessageId}
+                      onDelete={(id) => this.props.onDelete(id)}
+                      onUnSend={(id) => this.props.onUnSendMsg(id)}
+                      orientation={this.props.orientation}
+                      audioPlayingId={this.state.audioPlayingId}
+                      closeMenu={this.state.closeMenu}
+                      perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                      onAudioPlayPress={(id) => {
+                        this.setState({
+                          audioPlayingId: id,
+                          perviousPlayingAudioId: this.state.audioPlayingId,
+                        });
+                      }}
+                      onReplyPress={(id) => {
+                        this.scrollView.scrollToIndex({
+                          animated: true,
+                          index: this.searchItemIndex(messages, id, index),
+                        });
+                      }}
+                    />
+                    {(messages[index + 1] &&
+                      new Date(item.created).getDate() !==
+                        new Date(messages[index + 1].created).getDate()) ||
                     index === conversationLength - 1 ? (
                       item.message_body == null && !item.is_unsent ? null : (
                         <Fragment>
@@ -299,16 +304,19 @@ class ChatContainer extends Component {
                         </Fragment>
                       )
                     ) : null}
-                </Fragment>
+                  </Fragment>
+                );
               }}
-              ListEmptyComponent={() => <NoData
-                title={translate('pages.xchat.startANewConversationHere')}
-                source={Images.image_conversation}
-                imageColor={Colors.primary}
-                imageAvailable
-                style={{transform: [{ rotate: '180deg' }]}}
-                textStyle={{transform:[{rotateY:"180deg"}]}}
-              />}
+              ListEmptyComponent={() => (
+                <NoData
+                  title={translate('pages.xchat.startANewConversationHere')}
+                  source={Images.image_conversation}
+                  imageColor={Colors.primary}
+                  imageAvailable
+                  style={{transform: [{rotate: '180deg'}]}}
+                  textStyle={{transform: [{rotateY: '180deg'}]}}
+                />
+              )}
             />
           </Fragment>
           {/* <ScrollView
@@ -351,23 +359,21 @@ class ChatContainer extends Component {
                 bottom: 20,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
-              }}
-            >
+              }}>
               <View
                 style={{
                   flex: 3,
                   flexDirection: 'row',
                   alignItems: 'center',
-                }}
-              >
-                <View style={{ flex: 8 }}>
-                  <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
+                }}>
+                <View style={{flex: 8}}>
+                  <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.from_user.id === this.props.userData.id
                       ? 'You'
                       : repliedMessage.from_user.username}
                   </Text>
                 </View>
-                <View style={{ flex: 2, alignItems: 'flex-end' }}>
+                <View style={{flex: 2, alignItems: 'flex-end'}}>
                   <TouchableOpacity
                     style={{
                       justifyContent: 'center',
@@ -377,8 +383,7 @@ class ChatContainer extends Component {
                       borderRadius: 100,
                       backgroundColor: Colors.gradient_1,
                     }}
-                    onPress={cancelReply}
-                  >
+                    onPress={cancelReply}>
                     <Image
                       source={Icons.icon_close}
                       style={{
@@ -390,11 +395,8 @@ class ChatContainer extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={{ flex: 7, justifyContent: 'center', width: '95%' }}>
-                <Text
-                  numberOfLines={2}
-                  style={{ fontFamily: Fonts.extralight }}
-                >
+              <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
+                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {repliedMessage.message_body}
                 </Text>
               </View>
@@ -420,8 +422,9 @@ const chatStyle = StyleSheet.create({
   messageAreaConatiner: {
     flex: 0.95,
     justifyContent: 'flex-end',
+    backgroundColor: Colors.light_pink,
   },
-  messareAreaScroll: { flexGrow: 1, paddingBottom: 20 },
+  messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -431,13 +434,13 @@ const chatStyle = StyleSheet.create({
     marginVertical: 15,
   },
   messageDate: {
-    backgroundColor: Colors.orange_header,
-    paddingVertical: 4,
-    paddingHorizontal: 11,
-    borderRadius: 18,
+    // backgroundColor: Colors.orange_header,
+    // paddingVertical: 4,
+    // paddingHorizontal: 11,
+    // borderRadius: 18,
   },
   messageDateText: {
-    color: Colors.white,
+    color: Colors.dark_pink,
     fontFamily: Fonts.medium,
     fontSize: 13,
     fontWeight: '300',

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,14 +8,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import ChatMessageBubble from './ChatMessageBubble';
-import { Colors, Fonts } from '../constants';
-import { translate } from '../redux/reducers/languageReducer';
-import { globalStyles } from '../styles';
+import {Colors, Fonts} from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
+import {globalStyles} from '../styles';
 import RoundedImage from './RoundedImage';
-import { getAvatar } from '../utils';
+import {getAvatar} from '../utils';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export default class ChatMessageBox extends Component {
   constructor(props) {
@@ -36,16 +36,16 @@ export default class ChatMessageBox extends Component {
       this.isPortrait(this.props.message.message_body);
   }
 
-  _openMenu = () => this.setState({ longPressMenu: true });
+  _openMenu = () => this.setState({longPressMenu: true});
 
   _closeMenu = () => {
     if (this.state.longPressMenu) {
-      this.setState({ longPressMenu: false });
+      this.setState({longPressMenu: false});
     }
   };
 
   layoutChange = (event) => {
-    var { x, y, width, height } = event.nativeEvent.layout;
+    var {x, y, width, height} = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -81,14 +81,12 @@ export default class ChatMessageBox extends Component {
           paddingHorizontal: 20,
           paddingVertical: 10,
           marginBottom: 15,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: Fonts.light,
             fontSize: 14,
-          }}
-        >
+          }}>
           {this.props.translatedMessage}
         </Text>
         <View
@@ -96,23 +94,20 @@ export default class ChatMessageBox extends Component {
             flexDirection: 'row',
             alignItems: 'center',
             marginTop: 5,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontFamily: Fonts.extralight,
               fontSize: 12,
               color: Colors.gray_dark,
-            }}
-          >
+            }}>
             {translate('common.translatedMessage')}
           </Text>
           <TouchableOpacity
-            style={{ marginLeft: 10 }}
+            style={{marginLeft: 10}}
             onPress={() => {
               this.props.onMessageTranslateClose();
-            }}
-          >
+            }}>
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
         </View>
@@ -120,7 +115,7 @@ export default class ChatMessageBox extends Component {
     );
   };
   render() {
-    const { longPressMenu, selectedMessageId, isPortrait } = this.state;
+    const {longPressMenu, selectedMessageId, isPortrait} = this.state;
     const {
       message,
       isUser,
@@ -141,7 +136,7 @@ export default class ChatMessageBox extends Component {
       onAudioPlayPress,
       closeMenu,
       currentChannel,
-      onReplyPress
+      onReplyPress,
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -158,50 +153,54 @@ export default class ChatMessageBox extends Component {
           {
             justifyContent: 'flex-start',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             alignItems: 'flex-start',
             marginVertical: 5,
-          }}
-        >
-          <View style={{ flexDirection: 'row' }}>
+          }}>
+          <View style={{flexDirection: 'row'}}>
             {/* <RoundedImage
               source={getAvatar(message.from_user.avatar)}
               size={50}
               resizeMode={'cover'}
             /> */}
-            {(isChannel && (currentChannel.channel_picture==null || currentChannel.channel_picture==''))?
-            (
+            {isChannel &&
+            (currentChannel.channel_picture == null ||
+              currentChannel.channel_picture == '') ? (
               <LinearGradient
-                start={{ x: 0.1, y: 0.7 }}
-                end={{ x: 0.5, y: 0.2 }}
+                start={{x: 0.1, y: 0.7}}
+                end={{x: 0.5, y: 0.2}}
                 locations={[0.1, 0.6, 1]}
                 colors={[
                   Colors.gradient_1,
                   Colors.gradient_2,
                   Colors.gradient_3,
                 ]}
-                style={styles.squareImage}
-              >
+                style={styles.squareImage}>
                 <Text style={globalStyles.normalRegularText15}>
-                  {currentChannel.name && currentChannel.name.charAt(0).toUpperCase()}
+                  {currentChannel.name &&
+                    currentChannel.name.charAt(0).toUpperCase()}
                   {/* {secondUpperCase} */}
                 </Text>
               </LinearGradient>
-            ):
-            <Image
-              source={isChannel?getAvatar(currentChannel.channel_picture):getAvatar(message.from_user.avatar)}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                resizeMode: 'cover',
-                  marginTop: 15
-              }}
-            />}
-            <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
+            ) : (
+              <Image
+                source={
+                  isChannel
+                    ? getAvatar(currentChannel.channel_picture)
+                    : getAvatar(message.from_user.avatar)
+                }
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  resizeMode: 'cover',
+                  marginTop: 15,
+                }}
+              />
+            )}
+            <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
               <ChatMessageBubble
                 message={message}
                 isUser={isUser}
@@ -231,8 +230,7 @@ export default class ChatMessageBox extends Component {
                   marginVertical: 15,
                   alignSelf: 'flex-end',
                   paddingBottom: 5,
-                }}
-              >
+                }}>
                 {/*<Text style={styles.statusText}>{status}</Text>*/}
                 <Text style={styles.statusText}>{`${time.getHours()}:${
                   time.getMinutes() < 10
@@ -257,14 +255,12 @@ export default class ChatMessageBox extends Component {
               alignItems: 'flex-end',
               alignSelf: 'flex-end',
             },
-          ]}
-        >
+          ]}>
           <View
             style={{
               alignItems: 'flex-end',
-            }}
-          >
-            <View style={{ flexDirection: 'row' }}>
+            }}>
+            <View style={{flexDirection: 'row'}}>
               <View
                 style={{
                   marginHorizontal: '1.5%',
@@ -272,8 +268,7 @@ export default class ChatMessageBox extends Component {
                   marginVertical: 15,
                   alignSelf: 'flex-end',
                   paddingBottom: 5,
-                }}
-              >
+                }}>
                 {is_read && (
                   <Text style={styles.statusText}>
                     {translate('pages.xchat.read')}
@@ -326,12 +321,12 @@ const styles = StyleSheet.create({
     maxWidth: width * 0.65,
     paddingHorizontal: '3%',
   },
-    containerSelf: {
-        maxWidth: width * 0.75,
-        paddingHorizontal: '3%',
-    },
+  containerSelf: {
+    maxWidth: width * 0.75,
+    paddingHorizontal: '3%',
+  },
   statusText: {
-    color: Colors.gradient_1,
+    color: Colors.dark_pink,
     fontFamily: Fonts.light,
     fontSize: 9,
   },

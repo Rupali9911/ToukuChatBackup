@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
-import { Menu } from 'react-native-paper';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {Colors, Icons, Fonts} from '../../constants';
+import {globalStyles} from '../../styles';
+import {Menu} from 'react-native-paper';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
@@ -19,9 +19,9 @@ export default class SearchInput extends Component {
     };
   }
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => this.setState({visible: true});
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => this.setState({visible: false});
 
   componentDidMount() {
     if (this.props.onRef != null) {
@@ -76,7 +76,7 @@ export default class SearchInput extends Component {
           //   onPress={onIconRightClick}>
           //   <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
           <Menu
-            style={{ marginTop: 40 }}
+            style={{marginTop: 40}}
             contentStyle={{}}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
@@ -84,37 +84,35 @@ export default class SearchInput extends Component {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.iconRightContainer}
-                onPress={this._openMenu}
-              >
+                onPress={this._openMenu}>
                 <Image source={Icons.man_plus_icon} style={styles.iconRight} />
               </TouchableOpacity>
-            }
-          >
+            }>
             <Menu.Item
               icon={() => <Image source={Icons.icon_create_group_chat} />}
-              titleStyle={{ marginLeft: -25 }}
+              titleStyle={{marginLeft: -25}}
               onPress={() => {
                 navigation.navigate('CreateGroupChat');
                 this._closeMenu();
               }}
               title={translate('pages.xchat.createNewGroup')}
             />
-            {/*<Menu.Item*/}
-              {/*icon={() => <Image source={Icons.icon_create_new_channel} />}*/}
-              {/*onPress={() => {*/}
-                {/*navigation.navigate('CreateChannel');*/}
-                {/*this._closeMenu();*/}
-              {/*}}*/}
-              {/*titleStyle={{ marginLeft: -25 }}*/}
-              {/*title={translate('pages.xchat.createChannel')}*/}
-            {/*/>*/}
+            <Menu.Item
+              icon={() => <Image source={Icons.icon_create_new_channel} />}
+              onPress={() => {
+                navigation.navigate('CreateChannel');
+                this._closeMenu();
+              }}
+              titleStyle={{marginLeft: -25}}
+              title={translate('pages.xchat.createChannel')}
+            />
             <Menu.Item
               icon={() => <Image source={Icons.add_friend} />}
               onPress={() => {
                 navigation.navigate('AddFriendScreen');
                 this._closeMenu();
               }}
-              titleStyle={{ marginLeft: -25 }}
+              titleStyle={{marginLeft: -25}}
               title={translate('pages.xchat.addFriend')}
             />
           </Menu>
@@ -130,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingBottom: 10,
-    backgroundColor: Colors.home_header,
+    // backgroundColor: Colors.home_header,
   },
   searchContainer: {
     height: Platform.OS === 'ios' ? 'auto' : 45,
@@ -138,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: 50,
     paddingHorizontal: 10,
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     backgroundColor: Colors.white,

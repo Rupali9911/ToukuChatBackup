@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -8,9 +8,10 @@ import {
   Dimensions,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { Colors, Icons, Fonts } from '../../constants';
-import { isIphoneX } from '../../utils';
-const { height } = Dimensions.get('window');
+import {Colors, Icons, Fonts} from '../../constants';
+import {isIphoneX} from '../../utils';
+import LinearGradient from 'react-native-linear-gradient';
+const {height} = Dimensions.get('window');
 
 export default class ChatInput extends Component {
   constructor(props) {
@@ -36,14 +37,20 @@ export default class ChatInput extends Component {
       sendingImage,
     } = this.props;
     return (
-      <View style={chatInput.chatInputContainer}>
+      <LinearGradient
+        colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
+        // locations={[0.2, 1]}
+        useAngle={true}
+        // angle={270}
+        angleCenter={{x: 0, y: 1}}
+        style={chatInput.chatInputContainer}>
+        {/* <View style={chatInput.chatInputContainer}> */}
         <View style={chatInput.chatAttachmentContainer}>
           <TouchableOpacity
             style={chatInput.chatAttachmentButton}
             onPress={() => {
               onAttachmentPress();
-            }}
-          >
+            }}>
             {/* <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} /> */}
             <Image
               source={Icons.plus_icon_select}
@@ -55,8 +62,7 @@ export default class ChatInput extends Component {
             style={chatInput.chatAttachmentButton}
             onPress={() => {
               onCameraPress();
-            }}
-          >
+            }}>
             <Image
               source={Icons.icon_camera_grad}
               style={chatInput.attachmentImage}
@@ -67,8 +73,7 @@ export default class ChatInput extends Component {
             style={chatInput.chatAttachmentButton}
             onPress={() => {
               onGalleryPress();
-            }}
-          >
+            }}>
             <Image
               source={Icons.gallery_icon_select}
               style={chatInput.attachmentImage}
@@ -96,18 +101,18 @@ export default class ChatInput extends Component {
           activeOpacity={value != 0 || sendingImage.uri ? 0 : 1}
           onPress={() => {
             value != 0 || sendingImage.uri ? onSend() : null;
-          }}
-        >
+          }}>
           <Image
             source={Icons.icon_send_button}
             style={[
               chatInput.sandButtonImage,
-              (value != 0 || sendingImage.uri) && { tintColor: null },
+              (value != 0 || sendingImage.uri) && {tintColor: null},
             ]}
             resizeMode={'contain'}
           />
         </TouchableOpacity>
-      </View>
+        {/* </View> */}
+      </LinearGradient>
     );
   }
 }
@@ -117,7 +122,7 @@ const chatInput = StyleSheet.create({
     flex: 0.95,
     justifyContent: 'flex-end',
   },
-  messareAreaScroll: { flexGrow: 1 },
+  messareAreaScroll: {flexGrow: 1},
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -128,7 +133,7 @@ const chatInput = StyleSheet.create({
     width: '100%',
     minHeight: isIphoneX() ? 70 : 50,
     maxHeight: 200,
-    backgroundColor: '#FC94B8',
+    // backgroundColor: '#FC94B8',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
@@ -173,5 +178,5 @@ const chatInput = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sandButtonImage: { height: '50%', width: '70%', tintColor: Colors.gray },
+  sandButtonImage: {height: '50%', width: '70%', tintColor: Colors.gray},
 });

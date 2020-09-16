@@ -105,7 +105,7 @@ import {
   updateChannelLastMsgWithOutCount,
   getFriendChatConversationById,
   getGroupChatConversationById,
-    updateLastEventId
+  updateLastEventId,
 } from '../../storage/Service';
 
 class Chat extends Component {
@@ -191,7 +191,7 @@ class Chat extends Component {
     // );
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.SingleSocket && this.SingleSocket.closeSocket();
   }
 
@@ -236,9 +236,9 @@ class Chat extends Component {
       'checkEventTypes -> message.text.data.type',
       message.text.data.type,
     );
-      if (message.text.data.socket_event_id){
-        updateLastEventId(message.text.data.socket_event_id)
-      }
+    if (message.text.data.socket_event_id) {
+      updateLastEventId(message.text.data.socket_event_id);
+    }
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
         //this.setFriendsOnlineStatus(message);
@@ -443,9 +443,9 @@ class Chat extends Component {
 
           this.props.updateUnreadFriendMsgsCounts(unread_counts);
 
-          this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id,
-          );
+          // this.props.getMissedSocketEventsById(
+          //   message.text.data.socket_event_id,
+          // );
           // this.getUserFriends();
           this.props.setUserFriends().then((res) => {
             this.props.setCommonChatConversation();
@@ -471,9 +471,9 @@ class Chat extends Component {
             message.text.data.message_details.channel_id,
             message.text.data.message_details.read_count,
           );
-          this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id,
-          );
+          // this.props.getMissedSocketEventsById(
+          //   message.text.data.socket_event_id,
+          // );
           // this.getFollowingChannels();
           this.props.getLocalFollowingChannels().then((res) => {
             this.props.setCommonChatConversation();
@@ -506,9 +506,9 @@ class Chat extends Component {
 
           this.props.updateUnreadGroupMsgsCounts(unread_counts);
 
-          this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id,
-          );
+          // this.props.getMissedSocketEventsById(
+          //   message.text.data.socket_event_id,
+          // );
           this.props.getLocalUserGroups().then((res) => {
             this.props.setCommonChatConversation();
           });
@@ -1731,6 +1731,7 @@ class Chat extends Component {
                 isOnline={item.is_online}
                 onPress={() => this.onOpenFriendChats(item)}
                 unreadCount={item.unread_msg}
+                isTyping={item.is_typing}
               />
             )
           }
@@ -1749,26 +1750,29 @@ class Chat extends Component {
   render() {
     const {orientation} = this.state;
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
-        style={globalStyles.container}>
-        <View style={globalStyles.container}>
-          <HomeHeader
-            title={translate('pages.xchat.chat')}
-            isSortOptions
-            menuItems={this.state.sortOptions}
-          />
-          <SearchInput
+      // <ImageBackground
+      //   source={Images.image_home_bg}
+      //   style={globalStyles.container}>
+      <View style={globalStyles.container}>
+        <HomeHeader
+          title={translate('pages.xchat.chat')}
+          isSortOptions
+          menuItems={this.state.sortOptions}
+          onChangeText={this.onSearch.bind(this)}
+          navigation={this.props.navigation}
+          isSearchBar
+        />
+        {/* <SearchInput
             onChangeText={this.onSearch.bind(this)}
             navigation={this.props.navigation}
-          />
-          <View style={globalStyles.container}>
-            <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-              {this.renderCommonChat()}
-            </KeyboardAwareScrollView>
-          </View>
+          /> */}
+        <View style={globalStyles.container}>
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+            {this.renderCommonChat()}
+          </KeyboardAwareScrollView>
         </View>
-      </ImageBackground>
+      </View>
+      // </ImageBackground>
     );
   }
 }

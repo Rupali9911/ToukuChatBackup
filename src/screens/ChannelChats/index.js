@@ -1044,8 +1044,8 @@ class ChannelChats extends Component {
   render() {
     const {currentChannel} = this.props;
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
+      <View
+        // source={Images.image_home_bg}
         style={globalStyles.container}>
         <ChatHeader
           title={currentChannel.name}
@@ -1292,7 +1292,7 @@ class ChannelChats extends Component {
             </ImageBackground>
           </View>
         </Modal>
-      </ImageBackground>
+      </View>
     );
   }
 }
