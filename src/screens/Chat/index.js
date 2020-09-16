@@ -104,6 +104,7 @@ import {
   updateChannelLastMsgWithOutCount,
   getFriendChatConversationById,
   getGroupChatConversationById,
+    updateLastEventId
 } from '../../storage/Service';
 
 class Chat extends Component {
@@ -229,9 +230,12 @@ class Chat extends Component {
       'checkEventTypes -> message.text.data.type',
       message.text.data.type,
     );
+      if (message.text.data.socket_event_id){
+        updateLastEventId(message.text.data.socket_event_id)
+      }
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
-        this.setFriendsOnlineStatus(message);
+        //this.setFriendsOnlineStatus(message);
         break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
         this.setFriendsTypingStatus(message);

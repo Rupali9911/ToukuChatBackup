@@ -11,7 +11,8 @@ import {
   ChannelLastConversation,
   Groups,
   GroupsLastConversation,
-  FriendRequest
+  FriendRequest,
+    EventDetail
 } from './Schema';
 
 const DB_SCHEMAS = [
@@ -26,7 +27,8 @@ const DB_SCHEMAS = [
   ChannelLastConversation,
   Groups,
   GroupsLastConversation,
-  FriendRequest
+  FriendRequest,
+    EventDetail
 ];
 
 const DB_SCHEMA_VERSION = 1;
@@ -826,5 +828,37 @@ export const deleteFriendRequest = async (id) => {
   });
 }
 
+export const updateLastEventId = (item) => {
+    var obj = realm.objects('event').filtered(`id == 1`);
+   // console.log('obj', obj)
+    if (obj.length > 0) {
+        realm.write(() => {
+            realm.create(
+                'event',
+                {id: 1, socket_event_id: item},
+                'modified'
+            );
+        });
+    } else {
+        realm.write(() => {
+            realm.create(
+                'event',
+                {
+                  id: 1,
+                    socket_event_id: item
+                }
+            );
+        });
+    }
+}
 
+export const isEventIdExists = () => {
+    var obj = realm.objects('event').filtered(`id == 1`);
+      return obj.length > 0
+}
 
+export const getLastEventId = () => {
+    return realm
+        .objects('event')
+        .filtered(`id == 1`);
+}

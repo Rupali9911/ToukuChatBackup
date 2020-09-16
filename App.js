@@ -7,7 +7,7 @@ import {PersistGate} from 'redux-persist/es/integration/react';
 import {store, persistor} from './src/redux/store';
 import Root from './src/screens/Root';
 import InternetInfo from './src/components/InternetInfo';
-import {CLEAR_BADGE_COUNT, socket, userAgent} from './src/helpers/api';
+import {CLEAR_BADGE_COUNT, client, socket, userAgent} from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from "@react-native-community/async-storage";
 import {loginUrl, registerUrl, channelUrl, DEEPLINK, Environment} from './src/constants/index'
@@ -16,17 +16,14 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
 import {setCurrentChannel} from "./src/redux/reducers/channelReducer";
+import {
+    isEventIdExists,
+    getLastEventId
+} from './src/storage/Service';
 
-// function app() {
-//     console.log('UserEffect Called')
-//     useEffect(() => {
-//         const unsubscribe = messaging().onMessage(async remoteMessage => {
-//             Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-//         });
-//
-//         return unsubscribe;
-//     }, []);
-// }
+import {
+    getMissedSocketEventsById,
+} from './src/redux/reducers/userReducer';
 
 export default class App extends Component {
   constructor(props) {
@@ -80,29 +77,27 @@ export default class App extends Component {
             let fCount = store.getState().friendReducer.unreadFriendMsgsCounts
             let gCount = store.getState().groupReducer.unreadGroupMsgsCounts
             let cCount = store.getState().channelReducer.unreadChannelMsgsCounts
-            let totalCount = fCount + gCount + cCount
+            let frCount = store.getState().addFriendReducer.friendRequest.length
+            let totalCount = fCount + gCount + cCount + frCount
             console.log('_handleAppStateChange', totalCount)
             PushNotificationIOS.setApplicationIconBadgeNumber(totalCount)
         }
-        // if (this.state.appState.match(/background/) && nextAppState === 'active') {
-        //     console.log('From background to active')
-        //     setTimeout(() => {
-        //         this.clearBatchCount()
-        //     }, 2000)
-        // }
 
         if (this.state.appState.match(/background/) && nextAppState === 'active' || this.state.appState.match(/unknown/) && nextAppState === 'active') {
             console.log('From background to active or unknown to active')
             this.clearBatchCount()
+
+            if (this.state.appState.match(/background/) && nextAppState === 'active') {
+                console.log('From background to active')
+                if (isEventIdExists()) {
+                    let idObj = getLastEventId()
+                    console.log('getLastEventId', idObj)
+                    if (idObj.length > 0) {
+                        getMissedSocketEventsById(idObj[0].socket_event_id)
+                    }
+                }
+            }
         }
-        // else  if (nextAppState === 'inactive') {
-        //     this.clearBatchCount()
-        // }
-        // if (nextAppState === 'active') {
-        //     setTimeout(() => {
-        //         this.clearBatchCount()
-        //     }, 2000)
-        // }
         this.setState({appState: nextAppState})
     };
 
@@ -222,6 +217,7 @@ export default class App extends Component {
         // When a user tap on a push notification and the app is in background
         this.backgroundNotificationListener = messaging().onNotificationOpenedApp(async (remoteMessage) => {
             console.log('remoteMessage background', remoteMessage)
+            
         });
 
         // When a user tap on a push notification and the app is CLOSED
@@ -248,17 +244,6 @@ export default class App extends Component {
             this.notif.localNotif(notification?.notification?.title, notification?.notification?.body, 'default')
         }
     }
-
-    // onRegister(tokenObj) {
-    //     console.log('tokenObj from local notification library', tokenObj)
-    //     // this.setState({registerToken: token.token, fcmRegistered: true});
-    // }
-
-    // onNotif(notif) {
-    //     console.log('Notification from local notification library', notif)
-    //    // Alert.alert(notif.title, notif.message);
-    // }
-
 
   render() {
     return (

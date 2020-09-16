@@ -50,18 +50,8 @@ client.interceptors.request.use(
     var socialAuth = await AsyncStorage.getItem('socialToken');
     if (socialAuth && socialAuth != null) {
       config.headers.Authorization = `JWT ${socialAuth}`;
-      //console.log("Token", config.headers.Authorization);
-      // SingleSocket.create({
-      //   user_id: 9795,
-      //   token: socialAuth,
-      // });
     } else if (basicAuth && basicAuth != null) {
       config.headers.Authorization = `JWT ${basicAuth}`;
-      //console.log("Token", config.headers.Authorization);
-      // SingleSocket.create({
-      //   user_id: 9795,
-      //   token: basicAuth,
-      // });
     }
     config.headers.Origin = 'touku';
     return config;
