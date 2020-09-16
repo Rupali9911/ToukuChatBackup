@@ -91,7 +91,7 @@ export const globalStyles = StyleSheet.create({
   },
   //App Logo Text
   logoText: {
-    fontSize: Platform.isPad ? 117 : 100,
+    fontSize: Platform.isPad ? 142 : 125,
     fontFamily: Fonts.absolute,
     paddingVertical: 15,
     textAlign: 'center',

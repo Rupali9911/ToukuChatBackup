@@ -1073,7 +1073,7 @@ class Login extends Component {
                     {
                         Platform.OS === 'ios' &&
                         <View style={{alignSelf: 'center', width: '80%'}}>
-                            <Text style={[{marginTop: 10},selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
+                            <Text style={selectedLanguageItem.language_name === 'ja' ? [globalStyles.normalLightText,{marginTop:10}] : [globalStyles.smallLightText,{marginTop:10,fontSize:14}]}>
                                 {translate('common.or')}
                             </Text>
                             <TouchableOpacity onPress={() => this.appleLogin()}

@@ -12,6 +12,23 @@ export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+  }
+
+  checkTyping = (typing) => {
+    if(typing){
+      this.typingTimeout && clearTimeout(this.typingTimeout);
+      this.typingTimeout = setTimeout(()=>{
+        console.log('typing stop');
+        this.props.callTypingStop && this.props.callTypingStop(this.props.user_id);
+      },3000); 
+    }else{
+
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.checkTyping(nextProps.isTyping);
   }
 
   render() {
@@ -24,6 +41,7 @@ export default class FriendListItem extends Component {
       isOnline,
       isTyping,
       unreadCount,
+      callTypingStop
     } = this.props;
     return (
       <Fragment>

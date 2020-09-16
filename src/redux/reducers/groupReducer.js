@@ -380,6 +380,7 @@ export const getGroupConversation = (groupId) => (dispatch) =>
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
+        console.log('res',JSON.stringify(res));
         setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
         resolve(res);

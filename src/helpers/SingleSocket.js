@@ -32,20 +32,22 @@ export default class SingleSocket extends Component {
 
   connectSocket() {
     if (this.jwt !== '') {
-      this.webSocketBridge = new WebSocket(
-        `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
-      );
-      this.webSocketBridge.onopen = (e) => {
-        this.checkSocketConnected();
-      };
-      this.webSocketBridge.onmessage = (e) => {
-        this.onNewMessage(e);
-      };
-      this.webSocketBridge.onerror = (e) => {
-        setTimeout(() => {
+      if(!this.webSocketBridge){
+        this.webSocketBridge = new WebSocket(
+          `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
+        );
+        this.webSocketBridge.onopen = (e) => {
           this.checkSocketConnected();
-        }, 1000);
-      };
+        };
+        this.webSocketBridge.onmessage = (e) => {
+          this.onNewMessage(e);
+        };
+        this.webSocketBridge.onerror = (e) => {
+          setTimeout(() => {
+            this.checkSocketConnected();
+          }, 1000);
+        };
+      }
     }
   }
 
@@ -62,6 +64,7 @@ export default class SingleSocket extends Component {
       this.jwt = '';
       this.userId = 0;
       this.webSocketBridge.close();
+      console.log('Socket Connection closed');
     }, 1000);
   }
 

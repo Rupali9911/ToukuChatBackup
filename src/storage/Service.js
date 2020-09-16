@@ -466,7 +466,7 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
     array = [...array,c];
   }
 
-  if(array.length>0 && array[0].last_msg.id!=message.id){
+  if(array.length>0 && array[0].last_msg!==null && array[0].last_msg.id!=message.id){
     realm.write(() => {
       realm.create(
         'channels',
@@ -813,7 +813,13 @@ export const setFriendRequests = (requests) => {
   }
 }
 
-export const getLocalFriendRequests = (id) => {
+export const getLocalFriendRequests = () => {
+  return realm
+  .objects('friend_reuqest')
+  .sorted('created', { ascending: true });
+}
+
+export const getLocalFriendRequest = (id) => {
   return realm
   .objects('friend_reuqest')
   .sorted('created', { ascending: true })

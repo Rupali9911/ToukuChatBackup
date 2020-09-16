@@ -83,6 +83,7 @@ import {
   updateFriendTypingStatus,
   getGroups,
   setGroups,
+  setFriendRequests,
   deleteFriendRequest,
   setChannels,
   deleteGroupById,
@@ -189,6 +190,11 @@ class Chat extends Component {
     //   async () => this.updateData(),
     // );
   }
+
+  componentWillUnmount(){
+    this.SingleSocket && this.SingleSocket.closeSocket();
+  }
+
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
@@ -275,7 +281,7 @@ class Chat extends Component {
         this.readAllMessageFriendChat(message);
         break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
-        this.friendIsTyping(message);
+        // this.friendIsTyping(message);
         break;
       case SocketEvents.NEW_MESSAGE_IN_FREIND:
         this.onNewMessageInFriend(message);
@@ -910,7 +916,7 @@ class Chat extends Component {
     }
   }
 
-  onChannelMemberRemoveCount() {
+  onChannelMemberRemoveCount(message) {
     if (
       message.text.data.type ===
         SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&

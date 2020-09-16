@@ -608,9 +608,9 @@ class LoginSignUp extends Component {
                 width: Platform.isPad ? '60%' : '100%',
                 alignSelf: 'center',
               }}>
-              <Text style={globalStyles.logoText}>
-                {translate('header.logoTitle')}
-              </Text>
+                <Text style={globalStyles.logoText}>
+                  {translate('header.logoTitle')}
+                </Text>
               <View
                 style={{
                   flex: 1,
@@ -692,7 +692,7 @@ class LoginSignUp extends Component {
                         {
                             Platform.OS === 'ios' &&
                             <View style={{alignSelf: 'center', width: '80%'}}>
-                                <Text style={[{marginTop: 10},selectedLanguageItem.language_name === 'ja' ? globalStyles.normalLightText : globalStyles.smallLightText]}>
+                                <Text style={selectedLanguageItem.language_name === 'ja' ? [globalStyles.normalLightText,{marginTop:10}] : [globalStyles.smallLightText,{marginTop:10,fontSize:14}]}>
                                     {translate('common.or')}
                                 </Text>
                                 <TouchableOpacity onPress={() => this.appleLogin()}
@@ -721,7 +721,7 @@ export const SocialLogin = (props) => {
     <TouchableOpacity onPress={props.onPress} activeOpacity={0.6}>
       <Image
         source={props.IconSrc}
-        style={[globalStyles.iconStyle, {marginHorizontal: 10}]}
+        style={[globalStyles.iconStyle, {marginHorizontal: 10, width:35, height:35 }]}
       />
     </TouchableOpacity>
   );

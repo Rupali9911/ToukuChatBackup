@@ -111,7 +111,8 @@ import {
   deleteChannelById,
   updateChannelTotalMember,
   updateChannelLastMsgWithOutCount,
-  getLocalFriendRequests
+  getLocalFriendRequests,
+  updateFriendTypingStatus
 } from '../../storage/Service';
 
 class Home extends Component {
@@ -155,6 +156,11 @@ class Home extends Component {
   }
 
   async componentDidMount() {
+
+    Realm.open({}).then(realm => {
+      console.log("Realm is located at: " + realm.path);
+    }).catch(err => {console.log('Real Open error',err)});
+
     this.props.getUserProfile();
     // this.SingleSocket.create({ user_id: this.props.userData.id });
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -175,9 +181,7 @@ class Home extends Component {
     //   }
     // );
     // Get on-disk location of the default Realm
-    Realm.open({}).then(realm => {
-      console.log("Realm is located at: " + realm.path);
-    });
+    
   }
 
   _orientationDidChange = (orientation) => {
@@ -1100,6 +1104,7 @@ class Home extends Component {
           renderItem={({ item, index }) => (
             <FriendListItem
               key={index}
+              user_id={item.user_id}
               title={item.display_name}
               description={
                 item.last_msg
@@ -1114,6 +1119,14 @@ class Home extends Component {
               isTyping={item.is_typing}
               onPress={() => this.onOpenFriendChats(item)}
               unreadCount={item.unread_msg}
+              callTypingStop={(id)=>{
+                console.log('user_id',id);
+                updateFriendTypingStatus(
+                  id,
+                  false,
+                );
+                this.props.setUserFriends();
+              }}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
