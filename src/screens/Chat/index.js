@@ -231,7 +231,7 @@ class Chat extends Component {
   };
 
   checkEventTypes(message) {
-    console.log(JSON.stringify(message));
+    //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
       message.text.data.type,
@@ -241,7 +241,7 @@ class Chat extends Component {
     }
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
-        //this.setFriendsOnlineStatus(message);
+        this.setFriendsOnlineStatus(message);
         break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
         this.setFriendsTypingStatus(message);

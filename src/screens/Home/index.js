@@ -122,6 +122,7 @@ class Home extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       isChannelCollapsed: true,
+      isFriendReqCollapse: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
       searchText: '',
@@ -184,6 +185,14 @@ class Home extends Component {
     //   }
     // );
     // Get on-disk location of the default Realm
+
+      //
+      // console.log('expandCollapse on SignUp', this.props.navigation.state.params.expandCollapse)
+      // if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
+      //         this.setState({isFriendReqCollapse: true})
+      // } else if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
+      //     this.setState({isFriendsCollapsed: true})
+      // }
   }
 
   _orientationDidChange = (orientation) => {
@@ -1061,6 +1070,7 @@ class Home extends Component {
       isChannelCollapsed,
       isGroupCollapsed,
       isFriendsCollapsed,
+        isFriendReqCollapse
     } = this.state;
     if (!isChannelCollapsed) {
       this.setState({isChannelCollapsed: true});
@@ -1070,6 +1080,9 @@ class Home extends Component {
     }
     if (!isFriendsCollapsed) {
       this.setState({isFriendsCollapsed: true});
+    }
+    if (!isFriendReqCollapse) {
+      this.setState({isFriendReqCollapse: true});
     }
     this.setState({searchText: text});
   };
@@ -1353,6 +1366,7 @@ class Home extends Component {
       isChannelCollapsed,
       isGroupCollapsed,
       isFriendsCollapsed,
+        isFriendReqCollapse,
       searchText,
       channelHeaderCounts,
       groupHeaderCounts,
@@ -1425,14 +1439,14 @@ class Home extends Component {
               <Collapse
                 onToggle={(isColl) =>
                   this.setState({
-                    isChannelCollapsed: isColl,
+                      isFriendReqCollapse: isColl,
                   })
                 }
-                isCollapsed={isChannelCollapsed}>
+                isCollapsed={isFriendReqCollapse}>
                 <CollapseHeader>
                   <DropdownHeader
                     title={translate('pages.xchat.friendRequest')}
-                    isCollapsed={isChannelCollapsed}
+                    isCollapsed={isFriendReqCollapse}
                     listcounts={filteredFriendRequest.length}
                     badgeCount={friendRequest.length}
                     selectedLanguageItem={selectedLanguageItem}

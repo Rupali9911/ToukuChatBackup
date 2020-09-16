@@ -267,6 +267,16 @@ export const SocketEvents = {
   UNPINED_CHANNEL: 'unpined channel',
 };
 
+export const NotificationType = {
+    NEW_FRIEND_REQUEST: 'NEW_FRIEND_REQUEST',
+    FRIEND_REQUEST_ACCEPTED: 'FRIEND_REQUEST_ACCEPTED',
+    SEND_FRIEND_REQUEST: 'SEND_FRIEND_REQUEST',
+    MESSAGE_IN_FRIEND: 'MESSAGE_IN_FRIEND',
+    MESSAGE_IN_CHANNEL: 'MESSAGE_IN_CHANNEL',
+    MESSAGE_IN_GROUP: 'MESSAGE_IN_GROUP',
+    MESSAGE_IN_THREAD: 'MESSAGE_IN_THREAD',
+}
+
 export const closeBoxImage = [
   {
     key: 1,

@@ -868,3 +868,9 @@ export const getLastEventId = () => {
         .objects('event')
         .filtered(`id == 1`);
 }
+
+export const getUserFriendByFriendId = (id) => {
+    return realm
+        .objects('user_friends')
+        .filtered(`friend == ${id}`);
+}

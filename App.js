@@ -10,15 +10,19 @@ import InternetInfo from './src/components/InternetInfo';
 import {CLEAR_BADGE_COUNT, client, socket, userAgent} from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from "@react-native-community/async-storage";
-import {loginUrl, registerUrl, channelUrl, DEEPLINK, Environment} from './src/constants/index'
-
+import {loginUrl, registerUrl, channelUrl, DEEPLINK, Environment, NotificationType} from './src/constants/index'
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
 import {setCurrentChannel} from "./src/redux/reducers/channelReducer";
+import {setCurrentFriend} from "./src/redux/reducers/friendReducer";
+import {setCurrentGroup} from "./src/redux/reducers/groupReducer";
 import {
     isEventIdExists,
-    getLastEventId
+    getLastEventId,
+    getUserFriendByFriendId,
+    getChannelsById,
+    getGroupsById
 } from './src/storage/Service';
 
 import {
@@ -41,7 +45,6 @@ export default class App extends Component {
       this.addListener()
       this.checkNotificationPermission();
       this.getInitialLinking()
-
   }
     componentWillUnmount () {
         this.removeListeners()
@@ -93,7 +96,7 @@ export default class App extends Component {
                     let idObj = getLastEventId()
                     console.log('getLastEventId', idObj)
                     if (idObj.length > 0) {
-                        getMissedSocketEventsById(idObj[0].socket_event_id)
+                        //getMissedSocketEventsById(idObj[0].socket_event_id)
                     }
                 }
             }
@@ -217,7 +220,43 @@ export default class App extends Component {
         // When a user tap on a push notification and the app is in background
         this.backgroundNotificationListener = messaging().onNotificationOpenedApp(async (remoteMessage) => {
             console.log('remoteMessage background', remoteMessage)
-            
+                if (remoteMessage.data) {
+                    let notificationData = remoteMessage.data
+                    if (notificationData.notification_type) {
+                        console.log('notificationData and type', notificationData, notificationData.notification_type)
+                        if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED ||
+                            notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST ||
+                            notificationData.notification_type === NotificationType.NEW_FRIEND_REQUEST){
+                            // if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED){
+                            //     NavigationService.navigate('Home', { expandCollapse: 'friends' });
+                            // }else if (notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST){
+                            //     NavigationService.navigate('Home', { expandCollapse: 'friendReq' });
+                            // }
+                            NavigationService.navigate('Home');
+                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_FRIEND ){
+                          //  NavigationService.navigate('Chat');
+                            let friendObj = getUserFriendByFriendId(notificationData.id)
+                            if (friendObj.length > 0) {
+                                store.dispatch(setCurrentFriend(friendObj[0]))
+                                NavigationService.navigate('FriendChats');
+                            }
+                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_CHANNEL ){
+                            let channelObj = getChannelsById(notificationData.id)
+                            if (channelObj.length > 0) {
+                                store.dispatch(setCurrentChannel(channelObj[0]))
+                                NavigationService.navigate('ChannelChats');
+                            }
+                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_GROUP ){
+                            let groupObj = getGroupsById(notificationData.id)
+                            if (groupObj.length > 0) {
+                                store.dispatch(setCurrentGroup(groupObj[0]))
+                                NavigationService.navigate('GroupChats');
+                            }
+                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_THREAD ){
+                            NavigationService.navigate('Chat');
+                        }
+                    }
+                }
         });
 
         // When a user tap on a push notification and the app is CLOSED

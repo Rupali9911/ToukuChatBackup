@@ -276,3 +276,5 @@ export const EventDetail = {
         socket_event_id: { type: 'int', default: 0 },
     },
 };
+
+
