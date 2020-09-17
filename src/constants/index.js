@@ -175,7 +175,7 @@ export const languageArray = [
 ];
 
 export const supportUrl = 'https://www.touku.net/#/support/';
-export const termsUrl = 'https://www.touku.net/#/terms/';
+export const termsUrl = 'https://touku.net/#/terms?lang=';
 export const registerUrl = 'https://www.touku.net/#/register/';
 export const loginUrl = 'https://www.touku.net/#/login/';
 export const channelUrl = 'https://www.touku.net/#/channels/';

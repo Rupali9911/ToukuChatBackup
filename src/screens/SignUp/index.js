@@ -476,7 +476,8 @@ class SignUp extends Component {
   }
 
     onTermsAndCondition() {
-        Linking.openURL(termsUrl);
+      console.log('Terms URL', termsUrl + this.props.selectedLanguageItem.language_name)
+        Linking.openURL(termsUrl + this.props.selectedLanguageItem.language_name);
     }
 
   onChangePhoneNumber(phone, code) {

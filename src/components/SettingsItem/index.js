@@ -7,7 +7,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {Menu} from "react-native-paper";
 import {setAppLanguage, setI18nConfig, translate, userLanguage} from "../../redux/reducers/languageReducer";
-import {setChannelMode, updateChannelMode} from "../../redux/reducers/configurationReducer";
+import {setChannelMode, updateChannelMode, updateConfiguration} from "../../redux/reducers/configurationReducer";
 import {connect} from 'react-redux';
 import {showToast} from '../../utils'
 import SwitchCustom from '../SwitchCustom'
@@ -50,6 +50,10 @@ class SettingsItem extends Component {
       if (filteredArray.length > 0) {
           this.props.setAppLanguage(filteredArray[0]);
           setI18nConfig(filteredArray[0].language_name);
+          let data = {
+              language: filteredArray[0].language_name
+          }
+          this.props.updateConfiguration(data)
       }
   }
 
@@ -281,7 +285,8 @@ const mapDispatchToProps = {
     setAppLanguage,
     userLanguage,
     updateChannelMode,
-    setChannelMode
+    setChannelMode,
+    updateConfiguration
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsItem);

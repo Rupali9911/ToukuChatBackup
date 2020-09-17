@@ -277,6 +277,7 @@ export const translateMessage = (data) => (dispatch) =>
 export const setAppLanguage = (data) => (dispatch) =>
   dispatch(setSelectedLanguage(data));
 
+
 const setSelectedLanguage = (data) => ({
   type: SET_LANGUAGE_SELECTED,
   payload: {

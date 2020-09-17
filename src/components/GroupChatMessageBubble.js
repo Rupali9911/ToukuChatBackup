@@ -25,6 +25,7 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 let borderRadius = 20;
+import HyperLink from 'react-native-hyperlink';
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {

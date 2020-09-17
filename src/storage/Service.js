@@ -281,7 +281,7 @@ export const setGroupChatConversation = (conversation) => {
           is_unsent: item.is_unsent,
           timestamp: item.timestamp,
           reply_to: item.reply_to,
-          mentions: item.mentions,
+          mentions: item.mentions?((item.mentions instanceof Object)?[]:item.mentions):[],
           read_count: item.read_count?item.read_count:0,
           created: item.created,
         });
@@ -534,7 +534,7 @@ export const setGroups = async (channels) => {
           sender_id: item.sender_id?item.sender_id:null,
           sender_username: item.sender_username,
           sender_display_name: item.sender_display_name,
-          mentions: (item.mentions instanceof Object)?[]:item.mentions,
+          mentions: item.mentions?((item.mentions instanceof Object)?[]:item.mentions):[],
           reply_to: item.reply_to
         },'modified');
       });
@@ -557,7 +557,7 @@ export const setGroups = async (channels) => {
           sender_id: item.sender_id?item.sender_id:null,
           sender_username: item.sender_username,
           sender_display_name: item.sender_display_name,
-          mentions: (item.mentions instanceof Object)?[]:item.mentions,
+          mentions: item.mentions?((item.mentions instanceof Object)?[]:item.mentions):[],
           reply_to: item.reply_to
         });
       });

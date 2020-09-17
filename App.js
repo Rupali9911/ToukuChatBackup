@@ -96,7 +96,7 @@ export default class App extends Component {
                     let idObj = getLastEventId()
                     console.log('getLastEventId', idObj)
                     if (idObj.length > 0) {
-                        //getMissedSocketEventsById(idObj[0].socket_event_id)
+                        getMissedSocketEventsById(idObj[0].socket_event_id)
                     }
                 }
             }

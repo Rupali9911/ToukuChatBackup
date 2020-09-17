@@ -53,14 +53,16 @@ class FriendWithStatus extends Component {
                         ]}
                     >{user.username}</Text>
                 </View>
+                <View style={{width: user.is_requested === true ? 120 : 100}}>
              <Button
                 title={user.is_requested === true ? translate('pages.xchat.cancelRequest'): user.is_friend === true
                 ? translate('pages.xchat.friend') : translate('pages.xchat.add')}
                 type={user.is_requested === true ? 'translucent' : 'primary'}
-                height={25}
+                height={30}
                 onPress={this.onButtonAction.bind(this)}
                 fontType={'smallRegularText'}
              />
+                </View>
             </View>
         );
     }

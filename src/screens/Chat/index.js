@@ -6,7 +6,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {createFilter} from 'react-native-search-filter';
 import {withNavigationFocus} from 'react-navigation';
 
-import {Images, SocketEvents} from '../../constants';
+import {Images, languageArray, SocketEvents} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
 import {getAvatar, eventService} from '../../utils';
 import {
@@ -19,7 +19,7 @@ import {ListLoader} from '../../components/Loaders';
 
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {setI18nConfig, translate, setAppLanguage} from '../../redux/reducers/languageReducer';
 
 import {
   getUserProfile,
@@ -159,7 +159,17 @@ class Chat extends Component {
     // this.getUserGroups();
     // this.getUserFriends();
     // this.setCommonConversation();
-    this.props.getUserConfiguration();
+    this.props.getUserConfiguration().then((res) => {
+      console.log('getUserConfiguration', res.language)
+        setI18nConfig(res.language);
+
+        let filteredArray = languageArray.filter(item => item.language_name === res.language)
+        console.log('filteredArray', filteredArray)
+        if (filteredArray.length > 0) {
+            this.props.setAppLanguage(filteredArray[0]);
+            setI18nConfig(filteredArray[0].language_name);
+        }
+    });
     this.props.getFriendRequest();
 
     this.props.getFollowingChannels().then((res) => {
@@ -241,10 +251,10 @@ class Chat extends Component {
     }
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
-        this.setFriendsOnlineStatus(message);
+        //this.setFriendsOnlineStatus(message);
         break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
-        this.setFriendsTypingStatus(message);
+       // this.setFriendsTypingStatus(message);
         break;
       case SocketEvents.CHECK_IS_USER_ONLINE:
         // this.checkIsUserOnline(message);
@@ -1239,7 +1249,7 @@ class Chat extends Component {
             sender_id: null,
             sender_username: null,
             sender_display_name: null,
-            mentions: null,
+            mentions: [],
             reply_to: null,
           };
           setGroups([group]);
@@ -1825,6 +1835,7 @@ const mapDispatchToProps = {
   setCurrentGroupDetail,
   getGroupDetail,
   setChannelConversation,
+    setAppLanguage
 };
 
 export default connect(

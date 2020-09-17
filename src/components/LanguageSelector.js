@@ -15,6 +15,10 @@ import {
   setAppLanguage,
   userLanguage,
 } from '../redux/reducers/languageReducer';
+import {
+    updateConfiguration,
+} from '../redux/reducers/configurationReducer';
+
 
 class LanguageSelector extends Component {
   constructor(props) {
@@ -57,6 +61,13 @@ class LanguageSelector extends Component {
   onLanguageSelectPress = (item) => {
     this.props.setAppLanguage(item);
     setI18nConfig(item.language_name);
+      // if (this.state.isChecked){
+      //     let data = {
+      //         language: item.language_name
+      //     }
+      //     console.log('Data', data)
+      //     this.props.updateConfiguration(data)
+      // }
     this.setState((prevState) => {
       return {
         isChecked: !prevState.isChecked,
@@ -170,6 +181,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   setAppLanguage,
   userLanguage,
+    updateConfiguration
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LanguageSelector);
