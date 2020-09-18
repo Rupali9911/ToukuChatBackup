@@ -12,22 +12,21 @@ export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-
   }
 
   checkTyping = (typing) => {
-    if(typing){
+    if (typing) {
       this.typingTimeout && clearTimeout(this.typingTimeout);
-      this.typingTimeout = setTimeout(()=>{
+      this.typingTimeout = setTimeout(() => {
         console.log('typing stop');
-        this.props.callTypingStop && this.props.callTypingStop(this.props.user_id);
-      },3000); 
-    }else{
-
+        this.props.callTypingStop &&
+          this.props.callTypingStop(this.props.user_id);
+      }, 3000);
+    } else {
     }
-  }
+  };
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.checkTyping(nextProps.isTyping);
   }
 
@@ -41,7 +40,7 @@ export default class FriendListItem extends Component {
       isOnline,
       isTyping,
       unreadCount,
-      callTypingStop
+      callTypingStop,
     } = this.props;
     return (
       <Fragment>
@@ -61,16 +60,16 @@ export default class FriendListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallRegularText,
-                    {color: Colors.black},
+                    globalStyles.smallNunitoRegularText,
+                    {color: Colors.black_light},
                   ]}>
                   {title}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallLightText,
-                    {color: Colors.gray_dark, textAlign: 'left'},
+                    globalStyles.smallNunitoLightText,
+                    {color: Colors.message_gray, textAlign: 'left'},
                   ]}>
                   {isTyping ? 'Typing...' : description}
                   {/* {description} */}

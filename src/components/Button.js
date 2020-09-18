@@ -11,7 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import {Colors, Fonts} from '../constants';
 import {globalStyles} from '../styles';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 class Button extends Component {
   constructor(props) {
@@ -23,6 +23,12 @@ class Button extends Component {
     switch (this.props.type) {
       case 'primary':
         return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
+      case 'primaryNew':
+        return [
+          Colors.header_gradient_3,
+          Colors.header_gradient_2,
+          Colors.header_gradient_1,
+        ];
       case 'secondary':
         return [Colors.gray, Colors.gray, Colors.gray];
       case 'transparent':
@@ -37,6 +43,8 @@ class Button extends Component {
   getBorderColor() {
     switch (this.props.type) {
       case 'primary':
+        return 'transparent';
+      case 'primaryNew':
         return 'transparent';
       case 'secondary':
         return 'transparent';
@@ -53,6 +61,8 @@ class Button extends Component {
     switch (this.props.type) {
       case 'primary':
         return Colors.white;
+      case 'primaryNew':
+        return Colors.white;
       case 'transparent':
         return Colors.primary;
       case 'translucent':
@@ -66,6 +76,8 @@ class Button extends Component {
     switch (this.props.type) {
       case 'primary':
         return Colors.white;
+      case 'primaryNew':
+        return Colors.white;
       case 'secondary':
         return Colors.black;
       case 'transparent':
@@ -77,30 +89,36 @@ class Button extends Component {
     }
   }
 
-    getFont() {
-        switch (this.props.fontType) {
-            case 'normalRegularText':
-                return globalStyles.normalRegularText;
-            case 'smallRegularText':
-                return globalStyles.smallLightText;
-                case 'bigSemiBoldText':
-                return globalStyles.bigSemiBoldText;
-            default:
-                return globalStyles.normalRegularText;
-        }
+  getFont() {
+    switch (this.props.fontType) {
+      case 'normalRegularText':
+        return globalStyles.normalRegularText;
+      case 'smallRegularText':
+        return globalStyles.smallLightText;
+      case 'bigSemiBoldText':
+        return globalStyles.bigSemiBoldText;
+      default:
+        return globalStyles.normalRegularText;
     }
+  }
 
   render() {
-    const {title, onPress, loading, isRounded, height, disabled, fontType} = this.props;
+    const {
+      title,
+      onPress,
+      loading,
+      isRounded,
+      height,
+      disabled,
+      fontType,
+      type,
+    } = this.props;
     return (
-      <TouchableOpacity
-        disabled={disabled}
-        activeOpacity={1}
-        onPress={onPress}>
+      <TouchableOpacity disabled={disabled} activeOpacity={1} onPress={onPress}>
         <LinearGradient
-          start={{x: 0.1, y: 0.7}}
-          end={{x: 0.5, y: 0.8}}
-          locations={[0.1, 0.6, 1]}
+          start={type === 'primaryNew' ? {x: 0.2, y: 0.7} : {x: 0.1, y: 0.7}}
+          end={type === 'primaryNew' ? {x: 0.95, y: 0.8} : {x: 0.5, y: 0.8}}
+          locations={type === 'primaryNew' ? [0.1, 0.9, 1] : [0.1, 0.6, 1]}
           colors={this.getGradientColors()}
           style={[
             styles.linearGradient,
@@ -122,7 +140,15 @@ class Button extends Component {
             <Text
               style={[
                 this.getFont(),
-                {color: this.getTitleColor(), padding: this.props.selectedLanguageItem.language_name === 'ja' ? height > 30 ? 10 : 5 : 0},
+                {
+                  color: this.getTitleColor(),
+                  padding:
+                    this.props.selectedLanguageItem.language_name === 'ja'
+                      ? height > 30
+                        ? 10
+                        : 5
+                      : 0,
+                },
               ]}>
               {title}
             </Text>
@@ -160,7 +186,7 @@ Button.propTypes = {
    * Callbacks
    */
   onPress: PropTypes.func,
-    fontType: PropTypes.oneOf(['normalRegularText', 'smallRegularText']),
+  fontType: PropTypes.oneOf(['normalRegularText', 'smallRegularText']),
 };
 
 Button.defaultProps = {
@@ -171,17 +197,15 @@ Button.defaultProps = {
   loading: false,
   isRounded: true,
   onPress: null,
-    fontType: 'normalRegularText'
+  fontType: 'normalRegularText',
 };
 
 const mapStateToProps = (state) => {
-    return {
-        selectedLanguageItem: state.languageReducer.selectedLanguageItem,
-    };
+  return {
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+  };
 };
 
-const mapDispatchToProps = {
-
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Button);

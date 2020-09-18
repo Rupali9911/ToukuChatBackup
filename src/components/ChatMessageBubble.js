@@ -322,13 +322,22 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink linkStyle={{color: Colors.link_color}}>
                             <Text
-                              style={{fontSize: 15, fontFamily: Fonts.light}}>
+                              style={{
+                                fontSize: 15,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '300',
+                              }}>
                               {message.message_body}
                             </Text>
                           </HyperLink>
                         </TouchableOpacity>
                       ) : (
-                        <Text style={{fontSize: 15, fontFamily: Fonts.light}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            fontFamily: Fonts.regular,
+                            fontWeight: '300',
+                          }}>
                           {message.message_body}
                         </Text>
                       )}
@@ -438,6 +447,7 @@ class ChatMessageBubble extends Component {
                               color: Colors.black,
                               fontSize: 15,
                               fontWeight: '500',
+                              fontFamily: Fonts.light,
                             }}>
                             {message.message_body
                               .split('/')
@@ -473,13 +483,25 @@ class ChatMessageBubble extends Component {
                             onMessagePress(message.id);
                           }}>
                           <HyperLink linkStyle={{color: Colors.link_color}}>
-                            <Text style={{color: Colors.black, fontSize: 15}}>
+                            <Text
+                              style={{
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '300',
+                              }}>
                               {message.message_body}
                             </Text>
                           </HyperLink>
                         </TouchableOpacity>
                       ) : (
-                        <Text style={{color: Colors.black, fontSize: 15}}>
+                        <Text
+                          style={{
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontFamily: Fonts.regular,
+                            fontWeight: '300',
+                          }}>
                           {message.message_body}
                         </Text>
                       )}

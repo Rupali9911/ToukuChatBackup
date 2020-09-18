@@ -506,6 +506,7 @@ class GroupChatMessageBubble extends Component {
                               color: Colors.black,
                               fontSize: 15,
                               fontWeight: '500',
+                              fontFamily: Fonts.light,
                             }}>
                             {message.message_body.text
                               .split('/')
@@ -543,13 +544,25 @@ class GroupChatMessageBubble extends Component {
                             onMessagePress(message.msg_id);
                           }}>
                           <HyperLink linkStyle={{color: Colors.link_color}}>
-                            <Text style={{color: Colors.black, fontSize: 15}}>
+                            <Text
+                              style={{
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '300',
+                              }}>
                               {message.message_body.text}
                             </Text>
                           </HyperLink>
                         </TouchableOpacity>
                       ) : (
-                        <Text style={{color: Colors.black, fontSize: 15}}>
+                        <Text
+                          style={{
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontFamily: Fonts.regular,
+                            fontWeight: '300',
+                          }}>
                           {message.message_body.text}
                         </Text>
                       )}
