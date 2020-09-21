@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
@@ -11,27 +11,27 @@ import {
   Dimensions,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { createFilter } from 'react-native-search-filter';
+import {connect} from 'react-redux';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {createFilter} from 'react-native-search-filter';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
-import { red } from 'color-name';
+import {red} from 'color-name';
 
-import { groupDetailStyles } from './styles';
-import { globalStyles } from '../../styles';
-import { getImage, eventService } from '../../utils';
+import {groupDetailStyles} from './styles';
+import {globalStyles} from '../../styles';
+import {getImage, eventService} from '../../utils';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import { Images, Icons, Colors, Fonts, SocketEvents } from '../../constants';
+import {Images, Icons, Colors, Fonts, SocketEvents} from '../../constants';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import Button from '../../components/Button';
 import GroupFriend from '../../components/GroupFriend';
 import NoData from '../../components/NoData';
-import { ListLoader, ImageLoader } from '../../components/Loaders';
+import {ListLoader, ImageLoader} from '../../components/Loaders';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
 
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { getUserFriends } from '../../redux/reducers/friendReducer';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {getUserFriends} from '../../redux/reducers/friendReducer';
 import {
   editGroup,
   deleteGroup,
@@ -44,11 +44,11 @@ import {
   getGroupMembers,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import { ConfirmationModal } from '../../components/Modals';
+import {ConfirmationModal} from '../../components/Modals';
 import S3uploadService from '../../helpers/S3uploadService';
-import { ActivityIndicator } from 'react-native-paper';
+import {ActivityIndicator} from 'react-native-paper';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 class GroupDetails extends Component {
   constructor(props) {
@@ -65,7 +65,7 @@ class GroupDetails extends Component {
       isEdit: false,
       showDeleteGroupConfirmationModal: false,
       showLeaveGroupConfirmationModal: false,
-      filePath: { uri: this.props.currentGroupDetail.group_picture }, //For Image Picker
+      filePath: {uri: this.props.currentGroupDetail.group_picture}, //For Image Picker
       memberOption: [
         {
           title: translate('pages.xchat.admin'),
@@ -121,18 +121,21 @@ class GroupDetails extends Component {
       if (admin.id === this.props.userData.id) {
         this.props.getUserFriends();
         this.props;
-        this.setState({ isMyGroup: true });
+        this.setState({isMyGroup: true});
       }
     }
 
-    if (this.props.navigation.state.params && this.props.navigation.state.params.isInvite) {
-        this.setState({ isManage: true });
+    if (
+      this.props.navigation.state.params &&
+      this.props.navigation.state.params.isInvite
+    ) {
+      this.setState({isManage: true});
     }
   }
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
@@ -140,11 +143,11 @@ class GroupDetails extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   checkEventTypes(message) {
-    const { currentGroupDetail } = this.props;
+    const {currentGroupDetail} = this.props;
     switch (message.text.data.type) {
       case SocketEvents.ADD_GROUP_MEMBER: {
         this.getGroupMembers(message.text.data.message_details.group_id);
@@ -162,7 +165,7 @@ class GroupDetails extends Component {
   }
 
   setAdmin = (id, type) => {
-    const { currentGroupDetail } = this.props;
+    const {currentGroupDetail} = this.props;
     let addAdminData;
     if (type === 'add') {
       addAdminData = {
@@ -182,7 +185,7 @@ class GroupDetails extends Component {
   };
 
   setMember = (id, type) => {
-    const { currentGroupDetail } = this.props;
+    const {currentGroupDetail} = this.props;
     let addMemberData = {
       group_id: currentGroupDetail.id,
       members: [id],
@@ -193,7 +196,7 @@ class GroupDetails extends Component {
   };
 
   removeMember = (id, type) => {
-    const { currentGroupDetail } = this.props;
+    const {currentGroupDetail} = this.props;
     let removeData;
     if (type === 'admin') {
       removeData = {
@@ -272,7 +275,7 @@ class GroupDetails extends Component {
       });
   };
 
-  onUpdateGroup = (group_picture,group_picture_thumb) => {
+  onUpdateGroup = (group_picture, group_picture_thumb) => {
     let editData = {
       group_id: 310,
       name: this.state.groupName,
@@ -284,9 +287,9 @@ class GroupDetails extends Component {
       greeting_text: '',
     };
 
-    console.log('editData',group_picture_thumb);
+    console.log('editData', group_picture_thumb);
 
-    if(group_picture_thumb){
+    if (group_picture_thumb) {
       editData['group_picture'] = group_picture;
       editData['group_picture_thumb'] = group_picture_thumb;
     }
@@ -299,23 +302,23 @@ class GroupDetails extends Component {
           text: translate('pages.xchat.toastr.groupUpdatedSuccessfully'),
           type: 'positive',
         });
-        this.setState({ isEdit: false });
+        this.setState({isEdit: false});
       });
   };
 
   chooseFile = () => {
     var options = {
-        title: translate('pages.xchat.chooseOption'),
-        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
-        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
-        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
-        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
+      title: translate('pages.xchat.chooseOption'),
+      takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+      chooseFromLibraryButtonTitle: translate('pages.xchat.chooseFromLibrary'),
+      // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+      cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, async(response) => {
+    ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
@@ -339,12 +342,11 @@ class GroupDetails extends Component {
           background_image: uploadedImages.image[0].thumbnail,
         };
 
-        image = uploadedImages.image[0].image
-        thumbnail = uploadedImages.image[0].thumbnail
+        image = uploadedImages.image[0].image;
+        thumbnail = uploadedImages.image[0].thumbnail;
 
-        this.onUpdateGroup(image,thumbnail);
+        this.onUpdateGroup(image, thumbnail);
         this.setState({filePath: source});
-
       }
     });
   };
@@ -391,10 +393,10 @@ class GroupDetails extends Component {
   };
 
   renderUserFriends() {
-    const { userFriends, friendLoading, currentGroupMembers } = this.props;
-    const { memberOption, adminOption, addOption } = this.state;
+    const {userFriends, friendLoading, currentGroupMembers} = this.props;
+    const {memberOption, adminOption, addOption} = this.state;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['display_name'])
+      createFilter(this.state.searchText, ['display_name']),
     );
 
     if (
@@ -406,9 +408,9 @@ class GroupDetails extends Component {
     } else if (filteredFriends.length > 0) {
       return (
         <FlatList
-            keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => index.toString()}
           data={filteredFriends}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <GroupFriend
               user={item}
               onAddPress={(isAdded) => this.onAddFriend(isAdded, item)}
@@ -444,7 +446,7 @@ class GroupDetails extends Component {
   }
 
   isMemberCheck = (userId) => {
-    const { currentGroupMembers } = this.props;
+    const {currentGroupMembers} = this.props;
     let memeber = currentGroupMembers.find((member) => {
       return member.id === userId;
     });
@@ -466,8 +468,7 @@ class GroupDetails extends Component {
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -477,16 +478,15 @@ class GroupDetails extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={groupDetailStyles.mainContainer}
             showsVerticalScrollIndicator={false}
-            extraScrollHeight={100}
-          >
+            extraScrollHeight={100}>
             <View style={groupDetailStyles.imageContainer}>
               <View style={groupDetailStyles.imageView}>
                 {filePath.uri === null ||
                 filePath.uri === '' ||
                 typeof filePath.uri === undefined ? (
                   <LinearGradient
-                    start={{ x: 0.1, y: 0.7 }}
-                    end={{ x: 0.5, y: 0.2 }}
+                    start={{x: 0.1, y: 0.7}}
+                    end={{x: 0.5, y: 0.2}}
                     locations={[0.1, 0.6, 1]}
                     colors={[
                       Colors.gradient_1,
@@ -499,8 +499,7 @@ class GroupDetails extends Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                       },
-                    ]}
-                  >
+                    ]}>
                     <Text style={globalStyles.bigSemiBoldText}>
                       {groupName.charAt(0).toUpperCase()}
                       {/* {secondUpperCase} */}
@@ -536,17 +535,15 @@ class GroupDetails extends Component {
                     },
                   ]}
                   onPress={() => {
-                    this.setState({ isManage: false });
-                  }}
-                >
+                    this.setState({isManage: false});
+                  }}>
                   <Text
                     style={[
                       groupDetailStyles.tabTitle,
                       {
                         fontFamily: Fonts.regular,
                       },
-                    ]}
-                  >
+                    ]}>
                     {translate(`pages.xchat.about`)}
                   </Text>
                 </TouchableOpacity>
@@ -559,23 +556,21 @@ class GroupDetails extends Component {
                     },
                   ]}
                   onPress={() => {
-                    this.setState({ isManage: true });
-                  }}
-                >
+                    this.setState({isManage: true});
+                  }}>
                   <Text
                     style={[
                       groupDetailStyles.tabTitle,
                       {
                         fontFamily: Fonts.regular,
                       },
-                    ]}
-                  >
+                    ]}>
                     {translate(`pages.xchat.manage`)}
                   </Text>
                 </TouchableOpacity>
               </View>
             ) : (
-              <View style={{ height: 20 }} />
+              <View style={{height: 20}} />
             )}
             {isManage ? (
               <React.Fragment>
@@ -583,8 +578,7 @@ class GroupDetails extends Component {
                   style={{
                     backgroundColor: Colors.gradient_3,
                     justifyContent: 'center',
-                  }}
-                >
+                  }}>
                   <View style={groupDetailStyles.searchContainer}>
                     <Image
                       source={Icons.icon_search}
@@ -593,9 +587,7 @@ class GroupDetails extends Component {
                     <TextInput
                       style={[groupDetailStyles.inputStyle]}
                       placeholder={translate('pages.xchat.search')}
-                      onChangeText={(searchText) =>
-                        this.setState({ searchText })
-                      }
+                      onChangeText={(searchText) => this.setState({searchText})}
                       returnKeyType={'done'}
                       autoCorrect={false}
                       autoCapitalize={'none'}
@@ -611,17 +603,17 @@ class GroupDetails extends Component {
               <React.Fragment>
                 {isEdit ? (
                   isMyGroup && (
-                    <View style={{ marginBottom: 10 }}>
+                    <View style={{marginBottom: 10}}>
                       <InputWithTitle
                         onChangeText={(text) =>
-                          this.setState({ groupName: text })
+                          this.setState({groupName: text})
                         }
                         title={translate(`pages.xchat.groupName`)}
                         value={groupName}
                       />
 
                       <TextAreaWithTitle
-                        onChangeText={(text) => this.setState({ note: text })}
+                        onChangeText={(text) => this.setState({note: text})}
                         title={translate(`pages.xchat.note`)}
                         value={note}
                         rightTitle={`${note.length}/3000`}
@@ -631,26 +623,23 @@ class GroupDetails extends Component {
                   )
                 ) : (
                   <React.Fragment>
-                    <View style={{ marginBottom: 10 }}>
+                    <View style={{marginBottom: 10}}>
                       <View
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
-                      >
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Text
                           style={{
                             color: Colors.gradient_2,
                             fontSize: 16,
                             fontFamily: Fonts.regular,
-                          }}
-                        >
+                          }}>
                           {translate(`pages.xchat.groupName`)}
                         </Text>
                         {isMyGroup && (
                           <TouchableOpacity
                             style={{}}
                             onPress={() => {
-                              this.setState({ isEdit: true });
-                            }}
-                          >
+                              this.setState({isEdit: true});
+                            }}>
                             <Image
                               source={Icons.icon_edit_pen}
                               resizeMode={'cover'}
@@ -659,30 +648,27 @@ class GroupDetails extends Component {
                           </TouchableOpacity>
                         )}
                       </View>
-                      <Text style={{ fontSize: 13, fontFamily: Fonts.light }}>
+                      <Text style={{fontSize: 13, fontFamily: Fonts.light}}>
                         {groupName}
                       </Text>
                     </View>
-                    <View style={{ marginBottom: 10 }}>
+                    <View style={{marginBottom: 10}}>
                       <View
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
-                      >
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Text
                           style={{
                             color: Colors.gradient_2,
                             fontSize: 16,
                             fontFamily: Fonts.regular,
-                          }}
-                        >
+                          }}>
                           {translate(`pages.xchat.note`)}
                         </Text>
                         {isMyGroup && (
                           <TouchableOpacity
                             style={{}}
                             onPress={() => {
-                              this.setState({ isEdit: true });
-                            }}
-                          >
+                              this.setState({isEdit: true});
+                            }}>
                             <Image
                               source={Icons.icon_edit_pen}
                               resizeMode={'cover'}
@@ -691,7 +677,7 @@ class GroupDetails extends Component {
                           </TouchableOpacity>
                         )}
                       </View>
-                      <Text style={{ fontSize: 13, fontFamily: Fonts.light }}>
+                      <Text style={{fontSize: 13, fontFamily: Fonts.light}}>
                         {note}
                       </Text>
                     </View>
@@ -703,7 +689,7 @@ class GroupDetails extends Component {
                       <Button
                         title={translate(`pages.xchat.deleteGroup`)}
                         onPress={this.toggleDeleteGroupConfirmationModal.bind(
-                          this
+                          this,
                         )}
                         isRounded={false}
                         type={'secondary'}
@@ -742,7 +728,6 @@ class GroupDetails extends Component {
             message={translate('pages.xchat.wantToLeaveText')}
           />
         </View>
-
       </ImageBackground>
     );
   }

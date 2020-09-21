@@ -290,7 +290,10 @@ class GroupChats extends Component {
       }
 
       this.state.conversation.unshift(sendmsgdata);
-      this.props.setGroupConversation([sendmsgdata,...this.props.chatGroupConversation]);
+      this.props.setGroupConversation([
+        sendmsgdata,
+        ...this.props.chatGroupConversation,
+      ]);
       // this.props.sendGroupMessage(groupMessage);
     }
 

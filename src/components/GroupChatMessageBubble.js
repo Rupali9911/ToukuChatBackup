@@ -391,13 +391,22 @@ class GroupChatMessageBubble extends Component {
                           }}>
                           <HyperLink linkStyle={{color: Colors.link_color}}>
                             <Text
-                              style={{fontSize: 15, fontFamily: Fonts.light}}>
+                              style={{
+                                fontSize: 15,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '400',
+                              }}>
                               {message.message_body.text}
                             </Text>
                           </HyperLink>
                         </TouchableOpacity>
                       ) : (
-                        <Text style={{fontSize: 15, fontFamily: Fonts.light}}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            fontFamily: Fonts.regular,
+                            fontWeight: '400',
+                          }}>
                           {message.message_body.text}
                         </Text>
                       )}
@@ -549,7 +558,7 @@ class GroupChatMessageBubble extends Component {
                                 color: Colors.black,
                                 fontSize: 15,
                                 fontFamily: Fonts.regular,
-                                fontWeight: '300',
+                                fontWeight: '400',
                               }}>
                               {message.message_body.text}
                             </Text>
@@ -561,7 +570,7 @@ class GroupChatMessageBubble extends Component {
                             color: Colors.black,
                             fontSize: 15,
                             fontFamily: Fonts.regular,
-                            fontWeight: '300',
+                            fontWeight: '400',
                           }}>
                           {message.message_body.text}
                         </Text>

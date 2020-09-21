@@ -131,12 +131,15 @@ export default class ChatHeader extends Component {
                     }}>
                     <Text
                       numberOfLines={1}
-                      style={globalStyles.normalRegularText15}>
+                      style={[
+                        globalStyles.normalRegularText15,
+                        {fontSize: 14},
+                      ]}>
                       {title}
                     </Text>
                     <Text
                       numberOfLines={1}
-                      style={globalStyles.smallRegularText}>
+                      style={[globalStyles.smallRegularText, {fontSize: 11}]}>
                       {description}
                     </Text>
                   </View>

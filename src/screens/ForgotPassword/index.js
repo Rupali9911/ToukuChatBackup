@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {
-    View,
-    Text,
-    ScrollView,
-    ImageBackground,
-    StyleSheet,
-    SafeAreaView,
-    Platform, Keyboard,
+  View,
+  Text,
+  ScrollView,
+  ImageBackground,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -122,14 +123,14 @@ class ForgotPassword extends Component {
           });
         })
         .catch((err) => {
-            if (err.response.request._response) {
-                let errMessage = JSON.parse(err.response.request._response)
-                Toast.show({
-                    title: translate('common.sendSMS'),
-                    text: translate(errMessage.message.toString()),
-                    type: 'primary',
-                });
-            }
+          if (err.response.request._response) {
+            let errMessage = JSON.parse(err.response.request._response);
+            Toast.show({
+              title: translate('common.sendSMS'),
+              text: translate(errMessage.message.toString()),
+              type: 'primary',
+            });
+          }
         });
     } else {
       Toast.show({
@@ -141,7 +142,7 @@ class ForgotPassword extends Component {
   }
 
   onSubmitPress() {
-      Keyboard.dismiss();
+    Keyboard.dismiss();
     const {userName, authCode, password, newPassword} = this.state;
 
     this.setState({
@@ -178,18 +179,18 @@ class ForgotPassword extends Component {
         newPasswordErr: 'messages.required',
       });
     }
-      if (password.length > 0 && password.length <= 7) {
-          isValid = false;
-          this.setState({
-              passwordErr: 'pages.register.minLengthPassword',
-          });
-      }
-      if (password.length > 64) {
-          isValid = false;
-          this.setState({
-              passwordErr: 'pages.register.maxLengthPassword',
-          });
-      }
+    if (password.length > 0 && password.length <= 7) {
+      isValid = false;
+      this.setState({
+        passwordErr: 'pages.register.minLengthPassword',
+      });
+    }
+    if (password.length > 64) {
+      isValid = false;
+      this.setState({
+        passwordErr: 'pages.register.maxLengthPassword',
+      });
+    }
     if (password != newPassword) {
       isValid = false;
       this.setState({newPasswordConfirmStatus: 'wrong'});
@@ -211,7 +212,7 @@ class ForgotPassword extends Component {
               text: translate('pages.resetPassword.toastr.passwordUpdated'),
               type: 'positive',
             });
-              this.props.navigation.goBack()
+            this.props.navigation.goBack();
           } else {
             Toast.show({
               title: translate('common.register'),
@@ -240,13 +241,15 @@ class ForgotPassword extends Component {
     } = this.state;
     return (
       <ImageBackground
-          //source={Images.image_touku_bg}
-          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
+        //source={Images.image_touku_bg}
+        source={
+          Platform.isPad ? Images.image_touku_bg : Images.image_touku_bg_phone
+        }
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-              keyboardShouldPersistTaps={"handled"}
-              behavior={'position'}
+            keyboardShouldPersistTaps={'handled'}
+            behavior={'position'}
             contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
@@ -358,19 +361,19 @@ class ForgotPassword extends Component {
                         marginBottom: 5,
                       },
                     ]}>
-                    {passwordErr === 'messages.required' ? translate(passwordErr).replace(
-                      '[missing {{field}} value]',
-                      translate('common.password')): translate(passwordErr)
-                    }
+                    {passwordErr === 'messages.required'
+                      ? translate(passwordErr).replace(
+                          '[missing {{field}} value]',
+                          translate('common.password'),
+                        )
+                      : translate(passwordErr)}
                   </Text>
                 ) : null}
                 <Inputfield
                   onRef={(ref) => {
                     this.inputs['newPassword'] = ref;
                   }}
-                  placeholder={translate(
-                    'pages.setting.confirmPassword',
-                  )}
+                  placeholder={translate('pages.setting.confirmPassword')}
                   value={this.state.newPassword}
                   secureTextEntry={true}
                   onChangeText={(newPassword) =>

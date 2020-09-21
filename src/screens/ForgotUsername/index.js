@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {
-    View,
-    Text,
-    ImageBackground,
-    StyleSheet,
-    SafeAreaView,
-    ScrollView,
-    Platform, Keyboard,
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -54,7 +55,7 @@ class ForgotUserName extends Component {
   };
 
   onSubmitPress() {
-      Keyboard.dismiss();
+    Keyboard.dismiss();
     const {email} = this.state;
     if (email !== '') {
       let userNameData = {
@@ -70,14 +71,14 @@ class ForgotUserName extends Component {
           });
         })
         .catch((err) => {
-            if (err.response.request._response) {
-                let errMessage = JSON.parse(err.response.request._response)
-                Toast.show({
-                    title: translate('pages.xchat.reconfirmUserName'),
-                    text: translate(errMessage.message.toString()),
-                    type: 'primary',
-                });
-            }
+          if (err.response.request._response) {
+            let errMessage = JSON.parse(err.response.request._response);
+            Toast.show({
+              title: translate('pages.xchat.reconfirmUserName'),
+              text: translate(errMessage.message.toString()),
+              type: 'primary',
+            });
+          }
         });
     } else {
       Toast.show({
@@ -93,13 +94,15 @@ class ForgotUserName extends Component {
 
     return (
       <ImageBackground
-          //source={Images.image_touku_bg}
-          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
+        //source={Images.image_touku_bg}
+        source={
+          Platform.isPad ? Images.image_touku_bg : Images.image_touku_bg_phone
+        }
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-              keyboardShouldPersistTaps={"handled"}
-              behavior={'position'}
+            keyboardShouldPersistTaps={'handled'}
+            behavior={'position'}
             contentContainerStyle={{
               flex: 1,
               padding: 20,

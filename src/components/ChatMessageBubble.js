@@ -325,7 +325,7 @@ class ChatMessageBubble extends Component {
                               style={{
                                 fontSize: 15,
                                 fontFamily: Fonts.regular,
-                                fontWeight: '300',
+                                fontWeight: '400',
                               }}>
                               {message.message_body}
                             </Text>
@@ -336,7 +336,7 @@ class ChatMessageBubble extends Component {
                           style={{
                             fontSize: 15,
                             fontFamily: Fonts.regular,
-                            fontWeight: '300',
+                            fontWeight: '400',
                           }}>
                           {message.message_body}
                         </Text>
@@ -488,7 +488,7 @@ class ChatMessageBubble extends Component {
                                 color: Colors.black,
                                 fontSize: 15,
                                 fontFamily: Fonts.regular,
-                                fontWeight: '300',
+                                fontWeight: '400',
                               }}>
                               {message.message_body}
                             </Text>
@@ -500,7 +500,7 @@ class ChatMessageBubble extends Component {
                             color: Colors.black,
                             fontSize: 15,
                             fontFamily: Fonts.regular,
-                            fontWeight: '300',
+                            fontWeight: '400',
                           }}>
                           {message.message_body}
                         </Text>
