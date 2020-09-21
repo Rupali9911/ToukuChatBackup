@@ -1249,7 +1249,7 @@ class Home extends Component {
               onPress={() => this.onOpenFriendChats(item)}
               unreadCount={item.unread_msg}
               callTypingStop={(id) => {
-                console.log('user_id', id);
+                console.log('home_user_id', id);
                 updateFriendTypingStatus(id, false);
                 this.props.setUserFriends();
               }}

@@ -436,7 +436,7 @@ export const setToukuPoints = (userData, toukuPoints) => (dispatch) =>
     resolve(userData);
   });
 
-export const getMissedSocketEventsById = (id) =>
+export const getMissedSocketEventsById = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
       console.log('getMissedSocketEventsById called', id)
     client

@@ -46,7 +46,7 @@ export const resetData = () => {
   })
 }
 
-//Channel Services
+//#region Channel Services
 export const setChannelChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm.objects('chat_conversation').filtered('id =' + item.id);
@@ -150,8 +150,9 @@ export const setMessageUnsend = async(id) => {
     );
   });
 };
+//#endregion
 
-//Friend Services
+//#region Friend Services
 export const setFriendChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm
@@ -260,8 +261,9 @@ export const updateAllFriendMessageRead = (friend) => {
     });
   }
 }
+//#endregion
 
-//Group Services
+//#region Group Services
 export const setGroupChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm.objects('chat_conversation_group').filtered('msg_id =' + item.msg_id);
@@ -338,9 +340,9 @@ export const setGroupMessageUnsend = (id) => {
     );
   });
 };
+//#endregion
 
-
-//Channels List
+//#region Channels List
 export const setChannels = (channels) => {
   // console.log('realm insert data',channels);
   for (let item of channels) {
@@ -508,8 +510,9 @@ export const deleteChannelById = (id) => {
     realm.delete(message);
   });
 }
+//#endregion
 
-//Groups List
+//#region Groups List
 export const setGroups = async (channels) => {
   // console.log('realm insert data',channels);
   var checkObject = {};
@@ -643,9 +646,9 @@ export const setGroupLastMessageUnsend = (id) => {
     );
   });
 }
+//#endregion
 
-
-// User friends
+//#region User friends
 export const getLocalUserFriends = () => {
   return realm.objects('user_friends')
   .sorted('timestamp', { ascending: false });
@@ -708,7 +711,7 @@ export const updateFriendOnlineStatus = (id, status) => {
 }
 
 export const updateFriendTypingStatus = (id, status) => {
-  console.log('status_typing_u[date',status);
+  console.log('status_typing_update',status);
   realm.write(() => {
     realm.create(
       'user_friends',
@@ -791,9 +794,9 @@ export const updateFriendLastMsg = (id,message) => {
     });
   }
 }
+//#endregion
 
-
-//Friend Request
+//#region Friend Request
 export const setFriendRequests = (requests) => {
   for (let item of requests) {
     var obj = realm.objects('friend_reuqest').filtered('from_user_id=' + item.from_user_id);
@@ -874,3 +877,4 @@ export const getUserFriendByFriendId = (id) => {
         .objects('user_friends')
         .filtered(`friend == ${id}`);
 }
+//#endregion
