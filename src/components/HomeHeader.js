@@ -76,14 +76,14 @@ export default class HomeHeader extends Component {
                     : 40,
               },
             ]}>
-            {/*<View style={{ flex: 0.1 }}>*/}
+            <View style={{flex: 0.1}} />
             {/*{isDrawer ? (*/}
             {/*<HamburgerIcon />*/}
             {/*) : (*/}
             {/*<View style={globalStyles.iconStyle} />*/}
             {/*)}*/}
             {/*</View>*/}
-            <View style={{flex: 0.9, alignItems: 'center'}}>
+            <View style={{flex: 0.8, alignItems: 'center'}}>
               <Text
                 style={[
                   globalStyles.normalRegularText,

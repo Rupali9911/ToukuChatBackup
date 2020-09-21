@@ -186,13 +186,13 @@ class Home extends Component {
     // );
     // Get on-disk location of the default Realm
 
-      //
-      // console.log('expandCollapse on SignUp', this.props.navigation.state.params.expandCollapse)
-      // if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
-      //         this.setState({isFriendReqCollapse: true})
-      // } else if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
-      //     this.setState({isFriendsCollapsed: true})
-      // }
+    //
+    // console.log('expandCollapse on SignUp', this.props.navigation.state.params.expandCollapse)
+    // if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
+    //         this.setState({isFriendReqCollapse: true})
+    // } else if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
+    //     this.setState({isFriendsCollapsed: true})
+    // }
   }
 
   _orientationDidChange = (orientation) => {
@@ -1070,7 +1070,7 @@ class Home extends Component {
       isChannelCollapsed,
       isGroupCollapsed,
       isFriendsCollapsed,
-        isFriendReqCollapse
+      isFriendReqCollapse,
     } = this.state;
     if (!isChannelCollapsed) {
       this.setState({isChannelCollapsed: true});
@@ -1366,7 +1366,7 @@ class Home extends Component {
       isChannelCollapsed,
       isGroupCollapsed,
       isFriendsCollapsed,
-        isFriendReqCollapse,
+      isFriendReqCollapse,
       searchText,
       channelHeaderCounts,
       groupHeaderCounts,
@@ -1427,8 +1427,13 @@ class Home extends Component {
             <RoundedImage source={getAvatar(userData.avatar)} size={50} />
             <Text
               style={[
-                globalStyles.normalRegularText,
-                {color: Colors.black, marginStart: 10},
+                globalStyles.smallNunitoRegularText,
+                {
+                  color: Colors.black,
+                  marginStart: 10,
+                  fontSize: 14,
+                  fontWeight: '300',
+                },
               ]}>
               {userConfig.display_name}
             </Text>
@@ -1439,7 +1444,7 @@ class Home extends Component {
               <Collapse
                 onToggle={(isColl) =>
                   this.setState({
-                      isFriendReqCollapse: isColl,
+                    isFriendReqCollapse: isColl,
                   })
                 }
                 isCollapsed={isFriendReqCollapse}>
@@ -1549,7 +1554,7 @@ const DropdownHeader = (props) => {
         paddingHorizontal: 15,
       }}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Text style={globalStyles.smallRegularText}>{title}</Text>
+        <Text style={[globalStyles.smallRegularText, {}]}>{title}</Text>
         <Text style={[globalStyles.smallRegularText, {marginStart: 5}]}>
           {'('}
           {listcounts}

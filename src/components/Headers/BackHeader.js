@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {Icons, Colors} from '../../constants';
@@ -37,6 +38,10 @@ export default class BackHeader extends Component {
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',

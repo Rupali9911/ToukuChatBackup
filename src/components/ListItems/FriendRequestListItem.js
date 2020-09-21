@@ -1,20 +1,14 @@
-import React, { Component, Fragment } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import React, {Component, Fragment} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Badge, Divider } from 'react-native-paper';
+import {Badge, Divider} from 'react-native-paper';
 
 import RoundedImage from '../RoundedImage';
-import { globalStyles } from '../../styles';
-import { Colors, Images } from '../../constants';
+import {globalStyles} from '../../styles';
+import {Colors, Images} from '../../constants';
 import Button from '../Button';
-import { translate } from '../../redux/reducers/languageReducer';
+import {translate} from '../../redux/reducers/languageReducer';
 
 export default class FriendRequestListItem extends Component {
   constructor(props) {
@@ -23,7 +17,7 @@ export default class FriendRequestListItem extends Component {
   }
 
   render() {
-    const { title, date, image, onAcceptPress, onRejectPress } = this.props;
+    const {title, date, image, onAcceptPress, onRejectPress} = this.props;
     return (
       <Fragment>
         <View style={styles.container}>
@@ -35,22 +29,20 @@ export default class FriendRequestListItem extends Component {
               // isOnline={isOnline}
             />
             <View style={styles.secondView}>
-              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+              <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallRegularText,
-                    { color: Colors.black },
-                  ]}
-                >
+                    globalStyles.smallNunitoRegularText,
+                    {color: Colors.black_light},
+                  ]}>
                   {title}
                 </Text>
                 <View
                   style={{
                     flexDirection: 'row',
-                  }}
-                >
-                  <View style={{ marginRight: 10, width: 100 }}>
+                  }}>
+                  <View style={{marginRight: 10, width: 100}}>
                     <Button
                       title={translate('common.reject')}
                       onPress={onRejectPress}
@@ -59,7 +51,7 @@ export default class FriendRequestListItem extends Component {
                       height={Platform.isPad ? 40 : 30}
                     />
                   </View>
-                  <View style={{ marginRight: 10, width: 100 }}>
+                  <View style={{marginRight: 10, width: 100}}>
                     <Button
                       title={translate('pages.xchat.accept')}
                       onPress={onAcceptPress}
@@ -75,9 +67,8 @@ export default class FriendRequestListItem extends Component {
                   numberOfLines={1}
                   style={[
                     globalStyles.smallLightText,
-                    { color: Colors.gray_dark },
-                  ]}
-                >
+                    {color: Colors.gray_dark},
+                  ]}>
                   {moment(date).format('MM/DD')}
                 </Text>
                 {/* {unreadCount !== 0 && unreadCount != null && (

@@ -116,6 +116,7 @@ export const Colors = {
   pink_chat: '#ffdaec',
   dark_pink: '#e13887',
   light_pink: '#FFEDEE',
+  message_gray: '#9FA7B0',
 };
 
 export const Fonts = {
@@ -131,6 +132,8 @@ export const Fonts = {
   extrabold: 'Poppins-ExtraBold',
   absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
   arialRegular: 'Arial',
+  nunitoSansLight: 'NunitoSans-Light',
+  nunitoSansRegular: 'NunitoSans-Regular',
 };
 
 export const environment = {
@@ -268,14 +271,14 @@ export const SocketEvents = {
 };
 
 export const NotificationType = {
-    NEW_FRIEND_REQUEST: 'NEW_FRIEND_REQUEST',
-    FRIEND_REQUEST_ACCEPTED: 'FRIEND_REQUEST_ACCEPTED',
-    SEND_FRIEND_REQUEST: 'SEND_FRIEND_REQUEST',
-    MESSAGE_IN_FRIEND: 'MESSAGE_IN_FRIEND',
-    MESSAGE_IN_CHANNEL: 'MESSAGE_IN_CHANNEL',
-    MESSAGE_IN_GROUP: 'MESSAGE_IN_GROUP',
-    MESSAGE_IN_THREAD: 'MESSAGE_IN_THREAD',
-}
+  NEW_FRIEND_REQUEST: 'NEW_FRIEND_REQUEST',
+  FRIEND_REQUEST_ACCEPTED: 'FRIEND_REQUEST_ACCEPTED',
+  SEND_FRIEND_REQUEST: 'SEND_FRIEND_REQUEST',
+  MESSAGE_IN_FRIEND: 'MESSAGE_IN_FRIEND',
+  MESSAGE_IN_CHANNEL: 'MESSAGE_IN_CHANNEL',
+  MESSAGE_IN_GROUP: 'MESSAGE_IN_GROUP',
+  MESSAGE_IN_THREAD: 'MESSAGE_IN_THREAD',
+};
 
 export const closeBoxImage = [
   {

@@ -56,16 +56,16 @@ export default class ChannelListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallRegularText,
-                    {color: Colors.black},
+                    globalStyles.smallNunitoRegularText,
+                    {color: Colors.black_light},
                   ]}>
                   {title}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallLightText,
-                    {color: Colors.gray_dark},
+                    globalStyles.smallNunitoLightText,
+                    {color: Colors.message_gray},
                   ]}>
                   {description}
                 </Text>
