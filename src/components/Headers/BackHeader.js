@@ -20,25 +20,18 @@ export default class BackHeader extends Component {
   render() {
     const {isIconLeft, title, onBackPress} = this.props;
     return (
-      <View style={styles.headerContainer}>
-        <ImageBackground
-          source={Images.header_bg_small}
-          style={{flex: 1}}
-          resizeMode="cover">
-          <View style={styles.container}>
-            {isIconLeft ? (
-              <TouchableOpacity onPress={onBackPress}>
-                <Image source={Icons.icon_back} style={styles.backIcon} />
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.backIcon} />
-            )}
-            <View>
-              <Text style={styles.titleTxt}>{title}</Text>
-            </View>
-            <View></View>
-          </View>
-        </ImageBackground>
+      <View style={styles.container}>
+        {isIconLeft ? (
+          <TouchableOpacity onPress={onBackPress}>
+            <Image source={Icons.icon_back} style={styles.backIcon} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.backIcon} />
+        )}
+        <View>
+          <Text style={styles.titleTxt}>{title}</Text>
+        </View>
+        <View></View>
       </View>
     );
   }
