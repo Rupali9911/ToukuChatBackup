@@ -268,6 +268,10 @@ class GroupChats extends Component {
         };
       }
       this.state.conversation.unshift(sendmsgdata);
+      this.props.setGroupConversation([
+        sendmsgdata,
+        ...this.props.chatGroupConversation,
+      ]);
       this.props.sendGroupMessage(groupMessage);
     } else {
       let groupMessage;
@@ -294,7 +298,7 @@ class GroupChats extends Component {
         sendmsgdata,
         ...this.props.chatGroupConversation,
       ]);
-      // this.props.sendGroupMessage(groupMessage);
+      this.props.sendGroupMessage(groupMessage);
     }
 
     this.setState({

@@ -262,6 +262,7 @@ class FriendChats extends Component {
         reply_to: repliedMessage.id,
       };
       this.state.conversations.unshift(sendmsgdata);
+      this.props.setFriendConversation([sendmsgdata,...this.props.chatFriendConversation]);
       this.props.sendPersonalMessage(data);
     } else {
       let data = {
@@ -272,6 +273,7 @@ class FriendChats extends Component {
         to_user: this.props.currentFriend.user_id,
       };
       this.state.conversations.unshift(sendmsgdata);
+      this.props.setFriendConversation([sendmsgdata,...this.props.chatFriendConversation]);
       this.props.sendPersonalMessage(data);
     }
     this.setState({
