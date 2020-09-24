@@ -97,7 +97,7 @@ export default class SearchInput extends Component {
               }}
               title={translate('pages.xchat.createNewGroup')}
             />
-            <Menu.Item
+            {/* <Menu.Item
               icon={() => <Image source={Icons.icon_create_new_channel} />}
               onPress={() => {
                 navigation.navigate('CreateChannel');
@@ -105,7 +105,7 @@ export default class SearchInput extends Component {
               }}
               titleStyle={{marginLeft: -25}}
               title={translate('pages.xchat.createChannel')}
-            />
+            /> */}
             <Menu.Item
               icon={() => <Image source={Icons.add_friend} />}
               onPress={() => {

@@ -10,7 +10,7 @@ import {
   Modal,
   Image,
   PixelRatio,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -60,12 +60,12 @@ import {
   updateMessageById,
   deleteMessageById,
   setMessageUnsend,
-  updateChannelUnReadCountById
+  updateChannelUnReadCountById,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 import bonusImage from '../../../assets/images/bonus_bg.png';
 
-const dimensions = Dimensions.get("window");
+const dimensions = Dimensions.get('window');
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -141,12 +141,12 @@ class ChannelChats extends Component {
   }
 
   updateUnReadChannelCount = () => {
-    updateChannelUnReadCountById(this.props.currentChannel.id,0);
+    updateChannelUnReadCountById(this.props.currentChannel.id, 0);
 
     this.props.getLocalFollowingChannels().then((res) => {
       this.props.setCommonChatConversation();
     });
-  }
+  };
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -509,7 +509,10 @@ class ChannelChats extends Component {
     // console.log('ChannelChats -> onMessageSend -> sendmsgdata', sendmsgdata);
     this.props.addNewSendMessage(sendmsgdata);
     this.state.conversations.unshift(sendmsgdata);
-    this.props.setChannelConversation([sendmsgdata,...this.props.chatConversation]);
+    this.props.setChannelConversation([
+      sendmsgdata,
+      ...this.props.chatConversation,
+    ]);
     this.props.sendChannelMessage(messageData);
     this.setState({
       newMessageText: '',
@@ -1348,12 +1351,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   bonusImage: {
-    width: Math.round((dimensions.width) / 4),
-    height: Math.round((dimensions.width) / 4),
+    width: Math.round(dimensions.width / 4),
+    height: Math.round(dimensions.width / 4),
   },
   bonusImageZoom: {
-    width: Math.round((dimensions.width) / 3),
-    height: Math.round((dimensions.width) / 3),
+    width: Math.round(dimensions.width / 3),
+    height: Math.round(dimensions.width / 3),
   },
 });
 
