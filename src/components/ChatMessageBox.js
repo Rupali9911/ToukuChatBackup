@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+  Animated,
   View,
   StyleSheet,
   Text,
@@ -24,6 +25,7 @@ export default class ChatMessageBox extends Component {
       longPressMenu: false,
       selectedMessageId: null,
       isPortrait: false,
+      animation: new Animated.Value(1),
     };
   }
 
@@ -35,6 +37,38 @@ export default class ChatMessageBox extends Component {
       this.props.message.message_body &&
       this.isPortrait(this.props.message.message_body);
   }
+
+  callBlinking = (id) => {
+    console.log('buuble_box', this[`bubble_box_${id}`], id);
+    
+    this.callBlinkAnimation();
+
+    // this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
+  };
+
+  startAnimation = () => {
+    this.animInterval = setInterval(() => {
+      Animated.timing(this.state.animation, {
+        toValue: 0,
+        timing: 400,
+        useNativeDriver: true,
+      }).start(() => {
+        Animated.timing(this.state.animation, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 800);
+  };
+
+  callBlinkAnimation = () => {
+    setTimeout(() => {
+      clearInterval(this.animInterval);
+    }, 3200);
+    this.startAnimation();
+    console.log('animation start');
+  };
 
   _openMenu = () => this.setState({longPressMenu: true});
 
@@ -146,7 +180,13 @@ export default class ChatMessageBox extends Component {
     if (closeMenu) {
       this._closeMenu();
     }
+
+    const animatedStyle = {
+      opacity: this.state.animation,
+    };
+
     return !isUser ? (
+      <Animated.View style={[animatedStyle]}>
       <View
         style={[
           styles.container,
@@ -246,7 +286,9 @@ export default class ChatMessageBox extends Component {
             this.renderTransltedMessage()}
         </View>
       </View>
+      </Animated.View>
     ) : (
+      <Animated.View style={[animatedStyle]}>
       <View>
         <View
           style={[
@@ -312,6 +354,7 @@ export default class ChatMessageBox extends Component {
           </View>
         </View>
       </View>
+      </Animated.View>
     );
   }
 }

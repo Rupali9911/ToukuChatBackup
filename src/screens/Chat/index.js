@@ -667,7 +667,7 @@ class Chat extends Component {
             updateChannelLastMsg(
               message.text.data.message_details.channel,
               message.text.data.message_details,
-              channels[0].unread_msg + 1,
+              channels[0].unread_msg,
             );
             this.props.getLocalFollowingChannels().then((res) => {
               this.props.setCommonChatConversation();
@@ -910,7 +910,7 @@ class Chat extends Component {
     const {userFriends, currentFriend, userData} = this.props;
     console.log(
       'onNewMessageInFriend -> onNewMessageInFriend currentFriend',
-      currentFriend,
+      currentFriend
     );
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
@@ -920,6 +920,7 @@ class Chat extends Component {
         updateFriendLastMsg(
           message.text.data.message_details.to_user.id,
           message.text.data.message_details,
+          false
         );
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
@@ -936,6 +937,7 @@ class Chat extends Component {
         updateFriendLastMsg(
           message.text.data.message_details.from_user.id,
           message.text.data.message_details,
+          true
         );
         // this.getUserFriends();
         this.props.setUserFriends().then((res) => {

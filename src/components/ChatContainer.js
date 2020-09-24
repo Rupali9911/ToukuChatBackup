@@ -244,6 +244,9 @@ class ChatContainer extends Component {
                 return (
                   <Fragment>
                     <ChatMessageBox
+                    ref={(view) => {
+                      this[`message_box_${item.id}`] = view;
+                    }}
                       key={item.id}
                       message={item}
                       isUser={
@@ -286,6 +289,8 @@ class ChatContainer extends Component {
                           animated: true,
                           index: this.searchItemIndex(messages, id, index),
                         });
+                        this[`message_box_${id}`] &&
+                          this[`message_box_${id}`].callBlinking(id);
                       }}
                     />
                     {(messages[index + 1] &&

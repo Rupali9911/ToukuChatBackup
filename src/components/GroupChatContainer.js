@@ -9,6 +9,7 @@ import {
   Image,
   Keyboard,
   FlatList,
+  SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import moment from 'moment';
@@ -180,6 +181,7 @@ class GroupChatContainer extends Component {
           style={[
             chatStyle.messageAreaConatiner,
             {
+              flex: Platform.OS==='ios'?0.95:1,
               paddingBottom:
                 Platform.OS === 'android'
                   ? orientation === 'PORTRAIT'
@@ -344,12 +346,12 @@ class GroupChatContainer extends Component {
           {isReply ? (
             <View
               style={{
-                height: '12%',
+                height: 80,
                 width: '100%',
                 backgroundColor: '#FFDBE9',
-                position: 'absolute',
+                // position: 'absolute',
                 padding: 10,
-                bottom: 20,
+                bottom: Platform.OS=='ios'?20:30,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
               }}>

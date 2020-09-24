@@ -826,7 +826,7 @@ export const updateFriendLastMsgWithoutCount = async (id,message) => {
     });
 }
 
-export const updateFriendLastMsg = (id,message) => {
+export const updateFriendLastMsg = (id,message,updateCount) => {
   var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
 
   var items = [];
@@ -840,7 +840,7 @@ export const updateFriendLastMsg = (id,message) => {
         'user_friends',
         {
           user_id: id,
-          unread_msg: items[0].unread_msg+1,
+          unread_msg: updateCount?items[0].unread_msg+1:items[0].unread_msg,
           last_msg_id: message.id,
           last_msg: message.message_body ? message.message_body : '',
           last_msg_type: message.msg_type,
