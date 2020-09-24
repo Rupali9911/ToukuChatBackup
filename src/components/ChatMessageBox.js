@@ -65,7 +65,7 @@ export default class ChatMessageBox extends Component {
   callBlinkAnimation = () => {
     setTimeout(() => {
       clearInterval(this.animInterval);
-    }, 3200);
+    }, 2200);
     this.startAnimation();
     console.log('animation start');
   };

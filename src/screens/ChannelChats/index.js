@@ -138,6 +138,7 @@ class ChannelChats extends Component {
       this.checkHasLoginBonus();
     }
     // this.getLoginBonus();
+    this.updateUnReadChannelCount();
   }
 
   updateUnReadChannelCount = () => {

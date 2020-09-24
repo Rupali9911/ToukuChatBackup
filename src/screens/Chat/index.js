@@ -37,6 +37,7 @@ import {
   getMoreFollowingChannels,
   getLocalFollowingChannels,
   setChannelConversation,
+  readAllChannelMessages
 } from '../../redux/reducers/channelReducer';
 import {setFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
@@ -49,6 +50,7 @@ import {
   getGroupMembers,
   setCurrentGroupDetail,
   getGroupDetail,
+  markGroupConversationRead
 } from '../../redux/reducers/groupReducer';
 import {getFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
@@ -59,6 +61,7 @@ import {
   getUserFriendsSuccess,
   setUserFriends,
   setFriendConversation,
+  markFriendMsgsRead
 } from '../../redux/reducers/friendReducer';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -245,7 +248,7 @@ class Chat extends Component {
     //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
-      message.text.data.type
+      message.text.data.type,JSON.stringify(message.text.data.message_details)
     );
     if (message.text.data.socket_event_id) {
       updateLastEventId(message.text.data.socket_event_id);
@@ -498,7 +501,7 @@ class Chat extends Component {
 
           updateUnReadCount(
             message.text.data.message_details.group_id,
-            message.text.data.message_details.read_count,
+            0,
           );
 
           this.props.updateUnreadGroupMsgsCounts(unread_counts);
@@ -557,6 +560,16 @@ class Chat extends Component {
           let unreadCount = item.length > 0 ? item[0].unread_count : 0;
 
           setGroupChatConversation([message.text.data.message_details]);
+
+          if (
+            currentGroup &&
+            message.text.data.message_details.group_id == currentGroup.group_id
+          ) {
+            this.getLocalGroupConversation();
+            this.markGroupMsgsRead();
+            unreadCount = 0;
+          }
+
           updateLastMsgGroups(
             message.text.data.message_details.group_id,
             message.text.data.message_details,
@@ -565,12 +578,6 @@ class Chat extends Component {
           this.props.getLocalUserGroups().then((res) => {
             this.props.setCommonChatConversation();
           });
-      }
-      if (
-        currentGroup &&
-        message.text.data.message_details.group_id == currentGroup.group_id
-      ) {
-        this.getLocalGroupConversation();
       }
     }
   }
@@ -687,22 +694,29 @@ class Chat extends Component {
               channels.push(item);
             });
             setChannelChatConversation([message.text.data.message_details]);
-            updateChannelLastMsg(
-              message.text.data.message_details.channel,
-              message.text.data.message_details,
-              channels[0].unread_msg + 1,
-            );
+            if (
+              currentChannel &&
+              message.text.data.message_details.channel == currentChannel.id
+            ) {
+              this.getLocalChannelConversations();
+              updateChannelLastMsg(
+                message.text.data.message_details.channel,
+                message.text.data.message_details,
+                channels[0].unread_msg,
+              );
+              this.markChannelMsgsRead();
+            }else{
+              updateChannelLastMsg(
+                message.text.data.message_details.channel,
+                message.text.data.message_details,
+                channels[0].unread_msg + 1,
+              );
+            }
             this.props.getLocalFollowingChannels().then((res) => {
               this.props.setCommonChatConversation();
             });
           }
         }
-      if (
-        currentChannel &&
-        message.text.data.message_details.channel == currentChannel.id
-      ) {
-        this.getLocalChannelConversations();
-      }
     }
   }
 
@@ -925,31 +939,39 @@ class Chat extends Component {
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
         });
-
         if (
           currentFriend &&
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
           this.getLocalFriendConversation();
+          this.markFriendMsgsRead();
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
-        updateFriendLastMsg(
-          message.text.data.message_details.from_user.id,
-          message.text.data.message_details,
-          true
-        );
-        // this.getUserFriends();
-        this.props.setUserFriends().then((res) => {
-          this.props.setCommonChatConversation();
-        });
+        
         if (
           currentFriend &&
           message.text.data.message_details.from_user.id ==
             currentFriend.user_id
         ) {
           this.getLocalFriendConversation();
-        }
+          updateFriendLastMsg(
+            message.text.data.message_details.from_user.id,
+            message.text.data.message_details,
+            false
+          );
+          this.markFriendMsgsRead();
+        }else{
+          updateFriendLastMsg(
+            message.text.data.message_details.from_user.id,
+            message.text.data.message_details,
+            true
+          );
+        }        
+        // this.getUserFriends();
+        this.props.setUserFriends().then((res) => {
+          this.props.setCommonChatConversation();
+        });
       }
     }
   }
@@ -1321,6 +1343,20 @@ class Chat extends Component {
       });
     }
   };
+
+  markChannelMsgsRead(){
+    this.props.readAllChannelMessages(this.props.currentChannel.id);
+  }
+
+  markFriendMsgsRead() {
+    this.props.markFriendMsgsRead(this.props.currentFriend.friend);
+  }
+
+  markGroupMsgsRead(){
+    let data = {group_id: this.props.currentGroup.group_id};
+    console.log(data);
+    this.props.markGroupConversationRead(data);
+  }
 
   onSearch = async (text) => {
     await this.setState({searchText: text, commonConversation: []});
@@ -1811,7 +1847,10 @@ const mapDispatchToProps = {
   setCurrentGroupDetail,
   getGroupDetail,
   setChannelConversation,
-    setAppLanguage
+  setAppLanguage,
+  markFriendMsgsRead,
+  readAllChannelMessages,
+  markGroupConversationRead
 };
 
 export default connect(

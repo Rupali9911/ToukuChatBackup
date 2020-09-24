@@ -570,6 +570,7 @@ class GroupChats extends Component {
 
   markGroupConversationRead() {
     let data = {group_id: this.props.currentGroup.group_id};
+    console.log('groups_chats_screen',data);
     this.props.markGroupConversationRead(data);
   }
 
