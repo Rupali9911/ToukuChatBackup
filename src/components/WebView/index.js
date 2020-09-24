@@ -3,10 +3,11 @@ import {
     SafeAreaView,
     View,
     Image,
-    Modal, Text, TouchableOpacity
+    ActivityIndicator,
+    Modal, Text, TouchableOpacity, ImageBackground
 } from 'react-native';
 import {WebView} from 'react-native-webview';
-import {Icons} from "../../constants";
+import {Icons, Images} from "../../constants";
 import PropTypes from 'prop-types';
 
 export default class WebViewClass extends Component {
@@ -21,8 +22,8 @@ export default class WebViewClass extends Component {
     }
 
     render() {
-        const {modalVisible, url} = this.props;
-
+        const {modalVisible, url, webViewLoaded} = this.props;
+        console.log('URL to webview', url)
         return (
             <SafeAreaView style={{flex: 1}}>
                 <Modal
@@ -36,11 +37,13 @@ export default class WebViewClass extends Component {
                     >
                         <Text >Close</Text>
                     </TouchableOpacity>
-
+                    <ImageBackground source={Images.image_touku_bg_phone}
+                                     style={{flex:1}} resizeMode={'cover'}>
                 <WebView
                     style={{backgroundColor : 'transparent'}}
-                    source={{uri: url, headers: {"Cache-Control": "no-cache"}}}
-                    cacheEnabled={false}/>
+                    source={{uri: url}}
+                    cacheEnabled={true}/>
+                    </ImageBackground>
                 </Modal>
             </SafeAreaView>
         );
@@ -58,3 +61,4 @@ WebViewClass.defaultProps = {
     url: '',
     closeModal: null
 };
+

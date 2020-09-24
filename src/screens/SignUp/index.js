@@ -19,7 +19,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
-import {Icons, Colors, Images, termsUrl} from '../../constants';
+import {Icons, Colors, Images, termsUrl, supportUrl, xanaUrl} from '../../constants';
 import {BackHeader} from '../../components/Headers';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -36,6 +36,7 @@ import {
   socialRegistration,
 } from '../../redux/reducers/signupReducer';
 import Toast from '../../components/Toast';
+import WebViewClass from "../../components/WebView";
 
 class SignUp extends Component {
   constructor(props) {
@@ -59,17 +60,17 @@ class SignUp extends Component {
       password: '',
       passwordConfirm: '',
       userNameSuggestions: [],
-
       emailStatus: 'normal',
       emailConfirmStatus: 'normal',
       passwordStatus: 'normal',
       passwordConfirmStatus: 'normal',
-
         userNameErr: 'messages.required',
         passwordErr: 'minLengthFailed',
         confirmPasswordErr: null,
         userNameStatus: 'normal',
-    };
+        isWebViewVisible: false,
+
+  };
 
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -281,27 +282,33 @@ class SignUp extends Component {
       let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
       let isValid = true;
-
       if (username.length <= 0) {
+          console.log('username.length', username.length )
           isValid = false;
           this.setState({
-              userNameStatus: 'wrong',
+              userNameStatus: 'normal',
               userNameErr: 'messages.required',
           });
       }
       if (isValid) {
-          this.setState({ userNameStatus: 'right', userNameErr: null });
+          this.setState({ userNameErr: null });
       }
 
     this.setState({username: username.replace(/\s/g, '')});
-    this.props.userNameCheck(username).then((res) => {
-      if (res.status === false) {
-        this.setState({userNameSuggestions: []});
-        AsyncStorage.setItem('username', username);
-      } else {
-        this.setState({userNameSuggestions: res.suggestions});
-      }
-    });
+      console.log('username.length, userNameCheck', username.length )
+      this.props.userNameCheck(username).then((res) => {
+          if (res.status === false) {
+              this.setState({userNameSuggestions: []});
+              AsyncStorage.setItem('username', username);
+              if (username.length <= 0) {
+                  this.setState({ userNameStatus: 'normal'});
+              }else{
+                  this.setState({ userNameStatus: 'right'});
+              }
+          } else {
+              this.setState({userNameSuggestions: res.suggestions, userNameStatus: 'wrong'});
+          }
+      });
   }
 
   async onSignUpPress() {
@@ -476,8 +483,8 @@ class SignUp extends Component {
   }
 
     onTermsAndCondition() {
-      console.log('Terms URL', termsUrl + this.props.selectedLanguageItem.language_name)
-        Linking.openURL(termsUrl + this.props.selectedLanguageItem.language_name);
+        this.setState({isWebViewVisible: true})
+        //Linking.openURL(termsUrl + this.props.selectedLanguageItem.language_name);
     }
 
   onChangePhoneNumber(phone, code) {
@@ -574,7 +581,7 @@ class SignUp extends Component {
   };
 
     selectSuggestedUserName(username){
-        this.setState({username: username})
+        this.setState({username: username, userNameStatus: 'right'})
     }
 
   showSuggestions = () => {
@@ -601,7 +608,7 @@ class SignUp extends Component {
           </Text>
             { suggestions.map((item, index) => {
                 return (
-                    <TouchableOpacity style={{width: 70, height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
+                    <TouchableOpacity style={{ height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
                         <Text style={[globalStyles.smallLightText,{textDecorationLine: 'underline'}]}>
                             {item + '  '}
                         </Text>
@@ -844,6 +851,7 @@ class SignUp extends Component {
                   this.password.focus();
                   this.checkUserName(this.state.username);
                 }}
+                  status={this.state.userNameStatus}
                 isSuggestions={
                   this.state.userNameSuggestions.length ? true : false
                 }
@@ -973,7 +981,7 @@ class SignUp extends Component {
   }
 
   render() {
-    const {currentPosition, orientation} = this.state;
+    const {currentPosition, orientation, isWebViewVisible} = this.state;
     return (
       <ImageBackground
           //source={Images.image_touku_bg}
@@ -1011,6 +1019,11 @@ class SignUp extends Component {
               </View>
               {this.renderPage(currentPosition)}
             </View>
+              <WebViewClass
+                  modalVisible={isWebViewVisible}
+                  url={termsUrl + this.props.selectedLanguageItem.language_name}
+                  closeModal={() => this.setState({isWebViewVisible: false})}
+              />
             <LanguageSelector />
           </KeyboardAwareScrollView>
         </SafeAreaView>

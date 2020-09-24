@@ -261,7 +261,7 @@ class Chat extends Component {
         this.setFriendsOnlineStatus(message);
         break;
       case SocketEvents.FRIEND_TYPING_MESSAGE:
-        this.setFriendsTypingStatus(message);
+      // this.setFriendsTypingStatus(message);
         break;
       case SocketEvents.CHECK_IS_USER_ONLINE:
         // this.checkIsUserOnline(message);
@@ -296,9 +296,6 @@ class Chat extends Component {
         break;
       case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
         this.readAllMessageFriendChat(message);
-        break;
-      case SocketEvents.FRIEND_TYPING_MESSAGE:
-        // this.friendIsTyping(message);
         break;
       case SocketEvents.NEW_MESSAGE_IN_FREIND:
         this.onNewMessageInFriend(message);

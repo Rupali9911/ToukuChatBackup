@@ -28,7 +28,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Button from '../../components/Button';
 import Inputfield from '../../components/InputField';
 import CheckBox from '../../components/CheckBox';
-import { Colors, Images, Icons, supportUrl } from '../../constants';
+import {Colors, Images, Icons, supportUrl, termsUrl} from '../../constants';
 import { BackHeader } from '../../components/Headers';
 import { loginStyles } from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -62,6 +62,7 @@ import { store } from '../../redux/store';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {setCurrentChannel} from "../../redux/reducers/channelReducer";
 import NavigationService from "../../navigation/NavigationService";
+import WebViewClass from "../../components/WebView";
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -84,6 +85,7 @@ class Login extends Component {
       userNameStatus: 'normal',
       passwordStatus: 'normal',
       showSNS: false,
+        isWebViewVisible: false,
     };
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -689,7 +691,8 @@ class Login extends Component {
 
   onNeedSupportClick() {
     //this.props.navigation.navigate('NeedSupport');
-    Linking.openURL(supportUrl);
+    // Linking.openURL(supportUrl);
+      this.setState({isWebViewVisible: true})
   }
 
   appleLogin() {
@@ -787,6 +790,7 @@ class Login extends Component {
       userNameErr,
       passwordErr,
       showSNS,
+        isWebViewVisible
     } = this.state;
 
     const {
@@ -1100,6 +1104,11 @@ class Login extends Component {
                     </Text>
                 </View>
             </View>
+              <WebViewClass
+                  modalVisible={isWebViewVisible}
+                  url={supportUrl}
+                  closeModal={() => this.setState({isWebViewVisible: false})}
+              />
             <LanguageSelector />
           </KeyboardAwareScrollView>
         </SafeAreaView>
