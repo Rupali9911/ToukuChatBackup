@@ -16,7 +16,6 @@ export default class FriendListItem extends Component {
 
   checkTyping = (typing) => {
     if(typing){
-      console.log('call',typing);
       this.typingTimeout && clearTimeout(this.typingTimeout);
       this.typingTimeout = setTimeout(()=>{
         this.props.callTypingStop && this.props.callTypingStop(this.props.user_id);
@@ -27,10 +26,10 @@ export default class FriendListItem extends Component {
   };
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.isTyping){
+    if(nextProps.isTyping !== this.props.isTyping){
       this.checkTyping(nextProps.isTyping);
     }else{
-      this.typingTimeout && clearTimeout(this.typingTimeout);
+      // this.typingTimeout && clearTimeout(this.typingTimeout);
     }
   }
 

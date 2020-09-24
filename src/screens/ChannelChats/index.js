@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {
+  Dimensions,
   ImageBackground,
   View,
   PermissionsAndroid,
@@ -9,6 +10,7 @@ import {
   Modal,
   Image,
   PixelRatio,
+  TouchableOpacity
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -31,6 +33,7 @@ import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   getChannelConversations,
   readAllChannelMessages,
@@ -44,6 +47,7 @@ import {
   checkLoginBonusOfChannel,
   selectLoginJackpotOfChannel,
   assetXPValueOfChannel,
+  getLocalFollowingChannels,
 } from '../../redux/reducers/channelReducer';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
 import {ConfirmationModal, UploadSelectModal} from '../../components/Modals';
@@ -56,10 +60,12 @@ import {
   updateMessageById,
   deleteMessageById,
   setMessageUnsend,
+  updateChannelUnReadCountById
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import bonusImage from '../../../assets/images/bonus_bg.png';
+
+const dimensions = Dimensions.get("window");
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -132,6 +138,14 @@ class ChannelChats extends Component {
       this.checkHasLoginBonus();
     }
     // this.getLoginBonus();
+  }
+
+  updateUnReadChannelCount = () => {
+    updateChannelUnReadCountById(this.props.currentChannel.id,0);
+
+    this.props.getLocalFollowingChannels().then((res) => {
+      this.props.setCommonChatConversation();
+    });
   }
 
   _orientationDidChange = (orientation) => {
@@ -1334,12 +1348,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   bonusImage: {
-    width: PixelRatio.getPixelSizeForLayoutSize(50),
-    height: PixelRatio.getPixelSizeForLayoutSize(50),
+    width: Math.round((dimensions.width) / 4),
+    height: Math.round((dimensions.width) / 4),
   },
   bonusImageZoom: {
-    width: PixelRatio.getPixelSizeForLayoutSize(70),
-    height: PixelRatio.getPixelSizeForLayoutSize(70),
+    width: Math.round((dimensions.width) / 3),
+    height: Math.round((dimensions.width) / 3),
   },
 });
 
@@ -1367,6 +1381,8 @@ const mapDispatchToProps = {
   checkLoginBonusOfChannel,
   selectLoginJackpotOfChannel,
   assetXPValueOfChannel,
+  setCommonChatConversation,
+  getLocalFollowingChannels,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

@@ -649,6 +649,63 @@ export const setGroupLastMessageUnsend = (id) => {
 //#endregion
 
 //#region User friends
+
+export const setUserFriendsFromApi = (friends) => {
+    return new Promise(resolve=>{
+      for (let i=0; i<friends.length;i++) {
+        let item = friends[i];
+        var obj = realm
+          .objects('user_friends')
+          .filtered('user_id =' + item.user_id);
+        if (obj.length > 0) {
+          // alert('matching friend');
+          realm.write(() => {
+            realm.create('user_friends', {
+              user_id: item.user_id,
+              friend: item.friend,
+              unread_msg: item.unread_msg,
+              last_msg_id: item.last_msg_id,
+              username: item.username,
+              avatar: item.avatar,
+              profile_picture: item.profile_picture,
+              background_image: item.background_image,
+              last_msg: item.last_msg ? item.last_msg : '',
+              last_msg_type: item.last_msg_type,
+              display_name: item.display_name,
+              isChecked: false,
+              is_online: item.is_online,
+              is_typing: false,
+              timestamp: item.timestamp,
+            },'modified');
+          });
+        } else {
+          realm.write(() => {
+            realm.create('user_friends', {
+              user_id: item.user_id,
+              friend: item.friend,
+              unread_msg: item.unread_msg,
+              last_msg_id: item.last_msg_id,
+              username: item.username,
+              avatar: item.avatar,
+              profile_picture: item.profile_picture,
+              background_image: item.background_image,
+              last_msg: item.last_msg ? item.last_msg : '',
+              last_msg_type: item.last_msg_type,
+              display_name: item.display_name,
+              isChecked: false,
+              is_online: item.is_online,
+              is_typing: false,
+              timestamp: item.timestamp,
+            });
+          });
+        }
+        if(i>=friends.length-1){
+          resolve();
+        }
+      }
+    });
+}
+
 export const getLocalUserFriends = () => {
   return realm.objects('user_friends')
   .sorted('timestamp', { ascending: false });

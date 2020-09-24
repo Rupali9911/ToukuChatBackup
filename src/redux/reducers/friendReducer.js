@@ -3,7 +3,8 @@ import Realm from 'realm';
 import {
   setFriendChatConversation,
   getFriendChatConversation,
-  getLocalUserFriends
+  getLocalUserFriends,
+  setUserFriendsFromApi
 } from '../../storage/Service';
 import { dispatch } from 'rxjs/internal/observable/pairs';
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
@@ -238,6 +239,9 @@ export const getUserFriends = () => (dispatch) =>
             });
             dispatch(setUnreadFriendMsgsCounts(unread_counts));
           }
+
+          setUserFriendsFromApi(friends);
+
           friends.sort((a, b) =>
             a.timestamp &&
             b.timestamp &&
@@ -246,53 +250,54 @@ export const getUserFriends = () => (dispatch) =>
               : -1
           );
 
-          for (let item of friends) {
-            var obj = realm
-              .objects('user_friends')
-              .filtered('user_id =' + item.user_id);
-            if (obj.length > 0) {
-              // alert('matching friend');
-              realm.write(() => {
-                realm.create('user_friends', {
-                  user_id: item.user_id,
-                  friend: item.friend,
-                  unread_msg: item.unread_msg,
-                  last_msg_id: item.last_msg_id,
-                  username: item.username,
-                  avatar: item.avatar,
-                  profile_picture: item.profile_picture,
-                  background_image: item.background_image,
-                  last_msg: item.last_msg ? item.last_msg : '',
-                  last_msg_type: item.last_msg_type,
-                  display_name: item.display_name,
-                  isChecked: false,
-                  is_online: item.is_online,
-                  is_typing: false,
-                  timestamp: item.timestamp,
-                },'modified');
-              });
-            } else {
-              realm.write(() => {
-                realm.create('user_friends', {
-                  user_id: item.user_id,
-                  friend: item.friend,
-                  unread_msg: item.unread_msg,
-                  last_msg_id: item.last_msg_id,
-                  username: item.username,
-                  avatar: item.avatar,
-                  profile_picture: item.profile_picture,
-                  background_image: item.background_image,
-                  last_msg: item.last_msg ? item.last_msg : '',
-                  last_msg_type: item.last_msg_type,
-                  display_name: item.display_name,
-                  isChecked: false,
-                  is_online: item.is_online,
-                  is_typing: false,
-                  timestamp: item.timestamp,
-                });
-              });
-            }
-          }
+          // for (let item of friends) {
+          //   var obj = realm
+          //     .objects('user_friends')
+          //     .filtered('user_id =' + item.user_id);
+          //   if (obj.length > 0) {
+          //     // alert('matching friend');
+          //     realm.write(() => {
+          //       realm.create('user_friends', {
+          //         user_id: item.user_id,
+          //         friend: item.friend,
+          //         unread_msg: item.unread_msg,
+          //         last_msg_id: item.last_msg_id,
+          //         username: item.username,
+          //         avatar: item.avatar,
+          //         profile_picture: item.profile_picture,
+          //         background_image: item.background_image,
+          //         last_msg: item.last_msg ? item.last_msg : '',
+          //         last_msg_type: item.last_msg_type,
+          //         display_name: item.display_name,
+          //         isChecked: false,
+          //         is_online: item.is_online,
+          //         is_typing: false,
+          //         timestamp: item.timestamp,
+          //       },'modified');
+          //     });
+          //   } else {
+          //     realm.write(() => {
+          //       realm.create('user_friends', {
+          //         user_id: item.user_id,
+          //         friend: item.friend,
+          //         unread_msg: item.unread_msg,
+          //         last_msg_id: item.last_msg_id,
+          //         username: item.username,
+          //         avatar: item.avatar,
+          //         profile_picture: item.profile_picture,
+          //         background_image: item.background_image,
+          //         last_msg: item.last_msg ? item.last_msg : '',
+          //         last_msg_type: item.last_msg_type,
+          //         display_name: item.display_name,
+          //         isChecked: false,
+          //         is_online: item.is_online,
+          //         is_typing: false,
+          //         timestamp: item.timestamp,
+          //       });
+          //     });
+          //   }
+          // }
+
           var user_friends = realm.objects('user_friends');
           // console.log('user_friends', user_friends);
 

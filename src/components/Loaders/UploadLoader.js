@@ -5,11 +5,19 @@ import { Colors } from '../../constants';
 export default class UploadLoader extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      progress: this.props.progress
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.progress) {
+      this.setState({ progress: nextProps.progress });
+    }
   }
 
   render() {
-    const { large } = this.props;
+    const { large, progress } = this.props;
     return (
       <View
         style={{

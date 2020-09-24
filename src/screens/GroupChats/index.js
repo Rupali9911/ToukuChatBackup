@@ -21,11 +21,14 @@ import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   getGroupConversation,
   getUserGroups,
   getGroupDetail,
   getGroupMembers,
+  getLocalUserGroups,
+  updateUnreadGroupMsgsCounts,
   setCurrentGroupDetail,
   setCurrentGroupMembers,
   deleteGroup,
@@ -48,6 +51,7 @@ import {
   deleteGroupMessageById,
   updateGroupMessageById,
   setGroupMessageUnsend,
+  updateUnReadCount,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -446,6 +450,19 @@ class GroupChats extends Component {
     this.getGroupConversationInitial();
     this.getGroupDetail();
     this.getGroupMembers();
+
+    this.updateUnReadGroupChatCount();
+
+  }
+
+  updateUnReadGroupChatCount = async () => {
+    updateUnReadCount(this.props.currentGroup.group_id,0);
+
+    this.props.updateUnreadGroupMsgsCounts(0);
+
+    this.props.getLocalUserGroups().then((res) => {
+      this.props.setCommonChatConversation();
+    });
   }
 
   _orientationDidChange = (orientation) => {
@@ -1090,6 +1107,9 @@ const mapDispatchToProps = {
   unSendGroupMessage,
   setGroupConversation,
   resetGroupConversation,
+  setCommonChatConversation,
+  getLocalUserGroups,
+  updateUnreadGroupMsgsCounts,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

@@ -18,6 +18,7 @@ import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   getPersonalConversation,
   sendPersonalMessage,
@@ -30,6 +31,8 @@ import {
   setFriendConversation,
   addNewSendMessage,
   resetFriendConversation,
+  updateUnreadFriendMsgsCounts,
+  setUserFriends,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
@@ -43,6 +46,7 @@ import {
   deleteFriendMessageById,
   setFriendMessageUnsend,
   updateAllFriendMessageRead,
+  updateFriendsUnReadCount,
   realm,
 } from '../../storage/Service';
 
@@ -135,10 +139,20 @@ class FriendChats extends Component {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getPersonalConversationInitial();
     this.markFriendMsgsRead();
-
+    this.updateUnReadFriendChatCount();
     // this.SingleSocket.create({user_id: this.props.userData.id});
 
     // alert(JSON.stringify(this.props.userData));
+  }
+
+  updateUnReadFriendChatCount = () => {
+    updateFriendsUnReadCount(this.props.currentFriend.friend, 0);
+
+    this.props.updateUnreadFriendMsgsCounts(0);
+
+    this.props.setUserFriends().then((res) => {
+      this.props.setCommonChatConversation();
+    });
   }
 
   _orientationDidChange = (orientation) => {
@@ -995,6 +1009,9 @@ const mapDispatchToProps = {
   setFriendConversation,
   addNewSendMessage,
   resetFriendConversation,
+  setCommonChatConversation,
+  updateUnreadFriendMsgsCounts,
+  setUserFriends,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);
