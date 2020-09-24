@@ -68,7 +68,7 @@ class TabBarComp extends Component {
       <LinearGradient
         //   start={{ x: 0.1, y: 0.7 }}
         //   end={{ x: 0.5, y: 0.2 }}
-        locations={[0, 1]}
+        locations={[0, 0.97, 1]}
         colors={[
           Colors.foorter_gradient_1,
           Colors.foorter_gradient_2,
