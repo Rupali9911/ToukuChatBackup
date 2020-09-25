@@ -788,9 +788,10 @@ class GroupChats extends Component {
       .leaveGroup(payload)
       .then((res) => {
         if (res.status === true) {
+          console.log('response',res);
           Toast.show({
             title: 'Touku',
-            text: translate('common.success'),
+            text: translate(res.message),
             type: 'positive',
           });
           // setTimeout(()=>{
