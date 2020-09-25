@@ -37,7 +37,7 @@ export default class CheckBox extends Component {
           {/*colors={this.getGradientColors()}*/}
           {/*style={{flex: 1, borderRadius: 4}}*/}
         {/*/>*/}
-          <FontAwesome5 name={isChecked ? 'check-square' : 'square' }  color= {Colors.white} size={25}/>
+          <FontAwesome5 name={isChecked ? 'check-square' : 'square' }  color= {Colors.green} size={25}/>
       </TouchableOpacity>
     );
   }

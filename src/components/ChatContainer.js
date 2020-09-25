@@ -18,6 +18,7 @@ import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import {translate} from '../redux/reducers/languageReducer';
 import {Colors, Fonts, Images, Icons} from '../constants';
+import {isIphoneX} from '../../src/utils';
 import NoData from './NoData';
 const {height} = Dimensions.get('window');
 
@@ -186,16 +187,16 @@ class ChatContainer extends Component {
               paddingBottom:
                 Platform.OS === 'android'
                   ? orientation === 'PORTRAIT'
-                    ? height * 0.03
+                    ? height * 0
                     : height * 0.05
                   : orientation === 'PORTRAIT'
-                  ? height * 0.01
+                  ? height * 0
                   : height * 0.03,
             },
           ]}>
           <Fragment>
             <FlatList
-              style={{marginBottom: 20}}
+              style={{}}
               contentContainerStyle={[
                 chatStyle.messareAreaScroll,
                 isReply && {paddingBottom: '20%'},
@@ -426,9 +427,10 @@ class ChatContainer extends Component {
 
 const chatStyle = StyleSheet.create({
   messageAreaConatiner: {
-    flex: 0.95,
+    flex: 1,
     justifyContent: 'flex-end',
     backgroundColor: Colors.light_pink,
+    marginBottom: isIphoneX() ? 70 : 50,
   },
   messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {

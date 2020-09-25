@@ -31,6 +31,7 @@ import {
   updateUnreadGroupMsgsCounts,
   setCurrentGroupDetail,
   setCurrentGroupMembers,
+  setCurrentGroup,
   deleteGroup,
   sendGroupMessage,
   leaveGroup,
@@ -52,6 +53,8 @@ import {
   updateGroupMessageById,
   setGroupMessageUnsend,
   updateUnReadCount,
+  deleteGroupById,
+  deleteAllGroupMessageByGroupId
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -579,7 +582,23 @@ class GroupChats extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          msg_id: item.msg_id,
+          sender_id: item.sender_id,
+          group_id: item.group_id,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          sender_picture: item.sender_picture,
+          message_body: item.message_body,
+          is_edited: item.is_edited,
+          is_unsent: item.is_unsent,
+          timestamp: item.timestamp,
+          reply_to: item.reply_to,
+          mentions: item.mentions,
+          read_count: item.read_count,
+          created: item.created
+        }
+        conversations = [...conversations, i];
       });
       this.props.setGroupConversation(conversations);
     }
@@ -605,7 +624,23 @@ class GroupChats extends Component {
           );
           let conversations = [];
           chat.map((item, index) => {
-            conversations = [...conversations, item];
+            let i = {
+              msg_id: item.msg_id,
+              sender_id: item.sender_id,
+              group_id: item.group_id,
+              sender_username: item.sender_username,
+              sender_display_name: item.sender_display_name,
+              sender_picture: item.sender_picture,
+              message_body: item.message_body,
+              is_edited: item.is_edited,
+              is_unsent: item.is_unsent,
+              timestamp: item.timestamp,
+              reply_to: item.reply_to,
+              mentions: item.mentions,
+              read_count: item.read_count,
+              created: item.created
+            }
+            conversations = [...conversations, i];
           });
 
           // this.setState({ conversation: conversations });
@@ -623,7 +658,23 @@ class GroupChats extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          msg_id: item.msg_id,
+          sender_id: item.sender_id,
+          group_id: item.group_id,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          sender_picture: item.sender_picture,
+          message_body: item.message_body,
+          is_edited: item.is_edited,
+          is_unsent: item.is_unsent,
+          timestamp: item.timestamp,
+          reply_to: item.reply_to,
+          mentions: item.mentions,
+          read_count: item.read_count,
+          created: item.created
+        }
+        conversations = [...conversations, i];
       });
 
       // this.setState({ conversation: conversations });
@@ -649,7 +700,23 @@ class GroupChats extends Component {
           );
           let conversations = [];
           chat.map((item, index) => {
-            conversations = [...conversations, item];
+            let i = {
+              msg_id: item.msg_id,
+              sender_id: item.sender_id,
+              group_id: item.group_id,
+              sender_username: item.sender_username,
+              sender_display_name: item.sender_display_name,
+              sender_picture: item.sender_picture,
+              message_body: item.message_body,
+              is_edited: item.is_edited,
+              is_unsent: item.is_unsent,
+              timestamp: item.timestamp,
+              reply_to: item.reply_to,
+              mentions: item.mentions,
+              read_count: item.read_count,
+              created: item.created
+            }
+            conversations = [...conversations, i];
           });
 
           // this.setState({ conversation: conversations });
@@ -693,6 +760,15 @@ class GroupChats extends Component {
       .catch((err) => {});
   }
 
+  deleteLocalGroup = (id) => {
+    this.props.setCurrentGroup(null);
+    deleteGroupById(id);
+    deleteAllGroupMessageByGroupId(id);
+    this.props.getLocalUserGroups().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  }
+
   handleMessage(message) {
     this.setState({newMessageText: message});
   }
@@ -717,6 +793,9 @@ class GroupChats extends Component {
             text: translate('common.success'),
             type: 'positive',
           });
+          // setTimeout(()=>{
+          //   this.deleteLocalGroup(this.props.currentGroup.group_id);
+          // },2000);
           this.props.getUserGroups();
           this.props.navigation.goBack();
         }
@@ -752,6 +831,7 @@ class GroupChats extends Component {
           });
           this.props.getUserGroups();
           this.props.navigation.goBack();
+          // this.deleteLocalGroup(this.props.currentGroup.group_id);
         }
       })
       .catch((err) => {
@@ -1101,6 +1181,7 @@ const mapDispatchToProps = {
   setCurrentGroupMembers,
   deleteGroup,
   leaveGroup,
+  setCurrentGroup,
   sendGroupMessage,
   translateMessage,
   editGroupMessage,
