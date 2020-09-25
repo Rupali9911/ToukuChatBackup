@@ -994,7 +994,12 @@
       "chooseOption": "Choose Option",
       "takePhoto": "Take Photo",
       "chooseFromLibrary": "Choose from library",
-      "cancelChooseOption": "Cancel"
+      "cancelChooseOption": "Cancel",
+      "reportChannel": "Report channel",
+      "userReported": "User reported",
+      "userBlocked": "User blocked",
+      "uploading": "Uploading…",
+      "channelReported": "Channel reported"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",

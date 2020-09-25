@@ -167,7 +167,7 @@ class Chat extends Component {
     // this.getUserFriends();
     // this.setCommonConversation();
     this.props.getUserConfiguration().then((res) => {
-      console.log('getUserConfiguration', res.language);
+      console.log('getUserConfiguration', res);
       setI18nConfig(res.language);
 
       let filteredArray = languageArray.filter(
@@ -1733,7 +1733,9 @@ class Chat extends Component {
                   item.last_msg
                     ? item.last_msg.type === 'text'
                       ? item.last_msg.text
-                      : item.last_msg.type
+                      : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
+                          ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
+                              : translate('pages.xchat.audio'))
                     : ''
                 }
                 date={item.timestamp}
@@ -1749,7 +1751,9 @@ class Chat extends Component {
                   item.last_msg
                     ? item.last_msg.msg_type === 'text'
                       ? item.last_msg.message_body
-                      : item.last_msg.msg_type
+                      : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
+                          ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
+                              : translate('pages.xchat.audio'))
                     : ''
                 }
                 date={item.created}
@@ -1766,7 +1770,9 @@ class Chat extends Component {
                   item.last_msg
                     ? item.last_msg_type === 'text'
                       ? item.last_msg
-                      : item.last_msg_type
+                      : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
+                          ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
+                              : translate('pages.xchat.audio'))
                     : ''
                 }
                 image={getAvatar(item.profile_picture)}

@@ -996,7 +996,12 @@
       "chooseOption": "옵션 선택",
       "takePhoto": "사진을 찍다",
       "chooseFromLibrary": "라이브러리에서 선택",
-      "cancelChooseOption": "취소"
+      "cancelChooseOption": "취소",
+      "reportChannel": "신고 채널",
+      "userReported": "신고 된 사용자",
+      "userBlocked": "사용자 차단",
+      "uploading": "업로드 중…",
+      "channelReported": "신고 된 채널"
     },
     "welcome":{
       "theWorldIsConnected":"\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

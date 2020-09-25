@@ -32,7 +32,7 @@ class QRCodeClass extends Component {
                 modalVisible ? (<View style={styles.mainContainer}>
                         <View style={styles.subCont}/>
 
-                        <View style={{width: 250}}>
+                        <View style={{width: 250, marginTop: (Dimensions.get('window').height/2)-125}}>
                             <LinearGradient
                                 start={{x: 0.1, y: 0.7}}
                                 end={{x: 0.5, y: 0.2}}
@@ -69,8 +69,9 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
     },
     subCont: {
         position: 'absolute',

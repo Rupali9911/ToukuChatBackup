@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Colors } from '../../constants';
+import {translate} from "../../redux/reducers/languageReducer";
 
 export default class UploadLoader extends Component {
   constructor(props) {
@@ -41,7 +42,7 @@ export default class UploadLoader extends Component {
             size={large ? 'large' : 'small'}
           />
           <Text style={{ color: Colors.white, marginTop: 10 }}>
-            Uploading...
+              {translate('pages.xchat.uploading')}
           </Text>
         </View>
       </View>

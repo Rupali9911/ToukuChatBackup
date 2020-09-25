@@ -995,7 +995,12 @@
       "chooseOption": "選擇選項",
       "takePhoto": "拍照",
       "chooseFromLibrary": "從圖書館挑選",
-      "cancelChooseOption": "取消"
+      "cancelChooseOption": "取消",
+      "reportChannel": "報告渠道",
+      "userReported": "用戶報告",
+      "userBlocked": "用戶被阻止",
+      "uploading": "上載中...",
+      "channelReported": "頻道已報告"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",
