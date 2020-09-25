@@ -35,6 +35,7 @@ export default class ChatInput extends Component {
       value,
       placeholder,
       sendingImage,
+      sendEnable,
     } = this.props;
     return (
       <LinearGradient
@@ -98,15 +99,15 @@ export default class ChatInput extends Component {
         </View>
         <TouchableOpacity
           style={chatInput.sendButoonContainer}
-          activeOpacity={value != 0 || sendingImage.uri ? 0 : 1}
+          activeOpacity={value || sendingImage.uri ? 0 : 1}
           onPress={() => {
-            value != 0 || sendingImage.uri ? onSend() : null;
+            value || sendingImage.uri ? onSend() : null;
           }}>
           <Image
             source={Icons.icon_send_button}
             style={[
               chatInput.sandButtonImage,
-              (value != 0 || sendingImage.uri) && {tintColor: null},
+              (value || sendingImage.uri) && {tintColor: null},
             ]}
             resizeMode={'contain'}
           />

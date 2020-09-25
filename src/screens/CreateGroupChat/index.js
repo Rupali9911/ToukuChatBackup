@@ -169,7 +169,6 @@ class CreateGroupChat extends Component {
         };
 
         this.props.createNewGroup(groupData).then((res) => {
-          this.setState({loading: false});
           Toast.show({
             title: 'Touku',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
@@ -263,7 +262,7 @@ class CreateGroupChat extends Component {
             scrollEnabled
             enableOnAndroid={true}
             keyboardShouldPersistTaps={'handled'}
-            extraScrollHeight={100}
+            // extraScrollHeight={100}
             extraHeight={100}
             behavior={'position'}
             contentContainerStyle={createGroupStyles.mainContainer}

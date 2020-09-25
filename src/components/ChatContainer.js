@@ -164,6 +164,7 @@ class ChatContainer extends Component {
       onAttachmentPress,
       sendingImage,
       currentChannel,
+      sendEnable,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -417,6 +418,7 @@ class ChatContainer extends Component {
           onChangeText={(message) => handleMessage(message)}
           onSend={onMessageSend}
           value={newMessageText}
+          sendEnable={sendEnable}
           placeholder={translate('pages.xchat.enterMessage')}
           sendingImage={sendingImage}
         />

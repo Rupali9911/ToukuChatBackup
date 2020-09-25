@@ -153,7 +153,7 @@ class FriendChats extends Component {
     this.props.setUserFriends().then((res) => {
       this.props.setCommonChatConversation();
     });
-  }
+  };
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -275,8 +275,11 @@ class FriendChats extends Component {
         to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
-      this.state.conversations.unshift(sendmsgdata);
-      this.props.setFriendConversation([sendmsgdata,...this.props.chatFriendConversation]);
+      // this.state.conversations.unshift(sendmsgdata);
+      this.props.setFriendConversation([
+        sendmsgdata,
+        ...this.props.chatFriendConversation,
+      ]);
       this.props.sendPersonalMessage(data);
     } else {
       let data = {
@@ -286,8 +289,11 @@ class FriendChats extends Component {
         msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
       };
-      this.state.conversations.unshift(sendmsgdata);
-      this.props.setFriendConversation([sendmsgdata,...this.props.chatFriendConversation]);
+      // this.state.conversations.unshift(sendmsgdata);
+      this.props.setFriendConversation([
+        sendmsgdata,
+        ...this.props.chatFriendConversation,
+      ]);
       this.props.sendPersonalMessage(data);
     }
     this.setState({
@@ -929,6 +935,7 @@ class FriendChats extends Component {
             onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}
             newMessageText={newMessageText}
+            sendEnable={newMessageText.lenght ? true : false}
             messages={chatFriendConversation}
             orientation={this.state.orientation}
             repliedMessage={this.state.repliedMessage}

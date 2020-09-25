@@ -509,11 +509,11 @@ class ChannelChats extends Component {
     };
     // console.log('ChannelChats -> onMessageSend -> sendmsgdata', sendmsgdata);
     this.props.addNewSendMessage(sendmsgdata);
-    this.state.conversations.unshift(sendmsgdata);
     this.props.setChannelConversation([
       sendmsgdata,
       ...this.props.chatConversation,
     ]);
+    // this.state.conversations.unshift(sendmsgdata);
     this.props.sendChannelMessage(messageData);
     this.setState({
       newMessageText: '',
@@ -905,6 +905,7 @@ class ChannelChats extends Component {
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
             newMessageText={newMessageText}
+            sendEnable={newMessageText.lenght ? true : false}
             messages={chatConversation}
             orientation={orientation}
             repliedMessage={repliedMessage}
