@@ -184,7 +184,6 @@ class ChatContainer extends Component {
           style={[
             chatStyle.messageAreaConatiner,
             {
-              flex: Platform.OS==='ios'?0.95:1,
               paddingBottom:
                 Platform.OS === 'android'
                   ? orientation === 'PORTRAIT'

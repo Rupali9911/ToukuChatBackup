@@ -28,6 +28,7 @@ import {
 import {
     getMissedSocketEventsById,
 } from './src/redux/reducers/userReducer';
+import SingleSocket from './src/helpers/SingleSocket';
 
 export default class App extends Component {
   constructor(props) {
@@ -99,6 +100,11 @@ export default class App extends Component {
                         getMissedSocketEventsById(idObj[0].socket_event_id)
                     }
                 }
+
+                this.SingleSocket = SingleSocket.getInstance();
+
+                this.SingleSocket.checkSocketConnected();
+
             }
         }
         this.setState({appState: nextAppState})

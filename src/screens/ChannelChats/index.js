@@ -102,12 +102,12 @@ class ChannelChats extends Component {
         },
         {
           id: 2,
-          title: 'Report Channel',
+          title: translate('pages.xchat.reportChannel'),
           icon: 'user-slash',
           onPress: () => {
             Toast.show({
               title: 'Touku',
-              text: 'Channel reported',
+              text: translate('pages.xchat.channelReported'),
               type: 'positive',
             });
           },

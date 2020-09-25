@@ -33,3 +33,28 @@
     //   : null;
     // this.updateFlagAndFormatNumber(number, actionAfterSetState);
   }
+  
+### [iOS] Fixes TextInput Text Rendering Issue when typing Japanese, Chinese etc
+Update only the lines with the + operator at the start of them
+
+-Goto ./node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m
+
+(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
+{
+ + if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
+ +   return;
+ +  }
+  _defaultTextAttributes = defaultTextAttributes;
+  self.typingAttributes = defaultTextAttributes;
+  [self _updatePlaceholder];
+
+-Goto ./node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.m
+
+(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
+{
++  if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
++    return;
++  }
+  _defaultTextAttributes = defaultTextAttributes;
+  [super setDefaultTextAttributes:defaultTextAttributes];
+  [self _updatePlaceholder];

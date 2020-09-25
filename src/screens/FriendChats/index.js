@@ -93,7 +93,7 @@ class FriendChats extends Component {
           onPress: () => {
             Toast.show({
               title: 'Touku',
-              text: 'User reported',
+              text: translate('pages.xchat.userReported'),
               type: 'positive',
             });
           },
@@ -105,7 +105,7 @@ class FriendChats extends Component {
           onPress: () => {
             Toast.show({
               title: 'Touku',
-              text: 'User blocked',
+              text: translate('pages.xchat.userBlocked'),
               type: 'positive',
             });
           },

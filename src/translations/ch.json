@@ -995,7 +995,12 @@
       "chooseOption": "选择选项",
       "takePhoto": "拍照",
       "chooseFromLibrary": "从图书馆挑选",
-      "cancelChooseOption": "取消"
+      "cancelChooseOption": "取消",
+      "reportChannel": "报告渠道",
+      "userReported": "用户报告",
+      "userBlocked": "用户被阻止",
+      "uploading": "上载中...",
+      "channelReported": "频道已报告"
     },
     "welcome":{
       "theWorldIsConnected":"世界相连",

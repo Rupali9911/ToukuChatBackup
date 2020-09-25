@@ -9,6 +9,9 @@ import {
 import {WebView} from 'react-native-webview';
 import {Icons, Images} from "../../constants";
 import PropTypes from 'prop-types';
+import {
+    translate,
+} from '../../redux/reducers/languageReducer';
 
 export default class WebViewClass extends Component {
     constructor(props) {
@@ -25,17 +28,18 @@ export default class WebViewClass extends Component {
         const {modalVisible, url, webViewLoaded} = this.props;
         console.log('URL to webview', url)
         return (
-            <SafeAreaView style={{flex: 1}}>
+
                 <Modal
                     animationType="slide"
                     transparent={false}
                     visible={modalVisible}
                 >
+                    <SafeAreaView style={{flex: 1}}>
                     <TouchableOpacity
-                        style={{height: 40, width: 40, top: 20}}
+                        style={{height: 20, width: 60, marginLeft: 10}}
                         onPress={() => this.closeModal()}
                     >
-                        <Text >Close</Text>
+                        <Text >{translate('common.close')}</Text>
                     </TouchableOpacity>
                     <ImageBackground source={Images.image_touku_bg_phone}
                                      style={{flex:1}} resizeMode={'cover'}>
@@ -44,8 +48,9 @@ export default class WebViewClass extends Component {
                     source={{uri: url}}
                     cacheEnabled={true}/>
                     </ImageBackground>
+                    </SafeAreaView>
                 </Modal>
-            </SafeAreaView>
+
         );
     }
 }

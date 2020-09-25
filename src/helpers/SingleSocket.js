@@ -15,6 +15,16 @@ export default class SingleSocket extends Component {
     this.socketChecker;
   }
 
+  static myInstance = null;
+  
+  static getInstance() {
+    if (SingleSocket.myInstance == null) {
+      SingleSocket.myInstance = new SingleSocket();
+    }
+
+    return this.myInstance;
+  }
+
   async create({...config}) {
     this.userId = config.user_id;
     this.jwt = config.token;
