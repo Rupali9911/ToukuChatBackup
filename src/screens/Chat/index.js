@@ -254,7 +254,7 @@ class Chat extends Component {
     //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
-      message.text.data.type,
+      message.text.data.type,this.props.currentRouteName
     );
     if (message.text.data.socket_event_id) {
       updateLastEventId(message.text.data.socket_event_id);
@@ -579,7 +579,7 @@ class Chat extends Component {
 
           setGroupChatConversation([message.text.data.message_details]);
 
-          if (
+          if (this.props.currentRouteName == "GroupChats" &&
             currentGroup &&
             message.text.data.message_details.group_id == currentGroup.group_id
           ) {
@@ -623,7 +623,7 @@ class Chat extends Component {
           this.props.setCommonChatConversation();
         });
       }
-      if (
+      if (this.props.currentRouteName == "GroupChats" &&
         currentGroup &&
         message.text.data.message_details.group_id == currentGroup.group_id
       ) {
@@ -654,7 +654,7 @@ class Chat extends Component {
           this.props.setCommonChatConversation();
         });
       }
-      if (
+      if (this.props.currentRouteName == "GroupChats" &&
         currentGroup &&
         message.text.data.message_details.group_id == currentGroup.group_id
       ) {
@@ -945,7 +945,7 @@ class Chat extends Component {
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
         });
-        if (
+        if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
@@ -955,7 +955,7 @@ class Chat extends Component {
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
         
-        if (
+        if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.from_user.id ==
             currentFriend.user_id
@@ -1003,7 +1003,7 @@ class Chat extends Component {
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
       updateFriendMessageById(editMessageId, newMessageText, messageType);
-      if (
+      if (this.props.currentRouteName == "FriendChats" &&
         currentFriend &&
         message.text.data.message_details.to_user.id == currentFriend.user_id
       ) {
@@ -1036,7 +1036,7 @@ class Chat extends Component {
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
       updateFriendMessageById(editMessageId, newMessageText, messageType);
-      if (
+      if (this.props.currentRouteName == "FriendChats" &&
         currentFriend &&
         message.text.data.message_details.from_user.id == currentFriend.user_id
       ) {
@@ -1096,7 +1096,7 @@ class Chat extends Component {
         //   );
         // }
 
-        if (
+        if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
@@ -1131,7 +1131,7 @@ class Chat extends Component {
         //   );
         // }
 
-        if (
+        if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.from_user.id ==
             currentFriend.user_id
@@ -1169,7 +1169,7 @@ class Chat extends Component {
             message.text.data.message_details,
           );
         }
-        if (
+        if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
@@ -1192,7 +1192,7 @@ class Chat extends Component {
           );
         }
 
-        if (
+        if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.from_user.id ==
             currentFriend.user_id
@@ -1212,7 +1212,7 @@ class Chat extends Component {
       for (let i of userGroups) {
       }
     }
-    if (
+    if (this.props.currentRouteName == "GroupChats" &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -1288,7 +1288,7 @@ class Chat extends Component {
         }
       }
     }
-    if (
+    if (this.props.currentRouteName == "GroupChats" &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -1317,7 +1317,7 @@ class Chat extends Component {
 
   onRemoveGroupMember(message) {
     const {currentGroup} = this.props;
-    if (
+    if (this.props.currentRouteName == "GroupChats" &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -1342,7 +1342,7 @@ class Chat extends Component {
           });
         }
       }
-      if (
+      if (this.props.currentRouteName == "GroupChats" &&
         currentGroup &&
         message.text.data.message_details.group_id == currentGroup.group_id
       ) {
@@ -1849,6 +1849,7 @@ const mapStateToProps = (state) => {
     currentFriend: state.friendReducer.currentFriend,
     currentGroup: state.groupReducer.currentGroup,
     currentChannel: state.channelReducer.currentChannel,
+    currentRouteName: state.userReducer.currentRouteName
   };
 };
 

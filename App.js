@@ -1,22 +1,22 @@
-import React, {Component, useEffect} from 'react';
-import {View, Text, StatusBar, AppState, Linking, Alert} from 'react-native';
+import React, { Component, useEffect } from 'react';
+import { View, Text, StatusBar, AppState, Linking, Alert } from 'react-native';
 import Routes from './src/navigation';
-import {Provider} from 'react-redux';
-import {Provider as PaperProvider} from 'react-native-paper';
-import {PersistGate} from 'redux-persist/es/integration/react';
-import {store, persistor} from './src/redux/store';
+import { Provider } from 'react-redux';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { PersistGate } from 'redux-persist/es/integration/react';
+import { store, persistor } from './src/redux/store';
 import Root from './src/screens/Root';
 import InternetInfo from './src/components/InternetInfo';
-import {CLEAR_BADGE_COUNT, client, socket, userAgent} from './src/helpers/api';
+import { CLEAR_BADGE_COUNT, client, socket, userAgent } from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from "@react-native-community/async-storage";
-import {loginUrl, registerUrl, channelUrl, DEEPLINK, Environment, NotificationType} from './src/constants/index'
+import { loginUrl, registerUrl, channelUrl, DEEPLINK, Environment, NotificationType } from './src/constants/index'
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
-import {setCurrentChannel} from "./src/redux/reducers/channelReducer";
-import {setCurrentFriend} from "./src/redux/reducers/friendReducer";
-import {setCurrentGroup} from "./src/redux/reducers/groupReducer";
+import { setCurrentChannel } from "./src/redux/reducers/channelReducer";
+import { setCurrentFriend } from "./src/redux/reducers/friendReducer";
+import { setCurrentGroup } from "./src/redux/reducers/groupReducer";
 import {
     isEventIdExists,
     getLastEventId,
@@ -27,47 +27,48 @@ import {
 
 import {
     getMissedSocketEventsById,
+    setCurrentRouteData
 } from './src/redux/reducers/userReducer';
 import SingleSocket from './src/helpers/SingleSocket';
 
 export default class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-        appState: AppState.currentState,
-    };
-      this.notif = new NotifService(
-          //this.onNotif.bind(this),
-      );
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            appState: AppState.currentState,
+        };
+        this.notif = new NotifService(
+            //this.onNotif.bind(this),
+        );
+    }
 
-  componentDidMount() {
-      this.createNotificationListeners();
-      this.addListener()
-      this.checkNotificationPermission();
-      this.getInitialLinking()
-  }
-    componentWillUnmount () {
+    componentDidMount() {
+        this.createNotificationListeners();
+        this.addListener()
+        this.checkNotificationPermission();
+        this.getInitialLinking()
+    }
+    componentWillUnmount() {
         this.removeListeners()
     }
 
-    getInitialLinking(){
+    getInitialLinking() {
         console.log('getInitialLinking calld')
         Linking.getInitialURL().then((url) => {
             if (url) {
                 setTimeout(() => {
-                    this.handleOpenURL({url})
+                    this.handleOpenURL({ url })
                 }, 3000)
             }
         })
     }
 
-    addListener(){
+    addListener() {
         AppState.addEventListener('change', this._handleAppStateChange)
         Linking.addEventListener('url', this.handleOpenURL)
     }
 
-    removeListeners(){
+    removeListeners() {
         AppState.removeEventListener('change', this._handleAppStateChange)
         Linking.removeEventListener('url', this.handleOpenURL);
         this.backgroundNotificationListener
@@ -77,7 +78,7 @@ export default class App extends Component {
 
     _handleAppStateChange = (nextAppState) => {
         console.log('nextAppState', nextAppState)
-        if (nextAppState === 'inactive'){
+        if (nextAppState === 'inactive') {
             let fCount = store.getState().friendReducer.unreadFriendMsgsCounts
             let gCount = store.getState().groupReducer.unreadGroupMsgsCounts
             let cCount = store.getState().channelReducer.unreadChannelMsgsCounts
@@ -107,16 +108,16 @@ export default class App extends Component {
 
             }
         }
-        this.setState({appState: nextAppState})
+        this.setState({ appState: nextAppState })
     };
 
-    handleOpenURL= async (event) => {
+    handleOpenURL = async (event) => {
         console.log('Deep linking Url', event.url);
         let url = event.url
 
         if (url.indexOf(DEEPLINK.toLowerCase()) > -1) {
             let suffixUrlDeep = Platform.OS === 'ios' ? url.split('touku://')[1].trim() : url.split('touku://touku')[1].trim()
-            if( suffixUrlDeep != ''){
+            if (suffixUrlDeep != '') {
                 url = Environment + suffixUrlDeep
                 console.log('suffixUrlDeep', url)
             }
@@ -124,17 +125,19 @@ export default class App extends Component {
 
         if (url.indexOf(loginUrl) > -1) {
             //setTimeout(() => {
-                NavigationService.navigate('Login', { url: event.url });
-           // }, 1000 );
-        }else if (url.indexOf(registerUrl) > -1) {
+            NavigationService.navigate('Login', { url: event.url });
+            // }, 1000 );
+        } else if (url.indexOf(registerUrl) > -1) {
             let suffixUrl = event.url.split(registerUrl)[1].trim()
             let invitationCode = suffixUrl.split('/').length > 0 ? suffixUrl.split('/')[0].trim() : suffixUrl
             await AsyncStorage.setItem('invitationCode', invitationCode);
             //setTimeout(() => {
-                NavigationService.navigate('SignUp', { pageNumber: 0,
-                    isSocial: false, invitationCode: invitationCode });
-           // }, 1000 );
-        }else if (url.indexOf(channelUrl) > -1){
+            NavigationService.navigate('SignUp', {
+                pageNumber: 0,
+                isSocial: false, invitationCode: invitationCode
+            });
+            // }, 1000 );
+        } else if (url.indexOf(channelUrl) > -1) {
             let suffixUrl = url.split(channelUrl)[1].trim()
             console.log('suffixUrl', suffixUrl)
             let channelId = suffixUrl.split('/').length > 0 ? suffixUrl.split('/')[0].trim() : suffixUrl
@@ -142,31 +145,31 @@ export default class App extends Component {
             //await AsyncStorage.setItem('invitationCode', invitationCode);
             const userToken = await AsyncStorage.getItem('userToken');
             let data = {
-                'id' : channelId
+                'id': channelId
             }
-            if (userToken){
+            if (userToken) {
                 console.log('NavigationService.getCurrentRoute()', NavigationService.getCurrentRoute())
                 let route = NavigationService.getCurrentRoute()
                 let routeName = route.routeName
-                if (routeName && (routeName === 'ChannelInfo' || routeName === 'ChannelChats')){
+                if (routeName && (routeName === 'ChannelInfo' || routeName === 'ChannelChats')) {
                     NavigationService.popToTop()
                 }
-                    // setTimeout(() => {
-                    //     console.log('Chat item',data)
-                        store.dispatch(setCurrentChannel(data))
-                        NavigationService.navigate('ChannelInfo');
-                    // }, 1000 );
+                // setTimeout(() => {
+                //     console.log('Chat item',data)
+                store.dispatch(setCurrentChannel(data))
+                NavigationService.navigate('ChannelInfo');
+                // }, 1000 );
 
-            } else{
+            } else {
                 await AsyncStorage.setItem('channelData', JSON.stringify(data));
-               // setTimeout(() => {
-                    NavigationService.navigate('Login', { url: event.url });
-               // }, 1000 );
+                // setTimeout(() => {
+                NavigationService.navigate('Login', { url: event.url });
+                // }, 1000 );
             }
         }
     }
 
-    clearBatchCount= async () =>{
+    clearBatchCount = async () => {
         const userAndFcmToken = await AsyncStorage.multiGet(["userToken", "fcmToken"])
         if (userAndFcmToken[0][1] && userAndFcmToken[1][1]) {
             let result = await fetch('https://api.angelium.net/api/xchat/reset-badge-count/',
@@ -226,43 +229,43 @@ export default class App extends Component {
         // When a user tap on a push notification and the app is in background
         this.backgroundNotificationListener = messaging().onNotificationOpenedApp(async (remoteMessage) => {
             console.log('remoteMessage background', remoteMessage)
-                if (remoteMessage.data) {
-                    let notificationData = remoteMessage.data
-                    if (notificationData.notification_type) {
-                        console.log('notificationData and type', notificationData, notificationData.notification_type)
-                        if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED ||
-                            notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST ||
-                            notificationData.notification_type === NotificationType.NEW_FRIEND_REQUEST){
-                            // if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED){
-                            //     NavigationService.navigate('Home', { expandCollapse: 'friends' });
-                            // }else if (notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST){
-                            //     NavigationService.navigate('Home', { expandCollapse: 'friendReq' });
-                            // }
-                            NavigationService.navigate('Home');
-                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_FRIEND ){
-                          //  NavigationService.navigate('Chat');
-                            let friendObj = getUserFriendByFriendId(notificationData.id)
-                            if (friendObj.length > 0) {
-                                store.dispatch(setCurrentFriend(friendObj[0]))
-                                NavigationService.navigate('FriendChats');
-                            }
-                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_CHANNEL ){
-                            let channelObj = getChannelsById(notificationData.id)
-                            if (channelObj.length > 0) {
-                                store.dispatch(setCurrentChannel(channelObj[0]))
-                                NavigationService.navigate('ChannelChats');
-                            }
-                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_GROUP ){
-                            let groupObj = getGroupsById(notificationData.id)
-                            if (groupObj.length > 0) {
-                                store.dispatch(setCurrentGroup(groupObj[0]))
-                                NavigationService.navigate('GroupChats');
-                            }
-                        }else if (notificationData.notification_type === NotificationType.MESSAGE_IN_THREAD ){
-                            NavigationService.navigate('Chat');
+            if (remoteMessage.data) {
+                let notificationData = remoteMessage.data
+                if (notificationData.notification_type) {
+                    console.log('notificationData and type', notificationData, notificationData.notification_type)
+                    if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED ||
+                        notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST ||
+                        notificationData.notification_type === NotificationType.NEW_FRIEND_REQUEST) {
+                        // if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED){
+                        //     NavigationService.navigate('Home', { expandCollapse: 'friends' });
+                        // }else if (notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST){
+                        //     NavigationService.navigate('Home', { expandCollapse: 'friendReq' });
+                        // }
+                        NavigationService.navigate('Home');
+                    } else if (notificationData.notification_type === NotificationType.MESSAGE_IN_FRIEND) {
+                        //  NavigationService.navigate('Chat');
+                        let friendObj = getUserFriendByFriendId(notificationData.id)
+                        if (friendObj.length > 0) {
+                            store.dispatch(setCurrentFriend(friendObj[0]))
+                            NavigationService.navigate('FriendChats');
                         }
+                    } else if (notificationData.notification_type === NotificationType.MESSAGE_IN_CHANNEL) {
+                        let channelObj = getChannelsById(notificationData.id)
+                        if (channelObj.length > 0) {
+                            store.dispatch(setCurrentChannel(channelObj[0]))
+                            NavigationService.navigate('ChannelChats');
+                        }
+                    } else if (notificationData.notification_type === NotificationType.MESSAGE_IN_GROUP) {
+                        let groupObj = getGroupsById(notificationData.id)
+                        if (groupObj.length > 0) {
+                            store.dispatch(setCurrentGroup(groupObj[0]))
+                            NavigationService.navigate('GroupChats');
+                        }
+                    } else if (notificationData.notification_type === NotificationType.MESSAGE_IN_THREAD) {
+                        NavigationService.navigate('Chat');
                     }
                 }
+            }
         });
 
         // When a user tap on a push notification and the app is CLOSED
@@ -274,41 +277,60 @@ export default class App extends Component {
 
         // When a user receives a push notification and the app is in foreground
         this.onMessageListener = messaging().onMessage(async remoteMessage => {
-           // this.onMessageReceived(remoteMessage)
+            // this.onMessageReceived(remoteMessage)
         });
     }
 
-    onMessageReceived(notification){
+    onMessageReceived(notification) {
         console.log('onMessageReceived', notification)
         if (Platform.OS === 'ios') {
             PushNotificationIOS.presentLocalNotification({
                 alertBody: notification?.notification?.body,
                 alertTitle: notification?.notification?.title
             })
-        }else{
+        } else {
             this.notif.localNotif(notification?.notification?.title, notification?.notification?.body, 'default')
         }
     }
 
-  render() {
-    return (
-      <Provider store={store}>
-        <PaperProvider>
-          <PersistGate loading={null} persistor={persistor}>
-            <Root>
-              <View style={{flex: 1}}>
-                <StatusBar barStyle="light-content" translucent />
-                <InternetInfo />
-                <Routes
-                  ref={(navigatorRef) => {
-                    NavigationService.setTopLevelNavigator(navigatorRef);
-                  }}
-                />
-              </View>
-            </Root>
-          </PersistGate>
-        </PaperProvider>
-      </Provider>
-    );
-  }
+    // gets the current screen from navigation state
+    getActiveRouteName(navigationState){
+        if (!navigationState) {
+            return null;
+        }
+        const route = navigationState.routes[navigationState.index];
+        // dive into nested navigators
+        if (route.routes) {
+            return this.getActiveRouteName(route);
+        }
+        return route.routeName;
+    }
+
+    render() {
+        return (
+            <Provider store={store}>
+                <PaperProvider>
+                    <PersistGate loading={null} persistor={persistor}>
+                        <Root>
+                            <View style={{ flex: 1 }}>
+                                <StatusBar barStyle="light-content" translucent />
+                                <InternetInfo />
+                                <Routes
+                                    ref={(navigatorRef) => {
+                                        NavigationService.setTopLevelNavigator(navigatorRef);
+                                    }}
+                                    onNavigationStateChange={(prevState, currentState, action) => {
+                                        const currentRouteName = this.getActiveRouteName(currentState);
+                                        const previousRouteName = this.getActiveRouteName(prevState);
+                                        console.log('currentRouteName',currentRouteName);
+                                        store.dispatch(setCurrentRouteData(currentRouteName));
+                                    }}
+                                />
+                            </View>
+                        </Root>
+                    </PersistGate>
+                </PaperProvider>
+            </Provider>
+        );
+    }
 }

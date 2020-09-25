@@ -5,6 +5,8 @@ import Toast from "../../components/Toast";
 import {translate} from "./languageReducer";
 import axios from 'axios';
 
+export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
+
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
 export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
@@ -23,6 +25,7 @@ let uuid = require('react-native-uuid')
 const initialState = {
   loading: false,
   userData: {},
+  currentRouteName: ''
 };
 
 export default function (state = initialState, action) {
@@ -81,6 +84,11 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
       };
+    case SET_CURRENT_ROUTE_NAME:
+      return {
+        ...state,
+        currentRouteName: action.payload.data
+      };
 
     default:
       return state;
@@ -88,6 +96,14 @@ export default function (state = initialState, action) {
 }
 
 //Actions
+// Set current route name
+export const setCurrentRouteData = (data) => ({
+  type: SET_CURRENT_ROUTE_NAME,
+  payload: {
+    data: data,
+  },
+});
+
 //Get User Profile
 const setUserData = (data) => ({
   type: SET_USER_PROFILE,
