@@ -57,6 +57,28 @@ export default class SingleSocket extends Component {
             this.checkSocketConnected();
           }, 1000);
         };
+      }else{
+        console.log('checking web socket connected');
+        if (this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
+          this.webSocketBridge.close();
+          this.webSocketBridge = null;
+          this.setTimeout(()=>{
+            this.webSocketBridge = new WebSocket(
+              `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
+            );
+            this.webSocketBridge.onopen = (e) => {
+              this.checkSocketConnected();
+            };
+            this.webSocketBridge.onmessage = (e) => {
+              this.onNewMessage(e);
+            };
+            this.webSocketBridge.onerror = (e) => {
+              setTimeout(() => {
+                this.checkSocketConnected();
+              }, 1000);
+            };
+          },1000);
+        }
       }
     }
   }
@@ -73,8 +95,10 @@ export default class SingleSocket extends Component {
     setTimeout(() => {
       this.jwt = '';
       this.userId = 0;
-      this.webSocketBridge.close();
+      this.webSocketBridge && this.webSocketBridge.close();
       console.log('Socket Connection closed');
+      clearInterval(this.socketChecker);
+      this.webSocketBridge = null;
     }, 1000);
   }
 
@@ -83,9 +107,10 @@ export default class SingleSocket extends Component {
   }
 
   checkSocketConnected() {
+    console.log('checking web socket connected');
     clearInterval(this.socketChecker);
     this.socketChecker = setInterval(() => {
-      if (this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
+      if (this.webSocketBridge == null || this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
         this.connectSocket();
         // setTimeout(() => {
         //   const payload: any = {
@@ -99,6 +124,9 @@ export default class SingleSocket extends Component {
         //   this.onNewMessage(payload);
         // }, 5000);
       }
+      // else if(this.webSocketBridge !== null && this.webSocketBridge.readyState === this.webSocketBridge.OPEN){
+      //   console.log('web_socket_connected');
+      // }
     }, 5000);
   }
 

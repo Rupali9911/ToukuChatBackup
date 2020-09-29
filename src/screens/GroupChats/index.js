@@ -609,7 +609,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          console.log('response', JSON.stringify(res));
+          // console.log('response', JSON.stringify(res));
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&
@@ -685,7 +685,7 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          console.log('response', JSON.stringify(res));
+          // console.log('response', JSON.stringify(res));
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&

@@ -186,7 +186,7 @@ class Chat extends Component {
     this.props.getFollowingChannels().then((res) => {
       this.props.getUserGroups().then((res) => {
         this.props.getUserFriends().then((res) => {
-          console.log('friends', res);
+          // console.log('friends', res);
           this.setCommonConversation();
         });
       });
