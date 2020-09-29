@@ -102,9 +102,9 @@ export default class App extends Component {
                     }
                 }
 
-                this.SingleSocket = SingleSocket.getInstance();
-
-                this.SingleSocket.checkSocketConnected();
+                // this.SingleSocket = SingleSocket.getInstance();
+                //
+                // this.SingleSocket.checkSocketConnected();
 
             }
         }

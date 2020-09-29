@@ -128,20 +128,20 @@ class Chat extends Component {
       isLoading: true,
       commonConversation: [],
       sortBy: this.props.userConfig.sort_by,
-      sortOptions: [
-        {
-          title: translate('pages.xchat.timeReceived'),
-          onPress: () => this.shotListBy('time'),
-        },
-        {
-          title: translate('pages.xchat.unreadMessages'),
-          onPress: () => this.shotListBy('unread'),
-        },
-        {
-          title: translate('pages.setting.name'),
-          onPress: () => this.shotListBy('name'),
-        },
-      ],
+      // sortOptions: [
+      //   {
+      //     title: translate('pages.xchat.timeReceived'),
+      //     onPress: () => this.shotListBy('time'),
+      //   },
+      //   {
+      //     title: translate('pages.xchat.unreadMessages'),
+      //     onPress: () => this.shotListBy('unread'),
+      //   },
+      //   {
+      //     title: translate('pages.setting.name'),
+      //     onPress: () => this.shotListBy('name'),
+      //   },
+      // ],
     };
     this.SingleSocket = SingleSocket.getInstance();
   }
@@ -956,7 +956,7 @@ class Chat extends Component {
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
-        
+
         if (this.props.currentRouteName == "FriendChats" &&
           currentFriend &&
           message.text.data.message_details.from_user.id ==
@@ -975,7 +975,7 @@ class Chat extends Component {
             message.text.data.message_details,
             true
           );
-        }        
+        }
         // this.getUserFriends();
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
@@ -1865,7 +1865,20 @@ class Chat extends Component {
         <HomeHeader
           title={translate('pages.xchat.chat')}
           isSortOptions
-          menuItems={this.state.sortOptions}
+          menuItems={[
+              {
+                  title: translate('pages.xchat.timeReceived'),
+                  onPress: () => this.shotListBy('time'),
+              },
+              {
+                  title: translate('pages.xchat.unreadMessages'),
+                  onPress: () => this.shotListBy('unread'),
+              },
+              {
+                  title: translate('pages.setting.name'),
+                  onPress: () => this.shotListBy('name'),
+              },
+          ]}
           onChangeText={this.onSearch.bind(this)}
           navigation={this.props.navigation}
           isSearchBar

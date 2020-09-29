@@ -37,11 +37,9 @@ class SettingsItem extends Component {
 
       let tmpReferralCode = this.props.userData.referral_link
       const arrLink = tmpReferralCode.split('/')
-        if (arrLink.length > 0){
-            this.setState({referralCode: arrLink[arrLink.length-1]})
+        if (arrLink.length > 0) {
+            this.setState({referralCode: arrLink[arrLink.length - 1]})
         }
-
-
     }
 
     onPressLanguage(){

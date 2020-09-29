@@ -162,7 +162,7 @@ class ToastModal extends Component {
 const styles = StyleSheet.create({
   toast: {
     position: 'absolute',
-    width: Platform.isPad ? '50%' : '80%',
+    width: Platform.isPad ? '50%' : '96%',
     alignSelf: 'center',
     borderRadius: 8,
     minHeight: Platform.isPad ? 100 : 90,

@@ -85,11 +85,15 @@ class More extends Component {
   };
 
   actionLogout = async () => {
-    await this.clearAsyncStorage();
-    this.updateModalVisibility();
-    this.props.logout().then((res) => {
-      this.props.navigation.navigate('Auth');
-      resetData();
+    let fcmToken = await AsyncStorage.getItem('fcmToken');
+    let data = {
+        dev_id: fcmToken
+    }
+    this.props.logout(data).then(async (res) => {
+        this.updateModalVisibility();
+        this.props.navigation.navigate('Auth');
+        resetData();
+        await this.clearAsyncStorage();
     });
   };
 
@@ -108,7 +112,12 @@ class More extends Component {
     Linking.openURL(xanaUrl);
   }
 
-  render() {
+    onNeedSupportClick() {
+        this.setState({isWebViewVisible: true})
+    }
+
+
+    render() {
     const {
       orientation,
       isWebViewVisible,
@@ -192,7 +201,7 @@ class More extends Component {
             title={translate('pages.xchat.customerSupport')}
             isFontAwesome={true}
             isCustomerSupport={true}
-            onPress={() => Linking.openURL(supportUrl)}
+            onPress={() => this.onNeedSupportClick()}
           />
           <SettingsItem
             icon_name={'code-branch'}
@@ -206,7 +215,7 @@ class More extends Component {
           />
           <WebViewClass
             modalVisible={isWebViewVisible}
-            url={isSupport ? supportUrl : xanaUrl}
+            url={supportUrl}
             closeModal={() => this.setState({isWebViewVisible: false})}
           />
 
@@ -241,8 +250,7 @@ const Section = (props) => {
         Colors.header_gradient_1,
       ]}
       style={{
-        height: 27,
-        marginTop: 1,
+        height: 27
       }}
     />
   );
