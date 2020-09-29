@@ -1,6 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons, Fonts } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons, Fonts} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const createGroupStyles = StyleSheet.create({
   mainContainer: {

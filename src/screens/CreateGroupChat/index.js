@@ -169,6 +169,8 @@ class CreateGroupChat extends Component {
         };
 
         this.props.createNewGroup(groupData).then((res) => {
+          // console.log('CreateGroupChat -> onCreatePress -> res', res);
+          this.setState({loading: false});
           Toast.show({
             title: 'Touku',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
@@ -197,6 +199,8 @@ class CreateGroupChat extends Component {
         };
 
         this.props.createNewGroup(groupData).then((res) => {
+          // console.log('CreateGroupChat -> onCreatePress -> res', res);
+          this.setState({loading: false});
           Toast.show({
             title: 'Touku',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
@@ -260,7 +264,7 @@ class CreateGroupChat extends Component {
           />
           <KeyboardAwareScrollView
             scrollEnabled
-            enableOnAndroid={true}
+            // enableOnAndroid={true}
             keyboardShouldPersistTaps={'handled'}
             // extraScrollHeight={100}
             extraHeight={100}

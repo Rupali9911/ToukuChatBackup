@@ -526,7 +526,7 @@ class CreateChannel extends Component {
           />
           <KeyboardAwareScrollView
             scrollEnabled
-            enableOnAndroid={true}
+            // enableOnAndroid={true}
             keyboardShouldPersistTaps={'handled'}
             // extraScrollHeight={100}
             extraHeight={100}

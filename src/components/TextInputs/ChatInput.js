@@ -38,82 +38,93 @@ export default class ChatInput extends Component {
       sendEnable,
     } = this.props;
     return (
-      <LinearGradient
-        colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
-        // locations={[0.2, 1]}
-        useAngle={true}
-        // angle={270}
-        angleCenter={{x: 0, y: 1}}
-        style={chatInput.chatInputContainer}>
-        {/* <View style={chatInput.chatInputContainer}> */}
-        <View style={chatInput.chatAttachmentContainer}>
-          <TouchableOpacity
-            style={chatInput.chatAttachmentButton}
-            onPress={() => {
-              onAttachmentPress();
-            }}>
-            {/* <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} /> */}
-            <Image
-              source={Icons.plus_icon_select}
-              style={chatInput.attachmentImage}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={chatInput.chatAttachmentButton}
-            onPress={() => {
-              onCameraPress();
-            }}>
-            <Image
-              source={Icons.icon_camera_grad}
-              style={chatInput.attachmentImage}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={chatInput.chatAttachmentButton}
-            onPress={() => {
-              onGalleryPress();
-            }}>
-            <Image
-              source={Icons.gallery_icon_select}
-              style={chatInput.attachmentImage}
-              resizeMode={'contain'}
-            />
-            {/* <FontAwesome5
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          width: '100%',
+          minHeight: isIphoneX() ? 70 : 50,
+          // height: isIphoneX() ? 70 : 50,
+          maxHeight: 200,
+          backgroundColor: Colors.white,
+        }}>
+        <LinearGradient
+          colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
+          // locations={[0.2, 1]}
+          useAngle={true}
+          // angle={270}
+          angleCenter={{x: 0, y: 1}}
+          style={chatInput.chatInputContainer}>
+          {/* <View style={chatInput.chatInputContainer}> */}
+          <View style={chatInput.chatAttachmentContainer}>
+            <TouchableOpacity
+              style={chatInput.chatAttachmentButton}
+              onPress={() => {
+                onAttachmentPress();
+              }}>
+              {/* <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} /> */}
+              <Image
+                source={Icons.plus_icon_select}
+                style={chatInput.attachmentImage}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={chatInput.chatAttachmentButton}
+              onPress={() => {
+                onCameraPress();
+              }}>
+              <Image
+                source={Icons.icon_camera_grad}
+                style={chatInput.attachmentImage}
+                resizeMode={'contain'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={chatInput.chatAttachmentButton}
+              onPress={() => {
+                onGalleryPress();
+              }}>
+              <Image
+                source={Icons.gallery_icon_select}
+                style={chatInput.attachmentImage}
+                resizeMode={'contain'}
+              />
+              {/* <FontAwesome5
               name={'image'}
               size={height * 0.03}
               color={'indigo'}
             /> */}
+            </TouchableOpacity>
+          </View>
+          <View style={chatInput.textInputContainer}>
+            <TextInput
+              multiline={true}
+              style={chatInput.textInput}
+              onChangeText={(message) => onChangeText(message)}
+              value={value}
+              placeholder={placeholder}
+              autoCorrect={false}
+            />
+          </View>
+          <TouchableOpacity
+            style={chatInput.sendButoonContainer}
+            activeOpacity={value || sendingImage.uri ? 0 : 1}
+            onPress={() => {
+              value || sendingImage.uri ? onSend() : null;
+            }}>
+            <Image
+              source={Icons.icon_send_button}
+              style={[
+                chatInput.sandButtonImage,
+                (value || sendingImage.uri) && {tintColor: null},
+              ]}
+              resizeMode={'contain'}
+            />
           </TouchableOpacity>
-        </View>
-        <View style={chatInput.textInputContainer}>
-          <TextInput
-            multiline={true}
-            style={chatInput.textInput}
-            onChangeText={(message) => onChangeText(message)}
-            value={value}
-            placeholder={placeholder}
-            autoCorrect={false}
-          />
-        </View>
-        <TouchableOpacity
-          style={chatInput.sendButoonContainer}
-          activeOpacity={value || sendingImage.uri ? 0 : 1}
-          onPress={() => {
-            value || sendingImage.uri ? onSend() : null;
-          }}>
-          <Image
-            source={Icons.icon_send_button}
-            style={[
-              chatInput.sandButtonImage,
-              (value || sendingImage.uri) && {tintColor: null},
-            ]}
-            resizeMode={'contain'}
-          />
-        </TouchableOpacity>
-        {/* </View> */}
-      </LinearGradient>
+          {/* </View> */}
+        </LinearGradient>
+      </View>
     );
   }
 }
@@ -130,10 +141,12 @@ const chatInput = StyleSheet.create({
   },
   chatInputContainer: {
     // position: 'absolute',
-    bottom: 0,
+    // bottom: 0,
     width: '100%',
-    minHeight: isIphoneX() ? 70 : 50,
-    maxHeight: 200,
+    height: '100%',
+    // flex: 1,
+    // minHeight: isIphoneX() ? 70 : 50,
+    // maxHeight: 200,
     // backgroundColor: '#FC94B8',
     flexDirection: 'row',
     alignItems: 'center',
@@ -167,7 +180,7 @@ const chatInput = StyleSheet.create({
     // height: '100%',
     borderWidth: 0.2,
     backgroundColor: Colors.white,
-    minHeight:35,
+    minHeight: 35,
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
@@ -181,6 +194,8 @@ const chatInput = StyleSheet.create({
     alignItems: 'center',
   },
   sandButtonImage: {
-    // height: '50%', 
-    width: '70%', tintColor: Colors.gray},
+    // height: '50%',
+    width: '70%',
+    tintColor: Colors.gray,
+  },
 });
