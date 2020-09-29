@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 
 export const SET_CURRENT_GROUP_DATA = 'SET_CURRENT_GROUP_DATA';
 export const SET_CURRENT_GROUP_DETAIL_DATA = 'SET_CURRENT_GROUP_DETAIL_DATA';
@@ -207,49 +207,52 @@ const deleteMessage = (data) => ({
 });
 
 export const getLocalUserGroups = () => (dispatch) =>
-new Promise(function(resolve,reject){
-  var groups = getGroups();
-  var array = [];
-  groups.map((item, index) => {
-    let i = {
-      group_id: item.group_id,
-      group_name: item.group_name,
-      unread_msg: item.unread_msg,
-      total_members: item.total_members,
-      description: item.description,
-      chat: item.chat,
-      group_picture: item.group_picture,
-      last_msg: item.last_msg,
-      last_msg_id: item.last_msg_id,
-      timestamp: item.timestamp,
-      event: item.event,
-      no_msgs: item.no_msgs,
-      is_pined: item.is_pined,
-      sender_id: item.sender_id,
-      sender_username: item.sender_username,
-      sender_display_name: item.sender_display_name,
-      mentions: item.mentions,
-      reply_to: item.reply_to
-    }
-    array = [...array, i];
-  });
-  array.sort((a, b) =>
-    a.timestamp && b.timestamp && new Date(a.timestamp) < new Date(b.timestamp)
-      ? 1
-      : -1,
-  );
-
-  let unread_counts = 0;
-  if (groups && groups.length > 0) {
-    groups = groups.map(function (el) {
-      unread_counts = unread_counts + el.unread_msg;
-      return groups;
+  new Promise(function (resolve, reject) {
+    var groups = getGroups();
+    var array = [];
+    groups.map((item, index) => {
+      let i = {
+        group_id: item.group_id,
+        group_name: item.group_name,
+        unread_msg: item.unread_msg,
+        total_members: item.total_members,
+        description: item.description,
+        chat: item.chat,
+        group_picture: item.group_picture,
+        last_msg: item.last_msg,
+        last_msg_id: item.last_msg_id,
+        timestamp: item.timestamp,
+        event: item.event,
+        no_msgs: item.no_msgs,
+        is_pined: item.is_pined,
+        sender_id: item.sender_id,
+        sender_username: item.sender_username,
+        sender_display_name: item.sender_display_name,
+        mentions: item.mentions,
+        reply_to: item.reply_to,
+      };
+      array = [...array, i];
     });
-    dispatch(setUnreadGroupMsgsCounts(unread_counts));
-  }
-  dispatch(getUserGroupsSuccess(array));
-  resolve();
-});
+    array.sort((a, b) =>
+      a.timestamp &&
+      b.timestamp &&
+      new Date(a.timestamp) < new Date(b.timestamp)
+        ? 1
+        : -1,
+    );
+
+    let unread_counts = 0;
+    if (groups && groups.length > 0) {
+      console.log('groups', groups);
+      groups = groups.map(function (el) {
+        unread_counts = unread_counts + el.unread_msg;
+        return groups;
+      });
+      dispatch(setUnreadGroupMsgsCounts(unread_counts));
+    }
+    dispatch(getUserGroupsSuccess(array));
+    resolve();
+  });
 
 export const getUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -380,7 +383,7 @@ export const getGroupConversation = (groupId) => (dispatch) =>
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
-        console.log('res',JSON.stringify(res));
+        console.log('res', JSON.stringify(res));
         setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
         resolve(res);
