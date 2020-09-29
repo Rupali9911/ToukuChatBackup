@@ -520,7 +520,24 @@ class FriendChats extends Component {
           );
           let conversations = [];
           chat.map((item, index) => {
-            conversations = [...conversations, item];
+            let i = {
+              created: item.created,
+              deleted_for: item.deleted_for,
+              friend: item.friend,
+              from_user: item.from_user,
+              id: item.id,
+              is_edited: item.is_edited,
+              is_read: item.is_read,
+              is_unsent: item.is_unsent,
+              local_id: item.local_id,
+              message_body: item.message_body,
+              msg_type: item.msg_type,
+              reply_to: item.reply_to,
+              thumbnail: item.thumbnail,
+              to_user: item.to_user,
+              updated: item.updated,
+            }
+            conversations = [...conversations, i];
           });
           this.props.setFriendConversation(conversations);
         }
@@ -532,7 +549,24 @@ class FriendChats extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          created: item.created,
+          deleted_for: item.deleted_for,
+          friend: item.friend,
+          from_user: item.from_user,
+          id: item.id,
+          is_edited: item.is_edited,
+          is_read: item.is_read,
+          is_unsent: item.is_unsent,
+          local_id: item.local_id,
+          message_body: item.message_body,
+          msg_type: item.msg_type,
+          reply_to: item.reply_to,
+          thumbnail: item.thumbnail,
+          to_user: item.to_user,
+          updated: item.updated,
+        }
+        conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
     }
@@ -543,7 +577,24 @@ class FriendChats extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          created: item.created,
+          deleted_for: item.deleted_for,
+          friend: item.friend,
+          from_user: item.from_user,
+          id: item.id,
+          is_edited: item.is_edited,
+          is_read: item.is_read,
+          is_unsent: item.is_unsent,
+          local_id: item.local_id,
+          message_body: item.message_body,
+          msg_type: item.msg_type,
+          reply_to: item.reply_to,
+          thumbnail: item.thumbnail,
+          to_user: item.to_user,
+          updated: item.updated,
+        }
+        conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
     }
@@ -559,7 +610,24 @@ class FriendChats extends Component {
           );
           let conversations = [];
           chat.map((item, index) => {
-            conversations = [...conversations, item];
+            let i = {
+              created: item.created,
+              deleted_for: item.deleted_for,
+              friend: item.friend,
+              from_user: item.from_user,
+              id: item.id,
+              is_edited: item.is_edited,
+              is_read: item.is_read,
+              is_unsent: item.is_unsent,
+              local_id: item.local_id,
+              message_body: item.message_body,
+              msg_type: item.msg_type,
+              reply_to: item.reply_to,
+              thumbnail: item.thumbnail,
+              to_user: item.to_user,
+              updated: item.updated,
+            }
+            conversations = [...conversations, i];
           });
           this.props.setFriendConversation(conversations);
         }

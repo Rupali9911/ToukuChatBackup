@@ -418,7 +418,7 @@ const chatStyle = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     backgroundColor: Colors.light_pink,
-    marginBottom: isIphoneX() ? 70 : 50,
+    // marginBottom: isIphoneX() ? 70 : 50,
   },
   messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {

@@ -762,6 +762,7 @@ class GroupChats extends Component {
 
   deleteLocalGroup = (id) => {
     this.props.setCurrentGroup(null);
+    this.props.setGroupConversation([]);
     deleteGroupById(id);
     deleteAllGroupMessageByGroupId(id);
     this.props.getLocalUserGroups().then((res) => {
@@ -794,9 +795,7 @@ class GroupChats extends Component {
             text: translate(res.message),
             type: 'positive',
           });
-          // setTimeout(()=>{
-          //   this.deleteLocalGroup(this.props.currentGroup.group_id);
-          // },2000);
+          this.deleteLocalGroup(this.props.currentGroup.group_id);
           this.props.getUserGroups();
           this.props.navigation.goBack();
         }
@@ -830,9 +829,9 @@ class GroupChats extends Component {
             text: translate('pages.xchat.toastr.groupIsRemoved'),
             type: 'positive',
           });
+          this.deleteLocalGroup(this.props.currentGroup.group_id);
           this.props.getUserGroups();
           this.props.navigation.goBack();
-          // this.deleteLocalGroup(this.props.currentGroup.group_id);
         }
       })
       .catch((err) => {

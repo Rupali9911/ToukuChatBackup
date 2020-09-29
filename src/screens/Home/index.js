@@ -1198,8 +1198,8 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg.type === 'text'
                     ? item.last_msg.text
-                    : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
-                        ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
+                    : (item.last_msg.type === 'image' ? translate('pages.xchat.photo') : item.last_msg.type === 'video'
+                        ?  translate('pages.xchat.video') : item.last_msg.type === 'doc' ? translate('pages.xchat.document')
                             : translate('pages.xchat.audio'))
                   : ''
               }

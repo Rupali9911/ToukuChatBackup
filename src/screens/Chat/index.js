@@ -94,10 +94,12 @@ import {
   deleteFriendRequest,
   setChannels,
   deleteGroupById,
+  deleteGroupMessageById,
   deleteAllGroupMessageByGroupId,
   UpdateGroupDetail,
   getGroupsById,
   updateLastMsgGroups,
+  updateLastMsgGroupsWithoutCount,
   updateUnReadCount,
   updateGroupMessageById,
   setGroupMessageUnsend,
@@ -987,7 +989,24 @@ class Chat extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          created: item.created,
+          deleted_for: item.deleted_for,
+          friend: item.friend,
+          from_user: item.from_user,
+          id: item.id,
+          is_edited: item.is_edited,
+          is_read: item.is_read,
+          is_unsent: item.is_unsent,
+          local_id: item.local_id,
+          message_body: item.message_body,
+          msg_type: item.msg_type,
+          reply_to: item.reply_to,
+          thumbnail: item.thumbnail,
+          to_user: item.to_user,
+          updated: item.updated,
+        }
+        conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
     }
@@ -1101,8 +1120,7 @@ class Chat extends Component {
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
           deleteFriendMessageById(message.text.data.message_details.id);
-          let friendChat = getFriendChatConversationById(currentFriend.friend);
-          this.props.setFriendConversation(friendChat);
+          this.getLocalFriendConversation();
         }
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
@@ -1137,8 +1155,7 @@ class Chat extends Component {
             currentFriend.user_id
         ) {
           deleteFriendMessageById(message.text.data.message_details.id);
-          let friendChat = getFriendChatConversationById(currentFriend.friend);
-          this.props.setFriendConversation(friendChat);
+          this.getLocalFriendConversation();
         }
 
         this.props.setUserFriends().then((res) => {
@@ -1209,16 +1226,34 @@ class Chat extends Component {
   onDeleteMessageInGroup(message) {
     const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_GROUP) {
-      for (let i of userGroups) {
-      }
-    }
-    if (this.props.currentRouteName == "GroupChats" &&
-      currentGroup &&
-      message.text.data.message_details.group_id == currentGroup.group_id
-    ) {
       deleteGroupMessageById(message.text.data.message_details.msg_id);
-      let chat = getGroupChatConversationById(currentGroup.group_id);
-      this.props.setGroupConversation(chat);
+      var group = getGroupsById(message.text.data.message_details.group_id);
+      if(group && group.length>0){
+        let chat = getGroupChatConversationById(message.text.data.message_details.group_id);
+
+        let array = chat.toJSON();
+
+        if(array && array.length>0){
+          
+          updateLastMsgGroupsWithoutCount(
+            message.text.data.message_details.group_id,
+            array[0].message_body.type,
+            array[0].message_body.text,
+            array[0].msg_id,
+            array[0].timestamp
+            );
+            this.props.getLocalUserGroups().then((res) => {
+              this.props.setCommonChatConversation();
+            });
+        }
+      }
+
+      if (this.props.currentRouteName == "GroupChats" &&
+        currentGroup &&
+        message.text.data.message_details.group_id == currentGroup.group_id
+      ) {
+        this.getLocalGroupConversation();
+      }
     }
   }
 
@@ -1534,8 +1569,25 @@ class Chat extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          msg_id: item.msg_id,
+          sender_id: item.sender_id,
+          group_id: item.group_id,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          sender_picture: item.sender_picture,
+          message_body: item.message_body,
+          is_edited: item.is_edited,
+          is_unsent: item.is_unsent,
+          timestamp: item.timestamp,
+          reply_to: item.reply_to,
+          mentions: item.mentions,
+          read_count: item.read_count,
+          created: item.created
+        }
+        conversations = [...conversations, i];
       });
+
       this.props.setGroupConversation(conversations);
     }
   };
@@ -1733,8 +1785,8 @@ class Chat extends Component {
                   item.last_msg
                     ? item.last_msg.type === 'text'
                       ? item.last_msg.text
-                      : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
-                          ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
+                      : (item.last_msg.type === 'image' ? translate('pages.xchat.photo') : item.last_msg.type === 'video'
+                          ?  translate('pages.xchat.video') : item.last_msg.type === 'doc' ? translate('pages.xchat.document')
                               : translate('pages.xchat.audio'))
                     : ''
                 }

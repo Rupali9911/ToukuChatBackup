@@ -624,6 +624,25 @@ export const updateLastMsgGroups = (id, message, unreadCount) => {
   });
 }
 
+export const updateLastMsgGroupsWithoutCount = (id, type, text, last_msg_id, timestamp) => {
+  let last_msg = {
+    type: type,
+    text: text
+  }
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        last_msg: last_msg,
+        last_msg_id: last_msg_id,
+        timestamp: timestamp
+      },
+      'modified'
+    );
+  });
+}
+
 export const updateUnReadCount = (id,unreadCount) => {
   realm.write(() => {
     realm.create(

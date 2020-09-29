@@ -129,7 +129,7 @@ const chatInput = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   chatInputContainer: {
-    position: 'absolute',
+    // position: 'absolute',
     bottom: 0,
     width: '100%',
     minHeight: isIphoneX() ? 70 : 50,
@@ -142,31 +142,32 @@ const chatInput = StyleSheet.create({
     paddingBottom: isIphoneX() ? 20 : 5,
   },
   chatAttachmentContainer: {
-    height: '100%',
+    // height: '100%',
     width: '30%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   chatAttachmentButton: {
-    height: '100%',
+    // height: '100%',
     width: '30%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   attachmentImage: {
-    height: '80%',
+    // height: '80%',
     width: '90%',
   },
   textInputContainer: {
     width: '60%',
-    height: '80%',
+    // height: '80%',
     justifyContent: 'center',
   },
   textInput: {
-    height: '100%',
+    // height: '100%',
     borderWidth: 0.2,
     backgroundColor: Colors.white,
+    minHeight:35,
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
@@ -174,10 +175,12 @@ const chatInput = StyleSheet.create({
     paddingBottom: 0,
   },
   sendButoonContainer: {
-    height: '100%',
+    // height: '100%',
     width: '10%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sandButtonImage: {height: '50%', width: '70%', tintColor: Colors.gray},
+  sandButtonImage: {
+    // height: '50%', 
+    width: '70%', tintColor: Colors.gray},
 });

@@ -363,7 +363,7 @@ class ChatContainer extends Component {
                 backgroundColor: '#FFDBE9',
                 // position: 'absolute',
                 padding: 10,
-                bottom: Platform.OS=='ios'?20:30,
+                // bottom: Platform.OS=='ios'?20:30,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
               }}>
@@ -431,7 +431,7 @@ const chatStyle = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     backgroundColor: Colors.light_pink,
-    marginBottom: isIphoneX() ? 70 : 50,
+    // marginBottom: isIphoneX() ? 70 : 50,
   },
   messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {
