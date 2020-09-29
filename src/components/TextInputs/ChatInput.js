@@ -11,12 +11,16 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Colors, Icons, Fonts} from '../../constants';
 import {isIphoneX} from '../../utils';
 import LinearGradient from 'react-native-linear-gradient';
+import {t} from 'i18n-js';
 const {height} = Dimensions.get('window');
 
 export default class ChatInput extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.newHeight = isIphoneX() ? 70 : 50;
+    this.lineHeight = 0;
+    this.oldLineHeight = 0;
   }
 
   componentDidMount() {
@@ -37,15 +41,18 @@ export default class ChatInput extends Component {
       sendingImage,
       sendEnable,
     } = this.props;
+    if (value.length === 0) {
+      this.newHeight = isIphoneX() ? 70 : 50;
+    }
     return (
       <View
         style={{
-          position: 'absolute',
-          bottom: 0,
+          // position: 'absolute',
+          // bottom: 0,
           width: '100%',
-          minHeight: isIphoneX() ? 70 : 50,
-          // height: isIphoneX() ? 70 : 50,
-          maxHeight: 200,
+          // minHeight: isIphoneX() ? 70 : 50,
+          height: this.newHeight,
+          // maxHeight: 200,
           backgroundColor: Colors.white,
         }}>
         <LinearGradient
@@ -102,6 +109,31 @@ export default class ChatInput extends Component {
               multiline={true}
               style={chatInput.textInput}
               onChangeText={(message) => onChangeText(message)}
+              onContentSizeChange={({nativeEvent}) => {
+                if (nativeEvent.contentSize.height != this.lineHeight) {
+                  this.lineHeight = nativeEvent.contentSize.height;
+                  if (
+                    this.lineHeight > 20 &&
+                    this.lineHeight > this.oldLineHeight &&
+                    this.newHeight <= 200
+                  ) {
+                    this.newHeight = this.newHeight + 15;
+                  }
+                  if (
+                    this.lineHeight > 20 &&
+                    this.lineHeight < this.oldLineHeight
+                  ) {
+                    this.newHeight = this.newHeight - 15;
+                  }
+                  if (
+                    this.lineHeight <= 20 &&
+                    this.lineHeight != this.oldLineHeight
+                  ) {
+                    this.newHeight = isIphoneX() ? 70 : 50;
+                  }
+                  this.oldLineHeight = this.lineHeight;
+                }
+              }}
               value={value}
               placeholder={placeholder}
               autoCorrect={false}
