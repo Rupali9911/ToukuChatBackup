@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -9,15 +9,15 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../constants';
-import { globalStyles } from '../styles';
-const { width, height } = Dimensions.get('window');
-import { getAvatar } from '../utils';
+import {Colors, Icons, Fonts} from '../constants';
+import {globalStyles} from '../styles';
+const {width, height} = Dimensions.get('window');
+import {getAvatar} from '../utils';
 import RoundedImage from './RoundedImage';
 import Button from './Button';
 import ButtonWithArrow from './ButtonWithArrow';
-import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
-import { createFilter } from 'react-native-search-filter';
+import {translate, setI18nConfig} from '../redux/reducers/languageReducer';
+import {createFilter} from 'react-native-search-filter';
 
 export default class GroupFriend extends Component {
   constructor(props) {
@@ -55,7 +55,7 @@ export default class GroupFriend extends Component {
       }),
       () => {
         this.props.onCheckPress(this.state.isCheck);
-      }
+      },
     );
   };
 
@@ -71,18 +71,17 @@ export default class GroupFriend extends Component {
       isSelected,
       memberType,
     } = this.props;
-    const { isAdded, onChecked } = this.state;
+    const {isAdded, onChecked} = this.state;
 
     return (
-      <View style={[styles.container, isCheckBox && { paddingHorizontal: 0 }]}>
+      <View style={[styles.container, isCheckBox && {paddingHorizontal: 0}]}>
         {isCheckBox && (
           <View
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               marginRight: 5,
-            }}
-          >
+            }}>
             <TouchableOpacity
               style={[
                 {
@@ -103,8 +102,7 @@ export default class GroupFriend extends Component {
                       borderColor: Colors.green,
                     },
               ]}
-              onPress={this.onChecked.bind(this)}
-            >
+              onPress={this.onChecked.bind(this)}>
               {user.isChecked && (
                 <Image
                   style={{
@@ -119,19 +117,18 @@ export default class GroupFriend extends Component {
             </TouchableOpacity>
           </View>
         )}
-        <View style={[styles.subContainer, isRightDropDown && { flex: 0.7 }]}>
+        <View style={[styles.subContainer, isRightDropDown && {flex: 0.7}]}>
           <RoundedImage source={getAvatar(user.profile_picture)} size={50} />
           <Text
             style={[
               globalStyles.smallLightText,
-              { color: Colors.black, textAlign: 'left', marginStart: 15 },
-            ]}
-          >
+              {color: Colors.black, textAlign: 'left', marginStart: 15},
+            ]}>
             {user.display_name}
           </Text>
         </View>
         {isRightButton && (
-          <View style={{ flex: 0.2 }}>
+          <View style={{flex: 0.2}}>
             <Button
               title={translate('pages.xchat.add')}
               type={isSelected ? 'primary' : 'translucent'}
@@ -141,13 +138,13 @@ export default class GroupFriend extends Component {
           </View>
         )}
         {isRightDropDown && (
-          <View style={{ flex: 0.3 }}>
+          <View style={{flex: 0.3}}>
             <ButtonWithArrow
               user={user}
               title={
                 memberTitle === 'member'
                   ? translate('pages.xchat.member')
-                  : memberTitle
+                  : translate('pages.xchat.admin')
               }
               type={isMember ? 'primary' : 'translucent'}
               memberType={memberType}
