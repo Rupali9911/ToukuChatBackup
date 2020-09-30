@@ -1,29 +1,32 @@
 import React, {Component} from 'react';
 import {
-  View,
-  TextInput,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Dimensions,
+    View,
+    TextInput,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    Dimensions,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Colors, Icons, Fonts} from '../../constants';
 import {isIphoneX} from '../../utils';
 import LinearGradient from 'react-native-linear-gradient';
+import {t} from 'i18n-js';
 const {height} = Dimensions.get('window');
 
 export default class ChatInput extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.newHeight = isIphoneX() ? 70 : 50;
+    this.lineHeight = 0;
+    this.oldLineHeight = 0;
   }
-
-  componentDidMount() {
-    if (this.props.onRef != null) {
-      this.props.onRef(this);
+    componentDidMount() {
+        if (this.props.onRef != null) {
+            this.props.onRef(this);
+        }
     }
-  }
 
   render() {
     const {
@@ -37,15 +40,18 @@ export default class ChatInput extends Component {
       sendingImage,
       sendEnable,
     } = this.props;
+    if (value.length === 0) {
+      this.newHeight = isIphoneX() ? 70 : 50;
+    }
     return (
       <View
         style={{
-          position: 'absolute',
-          bottom: 0,
+          // position: 'absolute',
+          // bottom: 0,
           width: '100%',
-          minHeight: isIphoneX() ? 70 : 50,
-          // height: isIphoneX() ? 70 : 50,
-          maxHeight: 200,
+          // minHeight: isIphoneX() ? 70 : 50,
+          height: this.newHeight,
+          // maxHeight: 200,
           backgroundColor: Colors.white,
         }}>
         <LinearGradient
@@ -102,6 +108,31 @@ export default class ChatInput extends Component {
               multiline={true}
               style={chatInput.textInput}
               onChangeText={(message) => onChangeText(message)}
+              onContentSizeChange={({nativeEvent}) => {
+                if (nativeEvent.contentSize.height != this.lineHeight) {
+                  this.lineHeight = nativeEvent.contentSize.height;
+                  if (
+                    this.lineHeight > 20 &&
+                    this.lineHeight > this.oldLineHeight &&
+                    this.newHeight <= 200
+                  ) {
+                    this.newHeight = this.newHeight + 15;
+                  }
+                  if (
+                    this.lineHeight > 20 &&
+                    this.lineHeight < this.oldLineHeight
+                  ) {
+                    this.newHeight = this.newHeight - 15;
+                  }
+                  if (
+                    this.lineHeight <= 20 &&
+                    this.lineHeight != this.oldLineHeight
+                  ) {
+                    this.newHeight = isIphoneX() ? 70 : 50;
+                  }
+                  this.oldLineHeight = this.lineHeight;
+                }
+              }}
               value={value}
               placeholder={placeholder}
               autoCorrect={false}
@@ -130,72 +161,72 @@ export default class ChatInput extends Component {
 }
 
 const chatInput = StyleSheet.create({
-  messareAreaConatiner: {
-    flex: 0.95,
-    justifyContent: 'flex-end',
-  },
-  messareAreaScroll: {flexGrow: 1},
-  messageContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  chatInputContainer: {
-    // position: 'absolute',
-    // bottom: 0,
-    width: '100%',
-    height: '100%',
-    // flex: 1,
-    // minHeight: isIphoneX() ? 70 : 50,
-    // maxHeight: 200,
-    // backgroundColor: '#FC94B8',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 5,
-    paddingBottom: isIphoneX() ? 20 : 5,
-  },
-  chatAttachmentContainer: {
-    // height: '100%',
-    width: '30%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chatAttachmentButton: {
-    // height: '100%',
-    width: '30%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  attachmentImage: {
-    // height: '80%',
-    width: '90%',
-  },
-  textInputContainer: {
-    width: '60%',
-    // height: '80%',
-    justifyContent: 'center',
-  },
-  textInput: {
-    // height: '100%',
-    borderWidth: 0.2,
-    backgroundColor: Colors.white,
-    minHeight: 35,
-    borderRadius: 10,
-    borderColor: Colors.gray,
-    paddingHorizontal: 10,
-    paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 5) : 0,
-    paddingBottom: 0,
-  },
-  sendButoonContainer: {
-    // height: '100%',
-    width: '10%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sandButtonImage: {
-    // height: '50%',
-    width: '70%',
-    tintColor: Colors.gray,
-  },
+    messareAreaConatiner: {
+        flex: 0.95,
+        justifyContent: 'flex-end',
+    },
+    messareAreaScroll: {flexGrow: 1},
+    messageContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+    },
+    chatInputContainer: {
+        // position: 'absolute',
+        // bottom: 0,
+        width: '100%',
+        height: '100%',
+        // flex: 1,
+        // minHeight: isIphoneX() ? 70 : 50,
+        // maxHeight: 200,
+        // backgroundColor: '#FC94B8',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingTop: 5,
+        paddingBottom: isIphoneX() ? 20 : 5,
+    },
+    chatAttachmentContainer: {
+        // height: '100%',
+        width: '30%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    chatAttachmentButton: {
+        // height: '100%',
+        width: '30%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    attachmentImage: {
+        // height: '80%',
+        width: '90%',
+    },
+    textInputContainer: {
+        width: '60%',
+        // height: '80%',
+        justifyContent: 'center',
+    },
+    textInput: {
+        // height: '100%',
+        borderWidth: 0.2,
+        backgroundColor: Colors.white,
+        minHeight: 35,
+        borderRadius: 10,
+        borderColor: Colors.gray,
+        paddingHorizontal: 10,
+        paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 5) : 0,
+        paddingBottom: 0,
+    },
+    sendButoonContainer: {
+        // height: '100%',
+        width: '10%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    sandButtonImage: {
+        // height: '50%',
+        width: '70%',
+        tintColor: Colors.gray,
+    },
 });

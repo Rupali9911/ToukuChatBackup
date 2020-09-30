@@ -204,7 +204,7 @@ class GroupChatContainer extends Component {
               onContentSizeChange={(contentWidth, contentHeight) => {
                 if (this.props.translatedMessageId) {
                 } else {
-                  // this.scrollView.scrollToEnd({ animated: false });
+                  messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
                 }
               }}
               // getItemLayout={(data, index) => (

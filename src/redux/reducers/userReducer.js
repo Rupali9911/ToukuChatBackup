@@ -466,3 +466,18 @@ export const getMissedSocketEventsById = (id) => (dispatch) =>
         reject(err);
       });
   });
+
+  export const getMissedSocketEventsByIdFromApp = (id) =>
+  new Promise(function (resolve, reject) {
+      console.log('getMissedSocketEventsById called', id)
+    client
+      .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
+      .then((res) => {
+          console.log('res getMissedSocketEventsById', res)
+        resolve(res);
+      })
+      .catch((err) => {
+          console.log('Error getMissedSocketEventsById')
+        reject(err);
+      });
+  });

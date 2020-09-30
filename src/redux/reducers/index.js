@@ -14,6 +14,7 @@ import configurationReducer from './configurationReducer';
 import addFriendReducer from './addFriendReducer';
 import timelineReducer from './timelineReducer';
 import commonReducer from './commonReducer';
+import {client} from "../../helpers/api";
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
@@ -32,13 +33,24 @@ const allReducers = combineReducers({
   commonReducer: commonReducer,
 });
 
-export const logout = (user) => (dispatch, getState) =>
-  new Promise(function (resolve, reject) {
-    dispatch({
-      type: LOGOUT_SUCCESS,
-    });
-    resolve(true);
-  });
+export const logout = (data) => (dispatch, getState) =>
+    new Promise(function (resolve, reject) {
+        client
+           .post(`/xchat/logout/`, data)
+           .then((res) => {
+               dispatch({
+                   type: LOGOUT_SUCCESS,
+               });
+               resolve(true);
+          })
+         .catch((err) => {
+             dispatch({
+                 type: LOGOUT_SUCCESS,
+             });
+             resolve(true);
+               // reject(err);
+         });
+});
 
 const rootReducer = (state, action) => {
   if (action.type === LOGOUT_SUCCESS) {

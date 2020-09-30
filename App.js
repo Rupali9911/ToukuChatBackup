@@ -26,7 +26,7 @@ import {
 } from './src/storage/Service';
 
 import {
-    getMissedSocketEventsById,
+    getMissedSocketEventsByIdFromApp,
     setCurrentRouteData
 } from './src/redux/reducers/userReducer';
 import SingleSocket from './src/helpers/SingleSocket';
@@ -48,6 +48,7 @@ export default class App extends Component {
         this.checkNotificationPermission();
         this.getInitialLinking()
     }
+
     componentWillUnmount() {
         this.removeListeners()
     }
@@ -94,18 +95,18 @@ export default class App extends Component {
 
             if (this.state.appState.match(/background/) && nextAppState === 'active') {
                 console.log('From background to active')
+                
+                this.SingleSocket = SingleSocket.getInstance();
+                
+                this.SingleSocket.checkSocketConnected();
+                
                 if (isEventIdExists()) {
                     let idObj = getLastEventId()
                     console.log('getLastEventId', idObj)
                     if (idObj.length > 0) {
-                        getMissedSocketEventsById(idObj[0].socket_event_id)
+                        getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id)
                     }
                 }
-
-                this.SingleSocket = SingleSocket.getInstance();
-
-                this.SingleSocket.checkSocketConnected();
-
             }
         }
         this.setState({ appState: nextAppState })

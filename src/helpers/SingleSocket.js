@@ -3,6 +3,13 @@ import {View, Text} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {socketUrl} from './api';
 import {eventService} from '../utils';
+import {
+  isEventIdExists,
+  getLastEventId
+} from '../storage/Service';
+import {
+  getMissedSocketEventsByIdFromApp
+} from '../redux/reducers/userReducer';
 
 export default class SingleSocket extends Component {
   constructor(props) {
@@ -42,7 +49,9 @@ export default class SingleSocket extends Component {
 
   connectSocket() {
     if (this.jwt !== '') {
-      if(!this.webSocketBridge){
+      console.log('webSocketBridge',this.webSocketBridge);
+      if(this.webSocketBridge == null){
+        console.log('connecting');
         this.webSocketBridge = new WebSocket(
           `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
         );
@@ -58,16 +67,23 @@ export default class SingleSocket extends Component {
           }, 1000);
         };
       }else{
-        console.log('checking web socket connected');
+        console.log('Object already exists checking web socket connected');
         if (this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
           this.webSocketBridge.close();
           this.webSocketBridge = null;
-          this.setTimeout(()=>{
+          setTimeout(()=>{
             this.webSocketBridge = new WebSocket(
               `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
             );
             this.webSocketBridge.onopen = (e) => {
               this.checkSocketConnected();
+              if (isEventIdExists()) {
+                let idObj = getLastEventId()
+                console.log('getLastEventId', idObj)
+                if (idObj.length > 0) {
+                    getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id)
+                }
+            }
             };
             this.webSocketBridge.onmessage = (e) => {
               this.onNewMessage(e);
@@ -107,7 +123,7 @@ export default class SingleSocket extends Component {
   }
 
   checkSocketConnected() {
-    console.log('checking web socket connected');
+    console.log('checking web socket connected',this.webSocketBridge);
     clearInterval(this.socketChecker);
     this.socketChecker = setInterval(() => {
       if (this.webSocketBridge == null || this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {

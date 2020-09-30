@@ -117,7 +117,7 @@ class FriendChats extends Component {
       editMessageId: null,
     };
 
-    this.SingleSocket = new SingleSocket();
+    this.SingleSocket = SingleSocket.getInstance();
     this.S3uploadService = new S3uploadService();
     this.props.resetFriendConversation();
   }

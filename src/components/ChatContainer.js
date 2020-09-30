@@ -207,7 +207,7 @@ class ChatContainer extends Component {
               onContentSizeChange={() => {
                 if (this.props.translatedMessageId) {
                 } else {
-                  // this.scrollView.scrollToEnd();
+                  messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
                 }
               }}
               // getItemLayout={(data, index) => (

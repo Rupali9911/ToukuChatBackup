@@ -133,7 +133,7 @@ class Home extends Component {
       groupHeaderCounts: 0,
       friendHeaderCounts: 0,
     };
-    this.SingleSocket = new SingleSocket();
+    this.SingleSocket = SingleSocket.getInstance();
     this.start = 0;
   }
 

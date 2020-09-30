@@ -16,7 +16,9 @@ import {
 export default class WebViewClass extends Component {
     constructor(props) {
         super(props);
-
+        this.state={
+            webViewLoaded: false
+        }
     }
 
     closeModal(){
@@ -24,8 +26,19 @@ export default class WebViewClass extends Component {
         this.props.closeModal()
     }
 
+    setWebViewVisibleState () {
+        const { webViewLoaded} = this.state
+        if (!this.state.webViewLoaded) {
+            console.log('Webview loaded')
+            setTimeout( () => {
+                this.setState({ webViewLoaded: true })
+            },1500);
+        }
+    }
+
     render() {
-        const {modalVisible, url, webViewLoaded} = this.props;
+        const {modalVisible, url} = this.props;
+        const {webViewLoaded} = this.state;
         console.log('URL to webview', url)
         return (
 
@@ -46,7 +59,15 @@ export default class WebViewClass extends Component {
                 <WebView
                     style={{backgroundColor : 'transparent'}}
                     source={{uri: url}}
-                    cacheEnabled={true}/>
+                    cacheEnabled={true}
+                    onLoadEnd={() => this.setWebViewVisibleState() }
+                />
+
+                        {!webViewLoaded && (
+                            <View style={{width: '100%', height: '100%', position: 'absolute'}}>
+                                <ActivityIndicator size="large" color="white" style={{position: 'absolute',top: 0, left: 0, right: 0, bottom: 0}} />
+                            </View>
+                        )}
                     </ImageBackground>
                     </SafeAreaView>
                 </Modal>

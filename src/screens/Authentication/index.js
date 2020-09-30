@@ -44,9 +44,15 @@ class Authentication extends Component {
   };
 
   componentDidMount() {
+    setTimeout(()=>{
+      SplashScreen.hide();
+    },2000);
     this.props.getAllLanguages().then((res) => {
-        this.props.getAllLanguagesBackend().then((res) => {
-            SplashScreen.hide();
+      console.log('languages',res);
+      // SplashScreen.hide();  
+      this.props.getAllLanguagesBackend().then((res) => {
+          console.log('languages_backend',res);  
+          // SplashScreen.hide();
         })
     })
   }

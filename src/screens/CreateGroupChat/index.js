@@ -169,18 +169,18 @@ class CreateGroupChat extends Component {
         };
 
         this.props.createNewGroup(groupData).then((res) => {
-          // console.log('CreateGroupChat -> onCreatePress -> res', res);
+          console.log('CreateGroupChat -> onCreatePress -> res', res);
           this.setState({loading: false});
           Toast.show({
             title: 'Touku',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
             type: 'positive',
           });
-          this.props.getUserGroups().then((res) => {
-            if (res.conversations) {
-              this.props.navigation.goBack();
-            }
-          });
+          this.props.navigation.goBack();
+          // this.props.getUserGroups().then((res) => {
+          //   if (res.conversations) {
+          //   }
+          // });
         });
       } else {
         let groupData = {
@@ -199,18 +199,18 @@ class CreateGroupChat extends Component {
         };
 
         this.props.createNewGroup(groupData).then((res) => {
-          // console.log('CreateGroupChat -> onCreatePress -> res', res);
+          console.log('CreateGroupChat -> onCreatePress -> res', res);
           this.setState({loading: false});
           Toast.show({
             title: 'Touku',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
             type: 'positive',
           });
-          this.props.getUserGroups().then((res) => {
-            if (res.conversations) {
-              this.props.navigation.goBack();
-            }
-          });
+          this.props.navigation.goBack();
+          // this.props.getUserGroups().then((res) => {
+          //   if (res.conversations) {
+          //   }
+          // });
         });
       }
     }
