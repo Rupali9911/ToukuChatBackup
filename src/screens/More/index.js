@@ -218,12 +218,11 @@ class More extends Component {
             url={supportUrl}
             closeModal={() => this.setState({isWebViewVisible: false})}
           />
-
-          <QRCodeClass
-            modalVisible={isQRVisible}
-            closeModal={() => this.setState({isQRVisible: false})}
-          />
         </ScrollView>
+          <QRCodeClass
+              modalVisible={isQRVisible}
+              closeModal={() => this.setState({isQRVisible: false})}
+          />
         <ConfirmationModal
           orientation={orientation}
           visible={isLogOutVisible}

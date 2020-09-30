@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Platform,
+    TextInput
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
@@ -126,7 +127,7 @@ class Button extends Component {
               height: height,
               borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
               borderColor: this.getBorderColor(),
-              opacity: disabled ? 0.5 : 1,
+              opacity: disabled ? 0.5 : 1
             },
           ]}>
           {loading ? (
@@ -137,21 +138,17 @@ class Button extends Component {
               />
             </View>
           ) : (
-            <Text
-              style={[
+            <TextInput
+                pointerEvents="none"
+                style={[
                 this.getFont(),
                 {
                   color: this.getTitleColor(),
-                  padding:
-                    this.props.selectedLanguageItem.language_name === 'ja'
-                      ? height > 30
-                        ? 10
-                        : 5
-                      : 0,
+                    alignSelf : "center"
                 },
               ]}>
               {title}
-            </Text>
+            </TextInput>
           )}
         </LinearGradient>
       </TouchableOpacity>

@@ -11,12 +11,13 @@ import {
 import Orientation from 'react-native-orientation';
 import PropTypes from 'prop-types';
 
-import {Icons, Colors, Images} from '../constants';
+import {Icons, Colors, Images, Fonts} from '../constants';
 import HamburgerIcon from './HamburgerIcon';
 import {isIphoneX} from '../utils';
 import {globalStyles} from '../styles';
 import {Menu, Divider} from 'react-native-paper';
 import {SearchInput} from './TextInputs';
+import LinearGradient from "react-native-linear-gradient";
 
 export default class HomeHeader extends Component {
   constructor(props) {
@@ -125,8 +126,35 @@ export default class HomeHeader extends Component {
                   {menuItems &&
                     menuItems.map((item, index) => {
                       return (
+                          item.isSorted ?
+                          <React.Fragment>
+                              <LinearGradient
+                                  colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
+                                  useAngle={true}
+                                  angle={247.32}
+                                  angleCenter={{ x: 0.5, y: 0.5}}>
+                                  <Menu.Item
+                                      style={{height: 35, width: 200}}
+                                      key={index}
+                                      onPress={() => {
+                                          item.onPress();
+                                          this._closeMenu();
+                                      }}
+                                      title={`${item.title}`}
+                                      titleStyle={{
+                                          fontFamily: Fonts.nunitoSansRegular,
+                                          fontSize: 14,
+                                          fontWeight: '300',
+                                          color: item.isSorted ? 'white' : 'black'
+                                      }}
+                                  />
+                              </LinearGradient>
+                              <Divider />
+                          </React.Fragment>
+                              :
                         <React.Fragment>
                           <Menu.Item
+                              style={{height: 35, width: 200}}
                             key={index}
                             onPress={() => {
                               item.onPress();
@@ -134,8 +162,10 @@ export default class HomeHeader extends Component {
                             }}
                             title={`${item.title}`}
                             titleStyle={{
-                              fontSize: 16,
-                              fontWeight: '200',
+                              fontFamily: Fonts.nunitoSansRegular,
+                              fontSize: 14,
+                              fontWeight: '300',
+                                color: item.isSorted ? 'white' : 'black'
                             }}
                           />
                           <Divider />

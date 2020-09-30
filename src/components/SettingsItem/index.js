@@ -216,13 +216,13 @@ const styles = StyleSheet.create({
         padding: 7,
         alignItems: 'center',
         flexDirection: 'row',
-        borderRadius: 5
+        borderRadius: 5,
   },
     txtLanguage:{
-      fontFamily: Fonts.regular,
+      fontFamily: Fonts.nunitoSansLight,
         color: Colors.dark_orange,
         fontSize: 13,
-        fontWeight: '300'
+        fontWeight: '500'
   },
     txtInvitation:{
         fontFamily: Fonts.regular,

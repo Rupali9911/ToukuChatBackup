@@ -687,18 +687,22 @@ class GroupDetails extends Component {
                   isEdit && (
                     <React.Fragment>
                       <Button
-                        title={translate(`pages.xchat.deleteGroup`)}
-                        onPress={this.toggleDeleteGroupConfirmationModal.bind(
-                          this,
-                        )}
-                        isRounded={false}
-                        type={'secondary'}
-                      />
-                      <Button
                         title={translate(`pages.xchat.update`)}
                         onPress={this.onUpdateGroup.bind(this)}
                         isRounded={false}
+                        fontType={'smallRegularText'}
+                        height={40}
                       />
+                        <Button
+                            title={translate(`pages.xchat.deleteGroup`)}
+                            onPress={this.toggleDeleteGroupConfirmationModal.bind(
+                                this,
+                            )}
+                            isRounded={false}
+                            type={'secondary'}
+                            fontType={'smallRegularText'}
+                            height={40}
+                        />
                     </React.Fragment>
                   )
                 ) : (

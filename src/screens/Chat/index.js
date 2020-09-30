@@ -1244,7 +1244,8 @@ class Chat extends Component {
 
         let array = chat.toJSON();
 
-        if (array && array.length > 0) {
+
+        if(array && array.length>0){
           updateLastMsgGroupsWithoutCount(
             message.text.data.message_details.group_id,
             array[0].message_body.type,
@@ -1886,7 +1887,7 @@ class Chat extends Component {
   };
 
   render() {
-    const {orientation} = this.state;
+    const {orientation, sortBy} = this.state;
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -1896,18 +1897,21 @@ class Chat extends Component {
           title={translate('pages.xchat.chat')}
           isSortOptions
           menuItems={[
-            {
-              title: translate('pages.xchat.timeReceived'),
-              onPress: () => this.shotListBy('time'),
-            },
-            {
-              title: translate('pages.xchat.unreadMessages'),
-              onPress: () => this.shotListBy('unread'),
-            },
-            {
-              title: translate('pages.setting.name'),
-              onPress: () => this.shotListBy('name'),
-            },
+              {
+                  title: translate('pages.xchat.timeReceived'),
+                  onPress: () => this.shotListBy('time'),
+                  isSorted: sortBy === 'time' ? true : false
+              },
+              {
+                  title: translate('pages.xchat.unreadMessages'),
+                  onPress: () => this.shotListBy('unread'),
+                  isSorted: sortBy === 'unread' ? true : false
+              },
+              {
+                  title: translate('pages.setting.name'),
+                  onPress: () => this.shotListBy('name'),
+                  isSorted: sortBy === 'name' ? true : false
+              }
           ]}
           onChangeText={this.onSearch.bind(this)}
           navigation={this.props.navigation}

@@ -95,11 +95,8 @@ export default class App extends Component {
 
             if (this.state.appState.match(/background/) && nextAppState === 'active') {
                 console.log('From background to active')
-                
                 this.SingleSocket = SingleSocket.getInstance();
-                
                 this.SingleSocket.checkSocketConnected();
-                
                 if (isEventIdExists()) {
                     let idObj = getLastEventId()
                     console.log('getLastEventId', idObj)

@@ -102,7 +102,7 @@ export default class HeaderWithBack extends Component {
               }}>
               <Text
                 style={[
-                  globalStyles.normalLightText,
+                  globalStyles.normalRegularText15,
                   {textAlign: isCentered ? 'center' : 'left'},
                 ]}>
                 {title}
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     // backgroundColor: Colors.home_header,
   },
   backIcon: {
-    height: 15,
+    height: 15
   },
 });
 

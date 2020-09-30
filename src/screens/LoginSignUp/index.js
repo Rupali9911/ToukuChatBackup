@@ -636,9 +636,7 @@ class LoginSignUp extends Component {
                         ? globalStyles.normalLightText
                         : globalStyles.smallLightText,
                       {
-                        marginEnd: 10,
-                        padding:
-                          selectedLanguageItem.language_name === 'ja' ? 5 : 0,
+                        marginEnd: 10
                       },
                     ]}>
                     {translate('pages.welcome.theWorldIsConnected')}
@@ -758,7 +756,6 @@ class LoginSignUp extends Component {
                               ? globalStyles.normalRegularText17
                               : [
                                   globalStyles.normalRegularText17,
-                                  {paddingTop: 8},
                                 ]
                           }>
                           {translate('common.continueWithApple')}

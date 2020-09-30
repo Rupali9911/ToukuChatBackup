@@ -295,8 +295,8 @@ class SignUp extends Component {
       }
 
     this.setState({username: username.replace(/\s/g, '')});
-      console.log('username.length, userNameCheck', username.length )
       this.props.userNameCheck(username).then((res) => {
+          console.log('userNameCheck res',res, username )
           if (res.status === false) {
               this.setState({userNameSuggestions: []});
               AsyncStorage.setItem('username', username);
@@ -622,21 +622,14 @@ class SignUp extends Component {
   };
 
   async onSocialSignUp() {
-    const {username, email, isAgreeWithTerms} = this.state;
+    const {username, email, isAgreeWithTerms, password, passwordConfirm} = this.state;
       let invitationCode = await AsyncStorage.getItem('invitationCode');
       let channelDataJson = await AsyncStorage.getItem('channelData');
       let channelData = JSON.parse(channelDataJson);
     let isValid = true;
 
     let regex = /^[a-zA-Z0-9- ]*$/
-      if(regex.test(username) == false) {
-          isValid =  false
-          Toast.show({
-              title: translate('common.register'),
-              text: translate('pages.register.enterValueInEnglish'),
-              type: 'primary',
-          });
-      }
+
 
     if (username.length <= 0) {
       isValid = false;
@@ -645,13 +638,68 @@ class SignUp extends Component {
             text: translate('pages.setting.toastr.pleaseEnterUsername'),
             type: 'warning',
         });
+    } else if(regex.test(username) == false) {
+        isValid =  false
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.enterValueInEnglish'),
+            type: 'primary',
+        });
+    }else  if (password.length <= 0) {
+        isValid = false;
+        // this.setState({
+        //     passwordStatus: 'wrong',
+        //     passwordErr: 'messages.required',
+        // });
+        this.setState({
+            passwordStatus: 'wrong',
+            passwordErr: 'minLengthFailed',
+        });
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.minLengthPassword'),
+            type: 'warning',
+        });
+    }else if (password.length < 8 ) {
+        isValid = false;
+        this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.minLengthPassword'),
+            type: 'warning',
+        });
+    }else if (password.length > 64) {
+        isValid = false;
+        this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.maxLengthPassword'),
+            type: 'warning',
+        });
+    }else if (passwordConfirm.length <= 0) {
+        isValid = false;
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('toastr.pleaseEnterYourConfirmPassword'),
+            type: 'warning',
+        });
+    }else if (password != passwordConfirm) {
+        isValid = false;
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
+            type: 'warning',
+        });
     }
+
     if (isValid) {
       if (isAgreeWithTerms) {
         let registrationData;
         if (this.props.navigation.state.params.pageNumber === 1) {
           registrationData = JSON.stringify({
             username: username,
+              password: password,
+              confirm_password: passwordConfirm,
             invitation_code: invitationCode ? invitationCode : '',
             email: email,
               site_from: 'touku',
@@ -659,10 +707,13 @@ class SignUp extends Component {
         } else {
           registrationData = JSON.stringify({
             username: username,
+              password: password,
+              confirm_password: passwordConfirm,
             invitation_code: invitationCode ? invitationCode : '',
               site_from: 'touku',
           });
         }
+        console.log('RegisterData through SNS', registrationData)
         this.props.socialRegistration(registrationData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
@@ -873,7 +924,7 @@ class SignUp extends Component {
                 ) : null}
 
               {this.showSuggestions()}
-              {!this.props.navigation.state.params.isSocial && (
+
                 <React.Fragment>
                   <Inputfield
                     ref={(input) => {
@@ -945,7 +996,6 @@ class SignUp extends Component {
                                 </Text>
                     ) : null}
                 </React.Fragment>
-              )}
                 <View
                     style={signUpStyles.termsContainer}>
                     <TouchableOpacity  onPress={() => this.onCheckRememberMe()} activeOpacity={1}>

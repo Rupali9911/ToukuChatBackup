@@ -565,7 +565,7 @@ class Login extends Component {
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('App');
             return;
           }
             if (res.error) {
@@ -1084,7 +1084,7 @@ class Login extends Component {
                                               style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', height: 44, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
                                 <View style={{flexDirection: 'row'}}>
                                     <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
-                                    <Text style={selectedLanguageItem.language_name === 'en' || selectedLanguageItem.language_name === 'ko'? globalStyles.normalRegularText17 : [globalStyles.normalRegularText17, { paddingTop: 8}]}>
+                                    <Text style={selectedLanguageItem.language_name === 'en' || selectedLanguageItem.language_name === 'ko'? globalStyles.normalRegularText17 : [globalStyles.normalRegularText17]}>
                                         {translate('common.continueWithApple')}
                                     </Text>
                                 </View>

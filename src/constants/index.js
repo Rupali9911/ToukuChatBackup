@@ -151,30 +151,32 @@ export const languageArray = [
     icon: Icons.icon_flag_america,
     language_display: 'English',
   },
+    {
+        language_id: 2,
+        language_name: 'ko',
+        icon: Icons.icon_flag_korea,
+        language_display: '한국어',
+    },
   {
-    language_id: 2,
+    language_id: 3,
     language_name: 'ja',
     icon: Icons.icon_flag_japan,
     language_display: '日本語',
   },
+    {
+        language_id: 4,
+        language_name: 'tw',
+        icon: Icons.icon_flag_taiwan,
+        language_display: '中文（繁体）',
+    },
   {
-    language_id: 3,
+    language_id: 5,
     language_name: 'ch',
     icon: Icons.icon_flag_china,
     language_display: '中文（简体）',
   },
-  {
-    language_id: 4,
-    language_name: 'tw',
-    icon: Icons.icon_flag_taiwan,
-    language_display: '中文（繁体）',
-  },
-  {
-    language_id: 5,
-    language_name: 'ko',
-    icon: Icons.icon_flag_korea,
-    language_display: '한국어',
-  },
+
+
 ];
 
 export const supportUrl = 'https://www.touku.net/#/support/';
