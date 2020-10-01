@@ -244,7 +244,19 @@ export const userRegister = (registerData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getRegisterFailure());
-        reject(err);
+        // reject(err);
+        if (err.response) {
+          if (err.response.data) {
+            console.log('error_data',err.response.data);  
+            // if (err.response.data.detail) {
+              //     Toast.show({
+              //         title: '',
+              //         text: err.response.data.detail.toString(),
+              //         type: 'primary',
+              //     });
+              // }
+          }
+      }
       });
   });
 

@@ -11,6 +11,7 @@ import {
   Image,
   PixelRatio,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -82,6 +83,7 @@ class ChannelChats extends Component {
       selectedKey: null,
       jackpotData: null,
       assetXPValue: null,
+      loadingJackpot:false,
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
@@ -646,6 +648,7 @@ class ChannelChats extends Component {
   };
 
   selectedLoginBonus = (key) => {
+    this.setState({loadingJackpot:true});
     this.props
       .selectLoginJackpotOfChannel({picked_option: key})
       .then((res) => {
@@ -654,9 +657,11 @@ class ChannelChats extends Component {
           this.setState({jackpotData: res.data});
           this.getAssetXpValue();
         }
+        this.setState({loadingJackpot:false});
       })
       .catch((err) => {
         console.log('err', err);
+        this.setState({loadingJackpot:false});
       });
   };
 
@@ -714,9 +719,10 @@ class ChannelChats extends Component {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
       let conversations = [];
-      chat.map((item, index) => {
-        conversations = [...conversations, item];
-      });
+      // chat.map((item, index) => {
+      //   conversations = [...conversations, item];
+      // });
+      conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
     }
   };
@@ -732,9 +738,12 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
           let conversations = [];
-          chat.map((item, index) => {
-            conversations = [...conversations, item];
-          });
+          // chat.map((item, index) => {
+          //   conversations = [...conversations, item];
+          // });
+
+          conversations = chat.toJSON();
+
           this.props.setChannelConversation(conversations);
         }
       });
@@ -744,9 +753,10 @@ class ChannelChats extends Component {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
       let conversations = [];
-      chat.map((item, index) => {
-        conversations = [...conversations, item];
-      });
+      // chat.map((item, index) => {
+      //   conversations = [...conversations, item];
+      // });
+      conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
     }
     await this.props
@@ -759,9 +769,10 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
           let conversations = [];
-          chat.map((item, index) => {
-            conversations = [...conversations, item];
-          });
+          // chat.map((item, index) => {
+          //   conversations = [...conversations, item];
+          // });
+          conversations = chat.toJSON();
           this.props.setChannelConversation(conversations);
         }
       });
@@ -1012,6 +1023,7 @@ class ChannelChats extends Component {
         deleted_for: [this.props.userData.id],
       };
       deleteMessageById(this.state.selectedMessageId);
+      this.getLocalChannelConversations();
       this.props
         .deleteChannelMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -1126,7 +1138,9 @@ class ChannelChats extends Component {
                     </Text>
                   </Text>
                 ) : null}
-                <View style={styles.bonusImageContainer}>
+                {this.state.loadingJackpot?
+                  <ActivityIndicator style={{marginTop:10}} size={'large'} color={'#fff'}/>
+                :<View style={styles.bonusImageContainer}>
                   <TouchableOpacity
                     disabled={this.state.jackpotData}
                     onPress={() => {
@@ -1286,7 +1300,7 @@ class ChannelChats extends Component {
                       </View>
                     ) : null}
                   </TouchableOpacity>
-                </View>
+                </View>}
               </View>
               <Text
                 style={{

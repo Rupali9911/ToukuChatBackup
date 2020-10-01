@@ -68,6 +68,7 @@ class FriendChats extends Component {
       sentMessageType: 'text',
       sendingMedia: false,
       showSelectModal: false,
+      callingApi: false,
       uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
         {
@@ -666,6 +667,7 @@ class FriendChats extends Component {
       channel_name: `unfriend_${this.props.currentFriend.user_id}`,
       unfriend_user_id: this.props.currentFriend.user_id,
     };
+    this.setState({callingApi:true});
     this.props
       .unFriendUser(payload)
       .then((res) => {
@@ -679,6 +681,7 @@ class FriendChats extends Component {
           this.props.navigation.goBack();
         }
         this.toggleConfirmationModal();
+        this.setState({callingApi:false});
       })
       .catch((err) => {
         console.log('FriendChats -> onConfirm -> err', err);
@@ -688,6 +691,7 @@ class FriendChats extends Component {
           type: 'primary',
         });
         this.toggleConfirmationModal();
+        this.setState({callingApi:false});
       });
   };
 

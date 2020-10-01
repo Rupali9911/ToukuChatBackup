@@ -204,7 +204,7 @@ class GroupChatContainer extends Component {
               onContentSizeChange={(contentWidth, contentHeight) => {
                 if (this.props.translatedMessageId) {
                 } else {
-                  messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
+                  // messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
                 }
               }}
               // getItemLayout={(data, index) => (
@@ -403,7 +403,10 @@ class GroupChatContainer extends Component {
           onCameraPress={() => onCameraPress()}
           onGalleryPress={() => onGalleryPress()}
           onChangeText={(message) => handleMessage(message)}
-          onSend={onMessageSend}
+          onSend={()=>{
+            onMessageSend();
+            messages.length>0 && this.scrollView && this.scrollView.scrollToIndex({index:0, animated: false });
+          }}
           value={newMessageText}
           placeholder={translate('pages.xchat.enterMessage')}
           sendingImage={sendingImage}

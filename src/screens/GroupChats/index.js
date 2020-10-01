@@ -54,7 +54,9 @@ import {
   setGroupMessageUnsend,
   updateUnReadCount,
   deleteGroupById,
-  deleteAllGroupMessageByGroupId
+  deleteAllGroupMessageByGroupId,
+  updateLastMsgGroupsWithoutCount,
+  setGroupLastMessageUnsend
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -320,11 +322,24 @@ class GroupChats extends Component {
   };
 
   sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+    const {newMessageText, editMessageId,sentMessageType} = this.state;
     const data = {
       message_body: newMessageText,
     };
-    this.props.editGroupMessage(editMessageId, data);
+    this.props.editGroupMessage(editMessageId, data).then((res)=>{
+      if(this.props.currentGroup.last_msg_id == editMessageId){
+        updateLastMsgGroupsWithoutCount(
+          this.props.currentGroup.group_id,
+          sentMessageType,
+          newMessageText,
+          this.props.currentGroup.last_msg_id,
+          this.props.currentGroup.timestamp,
+        );
+        this.props.getLocalUserGroups().then((res) => {
+          this.props.setCommonChatConversation();
+        });
+      }
+    });
     this.setState({
       newMessageText: '',
       isReply: false,
@@ -871,7 +886,29 @@ class GroupChats extends Component {
         .unSendGroupMessage(this.state.selectedMessageId, payload)
         .then((res) => {
           deleteGroupMessageById(this.state.selectedMessageId);
-          this.getGroupConversation();
+          this.getLocalGroupConversation();
+
+          if(this.props.currentGroup.last_msg_id == this.state.selectedMessageId){
+            let chat = getGroupChatConversationById(
+              this.props.currentGroup.group_id,
+            );
+    
+            let array = chat.toJSON();
+    
+            if(array && array.length>0){
+              updateLastMsgGroupsWithoutCount(
+                this.props.currentGroup.group_id,
+                array[0].message_body.type,
+                array[0].message_body.text,
+                array[0].msg_id,
+                array[0].timestamp,
+              );
+              this.props.getLocalUserGroups().then((res) => {
+                this.props.setCommonChatConversation();
+              });
+            }
+          }
+          // this.getGroupConversation();
         });
     }
   };
@@ -884,6 +921,13 @@ class GroupChats extends Component {
         .unSendGroupMessage(this.state.selectedMessageId, payload)
         .then((res) => {
           setGroupMessageUnsend(this.state.selectedMessageId);
+          this.getLocalGroupConversation();
+          if (this.props.currentGroup.last_msg_id == this.state.selectedMessageId) {
+            setGroupLastMessageUnsend(this.props.currentGroup.group_id);
+            this.props.getLocalUserGroups().then((res) => {
+              this.props.setCommonChatConversation();
+            });
+          }
           Toast.show({
             title: 'Touku',
             text: translate('pages.xchat.messageUnsent'),

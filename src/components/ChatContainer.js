@@ -207,7 +207,7 @@ class ChatContainer extends Component {
               onContentSizeChange={() => {
                 if (this.props.translatedMessageId) {
                 } else {
-                  messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
+                  // messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
                 }
               }}
               // getItemLayout={(data, index) => (
@@ -415,7 +415,10 @@ class ChatContainer extends Component {
           onCameraPress={() => onCameraPress()}
           onGalleryPress={() => onGalleryPress()}
           onChangeText={(message) => handleMessage(message)}
-          onSend={onMessageSend}
+          onSend={()=>{
+            onMessageSend();
+            messages.length>0 && this.scrollView && this.scrollView.scrollToIndex({index:0, animated: false });
+          }}
           value={newMessageText}
           sendEnable={sendEnable}
           placeholder={translate('pages.xchat.enterMessage')}
