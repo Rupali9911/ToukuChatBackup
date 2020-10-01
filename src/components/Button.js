@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Platform,
-    TextInput
+  TextInput,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
@@ -115,7 +115,10 @@ class Button extends Component {
       type,
     } = this.props;
     return (
-      <TouchableOpacity disabled={disabled} activeOpacity={1} onPress={onPress}>
+      <TouchableOpacity
+        disabled={disabled}
+        activeOpacity={1}
+        onPress={loading ? null : onPress}>
         <LinearGradient
           start={type === 'primaryNew' ? {x: 0.2, y: 0.7} : {x: 0.1, y: 0.7}}
           end={type === 'primaryNew' ? {x: 0.95, y: 0.8} : {x: 0.5, y: 0.8}}
@@ -127,7 +130,7 @@ class Button extends Component {
               height: height,
               borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
               borderColor: this.getBorderColor(),
-              opacity: disabled ? 0.5 : 1
+              opacity: disabled ? 0.5 : 1,
             },
           ]}>
           {loading ? (
@@ -139,12 +142,12 @@ class Button extends Component {
             </View>
           ) : (
             <TextInput
-                pointerEvents="none"
-                style={[
+              pointerEvents="none"
+              style={[
                 this.getFont(),
                 {
                   color: this.getTitleColor(),
-                    alignSelf : "center"
+                  alignSelf: 'center',
                 },
               ]}>
               {title}

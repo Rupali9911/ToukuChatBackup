@@ -47,6 +47,7 @@ class CreateGroupChat extends Component {
       loading: false,
     };
     this.S3uploadService = new S3uploadService();
+    this.isPressed = false;
   }
 
   static navigationOptions = () => {
@@ -131,7 +132,12 @@ class CreateGroupChat extends Component {
 
   async onCreatePress() {
     const {groupName, note, addedFriends, groupImagePath} = this.state;
+    if (this.isPressed) {
+      return;
+    }
+    this.isPressed = true;
     if (groupName.trim() === '') {
+      this.isPressed = false;
       this.setState({groupNameErr: 'messages.required'});
       Toast.show({
         title: 'Touku',
@@ -139,6 +145,7 @@ class CreateGroupChat extends Component {
         type: 'primary',
       });
     } else if (addedFriends.length <= 0) {
+      this.isPressed = false;
       Toast.show({
         title: 'Touku',
         text: translate('pages.xchat.toastr.pleaseSelectMember'),
@@ -347,7 +354,11 @@ class CreateGroupChat extends Component {
               <Button
                 type={'primary'}
                 title={translate('pages.xchat.create')}
-                onPress={() => this.onCreatePress()}
+                onPress={() =>
+                  loading || this.props.groupLoading
+                    ? null
+                    : this.onCreatePress()
+                }
                 loading={
                   groupImagePath.uri != null ? loading : this.props.groupLoading
                 }

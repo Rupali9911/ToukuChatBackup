@@ -54,7 +54,7 @@ export const setCommonChatConversation = () => (dispatch) =>
           last_msg: item.last_msg,
           is_pined: item.is_pined,
           created: item.created,
-        }
+        };
         array = [...array, i];
       });
     }
@@ -77,7 +77,7 @@ export const setCommonChatConversation = () => (dispatch) =>
           is_online: item.is_online,
           is_typing: item.is_typing,
           timestamp: item.timestamp,
-        }
+        };
         array = [...array, i];
       });
     }
@@ -102,17 +102,17 @@ export const setCommonChatConversation = () => (dispatch) =>
           sender_username: item.sender_username,
           sender_display_name: item.sender_display_name,
           mentions: item.mentions,
-          reply_to: item.reply_to
-        }
+          reply_to: item.reply_to,
+        };
         array = [...array, i];
       });
-      array.sort((a, b) =>
-        a.timestamp &&
-        b.timestamp &&
-        new Date(a.timestamp) < new Date(b.timestamp)
-          ? 1
-          : -1,
-      );
+      // array.sort((a, b) =>
+      //   a.timestamp &&
+      //   b.timestamp &&
+      //   new Date(a.timestamp) < new Date(b.timestamp)
+      //     ? 1
+      //     : -1,
+      // );
     }
     dispatch(setCommonChat(array));
     resolve();

@@ -1149,9 +1149,13 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg.msg_type === 'text'
                     ? item.last_msg.message_body
-                    : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
-                        ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
-                            : translate('pages.xchat.audio'))
+                    : item.last_msg_type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg_type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg_type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
               date={item.last_msg ? item.last_msg.created : item.created}
@@ -1198,9 +1202,13 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg.type === 'text'
                     ? item.last_msg.text
-                    : (item.last_msg.type === 'image' ? translate('pages.xchat.photo') : item.last_msg.type === 'video'
-                        ?  translate('pages.xchat.video') : item.last_msg.type === 'doc' ? translate('pages.xchat.document')
-                            : translate('pages.xchat.audio'))
+                    : item.last_msg.type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg.type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg.type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
               date={item.timestamp}
@@ -1243,9 +1251,13 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg_type === 'text'
                     ? item.last_msg
-                    : (item.last_msg_type === 'image' ? translate('pages.xchat.photo') : item.last_msg_type === 'video'
-                        ?  translate('pages.xchat.video') : item.last_msg_type === 'doc' ? translate('pages.xchat.document')
-                            : translate('pages.xchat.audio'))
+                    : item.last_msg_type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg_type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg_type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
               image={getAvatar(item.profile_picture)}
@@ -1421,6 +1433,7 @@ class Home extends Component {
           /> */}
 
         <View style={globalStyles.container}>
+          {/* <KeyboardAwareScrollView showsVerticalScrollIndicator={false}> */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => this.onUserProfilePress()}
@@ -1444,89 +1457,88 @@ class Home extends Component {
               {userConfig.display_name}
             </Text>
           </TouchableOpacity>
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-            {/* Friend Request */}
-            {filteredFriendRequest.length > 0 && (
-              <Collapse
-                onToggle={(isColl) =>
-                  this.setState({
-                    isFriendReqCollapse: isColl,
-                  })
-                }
-                isCollapsed={isFriendReqCollapse}>
-                <CollapseHeader>
-                  <DropdownHeader
-                    title={translate('pages.xchat.friendRequest')}
-                    isCollapsed={isFriendReqCollapse}
-                    listcounts={filteredFriendRequest.length}
-                    badgeCount={friendRequest.length}
-                    selectedLanguageItem={selectedLanguageItem}
-                  />
-                </CollapseHeader>
-                <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
-              </Collapse>
-            )}
-
-            {/* Channels */}
+          {/* Friend Request */}
+          {filteredFriendRequest.length > 0 && (
             <Collapse
               onToggle={(isColl) =>
                 this.setState({
-                  isChannelCollapsed: isColl,
+                  isFriendReqCollapse: isColl,
                 })
               }
-              isCollapsed={isChannelCollapsed}>
+              isCollapsed={isFriendReqCollapse}>
               <CollapseHeader>
                 <DropdownHeader
-                  title={translate('pages.xchat.channels')}
-                  isCollapsed={isChannelCollapsed}
-                  listcounts={filteredChannels.length}
-                  badgeCount={this.setChannelHeaderCount()}
+                  title={translate('pages.xchat.friendRequest')}
+                  isCollapsed={isFriendReqCollapse}
+                  listcounts={filteredFriendRequest.length}
+                  badgeCount={friendRequest.length}
                   selectedLanguageItem={selectedLanguageItem}
                 />
               </CollapseHeader>
-              <CollapseBody>{this.renderUserChannels()}</CollapseBody>
+              <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
             </Collapse>
+          )}
 
-            {/* Groups */}
-            <Collapse
-              onToggle={(isColl) =>
-                this.setState({
-                  isGroupCollapsed: isColl,
-                })
-              }
-              isCollapsed={isGroupCollapsed}>
-              <CollapseHeader>
-                <DropdownHeader
-                  title={translate('pages.xchat.groups')}
-                  isCollapsed={isGroupCollapsed}
-                  listcounts={filteredGroups.length}
-                  badgeCount={this.setGroupHeaderCount()}
-                  selectedLanguageItem={selectedLanguageItem}
-                />
-              </CollapseHeader>
-              <CollapseBody>{this.renderUserGroups()}</CollapseBody>
-            </Collapse>
+          {/* Channels */}
+          <Collapse
+            onToggle={(isColl) =>
+              this.setState({
+                isChannelCollapsed: isColl,
+              })
+            }
+            isCollapsed={isChannelCollapsed}>
+            <CollapseHeader>
+              <DropdownHeader
+                title={translate('pages.xchat.channels')}
+                isCollapsed={isChannelCollapsed}
+                listcounts={filteredChannels.length}
+                badgeCount={this.setChannelHeaderCount()}
+                selectedLanguageItem={selectedLanguageItem}
+              />
+            </CollapseHeader>
+            <CollapseBody>{this.renderUserChannels()}</CollapseBody>
+          </Collapse>
 
-            {/* Friends */}
-            <Collapse
-              onToggle={(isColl) =>
-                this.setState({
-                  isFriendsCollapsed: isColl,
-                })
-              }
-              isCollapsed={isFriendsCollapsed}>
-              <CollapseHeader>
-                <DropdownHeader
-                  title={translate('pages.xchat.friends')}
-                  isCollapsed={isFriendsCollapsed}
-                  listcounts={filteredFriends.length}
-                  badgeCount={this.setFriendHeaderCount()}
-                  selectedLanguageItem={selectedLanguageItem}
-                />
-              </CollapseHeader>
-              <CollapseBody>{this.renderUserFriends()}</CollapseBody>
-            </Collapse>
-          </KeyboardAwareScrollView>
+          {/* Groups */}
+          <Collapse
+            onToggle={(isColl) =>
+              this.setState({
+                isGroupCollapsed: isColl,
+              })
+            }
+            isCollapsed={isGroupCollapsed}>
+            <CollapseHeader>
+              <DropdownHeader
+                title={translate('pages.xchat.groups')}
+                isCollapsed={isGroupCollapsed}
+                listcounts={filteredGroups.length}
+                badgeCount={this.setGroupHeaderCount()}
+                selectedLanguageItem={selectedLanguageItem}
+              />
+            </CollapseHeader>
+            <CollapseBody>{this.renderUserGroups()}</CollapseBody>
+          </Collapse>
+
+          {/* Friends */}
+          <Collapse
+            onToggle={(isColl) =>
+              this.setState({
+                isFriendsCollapsed: isColl,
+              })
+            }
+            isCollapsed={isFriendsCollapsed}>
+            <CollapseHeader>
+              <DropdownHeader
+                title={translate('pages.xchat.friends')}
+                isCollapsed={isFriendsCollapsed}
+                listcounts={filteredFriends.length}
+                badgeCount={this.setFriendHeaderCount()}
+                selectedLanguageItem={selectedLanguageItem}
+              />
+            </CollapseHeader>
+            <CollapseBody>{this.renderUserFriends()}</CollapseBody>
+          </Collapse>
+          {/* </KeyboardAwareScrollView> */}
         </View>
       </View>
       // </ImageBackground>

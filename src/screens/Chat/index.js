@@ -158,9 +158,7 @@ class Chat extends Component {
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
     });
-  }
 
-  async componentDidMount() {
     this.props.getUserProfile();
     this.SingleSocket.create({user_id: this.props.userData.id});
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -169,7 +167,10 @@ class Chat extends Component {
     // this.getUserFriends();
     // this.setCommonConversation();
     this.props.getUserConfiguration().then((res) => {
-      console.log('getUserConfiguration', res);
+      console.log('getUserConfiguration ----->>>>>>>> ', res);
+      this.setState({
+        sortBy: res.sort_by,
+      });
       setI18nConfig(res.language);
 
       let filteredArray = languageArray.filter(
@@ -180,17 +181,56 @@ class Chat extends Component {
         this.props.setAppLanguage(filteredArray[0]);
         setI18nConfig(filteredArray[0].language_name);
       }
-    });
-    this.props.getFriendRequest();
+      this.props.getFriendRequest();
 
-    this.props.getFollowingChannels().then((res) => {
-      this.props.getUserGroups().then((res) => {
-        this.props.getUserFriends().then((res) => {
-          // console.log('friends', res);
-          this.setCommonConversation();
+      this.props.getFollowingChannels().then((res) => {
+        console.log('Chat -> componentDidMount -> getFollowingChannels', res);
+        this.props.getUserGroups().then((res) => {
+          console.log('Chat -> componentDidMount -> getUserGroups', res);
+          this.props.getUserFriends().then((res) => {
+            console.log('Chat -> componentDidMount -> getUserFriends', res);
+            // console.log('friends', res);
+            this.setCommonConversation();
+          });
         });
       });
     });
+  }
+
+  async componentDidMount() {
+    // this.props.getUserProfile();
+    this.SingleSocket.create({user_id: this.props.userData.id});
+    Orientation.addOrientationListener(this._orientationDidChange);
+    // this.getFollowingChannels();
+    // this.getUserGroups();
+    // this.getUserFriends();
+    // this.setCommonConversation();
+    // this.props.getUserConfiguration().then((res) => {
+    //   console.log('getUserConfiguration ----->>>>>>>> ', res);
+    //   setI18nConfig(res.language);
+
+    //   let filteredArray = languageArray.filter(
+    //     (item) => item.language_name === res.language,
+    //   );
+    //   console.log('filteredArray', filteredArray);
+    //   if (filteredArray.length > 0) {
+    //     this.props.setAppLanguage(filteredArray[0]);
+    //     setI18nConfig(filteredArray[0].language_name);
+    //   }
+    //   this.props.getFriendRequest();
+
+    //   this.props.getFollowingChannels().then((res) => {
+    //     console.log('Chat -> componentDidMount -> getFollowingChannels', res);
+    //     this.props.getUserGroups().then((res) => {
+    //       console.log('Chat -> componentDidMount -> getUserGroups', res);
+    //       this.props.getUserFriends().then((res) => {
+    //         console.log('Chat -> componentDidMount -> getUserFriends', res);
+    //         // console.log('friends', res);
+    //         this.setCommonConversation();
+    //       });
+    //     });
+    //   });
+    // });
 
     // Realm.open({}).then(realm => {
     //   console.log("Realm is located at: " + realm.path);
@@ -1244,8 +1284,7 @@ class Chat extends Component {
 
         let array = chat.toJSON();
 
-
-        if(array && array.length>0){
+        if (array && array.length > 0) {
           updateLastMsgGroupsWithoutCount(
             message.text.data.message_details.group_id,
             array[0].message_body.type,
@@ -1273,7 +1312,7 @@ class Chat extends Component {
     const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.CREATE_NEW_GROUP) {
       console.log(
-        'onCreateNewGroup -> message.text.data.message_details',
+        'onCreateNewGroup -> message.text.data.message_details ------>>>>>',
         message.text.data.message_details,
       );
       for (let id of message.text.data.message_details.members) {
@@ -1299,9 +1338,10 @@ class Chat extends Component {
             mentions: [],
             reply_to: null,
           };
-          setGroups([group]);
-          this.props.getLocalUserGroups().then((res) => {
-            this.props.setCommonChatConversation();
+          setGroups([group]).then(() => {
+            this.props.getLocalUserGroups().then((res) => {
+              this.props.setCommonChatConversation();
+            });
           });
           break;
         }
@@ -1672,6 +1712,7 @@ class Chat extends Component {
 
   sortList = () => {
     const {sortBy} = this.state;
+    console.log('sortList -> sortBy', sortBy);
     const commonConversation = this.props.commonChat;
 
     switch (sortBy) {
@@ -1772,7 +1813,32 @@ class Chat extends Component {
         return;
       }
       default:
+        // {
+        //   commonConversation.sort((a, b) =>
+        //     a.created &&
+        //     b.created &&
+        //     new Date(a.last_msg ? a.last_msg.created : a.created) <
+        //       new Date(b.last_msg ? b.last_msg.created : b.created)
+        //       ? 1
+        //       : a.created &&
+        //         b.timestamp &&
+        //         new Date(a.last_msg ? a.last_msg.created : a.created) <
+        //           new Date(b.timestamp)
+        //       ? 1
+        //       : a.timestamp &&
+        //         b.created &&
+        //         new Date(a.timestamp) <
+        //           new Date(b.last_msg ? b.last_msg.created : b.created)
+        //       ? 1
+        //       : a.timestamp &&
+        //         b.timestamp &&
+        //         new Date(a.timestamp) < new Date(b.timestamp)
+        //       ? 1
+        //       : -1,
+        //   );
+
         return;
+      // }
     }
   };
 
@@ -1897,21 +1963,21 @@ class Chat extends Component {
           title={translate('pages.xchat.chat')}
           isSortOptions
           menuItems={[
-              {
-                  title: translate('pages.xchat.timeReceived'),
-                  onPress: () => this.shotListBy('time'),
-                  isSorted: sortBy === 'time' ? true : false
-              },
-              {
-                  title: translate('pages.xchat.unreadMessages'),
-                  onPress: () => this.shotListBy('unread'),
-                  isSorted: sortBy === 'unread' ? true : false
-              },
-              {
-                  title: translate('pages.setting.name'),
-                  onPress: () => this.shotListBy('name'),
-                  isSorted: sortBy === 'name' ? true : false
-              }
+            {
+              title: translate('pages.xchat.timeReceived'),
+              onPress: () => this.shotListBy('time'),
+              isSorted: sortBy === 'time' ? true : false,
+            },
+            {
+              title: translate('pages.xchat.unreadMessages'),
+              onPress: () => this.shotListBy('unread'),
+              isSorted: sortBy === 'unread' ? true : false,
+            },
+            {
+              title: translate('pages.setting.name'),
+              onPress: () => this.shotListBy('name'),
+              isSorted: sortBy === 'name' ? true : false,
+            },
           ]}
           onChangeText={this.onSearch.bind(this)}
           navigation={this.props.navigation}

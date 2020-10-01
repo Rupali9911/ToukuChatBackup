@@ -536,7 +536,7 @@ class FriendChats extends Component {
               thumbnail: item.thumbnail,
               to_user: item.to_user,
               updated: item.updated,
-            }
+            };
             conversations = [...conversations, i];
           });
           this.props.setFriendConversation(conversations);
@@ -565,7 +565,7 @@ class FriendChats extends Component {
           thumbnail: item.thumbnail,
           to_user: item.to_user,
           updated: item.updated,
-        }
+        };
         conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
@@ -593,7 +593,7 @@ class FriendChats extends Component {
           thumbnail: item.thumbnail,
           to_user: item.to_user,
           updated: item.updated,
-        }
+        };
         conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
@@ -626,7 +626,7 @@ class FriendChats extends Component {
               thumbnail: item.thumbnail,
               to_user: item.to_user,
               updated: item.updated,
-            }
+            };
             conversations = [...conversations, i];
           });
           this.props.setFriendConversation(conversations);
@@ -1028,6 +1028,7 @@ class FriendChats extends Component {
           onCancel={this.onCancel}
           onConfirm={this.onConfirm}
           orientation={orientation}
+          isLoading={this.props.unFriendLoading}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.selectedUserWillBeRemoved')}
         />
@@ -1065,6 +1066,7 @@ const mapStateToProps = (state) => {
   return {
     currentFriend: state.friendReducer.currentFriend,
     chatsLoading: state.friendReducer.loading,
+    unFriendLoading: state.friendReducer.loading,
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
