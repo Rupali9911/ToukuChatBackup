@@ -81,7 +81,7 @@ export default class SingleSocket extends Component {
                 let idObj = getLastEventId()
                 console.log('getLastEventId', idObj)
                 if (idObj.length > 0) {
-                    getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id)
+                    getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id);
                 }
             }
             };

@@ -1149,11 +1149,11 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg.msg_type === 'text'
                     ? item.last_msg.message_body
-                    : item.last_msg_type === 'image'
+                    : item.last_msg.msg_type === 'image'
                     ? translate('pages.xchat.photo')
-                    : item.last_msg_type === 'video'
+                    : item.last_msg.msg_type === 'video'
                     ? translate('pages.xchat.video')
-                    : item.last_msg_type === 'doc'
+                    : item.last_msg.msg_type === 'doc'
                     ? translate('pages.xchat.document')
                     : translate('pages.xchat.audio')
                   : ''
@@ -1433,7 +1433,6 @@ class Home extends Component {
           /> */}
 
         <View style={globalStyles.container}>
-          {/* <KeyboardAwareScrollView showsVerticalScrollIndicator={false}> */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => this.onUserProfilePress()}
@@ -1458,6 +1457,7 @@ class Home extends Component {
             </Text>
           </TouchableOpacity>
           {/* Friend Request */}
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
           {filteredFriendRequest.length > 0 && (
             <Collapse
               onToggle={(isColl) =>
@@ -1538,7 +1538,7 @@ class Home extends Component {
             </CollapseHeader>
             <CollapseBody>{this.renderUserFriends()}</CollapseBody>
           </Collapse>
-          {/* </KeyboardAwareScrollView> */}
+          </KeyboardAwareScrollView>
         </View>
       </View>
       // </ImageBackground>

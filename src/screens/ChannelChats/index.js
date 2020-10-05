@@ -517,10 +517,10 @@ class ChannelChats extends Component {
     };
     // console.log('ChannelChats -> onMessageSend -> sendmsgdata', sendmsgdata);
     this.props.addNewSendMessage(sendmsgdata);
-    this.props.setChannelConversation([
-      sendmsgdata,
-      ...this.props.chatConversation,
-    ]);
+    // this.props.setChannelConversation([
+    //   sendmsgdata,
+    //   ...this.props.chatConversation,
+    // ]);
     // this.state.conversations.unshift(sendmsgdata);
     this.props.sendChannelMessage(messageData);
     // this.setState({
@@ -912,7 +912,7 @@ class ChannelChats extends Component {
     if (!this.props.chatConversation) {
       return null;
     }
-    console.log('chatConversation', chatConversation.length);
+    console.log('chatConversation', chatConversation);
     if (channelLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {

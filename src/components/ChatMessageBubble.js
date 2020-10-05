@@ -259,10 +259,10 @@ class ChatMessageBubble extends Component {
                       }>
                       {message.reply_to &&
                         this.renderReplyMessage(message.reply_to)}
-                      {message.msg_type === 'image' ? (
+                      {message.message_body && message.msg_type === 'image' ? (
                         <ScalableImage
                           src={
-                            message.thumbnail === ''
+                            message.thumbnail === null
                               ? message.message_body
                               : message.thumbnail
                           }
@@ -420,10 +420,10 @@ class ChatMessageBubble extends Component {
                       activeOpacity={0.8}>
                       {message.reply_to &&
                         this.renderReplyMessage(message.reply_to)}
-                      {message.msg_type === 'image' ? (
+                      {message.message_body && message.msg_type === 'image' ? (
                         <ScalableImage
                           src={
-                            message.thumbnail === ''
+                            message.thumbnail === null
                               ? message.message_body
                               : message.thumbnail
                           }

@@ -1880,11 +1880,11 @@ class Chat extends Component {
                   item.last_msg
                     ? item.last_msg.msg_type === 'text'
                       ? item.last_msg.message_body
-                      : item.last_msg_type === 'image'
+                      : item.last_msg.msg_type === 'image'
                       ? translate('pages.xchat.photo')
-                      : item.last_msg_type === 'video'
+                      : item.last_msg.msg_type === 'video'
                       ? translate('pages.xchat.video')
-                      : item.last_msg_type === 'doc'
+                      : item.last_msg.msg_type === 'doc'
                       ? translate('pages.xchat.document')
                       : translate('pages.xchat.audio')
                     : ''
