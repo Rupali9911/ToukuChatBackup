@@ -56,7 +56,7 @@ import {
   deleteGroupById,
   deleteAllGroupMessageByGroupId,
   updateLastMsgGroupsWithoutCount,
-  setGroupLastMessageUnsend
+  setGroupLastMessageUnsend,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -165,21 +165,27 @@ class GroupChats extends Component {
   }
 
   onMessageSend = async () => {
-    const {
-      newMessageText,
-      conversation,
-      isReply,
-      repliedMessage,
-      isEdited,
-      sentMessageType,
-      uploadFile,
-    } = this.state;
+    const {newMessageText, editMessageId, conversation} = this.state;
     const {userData, currentGroup} = this.props;
 
-    if (!newMessageText && !uploadFile.uri) {
+    let msgText = newMessageText;
+    let isReply = this.state.isReply;
+    let repliedMessage = this.state.repliedMessage;
+    let isEdited = this.state.isEdited;
+    let sentMessageType = this.state.sentMessageType;
+    let uploadFile = this.state.uploadFile;
+    if (!msgText && !uploadFile.uri) {
       return;
     }
-    let msgText = newMessageText;
+    this.setState({
+      newMessageText: '',
+      isReply: false,
+      repliedMessage: null,
+      isEdited: false,
+      sentMessageType: 'text',
+      sendingMedia: false,
+      uploadFile: {uri: null, type: null, name: null},
+    });
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
       let files = [file];
@@ -248,11 +254,11 @@ class GroupChats extends Component {
       read_count: null,
     };
     if (isEdited) {
-      updateGroupMessageById(this.state.editMessageId, {
+      updateGroupMessageById(editMessageId, {
         type: sentMessageType,
         text: msgText,
       });
-      this.sendEditMessage();
+      this.sendEditMessage(msgText, editMessageId, sentMessageType);
       return;
     }
     if (isReply) {
@@ -310,24 +316,24 @@ class GroupChats extends Component {
       this.props.sendGroupMessage(groupMessage);
     }
 
-    this.setState({
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-      isEdited: false,
-      sentMessageType: 'text',
-      sendingMedia: false,
-      uploadFile: {uri: null, type: null, name: null},
-    });
+    // this.setState({
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sentMessageType: 'text',
+    //   sendingMedia: false,
+    //   uploadFile: {uri: null, type: null, name: null},
+    // });
   };
 
-  sendEditMessage = () => {
-    const {newMessageText, editMessageId,sentMessageType} = this.state;
+  sendEditMessage = (newMessageText, editMessageId, sentMessageType) => {
+    // const {newMessageText, editMessageId,sentMessageType} = this.state;
     const data = {
       message_body: newMessageText,
     };
-    this.props.editGroupMessage(editMessageId, data).then((res)=>{
-      if(this.props.currentGroup.last_msg_id == editMessageId){
+    this.props.editGroupMessage(editMessageId, data).then((res) => {
+      if (this.props.currentGroup.last_msg_id == editMessageId) {
         updateLastMsgGroupsWithoutCount(
           this.props.currentGroup.group_id,
           sentMessageType,
@@ -340,13 +346,13 @@ class GroupChats extends Component {
         });
       }
     });
-    this.setState({
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-      isEdited: false,
-      sendingMedia: false,
-    });
+    // this.setState({
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sendingMedia: false,
+    // });
   };
 
   onDownload = async (message) => {
@@ -470,18 +476,17 @@ class GroupChats extends Component {
     this.getGroupMembers();
 
     this.updateUnReadGroupChatCount();
-
   }
 
   updateUnReadGroupChatCount = async () => {
-    updateUnReadCount(this.props.currentGroup.group_id,0);
+    updateUnReadCount(this.props.currentGroup.group_id, 0);
 
     this.props.updateUnreadGroupMsgsCounts(0);
 
     this.props.getLocalUserGroups().then((res) => {
       this.props.setCommonChatConversation();
     });
-  }
+  };
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -588,7 +593,7 @@ class GroupChats extends Component {
 
   markGroupConversationRead() {
     let data = {group_id: this.props.currentGroup.group_id};
-    console.log('groups_chats_screen',data);
+    console.log('groups_chats_screen', data);
     this.props.markGroupConversationRead(data);
   }
 
@@ -611,8 +616,8 @@ class GroupChats extends Component {
           reply_to: item.reply_to,
           mentions: item.mentions,
           read_count: item.read_count,
-          created: item.created
-        }
+          created: item.created,
+        };
         conversations = [...conversations, i];
       });
       this.props.setGroupConversation(conversations);
@@ -653,8 +658,8 @@ class GroupChats extends Component {
               reply_to: item.reply_to,
               mentions: item.mentions,
               read_count: item.read_count,
-              created: item.created
-            }
+              created: item.created,
+            };
             conversations = [...conversations, i];
           });
 
@@ -687,8 +692,8 @@ class GroupChats extends Component {
           reply_to: item.reply_to,
           mentions: item.mentions,
           read_count: item.read_count,
-          created: item.created
-        }
+          created: item.created,
+        };
         conversations = [...conversations, i];
       });
 
@@ -729,8 +734,8 @@ class GroupChats extends Component {
               reply_to: item.reply_to,
               mentions: item.mentions,
               read_count: item.read_count,
-              created: item.created
-            }
+              created: item.created,
+            };
             conversations = [...conversations, i];
           });
 
@@ -783,7 +788,7 @@ class GroupChats extends Component {
     this.props.getLocalUserGroups().then((res) => {
       this.props.setCommonChatConversation();
     });
-  }
+  };
 
   handleMessage(message) {
     this.setState({newMessageText: message});
@@ -804,7 +809,7 @@ class GroupChats extends Component {
       .leaveGroup(payload)
       .then((res) => {
         if (res.status === true) {
-          console.log('response',res);
+          console.log('response', res);
           Toast.show({
             title: 'Touku',
             text: translate(res.message),
@@ -888,14 +893,16 @@ class GroupChats extends Component {
           deleteGroupMessageById(this.state.selectedMessageId);
           this.getLocalGroupConversation();
 
-          if(this.props.currentGroup.last_msg_id == this.state.selectedMessageId){
+          if (
+            this.props.currentGroup.last_msg_id == this.state.selectedMessageId
+          ) {
             let chat = getGroupChatConversationById(
               this.props.currentGroup.group_id,
             );
-    
+
             let array = chat.toJSON();
-    
-            if(array && array.length>0){
+
+            if (array && array.length > 0) {
               updateLastMsgGroupsWithoutCount(
                 this.props.currentGroup.group_id,
                 array[0].message_body.type,
@@ -922,7 +929,9 @@ class GroupChats extends Component {
         .then((res) => {
           setGroupMessageUnsend(this.state.selectedMessageId);
           this.getLocalGroupConversation();
-          if (this.props.currentGroup.last_msg_id == this.state.selectedMessageId) {
+          if (
+            this.props.currentGroup.last_msg_id == this.state.selectedMessageId
+          ) {
             setGroupLastMessageUnsend(this.props.currentGroup.group_id);
             this.props.getLocalUserGroups().then((res) => {
               this.props.setCommonChatConversation();

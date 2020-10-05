@@ -118,7 +118,7 @@ class FriendChats extends Component {
       editMessageId: null,
     };
 
-    this.SingleSocket = SingleSocket.getInstance();
+    this.SingleSocket = new SingleSocket();
     this.S3uploadService = new S3uploadService();
     this.props.resetFriendConversation();
   }
@@ -161,21 +161,28 @@ class FriendChats extends Component {
   };
 
   onMessageSend = async () => {
-    const {
-      newMessageText,
-      isReply,
-      repliedMessage,
-      isEdited,
-      sentMessageType,
-      editMessageId,
-      uploadFile,
-    } = this.state;
+    const {newMessageText, editMessageId} = this.state;
     const {currentFriend, userData} = this.props;
 
-    if (!newMessageText && !uploadFile.uri) {
+    let msgText = newMessageText;
+    let isReply = this.state.isReply;
+    let repliedMessage = this.state.repliedMessage;
+    let isEdited = this.state.isEdited;
+    let sentMessageType = this.state.sentMessageType;
+    let uploadFile = this.state.uploadFile;
+    if (!msgText && !uploadFile.uri) {
       return;
     }
-    let msgText = newMessageText;
+    this.setState({
+      newMessageText: '',
+      isReply: false,
+      repliedMessage: null,
+      isEdited: false,
+      sentMessageType: 'text',
+      sendingMedia: false,
+      uploadFile: {uri: null, type: null, name: null},
+    });
+
     let imgThumb = '';
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
@@ -263,8 +270,8 @@ class FriendChats extends Component {
     };
 
     if (isEdited) {
-      updateFriendMessageById(editMessageId, newMessageText, sentMessageType);
-      this.sendEditMessage();
+      updateFriendMessageById(editMessageId, msgText, sentMessageType);
+      this.sendEditMessage(msgText, editMessageId);
       return;
     }
     if (isReply) {
@@ -297,19 +304,19 @@ class FriendChats extends Component {
       ]);
       this.props.sendPersonalMessage(data);
     }
-    this.setState({
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-      isEdited: false,
-      sentMessageType: 'text',
-      sendingMedia: false,
-      uploadFile: {uri: null, type: null, name: null},
-    });
+    // this.setState({
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sentMessageType: 'text',
+    //   sendingMedia: false,
+    //   uploadFile: {uri: null, type: null, name: null},
+    // });
   };
 
-  sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+  sendEditMessage = (newMessageText, editMessageId) => {
+    // const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -322,13 +329,13 @@ class FriendChats extends Component {
         this.getPersonalConversation();
       })
       .catch((err) => {});
-    this.setState({
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-      isEdited: false,
-      sendingMedia: false,
-    });
+    // this.setState({
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sendingMedia: false,
+    // });
   };
 
   onReply = (messageId) => {
@@ -667,7 +674,7 @@ class FriendChats extends Component {
       channel_name: `unfriend_${this.props.currentFriend.user_id}`,
       unfriend_user_id: this.props.currentFriend.user_id,
     };
-    this.setState({callingApi:true});
+    this.setState({callingApi: true});
     this.props
       .unFriendUser(payload)
       .then((res) => {
@@ -681,7 +688,7 @@ class FriendChats extends Component {
           this.props.navigation.goBack();
         }
         this.toggleConfirmationModal();
-        this.setState({callingApi:false});
+        this.setState({callingApi: false});
       })
       .catch((err) => {
         console.log('FriendChats -> onConfirm -> err', err);
@@ -691,7 +698,7 @@ class FriendChats extends Component {
           type: 'primary',
         });
         this.toggleConfirmationModal();
-        this.setState({callingApi:false});
+        this.setState({callingApi: false});
       });
   };
 
@@ -990,7 +997,11 @@ class FriendChats extends Component {
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <ChatHeader
-          title={currentFriend.display_name ? currentFriend.display_name : currentFriend.username}
+          title={
+            currentFriend.display_name
+              ? currentFriend.display_name
+              : currentFriend.username
+          }
           description={
             currentFriend.total_members + ' ' + translate('pages.xchat.members')
           }

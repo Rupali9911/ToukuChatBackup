@@ -128,6 +128,7 @@ class Chat extends Component {
       isLoading: true,
       commonConversation: [],
       sortBy: this.props.userConfig.sort_by,
+      reload: true,
       // sortOptions: [
       //   {
       //     title: translate('pages.xchat.timeReceived'),
@@ -247,10 +248,10 @@ class Chat extends Component {
 
     // this.getCommonChat();
 
-    // this.focusListener = this.props.navigation.addListener(
-    //   'didFocus',
-    //   async () => this.updateData(),
-    // );
+    this.focusListener = this.props.navigation.addListener(
+      'didFocus',
+      async () => this.forceUpdate(),
+    );
   }
 
   componentWillUnmount() {
@@ -1662,11 +1663,7 @@ class Chat extends Component {
           sort_order: this.props.userConfig.sort_order,
         };
 
-        this.props.updateConfiguration(sortData).then((res) => {
-          // this.setState({
-          //   sortBy: res.sort_by,
-          // });
-        });
+        this.props.updateConfiguration(sortData);
         return;
       }
       case 'unread': {
@@ -1675,11 +1672,7 @@ class Chat extends Component {
           sort_order: this.props.userConfig.sort_order,
         };
 
-        this.props.updateConfiguration(sortData).then((res) => {
-          // this.setState({
-          //   sortBy: res.sort_by,
-          // });
-        });
+        this.props.updateConfiguration(sortData);
         return;
       }
       case 'name': {
@@ -1688,11 +1681,7 @@ class Chat extends Component {
           sort_order: this.props.userConfig.sort_order,
         };
 
-        this.props.updateConfiguration(sortData).then((res) => {
-          // this.setState({
-          //   sortBy: res.sort_by,
-          // });
-        });
+        this.props.updateConfiguration(sortData);
         return;
       }
       default:
@@ -1701,11 +1690,7 @@ class Chat extends Component {
           sort_order: this.props.userConfig.sort_order,
         };
 
-        this.props.updateConfiguration(sortData).then((res) => {
-          // this.setState({
-          //   sortBy: res.sort_by,
-          // });
-        });
+        this.props.updateConfiguration(sortData);
         return;
     }
   };
@@ -1845,6 +1830,9 @@ class Chat extends Component {
   renderCommonChat = () => {
     const {isLoading} = this.state;
     const commonChat = this.props.commonChat;
+    if (this.props.currentRouteName !== 'ChatTab') {
+      return;
+    }
     const commonConversation = commonChat.filter(
       createFilter(this.state.searchText, [
         'name',

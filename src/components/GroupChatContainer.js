@@ -350,7 +350,7 @@ class GroupChatContainer extends Component {
                 backgroundColor: '#FFDBE9',
                 // position: 'absolute',
                 padding: 10,
-                bottom: Platform.OS=='ios'?20:30,
+                // bottom: Platform.OS=='ios'?20:30,
                 borderTopColor: Colors.gradient_1,
                 borderTopWidth: 1,
               }}>
@@ -403,9 +403,11 @@ class GroupChatContainer extends Component {
           onCameraPress={() => onCameraPress()}
           onGalleryPress={() => onGalleryPress()}
           onChangeText={(message) => handleMessage(message)}
-          onSend={()=>{
+          onSend={() => {
             onMessageSend();
-            messages.length>0 && this.scrollView && this.scrollView.scrollToIndex({index:0, animated: false });
+            messages.length > 0 &&
+              this.scrollView &&
+              this.scrollView.scrollToIndex({index: 0, animated: false});
           }}
           value={newMessageText}
           placeholder={translate('pages.xchat.enterMessage')}

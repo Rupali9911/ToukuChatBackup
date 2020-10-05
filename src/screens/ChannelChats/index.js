@@ -83,7 +83,7 @@ class ChannelChats extends Component {
       selectedKey: null,
       jackpotData: null,
       assetXPValue: null,
-      loadingJackpot:false,
+      loadingJackpot: false,
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
@@ -412,19 +412,25 @@ class ChannelChats extends Component {
   }
 
   onMessageSend = async () => {
-    const {
-      newMessageText,
-      isEdited,
-      sentMessageType,
-      uploadFile,
-      editMessageId,
-    } = this.state;
+    const {newMessageText, editMessageId} = this.state;
     const {userData, currentChannel} = this.props;
 
+    let msgText = newMessageText;
+    let repliedMessage = this.state.repliedMessage;
+    let isEdited = this.state.isEdited;
+    let sentMessageType = this.state.sentMessageType;
+    let uploadFile = this.state.uploadFile;
     if (!newMessageText && !uploadFile.uri) {
       return;
     }
-    let msgText = newMessageText;
+    this.setState({
+      newMessageText: '',
+      repliedMessage: null,
+      isEdited: false,
+      sentMessageType: 'text',
+      sendingMedia: false,
+      uploadFile: {uri: null, type: null, name: null},
+    });
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
       let files = [file];
@@ -500,7 +506,7 @@ class ChannelChats extends Component {
 
     if (isEdited) {
       updateMessageById(editMessageId, msgText, sentMessageType);
-      this.sendEditMessage();
+      this.sendEditMessage(msgText, editMessageId);
       return;
     }
     let messageData = {
@@ -517,14 +523,14 @@ class ChannelChats extends Component {
     ]);
     // this.state.conversations.unshift(sendmsgdata);
     this.props.sendChannelMessage(messageData);
-    this.setState({
-      newMessageText: '',
-      repliedMessage: null,
-      isEdited: false,
-      sentMessageType: 'text',
-      sendingMedia: false,
-      uploadFile: {uri: null, type: null, name: null},
-    });
+    // this.setState({
+    //   newMessageText: '',
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sentMessageType: 'text',
+    //   sendingMedia: false,
+    //   uploadFile: {uri: null, type: null, name: null},
+    // });
   };
 
   onEdit = (message) => {
@@ -542,8 +548,8 @@ class ChannelChats extends Component {
     });
   };
 
-  sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+  sendEditMessage = (newMessageText, editMessageId) => {
+    // const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -555,12 +561,12 @@ class ChannelChats extends Component {
         this.getChannelConversations();
       })
       .catch((err) => {});
-    this.setState({
-      newMessageText: '',
-      repliedMessage: null,
-      isEdited: false,
-      sendingMedia: false,
-    });
+    // this.setState({
+    //   newMessageText: '',
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sendingMedia: false,
+    // });
   };
 
   onDownload = async (message) => {
@@ -648,7 +654,7 @@ class ChannelChats extends Component {
   };
 
   selectedLoginBonus = (key) => {
-    this.setState({loadingJackpot:true});
+    this.setState({loadingJackpot: true});
     this.props
       .selectLoginJackpotOfChannel({picked_option: key})
       .then((res) => {
@@ -657,11 +663,11 @@ class ChannelChats extends Component {
           this.setState({jackpotData: res.data});
           this.getAssetXpValue();
         }
-        this.setState({loadingJackpot:false});
+        this.setState({loadingJackpot: false});
       })
       .catch((err) => {
         console.log('err', err);
-        this.setState({loadingJackpot:false});
+        this.setState({loadingJackpot: false});
       });
   };
 
@@ -1138,169 +1144,184 @@ class ChannelChats extends Component {
                     </Text>
                   </Text>
                 ) : null}
-                {this.state.loadingJackpot?
-                  <ActivityIndicator style={{marginTop:10}} size={'large'} color={'#fff'}/>
-                :<View style={styles.bonusImageContainer}>
-                  <TouchableOpacity
-                    disabled={this.state.jackpotData}
-                    onPress={() => {
-                      this.selectedLoginBonus(1);
-                    }}
-                    style={{
-                      marginHorizontal: 10,
-                      justifyContent: 'center',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <View style={{flex: 1, alignItems: 'center'}}>
-                      <Image
-                        style={
-                          this.state.jackpotData &&
-                          this.state.jackpotData.picked_option == 1
-                            ? styles.bonusImageZoom
-                            : styles.bonusImage
-                        }
-                        source={{
-                          uri: this.state.jackpotData
-                            ? this.checkImageWithAmount(
-                                this.getAmountValue(this.state.jackpotData)[0],
-                              )
-                            : closeBoxImage[0].value,
-                        }}
-                        resizeMode={'contain'}
-                      />
-                    </View>
-                    {this.state.jackpotData ? (
-                      <View
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: 1,
-                          borderBottomColor: '#fff',
-                        }}>
-                        <Text
-                          style={{
-                            textAlign: 'right',
-                            color:
-                              this.state.jackpotData &&
-                              this.state.jackpotData.picked_option == 1
-                                ? '#dbf875'
-                                : '#fff',
-                            fontSize: 29,
-                          }}>
-                          {this.getAmountValue(this.state.jackpotData)[0] + ''}{' '}
-                          XP
-                        </Text>
+                {this.state.loadingJackpot ? (
+                  <ActivityIndicator
+                    style={{marginTop: 10}}
+                    size={'large'}
+                    color={'#fff'}
+                  />
+                ) : (
+                  <View style={styles.bonusImageContainer}>
+                    <TouchableOpacity
+                      disabled={this.state.jackpotData}
+                      onPress={() => {
+                        this.selectedLoginBonus(1);
+                      }}
+                      style={{
+                        marginHorizontal: 10,
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <View style={{flex: 1, alignItems: 'center'}}>
+                        <Image
+                          style={
+                            this.state.jackpotData &&
+                            this.state.jackpotData.picked_option == 1
+                              ? styles.bonusImageZoom
+                              : styles.bonusImage
+                          }
+                          source={{
+                            uri: this.state.jackpotData
+                              ? this.checkImageWithAmount(
+                                  this.getAmountValue(
+                                    this.state.jackpotData,
+                                  )[0],
+                                )
+                              : closeBoxImage[0].value,
+                          }}
+                          resizeMode={'contain'}
+                        />
                       </View>
-                    ) : null}
-                  </TouchableOpacity>
+                      {this.state.jackpotData ? (
+                        <View
+                          style={{
+                            flex: 1,
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#fff',
+                          }}>
+                          <Text
+                            style={{
+                              textAlign: 'right',
+                              color:
+                                this.state.jackpotData &&
+                                this.state.jackpotData.picked_option == 1
+                                  ? '#dbf875'
+                                  : '#fff',
+                              fontSize: 29,
+                            }}>
+                            {this.getAmountValue(this.state.jackpotData)[0] +
+                              ''}{' '}
+                            XP
+                          </Text>
+                        </View>
+                      ) : null}
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    disabled={this.state.jackpotData}
-                    onPress={() => {
-                      this.selectedLoginBonus(2);
-                    }}
-                    style={{
-                      marginHorizontal: 10,
-                      justifyContent: 'center',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <View style={{flex: 1, alignItems: 'center'}}>
-                      <Image
-                        style={
-                          this.state.jackpotData &&
-                          this.state.jackpotData.picked_option == 2
-                            ? styles.bonusImageZoom
-                            : styles.bonusImage
-                        }
-                        source={{
-                          uri: this.state.jackpotData
-                            ? this.checkImageWithAmount(
-                                this.getAmountValue(this.state.jackpotData)[1],
-                              )
-                            : closeBoxImage[1].value,
-                        }}
-                        resizeMode={'contain'}
-                      />
-                    </View>
-                    {this.state.jackpotData ? (
-                      <View
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: 1,
-                          borderBottomColor: '#fff',
-                        }}>
-                        <Text
-                          style={{
-                            textAlign: 'right',
-                            color:
-                              this.state.jackpotData &&
-                              this.state.jackpotData.picked_option == 2
-                                ? '#dbf875'
-                                : '#fff',
-                            fontSize: 29,
-                          }}>
-                          {this.getAmountValue(this.state.jackpotData)[1] + ''}{' '}
-                          XP
-                        </Text>
+                    <TouchableOpacity
+                      disabled={this.state.jackpotData}
+                      onPress={() => {
+                        this.selectedLoginBonus(2);
+                      }}
+                      style={{
+                        marginHorizontal: 10,
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <View style={{flex: 1, alignItems: 'center'}}>
+                        <Image
+                          style={
+                            this.state.jackpotData &&
+                            this.state.jackpotData.picked_option == 2
+                              ? styles.bonusImageZoom
+                              : styles.bonusImage
+                          }
+                          source={{
+                            uri: this.state.jackpotData
+                              ? this.checkImageWithAmount(
+                                  this.getAmountValue(
+                                    this.state.jackpotData,
+                                  )[1],
+                                )
+                              : closeBoxImage[1].value,
+                          }}
+                          resizeMode={'contain'}
+                        />
                       </View>
-                    ) : null}
-                  </TouchableOpacity>
+                      {this.state.jackpotData ? (
+                        <View
+                          style={{
+                            flex: 1,
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#fff',
+                          }}>
+                          <Text
+                            style={{
+                              textAlign: 'right',
+                              color:
+                                this.state.jackpotData &&
+                                this.state.jackpotData.picked_option == 2
+                                  ? '#dbf875'
+                                  : '#fff',
+                              fontSize: 29,
+                            }}>
+                            {this.getAmountValue(this.state.jackpotData)[1] +
+                              ''}{' '}
+                            XP
+                          </Text>
+                        </View>
+                      ) : null}
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    disabled={this.state.jackpotData}
-                    onPress={() => {
-                      this.selectedLoginBonus(3);
-                    }}
-                    style={{
-                      marginHorizontal: 10,
-                      justifyContent: 'center',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <View style={{flex: 1, alignItems: 'center'}}>
-                      <Image
-                        style={
-                          this.state.jackpotData &&
-                          this.state.jackpotData.picked_option == 3
-                            ? styles.bonusImageZoom
-                            : styles.bonusImage
-                        }
-                        source={{
-                          uri: this.state.jackpotData
-                            ? this.checkImageWithAmount(
-                                this.getAmountValue(this.state.jackpotData)[2],
-                              )
-                            : closeBoxImage[2].value,
-                        }}
-                        resizeMode={'contain'}
-                      />
-                    </View>
-                    {this.state.jackpotData ? (
-                      <View
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: 1,
-                          borderBottomColor: '#fff',
-                        }}>
-                        <Text
-                          style={{
-                            textAlign: 'right',
-                            color:
-                              this.state.jackpotData &&
-                              this.state.jackpotData.picked_option == 3
-                                ? '#dbf875'
-                                : '#fff',
-                            fontSize: 29,
-                            fontFamily: Fonts.beba_regular,
-                          }}>
-                          {this.getAmountValue(this.state.jackpotData)[2] + ''}{' '}
-                          XP
-                        </Text>
+                    <TouchableOpacity
+                      disabled={this.state.jackpotData}
+                      onPress={() => {
+                        this.selectedLoginBonus(3);
+                      }}
+                      style={{
+                        marginHorizontal: 10,
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <View style={{flex: 1, alignItems: 'center'}}>
+                        <Image
+                          style={
+                            this.state.jackpotData &&
+                            this.state.jackpotData.picked_option == 3
+                              ? styles.bonusImageZoom
+                              : styles.bonusImage
+                          }
+                          source={{
+                            uri: this.state.jackpotData
+                              ? this.checkImageWithAmount(
+                                  this.getAmountValue(
+                                    this.state.jackpotData,
+                                  )[2],
+                                )
+                              : closeBoxImage[2].value,
+                          }}
+                          resizeMode={'contain'}
+                        />
                       </View>
-                    ) : null}
-                  </TouchableOpacity>
-                </View>}
+                      {this.state.jackpotData ? (
+                        <View
+                          style={{
+                            flex: 1,
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#fff',
+                          }}>
+                          <Text
+                            style={{
+                              textAlign: 'right',
+                              color:
+                                this.state.jackpotData &&
+                                this.state.jackpotData.picked_option == 3
+                                  ? '#dbf875'
+                                  : '#fff',
+                              fontSize: 29,
+                              fontFamily: Fonts.beba_regular,
+                            }}>
+                            {this.getAmountValue(this.state.jackpotData)[2] +
+                              ''}{' '}
+                            XP
+                          </Text>
+                        </View>
+                      ) : null}
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
               <Text
                 style={{

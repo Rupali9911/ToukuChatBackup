@@ -144,7 +144,9 @@ export default class GroupFriend extends Component {
               title={
                 memberTitle === 'member'
                   ? translate('pages.xchat.member')
-                  : translate('pages.xchat.admin')
+                  : memberTitle === 'admin'
+                  ? translate('pages.xchat.admin')
+                  : translate('pages.xchat.add')
               }
               type={isMember ? 'primary' : 'translucent'}
               memberType={memberType}
