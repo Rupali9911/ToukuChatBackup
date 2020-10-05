@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  ImageBackground,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  NativeModules,
-  Platform,
-  Linking,
-  Keyboard,
+    View,
+    Text,
+    ScrollView,
+    ImageBackground,
+    StyleSheet,
+    SafeAreaView,
+    TouchableOpacity,
+    Image,
+    NativeModules,
+    Platform,
+    Linking,
+    Keyboard, TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -1084,9 +1084,11 @@ class Login extends Component {
                                               style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', height: 44, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
                                 <View style={{flexDirection: 'row'}}>
                                     <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
-                                    <Text style={selectedLanguageItem.language_name === 'en' || selectedLanguageItem.language_name === 'ko'? globalStyles.normalRegularText17 : [globalStyles.normalRegularText17]}>
+                                    <View pointerEvents="none">
+                                        <TextInput style={globalStyles.normalRegularText17}>
                                         {translate('common.continueWithApple')}
-                                    </Text>
+                                        </TextInput>
+                                    </View>
                                 </View>
                             </TouchableOpacity>
                         </View>

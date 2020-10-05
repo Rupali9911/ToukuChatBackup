@@ -228,6 +228,7 @@ class ChannelInfo extends Component {
       },
     ];
 
+    console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -284,9 +285,7 @@ class ChannelInfo extends Component {
                         <Text
                           style={channelInfoStyles.channelNameText}
                           numberOfLines={1}>
-                          {channelData.channel_status != null || ''
-                            ? channelData.channel_status
-                            : 'Status'}
+                          {channelData.channel_status ? channelData.channel_status === '' ? '-' : channelData.channel_status : '-'}
                         </Text>
                       </View>
                     </View>
@@ -362,36 +361,36 @@ class ChannelInfo extends Component {
                 <Text style={channelInfoStyles.aboutHeading}>
                   {translate('pages.xchat.about')}
                 </Text>
-                <Text style={channelInfoStyles.aboutText}>Demo About us</Text>
+                <Text style={channelInfoStyles.aboutText}>{currentChannel.description}</Text>
               </View>
-              {currentChannel.is_vip && (
+              {channelData.is_vip && (
                 <React.Fragment>
                   <View style={channelInfoStyles.about}>
                     <Text style={channelInfoStyles.aboutHeading}>
                       {translate('pages.xchat.vipFeature')}
                     </Text>
                     <Text style={channelInfoStyles.aboutText}>
-                      Demo About us
+                        {channelData.vip_description}
                     </Text>
                   </View>
-                  <View style={channelInfoStyles.followerDetails}>
-                    <Text
-                      style={{fontFamily: Fonts.extralight, marginRight: 5}}>
-                      {translate('pages.xchat.affiliateRewardText')}
-                    </Text>
-                    <Text style={channelInfoStyles.detailText}>1 %</Text>
-                  </View>
+                  {/*<View style={channelInfoStyles.followerDetails}>*/}
+                    {/*<Text*/}
+                      {/*style={{fontFamily: Fonts.extralight, marginRight: 5}}>*/}
+                      {/*{translate('pages.xchat.affiliateRewardText')}*/}
+                    {/*</Text>*/}
+                    {/*<Text style={channelInfoStyles.detailText}>1 %</Text>*/}
+                  {/*</View>*/}
                 </React.Fragment>
               )}
 
               <View style={channelInfoStyles.buttonContainer}>
-                <Button
-                  isRounded={false}
-                  type={'primary'}
-                  title={translate('pages.xchat.affiliate')}
-                  onPress={this.toggleAffiliateModal}
-                />
-                {currentChannel.is_vip && (
+                {/*<Button*/}
+                  {/*isRounded={false}*/}
+                  {/*type={'primary'}*/}
+                  {/*title={translate('pages.xchat.affiliate')}*/}
+                  {/*onPress={this.toggleAffiliateModal}*/}
+                {/*/>*/}
+                {channelData.is_vip && channelData.subscription_type === 'member' && (
                   <Button
                     isRounded={false}
                     type={'primary'}
@@ -400,12 +399,12 @@ class ChannelInfo extends Component {
                   />
                 )}
               </View>
-              {currentChannel.is_vip && (
+              {channelData.is_vip && channelData.subscription_type === 'member' && (
                 <View style={channelInfoStyles.followerDetails}>
                   <Text style={{fontFamily: Fonts.extralight, marginRight: 5}}>
                     {translate('pages.xchat.vipMonth')}
                   </Text>
-                  <Text style={channelInfoStyles.detailText}>1 TP</Text>
+                  <Text style={channelInfoStyles.detailText}>{channelData.monthly_vip_fee} TP</Text>
                 </View>
               )}
             </KeyboardAwareScrollView>

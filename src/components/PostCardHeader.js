@@ -105,6 +105,7 @@ export default class PostCardHeader extends Component {
             flexDirection: 'row',
             justifyContent: 'flex-end',
           }}>
+            <View style={{width: 100}}>
           <Button
             title={
               post.is_following
@@ -115,6 +116,7 @@ export default class PostCardHeader extends Component {
             height={'80%'}
             fontType={'smallRegularText'}
           />
+            </View>
 
           <Menu
             style={{marginTop: 30}}

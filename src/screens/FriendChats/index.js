@@ -990,7 +990,7 @@ class FriendChats extends Component {
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <ChatHeader
-          title={currentFriend.username}
+          title={currentFriend.display_name ? currentFriend.display_name : currentFriend.username}
           description={
             currentFriend.total_members + ' ' + translate('pages.xchat.members')
           }

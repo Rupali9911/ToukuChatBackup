@@ -1,5 +1,7 @@
 import { client } from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
+import Toast from "../../components/Toast";
+import {translate} from "./languageReducer";
 
 export const GET_SEND_OTP_REQUEST = 'GET_SEND_OTP_REQUEST';
 export const GET_SEND_OTP_SUCCESS = 'GET_SEND_OTP_SUCCESS';
@@ -163,7 +165,7 @@ export const userSendOTP = (signUpData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getSendOtpRequest());
     client
-      .post(`/send-otp/`, signUpData)
+      .post('/send-otp/', signUpData)
       .then((res) => {
         if (res.status === true) {
           dispatch(getSendOtpSuccess());
@@ -174,7 +176,18 @@ export const userSendOTP = (signUpData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getSendOtpFailure());
-        reject(err);
+        //reject(err);
+          if (err.response) {
+              if (err.response.data) {
+                  if (err.response.data.detail) {
+                      Toast.show({
+                          title: translate('common.sendSMS'),
+                          text: err.response.data.detail.toString(),
+                          type: 'primary',
+                      });
+                  }
+              }
+          }
       });
   });
 
@@ -182,7 +195,7 @@ export const userVerifyOTP = (verifyData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getVerifyOtpRequest());
     client
-      .post(`/verify-otp/`, verifyData)
+      .post('/verify-otp/', verifyData)
       .then((res) => {
         if (res.status === true) {
           dispatch(getVerifyOtpSuccess());
@@ -193,7 +206,18 @@ export const userVerifyOTP = (verifyData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getVerifyOtpFailure());
-        reject(err);
+       // reject(err);
+          if (err.response) {
+              if (err.response.data) {
+                  if (err.response.data.detail) {
+                      Toast.show({
+                          title: '',
+                          text: err.response.data.detail.toString(),
+                          type: 'primary',
+                      });
+                  }
+              }
+          }
       });
   });
 
@@ -201,7 +225,7 @@ export const userEmailCheck = (email) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getCheckEmailRequest());
     client
-      .get(`/check-user-exist/?email=` + email)
+      .get('/check-user-exist/?email=' + email)
       .then((res) => {
         if (res.status === false) {
           dispatch(getCheckEmailSuccess());
@@ -219,7 +243,7 @@ export const userEmailCheck = (email) => (dispatch) =>
 export const userNameCheck = (userName) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .get(`/check-user-exist/?username=` + userName)
+      .get('/check-user-exist/?username=' + userName)
       .then((res) => {
         resolve(res);
       })
@@ -232,7 +256,7 @@ export const userRegister = (registerData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getRegisterRequest());
     client
-      .post(`/xana-register/`, registerData)
+      .post('/xana-register/', registerData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);
@@ -244,26 +268,26 @@ export const userRegister = (registerData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getRegisterFailure());
-        // reject(err);
-        if (err.response) {
-          if (err.response.data) {
-            console.log('error_data',err.response.data);  
-            // if (err.response.data.detail) {
-              //     Toast.show({
-              //         title: '',
-              //         text: err.response.data.detail.toString(),
-              //         type: 'primary',
-              //     });
-              // }
-          }
-      }
+         reject(err);
+      //   if (err.response) {
+      //     if (err.response.data) {
+      //       console.log('error_data',err.response.data);
+      //       // if (err.response.data.detail) {
+      //         //     Toast.show({
+      //         //         title: '',
+      //         //         text: err.response.data.detail.toString(),
+      //         //         type: 'primary',
+      //         //     });
+      //         // }
+      //     }
+      // }
       });
   });
 
 export const socialRegistration = (socialRegistrationData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .post(`/xchat/edit-user/`, socialRegistrationData)
+      .post('/xchat/edit-user/', socialRegistrationData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);

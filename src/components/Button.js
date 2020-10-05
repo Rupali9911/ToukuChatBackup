@@ -141,17 +141,28 @@ class Button extends Component {
               />
             </View>
           ) : (
+              Platform.OS === 'ios' ?
             <TextInput
-              pointerEvents="none"
-              style={[
+                pointerEvents="none"
+                editable={false}
+                style={[
                 this.getFont(),
                 {
-                  color: this.getTitleColor(),
-                  alignSelf: 'center',
+                  color: this.getTitleColor()
                 },
               ]}>
               {title}
             </TextInput>
+                  :
+                  <Text
+                      style={[
+                          this.getFont(),
+                          {
+                              color: this.getTitleColor(),
+                          },
+                      ]}>
+                      {title}
+                  </Text>
           )}
         </LinearGradient>
       </TouchableOpacity>

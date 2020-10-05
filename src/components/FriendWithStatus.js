@@ -51,7 +51,7 @@ class FriendWithStatus extends Component {
                             globalStyles.regularWeightedText,
                             { textAlign: 'left', marginStart: 15 },
                         ]}
-                    >{user.username}</Text>
+                    >{user.display_name ? user.display_name : user.username}</Text>
                 </View>
                 <View style={{width: user.is_requested === true ? 120 : 100}}>
              <Button

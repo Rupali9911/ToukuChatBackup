@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  ImageBackground,
-  SafeAreaView,
-  NativeModules,
-  Platform,
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    ScrollView,
+    ImageBackground,
+    SafeAreaView,
+    NativeModules,
+    Platform, TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -749,17 +749,12 @@ class LoginSignUp extends Component {
                           color={Colors.black}
                           style={{alignSelf: 'center'}}
                         />
-                        <Text
-                          style={
-                            selectedLanguageItem.language_name === 'en' ||
-                            selectedLanguageItem.language_name === 'ko'
-                              ? globalStyles.normalRegularText17
-                              : [
-                                  globalStyles.normalRegularText17,
-                                ]
-                          }>
+                          <View pointerEvents="none">
+                              <TextInput
+                          style={globalStyles.normalRegularText17}>
                           {translate('common.continueWithApple')}
-                        </Text>
+                              </TextInput>
+                          </View>
                       </View>
                     </TouchableOpacity>
                   </View>

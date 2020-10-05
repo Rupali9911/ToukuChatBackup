@@ -280,7 +280,6 @@ class SignUp extends Component {
 
   checkUserName(username) {
       let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
       let isValid = true;
       if (username.length <= 0) {
           console.log('username.length', username.length )
@@ -896,7 +895,7 @@ class SignUp extends Component {
                 value={this.state.username}
                 placeholder={translate('common.enterUsername')}
                 returnKeyType={'done'}
-                onChangeText={(username) => this.checkUserName(username)}
+                onChangeText={(username) => this.checkUserName(username.toLowerCase())}
                 // onChangeText={(username) => this.setState({ username })}
                 onSubmitEditing={() => {
                   this.password.focus();
