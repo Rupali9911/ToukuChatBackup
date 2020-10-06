@@ -183,7 +183,7 @@ class GroupChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
-      sendingMedia: false,
+      // sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
     });
     if (sentMessageType === 'image') {
@@ -315,6 +315,11 @@ class GroupChats extends Component {
       ]);
       this.props.sendGroupMessage(groupMessage);
     }
+    if (uploadFile.uri) {
+      this.setState({
+        sendingMedia: false,
+      });
+    }
 
     // this.setState({
     //   newMessageText: '',
@@ -345,6 +350,9 @@ class GroupChats extends Component {
           this.props.setCommonChatConversation();
         });
       }
+    });
+    this.setState({
+      sendingMedia: false,
     });
     // this.setState({
     //   newMessageText: '',
