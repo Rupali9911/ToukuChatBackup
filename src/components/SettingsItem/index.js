@@ -119,7 +119,6 @@ render() {
 
         })
     }
-    console.log('userData', userData)
     return (
       <TouchableOpacity style={styles.container} activeOpacity={1} onPress={onPress}>
         <View style={styles.row}>

@@ -399,6 +399,7 @@ class GroupDetails extends Component {
       createFilter(this.state.searchText, ['display_name']),
     );
 
+    console.log('filteredFriends & userFriends', filteredFriends, userFriends)
     if (
       filteredFriends.length &&
       filteredFriends.length === 0 &&

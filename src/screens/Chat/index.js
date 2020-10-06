@@ -250,7 +250,10 @@ class Chat extends Component {
 
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
-      async () => this.forceUpdate(),
+      async () =>
+          setTimeout(() => {
+              this.forceUpdate()
+          }, 100),
     );
   }
 

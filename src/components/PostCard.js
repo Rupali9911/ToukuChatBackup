@@ -34,11 +34,11 @@ export default class PostCard extends Component {
   _closeMenu = () => this.setState({ visible: false });
 
   render() {
-    const { menuItems, posts, isTimeline } = this.props;
+    const { menuItems, posts, isTimeline} = this.props;
       console.log('POST', posts)
     return posts.length ? (
       posts.map((post, index) => {
-          console.log('POST TEXT', post.text)
+         // console.log('POST TEXT', post.text)
         return (
           <View
             style={{
@@ -50,6 +50,7 @@ export default class PostCard extends Component {
             <PostCardHeader
                 menuItems={menuItems}
                 post={post}
+                isMenuRequired={isTimeline}
             />
             {post.media.audio && post.media.audio.length ? (
               <View style={{ margin: 10 }}>
