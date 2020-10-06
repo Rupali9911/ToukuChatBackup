@@ -428,7 +428,7 @@ class ChannelChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
-      sendingMedia: false,
+      // sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
     });
     if (sentMessageType === 'image') {
@@ -523,6 +523,11 @@ class ChannelChats extends Component {
     // ]);
     // this.state.conversations.unshift(sendmsgdata);
     this.props.sendChannelMessage(messageData);
+    if (uploadFile.uri) {
+      this.setState({
+        sendingMedia: false,
+      });
+    }
     // this.setState({
     //   newMessageText: '',
     //   repliedMessage: null,
@@ -561,6 +566,9 @@ class ChannelChats extends Component {
         this.getChannelConversations();
       })
       .catch((err) => {});
+    this.setState({
+      sendingMedia: false,
+    });
     // this.setState({
     //   newMessageText: '',
     //   repliedMessage: null,

@@ -179,7 +179,7 @@ class FriendChats extends Component {
       repliedMessage: null,
       isEdited: false,
       sentMessageType: 'text',
-      sendingMedia: false,
+      // sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
     });
 
@@ -304,6 +304,11 @@ class FriendChats extends Component {
       ]);
       this.props.sendPersonalMessage(data);
     }
+    if (uploadFile.uri) {
+      this.setState({
+        sendingMedia: false,
+      });
+    }
     // this.setState({
     //   newMessageText: '',
     //   isReply: false,
@@ -329,6 +334,9 @@ class FriendChats extends Component {
         this.getPersonalConversation();
       })
       .catch((err) => {});
+    this.setState({
+      sendingMedia: false,
+    });
     // this.setState({
     //   newMessageText: '',
     //   isReply: false,
