@@ -147,10 +147,10 @@ class SignUp extends Component {
         })
         .catch((err) => {
             if (err.response) {
+                console.log(err.response)
                 if (err.response.request._response) {
                     console.log(err.response.request._response)
                     let errMessage = JSON.parse(err.response.request._response)
-                    console.log(errMessage.non_field_errors)
                     if (errMessage.message) {
                         Toast.show({
                             title: translate('common.sendSMS'),
@@ -170,8 +170,13 @@ class SignUp extends Component {
                             text: translate('pages.register.toastr.phoneNumberIsInvalid'),
                             type: 'primary',
                         });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('common.sendSMS'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
                     }
-
                 }
             }
         });
@@ -718,7 +723,6 @@ class SignUp extends Component {
           if (res.token) {
             AsyncStorage.removeItem('invitationCode')
             this.props.navigation.navigate('App');
-
               if (channelData) {
                   this.props.setCurrentChannel(channelData)
                   setTimeout(() => {
@@ -1068,11 +1072,14 @@ class SignUp extends Component {
               </View>
               {this.renderPage(currentPosition)}
             </View>
+              {isWebViewVisible &&
               <WebViewClass
                   modalVisible={isWebViewVisible}
                   url={termsUrl + this.props.selectedLanguageItem.language_name}
                   closeModal={() => this.setState({isWebViewVisible: false})}
               />
+              }
+
             <LanguageSelector />
           </KeyboardAwareScrollView>
         </SafeAreaView>

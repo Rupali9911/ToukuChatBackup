@@ -117,24 +117,32 @@ class ForgotPassword extends Component {
         .forgotUserName(userNameData)
         .then((res) => {
           Toast.show({
-            title: translate('common.sendSMS'),
+            title: translate('pages.resetPassword.resetPassword'),
             text: translate(res.message),
             type: 'positive',
           });
         })
         .catch((err) => {
-          if (err.response.request._response) {
-            let errMessage = JSON.parse(err.response.request._response);
-            Toast.show({
-              title: translate('common.sendSMS'),
-              text: translate(errMessage.message.toString()),
-              type: 'primary',
-            });
-          }
-        });
+            if (err.response.request._response) {
+                let errMessage = JSON.parse(err.response.request._response);
+                if (errMessage.detail) {
+                    Toast.show({
+                        title: translate('pages.resetPassword.resetPassword'),
+                        text: errMessage.detail.toString(),
+                        type: 'primary',
+                    });
+                } else {
+                    Toast.show({
+                        title: translate('pages.resetPassword.resetPassword'),
+                        text: translate(errMessage.message.toString()),
+                        type: 'primary',
+                    });
+                }
+            }
+        })
     } else {
       Toast.show({
-        title: translate('common.sendSMS'),
+        title: translate('pages.resetPassword.resetPassword'),
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
@@ -206,6 +214,7 @@ class ForgotPassword extends Component {
       this.props
         .forgotPassword(forgotData)
         .then((res) => {
+          console.log('Response for Forgot password',res)
           if (res.status === true) {
             Toast.show({
               title: translate('pages.resetPassword.resetPassword'),
@@ -215,18 +224,46 @@ class ForgotPassword extends Component {
             this.props.navigation.goBack();
           } else {
             Toast.show({
-              title: translate('common.register'),
-              text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
+              title: translate('pages.resetPassword.resetPassword'),
+              text: translate('pages.resetPassword.toastr.pleaseCheckOTPCodeandTryAgain'),
               type: 'primary',
             });
           }
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
-            type: 'primary',
-          });
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.phone) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
+            }
         });
     }
   }

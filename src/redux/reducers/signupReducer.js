@@ -176,18 +176,7 @@ export const userSendOTP = (signUpData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getSendOtpFailure());
-        //reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  if (err.response.data.detail) {
-                      Toast.show({
-                          title: translate('common.sendSMS'),
-                          text: err.response.data.detail.toString(),
-                          type: 'primary',
-                      });
-                  }
-              }
-          }
+        reject(err);
       });
   });
 

@@ -34,7 +34,7 @@ export default class ConfirmationModal extends Component {
       <Modal isVisible={visible}>
         <View
           style={{
-            height: orientation === 'PORTRAIT' ? '35%' : '80%',
+            height: orientation === 'PORTRAIT' ? 250 : '80%',
             backgroundColor: Colors.white,
             borderRadius: 5,
             paddingVertical: '5%',
@@ -59,6 +59,7 @@ export default class ConfirmationModal extends Component {
               flex: 0.5,
               justifyContent: 'space-around',
               alignItems: 'center',
+                backgroundColor : 'transparent'
             }}>
             <View
               style={{
@@ -90,6 +91,8 @@ export default class ConfirmationModal extends Component {
                 paddingHorizontal: '20%',
                 alignItems: 'flex-end',
                 flex: 0.5,
+                  marginTop: 20,
+                  backgroundColor : 'transparent'
               }}>
               <View
                 style={{

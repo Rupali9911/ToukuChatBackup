@@ -117,6 +117,8 @@ export const Colors = {
   dark_pink: '#e13887',
   light_pink: '#FFEDEE',
   message_gray: '#9FA7B0',
+  textTitle_orange: '#e26161',
+
 };
 
 export const Fonts = {

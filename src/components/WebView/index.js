@@ -59,7 +59,7 @@ export default class WebViewClass extends Component {
                 <WebView
                     style={{backgroundColor : 'transparent'}}
                     source={{uri: url}}
-                    cacheEnabled={true}
+                    //cacheEnabled={true}
                     onLoadEnd={() => this.setWebViewVisibleState() }
                 />
 

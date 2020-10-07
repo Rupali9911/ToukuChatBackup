@@ -71,14 +71,47 @@ class ForgotUserName extends Component {
           });
         })
         .catch((err) => {
-          if (err.response.request._response) {
-            let errMessage = JSON.parse(err.response.request._response);
-            Toast.show({
-              title: translate('pages.xchat.reconfirmUserName'),
-              text: translate(errMessage.message.toString()),
-              type: 'primary',
-            });
-          }
+          // if (err.response.request._response) {
+          //   let errMessage = JSON.parse(err.response.request._response);
+          //   Toast.show({
+          //     title: translate('pages.xchat.reconfirmUserName'),
+          //     text: translate(errMessage.message.toString()),
+          //     type: 'primary',
+          //   });
+          // }
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.phone) {
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
+            }
         });
     } else {
       Toast.show({

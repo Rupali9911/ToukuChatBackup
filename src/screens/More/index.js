@@ -113,7 +113,8 @@ class More extends Component {
   }
 
     onNeedSupportClick() {
-        this.setState({isWebViewVisible: true})
+        //this.setState({isWebViewVisible: true})
+        Linking.openURL(supportUrl);
     }
 
 
@@ -213,11 +214,14 @@ class More extends Component {
             title={translate('header.logout')}
             onPress={() => this.updateModalVisibility()}
           />
-          <WebViewClass
-            modalVisible={isWebViewVisible}
-            url={supportUrl}
-            closeModal={() => this.setState({isWebViewVisible: false})}
-          />
+            {/*{isWebViewVisible &&*/}
+            {/*<WebViewClass*/}
+                {/*modalVisible={isWebViewVisible}*/}
+                {/*url={supportUrl}*/}
+                {/*closeModal={() => this.setState({isWebViewVisible: false})}*/}
+            {/*/>*/}
+            {/*}*/}
+
         </ScrollView>
           <QRCodeClass
               modalVisible={isQRVisible}

@@ -260,7 +260,9 @@ class LoginSignUp extends Component {
           }
         });
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.log('Error from facebook', err)
+      });
   }
 
   async firebaseTwitterLogin() {

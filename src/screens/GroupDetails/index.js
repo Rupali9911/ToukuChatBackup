@@ -255,11 +255,11 @@ class GroupDetails extends Component {
       .leaveGroup(payload)
       .then((res) => {
         if (res.status === true) {
-          Toast.show({
-            title: 'Touku',
-            text: translate('common.success'),
-            type: 'positive',
-          });
+          // Toast.show({
+          //   title: 'Touku',
+          //   text: translate('common.success'),
+          //   type: 'positive',
+          // });
           this.props.getUserGroups();
           this.props.navigation.popToTop();
         }
