@@ -30,6 +30,7 @@ import {
     setCurrentRouteData
 } from './src/redux/reducers/userReducer';
 import SingleSocket from './src/helpers/SingleSocket';
+import {eventService} from './src/utils';
 
 export default class App extends Component {
     constructor(props) {
@@ -101,7 +102,14 @@ export default class App extends Component {
                     let idObj = getLastEventId()
                     console.log('getLastEventId', idObj)
                     if (idObj.length > 0) {
-                        getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id)
+                        getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id).then((res)=>{
+                            if(res && res.data && res.data.length>0){
+                              res.data.map((item)=>{
+                                console.log('item_events',item);
+                                eventService.sendMessage({data: item});
+                              })
+                            }
+                        });
                     }
                 }
             }

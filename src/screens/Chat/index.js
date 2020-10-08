@@ -258,7 +258,7 @@ class Chat extends Component {
   }
 
   componentWillUnmount() {
-    this.SingleSocket && this.SingleSocket.closeSocket();
+    // this.SingleSocket && this.SingleSocket.closeSocket();
   }
 
   _orientationDidChange = (orientation) => {
@@ -538,7 +538,7 @@ class Chat extends Component {
         //   message.text.data.message_details.read_count;
         updateChannelUnReadCountById(
           message.text.data.message_details.channel_id,
-          message.text.data.message_details.read_count,
+          0,
         );
         // this.props.getMissedSocketEventsById(
         //   message.text.data.socket_event_id,

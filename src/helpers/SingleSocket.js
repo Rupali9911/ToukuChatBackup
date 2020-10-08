@@ -51,11 +51,12 @@ export default class SingleSocket extends Component {
     if (this.jwt !== '') {
       console.log('webSocketBridge',this.webSocketBridge);
       if(this.webSocketBridge == null){
-        console.log('connecting');
+        console.log('connection_url',`${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`);
         this.webSocketBridge = new WebSocket(
           `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
         );
         this.webSocketBridge.onopen = (e) => {
+          console.log('socket opened');
           this.checkSocketConnected();
         };
         this.webSocketBridge.onmessage = (e) => {
@@ -66,12 +67,16 @@ export default class SingleSocket extends Component {
             this.checkSocketConnected();
           }, 1000);
         };
+        this.webSocketBridge.onclose = (e) => {
+          console.log('socket closed');
+        }
       }else{
         console.log('Object already exists checking web socket connected');
         if (this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
           this.webSocketBridge.close();
           this.webSocketBridge = null;
           setTimeout(()=>{
+            console.log('connection_url',`${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`);
             this.webSocketBridge = new WebSocket(
               `${socketUrl}/single-socket/${this.userId}?token=${this.jwt}`,
             );
@@ -83,7 +88,7 @@ export default class SingleSocket extends Component {
                 if (idObj.length > 0) {
                     getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id);
                 }
-            }
+              }
             };
             this.webSocketBridge.onmessage = (e) => {
               this.onNewMessage(e);
@@ -92,6 +97,9 @@ export default class SingleSocket extends Component {
               setTimeout(() => {
                 this.checkSocketConnected();
               }, 1000);
+            };
+            this.webSocketBridge.onclose = (e) => {
+              console.log('socket closed');
             };
           },1000);
         }
@@ -125,25 +133,27 @@ export default class SingleSocket extends Component {
   checkSocketConnected() {
     console.log('checking web socket connected',this.webSocketBridge);
     clearInterval(this.socketChecker);
-    this.socketChecker = setInterval(() => {
-      if (this.webSocketBridge == null || this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
-        this.connectSocket();
-        // setTimeout(() => {
-        //   const payload: any = {
-        //     data: JSON.stringify({
-        //       data: {
-        //         type: AppConstants.SOCKET_EVENTS.SOCKET_CONNECTED,
-        //         message_details: null
-        //       }
-        //     })
-        //   };
-        //   this.onNewMessage(payload);
-        // }, 5000);
-      }
-      // else if(this.webSocketBridge !== null && this.webSocketBridge.readyState === this.webSocketBridge.OPEN){
-      //   console.log('web_socket_connected');
-      // }
-    }, 5000);
+    if(this.jwt && this.jwt !== ''){
+      this.socketChecker = setInterval(() => {
+        if (this.webSocketBridge == null || this.webSocketBridge.readyState === this.webSocketBridge.CLOSED) {
+          this.connectSocket();
+          // setTimeout(() => {
+          //   const payload: any = {
+          //     data: JSON.stringify({
+          //       data: {
+          //         type: AppConstants.SOCKET_EVENTS.SOCKET_CONNECTED,
+          //         message_details: null
+          //       }
+          //     })
+          //   };
+          //   this.onNewMessage(payload);
+          // }, 5000);
+        }
+        // else if(this.webSocketBridge !== null && this.webSocketBridge.readyState === this.webSocketBridge.OPEN){
+        //   console.log('web_socket_connected');
+        // }
+      }, 5000);
+    }
   }
 
   //   onDisconnect() {

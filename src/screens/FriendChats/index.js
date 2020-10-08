@@ -47,6 +47,7 @@ import {
   setFriendMessageUnsend,
   updateAllFriendMessageRead,
   updateFriendsUnReadCount,
+  updateFriendLastMsgWithoutCount,
   realm,
 } from '../../storage/Service';
 
@@ -732,6 +733,30 @@ class FriendChats extends Component {
         .then((res) => {
           deleteFriendMessageById(this.state.selectedMessageId);
           this.getPersonalConversation();
+          
+          if (this.props.currentFriend.last_msg_id == this.state.selectedMessageId) {
+            let chat = getFriendChatConversationById(
+              this.props.currentFriend.friend,
+            );
+
+            let array = chat.toJSON();
+
+            if (array && array.length > 0) {
+              updateFriendLastMsgWithoutCount(
+                this.props.currentFriend.user_id,
+                {
+                  id: array[0].id,
+                  msg_type: array[0].msg_type,
+                  message_body: array[0].message_body,
+                  created: array[0].timestamp
+                }
+              );
+              this.props.setUserFriends().then((res) => {
+                this.props.setCommonChatConversation();
+              });
+            }
+          }
+
         });
     }
   };

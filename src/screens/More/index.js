@@ -26,6 +26,7 @@ import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {resetData} from '../../storage/Service';
 import LinearGradient from 'react-native-linear-gradient';
+import SingleSocket from '../../helpers/SingleSocket';
 
 class More extends Component {
   constructor(props) {
@@ -38,6 +39,7 @@ class More extends Component {
       isSupport: false,
       isLogOutVisible: false,
     };
+    this.SingleSocket = SingleSocket.getInstance();
   }
 
   static navigationOptions = () => {
@@ -92,6 +94,7 @@ class More extends Component {
     this.props.logout(data).then(async (res) => {
         this.updateModalVisibility();
         this.props.navigation.navigate('Auth');
+        this.SingleSocket && this.SingleSocket.closeSocket();
         resetData();
         await this.clearAsyncStorage();
     });
