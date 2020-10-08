@@ -251,9 +251,9 @@ class Chat extends Component {
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
       async () =>
-          setTimeout(() => {
-              this.forceUpdate()
-          }, 100),
+        setTimeout(() => {
+          this.forceUpdate();
+        }, 100),
     );
   }
 
@@ -1892,7 +1892,7 @@ class Chat extends Component {
                       : translate('pages.xchat.audio')
                     : ''
                 }
-                date={item.created}
+                date={item.last_msg ? item.last_msg.created : item.created}
                 image={item.channel_picture}
                 onPress={() => this.onOpenChannelChats(item)}
                 unreadCount={item.unread_msg}

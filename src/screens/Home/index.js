@@ -1458,86 +1458,86 @@ class Home extends Component {
           </TouchableOpacity>
           {/* Friend Request */}
           <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-          {filteredFriendRequest.length > 0 && (
+            {filteredFriendRequest.length > 0 && (
+              <Collapse
+                onToggle={(isColl) =>
+                  this.setState({
+                    isFriendReqCollapse: isColl,
+                  })
+                }
+                isCollapsed={isFriendReqCollapse}>
+                <CollapseHeader>
+                  <DropdownHeader
+                    title={translate('pages.xchat.friendRequest')}
+                    isCollapsed={isFriendReqCollapse}
+                    listcounts={filteredFriendRequest.length}
+                    badgeCount={friendRequest.length}
+                    selectedLanguageItem={selectedLanguageItem}
+                  />
+                </CollapseHeader>
+                <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
+              </Collapse>
+            )}
+
+            {/* Channels */}
             <Collapse
               onToggle={(isColl) =>
                 this.setState({
-                  isFriendReqCollapse: isColl,
+                  isChannelCollapsed: isColl,
                 })
               }
-              isCollapsed={isFriendReqCollapse}>
+              isCollapsed={isChannelCollapsed}>
               <CollapseHeader>
                 <DropdownHeader
-                  title={translate('pages.xchat.friendRequest')}
-                  isCollapsed={isFriendReqCollapse}
-                  listcounts={filteredFriendRequest.length}
-                  badgeCount={friendRequest.length}
+                  title={translate('pages.xchat.channels')}
+                  isCollapsed={isChannelCollapsed}
+                  listcounts={filteredChannels.length}
+                  badgeCount={this.setChannelHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
                 />
               </CollapseHeader>
-              <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
+              <CollapseBody>{this.renderUserChannels()}</CollapseBody>
             </Collapse>
-          )}
 
-          {/* Channels */}
-          <Collapse
-            onToggle={(isColl) =>
-              this.setState({
-                isChannelCollapsed: isColl,
-              })
-            }
-            isCollapsed={isChannelCollapsed}>
-            <CollapseHeader>
-              <DropdownHeader
-                title={translate('pages.xchat.channels')}
-                isCollapsed={isChannelCollapsed}
-                listcounts={filteredChannels.length}
-                badgeCount={this.setChannelHeaderCount()}
-                selectedLanguageItem={selectedLanguageItem}
-              />
-            </CollapseHeader>
-            <CollapseBody>{this.renderUserChannels()}</CollapseBody>
-          </Collapse>
+            {/* Groups */}
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isGroupCollapsed: isColl,
+                })
+              }
+              isCollapsed={isGroupCollapsed}>
+              <CollapseHeader>
+                <DropdownHeader
+                  title={translate('pages.xchat.groups')}
+                  isCollapsed={isGroupCollapsed}
+                  listcounts={filteredGroups.length}
+                  badgeCount={this.setGroupHeaderCount()}
+                  selectedLanguageItem={selectedLanguageItem}
+                />
+              </CollapseHeader>
+              <CollapseBody>{this.renderUserGroups()}</CollapseBody>
+            </Collapse>
 
-          {/* Groups */}
-          <Collapse
-            onToggle={(isColl) =>
-              this.setState({
-                isGroupCollapsed: isColl,
-              })
-            }
-            isCollapsed={isGroupCollapsed}>
-            <CollapseHeader>
-              <DropdownHeader
-                title={translate('pages.xchat.groups')}
-                isCollapsed={isGroupCollapsed}
-                listcounts={filteredGroups.length}
-                badgeCount={this.setGroupHeaderCount()}
-                selectedLanguageItem={selectedLanguageItem}
-              />
-            </CollapseHeader>
-            <CollapseBody>{this.renderUserGroups()}</CollapseBody>
-          </Collapse>
-
-          {/* Friends */}
-          <Collapse
-            onToggle={(isColl) =>
-              this.setState({
-                isFriendsCollapsed: isColl,
-              })
-            }
-            isCollapsed={isFriendsCollapsed}>
-            <CollapseHeader>
-              <DropdownHeader
-                title={translate('pages.xchat.friends')}
-                isCollapsed={isFriendsCollapsed}
-                listcounts={filteredFriends.length}
-                badgeCount={this.setFriendHeaderCount()}
-                selectedLanguageItem={selectedLanguageItem}
-              />
-            </CollapseHeader>
-            <CollapseBody>{this.renderUserFriends()}</CollapseBody>
-          </Collapse>
+            {/* Friends */}
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isFriendsCollapsed: isColl,
+                })
+              }
+              isCollapsed={isFriendsCollapsed}>
+              <CollapseHeader>
+                <DropdownHeader
+                  title={translate('pages.xchat.friends')}
+                  isCollapsed={isFriendsCollapsed}
+                  listcounts={filteredFriends.length}
+                  badgeCount={this.setFriendHeaderCount()}
+                  selectedLanguageItem={selectedLanguageItem}
+                />
+              </CollapseHeader>
+              <CollapseBody>{this.renderUserFriends()}</CollapseBody>
+            </Collapse>
           </KeyboardAwareScrollView>
         </View>
       </View>
@@ -1558,11 +1558,13 @@ const DropdownHeader = (props) => {
     <LinearGradient
       start={{x: 0.03, y: 0.7}}
       end={{x: 0.95, y: 0.8}}
-      locations={[0.1, 0.9, 1]}
+      locations={[0.065, 0.22, 0.92]}
+      useAngle={true}
+      angle={222.28}
       colors={[
-        Colors.header_gradient_3,
-        Colors.header_gradient_2,
         Colors.header_gradient_1,
+        Colors.header_gradient_2,
+        Colors.header_gradient_3,
       ]}
       style={{
         flexDirection: 'row',
@@ -1572,8 +1574,33 @@ const DropdownHeader = (props) => {
         paddingHorizontal: 15,
       }}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Text style={[globalStyles.smallRegularText, {}]}>{title}</Text>
-        <Text style={[globalStyles.smallRegularText, {marginStart: 5}]}>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            {
+              fontSize: 14,
+              fontWeight: '400',
+              color: '#fff',
+              textShadowColor: 'rgba(0,0,0,.004)',
+              textShadowOffset: {width: 1, height: 1},
+              textShadowRadius: 10,
+            },
+          ]}>
+          {title}
+        </Text>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            {
+              marginStart: 5,
+              fontSize: 14,
+              fontWeight: '400',
+              textShadowColor: 'rgba(0,0,0,.004)',
+              color: '#fff',
+              textShadowOffset: {width: 1, height: 1},
+              textShadowRadius: 1,
+            },
+          ]}>
           {'('}
           {listcounts}
           {')'}

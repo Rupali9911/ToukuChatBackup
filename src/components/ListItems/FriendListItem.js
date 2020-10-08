@@ -15,23 +15,39 @@ export default class FriendListItem extends Component {
   }
 
   checkTyping = (typing) => {
-    if(typing){
+    if (typing) {
       this.typingTimeout && clearTimeout(this.typingTimeout);
-      this.typingTimeout = setTimeout(()=>{
-        this.props.callTypingStop && this.props.callTypingStop(this.props.user_id);
+      this.typingTimeout = setTimeout(() => {
+        this.props.callTypingStop &&
+          this.props.callTypingStop(this.props.user_id);
         clearTimeout(this.typingTimeout);
-      },5000); 
-      console.log('timer_set',this.typingTimeout);
+      }, 5000);
+      console.log('timer_set', this.typingTimeout);
     }
   };
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.isTyping !== this.props.isTyping){
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isTyping !== this.props.isTyping) {
       this.checkTyping(nextProps.isTyping);
-    }else{
+    } else {
       // this.typingTimeout && clearTimeout(this.typingTimeout);
     }
   }
+  getDate = (date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const msgDate = new Date(date);
+    if (today.getDate() === msgDate.getDate()) {
+      return moment(date).format('H:mm');
+    }
+    if (
+      yesterday.getDate() === msgDate.getDate() &&
+      yesterday.getMonth() === msgDate.getMonth()
+    )
+      return translate('common.yesterday');
+    return moment(date).format('MM/DD');
+  };
 
   render() {
     const {
@@ -85,7 +101,7 @@ export default class FriendListItem extends Component {
                     globalStyles.smallLightText,
                     {color: Colors.gray_dark},
                   ]}>
-                  {moment(date).format('MM/DD')}
+                  {this.getDate(date)}
                 </Text>
                 {unreadCount !== 0 && unreadCount != null && (
                   <Badge

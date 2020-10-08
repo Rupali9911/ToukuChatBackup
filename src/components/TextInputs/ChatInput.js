@@ -60,7 +60,15 @@ export default class ChatInput extends Component {
           useAngle={true}
           // angle={270}
           angleCenter={{x: 0, y: 1}}
-          style={chatInput.chatInputContainer}>
+          style={[
+            chatInput.chatInputContainer,
+            {
+              alignItems:
+                this.newHeight == 70 || this.newHeight == 50
+                  ? 'center'
+                  : 'flex-end',
+            },
+          ]}>
           {/* <View style={chatInput.chatInputContainer}> */}
           <View style={chatInput.chatAttachmentContainer}>
             <TouchableOpacity
@@ -125,8 +133,7 @@ export default class ChatInput extends Component {
                     this.newHeight = this.newHeight - 15;
                   }
                   if (
-                    this.lineHeight <= 20 &&
-                    this.lineHeight != this.oldLineHeight
+                    isIphoneX() ? this.lineHeight <= 70 : this.lineHeight <= 50
                   ) {
                     this.newHeight = isIphoneX() ? 70 : 50;
                   }
@@ -180,7 +187,6 @@ const chatInput = StyleSheet.create({
     // maxHeight: 200,
     // backgroundColor: '#FC94B8',
     flexDirection: 'row',
-    alignItems: 'flex-end',
     paddingHorizontal: 15,
     paddingTop: 5,
     paddingBottom: isIphoneX() ? 20 : 5,

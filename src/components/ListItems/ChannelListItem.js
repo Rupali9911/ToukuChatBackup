@@ -16,6 +16,22 @@ export default class ChannelListItem extends Component {
     this.state = {};
   }
 
+  getDate = (date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const msgDate = new Date(date);
+    if (today.getDate() === msgDate.getDate()) {
+      return moment(date).format('H:mm');
+    }
+    if (
+      yesterday.getDate() === msgDate.getDate() &&
+      yesterday.getMonth() === msgDate.getMonth()
+    )
+      return translate('common.yesterday');
+    return moment(date).format('MM/DD');
+  };
+
   render() {
     const {title, description, date, image, onPress, unreadCount} = this.props;
     // var matches = title.match(/\b(\w)/g);
@@ -77,7 +93,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallLightText,
                     {color: Colors.gray_dark},
                   ]}>
-                  {moment(date).format('MM/DD')}
+                  {this.getDate(date)}
                 </Text>
                 {unreadCount !== 0 && unreadCount != null && (
                   <Badge
