@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {Badge, Divider} from 'react-native-paper';
-
+import {translate} from '../../redux/reducers/languageReducer';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';

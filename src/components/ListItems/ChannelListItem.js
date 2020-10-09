@@ -9,7 +9,7 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
 import {getImage} from '../../utils';
-
+import {translate} from '../../redux/reducers/languageReducer';
 export default class ChannelListItem extends Component {
   constructor(props) {
     super(props);

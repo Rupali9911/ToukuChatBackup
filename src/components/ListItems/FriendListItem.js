@@ -7,7 +7,7 @@ import {Badge, Divider} from 'react-native-paper';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
-
+import {translate} from '../../redux/reducers/languageReducer';
 export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
