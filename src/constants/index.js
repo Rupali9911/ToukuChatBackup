@@ -118,7 +118,6 @@ export const Colors = {
   light_pink: '#FFEDEE',
   message_gray: '#9FA7B0',
   textTitle_orange: '#e26161',
-
 };
 
 export const Fonts = {
@@ -136,6 +135,7 @@ export const Fonts = {
   arialRegular: 'Arial',
   nunitoSansLight: 'NunitoSans-Light',
   nunitoSansRegular: 'NunitoSans-Regular',
+  nunitoSansJPLight: 'NotoSansJP-Light',
 };
 
 export const environment = {
@@ -153,32 +153,30 @@ export const languageArray = [
     icon: Icons.icon_flag_america,
     language_display: 'English',
   },
-    {
-        language_id: 2,
-        language_name: 'ko',
-        icon: Icons.icon_flag_korea,
-        language_display: '한국어',
-    },
+  {
+    language_id: 2,
+    language_name: 'ko',
+    icon: Icons.icon_flag_korea,
+    language_display: '한국어',
+  },
   {
     language_id: 3,
     language_name: 'ja',
     icon: Icons.icon_flag_japan,
     language_display: '日本語',
   },
-    {
-        language_id: 4,
-        language_name: 'tw',
-        icon: Icons.icon_flag_taiwan,
-        language_display: '中文（繁体）',
-    },
+  {
+    language_id: 4,
+    language_name: 'tw',
+    icon: Icons.icon_flag_taiwan,
+    language_display: '中文（繁体）',
+  },
   {
     language_id: 5,
     language_name: 'ch',
     icon: Icons.icon_flag_china,
     language_display: '中文（简体）',
   },
-
-
 ];
 
 export const supportUrl = 'https://www.touku.net/#/support/';

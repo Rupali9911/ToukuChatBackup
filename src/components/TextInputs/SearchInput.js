@@ -145,14 +145,15 @@ const styles = StyleSheet.create({
     flex: 1,
     // width: '100%',
     color: Colors.black,
-    fontSize: 15,
-    // fontFamily: Fonts.black,
+    fontSize: 14,
+    fontFamily: Fonts.nunitoSansJPLight,
     marginStart: 10,
     alignSelf: 'center',
+    // fontWeight: '200',
   },
   iconRight: {
-    width: 30,
-    height: 30,
+    height: 25,
+    width: 25,
     resizeMode: 'center',
   },
   iconSearch: {
@@ -163,5 +164,6 @@ const styles = StyleSheet.create({
   iconRightContainer: {
     marginStart: 15,
     alignSelf: 'center',
+    width: 35,
   },
 });

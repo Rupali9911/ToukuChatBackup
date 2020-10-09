@@ -1578,7 +1578,7 @@ const DropdownHeader = (props) => {
           style={[
             globalStyles.smallRegularText,
             {
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: '400',
               color: '#fff',
               textShadowColor: 'rgba(0,0,0,.004)',
@@ -1593,7 +1593,7 @@ const DropdownHeader = (props) => {
             globalStyles.smallRegularText,
             {
               marginStart: 5,
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: '400',
               textShadowColor: 'rgba(0,0,0,.004)',
               color: '#fff',

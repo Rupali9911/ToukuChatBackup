@@ -73,15 +73,23 @@ export default class ChannelListItem extends Component {
                   numberOfLines={1}
                   style={[
                     globalStyles.smallNunitoRegularText,
-                    {color: Colors.black_light},
+                    {
+                      color: Colors.black_light,
+                      fontSize: 13,
+                      fontWeight: '400',
+                    },
                   ]}>
                   {title}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallNunitoLightText,
-                    {color: Colors.message_gray},
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.message_gray,
+                      fontSize: 12,
+                      fontWeight: '400',
+                    },
                   ]}>
                   {description}
                 </Text>
@@ -90,8 +98,12 @@ export default class ChannelListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallLightText,
-                    {color: Colors.gray_dark},
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.message_gray,
+                      fontSize: 11,
+                      fontWeight: '400',
+                    },
                   ]}>
                   {this.getDate(date)}
                 </Text>
