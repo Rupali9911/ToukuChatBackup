@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Menu} from 'react-native-paper';
+import {Menu, Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
@@ -25,7 +25,7 @@ import Toast from '../components/Toast';
 import HyperLink from 'react-native-hyperlink';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-viewing';
-
+import {getAvatar} from '../utils';
 let borderRadius = 20;
 
 class ChatMessageBubble extends Component {
@@ -100,43 +100,78 @@ class ChatMessageBubble extends Component {
     }
   };
 
-  renderReplyMessage = (replyMessage) => {
+  renderReplyMessage = (message) => {
+    let replyMessage = message.reply_to;
     if (replyMessage.message) {
       return (
-        <TouchableOpacity
-          onPress={() => {
-            this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
-          }}
-          style={{
-            backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
-            padding: 5,
-            width: '100%',
-            borderRadius: 5,
-            marginBottom: 5,
-          }}>
-          <View
+        <>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.onReplyPress &&
+                this.props.onReplyPress(replyMessage.id);
+            }}
             style={{
-              flex: 3,
+              backgroundColor: this.props.isUser
+                ? 'rgba(243,243,243,.53)'
+                : Colors.gray,
+              padding: 5,
+              width: '100%',
+              borderRadius: 5,
+              marginBottom: 5,
               flexDirection: 'row',
-              alignItems: 'center',
             }}>
-            <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-              {replyMessage.sender_id === this.props.userData.id
-                ? 'You'
-                : replyMessage.name}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 7,
-              justifyContent: 'center',
-              width: '95%',
-            }}>
-            <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
-              {replyMessage.message}
-            </Text>
-          </View>
-        </TouchableOpacity>
+            <View style={{}}>
+              <Image
+                source={getAvatar(
+                  replyMessage.sender_id === this.props.userData.id
+                    ? message.from_user.avatar
+                    : message.to_user.avatar,
+                )}
+                style={{
+                  width: 25,
+                  height: 25,
+                  borderRadius: 20,
+                  resizeMode: 'cover',
+                  marginTop: 5,
+                  marginRight: 5,
+                }}
+              />
+            </View>
+            <View style={{}}>
+              <View
+                style={{
+                  flex: 3,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+                  {/* {replyMessage.sender_id === this.props.userData.id
+                ? 'You' */}
+                  {/* :  */}
+                  {replyMessage.display_name}
+                  {/* } */}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 7,
+                  justifyContent: 'center',
+                  width: '100%',
+                }}>
+                <Text
+                  numberOfLines={2}
+                  style={{
+                    fontFamily: Fonts.regular,
+                    fontWeight: '300',
+                    fontSize: 15,
+                  }}>
+                  {replyMessage.message}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <Divider />
+        </>
       );
     }
   };
@@ -257,8 +292,7 @@ class ChatMessageBubble extends Component {
                             )
                           : null
                       }>
-                      {message.reply_to &&
-                        this.renderReplyMessage(message.reply_to)}
+                      {message.reply_to && this.renderReplyMessage(message)}
                       {message.message_body && message.msg_type === 'image' ? (
                         <ScalableImage
                           src={
@@ -283,9 +317,9 @@ class ChatMessageBubble extends Component {
                         <Fragment>
                           <Text
                             style={{
+                              fontFamily: Fonts.regular,
+                              fontWeight: '300',
                               fontSize: 15,
-                              fontFamily: Fonts.light,
-                              fontWeight: '500',
                             }}>
                             {message.message_body
                               .split('/')
@@ -306,9 +340,10 @@ class ChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.dark_gray,
-                                fontSize: 13,
                                 marginLeft: 5,
-                                fontFamily: Fonts.light,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '300',
+                                fontSize: 15,
                               }}>
                               File
                             </Text>
@@ -323,9 +358,9 @@ class ChatMessageBubble extends Component {
                           <HyperLink linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
-                                fontSize: 15,
                                 fontFamily: Fonts.regular,
-                                fontWeight: '400',
+                                fontWeight: '300',
+                                fontSize: 15,
                               }}>
                               {message.message_body}
                             </Text>
@@ -334,9 +369,9 @@ class ChatMessageBubble extends Component {
                       ) : (
                         <Text
                           style={{
-                            fontSize: 15,
                             fontFamily: Fonts.regular,
-                            fontWeight: '400',
+                            fontWeight: '300',
+                            fontSize: 15,
                           }}>
                           {message.message_body}
                         </Text>
@@ -419,7 +454,8 @@ class ChatMessageBubble extends Component {
                       }
                       activeOpacity={0.8}>
                       {message.reply_to &&
-                        this.renderReplyMessage(message.reply_to)}
+                        message.reply_to &&
+                        this.renderReplyMessage(message)}
                       {message.message_body && message.msg_type === 'image' ? (
                         <ScalableImage
                           src={
@@ -446,8 +482,8 @@ class ChatMessageBubble extends Component {
                             style={{
                               color: Colors.black,
                               fontSize: 15,
-                              fontWeight: '500',
-                              fontFamily: Fonts.light,
+                              fontWeight: '300',
+                              fontFamily: Fonts.regular,
                             }}>
                             {message.message_body
                               .split('/')
@@ -468,9 +504,10 @@ class ChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.dark_gray,
-                                fontSize: 13,
                                 marginLeft: 5,
-                                fontFamily: Fonts.light,
+                                fontSize: 15,
+                                fontWeight: '300',
+                                fontFamily: Fonts.regular,
                               }}>
                               File
                             </Text>
@@ -487,8 +524,8 @@ class ChatMessageBubble extends Component {
                               style={{
                                 color: Colors.black,
                                 fontSize: 15,
+                                fontWeight: '300',
                                 fontFamily: Fonts.regular,
-                                fontWeight: '400',
                               }}>
                               {message.message_body}
                             </Text>
@@ -499,8 +536,8 @@ class ChatMessageBubble extends Component {
                           style={{
                             color: Colors.black,
                             fontSize: 15,
+                            fontWeight: '300',
                             fontFamily: Fonts.regular,
-                            fontWeight: '400',
                           }}>
                           {message.message_body}
                         </Text>

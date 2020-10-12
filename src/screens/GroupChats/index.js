@@ -16,7 +16,11 @@ import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
 import {Colors, Fonts, Images, Icons, SocketEvents} from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
-import {ConfirmationModal, UploadSelectModal} from '../../components/Modals';
+import {
+  ConfirmationModal,
+  UploadSelectModal,
+  ShowAttahmentModal,
+} from '../../components/Modals';
 import {
   translate,
   translateMessage,
@@ -76,6 +80,8 @@ class GroupChats extends Component {
       showMessageDeleteConfirmationModal: false,
       sentMessageType: 'text',
       showSelectModal: false,
+      uploadedFiles: [],
+      showAttachmentModal: false,
       sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
@@ -162,6 +168,7 @@ class GroupChats extends Component {
     };
     this.S3uploadService = new S3uploadService();
     this.props.resetGroupConversation();
+    this.isUploading = false;
   }
 
   onMessageSend = async () => {
@@ -999,52 +1006,18 @@ class GroupChats extends Component {
       this.onMessageSend();
     });
   };
-  onGalleryPress = async (mediaType) => {
-    if (mediaType === 'images') {
-      ImagePicker.openPicker({
-        multiple: true,
-        mediaType: 'photo',
-        includeBase64: true,
-      }).then(async (images) => {
-        await images.map(async (item, index) => {
-          let source = {
-            uri: 'data:image/jpeg;base64,' + item.data,
-            type: item.mime,
-            name: null,
-          };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'image',
-            sendingMedia: true,
-          });
-          this.toggleSelectModal(false);
-          await this.onMessageSend();
-        });
+  onGalleryPress = async () => {
+    ImagePicker.openPicker({
+      multiple: true,
+      mediaType: 'any',
+      includeBase64: true,
+    }).then(async (images) => {
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...images],
       });
-    }
-
-    if (mediaType === 'video') {
-      ImagePicker.openPicker({
-        multiple: true,
-        mediaType: 'video',
-      }).then(async (video) => {
-        console.log('ChannelChats -> onGalleryPress -> video', video);
-        await video.map(async (item, index) => {
-          let source = {
-            uri: item.path,
-            type: item.mime,
-            name: null,
-          };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'video',
-            sendingMedia: true,
-          });
-          this.toggleSelectModal(false);
-          await this.onMessageSend();
-        });
-      });
-    }
+      // this.toggleSelectModal(false);
+      this.toggleAttachmentModal(true);
+    });
   };
 
   onAttachmentPress = async () => {
@@ -1093,15 +1066,79 @@ class GroupChats extends Component {
     }
   };
 
-  toggleSelectModal = (status) => {
+  // toggleSelectModal = (status) => {
+  //   this.setState({
+  //     showSelectModal: status,
+  //   });
+  // };
+
+  // selectUploadOption = (mediaType) => {
+  //   // this.toggleSelectModal();
+  //   this.onGalleryPress(mediaType);
+  // };
+
+  toggleAttachmentModal = (status) => {
     this.setState({
-      showSelectModal: status,
+      showAttachmentModal: status,
     });
   };
 
-  selectUploadOption = (mediaType) => {
-    // this.toggleSelectModal();
-    this.onGalleryPress(mediaType);
+  uploadAndSend = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    this.toggleAttachmentModal(false);
+
+    for (const file of this.state.uploadedFiles) {
+      let fileType = file.mime;
+      if (fileType.includes('image')) {
+        let source = {
+          uri: 'data:image/jpeg;base64,' + file.data,
+          type: file.mime,
+          name: null,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          async () => {
+            await this.onMessageSend();
+          },
+        );
+      } else {
+        let source = {
+          uri: file.path,
+          type: file.mime,
+          name: null,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      }
+    }
+    this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+
+  removeUploadData = (index) => {
+    let newArray = this.state.uploadedFiles.filter((item, itemIndex) => {
+      if (index !== itemIndex) {
+        return item;
+      }
+    });
+    this.setState({
+      uploadedFiles: newArray,
+    });
   };
 
   render() {
@@ -1169,7 +1206,7 @@ class GroupChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.toggleSelectModal(true)}
+            onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />
@@ -1211,10 +1248,24 @@ class GroupChats extends Component {
           message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
 
-        <UploadSelectModal
+        {/* <UploadSelectModal
           visible={this.state.showSelectModal}
           toggleSelectModal={this.toggleSelectModal}
           onSelect={(mediaType) => this.selectUploadOption(mediaType)}
+        /> */}
+
+        <ShowAttahmentModal
+          visible={this.state.showAttachmentModal}
+          toggleAttachmentModal={this.toggleAttachmentModal}
+          data={this.state.uploadedFiles}
+          onCancel={() => {
+            this.setState({uploadedFiles: []});
+            this.toggleAttachmentModal(false);
+          }}
+          onUpload={() => this.uploadAndSend()}
+          isLoading={this.isUploading}
+          removeUploadData={(index) => this.removeUploadData(index)}
+          onGalleryPress={() => this.onGalleryPress()}
         />
         {sendingMedia && <UploadLoader />}
       </ImageBackground>

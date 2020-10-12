@@ -246,9 +246,9 @@ class ChatContainer extends Component {
                 return (
                   <Fragment>
                     <ChatMessageBox
-                    ref={(view) => {
-                      this[`message_box_${item.id}`] = view;
-                    }}
+                      ref={(view) => {
+                        this[`message_box_${item.id}`] = view;
+                      }}
                       key={item.id}
                       message={item}
                       isUser={
@@ -415,9 +415,11 @@ class ChatContainer extends Component {
           onCameraPress={() => onCameraPress()}
           onGalleryPress={() => onGalleryPress()}
           onChangeText={(message) => handleMessage(message)}
-          onSend={()=>{
+          onSend={() => {
             onMessageSend();
-            messages.length>0 && this.scrollView && this.scrollView.scrollToIndex({index:0, animated: false });
+            messages.length > 0 &&
+              this.scrollView &&
+              this.scrollView.scrollToIndex({index: 0, animated: false});
           }}
           value={newMessageText}
           sendEnable={sendEnable}

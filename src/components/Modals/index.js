@@ -7,6 +7,7 @@ import BackgroundImgModal from './BackgroundImgModal';
 import ConfirmationModal from './ConfirmationModal';
 import AffilicateModal from './AffilicateModal';
 import UploadSelectModal from './UploadSelectModal';
+import ShowAttahmentModal from './ShowAttahmentModal';
 
 export {
   ProfileModal,
@@ -18,4 +19,5 @@ export {
   ConfirmationModal,
   AffilicateModal,
   UploadSelectModal,
+  ShowAttahmentModal,
 };

@@ -26,6 +26,7 @@ import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 let borderRadius = 20;
 import HyperLink from 'react-native-hyperlink';
+import {getAvatar} from '../utils';
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {
@@ -129,45 +130,75 @@ class GroupChatMessageBubble extends Component {
     }
   };
 
-  renderReplyMessage = (replyMessage) => {
-    // console.log('reply_render',replyMessage.message);
+  renderReplyMessage = (message) => {
+    console.log(
+      'GroupChatMessageBubble -> renderReplyMessage -> message',
+      message,
+    );
+    let replyMessage = message.reply_to;
     if (replyMessage.message) {
       return (
-        <TouchableOpacity
-          onPress={() => {
-            this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
-          }}
-          style={{
-            backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
-            padding: 5,
-            width: '100%',
-            borderRadius: 5,
-            marginBottom: 5,
-          }}>
-          <View
+        <>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.onReplyPress &&
+                this.props.onReplyPress(replyMessage.id);
+            }}
             style={{
-              flex: 3,
-              flexDirection: 'row',
-              alignItems: 'center',
+              backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
+              padding: 5,
+              width: '100%',
+              borderRadius: 5,
+              marginBottom: 5,
             }}>
-            <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-              {replyMessage.sender_id === this.props.userData.id
+            {/* <View style={{}}>
+            <Image
+              source={getAvatar(
+                
+                  message.sender_picture,
+              )}              style={{
+                width: 25,
+                height: 25,
+                borderRadius: 20,
+                resizeMode: 'cover',
+                marginTop: 5,
+                marginRight: 5,
+              }}
+            />
+          </View> */}
+            <View style={{}}>
+              <View
+                style={{
+                  flex: 3,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+                  {/* {replyMessage.sender_id === this.props.userData.id
+                ? 'You' */}
+                  {/* :  */}
+                  {replyMessage.display_name}
+                  {/* } */}
+                  {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You'
-                : replyMessage.display_name}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 7,
-              justifyContent: 'center',
-              width: '95%',
-              marginTop: 5,
-            }}>
-            <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
-              {replyMessage.message}
-            </Text>
-          </View>
-        </TouchableOpacity>
+                : replyMessage.display_name} */}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 7,
+                  justifyContent: 'center',
+                  width: '95%',
+                  marginTop: 5,
+                }}>
+                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+                  {replyMessage.message}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <Divider />
+        </>
       );
     }
   };
@@ -303,8 +334,7 @@ class GroupChatMessageBubble extends Component {
                       {message.reply_to &&
                         // Object.keys(message.reply_to).length !== 0 &&
                         // message.reply_to.constructor === Object &&
-                        this.renderReplyMessage(message.reply_to)}
-
+                        this.renderReplyMessage(message)}
                       {message.message_body.type === 'image' &&
                       message.message_body.text !== null ? (
                         <ScalableImage
@@ -465,7 +495,7 @@ class GroupChatMessageBubble extends Component {
                         // &&
                         // Object.keys(message.reply_to).length !== 0 &&
                         // message.reply_to.constructor === Object
-                        this.renderReplyMessage(message.reply_to)}
+                        this.renderReplyMessage(message)}
 
                       {message.message_body.type === 'image' &&
                       message.message_body.text !== null ? (

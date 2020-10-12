@@ -11,7 +11,11 @@ import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
 import {globalStyles} from '../../styles';
 import {Images, SocketEvents} from '../../constants';
-import {ConfirmationModal, UploadSelectModal} from '../../components/Modals';
+import {
+  ConfirmationModal,
+  UploadSelectModal,
+  ShowAttahmentModal,
+} from '../../components/Modals';
 import {ListLoader} from '../../components/Loaders';
 import {UploadLoader} from '../../components/Loaders';
 import {
@@ -70,6 +74,8 @@ class FriendChats extends Component {
       sendingMedia: false,
       showSelectModal: false,
       callingApi: false,
+      uploadedFiles: [],
+      showAttachmentModal: false,
       uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
         {
@@ -122,6 +128,7 @@ class FriendChats extends Component {
     this.SingleSocket = new SingleSocket();
     this.S3uploadService = new S3uploadService();
     this.props.resetFriendConversation();
+    this.isUploading = false;
   }
 
   UNSAFE_componentWillMount() {
@@ -733,8 +740,10 @@ class FriendChats extends Component {
         .then((res) => {
           deleteFriendMessageById(this.state.selectedMessageId);
           this.getPersonalConversation();
-          
-          if (this.props.currentFriend.last_msg_id == this.state.selectedMessageId) {
+
+          if (
+            this.props.currentFriend.last_msg_id == this.state.selectedMessageId
+          ) {
             let chat = getFriendChatConversationById(
               this.props.currentFriend.friend,
             );
@@ -748,15 +757,14 @@ class FriendChats extends Component {
                   id: array[0].id,
                   msg_type: array[0].msg_type,
                   message_body: array[0].message_body,
-                  created: array[0].timestamp
-                }
+                  created: array[0].timestamp,
+                },
               );
               this.props.setUserFriends().then((res) => {
                 this.props.setCommonChatConversation();
               });
             }
           }
-
         });
     }
   };
@@ -907,51 +915,19 @@ class FriendChats extends Component {
       this.onMessageSend();
     });
   };
-  onGalleryPress = async (mediaType) => {
-    if (mediaType === 'images') {
-      ImagePicker.openPicker({
-        multiple: true,
-        mediaType: 'photo',
-        includeBase64: true,
-      }).then(async (images) => {
-        await images.map(async (item, index) => {
-          let source = {
-            uri: 'data:image/jpeg;base64,' + item.data,
-            type: item.mime,
-            name: null,
-          };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'image',
-            sendingMedia: true,
-          });
-          this.toggleSelectModal(false);
-          await this.onMessageSend();
-        });
+
+  onGalleryPress = async () => {
+    ImagePicker.openPicker({
+      multiple: true,
+      mediaType: 'any',
+      includeBase64: true,
+    }).then(async (images) => {
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...images],
       });
-    }
-    if (mediaType === 'video') {
-      ImagePicker.openPicker({
-        multiple: true,
-        mediaType: 'video',
-      }).then(async (video) => {
-        console.log('ChannelChats -> onGalleryPress -> video', video);
-        await video.map(async (item, index) => {
-          let source = {
-            uri: item.path,
-            type: item.mime,
-            name: null,
-          };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'video',
-            sendingMedia: true,
-          });
-          this.toggleSelectModal(false);
-          await this.onMessageSend();
-        });
-      });
-    }
+      // this.toggleSelectModal(false);
+      this.toggleAttachmentModal(true);
+    });
   };
 
   onAttachmentPress = async () => {
@@ -1000,15 +976,79 @@ class FriendChats extends Component {
     }
   };
 
-  toggleSelectModal = (status) => {
+  // toggleSelectModal = (status) => {
+  //   this.setState({
+  //     showSelectModal: status,
+  //   });
+  // };
+
+  // selectUploadOption = (mediaType) => {
+  //   // this.toggleSelectModal();
+  //   this.onGalleryPress(mediaType);
+  // };
+
+  toggleAttachmentModal = (status) => {
     this.setState({
-      showSelectModal: status,
+      showAttachmentModal: status,
     });
   };
 
-  selectUploadOption = (mediaType) => {
-    // this.toggleSelectModal();
-    this.onGalleryPress(mediaType);
+  uploadAndSend = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    this.toggleAttachmentModal(false);
+
+    for (const file of this.state.uploadedFiles) {
+      let fileType = file.mime;
+      if (fileType.includes('image')) {
+        let source = {
+          uri: 'data:image/jpeg;base64,' + file.data,
+          type: file.mime,
+          name: null,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          async () => {
+            await this.onMessageSend();
+          },
+        );
+      } else {
+        let source = {
+          uri: file.path,
+          type: file.mime,
+          name: null,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      }
+    }
+    this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+
+  removeUploadData = (index) => {
+    let newArray = this.state.uploadedFiles.filter((item, itemIndex) => {
+      if (index !== itemIndex) {
+        return item;
+      }
+    });
+    this.setState({
+      uploadedFiles: newArray,
+    });
   };
 
   render() {
@@ -1066,7 +1106,7 @@ class FriendChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.toggleSelectModal(true)}
+            onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />
@@ -1099,10 +1139,24 @@ class FriendChats extends Component {
           message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
 
-        <UploadSelectModal
+        {/* <UploadSelectModal
           visible={this.state.showSelectModal}
           toggleSelectModal={this.toggleSelectModal}
           onSelect={(mediaType) => this.selectUploadOption(mediaType)}
+        /> */}
+
+        <ShowAttahmentModal
+          visible={this.state.showAttachmentModal}
+          toggleAttachmentModal={this.toggleAttachmentModal}
+          data={this.state.uploadedFiles}
+          onCancel={() => {
+            this.setState({uploadedFiles: []});
+            this.toggleAttachmentModal(false);
+          }}
+          onUpload={() => this.uploadAndSend()}
+          isLoading={this.isUploading}
+          removeUploadData={(index) => this.removeUploadData(index)}
+          onGalleryPress={() => this.onGalleryPress()}
         />
         {sendingMedia && <UploadLoader />}
       </ImageBackground>
