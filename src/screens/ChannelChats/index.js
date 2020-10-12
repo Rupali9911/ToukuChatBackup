@@ -55,6 +55,7 @@ import {
   ConfirmationModal,
   UploadSelectModal,
   ShowAttahmentModal,
+  ShowGalleryModal,
 } from '../../components/Modals';
 import {eventService} from '../../utils';
 import Toast from '../../components/Toast';
@@ -94,6 +95,7 @@ class ChannelChats extends Component {
       showSelectModal: false,
       uploadedFiles: [],
       showAttachmentModal: false,
+      showGalleryModal: false,
       isEdited: false,
       editMessageId: null,
       sentMessageType: 'text',
@@ -827,7 +829,7 @@ class ChannelChats extends Component {
         uploadedFiles: [...this.state.uploadedFiles, ...images],
       });
       // this.toggleSelectModal(false);
-      this.toggleAttachmentModal(true);
+      this.toggleGalleryModal(true);
     });
   };
   onAttachmentPress = async () => {
@@ -842,30 +844,35 @@ class ChannelChats extends Component {
           DocumentPicker.types.audio,
         ],
       });
-      for (const res of results) {
-        console.log('ChannelChats -> onAttachmentPress -> res', res);
-        let fileType = res.type.substr(0, res.type.indexOf('/'));
-        console.log(
-          res.uri,
-          res.type, // mime type
-          res.name,
-          res.size,
-          res.type.substr(0, res.type.indexOf('/')),
-        );
-        let source = {uri: res.uri, type: res.type, name: res.name};
-        if (fileType === 'audio') {
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'audio',
-          });
-        } else if (fileType === 'application') {
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'doc',
-          });
-        }
-        this.onMessageSend();
-      }
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...results],
+      });
+      this.toggleAttachmentModal(true);
+      // for (const res of results) {
+      //   let fileType = res.type.substr(0, res.type.indexOf('/'));
+      //   console.log(
+      //     res.uri,
+      //     res.type, // mime type
+      //     res.name,
+      //     res.size,
+      //     res.type.substr(0, res.type.indexOf('/')),
+      //   );
+      //   let source = {uri: res.uri, type: res.type, name: res.name};
+      //   if (fileType === 'audio') {
+      //     this.setState({
+      //       uploadFile: source,
+      //       sentMessageType: 'audio',
+      //       sendingMedia: true,
+      //     });
+      //   } else if (fileType === 'application') {
+      //     this.setState({
+      //       uploadFile: source,
+      //       sentMessageType: 'doc',
+      //       sendingMedia: true,
+      //     });
+      //   }
+      //   this.onMessageSend();
+      // }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -875,9 +882,9 @@ class ChannelChats extends Component {
     }
   };
 
-  toggleAttachmentModal = (status) => {
+  toggleGalleryModal = (status) => {
     this.setState({
-      showAttachmentModal: status,
+      showGalleryModal: status,
     });
   };
 
@@ -886,7 +893,7 @@ class ChannelChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleAttachmentModal(false);
+    this.toggleGalleryModal(false);
 
     for (const file of this.state.uploadedFiles) {
       let fileType = file.mime;
@@ -916,6 +923,56 @@ class ChannelChats extends Component {
           {
             uploadFile: source,
             sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      }
+    }
+    this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+
+  toggleAttachmentModal = (status) => {
+    this.setState({
+      showAttachmentModal: status,
+    });
+  };
+
+  uploadAndSendAttachment = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    this.toggleAttachmentModal(false);
+    for (const res of this.state.uploadedFiles) {
+      let fileType = res.type.substr(0, res.type.indexOf('/'));
+      console.log(
+        res.uri,
+        res.type, // mime type
+        res.name,
+        res.size,
+        res.type.substr(0, res.type.indexOf('/')),
+      );
+      let source = {uri: res.uri, type: res.type, name: res.name};
+      if (fileType === 'audio') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'audio',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if (fileType === 'application') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'doc',
             sendingMedia: true,
           },
           () => {
@@ -1018,6 +1075,20 @@ class ChannelChats extends Component {
             onSelect={(mediaType) => this.selectUploadOption(mediaType)}
           /> */}
 
+          <ShowGalleryModal
+            visible={this.state.showGalleryModal}
+            toggleGalleryModal={this.toggleGalleryModal}
+            data={this.state.uploadedFiles}
+            onCancel={() => {
+              this.setState({uploadedFiles: []});
+              this.toggleGalleryModal(false);
+            }}
+            onUpload={() => this.uploadAndSend()}
+            isLoading={this.isUploading}
+            removeUploadData={(index) => this.removeUploadData(index)}
+            onGalleryPress={() => this.onGalleryPress()}
+          />
+
           <ShowAttahmentModal
             visible={this.state.showAttachmentModal}
             toggleAttachmentModal={this.toggleAttachmentModal}
@@ -1026,10 +1097,10 @@ class ChannelChats extends Component {
               this.setState({uploadedFiles: []});
               this.toggleAttachmentModal(false);
             }}
-            onUpload={() => this.uploadAndSend()}
+            onUpload={() => this.uploadAndSendAttachment()}
             isLoading={this.isUploading}
             removeUploadData={(index) => this.removeUploadData(index)}
-            onGalleryPress={() => this.onGalleryPress()}
+            onAttachmentPress={() => this.onAttachmentPress()}
           />
           {sendingMedia && <UploadLoader />}
         </View>

@@ -16,7 +16,7 @@ import {connect} from 'react-redux';
 import Button from '../Button';
 import {Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-class ShowAttahmentModal extends Component {
+class ShowGalleryModal extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
@@ -30,19 +30,19 @@ class ShowAttahmentModal extends Component {
   render() {
     const {
       visible,
-      toggleAttachmentModal,
+      toggleGalleryModal,
       data,
       onCancel,
       onUpload,
       isLoading,
       removeUploadData,
-      onAttachmentPress,
+      onGalleryPress,
     } = this.props;
     return (
       <Modal
         isVisible={visible}
-        onBackButtonPress={() => toggleAttachmentModal(false)}
-        onBackdropPress={() => toggleAttachmentModal(false)}>
+        onBackButtonPress={() => toggleGalleryModal(false)}
+        onBackdropPress={() => toggleGalleryModal(false)}>
         <SafeAreaView
           style={{
             // flex: '10%',
@@ -79,7 +79,7 @@ class ShowAttahmentModal extends Component {
                     paddingHorizontal: 5,
                     alignItems: 'center',
                   }}
-                  onPress={() => toggleAttachmentModal(false)}>
+                  onPress={() => toggleGalleryModal(false)}>
                   <Image
                     source={Icons.icon_close}
                     style={{
@@ -108,16 +108,39 @@ class ShowAttahmentModal extends Component {
                               alignItems: 'center',
                               marginBottom: 5,
                             }}>
-                            <FontAwesome
-                              name="file"
-                              size={30}
-                              color={Colors.black}
-                              style={{
-                                marginRight: 10,
-                              }}
-                            />
+                            {item.mime && item.mime.includes('image') ? (
+                              <Image
+                                source={{
+                                  uri: item.path,
+                                }}
+                                style={{
+                                  height: 50,
+                                  width: 50,
+                                  marginRight: 10,
+                                }}
+                                resizeMode={'cover'}
+                              />
+                            ) : (
+                              <View
+                                style={{
+                                  width: 50,
+                                  height: 50,
+                                  backgroundColor: Colors.black,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  marginRight: 10,
+                                }}>
+                                <FontAwesome
+                                  name="play"
+                                  size={15}
+                                  color={Colors.white}
+                                />
+                              </View>
+                            )}
                             <View style={{flex: 0.8}}>
-                              <Text style={{marginBottom: 5}}>{item.name}</Text>
+                              <Text style={{marginBottom: 5}}>
+                                {item.filename}
+                              </Text>
                               <TouchableOpacity
                                 style={{
                                   flexDirection: 'row',
@@ -140,7 +163,7 @@ class ShowAttahmentModal extends Component {
                                   alignItems: 'flex-end',
                                 }}>
                                 <TouchableOpacity
-                                  onPress={() => onAttachmentPress()}>
+                                  onPress={() => onGalleryPress()}>
                                   <Image
                                     source={Icons.icon_upload}
                                     style={{
@@ -166,7 +189,7 @@ class ShowAttahmentModal extends Component {
                       flex: 1,
                     }}>
                     <TouchableOpacity
-                      onPress={() => onAttachmentPress()}
+                      onPress={() => onGalleryPress()}
                       style={{alignItems: 'center'}}>
                       <Image
                         source={Icons.icon_upload}
@@ -236,4 +259,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShowAttahmentModal);
+export default connect(mapStateToProps, mapDispatchToProps)(ShowGalleryModal);

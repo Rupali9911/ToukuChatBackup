@@ -8,6 +8,7 @@ import ConfirmationModal from './ConfirmationModal';
 import AffilicateModal from './AffilicateModal';
 import UploadSelectModal from './UploadSelectModal';
 import ShowAttahmentModal from './ShowAttahmentModal';
+import ShowGalleryModal from './ShowGalleryModal';
 
 export {
   ProfileModal,
@@ -20,4 +21,5 @@ export {
   AffilicateModal,
   UploadSelectModal,
   ShowAttahmentModal,
+  ShowGalleryModal,
 };

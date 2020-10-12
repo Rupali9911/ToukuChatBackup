@@ -15,6 +15,7 @@ import {
   ConfirmationModal,
   UploadSelectModal,
   ShowAttahmentModal,
+  ShowGalleryModal,
 } from '../../components/Modals';
 import {ListLoader} from '../../components/Loaders';
 import {UploadLoader} from '../../components/Loaders';
@@ -76,6 +77,7 @@ class FriendChats extends Component {
       callingApi: false,
       uploadedFiles: [],
       showAttachmentModal: false,
+      showGalleryModal: false,
       uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
         {
@@ -926,7 +928,7 @@ class FriendChats extends Component {
         uploadedFiles: [...this.state.uploadedFiles, ...images],
       });
       // this.toggleSelectModal(false);
-      this.toggleAttachmentModal(true);
+      this.toggleGalleryModal(true);
     });
   };
 
@@ -942,31 +944,35 @@ class FriendChats extends Component {
           DocumentPicker.types.audio,
         ],
       });
-      for (const res of results) {
-        let fileType = res.type.substr(0, res.type.indexOf('/'));
-        console.log(
-          res.uri,
-          res.type, // mime type
-          res.name,
-          res.size,
-          res.type.substr(0, res.type.indexOf('/')),
-        );
-        let source = {uri: res.uri, type: res.type, name: res.name};
-        if (fileType === 'audio') {
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'audio',
-            sendingMedia: true,
-          });
-        } else if (fileType === 'application') {
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'doc',
-            sendingMedia: true,
-          });
-        }
-        this.onMessageSend();
-      }
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...results],
+      });
+      this.toggleAttachmentModal(true);
+      // for (const res of results) {
+      //   let fileType = res.type.substr(0, res.type.indexOf('/'));
+      //   console.log(
+      //     res.uri,
+      //     res.type, // mime type
+      //     res.name,
+      //     res.size,
+      //     res.type.substr(0, res.type.indexOf('/')),
+      //   );
+      //   let source = {uri: res.uri, type: res.type, name: res.name};
+      //   if (fileType === 'audio') {
+      //     this.setState({
+      //       uploadFile: source,
+      //       sentMessageType: 'audio',
+      //       sendingMedia: true,
+      //     });
+      //   } else if (fileType === 'application') {
+      //     this.setState({
+      //       uploadFile: source,
+      //       sentMessageType: 'doc',
+      //       sendingMedia: true,
+      //     });
+      //   }
+      //   this.onMessageSend();
+      // }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -987,9 +993,9 @@ class FriendChats extends Component {
   //   this.onGalleryPress(mediaType);
   // };
 
-  toggleAttachmentModal = (status) => {
+  toggleGalleryModal = (status) => {
     this.setState({
-      showAttachmentModal: status,
+      showGalleryModal: status,
     });
   };
 
@@ -998,7 +1004,7 @@ class FriendChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleAttachmentModal(false);
+    this.toggleGalleryModal(false);
 
     for (const file of this.state.uploadedFiles) {
       let fileType = file.mime;
@@ -1028,6 +1034,56 @@ class FriendChats extends Component {
           {
             uploadFile: source,
             sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      }
+    }
+    this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+
+  toggleAttachmentModal = (status) => {
+    this.setState({
+      showAttachmentModal: status,
+    });
+  };
+
+  uploadAndSendAttachment = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    this.toggleAttachmentModal(false);
+    for (const res of this.state.uploadedFiles) {
+      let fileType = res.type.substr(0, res.type.indexOf('/'));
+      console.log(
+        res.uri,
+        res.type, // mime type
+        res.name,
+        res.size,
+        res.type.substr(0, res.type.indexOf('/')),
+      );
+      let source = {uri: res.uri, type: res.type, name: res.name};
+      if (fileType === 'audio') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'audio',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if (fileType === 'application') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'doc',
             sendingMedia: true,
           },
           () => {
@@ -1145,6 +1201,20 @@ class FriendChats extends Component {
           onSelect={(mediaType) => this.selectUploadOption(mediaType)}
         /> */}
 
+        <ShowGalleryModal
+          visible={this.state.showGalleryModal}
+          toggleGalleryModal={this.toggleGalleryModal}
+          data={this.state.uploadedFiles}
+          onCancel={() => {
+            this.setState({uploadedFiles: []});
+            this.toggleGalleryModal(false);
+          }}
+          onUpload={() => this.uploadAndSend()}
+          isLoading={this.isUploading}
+          removeUploadData={(index) => this.removeUploadData(index)}
+          onGalleryPress={() => this.onGalleryPress()}
+        />
+
         <ShowAttahmentModal
           visible={this.state.showAttachmentModal}
           toggleAttachmentModal={this.toggleAttachmentModal}
@@ -1153,10 +1223,10 @@ class FriendChats extends Component {
             this.setState({uploadedFiles: []});
             this.toggleAttachmentModal(false);
           }}
-          onUpload={() => this.uploadAndSend()}
+          onUpload={() => this.uploadAndSendAttachment()}
           isLoading={this.isUploading}
           removeUploadData={(index) => this.removeUploadData(index)}
-          onGalleryPress={() => this.onGalleryPress()}
+          onAttachmentPress={() => this.onAttachmentPress()}
         />
         {sendingMedia && <UploadLoader />}
       </ImageBackground>
