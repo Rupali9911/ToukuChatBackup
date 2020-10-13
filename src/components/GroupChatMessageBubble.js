@@ -389,13 +389,13 @@ class GroupChatMessageBubble extends Component {
                         </Fragment>
                       ) : this.isContainUrl(message.message_body.text) ? (
                         <TouchableOpacity
-                          onPress={() =>
-                            this.openUrl(message.message_body.text)
-                          }
+                          // onPress={() =>
+                          //   this.openUrl(message.message_body.text)
+                          // }
                           onLongPress={(msg_id) => {
                             onMessagePress(message.msg_id);
                           }}>
-                          <HyperLink linkStyle={{color: Colors.link_color}}>
+                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 fontSize: 15,
@@ -552,13 +552,13 @@ class GroupChatMessageBubble extends Component {
                         </Fragment>
                       ) : this.isContainUrl(message.message_body.text) ? (
                         <TouchableOpacity
-                          onPress={() =>
-                            this.openUrl(message.message_body.text)
-                          }
+                          // onPress={() =>
+                          //   this.openUrl(message.message_body.text)
+                          // }
                           onLongPress={(msg_id) => {
                             onMessagePress(message.msg_id);
                           }}>
-                          <HyperLink linkStyle={{color: Colors.link_color}}>
+                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 color: Colors.black,

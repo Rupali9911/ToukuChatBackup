@@ -12,6 +12,7 @@ import {
   PixelRatio,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -57,7 +58,7 @@ import {
   ShowAttahmentModal,
   ShowGalleryModal,
 } from '../../components/Modals';
-import {eventService} from '../../utils';
+import {eventService,normalize} from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
@@ -1234,6 +1235,7 @@ class ChannelChats extends Component {
           transparent
           onRequestClose={() => this.setState({bonusModal: false})}>
           <View style={styles.bonusModalContainer}>
+            <SafeAreaView />
             <ImageBackground
               source={bonusImage}
               resizeMode={'cover'}
@@ -1246,12 +1248,12 @@ class ChannelChats extends Component {
                 </Text>
                 <Text style={styles.bonusTitleText}>
                   {translate('pages.xchat.jackPot')}{' '}
-                  <Text style={{fontSize: 30, fontWeight: 'bold'}}>
+                  <Text style={{fontSize: normalize(25), fontWeight: 'bold'}}>
                     {this.state.bonusXP}
                   </Text>{' '}
                   <Text
                     style={{
-                      fontSize: 15,
+                      fontSize: normalize(15),
                       fontFamily: Fonts.regular,
                       fontWeight: '300',
                     }}>
@@ -1261,12 +1263,12 @@ class ChannelChats extends Component {
                 {this.state.assetXPValue ? (
                   <Text style={styles.bonusTitleText}>
                     {translate('pages.xchat.youOwn')}{' '}
-                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>
+                    <Text style={{fontSize: normalize(25), fontWeight: 'bold'}}>
                       {this.state.assetXPValue.XP + ''}
                     </Text>{' '}
                     <Text
                       style={{
-                        fontSize: 15,
+                        fontSize: normalize(15),
                         fontFamily: Fonts.regular,
                         fontWeight: '300',
                       }}>
@@ -1328,7 +1330,8 @@ class ChannelChats extends Component {
                                 this.state.jackpotData.picked_option == 1
                                   ? '#dbf875'
                                   : '#fff',
-                              fontSize: 29,
+                              fontSize: normalize(24),
+                              fontFamily: Fonts.beba_regular,
                             }}>
                             {this.getAmountValue(this.state.jackpotData)[0] +
                               ''}{' '}
@@ -1384,7 +1387,8 @@ class ChannelChats extends Component {
                                 this.state.jackpotData.picked_option == 2
                                   ? '#dbf875'
                                   : '#fff',
-                              fontSize: 29,
+                              fontSize: normalize(24),
+                              fontFamily: Fonts.beba_regular,
                             }}>
                             {this.getAmountValue(this.state.jackpotData)[1] +
                               ''}{' '}
@@ -1440,7 +1444,7 @@ class ChannelChats extends Component {
                                 this.state.jackpotData.picked_option == 3
                                   ? '#dbf875'
                                   : '#fff',
-                              fontSize: 29,
+                              fontSize: normalize(24),
                               fontFamily: Fonts.beba_regular,
                             }}>
                             {this.getAmountValue(this.state.jackpotData)[2] +
@@ -1456,14 +1460,15 @@ class ChannelChats extends Component {
               <Text
                 style={{
                   textAlign: 'center',
-                  fontSize: 14,
+                  fontSize: normalize(14),
+                  paddingHorizontal: normalize(5),
                   fontWeight: '300',
                   color: '#fff',
                 }}>
                 {translate('pages.xchat.gamePlatformText')}
               </Text>
               <TouchableOpacity
-                style={{margin: 25}}
+                style={{margin: normalize(20)}}
                 onPress={() => {
                   this.setState({bonusModal: false});
                 }}>
@@ -1486,7 +1491,7 @@ const styles = StyleSheet.create({
   bonusModalContainer: {
     flex: 1,
     backgroundColor: '#00000080',
-    paddingTop: 40,
+    // paddingTop: 40,
   },
   bonusBgContainer: {
     flex: 1,
@@ -1496,17 +1501,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   bonusTextHeading: {
-    marginTop: 34,
+    marginTop: normalize(20),
     // marginBottom:PixelRatio.getPixelSizeForLayoutSize(10),
     textAlign: 'center',
-    fontSize: 32,
+    fontSize: normalize(25),
     fontWeight: '300',
     color: '#ffd300',
     fontFamily: Fonts.regular,
   },
   bonusTitleText: {
     textAlign: 'center',
-    fontSize: 22,
+    fontSize: normalize(20),
     fontWeight: '300',
     color: '#fff',
     fontFamily: Fonts.beba_regular,

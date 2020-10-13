@@ -4,9 +4,10 @@ import io from 'socket.io-client';
 import NavigationService from '../navigation/NavigationService';
 import Toast from '../components/Toast';
 import SingleSocket from './SingleSocket';
+import {resetData} from '../storage/Service';
 
 /* switch this for testing on staging or production */
-export const staging = false;
+export const staging = true;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -70,6 +71,9 @@ client.interceptors.response.use(
     } else if (response.status === 401) {
       AsyncStorage.clear();
       NavigationService.navigate('Auth');
+      let singleSocket = SingleSocket.getInstance();
+      singleSocket && singleSocket.closeSocket();
+      resetData();
       Toast.show({
         title: 'Touku',
         text: 'Session Expired',
@@ -90,6 +94,7 @@ client.interceptors.response.use(
     // }
   },
   function (error) {
+    console.log('response_console_from_interceptor_error',error);
     return Promise.reject(error);
   },
 );

@@ -191,6 +191,7 @@ export default class ChatMessageBox extends Component {
         style={[
           styles.container,
           {
+            maxWidth: message.msg_type==='text' ? width * 0.80 : width * 0.65,
             justifyContent: 'flex-start',
           },
         ]}>
@@ -294,6 +295,7 @@ export default class ChatMessageBox extends Component {
           style={[
             styles.containerSelf,
             {
+              maxWidth: message.msg_type === 'text' ? width * 0.93 : width * 0.75,
               alignItems: 'flex-end',
               alignSelf: 'flex-end',
             },
@@ -361,11 +363,11 @@ export default class ChatMessageBox extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    maxWidth: width * 0.65,
+    // maxWidth: width * 0.65,
     paddingHorizontal: '3%',
   },
   containerSelf: {
-    maxWidth: width * 0.75,
+    // maxWidth: width * 0.75,
     paddingHorizontal: '3%',
   },
   statusText: {

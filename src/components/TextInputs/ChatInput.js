@@ -49,9 +49,9 @@ export default class ChatInput extends Component {
           // position: 'absolute',
           // bottom: 0,
           width: '100%',
-          // minHeight: isIphoneX() ? 70 : 50,
-          height: this.newHeight,
-          // maxHeight: 200,
+          minHeight: isIphoneX() ? 70 : 50,
+          // height: this.newHeight,
+          maxHeight: 200,
           backgroundColor: Colors.white,
         }}>
         <LinearGradient
@@ -63,10 +63,7 @@ export default class ChatInput extends Component {
           style={[
             chatInput.chatInputContainer,
             {
-              alignItems:
-                this.newHeight == 70 || this.newHeight == 50
-                  ? 'center'
-                  : 'flex-end',
+              alignItems:'flex-end',
             },
           ]}>
           {/* <View style={chatInput.chatInputContainer}> */}
@@ -181,10 +178,10 @@ const chatInput = StyleSheet.create({
     // position: 'absolute',
     // bottom: 0,
     width: '100%',
-    height: '100%',
+    // height: '100%',
     // flex: 1,
-    // minHeight: isIphoneX() ? 70 : 50,
-    // maxHeight: 200,
+    minHeight: isIphoneX() ? 70 : 50,
+    maxHeight: 200,
     // backgroundColor: '#FC94B8',
     flexDirection: 'row',
     paddingHorizontal: 15,
@@ -192,11 +189,12 @@ const chatInput = StyleSheet.create({
     paddingBottom: isIphoneX() ? 20 : 5,
   },
   chatAttachmentContainer: {
-    // height: '100%',
+    // height: isIphoneX() ? 40 : 30,
     width: '30%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 5
   },
   chatAttachmentButton: {
     // height: '100%',
@@ -210,7 +208,7 @@ const chatInput = StyleSheet.create({
   },
   textInputContainer: {
     width: '60%',
-    // height: '80%',
+    // height: '80%',s
     justifyContent: 'center',
   },
   textInput: {
@@ -231,6 +229,7 @@ const chatInput = StyleSheet.create({
     width: '10%',
     justifyContent: 'center',
     alignItems: 'flex-end',
+    marginBottom: 5
   },
   sandButtonImage: {
     // height: '50%',

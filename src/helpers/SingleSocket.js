@@ -63,6 +63,7 @@ export default class SingleSocket extends Component {
           this.onNewMessage(e);
         };
         this.webSocketBridge.onerror = (e) => {
+          console.log('Socket err0r',e);
           setTimeout(() => {
             this.checkSocketConnected();
           }, 1000);

@@ -6,6 +6,7 @@ import {
   Dimensions,
   Platform,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -17,6 +18,7 @@ import ScalableImage from './ScalableImage';
 import PostCardHeader from './PostCardHeader';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
+import HyperLink from 'react-native-hyperlink';
 const { width, height } = Dimensions.get('window');
 
 export default class PostCard extends Component {
@@ -77,13 +79,17 @@ export default class PostCard extends Component {
               </View>
             ) : null}
             <View style={{ marginHorizontal: '4%', marginVertical: 5 }}>
-              <Text style={{ fontFamily: Fonts.light }}>
-                {post.text && post.text.length > 0
-                  ? post.text[0].text
-                  : post.mutlilanguage_message_body
-                  ? post.mutlilanguage_message_body.en
-                  : ''}
-              </Text>
+              <HyperLink onPress={(url,text) => {
+                Linking.openURL(url);
+              }} linkStyle={{ color: Colors.link_color_2 }}>
+                <Text style={{ fontFamily: Fonts.light }}>
+                  {post.text && post.text.length > 0
+                    ? post.text[0].text
+                    : post.mutlilanguage_message_body
+                      ? post.mutlilanguage_message_body.en
+                      : ''}
+                </Text>
+              </HyperLink>
             </View>
           </View>
         );

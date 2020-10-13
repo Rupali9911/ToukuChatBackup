@@ -85,6 +85,7 @@ class GroupChats extends Component {
       showAttachmentModal: false,
       showGalleryModal: false,
       sendingMedia: false,
+      isLeaveLoading: false,
       uploadFile: {uri: null, type: null, name: null},
       headerRightIconMenu: [
         {
@@ -488,9 +489,9 @@ class GroupChats extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
 
-    this.getGroupConversationInitial();
     this.getGroupDetail();
     this.getGroupMembers();
+    this.getGroupConversationInitial();
 
     this.updateUnReadGroupChatCount();
   }
@@ -779,6 +780,7 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
+        console.log('group_chats',err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
@@ -822,6 +824,7 @@ class GroupChats extends Component {
     const payload = {
       group_id: this.props.currentGroup.group_id,
     };
+    this.setState({isLeaveLoading: true});
     this.props
       .leaveGroup(payload)
       .then((res) => {
@@ -836,6 +839,7 @@ class GroupChats extends Component {
           this.props.getUserGroups();
           this.props.navigation.goBack();
         }
+        this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       })
       .catch((err) => {
@@ -844,6 +848,7 @@ class GroupChats extends Component {
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
+        this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       });
   };
@@ -1275,6 +1280,7 @@ class GroupChats extends Component {
           onConfirm={this.onConfirmLeaveGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.wantToLeaveText')}
+          isLoading={this.state.isLeaveLoading}
         />
 
         <ConfirmationModal

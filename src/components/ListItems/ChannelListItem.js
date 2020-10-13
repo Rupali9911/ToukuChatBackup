@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     paddingHorizontal: 10,
-    paddingLeft: 20,
+    // paddingLeft: 20,
   },
   squareImage: {
     width: 50,

@@ -185,11 +185,11 @@ class Chat extends Component {
       this.props.getFriendRequest();
 
       this.props.getFollowingChannels().then((res) => {
-        console.log('Chat -> componentDidMount -> getFollowingChannels', res);
+        // console.log('Chat -> componentDidMount -> getFollowingChannels', res);
         this.props.getUserGroups().then((res) => {
-          console.log('Chat -> componentDidMount -> getUserGroups', res);
+          // console.log('Chat -> componentDidMount -> getUserGroups', res);
           this.props.getUserFriends().then((res) => {
-            console.log('Chat -> componentDidMount -> getUserFriends', res);
+            // console.log('Chat -> componentDidMount -> getUserFriends', res);
             // console.log('friends', res);
             this.setCommonConversation();
           });
@@ -1354,10 +1354,19 @@ class Chat extends Component {
   }
 
   onDeleteGroup(message) {
-    const {userGroups, userData} = this.props;
+    const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_GROUP) {
       var group = getGroupsById(message.text.data.message_details.group_id);
       if (group && group.length > 0) {
+
+        if(this.props.currentRouteName == 'GroupChats' &&
+        currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id){
+          this.props.navigation.goBack();
+          this.props.setCurrentGroup(null);
+          this.props.setGroupConversation([]);
+        }
+
         deleteGroupById(message.text.data.message_details.group_id);
         deleteAllGroupMessageByGroupId(
           message.text.data.message_details.group_id,
@@ -1365,6 +1374,7 @@ class Chat extends Component {
         this.props.getLocalUserGroups().then((res) => {
           this.props.setCommonChatConversation();
         });
+
       }
     }
   }

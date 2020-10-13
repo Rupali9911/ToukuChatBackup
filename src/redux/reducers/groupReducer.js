@@ -35,6 +35,7 @@ const initialState = {
 
 import {
   setGroupChatConversation,
+  getGroupChatConversationById,
   setGroups,
   getGroups,
 } from '../../storage/Service';
@@ -367,9 +368,11 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
   let chat = getGroupChatConversationById(groupId);
   if (chat.length) {
     let conversations = [];
-    chat.map((item, index) => {
-      conversations = [...conversations, item];
-    });
+    // chat.map((item, index) => {
+    //   conversations = [...conversations, item];
+    // });
+
+    conversations = chat.toJSON();
 
     // this.setState({ conversation: conversations });
     dispatch(setGroupConversation(conversations));
@@ -436,6 +439,7 @@ export const updateGroupMembers = (data) => (dispatch) =>
 //Get Group Details
 export const getGroupDetail = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    console.log('api_url -> ',`/xchat/group-detail/` + groupId + '/');
     client
       .get(`/xchat/group-detail/` + groupId + '/')
       .then((res) => {

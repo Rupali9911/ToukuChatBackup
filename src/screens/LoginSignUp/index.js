@@ -648,6 +648,9 @@ class LoginSignUp extends Component {
                       selectedLanguageItem.language_name === 'ja'
                         ? globalStyles.normalLightText
                         : globalStyles.smallLightText,
+                        {
+                          marginTop:-1
+                        }
                     ]}>
                     {translate('pages.welcome.connectedByTouku')}
                   </Text>

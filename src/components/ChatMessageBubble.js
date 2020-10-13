@@ -351,11 +351,11 @@ class ChatMessageBubble extends Component {
                         </Fragment>
                       ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
-                          onPress={() => this.openUrl(message.message_body)}
+                          // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {
                             onMessagePress(message.id);
                           }}>
-                          <HyperLink linkStyle={{color: Colors.link_color}}>
+                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 fontFamily: Fonts.regular,
@@ -515,11 +515,11 @@ class ChatMessageBubble extends Component {
                         </Fragment>
                       ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
-                          onPress={() => this.openUrl(message.message_body)}
+                          // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {
                             onMessagePress(message.id);
                           }}>
-                          <HyperLink linkStyle={{color: Colors.link_color}}>
+                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 color: Colors.black,
