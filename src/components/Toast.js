@@ -26,7 +26,7 @@ class Toast extends Component {
     };
   }
 
-  static toastInstance;
+  static toastInstance = Toast.instance || new Toast()
 
   static show({...config}) {
     this.toastInstance.start(config);

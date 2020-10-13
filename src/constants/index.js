@@ -310,3 +310,5 @@ export const openBoxImage = {
   mid_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/midgold@3x.png',
   full_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/full_gold.png',
 };
+
+export const appleStoreUserId = 4046

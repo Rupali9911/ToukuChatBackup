@@ -17,6 +17,8 @@ export default class S3uploadService extends Component {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileName = `image_${moment().valueOf()}_${i + 1}`;
+
+      console.log('fileName', fileName)
       const originResizedImage = await this.uploadImage(
         file,
         fileName,
@@ -29,10 +31,13 @@ export default class S3uploadService extends Component {
         360,
         360
       );
+
+      console.log('originResizedImage, originResizedImage_2', originResizedImage, originResizedImage_2)
       imagesFiles.image.push({
         image: originResizedImage.body.postResponse.location,
         thumbnail: originResizedImage_2.body.postResponse.location,
       });
+      console.log('imagesFiles', imagesFiles)
     }
     return imagesFiles;
   }
@@ -82,7 +87,7 @@ export default class S3uploadService extends Component {
     console.log('S3uploadService -> uploadFile -> File', File);
 
     const options = {
-      keyPrefix: '/',
+      keyPrefix: '',
       bucket: 'angelium-media',
       region: environment.s3BucketConfig.region,
       accessKey: environment.s3BucketConfig.accessKeyId,

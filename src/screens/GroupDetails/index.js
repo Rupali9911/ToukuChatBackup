@@ -65,6 +65,7 @@ class GroupDetails extends Component {
       isEdit: false,
       showDeleteGroupConfirmationModal: false,
       showLeaveGroupConfirmationModal: false,
+        loading: false,
       filePath: {uri: this.props.currentGroupDetail.group_picture}, //For Image Picker
       memberOption: [
         {
@@ -116,14 +117,15 @@ class GroupDetails extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-
+      this.getGroupMembers(this.props.currentGroupDetail.id)
     for (let admin of this.props.currentGroupDetail.admin_details) {
       if (admin.id === this.props.userData.id) {
-        this.props.getUserFriends();
-        this.props;
+        //this.props.getUserFriends();
+        //this.props;
         this.setState({isMyGroup: true});
       }
     }
+
 
     if (
       this.props.navigation.state.params &&
@@ -197,6 +199,7 @@ class GroupDetails extends Component {
 
   removeMember = (id, type) => {
     const {currentGroupDetail} = this.props;
+    console.log('currentGroupDetail', currentGroupDetail)
     let removeData;
     if (type === 'admin') {
       removeData = {
@@ -218,6 +221,7 @@ class GroupDetails extends Component {
 
   udateGroup = (data) => {
     this.props.updateGroupMembers(data).then((res) => {
+        //this.getGroupMembers(this.props.currentGroupDetail.id)
       Toast.show({
         title: translate('pages.xchat.groupDetails'),
         text: translate('pages.xchat.toastr.groupUpdatedSuccessfully'),
@@ -227,15 +231,40 @@ class GroupDetails extends Component {
   };
 
   getGroupMembers = (id) => {
+    this.setState({loading: true})
     this.props
       .getGroupMembers(id)
-      .then((res) => {
-        this.props.setCurrentGroupMembers(res.results);
+      .then((responseArray) => {
+          this.props.getUserFriends().then(() => {
+              //let arrTemp = [...responseArray, ...this.props.userFriends]
+              let arrTemp = this.props.userFriends
+              let arrTemp2 = this.props.userFriends
+              console.log('arrTemp2', arrTemp2, responseArray)
+              console.log('responseArray', responseArray)
+              responseArray.map(itemRes =>{
+                  arrTemp2.map(itemUserFriends =>{
+                        if(itemRes.id === itemUserFriends.user_id){
+                          let index = arrTemp.indexOf(itemUserFriends)
+                            if(index !== -1){
+                                console.log('index ', index)
+                                arrTemp.splice(index, 1);
+                            }
+                      }
+                   })
+                  })
+              let arrTemp1 = [...responseArray, ...arrTemp]
+              //console.log('arrTemp1', arrTemp1)
+              this.props.setCurrentGroupMembers(arrTemp1);
+              this.setState({loading: false})
+          })
+
       })
-      .catch((err) => {});
+      .catch((err) => {this.setState({loading: false})});
   };
 
-  onAddFriend(isAdded, item) {}
+  onAddFriend(isAdded, item) {
+
+  }
 
   onLeaveGroup = () => {
     this.toggleLeaveGroupConfirmationModal();
@@ -394,16 +423,19 @@ class GroupDetails extends Component {
 
   renderUserFriends() {
     const {userFriends, friendLoading, currentGroupMembers} = this.props;
-    const {memberOption, adminOption, addOption} = this.state;
-    const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['display_name']),
-    );
+    const {memberOption, adminOption, addOption, loading} = this.state;
+    let filteredFriends = []
+        if(currentGroupMembers && currentGroupMembers.length > 0) {
+            filteredFriends = currentGroupMembers.filter(
+                createFilter(this.state.searchText, ['display_name']),
+            );
+        }
 
-    console.log('filteredFriends & userFriends', filteredFriends, userFriends)
+    //console.log('filteredFriends & userFriends', filteredFriends, currentGroupMembers)
     if (
-      filteredFriends.length &&
-      filteredFriends.length === 0 &&
-      friendLoading
+        (filteredFriends.length &&
+      filteredFriends.length === 0) ||
+        loading
     ) {
       return <ListLoader />;
     } else if (filteredFriends.length > 0) {
@@ -415,29 +447,29 @@ class GroupDetails extends Component {
             <GroupFriend
               user={item}
               onAddPress={(isAdded) => this.onAddFriend(isAdded, item)}
-              isMember={this.isMemberCheck(item.user_id)}
+              isMember={this.isMemberCheck(item.id ? item.id : item.user_Id)}
               memberTitle={
-                this.isMemberCheck(item.user_id)
-                  ? this.isMemberCheck(item.user_id).member_type
+                this.isMemberCheck(item.id ? item.id : item.user_Id)
+                  ? this.isMemberCheck(item.id ? item.id : item.user_Id).member_type
                   : translate('pages.xchat.add')
               }
               isRightDropDown
               dropDownData={
-                this.isMemberCheck(item.user_id)
-                  ? this.isMemberCheck(item.user_id).member_type == 'member'
+                this.isMemberCheck(item.id ? item.id : item.user_Id)
+                  ? this.isMemberCheck(item.id ? item.id : item.user_Id).member_type == 'member'
                     ? memberOption
                     : adminOption
                   : addOption
               }
               memberType={
-                this.isMemberCheck(item.user_id)
-                  ? this.isMemberCheck(item.user_id).member_type
+                this.isMemberCheck(item.id ? item.id : item.user_Id)
+                  ? this.isMemberCheck(item.id ? item.id : item.user_Id).member_type
                   : 'add'
               }
             />
           )}
           ListFooterComponent={() => (
-            <View>{friendLoading ? <ListLoader /> : null}</View>
+            <View>{loading ? <ListLoader /> : null}</View>
           )}
         />
       );
@@ -448,10 +480,19 @@ class GroupDetails extends Component {
 
   isMemberCheck = (userId) => {
     const {currentGroupMembers} = this.props;
-    let memeber = currentGroupMembers.find((member) => {
-      return member.id === userId;
-    });
-    return memeber;
+      if (currentGroupMembers && currentGroupMembers.length > 0){
+          let memeber = currentGroupMembers.find((member) => {
+              if (member.id && member.id === userId) {
+                return true
+              }else if (member.user_id && member.user_id === userId) {
+                  return true
+              }else{
+                return false
+              }
+          });
+          return memeber
+      }
+    return [];
   };
 
   render() {
@@ -467,9 +508,8 @@ class GroupDetails extends Component {
       showLeaveGroupConfirmationModal,
     } = this.state;
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
-        style={globalStyles.container}>
+      <View
+        style={[globalStyles.container, {backgroundColor: 'white'}]}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -733,7 +773,7 @@ class GroupDetails extends Component {
             message={translate('pages.xchat.wantToLeaveText')}
           />
         </View>
-      </ImageBackground>
+      </View>
     );
   }
 }

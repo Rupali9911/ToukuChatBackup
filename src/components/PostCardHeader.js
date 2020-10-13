@@ -117,7 +117,6 @@ export default class PostCardHeader extends Component {
             fontType={'smallRegularText'}
           />
             </View>
-
             {
                 isMenuRequired &&
                 <Menu
@@ -167,7 +166,6 @@ export default class PostCardHeader extends Component {
                     })}
                 </Menu>
             }
-
         </View>
       </View>
     );

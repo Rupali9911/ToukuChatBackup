@@ -7,7 +7,7 @@ import SingleSocket from './SingleSocket';
 import {resetData} from '../storage/Service';
 
 /* switch this for testing on staging or production */
-export const staging = true;
+export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';

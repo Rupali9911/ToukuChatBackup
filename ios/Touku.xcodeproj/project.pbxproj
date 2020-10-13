@@ -30,6 +30,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* ToukuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ToukuTests.m */; };
 		3593266C0E1E4761B807B4F2 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B03D9ACDE154749AC55000F /* Poppins-Light.ttf */; };
 		36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9A1BC4DD6D554D1AA7FF133B /* The-Absolute.otf */; };
+		4309B95F75194CA48C1C8FFB /* NotoSansJP-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3AF22584DAEB4636A619B941 /* NotoSansJP-Light.otf */; };
 		610B90F5858948E2B91C20F5 /* BebasNeue-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C4C0ABD8074442539239C54C /* BebasNeue-Regular.ttf */; };
 		88774A6424766CBD0074E14A /* LineLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 88774A6224766CBC0074E14A /* LineLoginManager.m */; };
 		8A9DCD933FBC4BE6A4B01324 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F98B71AB69A9487280F001F4 /* Arial.ttf */; };
@@ -39,7 +40,6 @@
 		B603B351AF78613292E8962A /* libPods-Touku-ToukuTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2499CD2596F973A937E3875E /* libPods-Touku-ToukuTests.a */; };
 		BF0CD4C80D6E444F839D783C /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DCF55CB9C0CA47078A374CC9 /* Poppins-ExtraLight.ttf */; };
 		F1146A4875094A8591C5F012 /* NunitoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B08C9D30BB044230B45E1D21 /* NunitoSans-Regular.ttf */; };
-		4309B95F75194CA48C1C8FFB /* NotoSansJP-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3AF22584DAEB4636A619B941 /* NotoSansJP-Light.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +102,7 @@
 		378A4B79DDF44F988E5A5C67 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		37E0B0F40937D9C1979E85CF /* Pods-Touku.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.debug.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.debug.xcconfig"; sourceTree = "<group>"; };
 		398857240A95A9748C55B05E /* Pods-Touku-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Touku-tvOS/Pods-Touku-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		3AF22584DAEB4636A619B941 /* NotoSansJP-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansJP-Light.otf"; path = "../assets/fonts/NotoSansJP-Light.otf"; sourceTree = "<group>"; };
 		3B03D9ACDE154749AC55000F /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
 		3D141FEB5CFB4971B19A7F19 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		417B797439D840269E7FECE4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
@@ -143,7 +144,6 @@
 		F35CC6508F52B75A8242BFFD /* Pods-Touku-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Touku-tvOSTests/Pods-Touku-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F7B3B65A6CE16B9BD0486CA1 /* Pods-Touku-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Touku-tvOS/Pods-Touku-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		F98B71AB69A9487280F001F4 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
-		3AF22584DAEB4636A619B941 /* NotoSansJP-Light.otf */ = {isa = PBXFileReference; name = "NotoSansJP-Light.otf"; path = "../assets/fonts/NotoSansJP-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -959,7 +959,7 @@
 			baseConfigurationReference = CD0D203CD62EA685B39FA7F0 /* Pods-Touku-ToukuTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -995,7 +995,7 @@
 			baseConfigurationReference = 44E3D66DD62797312B99BB45 /* Pods-Touku-ToukuTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
@@ -1030,7 +1030,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Touku/Touku.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
@@ -1055,10 +1055,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.angelium.touku.app;
 				PRODUCT_NAME = TOUKU;
-				PROVISIONING_PROFILE_SPECIFIER = Touku_AppStore_25August;
+				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev_6Oct;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1070,7 +1070,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Touku/Touku.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NU3TW5CK58;
@@ -1090,9 +1090,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.angelium.touku.app;
 				PRODUCT_NAME = TOUKU;
-				PROVISIONING_PROFILE_SPECIFIER = Touku_AppStore_25August;
+				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev_6Oct;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

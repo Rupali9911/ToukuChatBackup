@@ -34,11 +34,12 @@ const initialState = {
 };
 
 import {
-  setGroupChatConversation,
-  getGroupChatConversationById,
-  setGroups,
-  getGroups,
+    setGroupChatConversation,
+    getGroupChatConversationById,
+    setGroups,
+    getGroups, setChannels, getChannels,
 } from '../../storage/Service';
+import {recursionFollowingChannels} from "./channelReducer";
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -60,6 +61,7 @@ export default function (state = initialState, action) {
     case SET_CURRENT_GROUP_MEMBERS:
       return {
         ...state,
+          loading: false,
         currentGroupMembers: action.payload,
       };
 
@@ -450,27 +452,84 @@ export const getGroupDetail = (groupId) => (dispatch) =>
       });
   });
 
+
 //Get Group Members
-export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
-  dispatch,
-) =>
-  new Promise(function (resolve, reject) {
+export const getGroupMembers = (groupId, offset = 0, limit =20) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        group = []
+        recursionGetGroupMembers(groupId, offset, limit).then((res) => {
+            resolve(res);
+        }).catch((err) => {
+            reject(err);
+        })
+    });
+
+let group = []
+export const recursionGetGroupMembers = (groupId, offset, limit) =>
+    getGroupMembersApi(groupId, offset, limit).then((res)=>{
+        if(res.next){
+            if (group && group.length > 0){
+                group = [...group, ...res.results]
+            }else{
+                group = res.results
+            }
+            return recursionGetGroupMembers(groupId,offset+20, 20).then(res=>res);
+        }else{
+            if (group && group.length > 0){
+                if (res.results && res.results.length > 0){
+                    group = [...group, ...res.results]
+                }
+                return group
+            }else{
+                return res.results;
+            }
+        }
+    }).catch(err=>err);
+
+const getGroupMembersApi = (groupId, offset, limit) =>new Promise ((resolve,reject)=>{
     client
-      .get(
-        `/xchat/get-group-members/` +
-          groupId +
-          '/?limit=' +
-          limit +
-          '&offset=' +
-          offset,
-      )
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+        .get(`/xchat/get-group-members/` +
+                  groupId +
+                  '/?limit=' +
+                  limit +
+                  '&offset=' +
+                  offset)
+        .then((res) => {
+            // if (res.conversations) {
+            //     setChannels(res.conversations);
+            // }
+            resolve(res);
+        })
+        .catch((err) => {
+            reject(err);
+        });
+
+})
+
+
+
+
+// //Get Group Members
+// export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
+//   dispatch,
+// ) =>
+//   new Promise(function (resolve, reject) {
+//     client
+//       .get(
+//         `/xchat/get-group-members/` +
+//           groupId +
+//           '/?limit=' +
+//           limit +
+//           '&offset=' +
+//           offset,
+//       )
+//       .then((res) => {
+//         resolve(res);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
 
 //Send Group Message
 export const sendGroupMessage = (message) => (dispatch) =>

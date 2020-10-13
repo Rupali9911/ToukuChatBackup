@@ -139,7 +139,7 @@ export default class ButtonWithArrow extends Component {
             ]}
             title={item.title}
             onPress={() => {
-              item.onPress(user.user_id, memberType);
+              item.onPress(user.user_id ? user.user_id : user.id, memberType);
               this.setState({ visible: false });
             }}
           />

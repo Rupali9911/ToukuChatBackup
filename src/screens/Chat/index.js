@@ -116,6 +116,7 @@ import {
   getGroupChatConversationById,
   updateLastEventId,
 } from '../../storage/Service';
+import Toast from "../../components/Toast";
 
 class Chat extends Component {
   constructor(props) {
@@ -407,6 +408,7 @@ class Chat extends Component {
         this.onNewFriendRequest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_ACCEPTED:
+        console.log('FRIEND_REQUEST_ACCEPTED message', message.text.data.message_details)
         this.onAcceptFriendReuqest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_REJECTED:
@@ -1469,6 +1471,14 @@ class Chat extends Component {
 
   onAcceptFriendReuqest = (message) => {
     if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
+      if (message.text.data.message_details.conversation.requested_from === this.props.userData.username) {
+          Toast.show({
+              title: translate('pages.xchat.friendRequest'),
+              text: translate('pages.xchat.toastr.acceptedYourFriendRequest').replace(
+                      '[missing {{friend}} value]', message.text.data.message_details.conversation.display_name),
+              type: 'positive',
+          });
+      }
       deleteFriendRequest(
         message.text.data.message_details.conversation.user_id,
       );

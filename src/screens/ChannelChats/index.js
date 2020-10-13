@@ -24,11 +24,11 @@ import {Avatar} from 'react-native-paper';
 import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
 import {
-  Images,
-  SocketEvents,
-  Fonts,
-  closeBoxImage,
-  openBoxImage,
+    Images,
+    SocketEvents,
+    Fonts,
+    closeBoxImage,
+    openBoxImage, appleStoreUserId,
 } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {
@@ -102,7 +102,7 @@ class ChannelChats extends Component {
       sentMessageType: 'text',
       sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
-      headerRightIconMenu: [
+      headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
           title: translate('pages.xchat.channelDetails'),
@@ -123,6 +123,15 @@ class ChannelChats extends Component {
             });
           },
         },
+      ] : [
+          {
+              id: 1,
+              title: translate('pages.xchat.channelDetails'),
+              icon: 'bars',
+              onPress: () => {
+                  this.props.navigation.navigate('ChannelInfo');
+              },
+          }
       ],
     };
     this.S3uploadService = new S3uploadService();

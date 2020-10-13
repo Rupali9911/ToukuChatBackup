@@ -10,7 +10,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
 import {globalStyles} from '../../styles';
-import {Images, SocketEvents} from '../../constants';
+import {Images, SocketEvents, appleStoreUserId} from '../../constants';
 import {
   ConfirmationModal,
   UploadSelectModal,
@@ -41,7 +41,6 @@ import {
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
-import SingleSocket from '../../helpers/SingleSocket';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
   setFriendChatConversation,
@@ -79,7 +78,7 @@ class FriendChats extends Component {
       showAttachmentModal: false,
       showGalleryModal: false,
       uploadFile: {uri: null, type: null, name: null},
-      headerRightIconMenu: [
+      headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
           title: translate('pages.xchat.unfriend'),
@@ -120,14 +119,29 @@ class FriendChats extends Component {
             });
           },
         },
+      ] : [
+          {
+              id: 1,
+              title: translate('pages.xchat.unfriend'),
+              icon: 'user-times',
+              onPress: () => {
+                  this.toggleConfirmationModal();
+              },
+          },
+          {
+              id: 2,
+              title: translate('pages.xchat.createGroup'),
+              icon: 'users',
+              onPress: () => {
+                  this.props.navigation.navigate('CreateFriendGroup');
+              },
+          }
       ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
       editMessageId: null,
     };
-
-    this.SingleSocket = new SingleSocket();
     this.S3uploadService = new S3uploadService();
     this.props.resetFriendConversation();
     this.isUploading = false;
@@ -151,8 +165,6 @@ class FriendChats extends Component {
     this.getPersonalConversationInitial();
     this.markFriendMsgsRead();
     this.updateUnReadFriendChatCount();
-    // this.SingleSocket.create({user_id: this.props.userData.id});
-
     // alert(JSON.stringify(this.props.userData));
   }
 
@@ -319,6 +331,7 @@ class FriendChats extends Component {
         sendingMedia: false,
       });
     }
+
     // this.setState({
     //   newMessageText: '',
     //   isReply: false,
@@ -676,7 +689,6 @@ class FriendChats extends Component {
         channel_name: '',
       },
     };
-    // this.SingleSocket.sendMessage(payload);
   }
 
   toggleConfirmationModal = () => {
@@ -743,9 +755,7 @@ class FriendChats extends Component {
           deleteFriendMessageById(this.state.selectedMessageId);
           this.getPersonalConversation();
 
-          if (
-            this.props.currentFriend.last_msg_id == this.state.selectedMessageId
-          ) {
+          if (this.props.currentFriend.last_msg_id == this.state.selectedMessageId) {
             let chat = getFriendChatConversationById(
               this.props.currentFriend.friend,
             );
@@ -1137,7 +1147,7 @@ class FriendChats extends Component {
           type={'friend'}
           image={currentFriend.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
-          menuItems={this.state.headerRightIconMenu}
+          menuItems={this.state.headerRightIconMenu }
         />
         {chatsLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />

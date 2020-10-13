@@ -41,7 +41,6 @@ export default class WebViewClass extends Component {
         const {webViewLoaded} = this.state;
         console.log('URL to webview', url)
         return (
-
                 <Modal
                     animationType="slide"
                     transparent={false}

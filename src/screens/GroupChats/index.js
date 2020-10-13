@@ -14,7 +14,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 
 import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
-import {Colors, Fonts, Images, Icons, SocketEvents} from '../../constants';
+import {Colors, Fonts, Images, Icons, SocketEvents, appleStoreUserId} from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
 import {
   ConfirmationModal,
@@ -87,7 +87,7 @@ class GroupChats extends Component {
       sendingMedia: false,
       isLeaveLoading: false,
       uploadFile: {uri: null, type: null, name: null},
-      headerRightIconMenu: [
+      headerRightIconMenu: this.props.userData.id === appleStoreUserId ?  [
         {
           id: 1,
           title: translate('pages.xchat.groupDetails'),
@@ -116,8 +116,25 @@ class GroupChats extends Component {
             });
           },
         },
+      ]:  [
+          {
+              id: 1,
+              title: translate('pages.xchat.groupDetails'),
+              icon: 'bars',
+              onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+              },
+          },
+          {
+              id: 2,
+              title: translate('pages.xchat.leave'),
+              icon: 'user-slash',
+              onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+              },
+          }
       ],
-      headerRightIconMenuIsGroup: [
+      headerRightIconMenuIsGroup: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
           title: translate('pages.xchat.inviteFriends'),
@@ -163,6 +180,39 @@ class GroupChats extends Component {
             });
           },
         },
+      ]: [
+          {
+              id: 1,
+              title: translate('pages.xchat.inviteFriends'),
+              icon: Icons.man_plus_icon_black,
+              isLocalIcon: true,
+              onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {isInvite: true});
+              },
+          },
+          {
+              id: 2,
+              title: translate('pages.xchat.groupDetails'),
+              icon: 'bars',
+              onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+              },
+          },
+          {
+              id: 3,
+              title: translate('pages.xchat.deleteGroup'),
+              icon: 'trash',
+              onPress: () => {
+                  this.toggleDeleteGroupConfirmationModal();
+              },
+          },{
+              id: 4,
+              title: translate('pages.xchat.leave'),
+              icon: 'user-slash',
+              onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+              },
+          },
       ],
       isReply: false,
       repliedMessage: null,
@@ -202,7 +252,7 @@ class GroupChats extends Component {
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
       );
-
+      console.log('uploadedImages', uploadedImages)
       msgText = uploadedImages.image[0].image;
     }
     if (sentMessageType === 'audio') {
@@ -324,12 +374,14 @@ class GroupChats extends Component {
         ...this.props.chatGroupConversation,
       ]);
       this.props.sendGroupMessage(groupMessage);
+        console.log('groupMessage---------', groupMessage)
     }
     if (uploadFile.uri) {
       this.setState({
         sendingMedia: false,
       });
     }
+      console.log('sendmsgdata---------', sendmsgdata)
 
     // this.setState({
     //   newMessageText: '',

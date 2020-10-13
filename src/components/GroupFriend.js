@@ -118,7 +118,7 @@ export default class GroupFriend extends Component {
           </View>
         )}
         <View style={[styles.subContainer, isRightDropDown && {flex: 0.7}]}>
-          <RoundedImage source={getAvatar(user.profile_picture)} size={50} />
+          <RoundedImage source={getAvatar(user.profile_picture ? user.profile_picture : user.avatar)} size={50} />
           <Text
             style={[
               globalStyles.smallLightText,
