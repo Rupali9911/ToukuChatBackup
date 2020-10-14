@@ -131,10 +131,10 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (message) => {
-    console.log(
-      'GroupChatMessageBubble -> renderReplyMessage -> message',
-      message,
-    );
+    // console.log(
+    //   'GroupChatMessageBubble -> renderReplyMessage -> message',
+    //   message,
+    // );
     let replyMessage = message.reply_to;
     if (replyMessage.message) {
       return (

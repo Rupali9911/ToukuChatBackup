@@ -245,11 +245,10 @@ export const getLocalUserGroups = () => (dispatch) =>
     );
 
     let unread_counts = 0;
-    if (groups && groups.length > 0) {
+    if (array && array.length > 0) {
       // console.log('groups', groups);
-      groups = groups.map(function (el) {
+      array.map(function (el) {
         unread_counts = unread_counts + el.unread_msg;
-        return groups;
       });
       dispatch(setUnreadGroupMsgsCounts(unread_counts));
     }

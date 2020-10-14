@@ -21,6 +21,9 @@ const persistConfig = {
     'configurationReducer',
     'commonReducer'
   ],
+  writeFailHandler: (err) => {
+    console.log('redux_persist_error',err);
+  }
 };
 
 // Middleware: Redux Persist Persisted Reducer

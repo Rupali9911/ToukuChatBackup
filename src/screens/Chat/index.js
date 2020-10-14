@@ -117,6 +117,7 @@ import {
   updateLastEventId,
 } from '../../storage/Service';
 import Toast from "../../components/Toast";
+import NavigationService from '../../navigation/NavigationService';
 
 class Chat extends Component {
   constructor(props) {
@@ -558,7 +559,8 @@ class Chat extends Component {
     const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       let unread_counts = 0;
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
         // userGroups[i].unread_msg =
         //   message.text.data.message_details.read_count;
@@ -611,7 +613,8 @@ class Chat extends Component {
   onNewMessageInGroup(message) {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
         // this.getUserGroups();
 
@@ -650,14 +653,10 @@ class Chat extends Component {
   editMessageFromGroup(message) {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.MESSAGE_EDIT_FROM_GROUP) {
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
         updateGroupMessageById(message.text.data.message_details.msg_id);
-        let itm = getGroupsById(message.text.data.message_details.group_id);
-        let group = [];
-        itm.map((item) => {
-          group = [item];
-        });
         console.log('checking group', group);
         if (group[0].last_msg_id == message.text.data.message_details.msg_id) {
           updateLastMsgGroups(
@@ -687,14 +686,10 @@ class Chat extends Component {
   UnsentMessageFromGroup(message) {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_FROM_GROUP) {
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
         setGroupMessageUnsend(message.text.data.message_details.msg_id);
-        let itm = getGroupsById(message.text.data.message_details.group_id);
-        let group = [];
-        itm.map((item) => {
-          group = [item];
-        });
         if (group[0].last_msg_id == message.text.data.message_details.msg_id) {
           setGroupLastMessageUnsend(message.text.data.message_details.group_id);
         }
@@ -1282,7 +1277,8 @@ class Chat extends Component {
     const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_GROUP) {
       deleteGroupMessageById(message.text.data.message_details.msg_id);
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
         let chat = getGroupChatConversationById(
           message.text.data.message_details.group_id,
@@ -1358,13 +1354,14 @@ class Chat extends Component {
   onDeleteGroup(message) {
     const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_GROUP) {
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
 
         if(this.props.currentRouteName == 'GroupChats' &&
         currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id){
-          this.props.navigation.goBack();
+          NavigationService.pop();
           this.props.setCurrentGroup(null);
           this.props.setGroupConversation([]);
         }
@@ -1374,6 +1371,7 @@ class Chat extends Component {
           message.text.data.message_details.group_id,
         );
         this.props.getLocalUserGroups().then((res) => {
+          console.log('local groups update');
           this.props.setCommonChatConversation();
         });
 
@@ -1408,7 +1406,8 @@ class Chat extends Component {
   onMuteGroup(message) {
     const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.MUTE_GROUP) {
-      var group = getGroupsById(message.text.data.message_details.group_id);
+      var result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
       if (group && group.length > 0) {
         if (userData.id === message.text.data.message_details.user_id) {
           deleteGroupById(message.text.data.message_details.group_id);
@@ -1726,29 +1725,29 @@ class Chat extends Component {
     switch (sortBy) {
       case 'time': {
         commonConversation.sort((a, b) =>
-          a.created &&
+          (a.created &&
           b.created &&
           new Date(a.last_msg ? a.last_msg.created : a.created) <
-            new Date(b.last_msg ? b.last_msg.created : b.created)
+            new Date(b.last_msg ? b.last_msg.created : b.created))
             ? 1
-            : a.created &&
+            : (a.created &&
               b.timestamp &&
               new Date(a.last_msg ? a.last_msg.created : a.created) <
-                new Date(b.timestamp)
+                new Date(b.timestamp))
             ? 1
-            : a.timestamp &&
+            : (a.timestamp &&
               b.created &&
               new Date(a.timestamp) <
-                new Date(b.last_msg ? b.last_msg.created : b.created)
+                new Date(b.last_msg ? b.last_msg.created : b.created))
             ? 1
-            : a.timestamp &&
+            : (a.timestamp &&
               b.timestamp &&
-              new Date(a.timestamp) < new Date(b.timestamp)
+              new Date(a.timestamp) < new Date(b.timestamp))
             ? 1
             : -1,
         );
-
-        return;
+  
+        return commonConversation;
       }
       case 'unread': {
         commonConversation.sort((a, b) =>
@@ -1777,7 +1776,7 @@ class Chat extends Component {
         commonConversation.sort((a, b) =>
           a.unread_msg < b.unread_msg ? 1 : -1,
         );
-        return;
+        return commonConversation;
       }
       case 'name': {
         commonConversation.sort((a, b) =>
@@ -1818,7 +1817,7 @@ class Chat extends Component {
             : -1,
         );
 
-        return;
+        return commonConversation;
       }
       default:
         // {
@@ -1845,7 +1844,7 @@ class Chat extends Component {
         //       : -1,
         //   );
 
-        return;
+        return commonConversation;
       // }
     }
   };
@@ -1856,14 +1855,14 @@ class Chat extends Component {
     if (this.props.currentRouteName !== 'ChatTab') {
       return;
     }
-    const commonConversation = commonChat.filter(
+    let commonConversation = commonChat.filter(
       createFilter(this.state.searchText, [
         'name',
         'group_name',
         'display_name',
       ]),
     );
-    this.sortList();
+    commonConversation = this.sortList();
     if (commonConversation.length === 0 && isLoading) {
       return <ListLoader />;
     } else if (commonConversation.length > 0 && isLoading) {

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Keyboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -34,12 +35,25 @@ const S = StyleSheet.create({
 class TabBarComp extends Component {
   state = {
     routes: [],
+    isVisible: true,
   };
+
+  constructor(props){
+    super(props)
+    this.keyboardWillShow = this.keyboardWillShow.bind(this)
+    this.keyboardWillHide = this.keyboardWillHide.bind(this)
+  }
+
   componentDidMount() {
     const {navigation} = this.props;
     const {routes} = navigation.state;
     this.setState({routes});
+
+    this.keyboardWillShowListener = Keyboard.addListener('keyboardDidShow',this.keyboardWillShow)
+    this.keyboardWillHideListener = Keyboard.addListener('keyboardDidHide',this.keyboardWillHide)
+
   }
+
   componentDidUpdate(prevProps) {
     const prevSelectedLang = prevProps.selectedLanguageItem.language_name;
     const currentSelectedLang = this.props.selectedLanguageItem.language_name;
@@ -48,10 +62,29 @@ class TabBarComp extends Component {
       this.setState({routes});
     }
   }
+
+  componentWillUnmount(){
+    this.keyboardWillShowListener && this.keyboardWillShowListener.remove()
+    this.keyboardWillHideListener && this.keyboardWillHideListener.remove()
+  }
+
+  keyboardWillShow = event => {
+    Platform.OS==='android' && 
+    this.setState({
+      isVisible: false
+    })
+  }
+
+  keyboardWillHide = event => {
+    this.setState({
+      isVisible: true
+    })
+  }
+
   render() {
     const dimen = Dimensions.get('window');
     console.log('dimen.height', isIphoneX());
-    const {routes} = this.state;
+    const {routes,isVisible} = this.state;
     const {
       renderIcon,
       getLabelText,
@@ -64,7 +97,7 @@ class TabBarComp extends Component {
     } = this.props;
     console.log(routes);
     const {index: activeRouteIndex} = navigation.state;
-    return (
+    return (isVisible?
       <LinearGradient
         //   start={{ x: 0.1, y: 0.7 }}
         //   end={{ x: 0.5, y: 0.2 }}
@@ -98,6 +131,7 @@ class TabBarComp extends Component {
           );
         })}
       </LinearGradient>
+      :null
     );
   }
 }

@@ -541,11 +541,13 @@ class GroupChats extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
 
-    this.getGroupDetail();
-    this.getGroupMembers();
-    this.getGroupConversationInitial();
-
-    this.updateUnReadGroupChatCount();
+    if(this.props.currentGroup){
+      this.getGroupDetail();
+      this.getGroupMembers();
+      this.getGroupConversationInitial();
+  
+      this.updateUnReadGroupChatCount();
+    }
   }
 
   updateUnReadGroupChatCount = async () => {
