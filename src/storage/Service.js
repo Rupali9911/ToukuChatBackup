@@ -529,7 +529,6 @@ export const setGroups = async (channels) => {
   for (let item of channels) {
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
-      console.log('setGroups -> obj', obj);
       await realm.write(() => {
         realm.create(
           'groups',
@@ -962,6 +961,19 @@ export const updateLastEventId = (item) => {
       });
     });
   }
+};
+
+export const updateGroupnReadCount = (id, read_count) => {
+  realm.write(() => {
+    realm.create(
+      'chat_conversation_group',
+      {
+        msg_id: id,
+        read_count: read_count,
+      },
+      'modified',
+    );
+  });
 };
 
 export const isEventIdExists = () => {

@@ -14,7 +14,14 @@ import ImagePicker from 'react-native-image-crop-picker';
 
 import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
-import {Colors, Fonts, Images, Icons, SocketEvents, appleStoreUserId} from '../../constants';
+import {
+  Colors,
+  Fonts,
+  Images,
+  Icons,
+  SocketEvents,
+  appleStoreUserId,
+} from '../../constants';
 import GroupChatContainer from '../../components/GroupChatContainer';
 import {
   ConfirmationModal,
@@ -87,133 +94,144 @@ class GroupChats extends Component {
       sendingMedia: false,
       isLeaveLoading: false,
       uploadFile: {uri: null, type: null, name: null},
-      headerRightIconMenu: this.props.userData.id === appleStoreUserId ?  [
-        {
-          id: 1,
-          title: translate('pages.xchat.groupDetails'),
-          icon: 'bars',
-          onPress: () => {
-            this.props.navigation.navigate('GroupDetails');
-          },
-        },
-        {
-          id: 2,
-          title: translate('pages.xchat.leave'),
-          icon: 'user-slash',
-          onPress: () => {
-            this.toggleLeaveGroupConfirmationModal();
-          },
-        },
-        {
-          id: 3,
-          title: translate('pages.xchat.reportGroup'),
-          icon: 'user-slash',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: 'Group reported',
-              type: 'positive',
-            });
-          },
-        },
-      ]:  [
-          {
-              id: 1,
-              title: translate('pages.xchat.groupDetails'),
-              icon: 'bars',
-              onPress: () => {
+      headerRightIconMenu:
+        this.props.userData.id === appleStoreUserId
+          ? [
+              {
+                id: 1,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
                   this.props.navigation.navigate('GroupDetails');
+                },
               },
-          },
-          {
-              id: 2,
-              title: translate('pages.xchat.leave'),
-              icon: 'user-slash',
-              onPress: () => {
+              {
+                id: 2,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
                   this.toggleLeaveGroupConfirmationModal();
+                },
               },
-          }
-      ],
-      headerRightIconMenuIsGroup: this.props.userData.id === appleStoreUserId ? [
-        {
-          id: 1,
-          title: translate('pages.xchat.inviteFriends'),
-          icon: Icons.man_plus_icon_black,
-          isLocalIcon: true,
-          onPress: () => {
-            this.props.navigation.navigate('GroupDetails', {isInvite: true});
-          },
-        },
-        {
-          id: 2,
-          title: translate('pages.xchat.groupDetails'),
-          icon: 'bars',
-          onPress: () => {
-            this.props.navigation.navigate('GroupDetails');
-          },
-        },
-        {
-          id: 3,
-          title: translate('pages.xchat.deleteGroup'),
-          icon: 'trash',
-          onPress: () => {
-            this.toggleDeleteGroupConfirmationModal();
-          },
-        },
-        {
-          id: 4,
-          title: translate('pages.xchat.leave'),
-          icon: 'user-slash',
-          onPress: () => {
-            this.toggleLeaveGroupConfirmationModal();
-          },
-        },
-        {
-          id: 5,
-          title: translate('pages.xchat.reportGroup'),
-          icon: 'user-slash',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: 'Group reported',
-              type: 'positive',
-            });
-          },
-        },
-      ]: [
-          {
-              id: 1,
-              title: translate('pages.xchat.inviteFriends'),
-              icon: Icons.man_plus_icon_black,
-              isLocalIcon: true,
-              onPress: () => {
-                  this.props.navigation.navigate('GroupDetails', {isInvite: true});
+              {
+                id: 3,
+                title: translate('pages.xchat.reportGroup'),
+                icon: 'user-slash',
+                onPress: () => {
+                  Toast.show({
+                    title: 'Touku',
+                    text: 'Group reported',
+                    type: 'positive',
+                  });
+                },
               },
-          },
-          {
-              id: 2,
-              title: translate('pages.xchat.groupDetails'),
-              icon: 'bars',
-              onPress: () => {
+            ]
+          : [
+              {
+                id: 1,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
                   this.props.navigation.navigate('GroupDetails');
+                },
               },
-          },
-          {
-              id: 3,
-              title: translate('pages.xchat.deleteGroup'),
-              icon: 'trash',
-              onPress: () => {
+              {
+                id: 2,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+                },
+              },
+            ],
+      headerRightIconMenuIsGroup:
+        this.props.userData.id === appleStoreUserId
+          ? [
+              {
+                id: 1,
+                title: translate('pages.xchat.inviteFriends'),
+                icon: Icons.man_plus_icon_black,
+                isLocalIcon: true,
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {
+                    isInvite: true,
+                  });
+                },
+              },
+              {
+                id: 2,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+                },
+              },
+              {
+                id: 3,
+                title: translate('pages.xchat.deleteGroup'),
+                icon: 'trash',
+                onPress: () => {
                   this.toggleDeleteGroupConfirmationModal();
+                },
               },
-          },{
-              id: 4,
-              title: translate('pages.xchat.leave'),
-              icon: 'user-slash',
-              onPress: () => {
+              {
+                id: 4,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
                   this.toggleLeaveGroupConfirmationModal();
+                },
               },
-          },
-      ],
+              {
+                id: 5,
+                title: translate('pages.xchat.reportGroup'),
+                icon: 'user-slash',
+                onPress: () => {
+                  Toast.show({
+                    title: 'Touku',
+                    text: 'Group reported',
+                    type: 'positive',
+                  });
+                },
+              },
+            ]
+          : [
+              {
+                id: 1,
+                title: translate('pages.xchat.inviteFriends'),
+                icon: Icons.man_plus_icon_black,
+                isLocalIcon: true,
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {
+                    isInvite: true,
+                  });
+                },
+              },
+              {
+                id: 2,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+                },
+              },
+              {
+                id: 3,
+                title: translate('pages.xchat.deleteGroup'),
+                icon: 'trash',
+                onPress: () => {
+                  this.toggleDeleteGroupConfirmationModal();
+                },
+              },
+              {
+                id: 4,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+                },
+              },
+            ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
@@ -252,7 +270,6 @@ class GroupChats extends Component {
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
       );
-      console.log('uploadedImages', uploadedImages)
       msgText = uploadedImages.image[0].image;
     }
     if (sentMessageType === 'audio') {
@@ -374,14 +391,12 @@ class GroupChats extends Component {
         ...this.props.chatGroupConversation,
       ]);
       this.props.sendGroupMessage(groupMessage);
-        console.log('groupMessage---------', groupMessage)
     }
     if (uploadFile.uri) {
       this.setState({
         sendingMedia: false,
       });
     }
-      console.log('sendmsgdata---------', sendmsgdata)
 
     // this.setState({
     //   newMessageText: '',
@@ -461,7 +476,6 @@ class GroupChats extends Component {
         if (Platform.OS === 'ios') {
           RNFetchBlob.ios.openDocument(res.data);
         }
-        console.log('The file saved to ', res.path());
       });
   };
 
@@ -665,7 +679,6 @@ class GroupChats extends Component {
 
   markGroupConversationRead() {
     let data = {group_id: this.props.currentGroup.group_id};
-    console.log('groups_chats_screen', data);
     this.props.markGroupConversationRead(data);
   }
 
@@ -825,7 +838,6 @@ class GroupChats extends Component {
     this.props
       .getGroupDetail(this.props.currentGroup.group_id)
       .then((res) => {
-        console.log('group_detail', JSON.stringify(res));
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
@@ -834,7 +846,6 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
-        console.log('group_chats',err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
@@ -883,7 +894,6 @@ class GroupChats extends Component {
       .leaveGroup(payload)
       .then((res) => {
         if (res.status === true) {
-          console.log('response', res);
           Toast.show({
             title: 'Touku',
             text: translate(res.message),
@@ -1082,7 +1092,6 @@ class GroupChats extends Component {
   };
 
   onAttachmentPress = async () => {
-    console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
     try {
       const results = await DocumentPicker.pickMultiple({
         type: [
@@ -1209,13 +1218,6 @@ class GroupChats extends Component {
     this.toggleAttachmentModal(false);
     for (const res of this.state.uploadedFiles) {
       let fileType = res.type.substr(0, res.type.indexOf('/'));
-      console.log(
-        res.uri,
-        res.type, // mime type
-        res.name,
-        res.size,
-        res.type.substr(0, res.type.indexOf('/')),
-      );
       let source = {uri: res.uri, type: res.type, name: res.name};
       if (fileType === 'audio') {
         await this.setState(
@@ -1324,6 +1326,7 @@ class GroupChats extends Component {
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
+            currentGroupDetail={currentGroupDetail}
           />
         )}
 

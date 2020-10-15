@@ -131,10 +131,6 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (message) => {
-    // console.log(
-    //   'GroupChatMessageBubble -> renderReplyMessage -> message',
-    //   message,
-    // );
     let replyMessage = message.reply_to;
     if (replyMessage.message) {
       return (
@@ -145,7 +141,9 @@ class GroupChatMessageBubble extends Component {
                 this.props.onReplyPress(replyMessage.id);
             }}
             style={{
-              backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
+              backgroundColor: this.props.isUser
+                ? 'rgba(243,243,243,.53)'
+                : Colors.gray,
               padding: 5,
               width: '100%',
               borderRadius: 5,
@@ -395,7 +393,11 @@ class GroupChatMessageBubble extends Component {
                           onLongPress={(msg_id) => {
                             onMessagePress(message.msg_id);
                           }}>
-                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
+                          <HyperLink
+                            onPress={(url, text) => {
+                              Linking.openURL(url);
+                            }}
+                            linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 fontSize: 15,
@@ -558,7 +560,11 @@ class GroupChatMessageBubble extends Component {
                           onLongPress={(msg_id) => {
                             onMessagePress(message.msg_id);
                           }}>
-                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
+                          <HyperLink
+                            onPress={(url, text) => {
+                              Linking.openURL(url);
+                            }}
+                            linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 color: Colors.black,

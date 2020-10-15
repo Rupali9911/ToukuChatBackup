@@ -402,12 +402,12 @@ PODS:
   - react-native-fbsdk/Share (1.1.2):
     - FBSDKShareKit (= 5.8)
     - React
-  - react-native-image-picker (2.3.3):
-    - React
-  - react-native-image-resizer (1.2.6):
-    - React
-  - react-native-netinfo (5.9.6):
-    - React
+  - react-native-image-picker (2.3.4):
+    - React-Core
+  - react-native-image-resizer (1.3.0):
+    - React-Core
+  - react-native-netinfo (5.9.7):
+    - React-Core
   - react-native-orientation (3.1.3):
     - React
   - react-native-safe-area-context (0.7.3):
@@ -424,7 +424,7 @@ PODS:
     - react-native-video/Video (= 4.4.5)
   - react-native-video/Video (4.4.5):
     - React
-  - react-native-webview (10.8.3):
+  - react-native-webview (10.9.0):
     - React
   - React-RCTActionSheet (0.62.2):
     - React-Core/RCTActionSheetHeaders (= 0.62.2)
@@ -485,7 +485,7 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/callinvoker (= 0.62.2)
-  - RealmJS (6.1.0):
+  - RealmJS (6.1.2):
     - GCDWebServer
     - React
   - rn-fetch-blob (0.12.0):
@@ -496,20 +496,20 @@ PODS:
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPushNotificationIOS (1.4.1):
+  - RNCPushNotificationIOS (1.5.0):
     - React
   - RNFastImage (8.3.2):
     - React
     - SDWebImage (~> 5.8)
     - SDWebImageWebPCoder (~> 0.6.1)
-  - RNFBApp (8.4.1):
+  - RNFBApp (8.4.3):
     - Firebase/CoreOnly (~> 6.30.0)
-    - React
+    - React-Core
   - RNFBAuth (8.3.3):
     - Firebase/Auth (~> 6.30.0)
     - React
     - RNFBApp
-  - RNFBMessaging (7.8.4):
+  - RNFBMessaging (7.8.6):
     - Firebase/Messaging (~> 6.30.0)
     - React
     - RNFBApp
@@ -533,7 +533,7 @@ PODS:
     - React
   - RNReanimated (1.13.0):
     - React
-  - RNScreens (2.10.1):
+  - RNScreens (2.11.0):
     - React
   - RNSoundPlayer (0.10.4):
     - React
@@ -868,16 +868,16 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-document-picker: c5752781fbc0c126c627c1549b037c139444a4cf
   react-native-fbsdk: c35d42169e64aaf66f01713c1e18d0674f7f6519
-  react-native-image-picker: a6c3d644751a388b0fc8b56822ff7cbd398a3008
-  react-native-image-resizer: f9fd7a61ffb3683987a6528e15e32bc32eb9dee3
-  react-native-netinfo: d2c312fa4b151214e1d5c8456ddb5f28ff24a576
+  react-native-image-picker: 32d1ad2c0024ca36161ae0d5c2117e2d6c441f11
+  react-native-image-resizer: b53bf95ad880100e20262687e41f76fdbc9df255
+  react-native-netinfo: e36c1bb6df27ab84aa933679b3f5bbf9d180b18f
   react-native-orientation: d4a97266b06ec8d45d74e626656a730ebbebbb6f
   react-native-safe-area-context: 8260e5157617df4b72865f44006797f895b2ada7
   react-native-slider: b733e17fdd31186707146debf1f04b5d94aa1a93
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-twitter-signin: 23e7c2a71777f2f124674cb7c372f5360a5aefb9
   react-native-video: aa527b0acb37f94c4491e70df0274cb26979405d
-  react-native-webview: 162c2f2b14555cb524ac0e3b422a9b66ebceefee
+  react-native-webview: 6ee7868ca8eba635dbf7963986d1ab7959da0391
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
@@ -888,23 +888,23 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
-  RealmJS: c8645e0d65b676780f7e6c393d327527a2eb15e8
+  RealmJS: 6eb9fd885c5f3cd609b8b50282a5785cb4b48a18
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAppleAuthentication: 473b2c076f1a48a537610580a168c1fb6d0a90c6
   RNCAsyncStorage: 3eea36d9460c5159b592f9ecbe5a77f8aca98006
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
-  RNCPushNotificationIOS: c625dde093c3c8351d4babd34285d772f551dc36
+  RNCPushNotificationIOS: 8025ff0b610d7b28d29ddc1b619cd55814362e4c
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
-  RNFBApp: e4321cad5dd23b43b3b4f0ca060300b9f85cb7a4
+  RNFBApp: a74d8259d827c8bf55100e759cffa2e50ba6fe30
   RNFBAuth: 8fd5ea881020a13deae2ca3e9810e30d15ce42ac
-  RNFBMessaging: f28096dc79edf6b0a094e95c265c7224122d051d
+  RNFBMessaging: c69238917a8672f5aed2c8a6ee124efa8f962677
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNGoogleSignin: ccf71ee4b6cfd324fd788a41e457e2043838c0d9
   RNImageCropPicker: 54e5ea3d0e298ed51e1441a2fa0a0e7c90ee256d
   RNLocalize: c388679af021ddd6069c215f7fdd2acf4e77ede5
   RNReactNativeDocViewer: 571c6ac38483531b8fb521d02a6ba54652ed10a7
   RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
-  RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
+  RNScreens: 0e91da98ab26d5d04c7b59a9b6bd694124caf88c
   RNSoundPlayer: b55bbb1b4cbf8b3f2c81db622d9db4b305407f5b
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNVectorIcons: 368d6d8b8301224e5ffb6254191f4f8876c2be0d

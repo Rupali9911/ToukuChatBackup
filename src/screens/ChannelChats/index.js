@@ -24,11 +24,12 @@ import {Avatar} from 'react-native-paper';
 import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
 import {
-    Images,
-    SocketEvents,
-    Fonts,
-    closeBoxImage,
-    openBoxImage, appleStoreUserId,
+  Images,
+  SocketEvents,
+  Fonts,
+  closeBoxImage,
+  openBoxImage,
+  appleStoreUserId,
 } from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
 import {
@@ -58,7 +59,7 @@ import {
   ShowAttahmentModal,
   ShowGalleryModal,
 } from '../../components/Modals';
-import {eventService,normalize} from '../../utils';
+import {eventService, normalize} from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
@@ -102,37 +103,40 @@ class ChannelChats extends Component {
       sentMessageType: 'text',
       sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
-      headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
-        {
-          id: 1,
-          title: translate('pages.xchat.channelDetails'),
-          icon: 'bars',
-          onPress: () => {
-            this.props.navigation.navigate('ChannelInfo');
-          },
-        },
-        {
-          id: 2,
-          title: translate('pages.xchat.reportChannel'),
-          icon: 'user-slash',
-          onPress: () => {
-            Toast.show({
-              title: 'Touku',
-              text: translate('pages.xchat.channelReported'),
-              type: 'positive',
-            });
-          },
-        },
-      ] : [
-          {
-              id: 1,
-              title: translate('pages.xchat.channelDetails'),
-              icon: 'bars',
-              onPress: () => {
+      headerRightIconMenu:
+        this.props.userData.id === appleStoreUserId
+          ? [
+              {
+                id: 1,
+                title: translate('pages.xchat.channelDetails'),
+                icon: 'bars',
+                onPress: () => {
                   this.props.navigation.navigate('ChannelInfo');
+                },
               },
-          }
-      ],
+              {
+                id: 2,
+                title: translate('pages.xchat.reportChannel'),
+                icon: 'user-slash',
+                onPress: () => {
+                  Toast.show({
+                    title: 'Touku',
+                    text: translate('pages.xchat.channelReported'),
+                    type: 'positive',
+                  });
+                },
+              },
+            ]
+          : [
+              {
+                id: 1,
+                title: translate('pages.xchat.channelDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('ChannelInfo');
+                },
+              },
+            ],
     };
     this.S3uploadService = new S3uploadService();
     this.props.resetChannelConversation();
@@ -1024,7 +1028,6 @@ class ChannelChats extends Component {
     if (!this.props.chatConversation) {
       return null;
     }
-    console.log('chatConversation', chatConversation);
     if (channelLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {

@@ -355,7 +355,11 @@ class ChatMessageBubble extends Component {
                           onLongPress={(id) => {
                             onMessagePress(message.id);
                           }}>
-                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
+                          <HyperLink
+                            onPress={(url, text) => {
+                              Linking.openURL(url);
+                            }}
+                            linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 fontFamily: Fonts.regular,
@@ -519,7 +523,11 @@ class ChatMessageBubble extends Component {
                           onLongPress={(id) => {
                             onMessagePress(message.id);
                           }}>
-                          <HyperLink onPress={(url,text)=>{Linking.openURL(url)}} linkStyle={{color: Colors.link_color}}>
+                          <HyperLink
+                            onPress={(url, text) => {
+                              Linking.openURL(url);
+                            }}
+                            linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
                                 color: Colors.black,

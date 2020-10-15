@@ -22,7 +22,6 @@ export default class GroupListItem extends Component {
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
     if (today.getDate() === msgDate.getDate()) {
-      console.log('GroupListItem -> getDate -> date', date);
       return `${msgDate.getHours()}:${
         msgDate.getMinutes() < 10
           ? '0' + msgDate.getMinutes()

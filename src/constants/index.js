@@ -258,6 +258,7 @@ export const SocketEvents = {
   DELETE_MESSAGE_IN_GROUP: 'Delete message in group',
   UNSENT_MESSAGE_FROM_GROUP: 'Unsent message from group',
   READ_ALL_MESSAGE_GROUP_CHAT: 'Read all message group chat',
+  UPDATE_READ_COUNT_IN_GROUP: 'Update read count in group',
   PINED_GROUP: 'pined group',
   UNPINED_GROUP: 'unpined group',
   TP_POINT_ACTION: 'Tp point action',
@@ -311,4 +312,4 @@ export const openBoxImage = {
   full_gold: 'https://cdn.angelium.net/touku/assets/images/bonus/full_gold.png',
 };
 
-export const appleStoreUserId = 4046
+export const appleStoreUserId = 4046;

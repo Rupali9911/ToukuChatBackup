@@ -115,8 +115,10 @@ import {
   getFriendChatConversationById,
   getGroupChatConversationById,
   updateLastEventId,
+  updateAllFriendMessageRead,
+  updateGroupnReadCount,
 } from '../../storage/Service';
-import Toast from "../../components/Toast";
+import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
 
 class Chat extends Component {
@@ -170,7 +172,6 @@ class Chat extends Component {
     // this.getUserFriends();
     // this.setCommonConversation();
     this.props.getUserConfiguration().then((res) => {
-      console.log('getUserConfiguration ----->>>>>>>> ', res);
       this.setState({
         sortBy: res.sort_by,
       });
@@ -179,7 +180,6 @@ class Chat extends Component {
       let filteredArray = languageArray.filter(
         (item) => item.language_name === res.language,
       );
-      console.log('filteredArray', filteredArray);
       if (filteredArray.length > 0) {
         this.props.setAppLanguage(filteredArray[0]);
         setI18nConfig(filteredArray[0].language_name);
@@ -187,12 +187,8 @@ class Chat extends Component {
       this.props.getFriendRequest();
 
       this.props.getFollowingChannels().then((res) => {
-        // console.log('Chat -> componentDidMount -> getFollowingChannels', res);
         this.props.getUserGroups().then((res) => {
-          // console.log('Chat -> componentDidMount -> getUserGroups', res);
           this.props.getUserFriends().then((res) => {
-            // console.log('Chat -> componentDidMount -> getUserFriends', res);
-            // console.log('friends', res);
             this.setCommonConversation();
           });
         });
@@ -363,7 +359,6 @@ class Chat extends Component {
         break;
       case SocketEvents.UNFRIEND:
         removeUserFriends(message.text.data.message_details.user_id);
-        console.log('get local freinds');
         this.props.setUserFriends().then((res) => {
           this.props.setCommonChatConversation();
         });
@@ -409,12 +404,14 @@ class Chat extends Component {
         this.onNewFriendRequest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_ACCEPTED:
-        console.log('FRIEND_REQUEST_ACCEPTED message', message.text.data.message_details)
         this.onAcceptFriendReuqest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_REJECTED:
         deleteFriendRequest(message.text.data.message_details.user_id);
         this.props.setFriendRequest();
+        break;
+      case SocketEvents.UPDATE_READ_COUNT_IN_GROUP:
+        this.onUpdateGroupReadCount(message);
         break;
       case SocketEvents.MESSAGE_EDITED_IN_THREAD:
         break;
@@ -496,13 +493,21 @@ class Chat extends Component {
 
   //Read Friend's all messages with socket event
   readAllMessageFriendChat(message) {
-    const {userFriends} = this.props;
+    const {userFriends, currentFriend} = this.props;
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       let unread_counts = 0;
       var user = getLocalUserFriend(
         message.text.data.message_details.friend_id,
       );
+      if (
+        this.props.currentRouteName == 'FriendChats' &&
+        currentFriend.friend === message.text.data.message_details.friend_id &&
+        currentFriend.user_id === message.text.data.message_details.read_by
+      ) {
+        updateAllFriendMessageRead(currentFriend.friend);
+        this.getLocalFriendConversation();
+      }
       if (user && user.length > 0) {
         if (
           user[0].friend == detail.friend_id &&
@@ -707,10 +712,31 @@ class Chat extends Component {
     }
   }
 
+  //Update group count
+  onUpdateGroupReadCount(message) {
+    console.log('onUpdateGroupReadCount -> onUpdateGroupReadCount');
+    const {currentGroup} = this.props;
+    let detail = message.text.data.message_details;
+    if (message.text.data.type === SocketEvents.UPDATE_READ_COUNT_IN_GROUP) {
+      if (
+        this.props.currentRouteName == 'GroupChats' &&
+        currentGroup.group_id === detail.group_id
+      ) {
+        const message = detail.message_ids;
+
+        const message_ids = Object.entries(message);
+
+        for (const value of message_ids) {
+          updateGroupnReadCount(parseInt(value[0]), parseInt(value[1]));
+        }
+        this.getLocalGroupConversation();
+      }
+    }
+  }
+
   //Message in Following Channel
   messageInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
-    console.log('messageInFollowingChannel -> currentChannel', currentChannel);
 
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       var channel = getChannelsById(message.text.data.message_details.channel);
@@ -779,11 +805,6 @@ class Chat extends Component {
   //Multiple Message in Following Channel
   multipleMessageInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
-    console.log('multipleMessageInFollowingChannel -> userData', userData.id);
-    console.log(
-      'multipleMessageInFollowingChannel -> currentChannel',
-      currentChannel,
-    );
     if (
       message.text.data.type ===
       SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
@@ -827,7 +848,6 @@ class Chat extends Component {
           message.text.data.message_details.message_body,
         );
         if (channels[0].last_msg.id == message.text.data.message_details.id) {
-          console.log('updateasdasdasd');
           updateChannelLastMsgWithOutCount(
             message.text.data.message_details.channel,
             message.text.data.message_details,
@@ -910,7 +930,6 @@ class Chat extends Component {
         for (let chat of chats) {
           array = [...array, chat];
         }
-        console.log('updated_last_messgae', JSON.stringify(array[0]));
         updateChannelLastMsgWithOutCount(
           message.text.data.message_details.channel,
           array[0],
@@ -972,10 +991,6 @@ class Chat extends Component {
   //New Message in Friend
   onNewMessageInFriend(message) {
     const {userFriends, currentFriend, userData} = this.props;
-    console.log(
-      'onNewMessageInFriend -> onNewMessageInFriend currentFriend',
-      currentFriend,
-    );
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -1117,7 +1132,6 @@ class Chat extends Component {
         array = [...array, u];
       }
 
-      console.log('array', JSON.stringify(array[0]));
       if (
         array.length > 0 &&
         array[0].last_msg_id == message.text.data.message_details.id
@@ -1135,7 +1149,6 @@ class Chat extends Component {
 
   onDeleteMessageInFriend(message) {
     const {userFriends, currentFriend, userData} = this.props;
-    console.log('onDeleteMessageInFriend -> currentFriend', currentFriend);
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         // var users = getLocalUserFriend(
@@ -1313,10 +1326,6 @@ class Chat extends Component {
   onCreateNewGroup(message) {
     const {userGroups, userData} = this.props;
     if (message.text.data.type === SocketEvents.CREATE_NEW_GROUP) {
-      console.log(
-        'onCreateNewGroup -> message.text.data.message_details ------>>>>>',
-        message.text.data.message_details,
-      );
       for (let id of message.text.data.message_details.members) {
         if (id == userData.id) {
           var item = message.text.data.message_details;
@@ -1357,10 +1366,11 @@ class Chat extends Component {
       var result = getGroupsById(message.text.data.message_details.group_id);
       let group = result.toJSON();
       if (group && group.length > 0) {
-
-        if(this.props.currentRouteName == 'GroupChats' &&
-        currentGroup &&
-          message.text.data.message_details.group_id == currentGroup.group_id){
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id
+        ) {
           NavigationService.pop();
           this.props.setCurrentGroup(null);
           this.props.setGroupConversation([]);
@@ -1374,7 +1384,6 @@ class Chat extends Component {
           console.log('local groups update');
           this.props.setCommonChatConversation();
         });
-
       }
     }
   }
@@ -1384,7 +1393,6 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.ADD_GROUP_MEMBER) {
       for (let i of message.text.data.message_details.members_data) {
         if (i.id == userData.id) {
-          console.log('group added___');
           setGroups([message.text.data.message_details.group_data]);
           this.props.getLocalUserGroups().then((res) => {
             this.props.setCommonChatConversation();
@@ -1470,13 +1478,20 @@ class Chat extends Component {
 
   onAcceptFriendReuqest = (message) => {
     if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
-      if (message.text.data.message_details.conversation.requested_from === this.props.userData.username) {
-          Toast.show({
-              title: translate('pages.xchat.friendRequest'),
-              text: translate('pages.xchat.toastr.acceptedYourFriendRequest').replace(
-                      '[missing {{friend}} value]', message.text.data.message_details.conversation.display_name),
-              type: 'positive',
-          });
+      if (
+        message.text.data.message_details.conversation.requested_from ===
+        this.props.userData.username
+      ) {
+        Toast.show({
+          title: translate('pages.xchat.friendRequest'),
+          text: translate(
+            'pages.xchat.toastr.acceptedYourFriendRequest',
+          ).replace(
+            '[missing {{friend}} value]',
+            message.text.data.message_details.conversation.display_name,
+          ),
+          type: 'positive',
+        });
       }
       deleteFriendRequest(
         message.text.data.message_details.conversation.user_id,
@@ -1499,7 +1514,6 @@ class Chat extends Component {
 
   markGroupMsgsRead() {
     let data = {group_id: this.props.currentGroup.group_id};
-    console.log(data);
     this.props.markGroupConversationRead(data);
   }
 
@@ -1719,34 +1733,33 @@ class Chat extends Component {
 
   sortList = () => {
     const {sortBy} = this.state;
-    console.log('sortList -> sortBy', sortBy);
     const commonConversation = this.props.commonChat;
 
     switch (sortBy) {
       case 'time': {
         commonConversation.sort((a, b) =>
-          (a.created &&
+          a.created &&
           b.created &&
           new Date(a.last_msg ? a.last_msg.created : a.created) <
-            new Date(b.last_msg ? b.last_msg.created : b.created))
+            new Date(b.last_msg ? b.last_msg.created : b.created)
             ? 1
-            : (a.created &&
+            : a.created &&
               b.timestamp &&
               new Date(a.last_msg ? a.last_msg.created : a.created) <
-                new Date(b.timestamp))
+                new Date(b.timestamp)
             ? 1
-            : (a.timestamp &&
+            : a.timestamp &&
               b.created &&
               new Date(a.timestamp) <
-                new Date(b.last_msg ? b.last_msg.created : b.created))
+                new Date(b.last_msg ? b.last_msg.created : b.created)
             ? 1
-            : (a.timestamp &&
+            : a.timestamp &&
               b.timestamp &&
-              new Date(a.timestamp) < new Date(b.timestamp))
+              new Date(a.timestamp) < new Date(b.timestamp)
             ? 1
             : -1,
         );
-  
+
         return commonConversation;
       }
       case 'unread': {
@@ -1941,7 +1954,6 @@ class Chat extends Component {
                 unreadCount={item.unread_msg}
                 isTyping={item.is_typing}
                 callTypingStop={(id) => {
-                  console.log('chat_user_id', id);
                   updateFriendTypingStatus(id, false);
                   this.props.setUserFriends().then(() => {
                     this.props.setCommonChatConversation();
