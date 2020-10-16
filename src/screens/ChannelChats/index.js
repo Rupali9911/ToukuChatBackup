@@ -1132,7 +1132,7 @@ class ChannelChats extends Component {
             removeUploadData={(index) => this.removeUploadData(index)}
             onAttachmentPress={() => this.onAttachmentPress()}
           />
-          {sendingMedia && <UploadLoader progress={this.state.uploadProgress}/>}
+          {sendingMedia && <UploadLoader/>}
         </View>
       );
     }

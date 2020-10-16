@@ -8,7 +8,7 @@ import {
     ImageBackground,
     SafeAreaView,
     NativeModules,
-    Platform, TextInput,
+    Platform, TextInput, ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -61,7 +61,7 @@ class LoginSignUp extends Component {
       orientation: 'PORTRAIT',
       pushData: [],
       loggedIn: false,
-      showSNS: false,
+      showSNS: false
     };
   }
 
@@ -123,6 +123,7 @@ class LoginSignUp extends Component {
     });
   }
   firebaseGoogleLogin = async () => {
+      this.setState({isLoading: true})
     let fcmToken = await AsyncStorage.getItem('fcmToken');
     try {
       await GoogleSignin.hasPlayServices();
@@ -141,6 +142,7 @@ class LoginSignUp extends Component {
         dev_id: fcmToken ? fcmToken : '',
       };
       this.props.googleRegister(googleLoginData).then(async (res) => {
+          this.setState({isLoading: false})
         console.log('JWT TOKEN=> ', JSON.stringify(res));
         if (res.token) {
           let status = res.status;
@@ -171,18 +173,71 @@ class LoginSignUp extends Component {
             type: 'primary',
           });
         }
+      }) .catch((err) => {
+          this.setState({isLoading: false})
+          if (err.response) {
+              console.log(err.response)
+              if (err.response.request._response) {
+                  console.log(err.response.request._response)
+                  let errMessage = JSON.parse(err.response.request._response)
+                  if (errMessage.message) {
+                      Toast.show({
+                          title: translate('common.loginFailed'),
+                          text: translate(errMessage.message.toString()),
+                          type: 'primary',
+                      });
+                  }else if (errMessage.non_field_errors) {
+                      let strRes = errMessage.non_field_errors
+                      Toast.show({
+                          title: translate('common.loginFailed'),
+                          text: translate(strRes.toString()),
+                          type: 'primary',
+                      });
+                  }else if (errMessage.detail) {
+                      Toast.show({
+                          title: translate('common.loginFailed'),
+                          text: errMessage.detail.toString(),
+                          type: 'primary',
+                      });
+                  }
+              }
+          }
       });
+
     } catch (error) {
-      // alert(error);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // alert('user cancelled the login flow');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // alert('operation (f.e. sign in) is in progress already');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // alert('play services not available or outdated');
-      } else {
-        // alert('some other error happened');
-      }
+        this.setState({isLoading: false})
+        //alert(error);
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            // alert('user cancelled the login flow');
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+            // alert('operation (f.e. sign in) is in progress already');
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: 'operation (f.e. sign in) is in progress already',
+                type: 'primary',
+            });
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+            // alert('play services not available or outdated');
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: 'play services not available or outdated',
+                type: 'primary',
+            });
+        } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+            // alert('play services not available or outdated');
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: 'play services not available or outdated',
+                type: 'primary',
+            });
+        } else {
+            // alert('some other error happened');
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: 'Error occured while signin',
+                type: 'primary',
+            });
+        }
     }
   };
 
@@ -213,8 +268,8 @@ class LoginSignUp extends Component {
     auth()
       .signInWithCredential(facebookCredential)
       .then((res) => {
+          this.setState({isLoading: true})
         console.log('Facebook response', JSON.stringify(res));
-
         const facebookLoginData = {
           access_token: data.accessToken,
           code: data.accessToken,
@@ -228,6 +283,7 @@ class LoginSignUp extends Component {
           facebookLoginData,
         );
         this.props.facebookRegister(facebookLoginData).then(async (res) => {
+            this.setState({isLoading: false})
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
@@ -258,11 +314,45 @@ class LoginSignUp extends Component {
               type: 'primary',
             });
           }
+        }).catch((err) => {
+            this.setState({isLoading: false})
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
+            }
         });
       })
-      .catch((err) => {
-        console.log('Error from facebook', err)
-      });
+        .catch((err) => {
+            this.setState({isLoading: false})
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: err,
+                type: 'primary',
+            });
+        });
   }
 
   async firebaseTwitterLogin() {
@@ -291,6 +381,7 @@ class LoginSignUp extends Component {
     auth()
       .signInWithCredential(twitterCredential)
       .then((res) => {
+          this.setState({isLoading: true})
         console.log('twitter response data==> ', JSON.stringify(res));
         const twitterLoginData = {
           access_token: authToken,
@@ -302,6 +393,7 @@ class LoginSignUp extends Component {
         };
         console.log('twitterLoginData==> ', twitterLoginData);
         this.props.twitterRegister(twitterLoginData).then(async (res) => {
+            this.setState({isLoading: false})
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
@@ -332,8 +424,45 @@ class LoginSignUp extends Component {
               type: 'primary',
             });
           }
+        }) .catch((err) => {
+            this.setState({isLoading: false})
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
+            }
         });
-      });
+      })
+        .catch((err) => {
+            this.setState({isLoading: false})
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: err,
+                type: 'primary',
+            });
+        })
   }
 
   async firebaseLineLogin() {
@@ -345,6 +474,7 @@ class LoginSignUp extends Component {
 
       LineLogin.loginWithPermissions(arrPermissions)
         .then((user) => {
+            this.setState({isLoading: true})
           console.log(user);
           const lineLoginData = {
             email: user.idToken.email,
@@ -358,6 +488,7 @@ class LoginSignUp extends Component {
             lineLoginData,
           );
           this.props.lineRegister(lineLoginData).then(async (res) => {
+              this.setState({isLoading: false})
             console.log('JWT TOKEN=> ', JSON.stringify(res));
             if (res.token) {
               let status = res.status;
@@ -388,14 +519,50 @@ class LoginSignUp extends Component {
                 type: 'primary',
               });
             }
+          }) .catch((err) => {
+              this.setState({isLoading: false})
+              if (err.response) {
+                  console.log(err.response)
+                  if (err.response.request._response) {
+                      console.log(err.response.request._response)
+                      let errMessage = JSON.parse(err.response.request._response)
+                      if (errMessage.message) {
+                          Toast.show({
+                              title: translate('common.loginFailed'),
+                              text: translate(errMessage.message.toString()),
+                              type: 'primary',
+                          });
+                      }else if (errMessage.non_field_errors) {
+                          let strRes = errMessage.non_field_errors
+                          Toast.show({
+                              title: translate('common.loginFailed'),
+                              text: translate(strRes.toString()),
+                              type: 'primary',
+                          });
+                      }else if (errMessage.detail) {
+                          Toast.show({
+                              title: translate('common.loginFailed'),
+                              text: errMessage.detail.toString(),
+                              type: 'primary',
+                          });
+                      }
+                  }
+              }
           });
         })
-        .catch((err) => {
-          console.log(err);
-        });
+          .catch((err) => {
+              this.setState({isLoading: false})
+              // Toast.show({
+              //     title: translate('common.loginFailed'),
+              //     text: err,
+              //     type: 'primary',
+              // });
+              console.log(err);
+          });
     } else {
       LineLogin.login()
         .then((user) => {
+            this.setState({isLoading: true})
           console.log(user);
           const lineLoginData = {
             code: '',
@@ -408,6 +575,7 @@ class LoginSignUp extends Component {
             lineLoginData,
           );
           this.props.lineRegister(lineLoginData).then(async (res) => {
+              this.setState({isLoading: false})
             console.log('JWT TOKEN=> ', JSON.stringify(res));
             if (res.token) {
               let status = res.status;
@@ -438,11 +606,46 @@ class LoginSignUp extends Component {
                 type: 'primary',
               });
             }
+          }).catch((err) => {
+              this.setState({isLoading: false})
+              if (err.response) {
+                  console.log(err.response)
+                  if (err.response.request._response) {
+                      console.log(err.response.request._response)
+                      let errMessage = JSON.parse(err.response.request._response)
+                      if (errMessage.message) {
+                          Toast.show({
+                              title: translate('common.loginFailed'),
+                              text: translate(errMessage.message.toString()),
+                              type: 'primary',
+                          });
+                      }else if (errMessage.non_field_errors) {
+                          let strRes = errMessage.non_field_errors
+                          Toast.show({
+                              title: translate('common.loginFailed'),
+                              text: translate(strRes.toString()),
+                              type: 'primary',
+                          });
+                      }else if (errMessage.detail) {
+                          Toast.show({
+                              title: translate('common.loginFailed'),
+                              text: errMessage.detail.toString(),
+                              type: 'primary',
+                          });
+                      }
+                  }
+              }
           });
         })
-        .catch((err) => {
-          console.log(err);
-        });
+          .catch((err) => {
+              this.setState({isLoading: false})
+              console.log(err);
+              //   Toast.show({
+              //       title: translate('common.loginFailed'),
+              //       text: err,
+              //       type: 'primary',
+              //   });
+          });
     }
   }
 
@@ -451,6 +654,7 @@ class LoginSignUp extends Component {
     let fcmToken = await AsyncStorage.getItem('fcmToken');
     KakaoLogins.login()
       .then((result) => {
+          this.setState({isLoading: true})
         console.log('result kakaoLogin', result);
         const kakaoLoginData = {
           code: '',
@@ -460,6 +664,7 @@ class LoginSignUp extends Component {
         };
         console.log('kakao request', kakaoLoginData);
         this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
+            this.setState({isLoading: false})
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             let status = res.status;
@@ -490,19 +695,55 @@ class LoginSignUp extends Component {
               type: 'primary',
             });
           }
+        }).catch((err) => {
+            this.setState({isLoading: false})
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('common.loginFailed'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
+            }
         });
       })
-      .catch((err) => {
-        console.log('Error kakaoLogin', err);
-        if (err.code === 'E_CANCELLED_OPERATION') {
-          //logCallback(`Login Cancelled:${err.message}`, setLoginLoading(false));
-        } else {
-          // logCallback(
-          //     `Login Failed:${err.code} ${err.message}`,
-          //     setLoginLoading(false),
-          // );
-        }
-      });
+        .catch((err) => {
+            this.setState({isLoading: false})
+            console.log('Error kakaoLogin', err);
+            if (err.code === 'E_CANCELLED_OPERATION') {
+                //logCallback(`Login Cancelled:${err.message}`, setLoginLoading(false));
+            } else {
+                // logCallback(
+                //     `Login Failed:${err.code} ${err.message}`,
+                //     setLoginLoading(false),
+                // );
+                Toast.show({
+                    title: translate('common.loginFailed'),
+                    text: err.message,
+                    type: 'primary',
+                });
+
+            }
+        });
   }
 
   appleLogin() {
@@ -585,7 +826,7 @@ class LoginSignUp extends Component {
   }
 
   render() {
-    const {orientation, showSNS} = this.state;
+    const {orientation, showSNS, isLoading} = this.state;
     const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
@@ -766,6 +1007,9 @@ class LoginSignUp extends Component {
                 )}
               </View>
             </View>
+              {isLoading && (
+                  <ActivityIndicator size="large" color="white" style={{position: 'absolute',top: 0, left: 0, right: 0, bottom: 0}} />
+              )}
             <LanguageSelector />
           </ScrollView>
         </SafeAreaView>

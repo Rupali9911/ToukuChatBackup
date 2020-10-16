@@ -92,18 +92,31 @@ class ForgotPassword extends Component {
   handlePassword = (password) => {
     this.setState({password});
     if (password.length <= 7 || password.length > 64) {
-      this.setState({passwordStatus: 'wrong'});
+        if (password !== ''){
+            this.setState({passwordStatus: 'wrong'});
+        }else{
+            this.setState({passwordStatus: 'normal', passwordErr: null});
+        }
     } else {
-      this.setState({passwordStatus: 'right', passwordErr: null});
+        this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
   handleConfirmPassword = (newPassword) => {
     this.setState({newPassword});
     if (this.state.password != newPassword) {
-      this.setState({newPasswordConfirmStatus: 'wrong'});
+        if (newPassword !== ''){
+            this.setState({newPasswordConfirmStatus: 'wrong', newPasswordErr: 'pages.resetPassword.passwordsMustMatch'});
+        }else{
+            this.setState({newPasswordConfirmStatus: 'normal', newPasswordErr: null});
+        }
+
     } else {
-      this.setState({newPasswordConfirmStatus: 'right', newPasswordErr: null});
+        if (newPassword !== ''){
+            this.setState({newPasswordConfirmStatus: 'right', newPasswordErr: null});
+        }else{
+            this.setState({newPasswordConfirmStatus: 'normal', newPasswordErr: null});
+        }
     }
   };
 
@@ -201,7 +214,7 @@ class ForgotPassword extends Component {
     }
     if (password != newPassword) {
       isValid = false;
-      this.setState({newPasswordConfirmStatus: 'wrong'});
+      this.setState({newPasswordConfirmStatus: 'wrong', newPasswordErr: 'pages.resetPassword.passwordsMustMatch'});
     }
 
     if (isValid) {
@@ -430,10 +443,20 @@ class ForgotPassword extends Component {
                         marginBottom: 5,
                       },
                     ]}>
-                    {translate(newPasswordErr).replace(
-                      '[missing {{field}} value]',
-                      translate('pages.resetPassword.repeatPassword'),
-                    )}
+                    {/*{translate(newPasswordErr).replace(*/}
+                      {/*'[missing {{field}} value]',*/}
+                      {/*translate('pages.resetPassword.repeatPassword'),*/}
+                    {/*)}*/}
+
+                      {newPasswordErr === 'messages.required'
+                          ? translate(newPasswordErr).replace(
+                              '[missing {{field}} value]',
+                              translate('pages.resetPassword.repeatPassword'),
+                          )
+                          : translate('messages.required').replace(
+                              '[missing {{field}} value]',
+                              translate('pages.resetPassword.passwordsMustMatch'),
+                          )}
                   </Text>
                 ) : null}
                 <Button

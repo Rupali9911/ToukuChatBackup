@@ -349,7 +349,8 @@ class ChatMessageBubble extends Component {
                             </Text>
                           </View>
                         </Fragment>
-                      ) : this.isContainUrl(message.message_body) ? (
+                      ) : this.isContainUrl(message.message_body) ?
+                          (
                         <TouchableOpacity
                           // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {

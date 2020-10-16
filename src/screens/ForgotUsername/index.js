@@ -151,7 +151,7 @@ class ForgotUserName extends Component {
                 style={[
                   globalStyles.bigSemiBoldText,
                   {
-                    fontSize: 30,
+                    fontSize: this.props.selectedLanguageItem.language_name === 'ja' ? 28 : 30,
                     marginVertical: 50,
                     opacity: 0.8,
                   },

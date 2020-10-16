@@ -524,11 +524,12 @@ export const deleteChannelById = (id) => {
 
 //#region Groups List
 export const setGroups = async (channels) => {
-  console.log('realm insert data', channels);
+  //console.log('realm insert data', channels);
   var checkObject = {};
   for (let item of channels) {
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
+      //console.log('setGroups -> obj', obj);
       await realm.write(() => {
         realm.create(
           'groups',

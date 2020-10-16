@@ -80,6 +80,8 @@ export default class App extends Component {
 
     _handleAppStateChange = (nextAppState) => {
         console.log('nextAppState', nextAppState)
+        const {appState} = this.state
+        this.setState({ appState: nextAppState })
         if (nextAppState === 'inactive') {
             let fCount = store.getState().friendReducer.unreadFriendMsgsCounts
             let gCount = store.getState().groupReducer.unreadGroupMsgsCounts
@@ -90,11 +92,11 @@ export default class App extends Component {
             PushNotificationIOS.setApplicationIconBadgeNumber(totalCount)
         }
 
-        if (this.state.appState.match(/background/) && nextAppState === 'active' || this.state.appState.match(/unknown/) && nextAppState === 'active') {
+        if (appState.match(/background/) && nextAppState === 'active' || appState.match(/unknown/) && nextAppState === 'active') {
             console.log('From background to active or unknown to active')
-            this.clearBatchCount()
+            //this.clearBatchCount()
 
-            if (this.state.appState.match(/background/) && nextAppState === 'active') {
+            if (appState.match(/background/) && nextAppState === 'active') {
                 console.log('From background to active')
                 this.SingleSocket = SingleSocket.getInstance();
                 this.SingleSocket.checkSocketConnected();
@@ -114,7 +116,6 @@ export default class App extends Component {
                 }
             }
         }
-        this.setState({ appState: nextAppState })
     };
 
     handleOpenURL = async (event) => {
@@ -208,14 +209,22 @@ export default class App extends Component {
 
     //3
     async getToken() {
-        let fcmToken = await AsyncStorage.getItem('fcmToken');
-        if (!fcmToken) {
-            fcmToken = await messaging().getToken()
-            if (fcmToken) {
+        let registeredFcmToken = await AsyncStorage.getItem('fcmToken');
+        console.log('saved dev_id token: ', registeredFcmToken);
+         let fcmToken = await messaging().getToken()
+            if (fcmToken !== registeredFcmToken) {
+                console.log('fcm NEWWWWWWWW dev_id: ', fcmToken);
                 await AsyncStorage.setItem('fcmToken', fcmToken);
             }
-        }
-        console.log('getToken() fcm token: ', fcmToken);
+
+        // let fcmToken = await AsyncStorage.getItem('fcmToken');
+        // if (!fcmToken) {
+        //     fcmToken = await messaging().getToken()
+        //     if (fcmToken) {
+        //         await AsyncStorage.setItem('fcmToken', fcmToken);
+        //     }
+        // }
+        // console.log('getToken() fcm token: ', fcmToken);
     }
 
     //2
@@ -283,7 +292,8 @@ export default class App extends Component {
 
         // When a user receives a push notification and the app is in foreground
         this.onMessageListener = messaging().onMessage(async remoteMessage => {
-            // this.onMessageReceived(remoteMessage)
+             this.onMessageReceived(remoteMessage)
+            console.log('foreground app Push Notification', remoteMessage)
         });
     }
 

@@ -54,6 +54,7 @@ export default class SearchInput extends Component {
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <Image source={Icons.icon_search} style={styles.iconSearch} />
+          <View style={{flex: 1,}}>
           <TextInput
             style={styles.inputStyle}
             placeholder={placeholder || translate('pages.xchat.search')}
@@ -68,6 +69,7 @@ export default class SearchInput extends Component {
             autoCapitalize={'none'}
             underlineColorAndroid={'transparent'}
           />
+          </View>
         </View>
         {!isIconRight ? (
           // <TouchableOpacity
@@ -148,7 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: Fonts.nunitoSansJPLight,
     marginStart: 10,
-    alignSelf: 'center',
+    //alignSelf: 'center',
+      paddingTop: 0,
+      paddingBottom: 0,
     // fontWeight: '200',
   },
   iconRight: {

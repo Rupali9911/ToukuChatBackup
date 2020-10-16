@@ -180,7 +180,7 @@ export const languageArray = [
   },
 ];
 
-export const supportUrl = 'https://www.touku.net/#/support/';
+export const supportUrl = 'https://www.touku.net/#/support?frame=1';
 export const termsUrl = 'https://touku.net/#/terms?lang=';
 export const registerUrl = 'https://www.touku.net/#/register/';
 export const loginUrl = 'https://www.touku.net/#/login/';

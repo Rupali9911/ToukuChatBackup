@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "185609886814-llnm1e2m9u578s1hp7ta6eb7hj26tomt.apps.googleusercontent.com",
+          "client_id": "185609886814-d29kn71v5ud906k7etjdjrosc9891v01.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.touku",
             "certificate_hash": "dd207d8ec30d9436af812d25942bd2ffdf1eac66"
+          }
+        },
+        {
+          "client_id": "185609886814-7pjkbkcbaqgtlch3vi1puc0bil465e65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.touku",
+            "certificate_hash": "c8924c5c2ed7f45d7cca885b0c1356dfe95d9d24"
           }
         },
         {

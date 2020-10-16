@@ -577,7 +577,7 @@ class GroupChats extends Component {
       this.getGroupDetail();
       this.getGroupMembers();
       this.getGroupConversationInitial();
-  
+
       this.updateUnReadGroupChatCount();
     }
   }
@@ -1418,7 +1418,7 @@ class GroupChats extends Component {
           removeUploadData={(index) => this.removeUploadData(index)}
           onAttachmentPress={() => this.onAttachmentPress()}
         />
-        {sendingMedia && <UploadLoader progress={this.state.uploadProgress}/>}
+        {sendingMedia && <UploadLoader/>}
       </ImageBackground>
     );
   }
