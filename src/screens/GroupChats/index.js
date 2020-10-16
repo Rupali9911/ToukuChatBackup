@@ -94,6 +94,7 @@ class GroupChats extends Component {
       sendingMedia: false,
       isLeaveLoading: false,
       uploadFile: {uri: null, type: null, name: null},
+      uploadProgress: 0,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -263,12 +264,17 @@ class GroupChats extends Component {
       sentMessageType: 'text',
       // sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
+      uploadProgress: 0
     });
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedImages.image[0].image;
     }
@@ -279,6 +285,10 @@ class GroupChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedAudio;
     }
@@ -290,6 +300,10 @@ class GroupChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedApplication;
     }
@@ -300,6 +314,10 @@ class GroupChats extends Component {
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedVideo;
     }
@@ -1400,7 +1418,7 @@ class GroupChats extends Component {
           removeUploadData={(index) => this.removeUploadData(index)}
           onAttachmentPress={() => this.onAttachmentPress()}
         />
-        {sendingMedia && <UploadLoader />}
+        {sendingMedia && <UploadLoader progress={this.state.uploadProgress}/>}
       </ImageBackground>
     );
   }

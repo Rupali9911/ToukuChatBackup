@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Colors } from '../../constants';
 import {translate} from "../../redux/reducers/languageReducer";
+import {ProgressBar, DarkTheme} from 'react-native-paper';
 
 export default class UploadLoader extends Component {
   constructor(props) {
@@ -37,10 +38,15 @@ export default class UploadLoader extends Component {
             justifyContent: 'center',
           }}
         >
-          <ActivityIndicator
+          {progress ? <View style={{alignItems:'center'}}> 
+            {/* <Text style={{ color: Colors.white, marginTop: 10, marginBottom:5, fontSize: 18 }}>
+              {parseFloat(this.state.progress*100).toFixed(2)}%
+            </Text>   */}
+            <ProgressBar color={Colors.primary} style={{ width: 200, height: 8 }} progress={this.state.progress}/>
+          </View> : <ActivityIndicator
             color={Colors.primary}
             size={large ? 'large' : 'small'}
-          />
+          />}
           <Text style={{ color: Colors.white, marginTop: 10 }}>
               {translate('pages.xchat.uploading')}
           </Text>

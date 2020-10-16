@@ -103,6 +103,7 @@ class ChannelChats extends Component {
       sentMessageType: 'text',
       sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
+      uploadProgress: 0,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -459,6 +460,10 @@ class ChannelChats extends Component {
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedImages.image[0].image;
     }
@@ -470,6 +475,10 @@ class ChannelChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedAudio;
     }
@@ -482,6 +491,10 @@ class ChannelChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedApplication;
     }
@@ -492,6 +505,10 @@ class ChannelChats extends Component {
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedVideo;
     }
@@ -1115,7 +1132,7 @@ class ChannelChats extends Component {
             removeUploadData={(index) => this.removeUploadData(index)}
             onAttachmentPress={() => this.onAttachmentPress()}
           />
-          {sendingMedia && <UploadLoader />}
+          {sendingMedia && <UploadLoader progress={this.state.uploadProgress}/>}
         </View>
       );
     }

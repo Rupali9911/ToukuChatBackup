@@ -12,7 +12,7 @@ export default class S3uploadService extends Component {
     this.state = {};
   }
 
-  async uploadImagesOnS3Bucket(files) {
+  async uploadImagesOnS3Bucket(files,onProgress) {
     const imagesFiles = { image: [] };
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -23,13 +23,15 @@ export default class S3uploadService extends Component {
         file,
         fileName,
         800,
-        800
+        800,
+        onProgress
       );
       const originResizedImage_2 = await this.uploadImage(
         file,
         `thumb_${fileName}`,
         360,
-        360
+        360,
+        onProgress
       );
 
       console.log('originResizedImage, originResizedImage_2', originResizedImage, originResizedImage_2)
@@ -42,43 +44,43 @@ export default class S3uploadService extends Component {
     return imagesFiles;
   }
 
-  async uploadImage(file, fileName, width, height) {
+  async uploadImage(file, fileName, width, height, onProgress) {
     const imageFile = await this.resizeImage(file, width, height);
-    return await this.uploadFile(imageFile, fileName, 'image/png');
+    return await this.uploadFile(imageFile, fileName, 'image/png', onProgress);
   }
 
-  async uploadAudioOnS3Bucket(files, fileName, fileType) {
+  async uploadAudioOnS3Bucket(files, fileName, fileType, onProgress) {
     let audio;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      audio = await this.uploadFile(file, fileName, fileType);
+      audio = await this.uploadFile(file, fileName, fileType, onProgress);
     }
     return audio.body.postResponse.location;
   }
 
-  async uploadApplicationOnS3Bucket(files, fileName, fileType) {
+  async uploadApplicationOnS3Bucket(files, fileName, fileType, onProgress) {
     let application;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      application = await this.uploadFile(file, fileName, fileType);
+      application = await this.uploadFile(file, fileName, fileType, onProgress);
     }
     return application.body.postResponse.location;
   }
 
-  async uploadVideoOnS3Bucket(files, type) {
+  async uploadVideoOnS3Bucket(files, type, onProgress) {
     console.log('S3uploadService -> uploadVideoOnS3Bucket -> type', type);
     let video;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileName = `video_${moment().valueOf()}_${i + 1}`;
-      video = await this.uploadFile(file, fileName, type);
+      video = await this.uploadFile(file, fileName, type, onProgress);
     }
     console.log('S3uploadService -> uploadVideoOnS3Bucket -> video', video);
 
     return video.body.postResponse.location;
   }
 
-  async uploadFile(file, fileName, fileType) {
+  async uploadFile(file, fileName, fileType, onProgress) {
     const File = {
       uri: file,
       name: fileName,
@@ -96,7 +98,10 @@ export default class S3uploadService extends Component {
     };
 
     return await RNS3.put(File, options)
-      .progress((e) => console.log(e.percent))
+      .progress((e) => {
+        console.log(e.percent)
+        onProgress && onProgress(e);
+      })
       .then(async (response) => {
         console.log('S3uploadService -> uploadFile -> response', response);
         return await response;

@@ -237,10 +237,13 @@ class GroupDetails extends Component {
       .then((responseArray) => {
           this.props.getUserFriends().then(() => {
               //let arrTemp = [...responseArray, ...this.props.userFriends]
-              let arrTemp = this.props.userFriends
+              
               let arrTemp2 = this.props.userFriends
+              let arrTemp = [...arrTemp2]
+              
               console.log('arrTemp2', arrTemp2, responseArray)
               console.log('responseArray', responseArray)
+
               responseArray.map(itemRes =>{
                   arrTemp2.map(itemUserFriends =>{
                         if(itemRes.id === itemUserFriends.user_id){
@@ -249,7 +252,7 @@ class GroupDetails extends Component {
                                 console.log('index ', index)
                                 arrTemp.splice(index, 1);
                             }
-                      }
+                        }
                    })
                   })
               let arrTemp1 = [...responseArray, ...arrTemp]
@@ -257,9 +260,7 @@ class GroupDetails extends Component {
               this.props.setCurrentGroupMembers(arrTemp1);
               this.setState({loading: false})
           })
-
-      })
-      .catch((err) => {this.setState({loading: false})});
+      }).catch((err) => {this.setState({loading: false})});
   };
 
   onAddFriend(isAdded, item) {

@@ -78,6 +78,7 @@ class FriendChats extends Component {
       showAttachmentModal: false,
       showGalleryModal: false,
       uploadFile: {uri: null, type: null, name: null},
+      uploadProgress: 0,
       headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
@@ -203,6 +204,7 @@ class FriendChats extends Component {
       sentMessageType: 'text',
       // sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
+      uploadProgress: 0
     });
 
     let imgThumb = '';
@@ -211,6 +213,10 @@ class FriendChats extends Component {
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       console.log('uploadedImages', uploadedImages);
       msgText = uploadedImages.image[0].image;
@@ -224,6 +230,10 @@ class FriendChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedAudio;
     }
@@ -236,6 +246,10 @@ class FriendChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedApplication;
     }
@@ -246,6 +260,10 @@ class FriendChats extends Component {
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedVideo;
     }
@@ -1238,7 +1256,7 @@ class FriendChats extends Component {
           removeUploadData={(index) => this.removeUploadData(index)}
           onAttachmentPress={() => this.onAttachmentPress()}
         />
-        {sendingMedia && <UploadLoader />}
+        {sendingMedia && <UploadLoader progress={this.state.uploadProgress}/>}
       </ImageBackground>
     );
   }
