@@ -162,16 +162,7 @@ export const facebookRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-          // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+           reject(err);
       });
   });
 
@@ -187,16 +178,7 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-          // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+          reject(err);
       });
   });
 
@@ -212,16 +194,7 @@ export const twitterRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+         reject(err);
       });
   });
 
@@ -237,16 +210,7 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        //reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+        reject(err);
       });
   });
 
@@ -262,16 +226,7 @@ export const kakaoRegister = (socialLoginData) => (dispatch) =>
                 resolve(res);
             })
             .catch((err) => {
-                // reject(err);
-                if (err.response) {
-                    if (err.response.data) {
-                        Toast.show({
-                            title: 'Login Failed',
-                            text: translate(err.response.data.toString()),
-                            type: 'primary',
-                        });
-                    }
-                }
+                 reject(err);
             });
     });
 

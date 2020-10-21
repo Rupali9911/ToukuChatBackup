@@ -428,7 +428,6 @@ class SignUp extends Component {
                   this.props.getUserProfile().then((res) => {
                     if (res.id) {
                       this.props.navigation.navigate('App');
-
                       if (channelData) {
                             this.props.setCurrentChannel(channelData)
                             setTimeout(() => {
@@ -454,11 +453,11 @@ class SignUp extends Component {
               })
               .catch((err) => {
                   console.log('userRegister response',err)
-                  Toast.show({
-                      title: translate('common.register'),
-                      text: translate('common.somethingWentWrong'),
-                      type: 'primary',
-                  });
+                  // Toast.show({
+                  //     title: translate('common.register'),
+                  //     text: translate('common.somethingWentWrong'),
+                  //     type: 'primary',
+                  // });
               });
           } else {
             Toast.show({
@@ -749,18 +748,18 @@ class SignUp extends Component {
                                     type: 'primary',
                                 });
                             }else{
-                                Toast.show({
-                                    title: translate('pages.register.toastr.RegisterFailed'),
-                                    text: translate('common.somethingWentWrong'),
-                                    type: 'primary',
-                                });
+                                // Toast.show({
+                                //     title: translate('pages.register.toastr.RegisterFailed'),
+                                //     text: translate('common.somethingWentWrong'),
+                                //     type: 'primary',
+                                // });
                             }
                         }else{
-                            Toast.show({
-                                title: translate('pages.register.toastr.RegisterFailed'),
-                                text: translate('common.somethingWentWrong'),
-                                type: 'primary',
-                            });
+                            // Toast.show({
+                            //     title: translate('pages.register.toastr.RegisterFailed'),
+                            //     text: translate('common.somethingWentWrong'),
+                            //     type: 'primary',
+                            // });
                         }
                     }
                 }

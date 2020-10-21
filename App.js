@@ -48,6 +48,12 @@ export default class App extends Component {
         this.addListener()
         this.checkNotificationPermission();
         this.getInitialLinking()
+
+        this.onTokenRefreshListener = messaging().onTokenRefresh(fcmToken => {
+            // Process your token as required
+            this.getToken()
+            console.log("Updated Token=" + fcmToken);
+        });
     }
 
     componentWillUnmount() {
@@ -76,6 +82,7 @@ export default class App extends Component {
         this.backgroundNotificationListener
         this.closedAppNotificationListener
         this.onMessageListener
+        this.onTokenRefreshListener
     }
 
     _handleAppStateChange = (nextAppState) => {
@@ -97,6 +104,7 @@ export default class App extends Component {
             //this.clearBatchCount()
 
             if (appState.match(/background/) && nextAppState === 'active') {
+                this.getToken();
                 console.log('From background to active')
                 this.SingleSocket = SingleSocket.getInstance();
                 this.SingleSocket.checkSocketConnected();
@@ -197,6 +205,35 @@ export default class App extends Component {
         }
     }
 
+    updateToken = async (token) => {
+        const userAndSocialToken = await AsyncStorage.multiGet(["userToken", "socialToken"])
+        let jwtToken = ''
+        if (userAndSocialToken[1][1] && userAndSocialToken[1][1] != null) {
+            jwtToken = `JWT ${userAndSocialToken[1][1]}`;
+        } else if (userAndSocialToken[0][1] && userAndSocialToken[0][1] != null) {
+            jwtToken = `JWT ${userAndSocialToken[0][1]}`;
+        }
+        if (userAndSocialToken[0][1] || userAndSocialToken[1][1]) {
+            let formData = new FormData();
+            formData.append("dev_id", token);
+            let result = await fetch('https://api.angelium.net/api/xchat/add-device/',
+                {
+                    method: 'POST',
+                    headers: {
+                        'User-Agent': userAgent,
+                        // Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: jwtToken,
+                        Origin: 'touku'
+                    },
+                    body: formData,
+                },
+            );
+            result = await result.json();
+            console.log('result of Update token', result, token)
+        }
+    }
+
     //1
     async checkNotificationPermission() {
         const enabled = messaging().isDeviceRegisteredForRemoteMessages
@@ -215,6 +252,7 @@ export default class App extends Component {
             if (fcmToken !== registeredFcmToken) {
                 console.log('fcm NEWWWWWWWW dev_id: ', fcmToken);
                 await AsyncStorage.setItem('fcmToken', fcmToken);
+                this.updateToken(registeredFcmToken)
             }
 
         // let fcmToken = await AsyncStorage.getItem('fcmToken');

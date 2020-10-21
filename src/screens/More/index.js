@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, ScrollView, Linking} from 'react-native';
+import {View, ImageBackground, ScrollView, Linking, ActivityIndicator} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
@@ -38,6 +38,7 @@ class More extends Component {
       isQRVisible: false,
       isSupport: false,
       isLogOutVisible: false,
+        loggingloggingOutOut: false
     };
     this.SingleSocket = SingleSocket.getInstance();
   }
@@ -87,6 +88,7 @@ class More extends Component {
   };
 
   actionLogout = async () => {
+    this.setState({loggingOut: true})
     let fcmToken = await AsyncStorage.getItem('fcmToken');
     let data = {
         dev_id: fcmToken
@@ -97,7 +99,11 @@ class More extends Component {
         this.SingleSocket && this.SingleSocket.closeSocket();
         resetData();
         await this.clearAsyncStorage();
-    });
+        this.setState({loggingOut: false})
+    })
+        .catch((error) => {
+            this.setState({loggingOut: false})
+        });
   };
 
   actionCancel() {
@@ -128,6 +134,7 @@ class More extends Component {
       isQRVisible,
       isSupport,
       isLogOutVisible,
+        loggingOut
     } = this.state;
     const {selectedLanguageItem, navigation} = this.props;
     return (
@@ -237,7 +244,9 @@ class More extends Component {
           onConfirm={this.actionLogout.bind(this)}
           title={translate('header.logoTitle')}
           message={translate('common.logOutAlert')}
+          isLoading={loggingOut}
         />
+
       </View>
       // </ImageBackground>
     );

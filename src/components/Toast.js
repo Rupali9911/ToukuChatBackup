@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Animated,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  Platform,
+    View,
+    Animated,
+    Text,
+    StyleSheet,
+    Image,
+    Dimensions,
+    Platform, AppState,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Orientation from 'react-native-orientation';
@@ -26,7 +26,7 @@ class Toast extends Component {
     };
   }
 
-  static toastInstance = Toast.instance || new Toast()
+  static toastInstance
 
   static show({...config}) {
     this.toastInstance.start(config);
@@ -122,6 +122,7 @@ class Toast extends Component {
 
   render() {
     const {title, text, icon, orientation} = this.state;
+      if (AppState.currentState === 'background') {return null}
     return (
       <Animated.View
         ref={(c) => (this._root = c)}
