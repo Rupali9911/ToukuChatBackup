@@ -8,7 +8,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
-import {getImage} from '../../utils';
+import {getImage,normalize} from '../../utils';
 
 export default class GroupListItem extends Component {
   constructor(props) {
@@ -80,7 +80,7 @@ export default class GroupListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: 13,
+                      fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -93,7 +93,7 @@ export default class GroupListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: 12,
+                      fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>

@@ -1457,7 +1457,7 @@ class Home extends Component {
             </Text>
           </TouchableOpacity>
           {/* Friend Request */}
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false} enableOnAndroid={true}>
             {filteredFriendRequest.length > 0 && (
               <Collapse
                 onToggle={(isColl) =>

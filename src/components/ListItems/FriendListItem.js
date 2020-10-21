@@ -8,6 +8,7 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
+import { normalize } from '../../utils';
 export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
@@ -82,7 +83,7 @@ export default class FriendListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: 13,
+                      fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -95,7 +96,7 @@ export default class FriendListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: 12,
+                      fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>
@@ -110,7 +111,7 @@ export default class FriendListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: 11,
+                      fontSize: normalize(9),
                       fontWeight: '400',
                     },
                   ]}>
@@ -123,7 +124,7 @@ export default class FriendListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: 11,
+                        fontSize: normalize(9),
                       },
                     ]}>
                     {unreadCount}

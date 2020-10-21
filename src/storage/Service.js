@@ -133,6 +133,18 @@ export const updateMessageById = (id, text, type) => {
   });
 };
 
+export const updateReadByChannelId = (id) => {
+  let results = realm
+    .objects('chat_conversation')
+    .filtered(`channel == ${id}`);
+
+    for (let chat of results) {
+      realm.write(() => {
+        realm.create('chat_conversation', {id: chat.id, is_read: true}, 'modified');
+      });
+    }
+};
+
 export const deleteMessageById = async (id) => {
   var message = realm.objects('chat_conversation').filtered(`id == ${id}`);
 

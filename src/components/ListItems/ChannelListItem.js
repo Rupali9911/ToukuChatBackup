@@ -8,8 +8,9 @@ import {Badge, Divider} from 'react-native-paper';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
-import {getImage} from '../../utils';
+import {getImage,normalize} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
+
 export default class ChannelListItem extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +23,7 @@ export default class ChannelListItem extends Component {
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
     if (today.getDate() === msgDate.getDate()) {
-      return moment(date).format('H:mm');
+      return moment(date).format('HH:mm');
     }
     if (
       yesterday.getDate() === msgDate.getDate() &&
@@ -75,7 +76,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: 13,
+                      fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -87,7 +88,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: 12,
+                      fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>
@@ -101,7 +102,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: 11,
+                      fontSize: normalize(9),
                       fontWeight: '400',
                     },
                   ]}>
@@ -114,7 +115,7 @@ export default class ChannelListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: 11,
+                        fontSize: normalize(9),
                       },
                     ]}>
                     {unreadCount}

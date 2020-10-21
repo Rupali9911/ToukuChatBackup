@@ -69,10 +69,10 @@ class TabBarComp extends Component {
   }
 
   keyboardWillShow = event => {
-    Platform.OS==='android' && 
-    this.setState({
-      isVisible: false
-    })
+    // Platform.OS==='android' && 
+    // this.setState({
+    //   isVisible: false
+    // })
   }
 
   keyboardWillHide = event => {
