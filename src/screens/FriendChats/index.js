@@ -167,6 +167,7 @@ class FriendChats extends Component {
     this.markFriendMsgsRead();
     this.updateUnReadFriendChatCount();
     // alert(JSON.stringify(this.props.userData));
+
   }
 
   updateUnReadFriendChatCount = () => {
@@ -949,6 +950,7 @@ class FriendChats extends Component {
   onGalleryPress = async () => {
     ImagePicker.openPicker({
       multiple: true,
+      maxFiles: 30,
       mediaType: 'any',
       includeBase64: true,
     }).then(async (images) => {

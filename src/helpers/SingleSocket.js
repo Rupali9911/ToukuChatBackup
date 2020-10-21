@@ -109,7 +109,7 @@ export default class SingleSocket extends Component {
   }
 
   sendMessage(msg) {
-    this.webSocketBridge.send(
+    this.webSocketBridge && this.webSocketBridge.send(
       JSON.stringify({
         message: msg,
       }),

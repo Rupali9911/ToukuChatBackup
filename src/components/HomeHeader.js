@@ -104,7 +104,7 @@ export default class HomeHeader extends Component {
                   visible={this.state.visible}
                   onDismiss={this._closeMenu}
                   anchor={
-                    <TouchableOpacity onPress={this._openMenu}>
+                    <TouchableOpacity style={{paddingHorizontal:10, paddingVertical:5}} onPress={this._openMenu}>
                       <Image
                         source={Icons.icon_triangle_up}
                         style={{

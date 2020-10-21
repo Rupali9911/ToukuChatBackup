@@ -275,6 +275,30 @@ export const setGroupChatConversation = (conversation) => {
       .filtered('msg_id =' + item.msg_id);
     if (obj.length > 0) {
       // alert('matching friend');
+      realm.write(() => {
+        realm.create('chat_conversation_group', {
+          msg_id: item.msg_id,
+          sender_id: item.sender_id,
+          group_id: item.group_id,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          sender_picture: item.sender_picture,
+          message_body: item.message_body,
+          is_edited: item.is_edited,
+          is_unsent: item.is_unsent,
+          timestamp: item.timestamp,
+          reply_to: item.reply_to,
+          mentions: item.mentions
+            ? item.mentions instanceof Object
+              ? []
+              : item.mentions
+            : [],
+          read_count: item.read_count ? item.read_count : 0,
+          created: item.created,
+        },
+        'modified',
+        );
+      });
     } else {
       realm.write(() => {
         realm.create('chat_conversation_group', {

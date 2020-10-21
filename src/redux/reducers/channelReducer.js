@@ -547,7 +547,7 @@ export const getChannelConversations = (id, limit = 30) => (dispatch) =>
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + limit)
       .then(async (res) => {
-        // console.log('res_channel_conversation',res);
+        console.log('res_channel_conversation',JSON.stringify(res));
         setChannelChatConversation(res.conversation);
         dispatch(getChannelConversationsSuccess());
         resolve(res);

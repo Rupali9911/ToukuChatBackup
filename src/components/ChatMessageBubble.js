@@ -148,7 +148,7 @@ class ChatMessageBubble extends Component {
                   {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You' */}
                   {/* :  */}
-                  {replyMessage.display_name}
+                  {(replyMessage.display_name && replyMessage.display_name!=='')?replyMessage.display_name:replyMessage.name}
                   {/* } */}
                 </Text>
               </View>

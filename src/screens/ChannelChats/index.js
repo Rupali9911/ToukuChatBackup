@@ -853,6 +853,7 @@ class ChannelChats extends Component {
   onGalleryPress = async () => {
     ImagePicker.openPicker({
       multiple: true,
+      maxFiles: 30,
       mediaType: 'any',
       includeBase64: true,
     }).then(async (images) => {

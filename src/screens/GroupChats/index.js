@@ -57,6 +57,7 @@ import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
 import {eventService} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
+import SingleSocket from '../../helpers/SingleSocket';
 
 import {
   setGroupChatConversation,
@@ -579,6 +580,15 @@ class GroupChats extends Component {
       this.getGroupConversationInitial();
 
       this.updateUnReadGroupChatCount();
+
+      let singleSocket =  SingleSocket.getInstance();
+
+      singleSocket.sendMessage(JSON.stringify({
+        "type": SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
+        "data": {
+          "group_id": this.props.currentGroup.group_id
+        }
+      }));
     }
   }
 
@@ -1098,6 +1108,7 @@ class GroupChats extends Component {
   onGalleryPress = async () => {
     ImagePicker.openPicker({
       multiple: true,
+      maxFiles:30,
       mediaType: 'any',
       includeBase64: true,
     }).then(async (images) => {

@@ -454,7 +454,7 @@ class GroupDetails extends Component {
                   ? this.isMemberCheck(item.id ? item.id : item.user_Id).member_type
                   : translate('pages.xchat.add')
               }
-              isRightDropDown
+              isRightDropDown={true}
               dropDownData={
                 this.isMemberCheck(item.id ? item.id : item.user_Id)
                   ? this.isMemberCheck(item.id ? item.id : item.user_Id).member_type == 'member'
