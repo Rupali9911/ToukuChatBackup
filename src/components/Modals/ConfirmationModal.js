@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {
-  View,
-  TouchableOpacity,
-  Text,
-  FlatList,
-  Image,
-  Platform,
+    View,
+    TouchableOpacity,
+    Text,
+    FlatList,
+    Image,
+    Platform, ActivityIndicator,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {Menu, Divider} from 'react-native-paper';

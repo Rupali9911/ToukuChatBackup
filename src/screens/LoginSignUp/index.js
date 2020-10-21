@@ -177,33 +177,14 @@ class LoginSignUp extends Component {
           this.setState({isLoading: false})
           if (err.response) {
               console.log(err.response)
-              if (err.response.request._response) {
-                  console.log(err.response.request._response)
-                  let errMessage = JSON.parse(err.response.request._response)
-                  if (errMessage.message) {
-                      Toast.show({
-                          title: translate('common.loginFailed'),
-                          text: translate(errMessage.message.toString()),
-                          type: 'primary',
-                      });
-                  }else if (errMessage.non_field_errors) {
-                      let strRes = errMessage.non_field_errors
-                      Toast.show({
-                          title: translate('common.loginFailed'),
-                          text: translate(strRes.toString()),
-                          type: 'primary',
-                      });
-                  }else if (errMessage.detail) {
-                      Toast.show({
-                          title: translate('common.loginFailed'),
-                          text: errMessage.detail.toString(),
-                          type: 'primary',
-                      });
-                  }
+              if (err.response.data) {
+                  Toast.show({
+                      title: 'Login Failed',
+                      text: translate(err.response.data.toString()),
+                      type: 'primary',});
               }
           }
       });
-
     } catch (error) {
         this.setState({isLoading: false})
         //alert(error);
@@ -318,29 +299,11 @@ class LoginSignUp extends Component {
             this.setState({isLoading: false})
             if (err.response) {
                 console.log(err.response)
-                if (err.response.request._response) {
-                    console.log(err.response.request._response)
-                    let errMessage = JSON.parse(err.response.request._response)
-                    if (errMessage.message) {
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: translate(errMessage.message.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.non_field_errors) {
-                        let strRes = errMessage.non_field_errors
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: translate(strRes.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.detail) {
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: errMessage.detail.toString(),
-                            type: 'primary',
-                        });
-                    }
+                if (err.response.data) {
+                    Toast.show({
+                        title: 'Login Failed',
+                        text: translate(err.response.data.toString()),
+                        type: 'primary',});
                 }
             }
         });
@@ -428,29 +391,11 @@ class LoginSignUp extends Component {
             this.setState({isLoading: false})
             if (err.response) {
                 console.log(err.response)
-                if (err.response.request._response) {
-                    console.log(err.response.request._response)
-                    let errMessage = JSON.parse(err.response.request._response)
-                    if (errMessage.message) {
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: translate(errMessage.message.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.non_field_errors) {
-                        let strRes = errMessage.non_field_errors
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: translate(strRes.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.detail) {
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: errMessage.detail.toString(),
-                            type: 'primary',
-                        });
-                    }
+                if (err.response.data) {
+                    Toast.show({
+                        title: 'Login Failed',
+                        text: translate(err.response.data.toString()),
+                        type: 'primary',});
                 }
             }
         });
@@ -523,29 +468,11 @@ class LoginSignUp extends Component {
               this.setState({isLoading: false})
               if (err.response) {
                   console.log(err.response)
-                  if (err.response.request._response) {
-                      console.log(err.response.request._response)
-                      let errMessage = JSON.parse(err.response.request._response)
-                      if (errMessage.message) {
-                          Toast.show({
-                              title: translate('common.loginFailed'),
-                              text: translate(errMessage.message.toString()),
-                              type: 'primary',
-                          });
-                      }else if (errMessage.non_field_errors) {
-                          let strRes = errMessage.non_field_errors
-                          Toast.show({
-                              title: translate('common.loginFailed'),
-                              text: translate(strRes.toString()),
-                              type: 'primary',
-                          });
-                      }else if (errMessage.detail) {
-                          Toast.show({
-                              title: translate('common.loginFailed'),
-                              text: errMessage.detail.toString(),
-                              type: 'primary',
-                          });
-                      }
+                  if (err.response.data) {
+                      Toast.show({
+                          title: 'Login Failed',
+                          text: translate(err.response.data.toString()),
+                          type: 'primary',});
                   }
               }
           });
@@ -610,29 +537,11 @@ class LoginSignUp extends Component {
               this.setState({isLoading: false})
               if (err.response) {
                   console.log(err.response)
-                  if (err.response.request._response) {
-                      console.log(err.response.request._response)
-                      let errMessage = JSON.parse(err.response.request._response)
-                      if (errMessage.message) {
-                          Toast.show({
-                              title: translate('common.loginFailed'),
-                              text: translate(errMessage.message.toString()),
-                              type: 'primary',
-                          });
-                      }else if (errMessage.non_field_errors) {
-                          let strRes = errMessage.non_field_errors
-                          Toast.show({
-                              title: translate('common.loginFailed'),
-                              text: translate(strRes.toString()),
-                              type: 'primary',
-                          });
-                      }else if (errMessage.detail) {
-                          Toast.show({
-                              title: translate('common.loginFailed'),
-                              text: errMessage.detail.toString(),
-                              type: 'primary',
-                          });
-                      }
+                  if (err.response.data) {
+                      Toast.show({
+                          title: 'Login Failed',
+                          text: translate(err.response.data.toString()),
+                          type: 'primary',});
                   }
               }
           });
@@ -699,29 +608,11 @@ class LoginSignUp extends Component {
             this.setState({isLoading: false})
             if (err.response) {
                 console.log(err.response)
-                if (err.response.request._response) {
-                    console.log(err.response.request._response)
-                    let errMessage = JSON.parse(err.response.request._response)
-                    if (errMessage.message) {
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: translate(errMessage.message.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.non_field_errors) {
-                        let strRes = errMessage.non_field_errors
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: translate(strRes.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.detail) {
-                        Toast.show({
-                            title: translate('common.loginFailed'),
-                            text: errMessage.detail.toString(),
-                            type: 'primary',
-                        });
-                    }
+                if (err.response.data) {
+                    Toast.show({
+                        title: 'Login Failed',
+                        text: translate(err.response.data.toString()),
+                        type: 'primary',});
                 }
             }
         });

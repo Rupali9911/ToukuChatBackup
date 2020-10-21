@@ -122,7 +122,7 @@ export default class GroupFriend extends Component {
           <Text
             style={[
               globalStyles.smallLightText,
-              {color: Colors.black, textAlign: 'left', marginStart: 15},
+              {color: Colors.black, textAlign: 'left', marginStart: 15,flexWrap: 'wrap', flex: 1,},
             ]}>
             {user.display_name}
           </Text>
@@ -171,6 +171,6 @@ const styles = StyleSheet.create({
   subContainer: {
     flex: 0.8,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
 });

@@ -1643,11 +1643,11 @@ class Chat extends Component {
         this.props.setCurrentGroupDetail(res);
       })
       .catch((err) => {
-        Toast.show({
-          title: 'Touku',
-          text: translate('common.somethingWentWrong'),
-          type: 'primary',
-        });
+        // Toast.show({
+        //   title: 'Touku',
+        //   text: translate('common.somethingWentWrong'),
+        //   type: 'primary',
+        // });
       });
   }
 
