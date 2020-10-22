@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import RoundedImage from '../RoundedImage';
 import {Icons, Colors, Images, Fonts} from '../../constants';
-import {isIphoneX, getImage, getAvatar} from '../../utils';
+import {isIphoneX, getImage, getAvatar, normalize} from '../../utils';
 import {globalStyles} from '../../styles';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {Menu} from 'react-native-paper';
@@ -133,13 +133,13 @@ export default class ChatHeader extends Component {
                       numberOfLines={1}
                       style={[
                         globalStyles.normalRegularText15,
-                        {fontSize: 14},
+                        {fontSize: normalize(12)},
                       ]}>
                       {title}
                     </Text>
                     <Text
                       numberOfLines={1}
-                      style={[globalStyles.smallRegularText, {fontSize: 11}]}>
+                      style={[globalStyles.smallRegularText, {fontSize: normalize(9)}]}>
                       {description}
                     </Text>
                   </View>

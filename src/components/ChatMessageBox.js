@@ -13,7 +13,7 @@ import {Colors, Fonts} from '../constants';
 import {translate} from '../redux/reducers/languageReducer';
 import {globalStyles} from '../styles';
 import RoundedImage from './RoundedImage';
-import {getAvatar} from '../utils';
+import {getAvatar, normalize} from '../utils';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 const {width} = Dimensions.get('window');
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.dark_pink,
     fontFamily: Fonts.light,
-    fontSize: 9,
+    fontSize: normalize(8),
   },
   squareImage: {
     width: 40,

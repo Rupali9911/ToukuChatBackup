@@ -185,7 +185,7 @@ class Chat extends Component {
         this.props.setAppLanguage(filteredArray[0]);
         setI18nConfig(filteredArray[0].language_name);
       }
-      this.props.getFriendRequest();
+      // this.props.getFriendRequest();
 
       this.props.getFollowingChannels().then((res) => {
         this.props.getUserGroups().then((res) => {

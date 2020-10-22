@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Colors, Icons, Fonts} from '../../constants';
-import {isIphoneX} from '../../utils';
+import {isIphoneX, normalize} from '../../utils';
 import LinearGradient from 'react-native-linear-gradient';
 import {t} from 'i18n-js';
 const {height} = Dimensions.get('window');
@@ -221,7 +221,7 @@ const chatInput = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 5) : 0,
     paddingBottom: 0,
-    fontSize: 12,
+    fontSize: normalize(10),
     lineHeight: 15,
   },
   sendButoonContainer: {

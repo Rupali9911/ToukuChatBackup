@@ -12,7 +12,7 @@ import GroupChatMessageBubble from './GroupChatMessageBubble';
 
 import {Colors, Fonts} from '../constants';
 import RoundedImage from './RoundedImage';
-import {getAvatar} from '../utils';
+import {getAvatar, normalize} from '../utils';
 import {translate} from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -372,6 +372,6 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.dark_pink,
     fontFamily: Fonts.light,
-    fontSize: 9,
+    fontSize: normalize(8),
   },
 });

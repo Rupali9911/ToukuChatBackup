@@ -28,7 +28,7 @@ import HomeHeader from '../../components/HomeHeader';
 import {Images, Colors, Icons, SocketEvents} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import {getAvatar, eventService} from '../../utils';
+import {getAvatar, eventService, normalize} from '../../utils';
 import {ProfileModal} from '../../components/Modals';
 import {
   ChannelListItem,
@@ -1578,7 +1578,7 @@ const DropdownHeader = (props) => {
           style={[
             globalStyles.smallRegularText,
             {
-              fontSize: 12,
+              fontSize: normalize(10),
               fontWeight: '400',
               color: '#fff',
               textShadowColor: 'rgba(0,0,0,.004)',
@@ -1593,7 +1593,7 @@ const DropdownHeader = (props) => {
             globalStyles.smallRegularText,
             {
               marginStart: 5,
-              fontSize: 12,
+              fontSize: normalize(10),
               fontWeight: '400',
               textShadowColor: 'rgba(0,0,0,.004)',
               color: '#fff',
@@ -1612,7 +1612,7 @@ const DropdownHeader = (props) => {
             style={{
               backgroundColor: Colors.green,
               color: Colors.white,
-              fontSize: 11,
+              fontSize: normalize(9),
             }}>
             {badgeCount}
           </Badge>
