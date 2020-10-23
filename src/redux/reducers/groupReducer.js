@@ -344,7 +344,7 @@ export const markGroupConversationRead = (data) => (dispatch) =>
   });
 
 //Get Group Conversations
-const getGroupConversationRequest = () => ({
+export const getGroupConversationRequest = () => ({
   type: GET_GROUP_CONVERSATION_REQUEST,
 });
 
@@ -382,12 +382,11 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
 
 export const getGroupConversation = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getGroupConversationRequest());
+    dispatch(getGroupConversationRequest())
     console.log('groupId', groupId);
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
-        // console.log('res',JSON.stringify(res));
         setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
         resolve(res);

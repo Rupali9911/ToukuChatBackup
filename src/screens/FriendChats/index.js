@@ -79,6 +79,7 @@ class FriendChats extends Component {
       showGalleryModal: false,
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
+      isChatLoading:false,
       headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
@@ -631,6 +632,7 @@ class FriendChats extends Component {
   };
 
   getPersonalConversationInitial = async () => {
+    this.setState({isChatLoading:true});
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
@@ -655,6 +657,7 @@ class FriendChats extends Component {
         conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
+      this.setState({isChatLoading:false});
     }
 
     await this.props
@@ -689,6 +692,7 @@ class FriendChats extends Component {
           });
           this.props.setFriendConversation(conversations);
         }
+        this.setState({isChatLoading:false});
       });
   };
 
@@ -1149,8 +1153,10 @@ class FriendChats extends Component {
       translatedMessageId,
       uploadFile,
       sendingMedia,
+      isChatLoading
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
+    console.log('chatsLoading',chatsLoading);
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1169,7 +1175,7 @@ class FriendChats extends Component {
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu }
         />
-        {chatsLoading && chatFriendConversation.length <= 0 ? (
+        {isChatLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />
         ) : (
           <ChatContainer

@@ -104,6 +104,7 @@ class ChannelChats extends Component {
       sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
+      isChatLoading:false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -804,6 +805,7 @@ class ChannelChats extends Component {
   };
 
   getChannelConversationsInitial = async () => {
+    this.setState({isChatLoading:true});
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
       let conversations = [];
@@ -812,6 +814,7 @@ class ChannelChats extends Component {
       // });
       conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
+      this.setState({isChatLoading:false});
     }
     await this.props
       .getChannelConversations(this.props.currentChannel.id)
@@ -829,6 +832,7 @@ class ChannelChats extends Component {
           conversations = chat.toJSON();
           this.props.setChannelConversation(conversations);
         }
+        this.setState({isChatLoading:false});
       });
   };
 
@@ -1042,11 +1046,12 @@ class ChannelChats extends Component {
       showMessageDeleteConfirmationModal,
       uploadFile,
       sendingMedia,
+      isChatLoading
     } = this.state;
     if (!this.props.chatConversation) {
       return null;
     }
-    if (channelLoading && chatConversation.length <= 0) {
+    if (isChatLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
       return (

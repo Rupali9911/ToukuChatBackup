@@ -358,7 +358,7 @@ const getPersonalConversationFailure = () => ({
 
 export const getPersonalConversation = (friend) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getPersonalConversationRequest());
+    dispatch(getPersonalConversationRequest())
     client
       .get(`/xchat/personal-conversation/${friend}/`)
       .then((res) => {

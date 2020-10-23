@@ -377,7 +377,7 @@ class ChatContainer extends Component {
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.from_user.id === this.props.userData.id
                       ? 'You'
-                      : repliedMessage.from_user.username}
+                      : repliedMessage.from_user.display_name?repliedMessage.from_user.display_name:repliedMessage.from_user.username}
                   </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>

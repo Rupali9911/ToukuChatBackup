@@ -52,6 +52,7 @@ import {
   unSendGroupMessage,
   setGroupConversation,
   resetGroupConversation,
+  getGroupConversationRequest
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
@@ -96,6 +97,7 @@ class GroupChats extends Component {
       isLeaveLoading: false,
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
+      isChatLoading: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -787,6 +789,7 @@ class GroupChats extends Component {
   };
 
   getGroupConversationInitial = async () => {
+    this.setState({isChatLoading:true});
     let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
     if (chat.length) {
       let conversations = [];
@@ -812,6 +815,7 @@ class GroupChats extends Component {
 
       // this.setState({ conversation: conversations });
       this.props.setGroupConversation(conversations);
+      this.setState({isChatLoading:false});
     }
 
     await this.props
@@ -854,6 +858,7 @@ class GroupChats extends Component {
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
+          this.setState({isChatLoading:false});
           this.markGroupConversationRead();
         }
       })
@@ -1303,6 +1308,7 @@ class GroupChats extends Component {
       translatedMessageId,
       uploadFile,
       sendingMedia,
+      isChatLoading
     } = this.state;
     const {
       chatGroupConversation,
@@ -1310,6 +1316,7 @@ class GroupChats extends Component {
       currentGroupDetail,
       groupLoading,
     } = this.props;
+    console.log('chatsLoading',groupLoading,chatGroupConversation.length);
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1329,7 +1336,7 @@ class GroupChats extends Component {
           }
           image={currentGroupDetail.group_picture}
         />
-        {groupLoading && chatGroupConversation.length <= 0 ? (
+        {(isChatLoading && chatGroupConversation.length <= 0) ? (
           <ListLoader />
         ) : (
           <GroupChatContainer
@@ -1465,7 +1472,7 @@ const mapDispatchToProps = {
   resetGroupConversation,
   setCommonChatConversation,
   getLocalUserGroups,
-  updateUnreadGroupMsgsCounts,
+  updateUnreadGroupMsgsCounts
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

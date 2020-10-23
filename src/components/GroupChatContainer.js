@@ -176,7 +176,8 @@ class GroupChatContainer extends Component {
           this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
         keyboardOpeningTime={1500}
-        extraHeight={200}>
+        extraHeight={200}
+        >
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -364,7 +365,7 @@ class GroupChatContainer extends Component {
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.sender_id === this.props.userData.id
                       ? 'You'
-                      : repliedMessage.sender_username}
+                      : repliedMessage.sender_display_name?repliedMessage.sender_display_name:repliedMessage.sender_username}
                   </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>

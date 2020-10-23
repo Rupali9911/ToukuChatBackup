@@ -22,15 +22,25 @@ export default class ChannelListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate()) {
+    if (today.getDate() === msgDate.getDate() && 
+    today.getMonth() === msgDate.getMonth() && 
+    today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('HH:mm');
     }
+    
     if (
       yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth()
-    )
+      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getFullYear() === msgDate.getFullYear()
+    ){
       return translate('common.yesterday');
-    return moment(date).format('MM/DD');
+    }
+
+    if(today.getFullYear() === msgDate.getFullYear()){
+      return moment(date).format('MM/DD');
+    }else{
+      return moment(date).format('MM/DD/YY');
+    }
   };
 
   render() {
