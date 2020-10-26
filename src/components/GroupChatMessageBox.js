@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
+  Animated,
   View,
   StyleSheet,
   Text,
@@ -9,13 +10,13 @@ import {
 } from 'react-native';
 import GroupChatMessageBubble from './GroupChatMessageBubble';
 
-import { Colors, Fonts } from '../constants';
+import {Colors, Fonts} from '../constants';
 import RoundedImage from './RoundedImage';
-import { getAvatar } from '../utils';
-import { translate } from '../redux/reducers/languageReducer';
+import {getAvatar, normalize} from '../utils';
+import {translate} from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 export default class GroupChatMessageBox extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ export default class GroupChatMessageBox extends Component {
       longPressMenu: false,
       selectedMessageId: null,
       isPortrait: false,
+      animation: new Animated.Value(1),
     };
   }
 
@@ -37,20 +39,47 @@ export default class GroupChatMessageBox extends Component {
   }
 
   callBlinking = (id) => {
-    console.log('buuble_box',this[`bubble_box_${id}`],id);
-    this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
-  }
+    console.log('buuble_box', this[`bubble_box_${id}`], id);
+    
+    this.callBlinkAnimation();
 
-  _openMenu = () => this.setState({ longPressMenu: true });
+    // this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
+  };
+
+  startAnimation = () => {
+    this.animInterval = setInterval(() => {
+      Animated.timing(this.state.animation, {
+        toValue: 0,
+        timing: 400,
+        useNativeDriver: true,
+      }).start(() => {
+        Animated.timing(this.state.animation, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 800);
+  };
+
+  callBlinkAnimation = () => {
+    setTimeout(() => {
+      clearInterval(this.animInterval);
+    }, 2200);
+    this.startAnimation();
+    console.log('animation start');
+  };
+
+  _openMenu = () => this.setState({longPressMenu: true});
 
   _closeMenu = () => {
     if (this.state.longPressMenu) {
-      this.setState({ longPressMenu: false });
+      this.setState({longPressMenu: false});
     }
   };
 
   layoutChange = (event) => {
-    var { x, y, width, height } = event.nativeEvent.layout;
+    var {x, y, width, height} = event.nativeEvent.layout;
     borderRadius = height / 2;
     if (height > 40) {
       borderRadius = height / 2;
@@ -58,7 +87,7 @@ export default class GroupChatMessageBox extends Component {
   };
 
   onMessagePress = (id) => {
-    this.setState({ selectedMessageId: id });
+    this.setState({selectedMessageId: id});
     this._openMenu();
   };
 
@@ -84,14 +113,12 @@ export default class GroupChatMessageBox extends Component {
           paddingHorizontal: 20,
           paddingVertical: 10,
           marginBottom: 15,
-        }}
-      >
+        }}>
         <Text
           style={{
             fontFamily: Fonts.light,
             fontSize: 14,
-          }}
-        >
+          }}>
           {this.props.translatedMessage}
         </Text>
         <View
@@ -99,23 +126,20 @@ export default class GroupChatMessageBox extends Component {
             flexDirection: 'row',
             alignItems: 'center',
             marginTop: 5,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontFamily: Fonts.extralight,
               fontSize: 12,
               color: Colors.gray_dark,
-            }}
-          >
+            }}>
             {translate('common.translatedMessage')}
           </Text>
           <TouchableOpacity
-            style={{ marginLeft: 10 }}
+            style={{marginLeft: 10}}
             onPress={() => {
               this.props.onMessageTranslateClose();
-            }}
-          >
+            }}>
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
         </View>
@@ -124,7 +148,7 @@ export default class GroupChatMessageBox extends Component {
   };
 
   render() {
-    const { longPressMenu, selectedMessageId, isPortrait } = this.state;
+    const {longPressMenu, selectedMessageId, isPortrait, bg_color} = this.state;
     const {
       message,
       isUser,
@@ -143,8 +167,8 @@ export default class GroupChatMessageBox extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
       closeMenu,
-        memberCount,
-        onReplyPress
+      memberCount,
+      onReplyPress,
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -163,26 +187,28 @@ export default class GroupChatMessageBox extends Component {
       this._closeMenu();
     }
 
+    const animatedStyle = {
+      opacity: this.state.animation,
+    };
+
     return !isUser ? (
+      <Animated.View style={[animatedStyle]}>
       <View
         style={[
           styles.container,
           {
             justifyContent: 'flex-start',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             alignItems: 'flex-start',
             marginVertical: 5,
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
-            }}
-          >
+            }}>
             {/* <RoundedImage
               source={getAvatar(message.sender_picture)}
               size={50}
@@ -197,7 +223,7 @@ export default class GroupChatMessageBox extends Component {
                 resizeMode: 'cover',
               }}
             />
-            <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
+            <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
               <View>
                 <Text
                   style={{
@@ -207,12 +233,11 @@ export default class GroupChatMessageBox extends Component {
                     textAlign: 'left',
                     marginStart: 10,
                     fontWeight: '300',
-                  }}
-                >
+                  }}>
                   {message.sender_display_name}
                 </Text>
                 <GroupChatMessageBubble
-                  ref={(view)=>{
+                  ref={(view) => {
                     this[`bubble_box_${message.msg_id}`] = view;
                   }}
                   message={message}
@@ -243,8 +268,7 @@ export default class GroupChatMessageBox extends Component {
                   marginVertical: 15,
                   alignSelf: 'flex-end',
                   paddingBottom: 5,
-                }}
-              >
+                }}>
                 {/*<Text style={styles.statusText}>{status}</Text>*/}
                 <Text style={styles.statusText}>{`${time.getHours()}:${
                   time.getMinutes() < 10
@@ -259,7 +283,9 @@ export default class GroupChatMessageBox extends Component {
             this.renderTransltedMessage()}
         </View>
       </View>
+      </Animated.View>
     ) : (
+      <Animated.View style={[animatedStyle]}>
       <View
         style={[
           styles.container,
@@ -267,18 +293,15 @@ export default class GroupChatMessageBox extends Component {
             alignItems: 'flex-end',
             alignSelf: 'flex-end',
           },
-        ]}
-      >
+        ]}>
         <View
           style={{
             alignItems: 'flex-end',
-          }}
-        >
+          }}>
           <View
             style={{
               flexDirection: 'row',
-            }}
-          >
+            }}>
             <View
               style={{
                 marginHorizontal: '1.5%',
@@ -286,11 +309,14 @@ export default class GroupChatMessageBox extends Component {
                 marginVertical: 15,
                 alignSelf: 'flex-end',
                 paddingBottom: 5,
-              }}
-            >
+              }}>
               {isRead && (
                 <Text style={styles.statusText}>
-                    {message.read_count && message.read_count >= memberCount-1 ? translate('pages.xchat.read') : translate('pages.xchat.read')+ ' - ' + message.read_count}
+                  {message.read_count && message.read_count >= memberCount - 1
+                    ? translate('pages.xchat.read')
+                    : translate('pages.xchat.read') +
+                      ' - ' +
+                      message.read_count}
                 </Text>
               )}
 
@@ -303,7 +329,7 @@ export default class GroupChatMessageBox extends Component {
               </Text>
             </View>
             <GroupChatMessageBubble
-              ref={(view)=>{
+              ref={(view) => {
                 console.log(`bubble_box_${message.msg_id}`);
                 this[`bubble_box_${message.msg_id}`] = view;
               }}
@@ -333,6 +359,7 @@ export default class GroupChatMessageBox extends Component {
             this.renderTransltedMessage()}
         </View>
       </View>
+      </Animated.View>
     );
   }
 }
@@ -343,8 +370,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: '3%',
   },
   statusText: {
-    color: Colors.gradient_1,
+    color: Colors.dark_pink,
     fontFamily: Fonts.light,
-    fontSize: 9,
+    fontSize: normalize(8),
   },
 });

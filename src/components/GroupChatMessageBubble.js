@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, {Fragment, Component} from 'react';
 import {
   Animated,
   View,
@@ -11,20 +11,22 @@ import {
   Linking,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Menu, Divider } from 'react-native-paper';
+import {Menu, Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import { Colors, Icons, Fonts, Images } from '../constants';
-import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
+import {Colors, Icons, Fonts, Images} from '../constants';
+import {translate, setI18nConfig} from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
-import ImageView from "react-native-image-viewing";
+import ImageView from 'react-native-image-viewing';
 let borderRadius = 20;
+import HyperLink from 'react-native-hyperlink';
+import {getAvatar} from '../utils';
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {
@@ -32,69 +34,47 @@ class GroupChatMessageBubble extends Component {
     this.state = {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
-        showImage: false,
-        images: null,
-        animation : new Animated.Value(1),
+      showImage: false,
+      images: null,
+      animation: new Animated.Value(1),
     };
   }
-    hideImage(){
-        console.log('hideImage called')
-        this.setState({showImage: false})
-    }
-    onImagePress= (url) => {
-        let images = [{
-            uri: url
-        }]
-        this.setState({showImage: true, images: images})
-    }
+  hideImage() {
+    console.log('hideImage called');
+    this.setState({showImage: false});
+  }
+  onImagePress = (url) => {
+    let images = [
+      {
+        uri: url,
+      },
+    ];
+    this.setState({showImage: true, images: images});
+  };
 
-  startAnimation=()=>{
-    this.animInterval = setInterval(()=>{
+  startAnimation = () => {
+    this.animInterval = setInterval(() => {
       Animated.timing(this.state.animation, {
-        toValue : 0,
-        timing : 400,
+        toValue: 0,
+        timing: 400,
         useNativeDriver: true,
-      }).start(()=>{
-        Animated.timing(this.state.animation,{
-          toValue : 1,
-          duration : 400,
+      }).start(() => {
+        Animated.timing(this.state.animation, {
+          toValue: 1,
+          duration: 400,
           useNativeDriver: true,
         }).start();
-      })
-    },800);
-  }
+      });
+    }, 800);
+  };
 
   callBlinkAnimation = () => {
-    setTimeout(()=>{
+    setTimeout(() => {
       clearInterval(this.animInterval);
-    },3200);
+    }, 3200);
     this.startAnimation();
     console.log('animation start');
-  }
-
-  startAnimation=()=>{
-    this.animInterval = setInterval(()=>{
-      Animated.timing(this.state.animation, {
-        toValue : 0,
-        timing : 400,
-        useNativeDriver: true,
-      }).start(()=>{
-        Animated.timing(this.state.animation,{
-          toValue : 1,
-          duration : 400,
-          useNativeDriver: true,
-        }).start();
-      })
-    },800);
-  }
-
-  callBlinkAnimation = () => {
-    setTimeout(()=>{
-      clearInterval(this.animInterval);
-    },3200);
-    this.startAnimation();
-    console.log('animation start');
-  }
+  };
 
   onCopy = (message) => {
     Clipboard.setString(message.text);
@@ -123,7 +103,7 @@ class GroupChatMessageBubble extends Component {
           } else {
             console.log(url);
           }
-        }
+        },
       );
     } else {
       OpenFile.openDoc(
@@ -145,70 +125,95 @@ class GroupChatMessageBubble extends Component {
           } else {
             console.log(url);
           }
-        }
+        },
       );
     }
   };
 
-  renderReplyMessage = (replyMessage) => {
-    // console.log('reply_render',replyMessage.message);
+  renderReplyMessage = (message) => {
+    let replyMessage = message.reply_to;
     if (replyMessage.message) {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          this.props.onReplyPress && this.props.onReplyPress(replyMessage.id);
-        }}
-        style={{
-          backgroundColor: this.props.isUser ? '#FFDBE9' : Colors.gray,
-          padding: 5,
-          width: '100%',
-          borderRadius: 5,
-          marginBottom: 5,
-        }}
-      >
-        <View
-          style={{
-            flex: 3,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Text numberOfLines={2} style={{ color: Colors.gradient_1 }}>
-            {replyMessage.sender_id === this.props.userData.id
-              ? 'You'
-              : replyMessage.display_name}
-          </Text>
-        </View>
-        <View
-          style={{
-            flex: 7,
-            justifyContent: 'center',
-            width: '95%',
-            marginTop: 5,
-          }}
-        >
-          <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-            {replyMessage.message}
-          </Text>
-        </View>
-      </TouchableOpacity>
+      return (
+        <>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.onReplyPress &&
+                this.props.onReplyPress(replyMessage.id);
+            }}
+            style={{
+              backgroundColor: this.props.isUser
+                ? 'rgba(243,243,243,.53)'
+                : Colors.gray,
+              padding: 5,
+              width: '100%',
+              borderRadius: 5,
+              marginBottom: 5,
+            }}>
+            {/* <View style={{}}>
+            <Image
+              source={getAvatar(
+                
+                  message.sender_picture,
+              )}              style={{
+                width: 25,
+                height: 25,
+                borderRadius: 20,
+                resizeMode: 'cover',
+                marginTop: 5,
+                marginRight: 5,
+              }}
+            />
+          </View> */}
+            <View style={{}}>
+              <View
+                style={{
+                  flex: 3,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+                  {/* {replyMessage.sender_id === this.props.userData.id
+                ? 'You' */}
+                  {/* :  */}
+                  {replyMessage.display_name}
+                  {/* } */}
+                  {/* {replyMessage.sender_id === this.props.userData.id
+                ? 'You'
+                : replyMessage.display_name} */}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 7,
+                  justifyContent: 'center',
+                  width: '95%',
+                  marginTop: 5,
+                }}>
+                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+                  {replyMessage.message}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <Divider />
+        </>
       );
     }
   };
 
   isContainUrl = (text) => {
-    if(text==null)return;
+    if (text == null) return;
     var urlRE = new RegExp(
-      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+'
+      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+',
     );
     const url = text.match(urlRE);
     return url;
   };
 
   openUrl = (text) => {
-    if(text==null)return;
+    if (text == null) return;
     var urlRE = new RegExp(
-      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+'
+      '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+',
     );
     const url = text.match(urlRE);
     Linking.openURL(url[0]);
@@ -233,7 +238,7 @@ class GroupChatMessageBubble extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
     } = this.props;
-      const {showImage, images} = this.state
+    const {showImage, images} = this.state;
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
@@ -251,431 +256,453 @@ class GroupChatMessageBubble extends Component {
 
     isEditable.setDate(isEditable.getDate() + 1);
 
-    const animatedStyle ={
-      opacity : this.state.animation
-    }
+    const animatedStyle = {
+      opacity: this.state.animation,
+    };
 
     return (
-        <View>
-      <Menu
-        contentStyle={{
-          backgroundColor: Colors.gradient_3,
-          opacity: 0.9,
-        }}
-        visible={longPressMenu}
-        onDismiss={closeMenu}
-        anchor={
-          !isUser ? (
-            <Animated.View style={[styles.talkBubble,animatedStyle]}>
-              <View style={{ marginLeft: 5 }}>
+      <View>
+        <Menu
+          contentStyle={{
+            backgroundColor: Colors.gradient_3,
+            opacity: 0.9,
+          }}
+          visible={longPressMenu}
+          onDismiss={closeMenu}
+          anchor={
+            !isUser ? (
+              <Animated.View style={[styles.talkBubble, animatedStyle]}>
+                <View style={{marginLeft: 5}}>
+                  <View
+                    style={[
+                      styles.talkBubbleAbsoluteLeft,
+                      message.is_unsent && {borderRightColor: Colors.gray},
+                    ]}
+                  />
+                  {message.is_unsent ? (
+                    <View
+                      activeOpacity={0.8}
+                      style={[
+                        {
+                          minHeight: 40,
+                          backgroundColor: Colors.gray,
+                          borderRadius: borderRadius,
+                          justifyContent: 'center',
+                          paddingHorizontal: 10,
+                          paddingVertical: 10,
+                        },
+                      ]}>
+                      <Text
+                        style={{
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontFamily: Fonts.extralight,
+                        }}>
+                        {translate('pages.xchat.messageUnsent')}
+                      </Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      style={[
+                        {
+                          minHeight: 40,
+                          backgroundColor: Colors.white,
+                          borderRadius: borderRadius,
+                          justifyContent: 'center',
+                          paddingHorizontal:
+                            message.message_body.type === 'image' ? 5 : 10,
+                          paddingVertical:
+                            message.message_body.type === 'image' ? 5 : 10,
+                        },
+                        message.message_body.type === 'audio' && {
+                          minWidth: '100%',
+                        },
+                      ]}
+                      onLongPress={(msg_id) => {
+                        onMessagePress(message.msg_id);
+                      }}
+                      onPress={() =>
+                        message.message_body.type === 'doc'
+                          ? this.onDocumentPress(message.message_body.text)
+                          : message.message_body.type === 'image'
+                          ? this.onImagePress(message.message_body.text)
+                          : null
+                      }>
+                      {message.reply_to &&
+                        // Object.keys(message.reply_to).length !== 0 &&
+                        // message.reply_to.constructor === Object &&
+                        this.renderReplyMessage(message)}
+                      {message.message_body.type === 'image' &&
+                      message.message_body.text !== null ? (
+                        <ScalableImage
+                          src={message.message_body.text}
+                          borderRadius={borderRadius}
+                        />
+                      ) : message.message_body.type === 'video' ? (
+                        <VideoPlayerCustom url={message.message_body.text} />
+                      ) : message.message_body.type === 'audio' ? (
+                        <AudioPlayerCustom
+                          audioPlayingId={audioPlayingId}
+                          perviousPlayingAudioId={perviousPlayingAudioId}
+                          onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                          postId={message.msg_id}
+                          url={message.message_body.text}
+                          isSmall={true}
+                        />
+                      ) : message.message_body.type === 'doc' ? (
+                        <Fragment>
+                          <Text
+                            style={{
+                              fontSize: 15,
+                              fontFamily: Fonts.light,
+                              fontWeight: '500',
+                            }}>
+                            {message.message_body.text
+                              .split('/')
+                              .pop()
+                              .split('%2F')
+                              .pop()}
+                          </Text>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              marginTop: 5,
+                            }}>
+                            <FontAwesome
+                              name={'file-o'}
+                              size={15}
+                              color={Colors.black_light}
+                            />
+                            <Text
+                              style={{
+                                color: Colors.dark_gray,
+                                fontSize: 13,
+                                marginLeft: 5,
+                                fontFamily: Fonts.light,
+                              }}>
+                              File
+                            </Text>
+                          </View>
+                        </Fragment>
+                      ) : this.isContainUrl(message.message_body.text) ? (
+                        <TouchableOpacity
+                          // onPress={() =>
+                          //   this.openUrl(message.message_body.text)
+                          // }
+                          onLongPress={(msg_id) => {
+                            onMessagePress(message.msg_id);
+                          }}>
+                          <HyperLink
+                            onPress={(url, text) => {
+                              Linking.openURL(url);
+                            }}
+                            linkStyle={{color: Colors.link_color}}>
+                            <Text
+                              style={{
+                                fontSize: 15,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '400',
+                              }}>
+                              {message.message_body.text}
+                            </Text>
+                          </HyperLink>
+                        </TouchableOpacity>
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            fontFamily: Fonts.regular,
+                            fontWeight: '400',
+                          }}>
+                          {message.message_body.text}
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </Animated.View>
+            ) : (
+              <Animated.View style={[styles.talkBubble, animatedStyle]}>
                 <View
                   style={[
-                    styles.talkBubbleAbsoluteLeft,
-                    message.is_unsent && { borderRightColor: Colors.gray },
+                    styles.talkBubbleAbsoluteRight,
+                    message.is_unsent && {borderLeftColor: Colors.gray},
                   ]}
                 />
                 {message.is_unsent ? (
                   <View
-                    activeOpacity={0.8}
                     style={[
                       {
                         minHeight: 40,
-                        backgroundColor: Colors.gray,
                         borderRadius: borderRadius,
+                        backgroundColor: Colors.gray,
+                      },
+                    ]}>
+                    <View
+                      style={{
+                        flex: 1,
                         justifyContent: 'center',
                         paddingHorizontal: 10,
                         paddingVertical: 10,
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={{
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontFamily: Fonts.extralight,
-                      }}
-                    >
-                      {translate('pages.xchat.messageUnsent')}
-                    </Text>
+                      }}>
+                      <Text
+                        style={{
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontFamily: Fonts.extralight,
+                        }}>
+                        {translate('pages.xchat.messageUnsent')}
+                      </Text>
+                    </View>
                   </View>
                 ) : (
-                  <TouchableOpacity
-                    activeOpacity={0.8}
+                  <View
+                    // colors={[
+                    //   Colors.gradient_3,
+                    //   Colors.gradient_2,
+                    //   Colors.gradient_1,
+                    // ]}
                     style={[
                       {
                         minHeight: 40,
-                        backgroundColor: Colors.white,
                         borderRadius: borderRadius,
+                        backgroundColor: Colors.pink_chat,
+                      },
+                      message.message_body.type === 'audio' && {
+                        minWidth: '100%',
+                      },
+                    ]}>
+                    <TouchableOpacity
+                      style={{
+                        flex: 1,
                         justifyContent: 'center',
                         paddingHorizontal:
                           message.message_body.type === 'image' ? 5 : 10,
                         paddingVertical:
                           message.message_body.type === 'image' ? 5 : 10,
-                      },
-                      message.message_body.type === 'audio' && {
-                        minWidth: '100%',
-                      },
-                    ]}
-                    onLongPress={(msg_id) => {
-                      onMessagePress(message.msg_id);
-                    }}
-                    onPress={() =>
-                      message.message_body.type === 'doc'
-                        ? this.onDocumentPress(message.message_body.text)
-                          : message.message_body.type === 'image' ? this.onImagePress(message.message_body.text) : null
-                    }
-                  >
-                    {message.reply_to &&
-                      // Object.keys(message.reply_to).length !== 0 &&
-                      // message.reply_to.constructor === Object &&
-                      this.renderReplyMessage(message.reply_to)
-                      }
-
-                    {message.message_body.type === 'image' &&
-                    message.message_body.text !== null ? (
-                      <ScalableImage
-                        src={message.message_body.text}
-                        borderRadius={borderRadius}
-                      />
-                    ) : message.message_body.type === 'video' ? (
-                      <VideoPlayerCustom url={message.message_body.text} />
-                    ) : message.message_body.type === 'audio' ? (
-                      <AudioPlayerCustom
-                        audioPlayingId={audioPlayingId}
-                        perviousPlayingAudioId={perviousPlayingAudioId}
-                        onAudioPlayPress={(id) => onAudioPlayPress(id)}
-                        postId={message.msg_id}
-                        url={message.message_body.text}
-                        isSmall={true}
-                      />
-                    ) : message.message_body.type === 'doc' ? (
-                      <Fragment>
-                        <Text
-                          style={{
-                            fontSize: 15,
-                            fontFamily: Fonts.light,
-                            fontWeight: '500',
-                          }}
-                        >
-                          {message.message_body.text
-                            .split('/')
-                            .pop()
-                            .split('%2F')
-                            .pop()}
-                        </Text>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            marginTop: 5,
-                          }}
-                        >
-                          <FontAwesome
-                            name={'file-o'}
-                            size={15}
-                            color={Colors.black_light}
-                          />
-                          <Text
-                            style={{
-                              color: Colors.dark_gray,
-                              fontSize: 13,
-                              marginLeft: 5,
-                              fontFamily: Fonts.light,
-                            }}
-                          >
-                            File
-                          </Text>
-                        </View>
-                      </Fragment>
-                    ) : this.isContainUrl(message.message_body.text) ? (
-                      <TouchableOpacity
-                        onPress={() => this.openUrl(message.message_body.text)}
-                        onLongPress={(msg_id) => {
-                          onMessagePress(message.msg_id);
-                        }}
-                      >
-                        <HyperLink linkStyle={{color: Colors.link_color}}>
-                        <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
-                          {message.message_body.text}
-                        </Text>
-                        </HyperLink>
-                      </TouchableOpacity>
-                    ) : (
-                      <Text style={{ fontSize: 15, fontFamily: Fonts.light }}>
-                        {message.message_body.text}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                )}
-              </View>
-            </Animated.View>
-          ) : (
-            <Animated.View style={[styles.talkBubble,animatedStyle]}>
-              <View
-                style={[
-                  styles.talkBubbleAbsoluteRight,
-                  message.is_unsent && { borderLeftColor: Colors.gray },
-                ]}
-              />
-              {message.is_unsent ? (
-                <View
-                  style={[
-                    {
-                      minHeight: 40,
-                      borderRadius: borderRadius,
-                      backgroundColor: Colors.gray,
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      paddingHorizontal: 10,
-                      paddingVertical: 10,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontFamily: Fonts.extralight,
                       }}
-                    >
-                      {translate('pages.xchat.messageUnsent')}
-                    </Text>
-                  </View>
-                </View>
-              ) : (
-                <LinearGradient
-                  colors={[
-                    Colors.gradient_3,
-                    Colors.gradient_2,
-                    Colors.gradient_1,
-                  ]}
-                  style={[
-                    {
-                      minHeight: 40,
-                      borderRadius: borderRadius,
-                    },
-                    message.message_body.type === 'audio' && {
-                      minWidth: '100%',
-                    },
-                  ]}
-                >
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      paddingHorizontal:
-                        message.message_body.type === 'image' ? 5 : 10,
-                      paddingVertical:
-                        message.message_body.type === 'image' ? 5 : 10,
-                    }}
-                    onLongPress={(msg_id) => {
-                      onMessagePress(message.msg_id);
-                    }}
-                    onPress={() =>
-                      message.message_body.type === 'doc'
-                        ? this.onDocumentPress(message.message_body.text)
-                          : message.message_body.type === 'image' ? this.onImagePress(message.message_body.text) : null
-                    }
-                    activeOpacity={0.8}
-                  >
-                    {
-                    (message.reply_to
-                      // &&
-                      // Object.keys(message.reply_to).length !== 0 &&
-                      // message.reply_to.constructor === Object
-                      ) &&
-                      this.renderReplyMessage(message.reply_to)
+                      onLongPress={(msg_id) => {
+                        onMessagePress(message.msg_id);
+                      }}
+                      onPress={() =>
+                        message.message_body.type === 'doc'
+                          ? this.onDocumentPress(message.message_body.text)
+                          : message.message_body.type === 'image'
+                          ? this.onImagePress(message.message_body.text)
+                          : null
                       }
+                      activeOpacity={0.8}>
+                      {message.reply_to &&
+                        // &&
+                        // Object.keys(message.reply_to).length !== 0 &&
+                        // message.reply_to.constructor === Object
+                        this.renderReplyMessage(message)}
 
-                    {message.message_body.type === 'image' &&
-                    message.message_body.text !== null ? (
-                      <ScalableImage
-                        src={message.message_body.text}
-                        borderRadius={borderRadius}
-                      />
-                    ) : message.message_body.type === 'video' ? (
-                      <VideoPlayerCustom url={message.message_body.text} />
-                    ) : message.message_body.type === 'audio' ? (
-                      <AudioPlayerCustom
-                        audioPlayingId={audioPlayingId}
-                        perviousPlayingAudioId={perviousPlayingAudioId}
-                        onAudioPlayPress={(id) => onAudioPlayPress(id)}
-                        postId={message.msg_id}
-                        url={message.message_body.text}
-                        isSmall={true}
-                      />
-                    ) : message.message_body.type === 'doc' ? (
-                      <Fragment>
-                        <Text
-                          style={{
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: '500',
-                          }}
-                        >
-                          {message.message_body.text
-                            .split('/')
-                            .pop()
-                            .split('%2F')
-                            .pop()}
-                        </Text>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            marginTop: 5,
-                          }}
-                        >
-                          <FontAwesome
-                            name={'file-o'}
-                            size={15}
-                            color={Colors.black_light}
-                          />
+                      {message.message_body.type === 'image' &&
+                      message.message_body.text !== null ? (
+                        <ScalableImage
+                          src={message.message_body.text}
+                          borderRadius={borderRadius}
+                        />
+                      ) : message.message_body.type === 'video' ? (
+                        <VideoPlayerCustom url={message.message_body.text} />
+                      ) : message.message_body.type === 'audio' ? (
+                        <AudioPlayerCustom
+                          audioPlayingId={audioPlayingId}
+                          perviousPlayingAudioId={perviousPlayingAudioId}
+                          onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                          postId={message.msg_id}
+                          url={message.message_body.text}
+                          isSmall={true}
+                        />
+                      ) : message.message_body.type === 'doc' ? (
+                        <Fragment>
                           <Text
                             style={{
-                              color: Colors.dark_gray,
-                              fontSize: 13,
-                              marginLeft: 5,
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: '500',
                               fontFamily: Fonts.light,
-                            }}
-                          >
-                            File
+                            }}>
+                            {message.message_body.text
+                              .split('/')
+                              .pop()
+                              .split('%2F')
+                              .pop()}
                           </Text>
-                        </View>
-                      </Fragment>
-                    ) : this.isContainUrl(message.message_body.text) ? (
-                      <TouchableOpacity
-                        onPress={() => this.openUrl(message.message_body.text)}
-                        onLongPress={(msg_id) => {
-                          onMessagePress(message.msg_id);
-                        }}
-                      >
-                        <HyperLink linkStyle={{color: Colors.link_color}}>
-                        <Text style={{ color: 'white', fontSize: 15 }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              marginTop: 5,
+                            }}>
+                            <FontAwesome
+                              name={'file-o'}
+                              size={15}
+                              color={Colors.black_light}
+                            />
+                            <Text
+                              style={{
+                                color: Colors.dark_gray,
+                                fontSize: 13,
+                                marginLeft: 5,
+                                fontFamily: Fonts.light,
+                              }}>
+                              File
+                            </Text>
+                          </View>
+                        </Fragment>
+                      ) : this.isContainUrl(message.message_body.text) ? (
+                        <TouchableOpacity
+                          // onPress={() =>
+                          //   this.openUrl(message.message_body.text)
+                          // }
+                          onLongPress={(msg_id) => {
+                            onMessagePress(message.msg_id);
+                          }}>
+                          <HyperLink
+                            onPress={(url, text) => {
+                              Linking.openURL(url);
+                            }}
+                            linkStyle={{color: Colors.link_color}}>
+                            <Text
+                              style={{
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontFamily: Fonts.regular,
+                                fontWeight: '400',
+                              }}>
+                              {message.message_body.text}
+                            </Text>
+                          </HyperLink>
+                        </TouchableOpacity>
+                      ) : (
+                        <Text
+                          style={{
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontFamily: Fonts.regular,
+                            fontWeight: '400',
+                          }}>
                           {message.message_body.text}
                         </Text>
-                        </HyperLink>
-                      </TouchableOpacity>
-                    ) : (
-                      <Text style={{ color: 'white', fontSize: 15 }}>
-                        {message.message_body.text}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                </LinearGradient>
-              )}
-            </Animated.View>
-          )
-        }
-      >
-        {message.message_body && message.message_body.type === 'text' && (
-          <Menu.Item
-            icon={() => (
-              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-            )}
-            onPress={() => {
-              onMessageTranslate(message);
-              closeMenu();
-            }}
-            title={translate('common.translate')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
-          />
-        )}
-        <Menu.Item
-          icon={() => (
-            <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            onMessageReply(selectedMessageId);
-            closeMenu();
-          }}
-          title={translate('common.reply')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
-        {isUser &&
-          isEditable > new Date() &&
-          message.message_body &&
-          message.message_body.type === 'text' && (
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </Animated.View>
+            )
+          }>
+          {message.message_body && message.message_body.type === 'text' && (
             <Menu.Item
               icon={() => (
                 <FontAwesome5
-                  name={'pencil-alt'}
+                  name={'language'}
                   size={20}
                   color={Colors.white}
                 />
               )}
               onPress={() => {
-                onEditMessage(message);
+                onMessageTranslate(message);
                 closeMenu();
               }}
-              title={translate('common.edit')}
-              titleStyle={{ marginLeft: -25, color: Colors.white }}
+              title={translate('common.translate')}
+              titleStyle={{marginLeft: -25, color: Colors.white}}
             />
           )}
-        <Menu.Item
-          icon={() => (
-            <FontAwesome name={'trash'} size={20} color={Colors.white} />
-          )}
-          onPress={() => {
-            onDelete(selectedMessageId);
-            closeMenu();
-          }}
-          title={translate('common.delete')}
-          titleStyle={{ marginLeft: -25, color: Colors.white }}
-        />
-        {isUser && isEditable > new Date() && (
           <Menu.Item
             icon={() => (
-              <FontAwesome5
-                name={'minus-circle'}
-                size={20}
-                color={Colors.white}
+              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+            )}
+            onPress={() => {
+              onMessageReply(selectedMessageId);
+              closeMenu();
+            }}
+            title={translate('common.reply')}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
+          />
+          {isUser &&
+            isEditable > new Date() &&
+            message.message_body &&
+            message.message_body.type === 'text' && (
+              <Menu.Item
+                icon={() => (
+                  <FontAwesome5
+                    name={'pencil-alt'}
+                    size={20}
+                    color={Colors.white}
+                  />
+                )}
+                onPress={() => {
+                  onEditMessage(message);
+                  closeMenu();
+                }}
+                title={translate('common.edit')}
+                titleStyle={{marginLeft: -25, color: Colors.white}}
               />
             )}
-            onPress={() => {
-              this.onUnSend(selectedMessageId);
-              closeMenu();
-            }}
-            title={translate('common.unsend')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
-          />
-        )}
-        {message.message_body && message.message_body.type === 'text' && (
           <Menu.Item
             icon={() => (
-              <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+              <FontAwesome name={'trash'} size={20} color={Colors.white} />
             )}
             onPress={() => {
-              this.onCopy(message.message_body);
+              onDelete(selectedMessageId);
               closeMenu();
             }}
-            title={translate('common.copy')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
+            title={translate('common.delete')}
+            titleStyle={{marginLeft: -25, color: Colors.white}}
           />
-        )}
-        {message.message_body && message.message_body.type !== 'text' && (
-          <Menu.Item
-            icon={() => (
-              <FontAwesome name={'download'} size={20} color={Colors.white} />
-            )}
-            onPress={() => {
-              onDownloadMessage(message);
-              closeMenu();
-            }}
-            title={translate('pages.setting.download')}
-            titleStyle={{ marginLeft: -25, color: Colors.white }}
-          />
-        )}
-      </Menu>
-            <ImageView
-                images={images}
-                imageIndex={0}
-                visible={showImage}
-                onRequestClose={() => this.hideImage(false)}
+          {isUser && isEditable > new Date() && (
+            <Menu.Item
+              icon={() => (
+                <FontAwesome5
+                  name={'minus-circle'}
+                  size={20}
+                  color={Colors.white}
+                />
+              )}
+              onPress={() => {
+                this.onUnSend(selectedMessageId);
+                closeMenu();
+              }}
+              title={translate('common.unsend')}
+              titleStyle={{marginLeft: -25, color: Colors.white}}
             />
-        </View>
+          )}
+          {message.message_body && message.message_body.type === 'text' && (
+            <Menu.Item
+              icon={() => (
+                <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+              )}
+              onPress={() => {
+                this.onCopy(message.message_body);
+                closeMenu();
+              }}
+              title={translate('common.copy')}
+              titleStyle={{marginLeft: -25, color: Colors.white}}
+            />
+          )}
+          {message.message_body && message.message_body.type !== 'text' && (
+            <Menu.Item
+              icon={() => (
+                <FontAwesome name={'download'} size={20} color={Colors.white} />
+              )}
+              onPress={() => {
+                onDownloadMessage(message);
+                closeMenu();
+              }}
+              title={translate('pages.setting.download')}
+              titleStyle={{marginLeft: -25, color: Colors.white}}
+            />
+          )}
+        </Menu>
+        <ImageView
+          images={images}
+          imageIndex={0}
+          visible={showImage}
+          onRequestClose={() => this.hideImage(false)}
+        />
+      </View>
     );
   }
 }
@@ -696,10 +723,10 @@ const styles = StyleSheet.create({
     borderTopColor: 'transparent',
     borderTopWidth: 12.5,
     borderLeftWidth: 6.5,
-    borderLeftColor: Colors.gradient_3,
+    borderLeftColor: Colors.pink_chat,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '-90deg' }],
+    transform: [{rotate: '-90deg'}],
     right: -5,
     top: -15,
   },
@@ -715,7 +742,7 @@ const styles = StyleSheet.create({
     borderRightColor: Colors.white,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '90deg' }],
+    transform: [{rotate: '90deg'}],
     left: -5,
     top: -15,
   },
@@ -731,5 +758,5 @@ const mapDispatchToProps = {};
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(GroupChatMessageBubble);

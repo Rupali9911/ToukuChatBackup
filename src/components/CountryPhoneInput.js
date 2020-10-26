@@ -118,7 +118,7 @@ class CountryPhoneInput extends Component {
           {number.length === 0 &&
           <Text disabled = {true}
                                       selectable={false}
-                                      style={{position: 'absolute', color: 'white', left: '28%', opacity: 0.8}}>
+                                      style={{position: 'absolute', color: 'white', left: '32%', opacity: 0.8}}>
               {translate('pages.register.phoneNumberTextForPlaceholder')}</Text>
           }
 
@@ -135,12 +135,12 @@ class CountryPhoneInput extends Component {
           style={{flex: 1}}
           flagStyle={{height: 30, width: 30, borderRadius: 15}}
           textStyle={{color: 'white'}}
-         autoFormat={true}
+          autoFormat={true}
           offset={0}
           allowZeroAfterCountryCode={false}
           textProps={{
             placeholder: '',
-            maxLength: 14,
+            maxLength: 16,
             placeholderTextColor: 'white',
             opacity: 0.8,
           }}

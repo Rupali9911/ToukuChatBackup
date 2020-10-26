@@ -1,20 +1,14 @@
-import React, { Component, Fragment } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import React, {Component, Fragment} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Badge, Divider } from 'react-native-paper';
+import {Badge, Divider} from 'react-native-paper';
 
 import RoundedImage from '../RoundedImage';
-import { globalStyles } from '../../styles';
-import { Colors, Images } from '../../constants';
+import {globalStyles} from '../../styles';
+import {Colors, Images} from '../../constants';
 import Button from '../Button';
-import { translate } from '../../redux/reducers/languageReducer';
+import {translate} from '../../redux/reducers/languageReducer';
 
 export default class FriendRequestListItem extends Component {
   constructor(props) {
@@ -22,8 +16,24 @@ export default class FriendRequestListItem extends Component {
     this.state = {};
   }
 
+  getDate = (date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const msgDate = new Date(date);
+    if (today.getDate() === msgDate.getDate()) {
+      return moment(date).format('H:mm');
+    }
+    if (
+      yesterday.getDate() === msgDate.getDate() &&
+      yesterday.getMonth() === msgDate.getMonth()
+    )
+      return translate('common.yesterday');
+    return moment(date).format('MM/DD');
+  };
+
   render() {
-    const { title, date, image, onAcceptPress, onRejectPress } = this.props;
+    const {title, date, image, onAcceptPress, onRejectPress} = this.props;
     return (
       <Fragment>
         <View style={styles.container}>
@@ -35,22 +45,24 @@ export default class FriendRequestListItem extends Component {
               // isOnline={isOnline}
             />
             <View style={styles.secondView}>
-              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+              <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallRegularText,
-                    { color: Colors.black },
-                  ]}
-                >
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.black_light,
+                      fontSize: 13,
+                      fontWeight: '400',
+                    },
+                  ]}>
                   {title}
                 </Text>
                 <View
                   style={{
                     flexDirection: 'row',
-                  }}
-                >
-                  <View style={{ marginRight: 10, width: 100 }}>
+                  }}>
+                  <View style={{marginRight: 10, width: 100}}>
                     <Button
                       title={translate('common.reject')}
                       onPress={onRejectPress}
@@ -59,7 +71,7 @@ export default class FriendRequestListItem extends Component {
                       height={Platform.isPad ? 40 : 30}
                     />
                   </View>
-                  <View style={{ marginRight: 10, width: 100 }}>
+                  <View style={{marginRight: 10, width: 100}}>
                     <Button
                       title={translate('pages.xchat.accept')}
                       onPress={onAcceptPress}
@@ -74,11 +86,14 @@ export default class FriendRequestListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallLightText,
-                    { color: Colors.gray_dark },
-                  ]}
-                >
-                  {moment(date).format('MM/DD')}
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.message_gray,
+                      fontSize: 11,
+                      fontWeight: '400',
+                    },
+                  ]}>
+                  {this.getDate(date)}
                 </Text>
                 {/* {unreadCount !== 0 && unreadCount != null && (
                   <Badge

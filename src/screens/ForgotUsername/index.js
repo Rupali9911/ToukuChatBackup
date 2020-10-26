@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {
-    View,
-    Text,
-    ImageBackground,
-    StyleSheet,
-    SafeAreaView,
-    ScrollView,
-    Platform, Keyboard,
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -54,7 +55,7 @@ class ForgotUserName extends Component {
   };
 
   onSubmitPress() {
-      Keyboard.dismiss();
+    Keyboard.dismiss();
     const {email} = this.state;
     if (email !== '') {
       let userNameData = {
@@ -70,13 +71,46 @@ class ForgotUserName extends Component {
           });
         })
         .catch((err) => {
-            if (err.response.request._response) {
-                let errMessage = JSON.parse(err.response.request._response)
-                Toast.show({
-                    title: translate('pages.xchat.reconfirmUserName'),
-                    text: translate(errMessage.message.toString()),
-                    type: 'primary',
-                });
+          // if (err.response.request._response) {
+          //   let errMessage = JSON.parse(err.response.request._response);
+          //   Toast.show({
+          //     title: translate('pages.xchat.reconfirmUserName'),
+          //     text: translate(errMessage.message.toString()),
+          //     type: 'primary',
+          //   });
+          // }
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.phone) {
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('pages.xchat.reconfirmUserName'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
             }
         });
     } else {
@@ -93,13 +127,15 @@ class ForgotUserName extends Component {
 
     return (
       <ImageBackground
-          //source={Images.image_touku_bg}
-          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
+        //source={Images.image_touku_bg}
+        source={
+          Platform.isPad ? Images.image_touku_bg : Images.image_touku_bg_phone
+        }
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-              keyboardShouldPersistTaps={"handled"}
-              behavior={'position'}
+            keyboardShouldPersistTaps={'handled'}
+            behavior={'position'}
             contentContainerStyle={{
               flex: 1,
               padding: 20,
@@ -115,7 +151,7 @@ class ForgotUserName extends Component {
                 style={[
                   globalStyles.bigSemiBoldText,
                   {
-                    fontSize: 30,
+                    fontSize: this.props.selectedLanguageItem.language_name === 'ja' ? 28 : 30,
                     marginVertical: 50,
                     opacity: 0.8,
                   },

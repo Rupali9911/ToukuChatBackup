@@ -268,3 +268,13 @@ export const FriendRequest = {
   },
 };
 
+export const EventDetail = {
+    name: 'event',
+    primaryKey: 'id',
+    properties: {
+        id: { type: 'int', default: 1 },
+        socket_event_id: { type: 'int', default: 0 },
+    },
+};
+
+

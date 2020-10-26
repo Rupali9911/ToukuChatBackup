@@ -5,7 +5,7 @@ import {
     Image,
     Modal, Text, TouchableOpacity, Dimensions, StyleSheet
 } from 'react-native';
-import {Icons, registerUrl, Colors, Fonts} from "../../constants";
+import {Icons, registerUrl, Colors, Fonts, languageArray} from "../../constants";
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {setAppLanguage, translate, userLanguage} from "../../redux/reducers/languageReducer";
@@ -13,11 +13,21 @@ import QRCode from 'react-native-qrcode-svg';
 import LinearGradient from "react-native-linear-gradient";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 class QRCodeClass extends Component {
     constructor(props) {
         super(props);
+        this.state={
+            referralCode: ''
+        }
+    }
 
+     componentDidMount() {
+        let tmpReferralCode = this.props.userData.referral_link
+        const arrLink = tmpReferralCode.split('/')
+        if (arrLink.length > 0) {
+            this.setState({referralCode: arrLink[arrLink.length - 1]})
+        }
     }
 
     closeModal(){
@@ -32,7 +42,7 @@ class QRCodeClass extends Component {
                 modalVisible ? (<View style={styles.mainContainer}>
                         <View style={styles.subCont}/>
 
-                        <View style={{width: 250}}>
+                        <View style={{width: '80%', marginTop: (Dimensions.get('window').height/3)}}>
                             <LinearGradient
                                 start={{x: 0.1, y: 0.7}}
                                 end={{x: 0.5, y: 0.2}}
@@ -44,15 +54,15 @@ class QRCodeClass extends Component {
                                     hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                                     style={styles.touchCross}
                                     onPress={() => this.closeModal()}>
-                                    <AntDesign name="close" color={Colors.white} />
+                                    <FontAwesome5 name="times" color={Colors.white} size={15} />
                                 </TouchableOpacity>
                             </LinearGradient>
 
                             <View style={styles.vwQr}>
-                                <View style={{top: 23}}>
+                                <View style={{top: 27}}>
                                 <QRCode
-                                    size={70}
-                                    value={registerUrl + userData.invitation_code}
+                                    size={115}
+                                    value={registerUrl + this.state.referralCode}
                                 />
                                 </View>
                             </View>
@@ -69,8 +79,9 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
     },
     subCont: {
         position: 'absolute',
@@ -86,10 +97,11 @@ const styles = StyleSheet.create({
     qrTxt:{
         flex: 9,
         color: Colors.white,
-        fontFamily: Fonts.light,
-        fontSize: 13,
+        fontFamily: Fonts.nunitoSansLight,
+        fontSize: 14,
         marginStart: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        fontWeight: '300'
     },
     touchCross:{
         height: 20,
@@ -100,7 +112,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     vwQr:{
-        height: 120,
+        height: 170,
         alignItems: 'center',
         backgroundColor: Colors.white
     }

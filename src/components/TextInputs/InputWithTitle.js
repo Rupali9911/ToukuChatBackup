@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.light,
+      color: Colors.textTitle_orange
   },
   inputBox: {
     height: 35,

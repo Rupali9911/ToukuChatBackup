@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 
 export const SET_CURRENT_GROUP_DATA = 'SET_CURRENT_GROUP_DATA';
 export const SET_CURRENT_GROUP_DETAIL_DATA = 'SET_CURRENT_GROUP_DETAIL_DATA';
@@ -34,10 +34,12 @@ const initialState = {
 };
 
 import {
-  setGroupChatConversation,
-  setGroups,
-  getGroups,
+    setGroupChatConversation,
+    getGroupChatConversationById,
+    setGroups,
+    getGroups, setChannels, getChannels,
 } from '../../storage/Service';
+import {recursionFollowingChannels} from "./channelReducer";
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -59,6 +61,7 @@ export default function (state = initialState, action) {
     case SET_CURRENT_GROUP_MEMBERS:
       return {
         ...state,
+          loading: false,
         currentGroupMembers: action.payload,
       };
 
@@ -207,29 +210,51 @@ const deleteMessage = (data) => ({
 });
 
 export const getLocalUserGroups = () => (dispatch) =>
-new Promise(function(resolve,reject){
-  var groups = getGroups();
-  var array = [];
-  groups.map((item, index) => {
-    array = [...array, item];
-  });
-  array.sort((a, b) =>
-    a.timestamp && b.timestamp && new Date(a.timestamp) < new Date(b.timestamp)
-      ? 1
-      : -1,
-  );
-
-  let unread_counts = 0;
-  if (groups && groups.length > 0) {
-    groups = groups.map(function (el) {
-      unread_counts = unread_counts + el.unread_msg;
-      return groups;
+  new Promise(function (resolve, reject) {
+    var groups = getGroups();
+    var array = [];
+    groups.map((item, index) => {
+      let i = {
+        group_id: item.group_id,
+        group_name: item.group_name,
+        unread_msg: item.unread_msg,
+        total_members: item.total_members,
+        description: item.description,
+        chat: item.chat,
+        group_picture: item.group_picture,
+        last_msg: item.last_msg,
+        last_msg_id: item.last_msg_id,
+        timestamp: item.timestamp,
+        event: item.event,
+        no_msgs: item.no_msgs,
+        is_pined: item.is_pined,
+        sender_id: item.sender_id,
+        sender_username: item.sender_username,
+        sender_display_name: item.sender_display_name,
+        mentions: item.mentions,
+        reply_to: item.reply_to,
+      };
+      array = [...array, i];
     });
-    dispatch(setUnreadGroupMsgsCounts(unread_counts));
-  }
-  dispatch(getUserGroupsSuccess(array));
-  resolve();
-});
+    array.sort((a, b) =>
+      a.timestamp &&
+      b.timestamp &&
+      new Date(a.timestamp) < new Date(b.timestamp)
+        ? 1
+        : -1,
+    );
+
+    let unread_counts = 0;
+    if (array && array.length > 0) {
+      // console.log('groups', groups);
+      array.map(function (el) {
+        unread_counts = unread_counts + el.unread_msg;
+      });
+      dispatch(setUnreadGroupMsgsCounts(unread_counts));
+    }
+    dispatch(getUserGroupsSuccess(array));
+    resolve();
+  });
 
 export const getUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -319,7 +344,7 @@ export const markGroupConversationRead = (data) => (dispatch) =>
   });
 
 //Get Group Conversations
-const getGroupConversationRequest = () => ({
+export const getGroupConversationRequest = () => ({
   type: GET_GROUP_CONVERSATION_REQUEST,
 });
 
@@ -344,9 +369,11 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
   let chat = getGroupChatConversationById(groupId);
   if (chat.length) {
     let conversations = [];
-    chat.map((item, index) => {
-      conversations = [...conversations, item];
-    });
+    // chat.map((item, index) => {
+    //   conversations = [...conversations, item];
+    // });
+
+    conversations = chat.toJSON();
 
     // this.setState({ conversation: conversations });
     dispatch(setGroupConversation(conversations));
@@ -355,7 +382,7 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
 
 export const getGroupConversation = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getGroupConversationRequest());
+    dispatch(getGroupConversationRequest())
     console.log('groupId', groupId);
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
@@ -412,6 +439,7 @@ export const updateGroupMembers = (data) => (dispatch) =>
 //Get Group Details
 export const getGroupDetail = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    console.log('api_url -> ',`/xchat/group-detail/` + groupId + '/');
     client
       .get(`/xchat/group-detail/` + groupId + '/')
       .then((res) => {
@@ -422,27 +450,84 @@ export const getGroupDetail = (groupId) => (dispatch) =>
       });
   });
 
+
 //Get Group Members
-export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
-  dispatch,
-) =>
-  new Promise(function (resolve, reject) {
+export const getGroupMembers = (groupId, offset = 0, limit =20) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        group = []
+        recursionGetGroupMembers(groupId, offset, limit).then((res) => {
+            resolve(res);
+        }).catch((err) => {
+            reject(err);
+        })
+    });
+
+let group = []
+export const recursionGetGroupMembers = (groupId, offset, limit) =>
+    getGroupMembersApi(groupId, offset, limit).then((res)=>{
+        if(res.next){
+            if (group && group.length > 0){
+                group = [...group, ...res.results]
+            }else{
+                group = res.results
+            }
+            return recursionGetGroupMembers(groupId,offset+20, 20).then(res=>res);
+        }else{
+            if (group && group.length > 0){
+                if (res.results && res.results.length > 0){
+                    group = [...group, ...res.results]
+                }
+                return group
+            }else{
+                return res.results;
+            }
+        }
+    }).catch(err=>err);
+
+const getGroupMembersApi = (groupId, offset, limit) =>new Promise ((resolve,reject)=>{
     client
-      .get(
-        `/xchat/get-group-members/` +
-          groupId +
-          '/?limit=' +
-          limit +
-          '&offset=' +
-          offset,
-      )
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+        .get(`/xchat/get-group-members/` +
+                  groupId +
+                  '/?limit=' +
+                  limit +
+                  '&offset=' +
+                  offset)
+        .then((res) => {
+            // if (res.conversations) {
+            //     setChannels(res.conversations);
+            // }
+            resolve(res);
+        })
+        .catch((err) => {
+            reject(err);
+        });
+
+})
+
+
+
+
+// //Get Group Members
+// export const getGroupMembers = (groupId, limit = 20, offset = 0) => (
+//   dispatch,
+// ) =>
+//   new Promise(function (resolve, reject) {
+//     client
+//       .get(
+//         `/xchat/get-group-members/` +
+//           groupId +
+//           '/?limit=' +
+//           limit +
+//           '&offset=' +
+//           offset,
+//       )
+//       .then((res) => {
+//         resolve(res);
+//       })
+//       .catch((err) => {
+//         reject(err);
+//       });
+//   });
 
 //Send Group Message
 export const sendGroupMessage = (message) => (dispatch) =>

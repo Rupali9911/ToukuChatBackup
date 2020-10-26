@@ -248,7 +248,19 @@ new Promise(function(resolve,reject){
     let counts = 0;
     channels.map((item, index) => {
       counts = counts + item.unread_msg;
-      array = [...array, item];
+      let i = {
+        id: item.id,
+        name: item.name,
+        unread_msg: item.unread_msg,
+        total_members: item.total_members,
+        description: item.description,
+        chat: item.chat,
+        channel_picture: item.channel_picture,
+        last_msg: item.last_msg,
+        is_pined: item.is_pined,
+        created: item.created,
+      }
+      array = [...array, i];
     });
     dispatch(setUnreadChannelMsgsCounts(counts))
     dispatch(getFollowingChannelsSuccess(array));
@@ -266,7 +278,19 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
         let counts = 0;
         channels.map((item,index)=>{
           counts = counts + item.unread_msg;
-          array = [...array, item];
+          let i = {
+            id: item.id,
+            name: item.name,
+            unread_msg: item.unread_msg,
+            total_members: item.total_members,
+            description: item.description,
+            chat: item.chat,
+            channel_picture: item.channel_picture,
+            last_msg: item.last_msg,
+            is_pined: item.is_pined,
+            created: item.created,
+          }
+          array = [...array, i];
         });
         dispatch(setUnreadChannelMsgsCounts(counts))
         dispatch(getFollowingChannelsSuccess(array));
@@ -523,7 +547,7 @@ export const getChannelConversations = (id, limit = 30) => (dispatch) =>
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + limit)
       .then(async (res) => {
-        console.log('res_channel_conversation',res);
+        console.log('res_channel_conversation',JSON.stringify(res));
         setChannelChatConversation(res.conversation);
         dispatch(getChannelConversationsSuccess());
         resolve(res);

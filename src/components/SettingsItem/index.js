@@ -7,7 +7,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {Menu} from "react-native-paper";
 import {setAppLanguage, setI18nConfig, translate, userLanguage} from "../../redux/reducers/languageReducer";
-import {setChannelMode, updateChannelMode} from "../../redux/reducers/configurationReducer";
+import {setChannelMode, updateChannelMode, updateConfiguration} from "../../redux/reducers/configurationReducer";
 import {connect} from 'react-redux';
 import {showToast} from '../../utils'
 import SwitchCustom from '../SwitchCustom'
@@ -21,7 +21,8 @@ class SettingsItem extends Component {
         isLanguageSelected: false,
         selectedLanguage: 'English',
         arrLanguage: languageArray,
-        channelMode: this.props.userConfig.channel_mode
+        channelMode: this.props.userConfig.channel_mode,
+        referralCode: ''
     };
   }
     async componentDidMount() {
@@ -34,6 +35,11 @@ class SettingsItem extends Component {
             })
         );
 
+      let tmpReferralCode = this.props.userData.referral_link
+      const arrLink = tmpReferralCode.split('/')
+        if (arrLink.length > 0) {
+            this.setState({referralCode: arrLink[arrLink.length - 1]})
+        }
     }
 
     onPressLanguage(){
@@ -50,11 +56,15 @@ class SettingsItem extends Component {
       if (filteredArray.length > 0) {
           this.props.setAppLanguage(filteredArray[0]);
           setI18nConfig(filteredArray[0].language_name);
+          let data = {
+              language: filteredArray[0].language_name
+          }
+          this.props.updateConfiguration(data)
       }
   }
 
   copyCode(){
-      let invitationLink = registerUrl + this.props.userData.invitation_code
+      let invitationLink = registerUrl + this.state.referralCode
       Clipboard.setString(invitationLink)
       showToast(translate('pages.setting.referralLink'), translate('pages.setting.toastr.linkCopiedSuccessfully'), 'positive' )
   }
@@ -84,7 +94,7 @@ class SettingsItem extends Component {
 render() {
       const {title, icon_name,
           onPress, isImage, isFontAwesome, isLanguage, isChannelMode, userData, isInvitation, isToukuPoints, isCustomerSupport, isVersion} = this.props;
-   const {isLanguageSelected, arrLanguage, selectedLanguage, channelMode} = this.state
+   const {isLanguageSelected, arrLanguage, selectedLanguage, channelMode, referralCode} = this.state
 
     const conditionalRender = ()=>{
         if (isImage){
@@ -151,7 +161,7 @@ render() {
 
             {isInvitation &&
             <View style={styles.vwRightInv}>
-                <Text style={[styles.txtInvitation]}>{userData.invitation_code}</Text>
+                <Text style={[styles.txtInvitation]}>{referralCode}</Text>
                 <TouchableOpacity
                     hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                     onPress={() => this.copyCode()}>
@@ -205,13 +215,13 @@ const styles = StyleSheet.create({
         padding: 7,
         alignItems: 'center',
         flexDirection: 'row',
-        borderRadius: 5
+        borderRadius: 5,
   },
     txtLanguage:{
-      fontFamily: Fonts.regular,
+      fontFamily: Fonts.nunitoSansLight,
         color: Colors.dark_orange,
         fontSize: 13,
-        fontWeight: '300'
+        fontWeight: '500'
   },
     txtInvitation:{
         fontFamily: Fonts.regular,
@@ -281,7 +291,8 @@ const mapDispatchToProps = {
     setAppLanguage,
     userLanguage,
     updateChannelMode,
-    setChannelMode
+    setChannelMode,
+    updateConfiguration
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsItem);

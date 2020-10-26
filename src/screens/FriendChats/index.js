@@ -10,14 +10,20 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
 import {globalStyles} from '../../styles';
-import {Images, SocketEvents} from '../../constants';
-import {ConfirmationModal, UploadSelectModal} from '../../components/Modals';
+import {Images, SocketEvents, appleStoreUserId} from '../../constants';
+import {
+  ConfirmationModal,
+  UploadSelectModal,
+  ShowAttahmentModal,
+  ShowGalleryModal,
+} from '../../components/Modals';
 import {ListLoader} from '../../components/Loaders';
 import {UploadLoader} from '../../components/Loaders';
 import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   getPersonalConversation,
   sendPersonalMessage,
@@ -30,10 +36,11 @@ import {
   setFriendConversation,
   addNewSendMessage,
   resetFriendConversation,
+  updateUnreadFriendMsgsCounts,
+  setUserFriends,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
-import SingleSocket from '../../helpers/SingleSocket';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
   setFriendChatConversation,
@@ -43,6 +50,8 @@ import {
   deleteFriendMessageById,
   setFriendMessageUnsend,
   updateAllFriendMessageRead,
+  updateFriendsUnReadCount,
+  updateFriendLastMsgWithoutCount,
   realm,
 } from '../../storage/Service';
 
@@ -64,8 +73,14 @@ class FriendChats extends Component {
       sentMessageType: 'text',
       sendingMedia: false,
       showSelectModal: false,
+      callingApi: false,
+      uploadedFiles: [],
+      showAttachmentModal: false,
+      showGalleryModal: false,
       uploadFile: {uri: null, type: null, name: null},
-      headerRightIconMenu: [
+      uploadProgress: 0,
+      isChatLoading:false,
+      headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
           title: translate('pages.xchat.unfriend'),
@@ -89,7 +104,7 @@ class FriendChats extends Component {
           onPress: () => {
             Toast.show({
               title: 'Touku',
-              text: 'User reported',
+              text: translate('pages.xchat.userReported'),
               type: 'positive',
             });
           },
@@ -101,21 +116,37 @@ class FriendChats extends Component {
           onPress: () => {
             Toast.show({
               title: 'Touku',
-              text: 'User blocked',
+              text: translate('pages.xchat.userBlocked'),
               type: 'positive',
             });
           },
         },
+      ] : [
+          {
+              id: 1,
+              title: translate('pages.xchat.unfriend'),
+              icon: 'user-times',
+              onPress: () => {
+                  this.toggleConfirmationModal();
+              },
+          },
+          {
+              id: 2,
+              title: translate('pages.xchat.createGroup'),
+              icon: 'users',
+              onPress: () => {
+                  this.props.navigation.navigate('CreateFriendGroup');
+              },
+          }
       ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
       editMessageId: null,
     };
-
-    this.SingleSocket = new SingleSocket();
     this.S3uploadService = new S3uploadService();
     this.props.resetFriendConversation();
+    this.isUploading = false;
   }
 
   UNSAFE_componentWillMount() {
@@ -135,38 +166,59 @@ class FriendChats extends Component {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getPersonalConversationInitial();
     this.markFriendMsgsRead();
-
-    this.SingleSocket.create({user_id: this.props.userData.id});
-
+    this.updateUnReadFriendChatCount();
     // alert(JSON.stringify(this.props.userData));
+
   }
+
+  updateUnReadFriendChatCount = () => {
+    updateFriendsUnReadCount(this.props.currentFriend.friend, 0);
+
+    this.props.updateUnreadFriendMsgsCounts(0);
+
+    this.props.setUserFriends().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
 
   onMessageSend = async () => {
-    const {
-      newMessageText,
-      isReply,
-      repliedMessage,
-      isEdited,
-      sentMessageType,
-      editMessageId,
-      uploadFile,
-    } = this.state;
+    const {newMessageText, editMessageId} = this.state;
     const {currentFriend, userData} = this.props;
 
-    if (!newMessageText && !uploadFile.uri) {
+    let msgText = newMessageText;
+    let isReply = this.state.isReply;
+    let repliedMessage = this.state.repliedMessage;
+    let isEdited = this.state.isEdited;
+    let sentMessageType = this.state.sentMessageType;
+    let uploadFile = this.state.uploadFile;
+    if (!msgText && !uploadFile.uri) {
       return;
     }
-    let msgText = newMessageText;
+    this.setState({
+      newMessageText: '',
+      isReply: false,
+      repliedMessage: null,
+      isEdited: false,
+      sentMessageType: 'text',
+      // sendingMedia: false,
+      uploadFile: {uri: null, type: null, name: null},
+      uploadProgress: 0
+    });
+
     let imgThumb = '';
     if (sentMessageType === 'image') {
       let file = uploadFile.uri;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       console.log('uploadedImages', uploadedImages);
       msgText = uploadedImages.image[0].image;
@@ -180,6 +232,10 @@ class FriendChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedAudio;
     }
@@ -192,6 +248,10 @@ class FriendChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedApplication;
     }
@@ -202,6 +262,10 @@ class FriendChats extends Component {
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
         uploadFile.type,
+        (e)=>{
+          console.log('progress_bar_percentage',e)
+          this.setState({uploadProgress: e.percent});
+        }
       );
       msgText = uploadedVideo;
     }
@@ -248,8 +312,8 @@ class FriendChats extends Component {
     };
 
     if (isEdited) {
-      updateFriendMessageById(editMessageId, newMessageText, sentMessageType);
-      this.sendEditMessage();
+      updateFriendMessageById(editMessageId, msgText, sentMessageType);
+      this.sendEditMessage(msgText, editMessageId);
       return;
     }
     if (isReply) {
@@ -261,7 +325,11 @@ class FriendChats extends Component {
         to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
-      this.state.conversations.unshift(sendmsgdata);
+      // this.state.conversations.unshift(sendmsgdata);
+      this.props.setFriendConversation([
+        sendmsgdata,
+        ...this.props.chatFriendConversation,
+      ]);
       this.props.sendPersonalMessage(data);
     } else {
       let data = {
@@ -271,22 +339,32 @@ class FriendChats extends Component {
         msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
       };
-      this.state.conversations.unshift(sendmsgdata);
+      // this.state.conversations.unshift(sendmsgdata);
+      this.props.setFriendConversation([
+        sendmsgdata,
+        ...this.props.chatFriendConversation,
+      ]);
       this.props.sendPersonalMessage(data);
     }
-    this.setState({
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-      isEdited: false,
-      sentMessageType: 'text',
-      sendingMedia: false,
-      uploadFile: {uri: null, type: null, name: null},
-    });
+    if (uploadFile.uri) {
+      this.setState({
+        sendingMedia: false,
+      });
+    }
+
+    // this.setState({
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sentMessageType: 'text',
+    //   sendingMedia: false,
+    //   uploadFile: {uri: null, type: null, name: null},
+    // });
   };
 
-  sendEditMessage = () => {
-    const {newMessageText, editMessageId} = this.state;
+  sendEditMessage = (newMessageText, editMessageId) => {
+    // const {newMessageText, editMessageId} = this.state;
 
     const data = {
       message_body: newMessageText,
@@ -300,12 +378,15 @@ class FriendChats extends Component {
       })
       .catch((err) => {});
     this.setState({
-      newMessageText: '',
-      isReply: false,
-      repliedMessage: null,
-      isEdited: false,
       sendingMedia: false,
     });
+    // this.setState({
+    //   newMessageText: '',
+    //   isReply: false,
+    //   repliedMessage: null,
+    //   isEdited: false,
+    //   sendingMedia: false,
+    // });
   };
 
   onReply = (messageId) => {
@@ -498,7 +579,24 @@ class FriendChats extends Component {
           );
           let conversations = [];
           chat.map((item, index) => {
-            conversations = [...conversations, item];
+            let i = {
+              created: item.created,
+              deleted_for: item.deleted_for,
+              friend: item.friend,
+              from_user: item.from_user,
+              id: item.id,
+              is_edited: item.is_edited,
+              is_read: item.is_read,
+              is_unsent: item.is_unsent,
+              local_id: item.local_id,
+              message_body: item.message_body,
+              msg_type: item.msg_type,
+              reply_to: item.reply_to,
+              thumbnail: item.thumbnail,
+              to_user: item.to_user,
+              updated: item.updated,
+            };
+            conversations = [...conversations, i];
           });
           this.props.setFriendConversation(conversations);
         }
@@ -510,20 +608,56 @@ class FriendChats extends Component {
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          created: item.created,
+          deleted_for: item.deleted_for,
+          friend: item.friend,
+          from_user: item.from_user,
+          id: item.id,
+          is_edited: item.is_edited,
+          is_read: item.is_read,
+          is_unsent: item.is_unsent,
+          local_id: item.local_id,
+          message_body: item.message_body,
+          msg_type: item.msg_type,
+          reply_to: item.reply_to,
+          thumbnail: item.thumbnail,
+          to_user: item.to_user,
+          updated: item.updated,
+        };
+        conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
     }
   };
 
   getPersonalConversationInitial = async () => {
+    this.setState({isChatLoading:true});
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
       chat.map((item, index) => {
-        conversations = [...conversations, item];
+        let i = {
+          created: item.created,
+          deleted_for: item.deleted_for,
+          friend: item.friend,
+          from_user: item.from_user,
+          id: item.id,
+          is_edited: item.is_edited,
+          is_read: item.is_read,
+          is_unsent: item.is_unsent,
+          local_id: item.local_id,
+          message_body: item.message_body,
+          msg_type: item.msg_type,
+          reply_to: item.reply_to,
+          thumbnail: item.thumbnail,
+          to_user: item.to_user,
+          updated: item.updated,
+        };
+        conversations = [...conversations, i];
       });
       this.props.setFriendConversation(conversations);
+      this.setState({isChatLoading:false});
     }
 
     await this.props
@@ -537,10 +671,28 @@ class FriendChats extends Component {
           );
           let conversations = [];
           chat.map((item, index) => {
-            conversations = [...conversations, item];
+            let i = {
+              created: item.created,
+              deleted_for: item.deleted_for,
+              friend: item.friend,
+              from_user: item.from_user,
+              id: item.id,
+              is_edited: item.is_edited,
+              is_read: item.is_read,
+              is_unsent: item.is_unsent,
+              local_id: item.local_id,
+              message_body: item.message_body,
+              msg_type: item.msg_type,
+              reply_to: item.reply_to,
+              thumbnail: item.thumbnail,
+              to_user: item.to_user,
+              updated: item.updated,
+            };
+            conversations = [...conversations, i];
           });
           this.props.setFriendConversation(conversations);
         }
+        this.setState({isChatLoading:false});
       });
   };
 
@@ -560,7 +712,6 @@ class FriendChats extends Component {
         channel_name: '',
       },
     };
-    // this.SingleSocket.sendMessage(payload);
   }
 
   toggleConfirmationModal = () => {
@@ -576,6 +727,7 @@ class FriendChats extends Component {
       channel_name: `unfriend_${this.props.currentFriend.user_id}`,
       unfriend_user_id: this.props.currentFriend.user_id,
     };
+    this.setState({callingApi: true});
     this.props
       .unFriendUser(payload)
       .then((res) => {
@@ -589,6 +741,7 @@ class FriendChats extends Component {
           this.props.navigation.goBack();
         }
         this.toggleConfirmationModal();
+        this.setState({callingApi: false});
       })
       .catch((err) => {
         console.log('FriendChats -> onConfirm -> err', err);
@@ -598,6 +751,7 @@ class FriendChats extends Component {
           type: 'primary',
         });
         this.toggleConfirmationModal();
+        this.setState({callingApi: false});
       });
   };
 
@@ -623,6 +777,29 @@ class FriendChats extends Component {
         .then((res) => {
           deleteFriendMessageById(this.state.selectedMessageId);
           this.getPersonalConversation();
+
+          if (this.props.currentFriend.last_msg_id == this.state.selectedMessageId) {
+            let chat = getFriendChatConversationById(
+              this.props.currentFriend.friend,
+            );
+
+            let array = chat.toJSON();
+
+            if (array && array.length > 0) {
+              updateFriendLastMsgWithoutCount(
+                this.props.currentFriend.user_id,
+                {
+                  id: array[0].id,
+                  msg_type: array[0].msg_type,
+                  message_body: array[0].message_body,
+                  created: array[0].timestamp,
+                },
+              );
+              this.props.setUserFriends().then((res) => {
+                this.props.setCommonChatConversation();
+              });
+            }
+          }
         });
     }
   };
@@ -773,51 +950,20 @@ class FriendChats extends Component {
       this.onMessageSend();
     });
   };
-  onGalleryPress = async (mediaType) => {
-    if (mediaType === 'images') {
-      ImagePicker.openPicker({
-        multiple: true,
-        mediaType: 'photo',
-        includeBase64: true,
-      }).then(async (images) => {
-        await images.map(async (item, index) => {
-          let source = {
-            uri: 'data:image/jpeg;base64,' + item.data,
-            type: item.mime,
-            name: null,
-          };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'image',
-            sendingMedia: true,
-          });
-          this.toggleSelectModal(false);
-          await this.onMessageSend();
-        });
+
+  onGalleryPress = async () => {
+    ImagePicker.openPicker({
+      multiple: true,
+      maxFiles: 30,
+      mediaType: 'any',
+      includeBase64: true,
+    }).then(async (images) => {
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...images],
       });
-    }
-    if (mediaType === 'video') {
-      ImagePicker.openPicker({
-        multiple: true,
-        mediaType: 'video',
-      }).then(async (video) => {
-        console.log('ChannelChats -> onGalleryPress -> video', video);
-        await video.map(async (item, index) => {
-          let source = {
-            uri: item.path,
-            type: item.mime,
-            name: null,
-          };
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'video',
-            sendingMedia: true,
-          });
-          this.toggleSelectModal(false);
-          await this.onMessageSend();
-        });
-      });
-    }
+      // this.toggleSelectModal(false);
+      this.toggleGalleryModal(true);
+    });
   };
 
   onAttachmentPress = async () => {
@@ -832,31 +978,35 @@ class FriendChats extends Component {
           DocumentPicker.types.audio,
         ],
       });
-      for (const res of results) {
-        let fileType = res.type.substr(0, res.type.indexOf('/'));
-        console.log(
-          res.uri,
-          res.type, // mime type
-          res.name,
-          res.size,
-          res.type.substr(0, res.type.indexOf('/')),
-        );
-        let source = {uri: res.uri, type: res.type, name: res.name};
-        if (fileType === 'audio') {
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'audio',
-            sendingMedia: true,
-          });
-        } else if (fileType === 'application') {
-          this.setState({
-            uploadFile: source,
-            sentMessageType: 'doc',
-            sendingMedia: true,
-          });
-        }
-        this.onMessageSend();
-      }
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...results],
+      });
+      this.toggleAttachmentModal(true);
+      // for (const res of results) {
+      //   let fileType = res.type.substr(0, res.type.indexOf('/'));
+      //   console.log(
+      //     res.uri,
+      //     res.type, // mime type
+      //     res.name,
+      //     res.size,
+      //     res.type.substr(0, res.type.indexOf('/')),
+      //   );
+      //   let source = {uri: res.uri, type: res.type, name: res.name};
+      //   if (fileType === 'audio') {
+      //     this.setState({
+      //       uploadFile: source,
+      //       sentMessageType: 'audio',
+      //       sendingMedia: true,
+      //     });
+      //   } else if (fileType === 'application') {
+      //     this.setState({
+      //       uploadFile: source,
+      //       sentMessageType: 'doc',
+      //       sendingMedia: true,
+      //     });
+      //   }
+      //   this.onMessageSend();
+      // }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -866,15 +1016,129 @@ class FriendChats extends Component {
     }
   };
 
-  toggleSelectModal = (status) => {
+  // toggleSelectModal = (status) => {
+  //   this.setState({
+  //     showSelectModal: status,
+  //   });
+  // };
+
+  // selectUploadOption = (mediaType) => {
+  //   // this.toggleSelectModal();
+  //   this.onGalleryPress(mediaType);
+  // };
+
+  toggleGalleryModal = (status) => {
     this.setState({
-      showSelectModal: status,
+      showGalleryModal: status,
     });
   };
 
-  selectUploadOption = (mediaType) => {
-    // this.toggleSelectModal();
-    this.onGalleryPress(mediaType);
+  uploadAndSend = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    this.toggleGalleryModal(false);
+
+    for (const file of this.state.uploadedFiles) {
+      let fileType = file.mime;
+      if (fileType.includes('image')) {
+        let source = {
+          uri: 'data:image/jpeg;base64,' + file.data,
+          type: file.mime,
+          name: null,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          async () => {
+            await this.onMessageSend();
+          },
+        );
+      } else {
+        let source = {
+          uri: file.path,
+          type: file.mime,
+          name: null,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      }
+    }
+    this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+
+  toggleAttachmentModal = (status) => {
+    this.setState({
+      showAttachmentModal: status,
+    });
+  };
+
+  uploadAndSendAttachment = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    this.toggleAttachmentModal(false);
+    for (const res of this.state.uploadedFiles) {
+      let fileType = res.type.substr(0, res.type.indexOf('/'));
+      console.log(
+        res.uri,
+        res.type, // mime type
+        res.name,
+        res.size,
+        res.type.substr(0, res.type.indexOf('/')),
+      );
+      let source = {uri: res.uri, type: res.type, name: res.name};
+      if (fileType === 'audio') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'audio',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if (fileType === 'application') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'doc',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      }
+    }
+    this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+
+  removeUploadData = (index) => {
+    let newArray = this.state.uploadedFiles.filter((item, itemIndex) => {
+      if (index !== itemIndex) {
+        return item;
+      }
+    });
+    this.setState({
+      uploadedFiles: newArray,
+    });
   };
 
   render() {
@@ -889,23 +1153,29 @@ class FriendChats extends Component {
       translatedMessageId,
       uploadFile,
       sendingMedia,
+      isChatLoading
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
+    console.log('chatsLoading',chatsLoading);
     return (
       <ImageBackground
         source={Images.image_home_bg}
         style={globalStyles.container}>
         <ChatHeader
-          title={currentFriend.username}
+          title={
+            currentFriend.display_name
+              ? currentFriend.display_name
+              : currentFriend.username
+          }
           description={
             currentFriend.total_members + ' ' + translate('pages.xchat.members')
           }
           type={'friend'}
           image={currentFriend.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
-          menuItems={this.state.headerRightIconMenu}
+          menuItems={this.state.headerRightIconMenu }
         />
-        {chatsLoading && chatFriendConversation.length <= 0 ? (
+        {isChatLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />
         ) : (
           <ChatContainer
@@ -913,6 +1183,7 @@ class FriendChats extends Component {
             onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}
             newMessageText={newMessageText}
+            sendEnable={newMessageText.lenght ? true : false}
             messages={chatFriendConversation}
             orientation={this.state.orientation}
             repliedMessage={this.state.repliedMessage}
@@ -927,7 +1198,7 @@ class FriendChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.toggleSelectModal(true)}
+            onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
           />
@@ -937,6 +1208,7 @@ class FriendChats extends Component {
           onCancel={this.onCancel}
           onConfirm={this.onConfirm}
           orientation={orientation}
+          isLoading={this.props.unFriendLoading}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.selectedUserWillBeRemoved')}
         />
@@ -959,12 +1231,40 @@ class FriendChats extends Component {
           message={translate('pages.xchat.toastr.messageWillBeUnsent')}
         />
 
-        <UploadSelectModal
+        {/* <UploadSelectModal
           visible={this.state.showSelectModal}
           toggleSelectModal={this.toggleSelectModal}
           onSelect={(mediaType) => this.selectUploadOption(mediaType)}
+        /> */}
+
+        <ShowGalleryModal
+          visible={this.state.showGalleryModal}
+          toggleGalleryModal={this.toggleGalleryModal}
+          data={this.state.uploadedFiles}
+          onCancel={() => {
+            this.setState({uploadedFiles: []});
+            this.toggleGalleryModal(false);
+          }}
+          onUpload={() => this.uploadAndSend()}
+          isLoading={this.isUploading}
+          removeUploadData={(index) => this.removeUploadData(index)}
+          onGalleryPress={() => this.onGalleryPress()}
         />
-        {sendingMedia && <UploadLoader />}
+
+        <ShowAttahmentModal
+          visible={this.state.showAttachmentModal}
+          toggleAttachmentModal={this.toggleAttachmentModal}
+          data={this.state.uploadedFiles}
+          onCancel={() => {
+            this.setState({uploadedFiles: []});
+            this.toggleAttachmentModal(false);
+          }}
+          onUpload={() => this.uploadAndSendAttachment()}
+          isLoading={this.isUploading}
+          removeUploadData={(index) => this.removeUploadData(index)}
+          onAttachmentPress={() => this.onAttachmentPress()}
+        />
+        {sendingMedia && <UploadLoader/>}
       </ImageBackground>
     );
   }
@@ -974,6 +1274,7 @@ const mapStateToProps = (state) => {
   return {
     currentFriend: state.friendReducer.currentFriend,
     chatsLoading: state.friendReducer.loading,
+    unFriendLoading: state.friendReducer.loading,
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
@@ -993,6 +1294,9 @@ const mapDispatchToProps = {
   setFriendConversation,
   addNewSendMessage,
   resetFriendConversation,
+  setCommonChatConversation,
+  updateUnreadFriendMsgsCounts,
+  setUserFriends,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

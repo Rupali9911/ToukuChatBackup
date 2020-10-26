@@ -5,6 +5,11 @@ import {
   CANCEL_FRIEND_REQUEST,
 } from '../../helpers/api';
 
+import {
+  setFriendRequests,
+  getLocalFriendRequests
+} from '../../storage/Service';
+
 export const SET_SEARCHED_FRIEND = 'SET_SEARCHED_FRIEND';
 
 export const GET_SEARCHED_FRIENDS_REQUEST = 'GET_SEARCHED_FRIENDS_REQUEST';
@@ -151,8 +156,20 @@ const setFiendRequest = (data) => ({
   },
 });
 
-export const setFriendRequest = (data) => (dispatch) => {
-  dispatch(setFiendRequest(data))
+export const setFriendRequest = () => (dispatch) => {
+  var result = getLocalFriendRequests();
+    var requests = [];
+  for (let i of result) {
+    let item = {
+      from_user_id: i.from_user_id,
+      from_user_display_name: i.from_user_display_name,
+      from_user_username: i.from_user_username,
+      from_user_avatar: i.from_user_avatar,
+      created: i.created
+    }
+    requests = [...requests, item];
+  }
+  dispatch(setFiendRequest(requests))
 }
 
 export const getFriendRequest = () => (dispatch) =>
@@ -160,6 +177,7 @@ export const getFriendRequest = () => (dispatch) =>
     client
       .get(`/xchat/list-friend-request/`)
       .then((res) => {
+        setFriendRequests(res);
         dispatch(setFiendRequest(res));
         resolve(res);
       })

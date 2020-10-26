@@ -43,7 +43,9 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-  [FIRApp configure];
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
 
   [[FBSDKApplicationDelegate sharedInstance] application:application
   didFinishLaunchingWithOptions:launchOptions];

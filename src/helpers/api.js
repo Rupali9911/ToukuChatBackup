@@ -4,12 +4,14 @@ import io from 'socket.io-client';
 import NavigationService from '../navigation/NavigationService';
 import Toast from '../components/Toast';
 import SingleSocket from './SingleSocket';
+import {resetData} from '../storage/Service';
 
 /* switch this for testing on staging or production */
 export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
+
 //Live API URL
 export const apiRootLive = 'https://api-touku.angelium.net/api';
 
@@ -29,9 +31,8 @@ export const GET_TOUKU_POINTS = apiRoot + '/xchat/get-total-tp/';
 export const GET_SEARCHED_FRIEND = apiRoot + '/xchat/search-contacts/';
 export const SEND_FRIEND_REQUEST = apiRoot + '/xchat/send-friend-request/';
 export const CANCEL_FRIEND_REQUEST = apiRoot + '/xchat/cancel-sent-request/';
-export const CLEAR_BADGE_COUNT = 'https://api-angelium.net/api/xchat/reset-badge-count/'
-
-
+export const CLEAR_BADGE_COUNT =
+  'https://api-angelium.net/api/xchat/reset-badge-count/';
 
 export const client = axios.create({
   baseURL: apiRoot,
@@ -39,7 +40,7 @@ export const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'User-Agent': userAgent,
-    'Origin': 'touku.net',
+    Origin: 'touku.net',
   },
 });
 
@@ -51,25 +52,15 @@ client.interceptors.request.use(
     var socialAuth = await AsyncStorage.getItem('socialToken');
     if (socialAuth && socialAuth != null) {
       config.headers.Authorization = `JWT ${socialAuth}`;
-      //console.log("Token", config.headers.Authorization);
-      // SingleSocket.create({
-      //   user_id: 9795,
-      //   token: socialAuth,
-      // });
     } else if (basicAuth && basicAuth != null) {
       config.headers.Authorization = `JWT ${basicAuth}`;
-      //console.log("Token", config.headers.Authorization);
-      // SingleSocket.create({
-      //   user_id: 9795,
-      //   token: basicAuth,
-      // });
     }
     config.headers.Origin = 'touku';
     return config;
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add a response interceptor
@@ -81,6 +72,9 @@ client.interceptors.response.use(
     } else if (response.status === 401) {
       AsyncStorage.clear();
       NavigationService.navigate('Auth');
+      let singleSocket = SingleSocket.getInstance();
+      singleSocket && singleSocket.closeSocket();
+      resetData();
       Toast.show({
         title: 'Touku',
         text: 'Session Expired',
@@ -101,6 +95,7 @@ client.interceptors.response.use(
     // }
   },
   function (error) {
+    console.log('response_console_from_interceptor_error', error);
     return Promise.reject(error);
-  }
+  },
 );

@@ -33,3 +33,33 @@
     //   : null;
     // this.updateFlagAndFormatNumber(number, actionAfterSetState);
   }
+  
+### [iOS] Fixes TextInput Text Rendering Issue when typing Japanese, Chinese etc
+Update only the lines with the + operator at the start of them
+
+-Goto ./node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m
+
+(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
+{
+ + if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
+ +   return;
+ +  }
+  _defaultTextAttributes = defaultTextAttributes;
+  self.typingAttributes = defaultTextAttributes;
+  [self _updatePlaceholder];
+
+-Goto ./node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.m
+
+(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
+{
++  if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
++    return;
++  }
+  _defaultTextAttributes = defaultTextAttributes;
+  [super setDefaultTextAttributes:defaultTextAttributes];
+  [self _updatePlaceholder];
+
+### To fix crash on android specific devices on launch
+
+- Update build.gradle of react-native-twitter-signin, react-native-doc-viewer, react-native-orientation, and react-native-line-sdk modules
+  Go to the ./node_module/moduleName/android/build.gradle and replace the compileSdkVersion, buildToolsVersion, minSdkVersion, and targetSdkVersion to your compileSdkVersion, buildToolsVersion, minSdkVersion, and targetSdkVersion of main build.gradle. For going to your build.gradle, go to android/build.gradle

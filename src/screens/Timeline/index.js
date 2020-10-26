@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
@@ -7,21 +7,21 @@ import {
   ScrollView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
-import { globalStyles } from '../../styles';
+import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {Images, Icons, Colors, Fonts} from '../../constants';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import TabBar from '../../components/TabBar';
 import PostCard from '../../components/PostCard';
 import {
   getTrendTimeline,
   getFollowingTimeline,
   getRankingTimeline,
-    hidePost,
-    hideAllPost,
-    reportPost
+  hidePost,
+  hideAllPost,
+  reportPost,
 } from '../../redux/reducers/timelineReducer';
 
 class Timeline extends Component {
@@ -38,9 +38,8 @@ class Timeline extends Component {
           title: 'trend',
           icon: Icons.icon_chat,
           action: () => {
-            this.setState({ activeTab: 'trend' });
-               this.props.getTrendTimeline().then((res) => {
-              });
+            this.setState({activeTab: 'trend'});
+            this.props.getTrendTimeline().then((res) => {});
           },
         },
         {
@@ -48,9 +47,8 @@ class Timeline extends Component {
           title: 'following',
           icon: Icons.icon_setting,
           action: () => {
-            this.setState({ activeTab: 'following' });
-              this.props.getFollowingTimeline().then((res) => {
-              });
+            this.setState({activeTab: 'following'});
+            this.props.getFollowingTimeline().then((res) => {});
           },
         },
         {
@@ -58,9 +56,8 @@ class Timeline extends Component {
           title: 'ranking',
           icon: Icons.icon_timeline,
           action: () => {
-            this.setState({ activeTab: 'ranking' });
-              this.props.getRankingTimeline().then((res) => {
-              });
+            this.setState({activeTab: 'ranking'});
+            this.props.getRankingTimeline().then((res) => {});
           },
         },
       ],
@@ -70,19 +67,25 @@ class Timeline extends Component {
           id: 1,
           title: translate('pages.xchat.hideThisPost'),
           icon: 'bars',
-          onPress: (res) => {this.hidePost(res)},
+          onPress: (res) => {
+            this.hidePost(res);
+          },
         },
         {
           id: 1,
           title: translate('pages.xchat.hideAllPost'),
           icon: 'bars',
-            onPress: (res) => {this.hideAllPost(res)},
+          onPress: (res) => {
+            this.hideAllPost(res);
+          },
         },
         {
           id: 1,
           title: translate('pages.xchat.reportContent'),
           icon: 'bars',
-            onPress: (res) => {this.reportContent(res)},
+          onPress: (res) => {
+            this.reportContent(res);
+          },
         },
       ],
     };
@@ -96,7 +99,7 @@ class Timeline extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   async componentDidMount() {
@@ -116,17 +119,17 @@ class Timeline extends Component {
   }
 
   showData() {
-    const { trendTimline, followingTimeline, rankingTimeLine } = this.props;
+    const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
     console.log('Timeline -> showData -> trendTimline', trendTimline);
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => this.setState({visible: true});
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => this.setState({visible: false});
 
   getAspectRatio = () => {
     Image.getSize(
@@ -135,7 +138,7 @@ class Timeline extends Component {
         this.setState({
           ratio: height / width,
         });
-      }
+      },
     );
   };
 
@@ -143,87 +146,86 @@ class Timeline extends Component {
     this.getAspectRatio();
   };
 
-  hidePost(post){
-      const { activeTab } = this.state
+  hidePost(post) {
+    const {activeTab} = this.state;
     this.props.hidePost(post.id).then((res) => {
-      console.log('Hide post server response', res)
-        this.refreshContent()
-    })
+      console.log('Hide post server response', res);
+      this.refreshContent();
+    });
   }
 
-  hideAllPost(post){
-    const { activeTab } = this.state
-      this.props.hideAllPost(post.channel_id).then((res) => {
-          console.log('hideAllPost post server response', res)
-          this.refreshContent()
-      })
+  hideAllPost(post) {
+    const {activeTab} = this.state;
+    this.props.hideAllPost(post.channel_id).then((res) => {
+      console.log('hideAllPost post server response', res);
+      this.refreshContent();
+    });
   }
 
-  reportContent(post){
-      const { activeTab } = this.state
-      this.props.reportPost(post.id).then((res) => {
-          console.log('reportContent server response', res)
-          this.refreshContent()
-      })
+  reportContent(post) {
+    const {activeTab} = this.state;
+    this.props.reportPost(post.id).then((res) => {
+      console.log('reportContent server response', res);
+      this.refreshContent();
+    });
   }
 
-  refreshContent (){
-      const { activeTab } = this.state
-      if (activeTab === 'trend'){
-          console.log('trend selected')
-          this.props.getTrendTimeline().then((res) => {
-              this.showData();
-          });
-      } else if  (activeTab === 'following'){
-          console.log('following selected')
-          this.props.getFollowingTimeline().then((res) => {
-              this.showData();
-          });
-
-      }else if  (activeTab === 'ranking'){
-          console.log('ranking selected')
-          this.props.getRankingTimeline().then((res) => {
-              this.showData();
-          });
-      }
+  refreshContent() {
+    const {activeTab} = this.state;
+    if (activeTab === 'trend') {
+      console.log('trend selected');
+      this.props.getTrendTimeline().then((res) => {
+        this.showData();
+      });
+    } else if (activeTab === 'following') {
+      console.log('following selected');
+      this.props.getFollowingTimeline().then((res) => {
+        this.showData();
+      });
+    } else if (activeTab === 'ranking') {
+      console.log('ranking selected');
+      this.props.getRankingTimeline().then((res) => {
+        this.showData();
+      });
+    }
   }
 
   render() {
-    const { tabBarItem, activeTab, menuItems, posts } = this.state;
-    const { trendTimline, followingTimeline, rankingTimeLine } = this.props;
+    const {tabBarItem, activeTab, menuItems, posts} = this.state;
+    const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+      // <ImageBackground
+      //   source={Images.image_home_bg}
+      //   style={globalStyles.container}
+      // >
+      <View style={globalStyles.container}>
+        <HomeHeader title={translate('pages.xchat.timeline')} />
         <View style={globalStyles.container}>
-          <HomeHeader title={translate('pages.xchat.timeline')} />
-          <View style={globalStyles.container}>
-            <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
-            <ScrollView>
-              {activeTab === 'trend' ? (
-                <PostCard
-                  menuItems={menuItems}
-                  posts={trendTimline}
-                  isTimeline={true}
-                />
-              ) : activeTab === 'following' ? (
-                <PostCard
-                  menuItems={menuItems}
-                  posts={followingTimeline}
-                  isTimeline={true}
-                />
-              ) : (
-                <PostCard
-                  menuItems={menuItems}
-                  posts={rankingTimeLine}
-                  isTimeline={true}
-                />
-              )}
-            </ScrollView>
-          </View>
+          <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
+          <ScrollView>
+            {activeTab === 'trend' ? (
+              <PostCard
+                menuItems={menuItems}
+                posts={trendTimline}
+                isTimeline={true}
+              />
+            ) : activeTab === 'following' ? (
+              <PostCard
+                menuItems={menuItems}
+                posts={followingTimeline}
+                isTimeline={true}
+              />
+            ) : (
+              <PostCard
+                menuItems={menuItems}
+                posts={rankingTimeLine}
+                isTimeline={true}
+              />
+            )}
+          </ScrollView>
         </View>
-      </ImageBackground>
+      </View>
+      // </ImageBackground>
     );
   }
 }
@@ -242,9 +244,9 @@ const mapDispatchToProps = {
   getTrendTimeline,
   getFollowingTimeline,
   getRankingTimeline,
-    hidePost,
-    hideAllPost,
-    reportPost
+  hidePost,
+  hideAllPost,
+  reportPost,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

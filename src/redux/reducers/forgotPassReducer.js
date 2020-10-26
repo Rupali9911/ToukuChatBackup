@@ -1,4 +1,6 @@
 import {client} from '../../helpers/api';
+import Toast from "../../components/Toast";
+import {translate} from "./languageReducer";
 export const GET_FORGOT_PASSWORD_REQUEST = 'GET_FORGOT_PASSWORD_REQUEST';
 export const GET_FORGOT_PASSWORD_SUCCESS = 'GET_FORGOT_PASSWORD_SUCCESS';
 export const GET_FORGOT_PASSWORD_FAIL = 'GET_FORGOT_PASSWORD_FAIL';

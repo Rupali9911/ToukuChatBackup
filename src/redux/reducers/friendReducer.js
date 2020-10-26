@@ -1,11 +1,12 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 import Realm from 'realm';
 import {
   setFriendChatConversation,
   getFriendChatConversation,
-  getLocalUserFriends
+  getLocalUserFriends,
+  setUserFriendsFromApi,
 } from '../../storage/Service';
-import { dispatch } from 'rxjs/internal/observable/pairs';
+import {dispatch} from 'rxjs/internal/observable/pairs';
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
 export const GET_USER_FRIENDS_FAIL = 'GET_USER_FRIENDS_FAIL';
@@ -25,6 +26,10 @@ export const RESET_FRIEND_CONVERSATION = 'RESET_FRIEND_CONVERSATION';
 export const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE';
 export const Delete_Message = 'Delete_Message';
 
+export const UNFRIEND = 'UNFRIEND';
+export const UNFRIEND_SUCCESS = 'UNFRIEND_SUCCESS';
+export const UNFRIEND_FAIL = 'UNFRIEND_FAIL';
+
 const initialState = {
   loading: false,
   userFriends: [],
@@ -33,7 +38,7 @@ const initialState = {
   unreadFriendMsgsCounts: 0,
 };
 
-var realm = new Realm({ path: 'ToukuDB.realm' });
+var realm = new Realm({path: 'ToukuDB.realm'});
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -105,11 +110,26 @@ export default function (state = initialState, action) {
           ...state.chatFriendConversation,
         ],
       };
+    case UNFRIEND:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UNFRIEND_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case UNFRIEND_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
     case Delete_Message:
       return {
         ...state,
         chatFriendConversation: state.chatFriendConversation.filter(
-          (item) => item.id !== action.payload
+          (item) => item.id !== action.payload,
         ),
       };
     default:
@@ -170,54 +190,54 @@ const deleteMessage = (data) => ({
 });
 
 export const setUserFriends = () => (dispatch) =>
-new Promise(function (resolve, reject) {
-  dispatch(getUserFriendsRequest());
-        var result = getLocalUserFriends();
+  new Promise(function (resolve, reject) {
+    dispatch(getUserFriendsRequest());
+    var result = getLocalUserFriends();
 
-        var friends = [];
+    var friends = [];
 
-        result.map(item=>{
-          var item2 = {
-            avatar: item.avatar,
-            background_image: item.background_image,
-            display_name: item.display_name,
-            friend: item.friend,
-            isChecked: item.isChecked,
-            is_online: item.is_online,
-            is_typing: item.is_typing,
-            last_msg: item.last_msg,
-            last_msg_id: item.last_msg_id,
-            last_msg_type: item.last_msg_type,
-            profile_picture: item.profile_picture,
-            timestamp: item.timestamp,
-            unread_msg: item.unread_msg,
-            user_id: item.user_id,
-            username: item.username
-          };
-          friends.push(item2);
-        })
+    result.map((item) => {
+      var item2 = {
+        avatar: item.avatar,
+        background_image: item.background_image,
+        display_name: item.display_name,
+        friend: item.friend,
+        isChecked: item.isChecked,
+        is_online: item.is_online,
+        is_typing: item.is_typing,
+        last_msg: item.last_msg,
+        last_msg_id: item.last_msg_id,
+        last_msg_type: item.last_msg_type,
+        profile_picture: item.profile_picture,
+        timestamp: item.timestamp,
+        unread_msg: item.unread_msg,
+        user_id: item.user_id,
+        username: item.username,
+      };
+      friends.push(item2);
+    });
 
-        let unread_counts = 0;
-        if (friends && friends.length > 0) {
-          friends.map(function (el) {
-            unread_counts = unread_counts + el.unread_msg;
-            // var o = Object.assign({}, el);
-            // o.isChecked = false;
-            // o.is_typing = false;
-            // return o;
-          });
-          dispatch(setUnreadFriendMsgsCounts(unread_counts));
-        }
-        friends.sort((a, b) =>
-          a.timestamp &&
-          b.timestamp &&
-          new Date(a.timestamp) < new Date(b.timestamp)
-            ? 1
-            : -1
-        );
-        dispatch(getUserFriendsSuccess(friends));
-        resolve();
-});
+    let unread_counts = 0;
+    if (friends && friends.length > 0) {
+      friends.map(function (el) {
+        unread_counts = unread_counts + el.unread_msg;
+        // var o = Object.assign({}, el);
+        // o.isChecked = false;
+        // o.is_typing = false;
+        // return o;
+      });
+      dispatch(setUnreadFriendMsgsCounts(unread_counts));
+    }
+    friends.sort((a, b) =>
+      a.timestamp &&
+      b.timestamp &&
+      new Date(a.timestamp) < new Date(b.timestamp)
+        ? 1
+        : -1,
+    );
+    dispatch(getUserFriendsSuccess(friends));
+    resolve();
+  });
 
 export const getUserFriends = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -238,61 +258,65 @@ export const getUserFriends = () => (dispatch) =>
             });
             dispatch(setUnreadFriendMsgsCounts(unread_counts));
           }
+
+          setUserFriendsFromApi(friends);
+
           friends.sort((a, b) =>
             a.timestamp &&
             b.timestamp &&
             new Date(a.timestamp) < new Date(b.timestamp)
               ? 1
-              : -1
+              : -1,
           );
 
-          for (let item of friends) {
-            var obj = realm
-              .objects('user_friends')
-              .filtered('user_id =' + item.user_id);
-            if (obj.length > 0) {
-              // alert('matching friend');
-              realm.write(() => {
-                realm.create('user_friends', {
-                  user_id: item.user_id,
-                  friend: item.friend,
-                  unread_msg: item.unread_msg,
-                  last_msg_id: item.last_msg_id,
-                  username: item.username,
-                  avatar: item.avatar,
-                  profile_picture: item.profile_picture,
-                  background_image: item.background_image,
-                  last_msg: item.last_msg ? item.last_msg : '',
-                  last_msg_type: item.last_msg_type,
-                  display_name: item.display_name,
-                  isChecked: false,
-                  is_online: item.is_online,
-                  is_typing: false,
-                  timestamp: item.timestamp,
-                },'modified');
-              });
-            } else {
-              realm.write(() => {
-                realm.create('user_friends', {
-                  user_id: item.user_id,
-                  friend: item.friend,
-                  unread_msg: item.unread_msg,
-                  last_msg_id: item.last_msg_id,
-                  username: item.username,
-                  avatar: item.avatar,
-                  profile_picture: item.profile_picture,
-                  background_image: item.background_image,
-                  last_msg: item.last_msg ? item.last_msg : '',
-                  last_msg_type: item.last_msg_type,
-                  display_name: item.display_name,
-                  isChecked: false,
-                  is_online: item.is_online,
-                  is_typing: false,
-                  timestamp: item.timestamp,
-                });
-              });
-            }
-          }
+          // for (let item of friends) {
+          //   var obj = realm
+          //     .objects('user_friends')
+          //     .filtered('user_id =' + item.user_id);
+          //   if (obj.length > 0) {
+          //     // alert('matching friend');
+          //     realm.write(() => {
+          //       realm.create('user_friends', {
+          //         user_id: item.user_id,
+          //         friend: item.friend,
+          //         unread_msg: item.unread_msg,
+          //         last_msg_id: item.last_msg_id,
+          //         username: item.username,
+          //         avatar: item.avatar,
+          //         profile_picture: item.profile_picture,
+          //         background_image: item.background_image,
+          //         last_msg: item.last_msg ? item.last_msg : '',
+          //         last_msg_type: item.last_msg_type,
+          //         display_name: item.display_name,
+          //         isChecked: false,
+          //         is_online: item.is_online,
+          //         is_typing: false,
+          //         timestamp: item.timestamp,
+          //       },'modified');
+          //     });
+          //   } else {
+          //     realm.write(() => {
+          //       realm.create('user_friends', {
+          //         user_id: item.user_id,
+          //         friend: item.friend,
+          //         unread_msg: item.unread_msg,
+          //         last_msg_id: item.last_msg_id,
+          //         username: item.username,
+          //         avatar: item.avatar,
+          //         profile_picture: item.profile_picture,
+          //         background_image: item.background_image,
+          //         last_msg: item.last_msg ? item.last_msg : '',
+          //         last_msg_type: item.last_msg_type,
+          //         display_name: item.display_name,
+          //         isChecked: false,
+          //         is_online: item.is_online,
+          //         is_typing: false,
+          //         timestamp: item.timestamp,
+          //       });
+          //     });
+          //   }
+          // }
+
           var user_friends = realm.objects('user_friends');
           // console.log('user_friends', user_friends);
 
@@ -334,7 +358,7 @@ const getPersonalConversationFailure = () => ({
 
 export const getPersonalConversation = (friend) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getPersonalConversationRequest());
+    dispatch(getPersonalConversationRequest())
     client
       .get(`/xchat/personal-conversation/${friend}/`)
       .then((res) => {
@@ -374,14 +398,30 @@ export const markFriendMsgsRead = (id) => (dispatch) =>
       });
   });
 
+//Get Personal Conversation
+const unFriend = () => ({
+  type: UNFRIEND,
+});
+
+const unFriendSuccess = () => ({
+  type: UNFRIEND_SUCCESS,
+});
+
+const unFriendFail = () => ({
+  type: UNFRIEND_FAIL,
+});
+
 export const unFriendUser = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    dispatch(unFriend());
     client
       .post(`/xchat/unfriend-user/`, data)
       .then((res) => {
+        dispatch(unFriendSuccess());
         resolve(res);
       })
       .catch((err) => {
+        dispatch(unFriendFail());
         reject(err);
       });
   });

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   ImageBackground,
@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Realm from 'realm';
 import {
   AccordionList,
@@ -17,19 +17,19 @@ import {
   CollapseBody,
 } from 'accordion-collapse-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { createFilter } from 'react-native-search-filter';
-import { Badge } from 'react-native-paper';
-import { withNavigationFocus } from 'react-navigation';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {createFilter} from 'react-native-search-filter';
+import {Badge} from 'react-native-paper';
+import {withNavigationFocus} from 'react-navigation';
 
-import { homeStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {homeStyles} from './styles';
+import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Colors, Icons, SocketEvents } from '../../constants';
-import { SearchInput } from '../../components/TextInputs';
+import {Images, Colors, Icons, SocketEvents} from '../../constants';
+import {SearchInput} from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import { getAvatar, eventService } from '../../utils';
-import { ProfileModal } from '../../components/Modals';
+import {getAvatar, eventService, normalize} from '../../utils';
+import {ProfileModal} from '../../components/Modals';
 import {
   ChannelListItem,
   FriendListItem,
@@ -38,10 +38,10 @@ import {
 } from '../../components/ListItems';
 import NoData from '../../components/NoData';
 import Button from '../../components/Button';
-import { ListLoader } from '../../components/Loaders';
+import {ListLoader} from '../../components/Loaders';
 import SingleSocket from '../../helpers/SingleSocket';
 
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   getUserProfile,
   getMissedSocketEventsById,
@@ -51,15 +51,15 @@ import {
   getFriendRequest,
   acceptFriendRequst,
   rejectFriendRequst,
-  setFriendRequest
+  setFriendRequest,
 } from '../../redux/reducers/addFriendReducer';
 
-import { getUserConfiguration } from '../../redux/reducers/configurationReducer';
+import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
 import {
   getMoreFollowingChannels,
   getFollowingChannels,
   setCurrentChannel,
-  getLocalFollowingChannels
+  getLocalFollowingChannels,
 } from '../../redux/reducers/channelReducer';
 import {
   getUserGroups,
@@ -73,7 +73,7 @@ import {
   setCurrentFriend,
   updateUnreadFriendMsgsCounts,
   getUserFriendsSuccess,
-  setUserFriends
+  setUserFriends,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 
@@ -110,7 +110,9 @@ import {
   getLocalFriendRequest,
   deleteChannelById,
   updateChannelTotalMember,
-  updateChannelLastMsgWithOutCount
+  updateChannelLastMsgWithOutCount,
+  getLocalFriendRequests,
+  updateFriendTypingStatus,
 } from '../../storage/Service';
 
 class Home extends Component {
@@ -120,6 +122,7 @@ class Home extends Component {
     this.state = {
       orientation: 'PORTRAIT',
       isChannelCollapsed: true,
+      isFriendReqCollapse: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
       searchText: '',
@@ -130,7 +133,7 @@ class Home extends Component {
       groupHeaderCounts: 0,
       friendHeaderCounts: 0,
     };
-    this.SingleSocket = new SingleSocket();
+    this.SingleSocket = SingleSocket.getInstance();
     this.start = 0;
   }
 
@@ -142,22 +145,31 @@ class Home extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
+    // this.events = eventService.getMessage().subscribe((message) => {
+    //   this.checkEventTypes(message);
+    // });
   }
 
   componentWillUnmount() {
-     this.events.unsubscribe();
+    //  this.events.unsubscribe();
   }
 
   async componentDidMount() {
+    Realm.open({})
+      .then((realm) => {
+        console.log('Realm is located at: ' + realm.path);
+      })
+      .catch((err) => {
+        console.log('Real Open error', err);
+      });
+
     this.props.getUserProfile();
-    this.SingleSocket.create({ user_id: this.props.userData.id });
+    // this.SingleSocket.create({ user_id: this.props.userData.id });
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.getFriendRequest();
+    // this.getFriendRequest();
+    this.getLocalRequest();
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
@@ -173,13 +185,18 @@ class Home extends Component {
     //   }
     // );
     // Get on-disk location of the default Realm
-    Realm.open({}).then(realm => {
-      console.log("Realm is located at: " + realm.path);
-    });
+
+    //
+    // console.log('expandCollapse on SignUp', this.props.navigation.state.params.expandCollapse)
+    // if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
+    //         this.setState({isFriendReqCollapse: true})
+    // } else if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
+    //     this.setState({isFriendsCollapsed: true})
+    // }
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   getFriendRequest() {
@@ -189,7 +206,7 @@ class Home extends Component {
       //   counts = counts + friend.unread_msg;
       // }
       this.props.friendRequest.length;
-      console.log('friendRequest',this.props.friendRequest);
+      console.log('friendRequest', this.props.friendRequest);
       this.setState({
         friendRequestHeaderCounts: this.props.friendRequest.length,
       });
@@ -199,7 +216,7 @@ class Home extends Component {
   getFollowingChannelsInitial() {
     var channels = getChannels();
     if (channels.length) {
-      var array = []
+      var array = [];
       channels.map((item, index) => {
         array = [...array, item];
       });
@@ -214,80 +231,78 @@ class Home extends Component {
       for (var channel of this.props.followingChannels) {
         counts = counts + channel.unread_msg;
       }
-      this.setState({ channelHeaderCounts: counts });
+      this.setState({channelHeaderCounts: counts});
     });
   }
 
   getFollowingChannels() {
     // this.props.getFollowingChannels().then((res) => {
-      // if (res.conversations.length > 0) {
-      //   this.handleLoadMoreChannels();
-      // }
-      let counts = 0;
-      for (var channel of this.props.followingChannels) {
-        counts = counts + channel.unread_msg;
-      }
-      this.setState({ channelHeaderCounts: counts });
+    // if (res.conversations.length > 0) {
+    //   this.handleLoadMoreChannels();
+    // }
+    let counts = 0;
+    for (var channel of this.props.followingChannels) {
+      counts = counts + channel.unread_msg;
+    }
+    this.setState({channelHeaderCounts: counts});
     // });
   }
 
   getUserGroups() {
     // this.props.getUserGroups().then((res) => {
-      // if (res.conversations && res.conversations.length > 0) {
-        let counts = 0;
-        for (let group of this.props.userGroups) {
-          counts = counts + group.unread_msg;
-        }
-        this.setState({ groupHeaderCounts: counts });
-      // }
+    // if (res.conversations && res.conversations.length > 0) {
+    let counts = 0;
+    for (let group of this.props.userGroups) {
+      counts = counts + group.unread_msg;
+    }
+    this.setState({groupHeaderCounts: counts});
+    // }
     // });
   }
 
   getUserFriends() {
     // this.props.getUserFriends().then((res) => {
-      let counts = 0;
-      for (let friend of this.props.userFriends) {
-        counts = counts + friend.unread_msg;
-      }
-      this.setState({ friendHeaderCounts: counts });
+    let counts = 0;
+    for (let friend of this.props.userFriends) {
+      counts = counts + friend.unread_msg;
+    }
+    this.setState({friendHeaderCounts: counts});
     // });
   }
 
-  getLocalRequest(){
-    var result = getLocalFriendRequest();
-    var requests = [];
-    for(let i of result){
-      requests = [...requests,i];
+  getLocalRequest() {
+    this.props.setFriendRequest();
+  }
+
+  setChannelHeaderCount() {
+    let counts = 0;
+    for (var channel of this.props.followingChannels) {
+      counts = counts + channel.unread_msg;
     }
-    this.props.setFriendRequest(requests);
+    // this.setState({ channelHeaderCounts: counts });
+    return counts;
   }
 
-  setChannelHeaderCount(){
+  setFriendHeaderCount() {
     let counts = 0;
-      for (var channel of this.props.followingChannels) {
-        counts = counts + channel.unread_msg;
-      }
-      this.setState({ channelHeaderCounts: counts });
+    for (let friend of this.props.userFriends) {
+      counts = counts + friend.unread_msg;
+    }
+    // this.setState({ friendHeaderCounts: counts });
+    return counts;
   }
 
-  setFriendHeaderCount(){
-    let counts = 0;
-      for (let friend of this.props.userFriends) {
-        counts = counts + friend.unread_msg;
-      }
-      this.setState({ friendHeaderCounts: counts });
-  }
-
-  setGroupHeaderCount(){
+  setGroupHeaderCount() {
     let counts = 0;
     for (let group of this.props.userGroups) {
       counts = counts + group.unread_msg;
     }
-    this.setState({ groupHeaderCounts: counts });
+    // this.setState({ groupHeaderCounts: counts });
+    return counts;
   }
 
   checkEventTypes(message) {
-    console.log('event_call',JSON.stringify(message));
+    console.log('event_call', JSON.stringify(message));
     switch (message.text.data.type) {
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
@@ -317,9 +332,9 @@ class Home extends Component {
       case SocketEvents.REMOVE_CHANNEL_MEMBER:
         this.onRemoveChannelMember(message);
         break;
-        case SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT:
-          this.onChannelMemberRemoveCount(message);
-          break;
+      case SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT:
+        this.onChannelMemberRemoveCount(message);
+        break;
       case SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT:
         this.readAllMessageFriendChat(message);
         break;
@@ -340,13 +355,12 @@ class Home extends Component {
         break;
       case SocketEvents.UNFRIEND:
         removeUserFriends(message.text.data.message_details.user_id);
-        console.log('get local freinds')
+        console.log('get local freinds');
         this.props.setUserFriends();
         break;
       case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
         this.readAllMessageGroupChat(message);
         break;
-
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
         this.onNewMessageInGroup(message);
         break;
@@ -362,21 +376,21 @@ class Home extends Component {
         break;
       case SocketEvents.FRIEND_REQUEST_CANCELLED:
         // this.onNewMessageInFriend(message);
-        this.getFriendRequest();
+        // this.getFriendRequest();
         break;
       case SocketEvents.NEW_FRIEND_REQUEST:
         // this.getFriendRequest();
-        this.onNewFriendRequest(message);
+        // this.onNewFriendRequest(message);
         break;
       case SocketEvents.FRIEND_REQUEST_ACCEPTED:
-        handleRequestAccept(message.text.data.message_details.conversation);
-        console.log('get local freinds')
-        this.props.setUserFriends();
-        this.setFriendHeaderCount();
+        // handleRequestAccept(message.text.data.message_details.conversation);
+        // console.log('get local freinds')
+        // this.props.setUserFriends();
+        // this.setFriendHeaderCount();
         break;
       case SocketEvents.FRIEND_REQUEST_REJECTED:
-        this.getFriendRequest();
-        this.getUserFriends();
+      // this.getFriendRequest();
+      // this.getUserFriends();
     }
   }
 
@@ -396,7 +410,7 @@ class Home extends Component {
 
   //Friend is Typing
   friendIsTyping(message) {
-    const { userFriends } = this.props;
+    const {userFriends} = this.props;
     if (message.text.data.message_details.type === 'personal') {
       for (var i in userFriends) {
         if (
@@ -422,7 +436,7 @@ class Home extends Component {
 
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
-    const { userFriends } = this.props;
+    const {userFriends} = this.props;
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
       for (var i in userFriends) {
         if (
@@ -442,22 +456,28 @@ class Home extends Component {
 
   //Message in Following Channel
   messageInFollowingChannel(message) {
-    const { userData, followingChannels } = this.props;
+    const {userData, followingChannels} = this.props;
 
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       for (let i of followingChannels) {
         if (message.text.data.message_details.channel == i.id) {
           if (message.text.data.message_details.from_user.id == userData.id) {
             // this.getFollowingChannels();
-            var result = getChannelsById(message.text.data.message_details.channel);
+            var result = getChannelsById(
+              message.text.data.message_details.channel,
+            );
 
             var channels = [];
 
-            result.map(item=>{
+            result.map((item) => {
               channels.push(item);
-            })
+            });
             setChannelChatConversation([message.text.data.message_details]);
-            updateChannelLastMsg(message.text.data.message_details.channel,message.text.data.message_details,channels[0].unread_msg);
+            updateChannelLastMsg(
+              message.text.data.message_details.channel,
+              message.text.data.message_details,
+              channels[0].unread_msg,
+            );
             this.props.getLocalFollowingChannels();
             this.setChannelHeaderCount();
             break;
@@ -466,15 +486,21 @@ class Home extends Component {
             message.text.data.message_details.to_user.id == userData.id
           ) {
             // this.getFollowingChannels();
-            var result = getChannelsById(message.text.data.message_details.channel);
+            var result = getChannelsById(
+              message.text.data.message_details.channel,
+            );
 
             var channels = [];
 
-            result.map(item=>{
+            result.map((item) => {
               channels.push(item);
-            })
+            });
             setChannelChatConversation([message.text.data.message_details]);
-            updateChannelLastMsg(message.text.data.message_details.channel,message.text.data.message_details,channels[0].unread_msg+1);
+            updateChannelLastMsg(
+              message.text.data.message_details.channel,
+              message.text.data.message_details,
+              channels[0].unread_msg + 1,
+            );
             this.props.getLocalFollowingChannels();
             this.setChannelHeaderCount();
             break;
@@ -487,91 +513,125 @@ class Home extends Component {
 
   //Multiple Message in Following Channel
   multipleMessageInFollowingChannel(message) {
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL) {
-      for (let item of message.text.data.message_details){
-        console.log('item',item);
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
+      for (let item of message.text.data.message_details) {
+        console.log('item', item);
         for (let i of followingChannels) {
           if (item.channel == i.id) {
-              var result = getChannelsById(item.channel);
-              var channels = [];
-              result.map(item=>{
-                channels.push(item);
-              })
-              setChannelChatConversation([item]);
-              updateChannelLastMsg(item.channel,item,channels[0].unread_msg+1);
-              this.props.getLocalFollowingChannels();
-              this.setChannelHeaderCount();
-              break;
+            var result = getChannelsById(item.channel);
+            var channels = [];
+            result.map((item) => {
+              channels.push(item);
+            });
+            setChannelChatConversation([item]);
+            updateChannelLastMsg(
+              item.channel,
+              item,
+              channels[0].unread_msg + 1,
+            );
+            this.props.getLocalFollowingChannels();
+            this.setChannelHeaderCount();
+            break;
           }
         }
       }
     }
   }
 
-  messageUpdateInFollowingChannel(message){
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL) {
+  messageUpdateInFollowingChannel(message) {
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
+    ) {
       for (let i of followingChannels) {
         if (message.text.data.message_details.channel == i.id) {
-              var result = getChannelsById(message.text.data.message_details.channel);
-              var channels = [];
-              result.map(item=>{
-                channels.push(item);
-              })
-              updateMessageById(message.text.data.message_details.id,message.text.data.message_details.message_body);
-              if(channels[0].last_msg.id==message.text.data.message_details.id){
-                console.log('updateasdasdasd');
-                updateChannelLastMsgWithOutCount(message.text.data.message_details.channel,message.text.data.message_details);
-              }
-              this.props.getLocalFollowingChannels();
-              this.setChannelHeaderCount();
-              break;
+          var result = getChannelsById(
+            message.text.data.message_details.channel,
+          );
+          var channels = [];
+          result.map((item) => {
+            channels.push(item);
+          });
+          updateMessageById(
+            message.text.data.message_details.id,
+            message.text.data.message_details.message_body,
+          );
+          if (channels[0].last_msg.id == message.text.data.message_details.id) {
+            console.log('updateasdasdasd');
+            updateChannelLastMsgWithOutCount(
+              message.text.data.message_details.channel,
+              message.text.data.message_details,
+            );
+          }
+          this.props.getLocalFollowingChannels();
+          this.setChannelHeaderCount();
+          break;
         }
       }
     }
   }
 
-  messageDeleteInFollowingChannel(message){
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL) {
+  messageDeleteInFollowingChannel(message) {
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
       var result = getChannelsById(message.text.data.message_details.channel);
       var channels = [];
-      result.map(item => {
+      result.map((item) => {
         channels.push(item);
-      })
+      });
       deleteMessageById(message.text.data.message_details.id);
       if (channels[0].last_msg.id == message.text.data.message_details.id) {
-        var chats = getChannelChatConversationById(message.text.data.message_details.channel);
-        var array = []
-        for(let chat of chats){
-          array = [...array,chat];
+        var chats = getChannelChatConversationById(
+          message.text.data.message_details.channel,
+        );
+        var array = [];
+        for (let chat of chats) {
+          array = [...array, chat];
         }
-        console.log('updated_last_messgae',JSON.stringify(array[0]));
-        updateChannelLastMsgWithOutCount(message.text.data.message_details.channel, array[0]);
+        console.log('updated_last_messgae', JSON.stringify(array[0]));
+        updateChannelLastMsgWithOutCount(
+          message.text.data.message_details.channel,
+          array[0],
+        );
       }
       this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
     }
   }
 
-  messageUnsentInFollowingChannel(message){
-    const { userData, followingChannels } = this.props;
-    if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL) {
+  messageUnsentInFollowingChannel(message) {
+    const {userData, followingChannels} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
       var result = getChannelsById(message.text.data.message_details.channel);
       var channels = [];
-      result.map(item => {
+      result.map((item) => {
         channels.push(item);
-      })
+      });
       setMessageUnsend(message.text.data.message_details.id);
       if (channels[0].last_msg.id == message.text.data.message_details.id) {
-        var chats = getChannelChatConversationById(message.text.data.message_details.channel);
-        var array = []
-        for(let chat of chats){
-          array = [...array,chat];
+        var chats = getChannelChatConversationById(
+          message.text.data.message_details.channel,
+        );
+        var array = [];
+        for (let chat of chats) {
+          array = [...array, chat];
         }
-        console.log('updated_last_messgae',JSON.stringify(array[0]));
-        updateChannelLastMsgWithOutCount(message.text.data.message_details.channel, array[0]);
+        console.log('updated_last_messgae', JSON.stringify(array[0]));
+        updateChannelLastMsgWithOutCount(
+          message.text.data.message_details.channel,
+          array[0],
+        );
       }
       this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
@@ -579,29 +639,34 @@ class Home extends Component {
   }
 
   onNewFriendRequest = (message) => {
-    const { friendRequest } = this.props;
+    const {friendRequest} = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
       this.getFriendRequest();
     }
-
-  }
+  };
 
   //New Message in Friend
   onNewMessageInFriend(message) {
-    const { userFriends } = this.props;
-    const { userData } = this.props;
+    const {userFriends} = this.props;
+    const {userData} = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         // this.getUserFriends();
         setFriendChatConversation([message.text.data.message_details]);
-        updateFriendLastMsg(message.text.data.message_details.to_user.id,message.text.data.message_details);
+        updateFriendLastMsg(
+          message.text.data.message_details.to_user.id,
+          message.text.data.message_details,
+        );
         this.props.setUserFriends();
         this.setFriendHeaderCount();
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
-        updateFriendLastMsg(message.text.data.message_details.from_user.id,message.text.data.message_details);
+        updateFriendLastMsg(
+          message.text.data.message_details.from_user.id,
+          message.text.data.message_details,
+        );
         // this.getUserFriends();
         this.props.setUserFriends();
         this.setFriendHeaderCount();
@@ -611,8 +676,8 @@ class Home extends Component {
 
   //Edit Message in Friend
   onEditMessageInFriend(message) {
-    const { userFriends } = this.props;
-    const { userData } = this.props;
+    const {userFriends} = this.props;
+    const {userData} = this.props;
 
     if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -622,16 +687,24 @@ class Home extends Component {
         let messageType = message.text.data.message_details.msg_type;
         updateFriendMessageById(editMessageId, newMessageText, messageType);
 
-        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
+        var users = getLocalUserFriend(
+          message.text.data.message_details.to_user.id,
+        );
 
-        var array = []
+        var array = [];
 
-        for(let u of users){
+        for (let u of users) {
           array = [...array, u];
         }
 
-        if(array.length>0 && array[0].last_msg_id == message.text.data.message_details.id){
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id,message.text.data.message_details);
+        if (
+          array.length > 0 &&
+          array[0].last_msg_id == message.text.data.message_details.id
+        ) {
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.to_user.id,
+            message.text.data.message_details,
+          );
           this.props.setUserFriends();
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
@@ -640,17 +713,25 @@ class Home extends Component {
         let messageType = message.text.data.message_details.msg_type;
         updateFriendMessageById(editMessageId, newMessageText, messageType);
 
-        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
+        var users = getLocalUserFriend(
+          message.text.data.message_details.from_user.id,
+        );
 
-        var array = []
+        var array = [];
 
-        for(let u of users){
+        for (let u of users) {
           array = [...array, u];
         }
 
-        console.log('array',JSON.stringify(array[0]));
-        if(array.length>0 && array[0].last_msg_id == message.text.data.message_details.id){
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id,message.text.data.message_details);
+        console.log('array', JSON.stringify(array[0]));
+        if (
+          array.length > 0 &&
+          array[0].last_msg_id == message.text.data.message_details.id
+        ) {
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.from_user.id,
+            message.text.data.message_details,
+          );
           this.props.setUserFriends();
         }
       }
@@ -658,41 +739,55 @@ class Home extends Component {
   }
 
   onDeleteMessageInFriend(message) {
-    const { userData } = this.props;
+    const {userData} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
-        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
-        var array = []
+        var users = getLocalUserFriend(
+          message.text.data.message_details.to_user.id,
+        );
+        var array = [];
         for (let u of users) {
           array = [...array, u];
         }
         deleteFriendMessageById(message.text.data.message_details.id);
         if (array[0].last_msg.id == message.text.data.message_details.id) {
-          var chats = getFriendChatConversationById(message.text.data.message_details.channel);
-          var array = []
+          var chats = getFriendChatConversationById(
+            message.text.data.message_details.channel,
+          );
+          var array = [];
           for (let chat of chats) {
             array = [...array, chat];
           }
           console.log('updated_last_messgae', JSON.stringify(array[0]));
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id, message.text.data.message_details);
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.to_user.id,
+            message.text.data.message_details,
+          );
         }
         this.props.getLocalFollowingChannels();
         this.setChannelHeaderCount();
       } else if (message.text.data.message_details.to_user.id == userData.id) {
-        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
-        var array = []
+        var users = getLocalUserFriend(
+          message.text.data.message_details.from_user.id,
+        );
+        var array = [];
         for (let u of users) {
           array = [...array, u];
         }
         deleteFriendMessageById(message.text.data.message_details.id);
         if (array[0].last_msg.id == message.text.data.message_details.id) {
-          var chats = getFriendChatConversationById(message.text.data.message_details.channel);
-          var array = []
+          var chats = getFriendChatConversationById(
+            message.text.data.message_details.channel,
+          );
+          var array = [];
           for (let chat of chats) {
             array = [...array, chat];
           }
           console.log('updated_last_messgae', JSON.stringify(array[0]));
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id, message.text.data.message_details);
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.from_user.id,
+            message.text.data.message_details,
+          );
         }
         this.props.getLocalFollowingChannels();
         this.setChannelHeaderCount();
@@ -701,31 +796,41 @@ class Home extends Component {
   }
 
   //Unsent message on friend
-  onUnsentMessageInFriend(message){
-    const { userFriends } = this.props;
-    const { userData } = this.props;
+  onUnsentMessageInFriend(message) {
+    const {userFriends} = this.props;
+    const {userData} = this.props;
 
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         // this.getUserFriends();
         setFriendMessageUnsend(message.text.data.message_details.id);
-        var users = getLocalUserFriend(message.text.data.message_details.to_user.id);
-        var array = []
+        var users = getLocalUserFriend(
+          message.text.data.message_details.to_user.id,
+        );
+        var array = [];
         for (let u of users) {
           array = [...array, u];
         }
         if (array[0].last_msg.id == message.text.data.message_details.id) {
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.to_user.id, message.text.data.message_details);
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.to_user.id,
+            message.text.data.message_details,
+          );
         }
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         setFriendMessageUnsend(message.text.data.message_details.id);
-        var users = getLocalUserFriend(message.text.data.message_details.from_user.id);
-        var array = []
+        var users = getLocalUserFriend(
+          message.text.data.message_details.from_user.id,
+        );
+        var array = [];
         for (let u of users) {
           array = [...array, u];
         }
         if (array[0].last_msg.id == message.text.data.message_details.id) {
-          updateFriendLastMsgWithoutCount(message.text.data.message_details.from_user.id, message.text.data.message_details);
+          updateFriendLastMsgWithoutCount(
+            message.text.data.message_details.from_user.id,
+            message.text.data.message_details,
+          );
         }
       }
       this.props.getLocalFollowingChannels();
@@ -735,19 +840,25 @@ class Home extends Component {
 
   //New Message in Group
   onNewMessageInGroup(message) {
-    const { userGroups } = this.props;
+    const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
           // this.getUserGroups();
-          var item = message.text.data.message_details.unread_msg.filter((item)=>{
-            return item.user__id===this.props.userData.id;
-          })
+          var item = message.text.data.message_details.unread_msg.filter(
+            (item) => {
+              return item.user__id === this.props.userData.id;
+            },
+          );
 
-          let unreadCount = item.length>0?item[0].unread_count:0;
+          let unreadCount = item.length > 0 ? item[0].unread_count : 0;
 
           setGroupChatConversation([message.text.data.message_details]);
-          updateLastMsgGroups(message.text.data.message_details.group_id,message.text.data.message_details,unreadCount);
+          updateLastMsgGroups(
+            message.text.data.message_details.group_id,
+            message.text.data.message_details,
+            unreadCount,
+          );
           this.props.getLocalUserGroups();
           this.setGroupHeaderCount();
           break;
@@ -756,8 +867,8 @@ class Home extends Component {
     }
   }
 
-  editMessageFromGroup(message){
-    const { userGroups } = this.props;
+  editMessageFromGroup(message) {
+    const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.MESSAGE_EDIT_FROM_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -766,12 +877,18 @@ class Home extends Component {
           updateGroupMessageById(message.text.data.message_details.msg_id);
           let itm = getGroupsById(message.text.data.message_details.group_id);
           let group = [];
-          itm.map(item=>{
+          itm.map((item) => {
             group = [item];
-          })
-          console.log('checking group',group);
-          if(group[0].last_msg_id==message.text.data.message_details.msg_id){
-            updateLastMsgGroups(message.text.data.message_details.group_id,message.text.data.message_details,group[0].unread_msg);
+          });
+          console.log('checking group', group);
+          if (
+            group[0].last_msg_id == message.text.data.message_details.msg_id
+          ) {
+            updateLastMsgGroups(
+              message.text.data.message_details.group_id,
+              message.text.data.message_details,
+              group[0].unread_msg,
+            );
           }
           this.props.getLocalUserGroups();
           break;
@@ -780,8 +897,8 @@ class Home extends Component {
     }
   }
 
-  UnsentMessageFromGroup(message){
-    const { userGroups } = this.props;
+  UnsentMessageFromGroup(message) {
+    const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_FROM_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -790,11 +907,15 @@ class Home extends Component {
           setGroupMessageUnsend(message.text.data.message_details.msg_id);
           let itm = getGroupsById(message.text.data.message_details.group_id);
           let group = [];
-          itm.map(item=>{
+          itm.map((item) => {
             group = [item];
-          })
-          if(group[0].last_msg_id==message.text.data.message_details.msg_id){
-            setGroupLastMessageUnsend(message.text.data.message_details.group_id);
+          });
+          if (
+            group[0].last_msg_id == message.text.data.message_details.msg_id
+          ) {
+            setGroupLastMessageUnsend(
+              message.text.data.message_details.group_id,
+            );
           }
           this.props.getLocalUserGroups();
           break;
@@ -805,7 +926,7 @@ class Home extends Component {
 
   //Mark as Read Group Chat
   readAllMessageGroupChat(message) {
-    const { userGroups } = this.props;
+    const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       let unread_counts = 0;
       for (var i in userGroups) {
@@ -818,12 +939,15 @@ class Home extends Component {
           // unread_counts =
           //   unread_counts + message.text.data.message_details.read_count;
 
-            updateUnReadCount(message.text.data.message_details.group_id,message.text.data.message_details.read_count);
+          updateUnReadCount(
+            message.text.data.message_details.group_id,
+            message.text.data.message_details.read_count,
+          );
 
           this.props.updateUnreadGroupMsgsCounts(unread_counts);
 
           this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id
+            message.text.data.socket_event_id,
           );
           this.props.getLocalUserGroups();
           // this.getUserGroups();
@@ -833,7 +957,7 @@ class Home extends Component {
     }
   }
 
-  onUpdateGroupDetail(message){
+  onUpdateGroupDetail(message) {
     const {userGroups} = this.props;
     if (message.text.data.type === SocketEvents.EDIT_GROUP_DETAIL) {
       for (let i of userGroups) {
@@ -842,8 +966,8 @@ class Home extends Component {
             message.text.data.message_details.id,
             message.text.data.message_details.name,
             message.text.data.message_details.group_picture,
-            message.text.data.message_details.members.length
-            );
+            message.text.data.message_details.members.length,
+          );
           this.props.getLocalUserGroups();
         }
       }
@@ -852,7 +976,7 @@ class Home extends Component {
 
   //Read Channel's all messages with socket event
   readAllMessageChannelChat(message) {
-    const { followingChannels } = this.props;
+    const {followingChannels} = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT) {
       for (var i in followingChannels) {
         if (
@@ -861,9 +985,12 @@ class Home extends Component {
         ) {
           // followingChannels[i].unread_msg =
           //   message.text.data.message_details.read_count;
-          updateChannelUnReadCountById(message.text.data.message_details.channel_id,message.text.data.message_details.read_count)
+          updateChannelUnReadCountById(
+            message.text.data.message_details.channel_id,
+            message.text.data.message_details.read_count,
+          );
           this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id
+            message.text.data.socket_event_id,
           );
           // this.getFollowingChannels();
           this.props.getLocalFollowingChannels();
@@ -876,7 +1003,7 @@ class Home extends Component {
 
   //Read Friend's all messages with socket event
   readAllMessageFriendChat(message) {
-    const { userFriends } = this.props;
+    const {userFriends} = this.props;
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       let unread_counts = 0;
@@ -891,12 +1018,12 @@ class Home extends Component {
           // unread_counts =
           //   unread_counts + message.text.data.message_details.read_count;
 
-            updateFriendsUnReadCount(detail.friend_id,0);
+          updateFriendsUnReadCount(detail.friend_id, 0);
 
           this.props.updateUnreadFriendMsgsCounts(unread_counts);
 
           this.props.getMissedSocketEventsById(
-            message.text.data.socket_event_id
+            message.text.data.socket_event_id,
           );
           // this.getUserFriends();
           this.props.setUserFriends();
@@ -926,9 +1053,10 @@ class Home extends Component {
     }
   }
 
-  onChannelMemberRemoveCount(){
+  onChannelMemberRemoveCount() {
     if (
-      message.text.data.type === SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
+      message.text.data.type ===
+        SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       updateChannelTotalMember(message.text.data.message_details.channel_id);
@@ -942,17 +1070,21 @@ class Home extends Component {
       isChannelCollapsed,
       isGroupCollapsed,
       isFriendsCollapsed,
+      isFriendReqCollapse,
     } = this.state;
     if (!isChannelCollapsed) {
-      this.setState({ isChannelCollapsed: true });
+      this.setState({isChannelCollapsed: true});
     }
     if (!isGroupCollapsed) {
-      this.setState({ isGroupCollapsed: true });
+      this.setState({isGroupCollapsed: true});
     }
     if (!isFriendsCollapsed) {
-      this.setState({ isFriendsCollapsed: true });
+      this.setState({isFriendsCollapsed: true});
     }
-    this.setState({ searchText: text });
+    if (!isFriendReqCollapse) {
+      this.setState({isFriendReqCollapse: true});
+    }
+    this.setState({searchText: text});
   };
 
   onUserProfilePress() {
@@ -978,27 +1110,27 @@ class Home extends Component {
     this.start = this.start + 20;
     this.props.getMoreFollowingChannels(this.start).then((res) => {
       if (res.conversations.length < 20) {
-        this.setState({ loadMoreVisible: false });
+        this.setState({loadMoreVisible: false});
       }
     });
   };
 
   renderUserChannels() {
-    const { followingChannels, channelLoading } = this.props;
-    const { loadMoreVisible } = this.state;
+    const {followingChannels, channelLoading} = this.props;
+    const {loadMoreVisible} = this.state;
 
     const sortChannels = followingChannels;
     sortChannels.sort((a, b) =>
       a.created &&
-        b.created &&
-        new Date(a.last_msg ? a.last_msg.updated : a.created) <
+      b.created &&
+      new Date(a.last_msg ? a.last_msg.updated : a.created) <
         new Date(b.last_msg ? b.last_msg.updated : b.created)
         ? 1
-        : -1
-    )
+        : -1,
+    );
 
     const filteredChannels = sortChannels.filter(
-      createFilter(this.state.searchText, ['name'])
+      createFilter(this.state.searchText, ['name']),
     );
 
     if (filteredChannels.length === 0 && channelLoading) {
@@ -1006,10 +1138,10 @@ class Home extends Component {
     } else if (filteredChannels.length > 0) {
       return (
         <FlatList
-          contentContainerStyle={{ display: 'flex' }}
+          contentContainerStyle={{display: 'flex'}}
           data={filteredChannels}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <ChannelListItem
               key={index}
               title={item.name}
@@ -1017,10 +1149,16 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg.msg_type === 'text'
                     ? item.last_msg.message_body
-                    : item.last_msg.msg_type
+                    : item.last_msg.msg_type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg.msg_type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg.msg_type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
-              date={item.last_msg?item.last_msg.created:item.created}
+              date={item.last_msg ? item.last_msg.created : item.created}
               image={item.channel_picture}
               onPress={() => this.onOpenChannelChats(item)}
               unreadCount={item.unread_msg}
@@ -1043,10 +1181,10 @@ class Home extends Component {
   }
 
   renderUserGroups() {
-    const { groupLoading, userGroups } = this.props;
+    const {groupLoading, userGroups} = this.props;
 
     const filteredGroups = userGroups.filter(
-      createFilter(this.state.searchText, ['group_name'])
+      createFilter(this.state.searchText, ['group_name']),
     );
 
     if (filteredGroups.length === 0 && groupLoading) {
@@ -1056,7 +1194,7 @@ class Home extends Component {
         <FlatList
           data={filteredGroups}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <GroupListItem
               key={index}
               title={item.group_name}
@@ -1064,7 +1202,13 @@ class Home extends Component {
                 item.last_msg
                   ? item.last_msg.type === 'text'
                     ? item.last_msg.text
-                    : item.last_msg.type
+                    : item.last_msg.type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg.type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg.type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
               date={item.timestamp}
@@ -1086,9 +1230,9 @@ class Home extends Component {
   }
 
   renderUserFriends() {
-    const { friendLoading, userFriends } = this.props;
+    const {friendLoading, userFriends} = this.props;
     const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username'])
+      createFilter(this.state.searchText, ['username']),
     );
 
     if (filteredFriends.length === 0 && friendLoading) {
@@ -1098,15 +1242,22 @@ class Home extends Component {
         <FlatList
           data={filteredFriends}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <FriendListItem
               key={index}
+              user_id={item.user_id}
               title={item.display_name}
               description={
                 item.last_msg
                   ? item.last_msg_type === 'text'
                     ? item.last_msg
-                    : item.last_msg_type
+                    : item.last_msg_type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg_type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg_type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
               image={getAvatar(item.profile_picture)}
@@ -1115,6 +1266,11 @@ class Home extends Component {
               isTyping={item.is_typing}
               onPress={() => this.onOpenFriendChats(item)}
               unreadCount={item.unread_msg}
+              callTypingStop={(id) => {
+                console.log('home_user_id', id);
+                updateFriendTypingStatus(id, false);
+                this.props.setUserFriends();
+              }}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -1130,9 +1286,9 @@ class Home extends Component {
   }
 
   renderFriendRequestList() {
-    const { friendRequestLoading, friendRequest } = this.props;
+    const {friendRequestLoading, friendRequest} = this.props;
     const filteredFriendRequest = friendRequest.filter(
-      createFilter(this.state.searchText, ['from_user_display_name'])
+      createFilter(this.state.searchText, ['from_user_display_name']),
     );
     if (filteredFriendRequest.length === 0 && friendRequestLoading) {
       return <ListLoader />;
@@ -1141,7 +1297,7 @@ class Home extends Component {
         <FlatList
           data={filteredFriendRequest}
           extraData={this.state}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <FriendRequestListItem
               key={index}
               title={item.from_user_display_name}
@@ -1228,11 +1384,12 @@ class Home extends Component {
       isChannelCollapsed,
       isGroupCollapsed,
       isFriendsCollapsed,
+      isFriendReqCollapse,
       searchText,
       channelHeaderCounts,
       groupHeaderCounts,
       friendHeaderCounts,
-      friendRequestHeaderCounts
+      friendRequestHeaderCounts,
     } = this.state;
 
     const {
@@ -1242,181 +1399,221 @@ class Home extends Component {
       userData,
       userConfig,
       friendRequest,
-        selectedLanguageItem
+      selectedLanguageItem,
     } = this.props;
     const filteredChannels = followingChannels.filter(
-      createFilter(searchText, ['name'])
+      createFilter(searchText, ['name']),
     );
     const filteredGroups = userGroups.filter(
-      createFilter(searchText, ['group_name'])
+      createFilter(searchText, ['group_name']),
     );
     const filteredFriends = userFriends.filter(
-      createFilter(searchText, ['username'])
+      createFilter(searchText, ['username']),
     );
 
     const filteredFriendRequest = friendRequest.filter(
-      createFilter(searchText, ['from_user_display_name'])
+      createFilter(searchText, ['from_user_display_name']),
     );
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
-        <View style={globalStyles.container}>
-          <HomeHeader title={translate('pages.xchat.home')} />
-          <SearchInput
+      // <ImageBackground
+      //   source={Images.image_home_bg}
+      //   style={globalStyles.container}>
+      <View style={globalStyles.container}>
+        <HomeHeader
+          title={translate('pages.xchat.home')}
+          onChangeText={this.onSearch.bind(this)}
+          onIconRightClick={this.showDropdown}
+          navigation={this.props.navigation}
+          isSearchBar
+        />
+        {/* <SearchInput
             onChangeText={this.onSearch.bind(this)}
             onIconRightClick={this.showDropdown}
             navigation={this.props.navigation}
-          />
-          <View style={globalStyles.container}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => this.onUserProfilePress()}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingVertical: 7,
-                paddingHorizontal: 10,
-              }}
-            >
-              <RoundedImage source={getAvatar(userData.avatar)} size={50} />
-              <Text
-                style={[
-                  globalStyles.normalRegularText,
-                  { color: Colors.black, marginStart: 10 },
-                ]}
-              >
-                {userConfig.display_name}
-              </Text>
-            </TouchableOpacity>
-            <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-              {/* Friend Request */}
-              {filteredFriendRequest.length > 0 && (
-                <Collapse
-                  onToggle={(isColl) =>
-                    this.setState({
-                      isChannelCollapsed: isColl,
-                    })
-                  }
+          /> */}
+
+        <View style={globalStyles.container}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => this.onUserProfilePress()}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingVertical: 7,
+              paddingHorizontal: 10,
+            }}>
+            <RoundedImage source={getAvatar(userData.avatar)} size={50} />
+            <Text
+              style={[
+                globalStyles.smallNunitoRegularText,
+                {
+                  color: Colors.black,
+                  marginStart: 10,
+                  fontSize: 14,
+                  fontWeight: '300',
+                },
+              ]}>
+              {userConfig.display_name}
+            </Text>
+          </TouchableOpacity>
+          {/* Friend Request */}
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false} enableOnAndroid={true}>
+            {filteredFriendRequest.length > 0 && (
+              <Collapse
+                onToggle={(isColl) =>
+                  this.setState({
+                    isFriendReqCollapse: isColl,
+                  })
+                }
+                isCollapsed={isFriendReqCollapse}>
+                <CollapseHeader>
+                  <DropdownHeader
+                    title={translate('pages.xchat.friendRequest')}
+                    isCollapsed={isFriendReqCollapse}
+                    listcounts={filteredFriendRequest.length}
+                    badgeCount={friendRequest.length}
+                    selectedLanguageItem={selectedLanguageItem}
+                  />
+                </CollapseHeader>
+                <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
+              </Collapse>
+            )}
+
+            {/* Channels */}
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isChannelCollapsed: isColl,
+                })
+              }
+              isCollapsed={isChannelCollapsed}>
+              <CollapseHeader>
+                <DropdownHeader
+                  title={translate('pages.xchat.channels')}
                   isCollapsed={isChannelCollapsed}
-                >
-                  <CollapseHeader>
-                    <DropdownHeader
-                      title={translate('pages.xchat.friendRequest')}
-                      isCollapsed={isChannelCollapsed}
-                      listcounts={filteredFriendRequest.length}
-                      badgeCount={friendRequest.length}
-                      selectedLanguageItem={selectedLanguageItem}
-                    />
-                  </CollapseHeader>
-                  <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
-                </Collapse>
-              )}
+                  listcounts={filteredChannels.length}
+                  badgeCount={this.setChannelHeaderCount()}
+                  selectedLanguageItem={selectedLanguageItem}
+                />
+              </CollapseHeader>
+              <CollapseBody>{this.renderUserChannels()}</CollapseBody>
+            </Collapse>
 
-              {/* Channels */}
-              <Collapse
-                onToggle={(isColl) =>
-                  this.setState({
-                    isChannelCollapsed: isColl,
-                  })
-                }
-                isCollapsed={isChannelCollapsed}
-              >
-                <CollapseHeader>
-                  <DropdownHeader
-                    title={translate('pages.xchat.channels')}
-                    isCollapsed={isChannelCollapsed}
-                    listcounts={filteredChannels.length}
-                    badgeCount={channelHeaderCounts}
-                    selectedLanguageItem={selectedLanguageItem}
-                  />
-                </CollapseHeader>
-                <CollapseBody>{this.renderUserChannels()}</CollapseBody>
-              </Collapse>
+            {/* Groups */}
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isGroupCollapsed: isColl,
+                })
+              }
+              isCollapsed={isGroupCollapsed}>
+              <CollapseHeader>
+                <DropdownHeader
+                  title={translate('pages.xchat.groups')}
+                  isCollapsed={isGroupCollapsed}
+                  listcounts={filteredGroups.length}
+                  badgeCount={this.setGroupHeaderCount()}
+                  selectedLanguageItem={selectedLanguageItem}
+                />
+              </CollapseHeader>
+              <CollapseBody>{this.renderUserGroups()}</CollapseBody>
+            </Collapse>
 
-              {/* Groups */}
-              <Collapse
-                onToggle={(isColl) =>
-                  this.setState({
-                    isGroupCollapsed: isColl,
-                  })
-                }
-                isCollapsed={isGroupCollapsed}
-              >
-                <CollapseHeader>
-                  <DropdownHeader
-                    title={translate('pages.xchat.groups')}
-                    isCollapsed={isGroupCollapsed}
-                    listcounts={filteredGroups.length}
-                    badgeCount={groupHeaderCounts}
-                    selectedLanguageItem={selectedLanguageItem}
-                  />
-                </CollapseHeader>
-                <CollapseBody>{this.renderUserGroups()}</CollapseBody>
-              </Collapse>
-
-              {/* Friends */}
-              <Collapse
-                onToggle={(isColl) =>
-                  this.setState({
-                    isFriendsCollapsed: isColl,
-                  })
-                }
-                isCollapsed={isFriendsCollapsed}
-              >
-                <CollapseHeader>
-                  <DropdownHeader
-                    title={translate('pages.xchat.friends')}
-                    isCollapsed={isFriendsCollapsed}
-                    listcounts={filteredFriends.length}
-                    badgeCount={friendHeaderCounts}
-                    selectedLanguageItem={selectedLanguageItem}
-                  />
-                </CollapseHeader>
-                <CollapseBody>{this.renderUserFriends()}</CollapseBody>
-              </Collapse>
-            </KeyboardAwareScrollView>
-          </View>
+            {/* Friends */}
+            <Collapse
+              onToggle={(isColl) =>
+                this.setState({
+                  isFriendsCollapsed: isColl,
+                })
+              }
+              isCollapsed={isFriendsCollapsed}>
+              <CollapseHeader>
+                <DropdownHeader
+                  title={translate('pages.xchat.friends')}
+                  isCollapsed={isFriendsCollapsed}
+                  listcounts={filteredFriends.length}
+                  badgeCount={this.setFriendHeaderCount()}
+                  selectedLanguageItem={selectedLanguageItem}
+                />
+              </CollapseHeader>
+              <CollapseBody>{this.renderUserFriends()}</CollapseBody>
+            </Collapse>
+          </KeyboardAwareScrollView>
         </View>
-      </ImageBackground>
+      </View>
+      // </ImageBackground>
     );
   }
 }
 
 const DropdownHeader = (props) => {
-  const { title, listcounts, badgeCount, isCollapsed, selectedLanguageItem } = props;
+  const {
+    title,
+    listcounts,
+    badgeCount,
+    isCollapsed,
+    selectedLanguageItem,
+  } = props;
   return (
     <LinearGradient
-      start={{ x: 0.1, y: 0.7 }}
-      end={{ x: 0.7, y: 0.8 }}
-      locations={[0.2, 0.7, 1]}
-      colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+      start={{x: 0.03, y: 0.7}}
+      end={{x: 0.95, y: 0.8}}
+      locations={[0.065, 0.22, 0.92]}
+      useAngle={true}
+      angle={222.28}
+      colors={[
+        Colors.header_gradient_1,
+        Colors.header_gradient_2,
+        Colors.header_gradient_3,
+      ]}
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 7,
         paddingHorizontal: 15,
-      }}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={globalStyles.smallRegularText}>{title}</Text>
-        <Text style={[globalStyles.smallRegularText, { marginStart: 5 }]}>
+      }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            {
+              fontSize: normalize(10),
+              fontWeight: '400',
+              color: '#fff',
+              textShadowColor: 'rgba(0,0,0,.004)',
+              textShadowOffset: {width: 1, height: 1},
+              textShadowRadius: 10,
+            },
+          ]}>
+          {title}
+        </Text>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            {
+              marginStart: 5,
+              fontSize: normalize(10),
+              fontWeight: '400',
+              textShadowColor: 'rgba(0,0,0,.004)',
+              color: '#fff',
+              textShadowOffset: {width: 1, height: 1},
+              textShadowRadius: 1,
+            },
+          ]}>
           {'('}
           {listcounts}
           {')'}
         </Text>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         {badgeCount > 0 ? (
           <Badge
             style={{
               backgroundColor: Colors.green,
               color: Colors.white,
-              fontSize: 11,
-            }}
-          >
+              fontSize: normalize(9),
+            }}>
             {badgeCount}
           </Badge>
         ) : null}
@@ -1470,10 +1667,10 @@ const mapDispatchToProps = {
   getLocalUserGroups,
   getLocalFollowingChannels,
   setUserFriends,
-  setFriendRequest
+  setFriendRequest,
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withNavigationFocus(Home));

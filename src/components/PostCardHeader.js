@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -10,17 +10,17 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Colors, Fonts, Icons } from '../constants';
-import { translate } from '../redux/reducers/languageReducer';
+import {Colors, Fonts, Icons} from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
 import Button from './Button';
 import RoundedImage from './RoundedImage';
 import moment from 'moment';
-import { Menu, Divider } from 'react-native-paper';
-import LinearGradient from "react-native-linear-gradient";
-import {globalStyles} from "../styles";
-import {getImage} from "../utils";
+import {Menu, Divider} from 'react-native-paper';
+import LinearGradient from 'react-native-linear-gradient';
+import {globalStyles} from '../styles';
+import {getImage} from '../utils';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 export default class PostCardHeader extends Component {
   constructor(props) {
@@ -31,14 +31,15 @@ export default class PostCardHeader extends Component {
   }
 
   _openMenu = () => {
-      this.setState({ visible: true });}
+    this.setState({visible: true});
+  };
 
   _closeMenu = () => {
-      this.setState({ visible: false });
-  }
+    this.setState({visible: false});
+  };
 
   render() {
-    const { post, menuItems } = this.props;
+    const {post, menuItems, isMenuRequired} = this.props;
     return (
       <View
         style={{
@@ -46,33 +47,33 @@ export default class PostCardHeader extends Component {
           flexDirection: 'row',
           alignItems: 'center',
           marginHorizontal: '4%',
-        }}
-      >
-        <View style={{ justifyContent: 'center' }}>
-            {post.channel_picture_thumb === null || post.channel_picture_thumb === '' || typeof post.channel_picture_thumb === undefined ? (
-                <LinearGradient
-                    start={{ x: 0.1, y: 0.7 }}
-                    end={{ x: 0.5, y: 0.2 }}
-                    locations={[0.1, 0.6, 1]}
-                    colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-                    style={styles.squareImage}
-                >
-                    <Text style={globalStyles.normalRegularText}>
-                        {post.channel_name.charAt(0).toUpperCase()}
-                        {/* {secondUpperCase} */}
-                    </Text>
-                </LinearGradient>
-            ) : (
-                <RoundedImage
-                    source={getImage(post.channel_picture_thumb)}
-                    isRounded={false}
-                    size={35}
-                />
-            )}
+        }}>
+        <View style={{justifyContent: 'center'}}>
+          {post.channel_picture_thumb === null ||
+          post.channel_picture_thumb === '' ||
+          typeof post.channel_picture_thumb === undefined ? (
+            <LinearGradient
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.5, y: 0.2}}
+              locations={[0.1, 0.6, 1]}
+              colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+              style={styles.squareImage}>
+              <Text style={globalStyles.normalRegularText}>
+                {post.channel_name.charAt(0).toUpperCase()}
+                {/* {secondUpperCase} */}
+              </Text>
+            </LinearGradient>
+          ) : (
+            <RoundedImage
+              source={getImage(post.channel_picture_thumb)}
+              isRounded={false}
+              size={35}
+            />
+          )}
           {/*<RoundedImage*/}
-            {/*source={post.channel_picture_thumb}*/}
-            {/*isRounded={false}*/}
-            {/*size={35}*/}
+          {/*source={post.channel_picture_thumb}*/}
+          {/*isRounded={false}*/}
+          {/*size={35}*/}
           {/*/>*/}
         </View>
         <View
@@ -80,14 +81,12 @@ export default class PostCardHeader extends Component {
             height: 35,
             marginHorizontal: 5,
             flex: 1,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontFamily: Fonts.regular,
               color: Colors.black,
-            }}
-          >
+            }}>
             {post.channel_name}
           </Text>
           <Text
@@ -95,8 +94,7 @@ export default class PostCardHeader extends Component {
               fontFamily: Fonts.extralight,
               color: Colors.gray_dark,
               fontSize: 12,
-            }}
-          >
+            }}>
             {moment(post.created).format('MM/DD')}
           </Text>
         </View>
@@ -106,67 +104,68 @@ export default class PostCardHeader extends Component {
             alignItems: 'center',
             flexDirection: 'row',
             justifyContent: 'flex-end',
-          }}
-        >
+          }}>
+            <View style={{width: 100}}>
           <Button
             title={
               post.is_following
                 ? translate('pages.xchat.following')
                 : translate('pages.xchat.follow')
             }
-            type={'primary'}
+            type={'primaryNew'}
             height={'80%'}
             fontType={'smallRegularText'}
           />
-
-          <Menu
-            style={{ marginTop: 30 }}
-            visible={this.state.visible}
-            onDismiss={this._closeMenu}
-            anchor={
-              <TouchableOpacity
-                style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginLeft: 5,
-                }}
-                onPress={this._openMenu}
-              >
-                <Image
-                  source={Icons.icon_dots}
-                  style={{
-                    tintColor: Colors.black_light,
-                    height: 15,
-                  }}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
+            </View>
+            {
+                isMenuRequired &&
+                <Menu
+                    style={{marginTop: 30}}
+                    visible={this.state.visible}
+                    onDismiss={this._closeMenu}
+                    anchor={
+                        <TouchableOpacity
+                            style={{
+                                height: 30,
+                                width: 30,
+                                borderRadius: 20,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginLeft: 5,
+                            }}
+                            onPress={this._openMenu}>
+                            <Image
+                                source={Icons.icon_dots}
+                                style={{
+                                    tintColor: Colors.black_light,
+                                    height: 15,
+                                }}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+                    }>
+                    {menuItems &&
+                    menuItems.map((item, index) => {
+                        return (
+                            <React.Fragment>
+                                <Menu.Item
+                                    key={index}
+                                    onPress={() => {
+                                        this._closeMenu();
+                                        item.onPress(post);
+                                    }}
+                                    title={`${item.title}`}
+                                    titleStyle={{
+                                        fontSize: 16,
+                                        fontWeight: '200',
+                                    }}
+                                />
+                                <Divider />
+                            </React.Fragment>
+                        );
+                    })}
+                </Menu>
             }
-          >
-            {menuItems &&
-              menuItems.map((item, index) => {
-                return (
-                  <React.Fragment>
-                    <Menu.Item
-                      key={index}
-                      onPress={() => {
-                        this._closeMenu();
-                        item.onPress(post)
-                      }}
-                      title={`${item.title}`}
-                      titleStyle={{
-                        fontSize: 16,
-                        fontWeight: '200',
-                      }}
-                    />
-                    <Divider />
-                  </React.Fragment>
-                );
-              })}
-          </Menu>
         </View>
       </View>
     );
@@ -174,11 +173,13 @@ export default class PostCardHeader extends Component {
 }
 
 PostCardHeader.propTypes = {
-  value: PropTypes.object
+  value: PropTypes.object,
+    isMenuRequired: PropTypes.bool,
 };
 
 PostCardHeader.defaultProps = {
-  value: {}
+  value: {},
+    isMenuRequired: true
 };
 
 const styles = StyleSheet.create({
@@ -202,10 +203,10 @@ const styles = StyleSheet.create({
     color: Colors.gradient_1,
     fontFamily: Fonts.regular,
   },
-    squareImage: {
-        width: 35,
-        height: 35,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+  squareImage: {
+    width: 35,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

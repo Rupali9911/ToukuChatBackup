@@ -7,12 +7,57 @@ import {Badge, Divider} from 'react-native-paper';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
-
+import {translate} from '../../redux/reducers/languageReducer';
+import { normalize } from '../../utils';
 export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
+
+  checkTyping = (typing) => {
+    if (typing) {
+      this.typingTimeout && clearTimeout(this.typingTimeout);
+      this.typingTimeout = setTimeout(() => {
+        this.props.callTypingStop &&
+          this.props.callTypingStop(this.props.user_id);
+        clearTimeout(this.typingTimeout);
+      }, 5000);
+      console.log('timer_set', this.typingTimeout);
+    }
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isTyping !== this.props.isTyping) {
+      this.checkTyping(nextProps.isTyping);
+    } else {
+      // this.typingTimeout && clearTimeout(this.typingTimeout);
+    }
+  }
+  getDate = (date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const msgDate = new Date(date);
+    if (today.getDate() === msgDate.getDate() && 
+    today.getMonth() === msgDate.getMonth() && 
+    today.getFullYear() === msgDate.getFullYear()) {
+      return moment(date).format('HH:mm');
+    }
+    if (
+      yesterday.getDate() === msgDate.getDate() &&
+      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getFullYear() === msgDate.getFullYear()
+    ){
+      return translate('common.yesterday');
+    }
+
+    if(today.getFullYear() === msgDate.getFullYear()){
+      return moment(date).format('MM/DD');
+    }else{
+      return moment(date).format('MM/DD/YY');
+    }
+  };
 
   render() {
     const {
@@ -24,6 +69,7 @@ export default class FriendListItem extends Component {
       isOnline,
       isTyping,
       unreadCount,
+      callTypingStop,
     } = this.props;
     return (
       <Fragment>
@@ -43,16 +89,25 @@ export default class FriendListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallRegularText,
-                    {color: Colors.black},
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.black_light,
+                      fontSize: normalize(12),
+                      fontWeight: '400',
+                    },
                   ]}>
                   {title}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallLightText,
-                    {color: Colors.gray_dark, textAlign: 'left'},
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.message_gray,
+                      textAlign: 'left',
+                      fontSize: normalize(11),
+                      fontWeight: '400',
+                    },
                   ]}>
                   {isTyping ? 'Typing...' : description}
                   {/* {description} */}
@@ -62,10 +117,14 @@ export default class FriendListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallLightText,
-                    {color: Colors.gray_dark},
+                    globalStyles.smallNunitoRegularText,
+                    {
+                      color: Colors.message_gray,
+                      fontSize: normalize(9),
+                      fontWeight: '400',
+                    },
                   ]}>
-                  {moment(date).format('MM/DD')}
+                  {this.getDate(date)}
                 </Text>
                 {unreadCount !== 0 && unreadCount != null && (
                   <Badge
@@ -74,7 +133,7 @@ export default class FriendListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: 11,
+                        fontSize: normalize(9),
                       },
                     ]}>
                     {unreadCount}

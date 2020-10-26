@@ -996,7 +996,12 @@
       "chooseOption": "オプションを選択",
       "takePhoto": "写真を撮る",
       "chooseFromLibrary": "ライブラリーから画像を選択",
-      "cancelChooseOption": "戻る"
+      "cancelChooseOption": "戻る",
+      "reportChannel": "レポートチャネル",
+      "userReported": "ユーザーが報告しました",
+      "userBlocked": "ユーザーをブロックしました",
+      "uploading": "アップロードしています…",
+      "channelReported": "報告されたチャネル"
     },
     "welcome":{
       "theWorldIsConnected":"世界が繋がる",

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
-import { Menu } from 'react-native-paper';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
+import {Colors, Icons, Fonts} from '../../constants';
+import {globalStyles} from '../../styles';
+import {Menu} from 'react-native-paper';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
@@ -19,9 +19,9 @@ export default class SearchInput extends Component {
     };
   }
 
-  _openMenu = () => this.setState({ visible: true });
+  _openMenu = () => this.setState({visible: true});
 
-  _closeMenu = () => this.setState({ visible: false });
+  _closeMenu = () => this.setState({visible: false});
 
   componentDidMount() {
     if (this.props.onRef != null) {
@@ -54,6 +54,7 @@ export default class SearchInput extends Component {
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <Image source={Icons.icon_search} style={styles.iconSearch} />
+          <View style={{flex: 1,}}>
           <TextInput
             style={styles.inputStyle}
             placeholder={placeholder || translate('pages.xchat.search')}
@@ -68,6 +69,7 @@ export default class SearchInput extends Component {
             autoCapitalize={'none'}
             underlineColorAndroid={'transparent'}
           />
+          </View>
         </View>
         {!isIconRight ? (
           // <TouchableOpacity
@@ -76,7 +78,7 @@ export default class SearchInput extends Component {
           //   onPress={onIconRightClick}>
           //   <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
           <Menu
-            style={{ marginTop: 40 }}
+            style={{marginTop: 40}}
             contentStyle={{}}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
@@ -85,36 +87,35 @@ export default class SearchInput extends Component {
                 activeOpacity={0.8}
                 style={styles.iconRightContainer}
                 onPress={this._openMenu}
-              >
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                 <Image source={Icons.man_plus_icon} style={styles.iconRight} />
               </TouchableOpacity>
-            }
-          >
+            }>
             <Menu.Item
               icon={() => <Image source={Icons.icon_create_group_chat} />}
-              titleStyle={{ marginLeft: -25 }}
+              titleStyle={{marginLeft: -25}}
               onPress={() => {
                 navigation.navigate('CreateGroupChat');
                 this._closeMenu();
               }}
               title={translate('pages.xchat.createNewGroup')}
             />
-            {/*<Menu.Item*/}
-              {/*icon={() => <Image source={Icons.icon_create_new_channel} />}*/}
-              {/*onPress={() => {*/}
-                {/*navigation.navigate('CreateChannel');*/}
-                {/*this._closeMenu();*/}
-              {/*}}*/}
-              {/*titleStyle={{ marginLeft: -25 }}*/}
-              {/*title={translate('pages.xchat.createChannel')}*/}
-            {/*/>*/}
+            {/* <Menu.Item
+              icon={() => <Image source={Icons.icon_create_new_channel} />}
+              onPress={() => {
+                navigation.navigate('CreateChannel');
+                this._closeMenu();
+              }}
+              titleStyle={{marginLeft: -25}}
+              title={translate('pages.xchat.createChannel')}
+            /> */}
             <Menu.Item
               icon={() => <Image source={Icons.add_friend} />}
               onPress={() => {
                 navigation.navigate('AddFriendScreen');
                 this._closeMenu();
               }}
-              titleStyle={{ marginLeft: -25 }}
+              titleStyle={{marginLeft: -25}}
               title={translate('pages.xchat.addFriend')}
             />
           </Menu>
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingBottom: 10,
-    backgroundColor: Colors.home_header,
+    // backgroundColor: Colors.home_header,
   },
   searchContainer: {
     height: Platform.OS === 'ios' ? 'auto' : 45,
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: 50,
     paddingHorizontal: 10,
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     backgroundColor: Colors.white,
@@ -147,14 +148,17 @@ const styles = StyleSheet.create({
     flex: 1,
     // width: '100%',
     color: Colors.black,
-    fontSize: 15,
-    // fontFamily: Fonts.black,
+    fontSize: 14,
+    fontFamily: Fonts.nunitoSansJPLight,
     marginStart: 10,
-    alignSelf: 'center',
+    //alignSelf: 'center',
+      paddingTop: 0,
+      paddingBottom: 0,
+    // fontWeight: '200',
   },
   iconRight: {
-    width: 30,
-    height: 30,
+    height: 25,
+    width: 25,
     resizeMode: 'center',
   },
   iconSearch: {
@@ -165,5 +169,6 @@ const styles = StyleSheet.create({
   iconRightContainer: {
     marginStart: 15,
     alignSelf: 'center',
+    width: 35,
   },
 });

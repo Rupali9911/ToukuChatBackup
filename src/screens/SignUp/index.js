@@ -19,7 +19,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Inputfield from '../../components/InputField';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
-import {Icons, Colors, Images, termsUrl} from '../../constants';
+import {Icons, Colors, Images, termsUrl, supportUrl, xanaUrl} from '../../constants';
 import {BackHeader} from '../../components/Headers';
 import {signUpStyles, stepIndicatorStyle} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -36,6 +36,7 @@ import {
   socialRegistration,
 } from '../../redux/reducers/signupReducer';
 import Toast from '../../components/Toast';
+import WebViewClass from "../../components/WebView";
 
 class SignUp extends Component {
   constructor(props) {
@@ -59,17 +60,17 @@ class SignUp extends Component {
       password: '',
       passwordConfirm: '',
       userNameSuggestions: [],
-
       emailStatus: 'normal',
       emailConfirmStatus: 'normal',
       passwordStatus: 'normal',
       passwordConfirmStatus: 'normal',
-
         userNameErr: 'messages.required',
         passwordErr: 'minLengthFailed',
         confirmPasswordErr: null,
         userNameStatus: 'normal',
-    };
+        isWebViewVisible: false,
+
+  };
 
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -146,10 +147,10 @@ class SignUp extends Component {
         })
         .catch((err) => {
             if (err.response) {
+                console.log(err.response)
                 if (err.response.request._response) {
                     console.log(err.response.request._response)
                     let errMessage = JSON.parse(err.response.request._response)
-                    console.log(errMessage.non_field_errors)
                     if (errMessage.message) {
                         Toast.show({
                             title: translate('common.sendSMS'),
@@ -169,8 +170,13 @@ class SignUp extends Component {
                             text: translate('pages.register.toastr.phoneNumberIsInvalid'),
                             type: 'primary',
                         });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('common.sendSMS'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
                     }
-
                 }
             }
         });
@@ -279,29 +285,34 @@ class SignUp extends Component {
 
   checkUserName(username) {
       let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
       let isValid = true;
-
       if (username.length <= 0) {
+          console.log('username.length', username.length )
           isValid = false;
           this.setState({
-              userNameStatus: 'wrong',
+              userNameStatus: 'normal',
               userNameErr: 'messages.required',
           });
       }
       if (isValid) {
-          this.setState({ userNameStatus: 'right', userNameErr: null });
+          this.setState({ userNameErr: null });
       }
 
     this.setState({username: username.replace(/\s/g, '')});
-    this.props.userNameCheck(username).then((res) => {
-      if (res.status === false) {
-        this.setState({userNameSuggestions: []});
-        AsyncStorage.setItem('username', username);
-      } else {
-        this.setState({userNameSuggestions: res.suggestions});
-      }
-    });
+      this.props.userNameCheck(username).then((res) => {
+          console.log('userNameCheck res',res, username )
+          if (res.status === false) {
+              this.setState({userNameSuggestions: []});
+              AsyncStorage.setItem('username', username);
+              if (username.length <= 0) {
+                  this.setState({ userNameStatus: 'normal'});
+              }else{
+                  this.setState({ userNameStatus: 'right'});
+              }
+          } else {
+              this.setState({userNameSuggestions: res.suggestions, userNameStatus: 'wrong'});
+          }
+      });
   }
 
   async onSignUpPress() {
@@ -404,9 +415,14 @@ class SignUp extends Component {
               password: password,
               phone: parsedData.phone,
               site_from: 'touku',
-              user_language: 1,
+              user_language: this.props.selectedLanguageItem.language_name === 'en' ? 1
+                  :this.props.selectedLanguageItem.language_name === 'ko' ? 2
+                      :this.props.selectedLanguageItem.language_name === 'ch' ? 3
+                          :this.props.selectedLanguageItem.language_name === 'ja' ? 4
+                          : 6
+                ,
               username: username,
-              dev_id: fcmToken,
+              dev_id: fcmToken
             };
             this.props
               .userRegister(registerData)
@@ -417,7 +433,6 @@ class SignUp extends Component {
                   this.props.getUserProfile().then((res) => {
                     if (res.id) {
                       this.props.navigation.navigate('App');
-
                       if (channelData) {
                             this.props.setCurrentChannel(channelData)
                             setTimeout(() => {
@@ -443,11 +458,11 @@ class SignUp extends Component {
               })
               .catch((err) => {
                   console.log('userRegister response',err)
-                  Toast.show({
-                      title: translate('common.register'),
-                      text: translate('common.somethingWentWrong'),
-                      type: 'primary',
-                  });
+                  // Toast.show({
+                  //     title: translate('common.register'),
+                  //     text: translate('common.somethingWentWrong'),
+                  //     type: 'primary',
+                  // });
               });
           } else {
             Toast.show({
@@ -476,7 +491,8 @@ class SignUp extends Component {
   }
 
     onTermsAndCondition() {
-        Linking.openURL(termsUrl);
+        this.setState({isWebViewVisible: true})
+        //Linking.openURL(termsUrl + this.props.selectedLanguageItem.language_name);
     }
 
   onChangePhoneNumber(phone, code) {
@@ -548,7 +564,7 @@ class SignUp extends Component {
       this.setState({password});
       if (password.length <= 0) {
           //this.setState({passwordStatus: 'wrong', passwordErr: 'messages.required'});
-          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthPassword'});
+          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
       }else if (password.length < 8 ) {
       this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
     }else if (password.length > 64) {
@@ -573,7 +589,7 @@ class SignUp extends Component {
   };
 
     selectSuggestedUserName(username){
-        this.setState({username: username})
+        this.setState({username: username, userNameStatus: 'right'})
     }
 
   showSuggestions = () => {
@@ -600,7 +616,7 @@ class SignUp extends Component {
           </Text>
             { suggestions.map((item, index) => {
                 return (
-                    <TouchableOpacity style={{width: 70, height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
+                    <TouchableOpacity style={{ height: 20}} onPress={() => this.selectSuggestedUserName(item)}>
                         <Text style={[globalStyles.smallLightText,{textDecorationLine: 'underline'}]}>
                             {item + '  '}
                         </Text>
@@ -614,21 +630,14 @@ class SignUp extends Component {
   };
 
   async onSocialSignUp() {
-    const {username, email, isAgreeWithTerms} = this.state;
+    const {username, email, isAgreeWithTerms, password, passwordConfirm} = this.state;
       let invitationCode = await AsyncStorage.getItem('invitationCode');
       let channelDataJson = await AsyncStorage.getItem('channelData');
       let channelData = JSON.parse(channelDataJson);
     let isValid = true;
 
     let regex = /^[a-zA-Z0-9- ]*$/
-      if(regex.test(username) == false) {
-          isValid =  false
-          Toast.show({
-              title: translate('common.register'),
-              text: translate('pages.register.enterValueInEnglish'),
-              type: 'primary',
-          });
-      }
+
 
     if (username.length <= 0) {
       isValid = false;
@@ -637,13 +646,68 @@ class SignUp extends Component {
             text: translate('pages.setting.toastr.pleaseEnterUsername'),
             type: 'warning',
         });
+    } else if(regex.test(username) == false) {
+        isValid =  false
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.enterValueInEnglish'),
+            type: 'primary',
+        });
+    }else  if (password.length <= 0) {
+        isValid = false;
+        // this.setState({
+        //     passwordStatus: 'wrong',
+        //     passwordErr: 'messages.required',
+        // });
+        this.setState({
+            passwordStatus: 'wrong',
+            passwordErr: 'minLengthFailed',
+        });
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.minLengthPassword'),
+            type: 'warning',
+        });
+    }else if (password.length < 8 ) {
+        isValid = false;
+        this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.minLengthPassword'),
+            type: 'warning',
+        });
+    }else if (password.length > 64) {
+        isValid = false;
+        this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.maxLengthPassword'),
+            type: 'warning',
+        });
+    }else if (passwordConfirm.length <= 0) {
+        isValid = false;
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('toastr.pleaseEnterYourConfirmPassword'),
+            type: 'warning',
+        });
+    }else if (password != passwordConfirm) {
+        isValid = false;
+        Toast.show({
+            title: translate('common.register'),
+            text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
+            type: 'warning',
+        });
     }
+
     if (isValid) {
       if (isAgreeWithTerms) {
         let registrationData;
         if (this.props.navigation.state.params.pageNumber === 1) {
           registrationData = JSON.stringify({
             username: username,
+              password: password,
+              confirm_password: passwordConfirm,
             invitation_code: invitationCode ? invitationCode : '',
             email: email,
               site_from: 'touku',
@@ -651,16 +715,18 @@ class SignUp extends Component {
         } else {
           registrationData = JSON.stringify({
             username: username,
+              password: password,
+              confirm_password: passwordConfirm,
             invitation_code: invitationCode ? invitationCode : '',
               site_from: 'touku',
           });
         }
+        console.log('RegisterData through SNS', registrationData)
         this.props.socialRegistration(registrationData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             AsyncStorage.removeItem('invitationCode')
             this.props.navigation.navigate('App');
-
               if (channelData) {
                   this.props.setCurrentChannel(channelData)
                   setTimeout(() => {
@@ -687,18 +753,18 @@ class SignUp extends Component {
                                     type: 'primary',
                                 });
                             }else{
-                                Toast.show({
-                                    title: translate('pages.register.toastr.RegisterFailed'),
-                                    text: translate('common.somethingWentWrong'),
-                                    type: 'primary',
-                                });
+                                // Toast.show({
+                                //     title: translate('pages.register.toastr.RegisterFailed'),
+                                //     text: translate('common.somethingWentWrong'),
+                                //     type: 'primary',
+                                // });
                             }
                         }else{
-                            Toast.show({
-                                title: translate('pages.register.toastr.RegisterFailed'),
-                                text: translate('common.somethingWentWrong'),
-                                type: 'primary',
-                            });
+                            // Toast.show({
+                            //     title: translate('pages.register.toastr.RegisterFailed'),
+                            //     text: translate('common.somethingWentWrong'),
+                            //     type: 'primary',
+                            // });
                         }
                     }
                 }
@@ -713,7 +779,7 @@ class SignUp extends Component {
     }
   }
 
-    actionBackPres(){
+    async actionBackPres(){
         this.props.navigation.goBack()
     // const {currentPosition} = this.state
     // if (this.props.navigation.state.params.isSocial) {
@@ -725,7 +791,8 @@ class SignUp extends Component {
     //       this.props.navigation.goBack()
     //   }
     // }
-
+        await AsyncStorage.removeItem('socialToken');
+        await AsyncStorage.removeItem('userToken');
   }
 
 
@@ -837,12 +904,13 @@ class SignUp extends Component {
                 value={this.state.username}
                 placeholder={translate('common.enterUsername')}
                 returnKeyType={'done'}
-                onChangeText={(username) => this.checkUserName(username)}
+                onChangeText={(username) => this.checkUserName(username.toLowerCase())}
                 // onChangeText={(username) => this.setState({ username })}
                 onSubmitEditing={() => {
                   this.password.focus();
                   this.checkUserName(this.state.username);
                 }}
+                  status={this.state.userNameStatus}
                 isSuggestions={
                   this.state.userNameSuggestions.length ? true : false
                 }
@@ -864,7 +932,7 @@ class SignUp extends Component {
                 ) : null}
 
               {this.showSuggestions()}
-              {!this.props.navigation.state.params.isSocial && (
+
                 <React.Fragment>
                   <Inputfield
                     ref={(input) => {
@@ -936,7 +1004,6 @@ class SignUp extends Component {
                                 </Text>
                     ) : null}
                 </React.Fragment>
-              )}
                 <View
                     style={signUpStyles.termsContainer}>
                     <TouchableOpacity  onPress={() => this.onCheckRememberMe()} activeOpacity={1}>
@@ -972,7 +1039,7 @@ class SignUp extends Component {
   }
 
   render() {
-    const {currentPosition, orientation} = this.state;
+    const {currentPosition, orientation, isWebViewVisible} = this.state;
     return (
       <ImageBackground
           //source={Images.image_touku_bg}
@@ -1010,6 +1077,14 @@ class SignUp extends Component {
               </View>
               {this.renderPage(currentPosition)}
             </View>
+              {isWebViewVisible &&
+              <WebViewClass
+                  modalVisible={isWebViewVisible}
+                  url={termsUrl + this.props.selectedLanguageItem.language_name}
+                  closeModal={() => this.setState({isWebViewVisible: false})}
+              />
+              }
+
             <LanguageSelector />
           </KeyboardAwareScrollView>
         </SafeAreaView>

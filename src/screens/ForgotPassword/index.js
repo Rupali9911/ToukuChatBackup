@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {
-    View,
-    Text,
-    ScrollView,
-    ImageBackground,
-    StyleSheet,
-    SafeAreaView,
-    Platform, Keyboard,
+  View,
+  Text,
+  ScrollView,
+  ImageBackground,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -91,18 +92,31 @@ class ForgotPassword extends Component {
   handlePassword = (password) => {
     this.setState({password});
     if (password.length <= 7 || password.length > 64) {
-      this.setState({passwordStatus: 'wrong'});
+        if (password !== ''){
+            this.setState({passwordStatus: 'wrong'});
+        }else{
+            this.setState({passwordStatus: 'normal', passwordErr: null});
+        }
     } else {
-      this.setState({passwordStatus: 'right', passwordErr: null});
+        this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
   handleConfirmPassword = (newPassword) => {
     this.setState({newPassword});
     if (this.state.password != newPassword) {
-      this.setState({newPasswordConfirmStatus: 'wrong'});
+        if (newPassword !== ''){
+            this.setState({newPasswordConfirmStatus: 'wrong', newPasswordErr: 'pages.resetPassword.passwordsMustMatch'});
+        }else{
+            this.setState({newPasswordConfirmStatus: 'normal', newPasswordErr: null});
+        }
+
     } else {
-      this.setState({newPasswordConfirmStatus: 'right', newPasswordErr: null});
+        if (newPassword !== ''){
+            this.setState({newPasswordConfirmStatus: 'right', newPasswordErr: null});
+        }else{
+            this.setState({newPasswordConfirmStatus: 'normal', newPasswordErr: null});
+        }
     }
   };
 
@@ -116,24 +130,32 @@ class ForgotPassword extends Component {
         .forgotUserName(userNameData)
         .then((res) => {
           Toast.show({
-            title: translate('common.sendSMS'),
+            title: translate('pages.resetPassword.resetPassword'),
             text: translate(res.message),
             type: 'positive',
           });
         })
         .catch((err) => {
             if (err.response.request._response) {
-                let errMessage = JSON.parse(err.response.request._response)
-                Toast.show({
-                    title: translate('common.sendSMS'),
-                    text: translate(errMessage.message.toString()),
-                    type: 'primary',
-                });
+                let errMessage = JSON.parse(err.response.request._response);
+                if (errMessage.detail) {
+                    Toast.show({
+                        title: translate('pages.resetPassword.resetPassword'),
+                        text: errMessage.detail.toString(),
+                        type: 'primary',
+                    });
+                } else {
+                    Toast.show({
+                        title: translate('pages.resetPassword.resetPassword'),
+                        text: translate(errMessage.message.toString()),
+                        type: 'primary',
+                    });
+                }
             }
-        });
+        })
     } else {
       Toast.show({
-        title: translate('common.sendSMS'),
+        title: translate('pages.resetPassword.resetPassword'),
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
@@ -141,7 +163,7 @@ class ForgotPassword extends Component {
   }
 
   onSubmitPress() {
-      Keyboard.dismiss();
+    Keyboard.dismiss();
     const {userName, authCode, password, newPassword} = this.state;
 
     this.setState({
@@ -178,21 +200,21 @@ class ForgotPassword extends Component {
         newPasswordErr: 'messages.required',
       });
     }
-      if (password.length > 0 && password.length <= 7) {
-          isValid = false;
-          this.setState({
-              passwordErr: 'pages.register.minLengthPassword',
-          });
-      }
-      if (password.length > 64) {
-          isValid = false;
-          this.setState({
-              passwordErr: 'pages.register.maxLengthPassword',
-          });
-      }
+    if (password.length > 0 && password.length <= 7) {
+      isValid = false;
+      this.setState({
+        passwordErr: 'pages.register.minLengthPassword',
+      });
+    }
+    if (password.length > 64) {
+      isValid = false;
+      this.setState({
+        passwordErr: 'pages.register.maxLengthPassword',
+      });
+    }
     if (password != newPassword) {
       isValid = false;
-      this.setState({newPasswordConfirmStatus: 'wrong'});
+      this.setState({newPasswordConfirmStatus: 'wrong', newPasswordErr: 'pages.resetPassword.passwordsMustMatch'});
     }
 
     if (isValid) {
@@ -205,27 +227,56 @@ class ForgotPassword extends Component {
       this.props
         .forgotPassword(forgotData)
         .then((res) => {
+          console.log('Response for Forgot password',res)
           if (res.status === true) {
             Toast.show({
               title: translate('pages.resetPassword.resetPassword'),
               text: translate('pages.resetPassword.toastr.passwordUpdated'),
               type: 'positive',
             });
-              this.props.navigation.goBack()
+            this.props.navigation.goBack();
           } else {
             Toast.show({
-              title: translate('common.register'),
-              text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
+              title: translate('pages.resetPassword.resetPassword'),
+              text: translate('pages.resetPassword.toastr.pleaseCheckOTPCodeandTryAgain'),
               type: 'primary',
             });
           }
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
-            type: 'primary',
-          });
+            if (err.response) {
+                console.log(err.response)
+                if (err.response.request._response) {
+                    console.log(err.response.request._response)
+                    let errMessage = JSON.parse(err.response.request._response)
+                    if (errMessage.message) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: translate(errMessage.message.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.non_field_errors) {
+                        let strRes = errMessage.non_field_errors
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: translate(strRes.toString()),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.phone) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
+                            type: 'primary',
+                        });
+                    }else if (errMessage.detail) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.resetPassword'),
+                            text: errMessage.detail.toString(),
+                            type: 'primary',
+                        });
+                    }
+                }
+            }
         });
     }
   }
@@ -240,13 +291,15 @@ class ForgotPassword extends Component {
     } = this.state;
     return (
       <ImageBackground
-          //source={Images.image_touku_bg}
-          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
+        //source={Images.image_touku_bg}
+        source={
+          Platform.isPad ? Images.image_touku_bg : Images.image_touku_bg_phone
+        }
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-              keyboardShouldPersistTaps={"handled"}
-              behavior={'position'}
+            keyboardShouldPersistTaps={'handled'}
+            behavior={'position'}
             contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
@@ -358,19 +411,19 @@ class ForgotPassword extends Component {
                         marginBottom: 5,
                       },
                     ]}>
-                    {passwordErr === 'messages.required' ? translate(passwordErr).replace(
-                      '[missing {{field}} value]',
-                      translate('common.password')): translate(passwordErr)
-                    }
+                    {passwordErr === 'messages.required'
+                      ? translate(passwordErr).replace(
+                          '[missing {{field}} value]',
+                          translate('common.password'),
+                        )
+                      : translate(passwordErr)}
                   </Text>
                 ) : null}
                 <Inputfield
                   onRef={(ref) => {
                     this.inputs['newPassword'] = ref;
                   }}
-                  placeholder={translate(
-                    'pages.setting.confirmPassword',
-                  )}
+                  placeholder={translate('pages.setting.confirmPassword')}
                   value={this.state.newPassword}
                   secureTextEntry={true}
                   onChangeText={(newPassword) =>
@@ -390,10 +443,20 @@ class ForgotPassword extends Component {
                         marginBottom: 5,
                       },
                     ]}>
-                    {translate(newPasswordErr).replace(
-                      '[missing {{field}} value]',
-                      translate('pages.resetPassword.repeatPassword'),
-                    )}
+                    {/*{translate(newPasswordErr).replace(*/}
+                      {/*'[missing {{field}} value]',*/}
+                      {/*translate('pages.resetPassword.repeatPassword'),*/}
+                    {/*)}*/}
+
+                      {newPasswordErr === 'messages.required'
+                          ? translate(newPasswordErr).replace(
+                              '[missing {{field}} value]',
+                              translate('pages.resetPassword.repeatPassword'),
+                          )
+                          : translate('messages.required').replace(
+                              '[missing {{field}} value]',
+                              translate('pages.resetPassword.passwordsMustMatch'),
+                          )}
                   </Text>
                 ) : null}
                 <Button

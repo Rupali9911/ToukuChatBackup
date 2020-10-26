@@ -5,6 +5,8 @@ import Toast from "../../components/Toast";
 import {translate} from "./languageReducer";
 import axios from 'axios';
 
+export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
+
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
 export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
@@ -23,6 +25,7 @@ let uuid = require('react-native-uuid')
 const initialState = {
   loading: false,
   userData: {},
+  currentRouteName: ''
 };
 
 export default function (state = initialState, action) {
@@ -81,6 +84,11 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
       };
+    case SET_CURRENT_ROUTE_NAME:
+      return {
+        ...state,
+        currentRouteName: action.payload.data
+      };
 
     default:
       return state;
@@ -88,6 +96,14 @@ export default function (state = initialState, action) {
 }
 
 //Actions
+// Set current route name
+export const setCurrentRouteData = (data) => ({
+  type: SET_CURRENT_ROUTE_NAME,
+  payload: {
+    data: data,
+  },
+});
+
 //Get User Profile
 const setUserData = (data) => ({
   type: SET_USER_PROFILE,
@@ -146,16 +162,7 @@ export const facebookRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-          // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+           reject(err);
       });
   });
 
@@ -171,16 +178,7 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-          // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+          reject(err);
       });
   });
 
@@ -196,16 +194,7 @@ export const twitterRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+         reject(err);
       });
   });
 
@@ -221,16 +210,7 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        //reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',
-                  });
-              }
-          }
+        reject(err);
       });
   });
 
@@ -246,16 +226,7 @@ export const kakaoRegister = (socialLoginData) => (dispatch) =>
                 resolve(res);
             })
             .catch((err) => {
-                // reject(err);
-                if (err.response) {
-                    if (err.response.data) {
-                        Toast.show({
-                            title: 'Login Failed',
-                            text: translate(err.response.data.toString()),
-                            type: 'primary',
-                        });
-                    }
-                }
+                 reject(err);
             });
     });
 
@@ -308,7 +279,7 @@ export const getUserProfile = () => (dispatch) =>
     client
       .get(`/profile/`)
       .then((res) => {
-          console.log('getUserProfile response', res)
+          //console.log('getUserProfile response', res)
         if (res.id) {
           dispatch(setUserData(res));
         }
@@ -438,12 +409,30 @@ export const setToukuPoints = (userData, toukuPoints) => (dispatch) =>
 
 export const getMissedSocketEventsById = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
+      console.log('getMissedSocketEventsById called', id)
     client
       .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
       .then((res) => {
+          console.log('res getMissedSocketEventsById', res)
         resolve(res);
       })
       .catch((err) => {
+          console.log('Error getMissedSocketEventsById')
+        reject(err);
+      });
+  });
+
+  export const getMissedSocketEventsByIdFromApp = (id) =>
+  new Promise(function (resolve, reject) {
+      console.log('getMissedSocketEventsById called', id)
+    client
+      .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
+      .then((res) => {
+          console.log('res getMissedSocketEventsById', res)
+        resolve(res);
+      })
+      .catch((err) => {
+          console.log('Error getMissedSocketEventsById')
         reject(err);
       });
   });

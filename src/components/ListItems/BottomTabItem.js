@@ -42,11 +42,23 @@ class BottomTabItem extends Component {
   }
 
   render() {
-    const {title, titleColor, source, unreadFriendMsgsCounts} = this.props;
+    const {
+      title,
+      titleColor,
+      source,
+      unreadFriendMsgsCounts,
+      focused,
+    } = this.props;
     return (
       <View>
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
-          <Image source={source} style={globalStyles.iconStyleTab} />
+          <Image
+            source={source}
+            style={[
+              globalStyles.iconStyleTab,
+              focused && {tintColor: Colors.yellow},
+            ]}
+          />
           <Text
             style={[
               globalStyles.smallLightTextTab,
