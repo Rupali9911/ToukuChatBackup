@@ -152,7 +152,7 @@ export default class ChatHeader extends Component {
                 visible={this.state.visible}
                 onDismiss={this._closeMenu}
                 anchor={
-                  <TouchableOpacity onPress={this._openMenu}>
+                  <TouchableOpacity onPress={this._openMenu} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                     <Image
                       source={Icons.icon_dots}
                       style={globalStyles.smallIcon}

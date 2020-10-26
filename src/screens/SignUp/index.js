@@ -415,9 +415,14 @@ class SignUp extends Component {
               password: password,
               phone: parsedData.phone,
               site_from: 'touku',
-              user_language: 1,
+              user_language: this.props.selectedLanguageItem.language_name === 'en' ? 1
+                  :this.props.selectedLanguageItem.language_name === 'ko' ? 2
+                      :this.props.selectedLanguageItem.language_name === 'ch' ? 3
+                          :this.props.selectedLanguageItem.language_name === 'ja' ? 4
+                          : 6
+                ,
               username: username,
-              dev_id: fcmToken,
+              dev_id: fcmToken
             };
             this.props
               .userRegister(registerData)
@@ -559,7 +564,7 @@ class SignUp extends Component {
       this.setState({password});
       if (password.length <= 0) {
           //this.setState({passwordStatus: 'wrong', passwordErr: 'messages.required'});
-          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthPassword'});
+          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
       }else if (password.length < 8 ) {
       this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
     }else if (password.length > 64) {
@@ -774,7 +779,7 @@ class SignUp extends Component {
     }
   }
 
-    actionBackPres(){
+    async actionBackPres(){
         this.props.navigation.goBack()
     // const {currentPosition} = this.state
     // if (this.props.navigation.state.params.isSocial) {
@@ -786,7 +791,8 @@ class SignUp extends Component {
     //       this.props.navigation.goBack()
     //   }
     // }
-
+        await AsyncStorage.removeItem('socialToken');
+        await AsyncStorage.removeItem('userToken');
   }
 
 

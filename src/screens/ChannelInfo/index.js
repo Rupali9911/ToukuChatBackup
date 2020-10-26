@@ -228,7 +228,7 @@ class ChannelInfo extends Component {
       },
     ];
 
-    console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
+    //console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
     return (
       <ImageBackground
         source={Images.image_home_bg}

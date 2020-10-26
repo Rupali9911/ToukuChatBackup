@@ -86,7 +86,8 @@ export default class SearchInput extends Component {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.iconRightContainer}
-                onPress={this._openMenu}>
+                onPress={this._openMenu}
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                 <Image source={Icons.man_plus_icon} style={styles.iconRight} />
               </TouchableOpacity>
             }>

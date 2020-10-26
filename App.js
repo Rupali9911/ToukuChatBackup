@@ -216,7 +216,7 @@ export default class App extends Component {
         if (userAndSocialToken[0][1] || userAndSocialToken[1][1]) {
             let formData = new FormData();
             formData.append("dev_id", token);
-            let result = await fetch('https://api.angelium.net/api/xchat/add-device/',
+            let result = await fetch('https://api-touku.angelium.net/api/xchat/add-device/',
                 {
                     method: 'POST',
                     headers: {
@@ -248,7 +248,9 @@ export default class App extends Component {
     async getToken() {
         let registeredFcmToken = await AsyncStorage.getItem('fcmToken');
         console.log('saved dev_id token: ', registeredFcmToken);
+        //this.updateToken(registeredFcmToken)
          let fcmToken = await messaging().getToken()
+        console.log('fcmToken dev_id token: ', fcmToken);
             if (fcmToken !== registeredFcmToken) {
                 console.log('fcm NEWWWWWWWW dev_id: ', fcmToken);
                 await AsyncStorage.setItem('fcmToken', fcmToken);
