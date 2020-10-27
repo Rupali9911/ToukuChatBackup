@@ -25,7 +25,7 @@ import Toast from '../components/Toast';
 import HyperLink from 'react-native-hyperlink';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-viewing';
-import {getAvatar} from '../utils';
+import {getAvatar, normalize} from '../utils';
 let borderRadius = 20;
 
 class ChatMessageBubble extends Component {
@@ -364,8 +364,8 @@ class ChatMessageBubble extends Component {
                             <Text
                               style={{
                                 fontFamily: Fonts.regular,
-                                fontWeight: '300',
-                                fontSize: 15,
+                                fontWeight: '400',
+                                fontSize: normalize(12),
                               }}>
                               {message.message_body}
                             </Text>
@@ -375,8 +375,8 @@ class ChatMessageBubble extends Component {
                         <Text
                           style={{
                             fontFamily: Fonts.regular,
-                            fontWeight: '300',
-                            fontSize: 15,
+                            fontWeight: '400',
+                            fontSize: normalize(12),
                           }}>
                           {message.message_body}
                         </Text>
@@ -532,7 +532,7 @@ class ChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.black,
-                                fontSize: 15,
+                                fontSize: normalize(12),
                                 fontWeight: '300',
                                 fontFamily: Fonts.regular,
                               }}>
@@ -544,7 +544,7 @@ class ChatMessageBubble extends Component {
                         <Text
                           style={{
                             color: Colors.black,
-                            fontSize: 15,
+                            fontSize: normalize(12),
                             fontWeight: '300',
                             fontFamily: Fonts.regular,
                           }}>

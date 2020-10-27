@@ -524,22 +524,33 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
     array = [...array, c];
   }
 
-  if (
-    array.length > 0 &&
-    array[0].last_msg !== null &&
-    array[0].last_msg.id != message.id
-  ) {
-    realm.write(() => {
-      realm.create(
-        'channels',
-        {
-          id: id,
-          last_msg: last_msg,
-          unread_msg: unreadCount,
-        },
-        'modified',
-      );
-    });
+  if (array.length > 0) {
+    if(array[0].last_msg !== null &&
+      array[0].last_msg.id !== message.id){
+        realm.write(() => {
+          realm.create(
+            'channels',
+            {
+              id: id,
+              last_msg: last_msg,
+              unread_msg: unreadCount,
+            },
+            'modified',
+          );
+        });
+      } else if(array[0].last_msg == null){
+        realm.write(() => {
+          realm.create(
+            'channels',
+            {
+              id: id,
+              last_msg: last_msg,
+              unread_msg: unreadCount,
+            },
+            'modified',
+          );
+        });
+      }
   }
 };
 

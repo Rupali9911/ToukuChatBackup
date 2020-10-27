@@ -107,7 +107,7 @@ export const Colors = {
   foorter_gradient_2: 'rgba(255,	28,	124, 0.68)',
   foorter_gradient_3: 'rgba(95,	18,	164, 0.68)',
   orange_header: 'rgba(255,107,0,00.40)',
-  link_color: 'blue',
+  link_color: '#007bff',
   link_color_2: '#14ffbe',
   off_white: '#e2dccd',
   yellow: '#fff700',

@@ -227,7 +227,7 @@ export default class GroupChatMessageBox extends Component {
               <View>
                 <Text
                   style={{
-                    fontSize: 11,
+                    fontSize: normalize(9),
                     fontFamily: Fonts.regular,
                     color: Colors.primary,
                     textAlign: 'left',

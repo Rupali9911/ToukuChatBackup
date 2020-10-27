@@ -22,7 +22,7 @@ import {Colors, Fonts, Images, Icons, environment} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
-import {getAvatar, getImage} from '../../utils';
+import {getAvatar, getImage, normalize} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
@@ -276,7 +276,7 @@ class UserProfile extends Component {
             <Text
               style={[
                 globalStyles.normalSemiBoldText,
-                {color: Colors.black, marginHorizontal: 10},
+                {color: Colors.black, marginHorizontal: 10,fontSize:normalize(15)},
               ]}>
               {/* {userData.first_name + ' '}
               {userData.last_name} */}
@@ -300,7 +300,7 @@ class UserProfile extends Component {
             <Text
               style={[
                 globalStyles.smallRegularText,
-                {color: Colors.black, marginBottom: 10},
+                {color: Colors.black, marginBottom: 10,fontSize:normalize(12), fontFamily: Fonts.nunitoSansJPLight},
               ]}>
               {userData.username}
             </Text>
@@ -366,10 +366,10 @@ const ProfileItem = (props) => {
   return (
     <View style={styles.inputTextContainer}>
       <View style={{flex: 1}}>
-        <Text style={[globalStyles.smallRegularText, styles.textNormal]}>
+        <Text style={[globalStyles.smallRegularText, styles.textNormal,{fontFamily: Fonts.nunitoSansJPLight}]}>
           {title}
         </Text>
-        <Text style={[globalStyles.smallRegularText, styles.textNormal]}>
+        <Text style={[globalStyles.smallRegularText, styles.textNormal, {fontSize:normalize(13),fontFamily: Fonts.nunitoSansJPLight,}]}>
           {value}
         </Text>
       </View>

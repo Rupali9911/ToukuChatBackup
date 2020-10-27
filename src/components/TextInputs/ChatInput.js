@@ -184,17 +184,19 @@ const chatInput = StyleSheet.create({
     maxHeight: 200,
     // backgroundColor: '#FC94B8',
     flexDirection: 'row',
-    paddingHorizontal: 15,
+    // paddingHorizontal: 15,
+    paddingLeft:10,
+    paddingRight:15,
     paddingTop: 5,
     paddingBottom: isIphoneX() ? 20 : 5,
   },
   chatAttachmentContainer: {
     // height: isIphoneX() ? 40 : 30,
-    width: '30%',
+    width: '25%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5
+    marginBottom: 5,
   },
   chatAttachmentButton: {
     // height: '100%',
@@ -207,7 +209,7 @@ const chatInput = StyleSheet.create({
     width: '90%',
   },
   textInputContainer: {
-    width: '60%',
+    width: '65%',
     // height: '80%',s
     justifyContent: 'center',
   },
@@ -219,9 +221,10 @@ const chatInput = StyleSheet.create({
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
-    paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 5) : 0,
+    paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 10) : 0,
     paddingBottom: 0,
-    fontSize: normalize(10),
+    fontSize: normalize(12),
+    textAlignVertical:'center',
     lineHeight: 15,
   },
   sendButoonContainer: {

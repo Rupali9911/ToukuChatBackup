@@ -26,7 +26,7 @@ import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 let borderRadius = 20;
 import HyperLink from 'react-native-hyperlink';
-import {getAvatar} from '../utils';
+import {getAvatar, normalize} from '../utils';
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {
@@ -400,7 +400,7 @@ class GroupChatMessageBubble extends Component {
                             linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
-                                fontSize: 15,
+                                fontSize: normalize(12),
                                 fontFamily: Fonts.regular,
                                 fontWeight: '400',
                               }}>
@@ -411,7 +411,7 @@ class GroupChatMessageBubble extends Component {
                       ) : (
                         <Text
                           style={{
-                            fontSize: 15,
+                            fontSize: normalize(12),
                             fontFamily: Fonts.regular,
                             fontWeight: '400',
                           }}>
@@ -568,9 +568,9 @@ class GroupChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.black,
-                                fontSize: 15,
+                                fontSize: normalize(12),
                                 fontFamily: Fonts.regular,
-                                fontWeight: '400',
+                                fontWeight: '300',
                               }}>
                               {message.message_body.text}
                             </Text>
@@ -580,9 +580,9 @@ class GroupChatMessageBubble extends Component {
                         <Text
                           style={{
                             color: Colors.black,
-                            fontSize: 15,
+                            fontSize: normalize(12),
                             fontFamily: Fonts.regular,
-                            fontWeight: '400',
+                            fontWeight: '300',
                           }}>
                           {message.message_body.text}
                         </Text>

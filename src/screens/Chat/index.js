@@ -796,31 +796,11 @@ class Chat extends Component {
   //Message in Following Channel
   messageInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
-
+    console.log('message_data',JSON.stringify(message))
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       var channel = getChannelsById(message.text.data.message_details.channel);
       if (channel && channel.length > 0) {
-        if (message.text.data.message_details.from_user.id == userData.id) {
-          // this.getFollowingChannels();
-          var result = getChannelsById(
-            message.text.data.message_details.channel,
-          );
-
-          var channels = [];
-
-          result.map((item) => {
-            channels.push(item);
-          });
-          setChannelChatConversation([message.text.data.message_details]);
-          updateChannelLastMsg(
-            message.text.data.message_details.channel,
-            message.text.data.message_details,
-            channels[0].unread_msg,
-          );
-          this.props.getLocalFollowingChannels().then((res) => {
-            this.props.setCommonChatConversation();
-          });
-        } else if (
+        if (
           message.text.data.message_details.to_user != null &&
           message.text.data.message_details.to_user.id == userData.id
         ) {
@@ -854,6 +834,26 @@ class Chat extends Component {
               channels[0].unread_msg + 1,
             );
           }
+          this.props.getLocalFollowingChannels().then((res) => {
+            this.props.setCommonChatConversation();
+          });
+        } else if (message.text.data.message_details.from_user.id == userData.id) {
+          // this.getFollowingChannels();
+          var result = getChannelsById(
+            message.text.data.message_details.channel,
+          );
+
+          var channels = [];
+
+          result.map((item) => {
+            channels.push(item);
+          });
+          setChannelChatConversation([message.text.data.message_details]);
+          updateChannelLastMsg(
+            message.text.data.message_details.channel,
+            message.text.data.message_details,
+            channels[0].unread_msg,
+          );
           this.props.getLocalFollowingChannels().then((res) => {
             this.props.setCommonChatConversation();
           });
