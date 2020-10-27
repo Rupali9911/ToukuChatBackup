@@ -8,7 +8,7 @@ import {Badge, Divider} from 'react-native-paper';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
-import {getImage,normalize} from '../../utils';
+import {getImage, normalize} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 
 export default class ChannelListItem extends Component {
@@ -22,23 +22,25 @@ export default class ChannelListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate() && 
-    today.getMonth() === msgDate.getMonth() && 
-    today.getFullYear() === msgDate.getFullYear()) {
+    if (
+      today.getDate() === msgDate.getDate() &&
+      today.getMonth() === msgDate.getMonth() &&
+      today.getFullYear() === msgDate.getFullYear()
+    ) {
       return moment(date).format('HH:mm');
     }
-    
+
     if (
       yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getMonth() === msgDate.getMonth() &&
       yesterday.getFullYear() === msgDate.getFullYear()
-    ){
+    ) {
       return translate('common.yesterday');
     }
 
-    if(today.getFullYear() === msgDate.getFullYear()){
+    if (today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('MM/DD');
-    }else{
+    } else {
       return moment(date).format('MM/DD/YY');
     }
   };
@@ -67,7 +69,7 @@ export default class ChannelListItem extends Component {
                 ]}
                 style={styles.squareImage}>
                 <Text style={globalStyles.normalRegularText}>
-                  {title.charAt(0).toUpperCase()}
+                  {title && title.charAt(0) && title.charAt(0).toUpperCase()}
                   {/* {secondUpperCase} */}
                 </Text>
               </LinearGradient>

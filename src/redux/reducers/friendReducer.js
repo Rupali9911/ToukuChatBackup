@@ -18,6 +18,7 @@ export const GET_PERSONAL_CONVERSATION_SUCCESS =
 export const GET_PERSONAL_CONVERSATION_FAIL = 'GET_PERSONAL_CONVERSATION_FAIL';
 
 export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
+export const UPDATE_CURRENT_FRIEND_AVTAR = 'UPDATE_CURRENT_FRIEND_AVTAR';
 export const SET_UNREAD_FRIEND_MSG_COUNTS = 'SET_UNREAD_FRIEND_MSG_COUNTS';
 
 export const GET_FRIEND_CONVERSATION = 'GET_FRIEND_CONVERSATION';
@@ -46,6 +47,17 @@ export default function (state = initialState, action) {
       return {
         ...state,
         currentFriend: action.payload,
+      };
+
+    case UPDATE_CURRENT_FRIEND_AVTAR:
+      return {
+        ...state,
+        currentFriend: {
+          ...state.currentFriend,
+          profile_picture: action.payload.avatar,
+          display_name: action.payload.display_name,
+          username: action.payload.username,
+        },
       };
 
     //Get Friend Requests
@@ -141,6 +153,11 @@ export default function (state = initialState, action) {
 //Set Current Friend Data
 const setCurrentFriendData = (data) => ({
   type: SET_CURRENT_FRIEND_DATA,
+  payload: data,
+});
+
+export const updateCurrentFriendAvtar = (data) => ({
+  type: UPDATE_CURRENT_FRIEND_AVTAR,
   payload: data,
 });
 
@@ -358,7 +375,7 @@ const getPersonalConversationFailure = () => ({
 
 export const getPersonalConversation = (friend) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getPersonalConversationRequest())
+    dispatch(getPersonalConversationRequest());
     client
       .get(`/xchat/personal-conversation/${friend}/`)
       .then((res) => {

@@ -61,6 +61,7 @@ import {
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
+  updateCurrentFriendAvtar,
   updateUnreadFriendMsgsCounts,
   getUserFriendsSuccess,
   setUserFriends,
@@ -87,6 +88,7 @@ import {
   setFriendMessageUnsend,
   getLocalUserFriends,
   updateFriendOnlineStatus,
+  updateFriendAvtar,
   updateFriendTypingStatus,
   getGroups,
   setGroups,
@@ -111,6 +113,7 @@ import {
   handleRequestAccept,
   getLocalFriendRequests,
   deleteChannelById,
+  deleteChannelConversationById,
   updateChannelTotalMember,
   updateChannelLastMsgWithOutCount,
   getFriendChatConversationById,
@@ -417,6 +420,9 @@ class Chat extends Component {
       case SocketEvents.UPDATE_READ_COUNT_IN_GROUP:
         this.onUpdateGroupReadCount(message);
         break;
+      case SocketEvents.UPLOAD_AVTAR:
+        this.updateUserAvtar(message);
+        break;
       case SocketEvents.MESSAGE_EDITED_IN_THREAD:
         break;
       case SocketEvents.DELETE_MESSAGE_IN_THREAD:
@@ -436,6 +442,29 @@ class Chat extends Component {
     }
   }
 
+  updateUserAvtar(message) {
+    const {userData, currentFriend} = this.props;
+    if (message.text.data.type === SocketEvents.UPLOAD_AVTAR) {
+      if (userData.id === message.text.data.message_details.user_id) {
+        this.props.getUserProfile();
+        return;
+      }
+      var user = getLocalUserFriend(message.text.data.message_details.user_id);
+      if (user && user.length > 0) {
+        updateFriendAvtar(
+          message.text.data.message_details.user_id,
+          message.text.data.message_details,
+        );
+        this.props.getUserFriends().then((res) => {
+          this.setCommonConversation();
+        });
+      }
+      if (currentFriend.user_id === message.text.data.message_details.user_id) {
+        this.props.updateCurrentFriendAvtar(message.text.data.message_details);
+        this.getLocalFriendConversation();
+      }
+    }
+  }
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
     const {userFriends} = this.props;
@@ -461,8 +490,8 @@ class Chat extends Component {
             message.text.data.message_details.user_id,
             false,
           );
-          this.props.setUserFriends().then((res) => {
-            this.props.setCommonChatConversation();
+          this.props.getUserFriends().then((res) => {
+            this.setCommonConversation();
           });
         }
       }
@@ -564,18 +593,16 @@ class Chat extends Component {
   }
 
   readAllMessageChannelSubChat(message) {
-    const {followingChannels,currentChannel} = this.props;
-    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT) {
+    const {followingChannels, currentChannel} = this.props;
+    if (
+      message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT
+    ) {
       var channel = getChannelsById(
         message.text.data.message_details.channel_id,
       );
       if (channel && channel.length > 0) {
-        
-        updateReadByChannelId(
-          message.text.data.message_details.channel_id,
-          0,
-        );
-        
+        updateReadByChannelId(message.text.data.message_details.channel_id, 0);
+
         this.props.getLocalFollowingChannels().then((res) => {
           this.props.setCommonChatConversation();
         });
@@ -587,7 +614,6 @@ class Chat extends Component {
         ) {
           this.getLocalChannelConversations();
         }
-
       }
     }
   }
@@ -809,7 +835,8 @@ class Chat extends Component {
             channels.push(item);
           });
           setChannelChatConversation([message.text.data.message_details]);
-          if (this.props.currentRouteName == 'ChannelChats' &&
+          if (
+            this.props.currentRouteName == 'ChannelChats' &&
             currentChannel &&
             message.text.data.message_details.channel == currentChannel.id
           ) {
@@ -856,7 +883,11 @@ class Chat extends Component {
             this.props.setCommonChatConversation();
           });
         }
-        if (this.props.currentRouteName == 'ChannelChats' && currentChannel && item.channel == currentChannel.id) {
+        if (
+          this.props.currentRouteName == 'ChannelChats' &&
+          currentChannel &&
+          item.channel == currentChannel.id
+        ) {
           this.getLocalChannelConversations();
         }
       }
@@ -890,7 +921,8 @@ class Chat extends Component {
           this.props.setCommonChatConversation();
         });
       }
-      if (this.props.currentRouteName == 'ChannelChats' &&
+      if (
+        this.props.currentRouteName == 'ChannelChats' &&
         currentChannel &&
         message.text.data.message_details.channel == currentChannel.id
       ) {
@@ -971,7 +1003,8 @@ class Chat extends Component {
       this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
-      if (this.props.currentRouteName == 'ChannelChats' &&
+      if (
+        this.props.currentRouteName == 'ChannelChats' &&
         currentChannel &&
         message.text.data.message_details.channel == currentChannel.id
       ) {
@@ -983,6 +1016,7 @@ class Chat extends Component {
   onAddChannelMemmber(message) {
     if (message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER) {
       setChannels([message.text.data.message_details]);
+      updateChannelUnReadCountById(message.text.data.message_details.id, 1);
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
@@ -996,6 +1030,9 @@ class Chat extends Component {
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       deleteChannelById(message.text.data.message_details.channel_id);
+      deleteChannelConversationById(
+        message.text.data.message_details.channel_id,
+      );
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
@@ -1771,18 +1808,18 @@ class Chat extends Component {
         commonConversation.sort((a, b) =>
           a.created &&
           b.created &&
-          new Date(a.last_msg ? a.last_msg.created : a.created) <
-            new Date(b.last_msg ? b.last_msg.created : b.created)
+          new Date(a.last_msg ? a.last_msg.created : a.joining_date) <
+            new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.created &&
               b.timestamp &&
-              new Date(a.last_msg ? a.last_msg.created : a.created) <
+              new Date(a.last_msg ? a.last_msg.created : a.joining_date) <
                 new Date(b.timestamp)
             ? 1
             : a.timestamp &&
               b.created &&
               new Date(a.timestamp) <
-                new Date(b.last_msg ? b.last_msg.created : b.created)
+                new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.timestamp &&
               b.timestamp &&
@@ -1797,18 +1834,18 @@ class Chat extends Component {
         commonConversation.sort((a, b) =>
           a.created &&
           b.created &&
-          new Date(a.last_msg ? a.last_msg.created : a.created) >
-            new Date(b.last_msg ? b.last_msg.created : b.created)
+          new Date(a.last_msg ? a.last_msg.created : a.joining_date) >
+            new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.created &&
               b.timestamp &&
-              new Date(a.last_msg ? a.last_msg.created : a.created) >
+              new Date(a.last_msg ? a.last_msg.created : a.joining_date) >
                 new Date(b.timestamp)
             ? 1
             : a.timestamp &&
               b.created &&
               new Date(a.timestamp) >
-                new Date(b.last_msg ? b.last_msg.created : b.created)
+                new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.timestamp &&
               b.timestamp &&
@@ -1955,7 +1992,7 @@ class Chat extends Component {
                       : translate('pages.xchat.audio')
                     : ''
                 }
-                date={item.last_msg ? item.last_msg.created : item.created}
+                date={item.last_msg ? item.last_msg.created : item.joining_date}
                 image={item.channel_picture}
                 onPress={() => this.onOpenChannelChats(item)}
                 unreadCount={item.unread_msg}
@@ -2041,7 +2078,9 @@ class Chat extends Component {
             navigation={this.props.navigation}
           /> */}
         <View style={globalStyles.container}>
-          <KeyboardAwareScrollView enableOnAndroid={true} showsVerticalScrollIndicator={false}>
+          <KeyboardAwareScrollView
+            enableOnAndroid={true}
+            showsVerticalScrollIndicator={false}>
             {this.renderCommonChat()}
           </KeyboardAwareScrollView>
         </View>
@@ -2081,6 +2120,7 @@ const mapDispatchToProps = {
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
+  updateCurrentFriendAvtar,
   getUserConfiguration,
   updateConfiguration,
   setCommonChatConversation,

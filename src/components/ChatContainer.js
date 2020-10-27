@@ -254,7 +254,10 @@ class ChatContainer extends Component {
                       isUser={
                         item.from_user.id == this.props.userData.id ||
                         item.from_user == this.props.userData.id
-                          ? true
+                          ? item.to_user &&
+                            item.to_user.id == this.props.userData.id
+                            ? false
+                            : true
                           : false
                       }
                       time={new Date(item.created)}
@@ -377,7 +380,9 @@ class ChatContainer extends Component {
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.from_user.id === this.props.userData.id
                       ? 'You'
-                      : repliedMessage.from_user.display_name?repliedMessage.from_user.display_name:repliedMessage.from_user.username}
+                      : repliedMessage.from_user.display_name
+                      ? repliedMessage.from_user.display_name
+                      : repliedMessage.from_user.username}
                   </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>

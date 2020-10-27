@@ -134,15 +134,17 @@ export const updateMessageById = (id, text, type) => {
 };
 
 export const updateReadByChannelId = (id) => {
-  let results = realm
-    .objects('chat_conversation')
-    .filtered(`channel == ${id}`);
+  let results = realm.objects('chat_conversation').filtered(`channel == ${id}`);
 
-    for (let chat of results) {
-      realm.write(() => {
-        realm.create('chat_conversation', {id: chat.id, is_read: true}, 'modified');
-      });
-    }
+  for (let chat of results) {
+    realm.write(() => {
+      realm.create(
+        'chat_conversation',
+        {id: chat.id, is_read: true},
+        'modified',
+      );
+    });
+  }
 };
 
 export const deleteMessageById = async (id) => {
@@ -288,27 +290,29 @@ export const setGroupChatConversation = (conversation) => {
     if (obj.length > 0) {
       // alert('matching friend');
       realm.write(() => {
-        realm.create('chat_conversation_group', {
-          msg_id: item.msg_id,
-          sender_id: item.sender_id,
-          group_id: item.group_id,
-          sender_username: item.sender_username,
-          sender_display_name: item.sender_display_name,
-          sender_picture: item.sender_picture,
-          message_body: item.message_body,
-          is_edited: item.is_edited,
-          is_unsent: item.is_unsent,
-          timestamp: item.timestamp,
-          reply_to: item.reply_to,
-          mentions: item.mentions
-            ? item.mentions instanceof Object
-              ? []
-              : item.mentions
-            : [],
-          read_count: item.read_count ? item.read_count : 0,
-          created: item.created,
-        },
-        'modified',
+        realm.create(
+          'chat_conversation_group',
+          {
+            msg_id: item.msg_id,
+            sender_id: item.sender_id,
+            group_id: item.group_id,
+            sender_username: item.sender_username,
+            sender_display_name: item.sender_display_name,
+            sender_picture: item.sender_picture,
+            message_body: item.message_body,
+            is_edited: item.is_edited,
+            is_unsent: item.is_unsent,
+            timestamp: item.timestamp,
+            reply_to: item.reply_to,
+            mentions: item.mentions
+              ? item.mentions instanceof Object
+                ? []
+                : item.mentions
+              : [],
+            read_count: item.read_count ? item.read_count : 0,
+            created: item.created,
+          },
+          'modified',
         );
       });
     } else {
@@ -392,7 +396,7 @@ export const setGroupMessageUnsend = (id) => {
 
 //#region Channels List
 export const setChannels = (channels) => {
-  // console.log('realm insert data',channels);
+  // console.log('realm insert data', channels);
   for (let item of channels) {
     var obj = realm.objects('channels').filtered('id=' + item.id);
     if (obj.length > 0) {
@@ -408,8 +412,9 @@ export const setChannels = (channels) => {
             chat: item.chat,
             channel_picture: item.channel_picture,
             last_msg: item.last_msg,
-            is_pined: item.is_pined,
+            is_pined: item.is_pined ? item.is_pined : false,
             created: item.created,
+            joining_date: item.joining_date,
           },
           'modified',
         );
@@ -425,8 +430,9 @@ export const setChannels = (channels) => {
           chat: item.chat,
           channel_picture: item.channel_picture,
           last_msg: item.last_msg,
-          is_pined: item.is_pined,
+          is_pined: item.is_pined ? item.is_pined : false,
           created: item.created,
+          joining_date: item.joining_date,
         });
       });
     }
@@ -557,6 +563,15 @@ export const deleteChannelById = (id) => {
   });
 };
 //#endregion
+
+export const deleteChannelConversationById = (id) => {
+  var channel = realm.objects('chat_conversation').filtered(`channel == ${id}`);
+  for (let c of channel) {
+    realm.write(() => {
+      realm.delete(c);
+    });
+  }
+};
 
 //#region Groups List
 export const setGroups = async (channels) => {
@@ -848,6 +863,21 @@ export const updateFriendOnlineStatus = (id, status) => {
       {
         user_id: id,
         is_online: status,
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateFriendAvtar = (id, data) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {
+        user_id: id,
+        avatar: data.avatar,
+        display_name: data.display_name,
+        username: data.username,
       },
       'modified',
     );

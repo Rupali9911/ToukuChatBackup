@@ -1,8 +1,8 @@
 import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import {KAKAO_API_KEY} from '../../helpers/api'
-import Toast from "../../components/Toast";
-import {translate} from "./languageReducer";
+import {KAKAO_API_KEY} from '../../helpers/api';
+import Toast from '../../components/Toast';
+import {translate} from './languageReducer';
 import axios from 'axios';
 
 export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
@@ -20,12 +20,12 @@ export const GET_CHANGE_NAME_FAIL = 'GET_CHANGE_NAME_FAIL';
 export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
 export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
 export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
-let uuid = require('react-native-uuid')
+let uuid = require('react-native-uuid');
 
 const initialState = {
   loading: false,
   userData: {},
-  currentRouteName: ''
+  currentRouteName: '',
 };
 
 export default function (state = initialState, action) {
@@ -87,7 +87,7 @@ export default function (state = initialState, action) {
     case SET_CURRENT_ROUTE_NAME:
       return {
         ...state,
-        currentRouteName: action.payload.data
+        currentRouteName: action.payload.data,
       };
 
     default:
@@ -162,7 +162,7 @@ export const facebookRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-           reject(err);
+        reject(err);
       });
   });
 
@@ -178,7 +178,7 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-          reject(err);
+        reject(err);
       });
   });
 
@@ -194,7 +194,7 @@ export const twitterRegister = (socialLoginData) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-         reject(err);
+        reject(err);
       });
   });
 
@@ -215,63 +215,65 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
   });
 
 export const kakaoRegister = (socialLoginData) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        client
-            .post(`/xchat/kakao-login-auth/`, socialLoginData)
-            .then((res) => {
-                if (res.token) {
-                    AsyncStorage.setItem('socialToken', res.token);
-                    // dispatch(getLoginSuccess(res.token))
-                }
-                resolve(res);
-            })
-            .catch((err) => {
-                 reject(err);
-            });
-    });
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/kakao-login-auth/`, socialLoginData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('socialToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 
 export const appleRegister = (socialLoginData) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        client
-            .post(`/xchat/apple-login-auth/`, socialLoginData)
-            .then((res) => {
-                if (res.token) {
-                    AsyncStorage.setItem('socialToken', res.token);
-                    // dispatch(getLoginSuccess(res.token))
-                }
-                resolve(res);
-            })
-            .catch((err) => {
-                // reject(err);
-                if (err.response) {
-                    if (err.response.data) {
-                        Toast.show({
-                            title: 'Login Failed',
-                            text: translate(err.response.data.toString()),
-                            type: 'primary',
-                        });
-                    }
-                }
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/apple-login-auth/`, socialLoginData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('socialToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        // reject(err);
+        if (err.response) {
+          if (err.response.data) {
+            Toast.show({
+              title: 'Login Failed',
+              text: translate(err.response.data.toString()),
+              type: 'primary',
             });
-    });
+          }
+        }
+      });
+  });
 
 export const getAccessCodeKakao = () => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        client
-            .get('https://kauth.kakao.com/oauth/authorize?client_id=' + KAKAO_API_KEY +'&scope=account_email&redirect_uri=https://touku.angelium.net&response_type=code&auth_tran_id=lvlxw5uu5g7608d108073fe9a65906c012b5c3f489kbkep4jw')
-            .then((res) => {
-                // if (res.token) {
-                //     AsyncStorage.setItem('socialToken', res.token);
-                //     // dispatch(getLoginSuccess(res.token))
-                // }
-                resolve(res);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
-
-
+  new Promise(function (resolve, reject) {
+    client
+      .get(
+        'https://kauth.kakao.com/oauth/authorize?client_id=' +
+          KAKAO_API_KEY +
+          '&scope=account_email&redirect_uri=https://touku.angelium.net&response_type=code&auth_tran_id=lvlxw5uu5g7608d108073fe9a65906c012b5c3f489kbkep4jw',
+      )
+      .then((res) => {
+        // if (res.token) {
+        //     AsyncStorage.setItem('socialToken', res.token);
+        //     // dispatch(getLoginSuccess(res.token))
+        // }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 
 //Get User Profile
 export const getUserProfile = () => (dispatch) =>
@@ -279,7 +281,7 @@ export const getUserProfile = () => (dispatch) =>
     client
       .get(`/profile/`)
       .then((res) => {
-          //console.log('getUserProfile response', res)
+        // console.log('getUserProfile response', res);
         if (res.id) {
           dispatch(setUserData(res));
         }
@@ -291,57 +293,60 @@ export const getUserProfile = () => (dispatch) =>
   });
 
 export const uploadAvatar = (data, token) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        dispatch(getUploadAvatarRequest());
-        // client
-        //   .post(`/avatar-upload/`, data)
-        //   .then((res) => {
-        //     dispatch(getUploadAvatarSuccess());
-        //     resolve(res);
-        //   })
-        //   .catch((err) => {
-        //     dispatch(getUploadAvatarFailure());
-        //     reject(err);
-        //   });
+  new Promise(function (resolve, reject) {
+    dispatch(getUploadAvatarRequest());
+    // client
+    //   .post(`/avatar-upload/`, data)
+    //   .then((res) => {
+    //     dispatch(getUploadAvatarSuccess());
+    //     resolve(res);
+    //   })
+    //   .catch((err) => {
+    //     dispatch(getUploadAvatarFailure());
+    //     reject(err);
+    //   });
 
-        let name = uuid.v4()
-         let formData = new FormData();
-         formData.append('avatar_thumbnail', {
-             uri: data.replace('file://', ''),
-             mineType: 'image/jpeg',
-             fileType: 'image/jpg',
-             type: 'image/jpg',
-             name: name + '.jpg'
-         });
-         formData.append('avatar', {
-             uri: data.replace('file://', ''),
-             mineType: 'image/jpeg',
-             fileType: 'image/jpg',
-             type: 'image/jpg',
-             name: name + '.jpg'
-         });
+    let name = uuid.v4();
+    let formData = new FormData();
+    formData.append('avatar_thumbnail', {
+      uri: data.replace('file://', ''),
+      mineType: 'image/jpeg',
+      fileType: 'image/jpg',
+      type: 'image/jpg',
+      name: name + '.jpg',
+    });
+    formData.append('avatar', {
+      uri: data.replace('file://', ''),
+      mineType: 'image/jpeg',
+      fileType: 'image/jpg',
+      type: 'image/jpg',
+      name: name + '.jpg',
+    });
 
-        setTimeout(() => {
-
-         console.log('Token and Form Data', token, formData)
-         axios.post("https://api-touku.angelium.net/api/avatar-upload/",formData, {headers: {
-                 'Content-Type': 'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
-                 'User-Agent': userAgent,
-                 'Origin': 'touku',
-                 'Authorization': token,
-             },
-         }).then((resp) => {
-             console.log('uploadAvatar API responser', resp);
-             dispatch(getUploadAvatarSuccess());
-             resolve(resp);
-         }).catch(err => {
-             console.log('uploadAvatar API response',err.response);
-             dispatch(getUploadAvatarFailure());
-             reject(err);
-         });
-        }, 1000);
-});
-
+    setTimeout(() => {
+      console.log('Token and Form Data', token, formData);
+      axios
+        .post('https://api-touku.angelium.net/api/avatar-upload/', formData, {
+          headers: {
+            'Content-Type':
+              'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
+            'User-Agent': userAgent,
+            Origin: 'touku',
+            Authorization: token,
+          },
+        })
+        .then((resp) => {
+          console.log('uploadAvatar API responser', resp);
+          dispatch(getUploadAvatarSuccess());
+          resolve(resp);
+        })
+        .catch((err) => {
+          console.log('uploadAvatar API response', err.response);
+          dispatch(getUploadAvatarFailure());
+          reject(err);
+        });
+    }, 1000);
+  });
 
 export const changeNameDetails = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -409,30 +414,30 @@ export const setToukuPoints = (userData, toukuPoints) => (dispatch) =>
 
 export const getMissedSocketEventsById = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
-      console.log('getMissedSocketEventsById called', id)
+    console.log('getMissedSocketEventsById called', id);
     client
       .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
       .then((res) => {
-          console.log('res getMissedSocketEventsById', res)
+        console.log('res getMissedSocketEventsById', res);
         resolve(res);
       })
       .catch((err) => {
-          console.log('Error getMissedSocketEventsById')
+        console.log('Error getMissedSocketEventsById');
         reject(err);
       });
   });
 
-  export const getMissedSocketEventsByIdFromApp = (id) =>
+export const getMissedSocketEventsByIdFromApp = (id) =>
   new Promise(function (resolve, reject) {
-      console.log('getMissedSocketEventsById called', id)
+    console.log('getMissedSocketEventsById called', id);
     client
       .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
       .then((res) => {
-          console.log('res getMissedSocketEventsById', res)
+        console.log('res getMissedSocketEventsById', res);
         resolve(res);
       })
       .catch((err) => {
-          console.log('Error getMissedSocketEventsById')
+        console.log('Error getMissedSocketEventsById');
         reject(err);
       });
   });

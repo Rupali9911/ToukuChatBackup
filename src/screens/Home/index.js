@@ -1121,10 +1121,8 @@ class Home extends Component {
 
     const sortChannels = followingChannels;
     sortChannels.sort((a, b) =>
-      a.created &&
-      b.created &&
-      new Date(a.last_msg ? a.last_msg.updated : a.created) <
-        new Date(b.last_msg ? b.last_msg.updated : b.created)
+      new Date(a.last_msg ? a.last_msg.updated : a.joining_date) <
+      new Date(b.last_msg ? b.last_msg.updated : b.joining_date)
         ? 1
         : -1,
     );
@@ -1158,7 +1156,7 @@ class Home extends Component {
                     : translate('pages.xchat.audio')
                   : ''
               }
-              date={item.last_msg ? item.last_msg.created : item.created}
+              date={item.last_msg ? item.last_msg.created : item.joining_date}
               image={item.channel_picture}
               onPress={() => this.onOpenChannelChats(item)}
               unreadCount={item.unread_msg}
@@ -1457,7 +1455,9 @@ class Home extends Component {
             </Text>
           </TouchableOpacity>
           {/* Friend Request */}
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false} enableOnAndroid={true}>
+          <KeyboardAwareScrollView
+            showsVerticalScrollIndicator={false}
+            enableOnAndroid={true}>
             {filteredFriendRequest.length > 0 && (
               <Collapse
                 onToggle={(isColl) =>
