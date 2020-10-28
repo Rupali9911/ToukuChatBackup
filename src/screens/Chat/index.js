@@ -730,6 +730,12 @@ class Chat extends Component {
           this.getLocalGroupConversation();
           this.markGroupMsgsRead();
           unreadCount = 0;
+          this.SingleSocket.sendMessage(JSON.stringify({
+            "type": SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
+            "data": {
+              "group_id": this.props.currentGroup.group_id
+            }
+          }));
         }
 
         updateLastMsgGroups(
@@ -1965,9 +1971,9 @@ class Chat extends Component {
   renderCommonChat = () => {
     const {isLoading} = this.state;
     const commonChat = this.props.commonChat;
-    if (this.props.currentRouteName !== 'ChatTab') {
-      return;
-    }
+    // if (this.props.currentRouteName !== 'ChatTab') {
+    //   return;
+    // }
     let commonConversation = commonChat.filter(
       createFilter(this.state.searchText, [
         'name',
