@@ -273,10 +273,60 @@ export const userRegister = (registerData) => (dispatch) =>
       });
   });
 
+export const userNewRegister = (registerData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getRegisterRequest());
+    client
+      .post('/xchat/touku-registration/', registerData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
+          dispatch(getRegisterSuccess());
+        } else {
+          dispatch(getRegisterFailure());
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getRegisterFailure());
+         reject(err);
+      //   if (err.response) {
+      //     if (err.response.data) {
+      //       console.log('error_data',err.response.data);
+      //       // if (err.response.data.detail) {
+      //         //     Toast.show({
+      //         //         title: '',
+      //         //         text: err.response.data.detail.toString(),
+      //         //         type: 'primary',
+      //         //     });
+      //         // }
+      //     }
+      // }
+      });
+  });
+
 export const socialRegistration = (socialRegistrationData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post('/xchat/edit-user/', socialRegistrationData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('userToken', res.token);
+          AsyncStorage.removeItem('socialToken');
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+
+  });
+
+export const socialRegistrationNew = (socialRegistrationData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post('/xchat/update-touku-username/', socialRegistrationData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);

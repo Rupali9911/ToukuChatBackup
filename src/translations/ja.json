@@ -226,7 +226,9 @@
       "suggestions":"提案",
       "usernameExists":"ユーザー名は既に存在します",
       "oldAndNewPasswordIsSameText":"古いパスワードと新しいパスワードを同じにしないでください",
-      "phoneNumberTextForPlaceholder":"電話番号を入力"
+      "phoneNumberTextForPlaceholder":"電話番号を入力",
+      "thisIsYourUsername":"これはあなたのユーザー名です（後で変更することはできません）",
+      "youCanChangeItUsername":"必要に応じて、今すぐ変更できます。"
     },
     "resetPassword":{
       "changePassword":"ログインパスワードを変更",

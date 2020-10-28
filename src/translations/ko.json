@@ -226,7 +226,9 @@
       "suggestions":"\uc81c\uc548",
       "usernameExists":"\uc0ac\uc6a9\uc790\uba85\uc774 \uc774\ubbf8 \uc874\uc7ac\ud569\ub2c8\ub2e4",
       "oldAndNewPasswordIsSameText":"\uc774\uc804 \ube44\ubc00\ubc88\ud638\uc640 \uc0c8 \ube44\ubc00\ubc88\ud638\ub294 \ub3d9\uc77c\ud558\uc9c0 \uc54a\uc544\uc57c\ud569\ub2c8\ub2e4.",
-      "phoneNumberTextForPlaceholder":"\uc804\ud654 \ubc88\ud638\ub97c \uc785\ub825"
+      "phoneNumberTextForPlaceholder":"\uc804\ud654 \ubc88\ud638\ub97c \uc785\ub825",
+      "thisIsYourUsername":"사용자 이름입니다 (나중에 변경할 수 없음).",
+      "youCanChangeItUsername":"원하는 경우 지금 변경할 수 있습니다."
     },
     "resetPassword":{
       "changePassword":"\ube44\ubc00\ubc88\ud638 \ubcc0\uacbd\ud558\uae30",

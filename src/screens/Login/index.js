@@ -179,13 +179,13 @@ class Login extends Component {
           if (!status) {
             if (isEmail) {
               this.props.navigation.navigate('SignUp', {
-                pageNumber: 1,
+                  showEmail: true,
                 isSocial: true,
               });
               return;
             }
             this.props.navigation.navigate('SignUp', {
-              pageNumber: 2,
+                showEmail: false,
               isSocial: true,
             });
             return;
@@ -322,13 +322,13 @@ class Login extends Component {
             if (!status) {
               if (isEmail) {
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 1,
+                    showEmail: true,
                   isSocial: true,
                 });
                 return;
               }
               this.props.navigation.navigate('SignUp', {
-                pageNumber: 2,
+                pageNumber: false,
                 isSocial: true,
               });
               return;
@@ -429,13 +429,13 @@ class Login extends Component {
             if (!status) {
               if (isEmail) {
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 1,
+                    showEmail: true,
                   isSocial: true,
                 });
                 return;
               }
               this.props.navigation.navigate('SignUp', {
-                pageNumber: 2,
+                  showEmail: false,
                 isSocial: true,
               });
               return;
@@ -514,13 +514,13 @@ class Login extends Component {
               if (!status) {
                 if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
-                    pageNumber: 1,
+                      showEmail: true,
                     isSocial: true,
                   });
                   return;
                 }
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 2,
+                    showEmail: false,
                   isSocial: true,
                 });
                 return;
@@ -593,13 +593,13 @@ class Login extends Component {
               if (!status) {
                 if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
-                    pageNumber: 1,
+                      showEmail: true,
                     isSocial: true,
                   });
                   return;
                 }
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 2,
+                    showEmail: false,
                   isSocial: true,
                 });
                 return;
@@ -674,13 +674,13 @@ class Login extends Component {
             if (!status) {
                 if (isEmail) {
                     this.props.navigation.navigate('SignUp', {
-                        pageNumber: 1,
+                        showEmail: true,
                         isSocial: true,
                     });
                     return;
                 }
               this.props.navigation.navigate('SignUp', {
-                pageNumber: 2,
+                  showEmail: false,
                 isSocial: true,
               });
               return;
@@ -912,13 +912,13 @@ class Login extends Component {
                     if (!status) {
                         if (isEmail) {
                             this.props.navigation.navigate('SignUp', {
-                                pageNumber: 1,
+                                showEmail: true,
                                 isSocial: true,
                             });
                             return;
                         }
                         this.props.navigation.navigate('SignUp', {
-                            pageNumber: 2,
+                            showEmail: false,
                             isSocial: true,
                         });
                         return;
