@@ -226,7 +226,9 @@
       "suggestions":"Suggestions",
       "usernameExists":"Username already exists",
       "oldAndNewPasswordIsSameText":"Old password and new password should not be same",
-      "phoneNumberTextForPlaceholder":"Enter phone number"
+      "phoneNumberTextForPlaceholder":"Enter phone number",
+      "thisIsYourUsername":"This is your user name (You cannot change later)",
+      "youCanChangeItUsername":"You can change it now if you want."
     },
     "resetPassword":{
       "changePassword":"Change Password",

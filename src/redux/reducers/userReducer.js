@@ -231,29 +231,32 @@ export const kakaoRegister = (socialLoginData) => (dispatch) =>
   });
 
 export const appleRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
-    client
-      .post(`/xchat/apple-login-auth/`, socialLoginData)
-      .then((res) => {
-        if (res.token) {
-          AsyncStorage.setItem('socialToken', res.token);
-          // dispatch(getLoginSuccess(res.token))
-        }
-        resolve(res);
-      })
-      .catch((err) => {
-        // reject(err);
-        if (err.response) {
-          if (err.response.data) {
-            Toast.show({
-              title: 'Login Failed',
-              text: translate(err.response.data.toString()),
-              type: 'primary',
+    new Promise(function (resolve, reject) {
+        client
+            .post(`/xchat/apple-login-auth/`, socialLoginData)
+            .then((res) => {
+                if (res.token) {
+                    AsyncStorage.setItem('socialToken', res.token);
+                    // dispatch(getLoginSuccess(res.token))
+                }
+                resolve(res);
+            })
+            .catch((err) => {
+                // reject(err);
+                console.log('Error from Apple login', err)
+                if (err.response) {
+                    console.log('Error from Apple login', err.response)
+                    if (err.response.data) {
+                        console.log('Error from Apple login', err.response.data)
+                        Toast.show({
+                            title: 'Login Failed',
+                            text: translate(err.response.data.toString()),
+                            type: 'primary',
+                        });
+                    }
+                }
             });
-          }
-        }
-      });
-  });
+          })
 
 export const getAccessCodeKakao = () => (dispatch) =>
   new Promise(function (resolve, reject) {

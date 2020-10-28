@@ -34,6 +34,8 @@ import {
   userNameCheck,
   userRegister,
   socialRegistration,
+    userNewRegister,
+    socialRegistrationNew
 } from '../../redux/reducers/signupReducer';
 import Toast from '../../components/Toast';
 import WebViewClass from "../../components/WebView";
@@ -44,7 +46,8 @@ class SignUp extends Component {
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
-      currentPosition: this.props.navigation.state.params.pageNumber,
+      currentPosition: 2,
+      showEmail: this.props.navigation.state.params.showEmail !== null ? this.props.navigation.state.params.showEmail : true,
       //currentPosition: 2,
       isAgreeWithTerms: false,
 
@@ -249,15 +252,16 @@ class SignUp extends Component {
             text: translate('common.emailMustBeValid'),
             type: 'warning',
           });
-        } else if (this.state.email != this.state.emailconfirm) {
-          isValid = false;
-          this.setState({emailConfirmStatus: 'wrong'});
-          Toast.show({
-              title: translate('common.register'),
-              text: translate('pages.register.toastr.confirmEmailDoNotMatch'),
-              type: 'warning',
-          });
         }
+        // else if (this.state.email != this.state.emailconfirm) {
+        //   isValid = false;
+        //   this.setState({emailConfirmStatus: 'wrong'});
+        //   Toast.show({
+        //       title: translate('common.register'),
+        //       text: translate('pages.register.toastr.confirmEmailDoNotMatch'),
+        //       type: 'warning',
+        //   });
+        // }
         if (isValid) {
           this.props
             .userEmailCheck(emailconfirm)
@@ -316,12 +320,60 @@ class SignUp extends Component {
   }
 
   async onSignUpPress() {
-    const {username, password, passwordConfirm, isAgreeWithTerms} = this.state;
+    const {username, password, passwordConfirm, isAgreeWithTerms, email} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     let isValid = true;
     let regex = /^[a-zA-Z0-9- ]*$/
 
-      if (username.length <= 0) {
+      console.log('email', email.length)
+      if (email.length <= 0) {
+          isValid = false;
+          this.setState({emailStatus: 'wrong'});
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.toastr.enterEmailAddress'),
+              type: 'warning',
+          });
+      } else if (reg.test(email) === false) {
+          isValid = false;
+          this.setState({emailStatus: 'wrong'});
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('common.emailMustBeValid'),
+              type: 'warning',
+          });
+      }else if (password.length <= 0) {
+          isValid = false;
+          // this.setState({
+          //     passwordStatus: 'wrong',
+          //     passwordErr: 'messages.required',
+          // });
+          this.setState({
+              passwordStatus: 'wrong',
+              passwordErr: 'minLengthFailed',
+          });
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.minLengthPassword'),
+              type: 'warning',
+          });
+      }else if (password.length < 8 ) {
+          isValid = false;
+          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.minLengthPassword'),
+              type: 'warning',
+          });
+      }else if (password.length > 64) {
+          isValid = false;
+          this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.maxLengthPassword'),
+              type: 'warning',
+          });
+      }else if (username.length <= 0) {
       isValid = false;
         this.setState({
             userNameStatus: 'wrong',
@@ -339,146 +391,73 @@ class SignUp extends Component {
               text: translate('pages.register.enterValueInEnglish'),
               type: 'primary',
           });
-      }else  if (password.length <= 0) {
-        isValid = false;
-        // this.setState({
-        //     passwordStatus: 'wrong',
-        //     passwordErr: 'messages.required',
-        // });
-        this.setState({
-            passwordStatus: 'wrong',
-            passwordErr: 'minLengthFailed',
-        });
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.minLengthPassword'),
-            type: 'warning',
-        });
-    }else if (password.length < 8 ) {
-        isValid = false;
-        this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.minLengthPassword'),
-            type: 'warning',
-        });
-    }else if (password.length > 64) {
-        isValid = false;
-        this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.maxLengthPassword'),
-            type: 'warning',
-        });
-    }else if (passwordConfirm.length <= 0) {
-        isValid = false;
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('toastr.pleaseEnterYourConfirmPassword'),
-            type: 'warning',
-        });
-    }else if (password != passwordConfirm) {
-      isValid = false;
-      Toast.show({
-        title: translate('common.register'),
-        text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
-        type: 'warning',
-      });
-    }
-    if (isValid) {
-      if (isAgreeWithTerms) {
-        let userPhoneData = await AsyncStorage.getItem('phoneData');
-        let parsedData = JSON.parse(userPhoneData);
-        // let username = await AsyncStorage.getItem('username');
-        let email = await AsyncStorage.getItem('email');
-        let fcmToken = await AsyncStorage.getItem('fcmToken');
-        let invitationCode = await AsyncStorage.getItem('invitationCode');
-        let invitationCodeProps = this.props.navigation.state.params.invitationCode
-          let channelDataJson = await AsyncStorage.getItem('channelData');
-          let channelData = JSON.parse(channelDataJson);
-
-        let keys = ['phoneData', 'email', 'invitationCode'];
-        this.props.userNameCheck(username).then((res) => {
-          console.log('userNameCheck response',res)
-          if (res.status === false) {
-            // AsyncStorage.setItem('username', username);
-
-            let registerData = {
-              channel_invitation_code: '',
-              confirm_password: passwordConfirm,
-              email: email,
-              first_name: '',
-              invitation_code: invitationCodeProps ? invitationCodeProps : invitationCode ? invitationCode : '' ,
-              isAgree: isAgreeWithTerms,
-              last_name: '',
-              otp_code: parsedData.code,
-              password: password,
-              phone: parsedData.phone,
-              site_from: 'touku',
-              user_language: this.props.selectedLanguageItem.language_name === 'en' ? 1
-                  :this.props.selectedLanguageItem.language_name === 'ko' ? 2
-                      :this.props.selectedLanguageItem.language_name === 'ch' ? 3
-                          :this.props.selectedLanguageItem.language_name === 'ja' ? 4
-                          : 6
-                ,
-              username: username,
-              dev_id: fcmToken
-            };
-            this.props
-              .userRegister(registerData)
-              .then((res) => {
-                  console.log('userRegister response',res)
-                if (res.token) {
-                  AsyncStorage.multiRemove(keys);
-                  this.props.getUserProfile().then((res) => {
-                    if (res.id) {
-                      this.props.navigation.navigate('App');
-                      if (channelData) {
-                            this.props.setCurrentChannel(channelData)
-                            setTimeout(() => {
-                                this.props.navigation.navigate('ChannelInfo');
-                            }, 1000 );
-                        }
-                    }
-                  });
-                }
-                if (res.user) {
-                  Toast.show({
-                    title: translate('common.register'),
-                    text: 'User Already Registered',
-                    type: 'primary',
-                  });
-                }else if (res.message) {
-                    Toast.show({
-                        title: translate('common.register'),
-                        text: res.message,
-                        type: 'primary',
-                    });
-                }
-              })
-              .catch((err) => {
-                  console.log('userRegister response',err)
-                  // Toast.show({
-                  //     title: translate('common.register'),
-                  //     text: translate('common.somethingWentWrong'),
-                  //     type: 'primary',
-                  // });
-              });
-          } else {
-            Toast.show({
-              title: translate('common.register'),
-              text: translate('pages.register.toastr.usrenameExist'),
-              type: 'primary',
-            });
-          }
-        });
-      } else {
-        Toast.show({
-          title: translate('common.register'),
-          text: translate('pages.register.toastr.termsAndCondition'),
-          type: 'primary',
-        });
       }
+    if (isValid) {
+        if (isAgreeWithTerms) {
+                        let fcmToken = await AsyncStorage.getItem('fcmToken');
+                        let channelDataJson = await AsyncStorage.getItem('channelData');
+                        let channelData = JSON.parse(channelDataJson);
+                                let registerData = {
+                                    email: email,
+                                    is_agree: isAgreeWithTerms,
+                                    password: password,
+                                    user_language: this.props.selectedLanguageItem.language_name === 'en' ? 'en'
+                                        : this.props.selectedLanguageItem.language_name === 'ko' ? 'ko'
+                                            : this.props.selectedLanguageItem.language_name === 'ch' ? 'zh-hans'
+                                                : this.props.selectedLanguageItem.language_name === 'ja' ? 'ja'
+                                                    : 'zh-hant'
+                                    ,
+                                    username: username,
+                                    dev_id: fcmToken
+                                };
+
+                                console.log('registerData', registerData)
+                                this.props
+                                    .userNewRegister(registerData)
+                                    .then((res) => {
+                                        console.log('userRegister response', res)
+                                        if (res.token) {
+                                            this.props.getUserProfile().then((res) => {
+                                                if (res.id) {
+                                                    this.props.navigation.navigate('App');
+                                                    if (channelData) {
+                                                        this.props.setCurrentChannel(channelData)
+                                                        setTimeout(() => {
+                                                            this.props.navigation.navigate('ChannelInfo');
+                                                        }, 1000);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        if (res.user) {
+                                            Toast.show({
+                                                title: translate('common.register'),
+                                                text: 'User Already Registered',
+                                                type: 'primary',
+                                            });
+                                        } else if (res.message) {
+                                            Toast.show({
+                                                title: translate('common.register'),
+                                                text: res.message,
+                                                type: 'primary',
+                                            });
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.log('userRegister response', err)
+                                        // Toast.show({
+                                        //     title: translate('common.register'),
+                                        //     text: translate('common.somethingWentWrong'),
+                                        //     type: 'primary',
+                                        // });
+                                    });
+                    } else {
+            Toast.show({
+                title: translate('common.register'),
+                text: translate('pages.register.toastr.termsAndCondition'),
+                type: 'primary',
+            });
+        }
     }
   }
 
@@ -630,85 +609,159 @@ class SignUp extends Component {
   };
 
   async onSocialSignUp() {
-    const {username, email, isAgreeWithTerms, password, passwordConfirm} = this.state;
-      let invitationCode = await AsyncStorage.getItem('invitationCode');
-      let channelDataJson = await AsyncStorage.getItem('channelData');
-      let channelData = JSON.parse(channelDataJson);
-    let isValid = true;
+      const {username, password, passwordConfirm, isAgreeWithTerms, email, showEmail} = this.state;
+        let invitationCode = await AsyncStorage.getItem('invitationCode');
+        let channelDataJson = await AsyncStorage.getItem('channelData');
+        let channelData = JSON.parse(channelDataJson);
 
-    let regex = /^[a-zA-Z0-9- ]*$/
+      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      let isValid = true;
+      let regex = /^[a-zA-Z0-9- ]*$/
+
+      if (showEmail) {
+          if (email.length <= 0) {
+              isValid = false;
+              this.setState({emailStatus: 'wrong'});
+              Toast.show({
+                  title: translate('common.register'),
+                  text: translate('pages.register.toastr.enterEmailAddress'),
+                  type: 'warning',
+              });
+          } else if (reg.test(email) === false) {
+              isValid = false;
+              this.setState({emailStatus: 'wrong'});
+              Toast.show({
+                  title: translate('common.register'),
+                  text: translate('common.emailMustBeValid'),
+                  type: 'warning',
+              });
+          }
+      } else if (password.length <= 0) {
+          isValid = false;
+          this.setState({
+              passwordStatus: 'wrong',
+              passwordErr: 'minLengthFailed',
+          });
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.minLengthPassword'),
+              type: 'warning',
+          });
+      }else if (password.length < 8 ) {
+          isValid = false;
+          this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.minLengthPassword'),
+              type: 'warning',
+          });
+      }else if (password.length > 64) {
+          isValid = false;
+          this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.maxLengthPassword'),
+              type: 'warning',
+          });
+      }else if (username.length <= 0) {
+          isValid = false;
+          this.setState({
+              userNameStatus: 'wrong',
+              userNameErr: 'messages.required',
+          });
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.setting.toastr.pleaseEnterUsername'),
+              type: 'warning',
+          });
+      } else if(regex.test(username) == false) {
+          isValid =  false
+          Toast.show({
+              title: translate('common.register'),
+              text: translate('pages.register.enterValueInEnglish'),
+              type: 'primary',
+          });
+      }
 
 
-    if (username.length <= 0) {
-      isValid = false;
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.setting.toastr.pleaseEnterUsername'),
-            type: 'warning',
-        });
-    } else if(regex.test(username) == false) {
-        isValid =  false
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.enterValueInEnglish'),
-            type: 'primary',
-        });
-    }else  if (password.length <= 0) {
-        isValid = false;
-        // this.setState({
-        //     passwordStatus: 'wrong',
-        //     passwordErr: 'messages.required',
-        // });
-        this.setState({
-            passwordStatus: 'wrong',
-            passwordErr: 'minLengthFailed',
-        });
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.minLengthPassword'),
-            type: 'warning',
-        });
-    }else if (password.length < 8 ) {
-        isValid = false;
-        this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.minLengthPassword'),
-            type: 'warning',
-        });
-    }else if (password.length > 64) {
-        isValid = false;
-        this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.maxLengthPassword'),
-            type: 'warning',
-        });
-    }else if (passwordConfirm.length <= 0) {
-        isValid = false;
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('toastr.pleaseEnterYourConfirmPassword'),
-            type: 'warning',
-        });
-    }else if (password != passwordConfirm) {
-        isValid = false;
-        Toast.show({
-            title: translate('common.register'),
-            text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
-            type: 'warning',
-        });
-    }
+    // const {username, email, isAgreeWithTerms, password, passwordConfirm} = this.state;
+    //   let invitationCode = await AsyncStorage.getItem('invitationCode');
+    //   let channelDataJson = await AsyncStorage.getItem('channelData');
+    //   let channelData = JSON.parse(channelDataJson);
+    // let isValid = true;
+    //
+    // let regex = /^[a-zA-Z0-9- ]*$/
+    //
+    //
+    // if (username.length <= 0) {
+    //   isValid = false;
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('pages.setting.toastr.pleaseEnterUsername'),
+    //         type: 'warning',
+    //     });
+    // } else if(regex.test(username) == false) {
+    //     isValid =  false
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('pages.register.enterValueInEnglish'),
+    //         type: 'primary',
+    //     });
+    // }else  if (password.length <= 0) {
+    //     isValid = false;
+    //     // this.setState({
+    //     //     passwordStatus: 'wrong',
+    //     //     passwordErr: 'messages.required',
+    //     // });
+    //     this.setState({
+    //         passwordStatus: 'wrong',
+    //         passwordErr: 'minLengthFailed',
+    //     });
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('pages.register.minLengthPassword'),
+    //         type: 'warning',
+    //     });
+    // }else if (password.length < 8 ) {
+    //     isValid = false;
+    //     this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('pages.register.minLengthPassword'),
+    //         type: 'warning',
+    //     });
+    // }else if (password.length > 64) {
+    //     isValid = false;
+    //     this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('pages.register.maxLengthPassword'),
+    //         type: 'warning',
+    //     });
+    // }else if (passwordConfirm.length <= 0) {
+    //     isValid = false;
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('toastr.pleaseEnterYourConfirmPassword'),
+    //         type: 'warning',
+    //     });
+    // }else if (password != passwordConfirm) {
+    //     isValid = false;
+    //     Toast.show({
+    //         title: translate('common.register'),
+    //         text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
+    //         type: 'warning',
+    //     });
+    // }
 
     if (isValid) {
       if (isAgreeWithTerms) {
         let registrationData;
-        if (this.props.navigation.state.params.pageNumber === 1) {
+        if (showEmail) {
           registrationData = JSON.stringify({
             username: username,
               password: password,
-              confirm_password: passwordConfirm,
-            invitation_code: invitationCode ? invitationCode : '',
+              invitation_code: invitationCode ? invitationCode : '',
             email: email,
               site_from: 'touku',
           });
@@ -716,13 +769,12 @@ class SignUp extends Component {
           registrationData = JSON.stringify({
             username: username,
               password: password,
-              confirm_password: passwordConfirm,
-            invitation_code: invitationCode ? invitationCode : '',
+              invitation_code: invitationCode ? invitationCode : '',
               site_from: 'touku',
           });
         }
         console.log('RegisterData through SNS', registrationData)
-        this.props.socialRegistration(registrationData).then((res) => {
+        this.props.socialRegistrationNew(registrationData).then((res) => {
           console.log('JWT TOKEN=> ', JSON.stringify(res));
           if (res.token) {
             AsyncStorage.removeItem('invitationCode')
@@ -797,7 +849,7 @@ class SignUp extends Component {
 
 
   renderPage(page) {
-      const {userNameErr, passwordErr, confirmPasswordErr} = this.state
+      const {userNameErr, passwordErr, confirmPasswordErr, userNameStatus, emailStatus, passwordStatus, showEmail} = this.state
     switch (page) {
       case 0:
         return (
@@ -889,25 +941,83 @@ class SignUp extends Component {
       case 2:
         return (
           <View>
-            <Text
-              style={[
-                globalStyles.smallLightText,
-                {paddingHorizontal: Platform.isPad ? 50 : 20},
-              ]}>
-              {translate('common.registerStepThree')}
-            </Text>
+            {/*<Text*/}
+              {/*style={[*/}
+                {/*globalStyles.smallLightText,*/}
+                {/*{paddingHorizontal: Platform.isPad ? 50 : 20},*/}
+              {/*]}>*/}
+              {/*{translate('common.registerStepThree')}*/}
+            {/*</Text>*/}
             <View style={{marginTop: Platform.isPad ? 200 : 50}}>
+                {
+                    showEmail &&
+                    <Inputfield
+                        value={this.state.email}
+                        placeholder={translate('common.email') +' '+ '(example@gmail.com)'}
+                        returnKeyType={'next'}
+                        keyboardType={'email-address'}
+                        onChangeText={(email) => this.handleEmail(email)}
+                        onSubmitEditing={() => {
+                            this.password.focus();
+                        }}
+                        status={this.state.emailStatus}
+                    />
+                }
+
+
+                <Inputfield
+                    ref={(input) => {
+                        this.password = input;
+                    }}
+                    value={this.state.password}
+                    placeholder={translate('pages.register.loginPassword')}
+                    returnKeyType={'next'}
+                    onChangeText={(password) => this.handlePassword(password)}
+                    onSubmitEditing={() => {
+                        this.username.focus();
+                    }}
+                    status={this.state.passwordStatus}
+                    isEyeIcon={true}
+                />
+                {passwordErr !== null ? (
+                    <Text
+                        style={[
+                            globalStyles.smallLightText,
+                            {
+                                textAlign: 'left',
+                                marginTop: -10,
+                                marginStart: 10,
+                                marginBottom: 5,
+                            },
+                        ]}
+                    >
+                        {/*{passwordErr === 'messages.required' ? translate(passwordErr).replace(*/}
+                        {/*'[missing {{field}} value]',*/}
+                        {/*translate('pages.register.loginPassword')): passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')*/}
+                        {/*:  translate('pages.register.maxLengthPassword')}*/}
+                        {passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')
+                            :  translate('pages.register.maxLengthPassword')}
+
+                    </Text>
+                ) : null}
+
+                <View style={{marginTop: 50}}>
+                    <Text
+                    style={[
+                    globalStyles.smallLightText,
+                    {textAlign: 'left', marginStart: 10,marginBottom: 5,},
+                    ]}>{translate('pages.register.thisIsYourUsername')+'  '+translate('pages.register.youCanChangeItUsername')}
+                    </Text>
               <Inputfield
                   ref={(input) => {
                       this.username = input;
                   }}
                 value={this.state.username}
-                placeholder={translate('common.enterUsername')}
+                placeholder={translate('common.username')}
                 returnKeyType={'done'}
                 onChangeText={(username) => this.checkUserName(username.toLowerCase())}
                 // onChangeText={(username) => this.setState({ username })}
                 onSubmitEditing={() => {
-                  this.password.focus();
                   this.checkUserName(this.state.username);
                 }}
                   status={this.state.userNameStatus}
@@ -932,78 +1042,7 @@ class SignUp extends Component {
                 ) : null}
 
               {this.showSuggestions()}
-
-                <React.Fragment>
-                  <Inputfield
-                    ref={(input) => {
-                      this.password = input;
-                    }}
-                    value={this.state.password}
-                    placeholder={translate('pages.register.loginPassword')}
-                    returnKeyType={'next'}
-                    onChangeText={(password) => this.handlePassword(password)}
-                    onSubmitEditing={() => {
-                      this.passwordConfirm.focus();
-                    }}
-                    status={this.state.passwordStatus}
-                    isEyeIcon={true}
-                  />
-                    {passwordErr !== null ? (
-                        <Text
-                            style={[
-                                globalStyles.smallLightText,
-                                {
-                                    textAlign: 'left',
-                                    marginTop: -10,
-                                    marginStart: 10,
-                                    marginBottom: 5,
-                                },
-                            ]}
-                        >
-                            {/*{passwordErr === 'messages.required' ? translate(passwordErr).replace(*/}
-                                {/*'[missing {{field}} value]',*/}
-                                {/*translate('pages.register.loginPassword')): passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')*/}
-                                {/*:  translate('pages.register.maxLengthPassword')}*/}
-                                {passwordErr === 'minLengthFailed'? translate('pages.register.minLengthPassword')
-                                :  translate('pages.register.maxLengthPassword')}
-
-                        </Text>
-                    ) : null}
-                  <Inputfield
-                    ref={(input) => {
-                      this.passwordConfirm = input;
-                    }}
-                    value={this.state.passwordConfirm}
-                    placeholder={translate(
-                      'pages.register.reEnterLoginPassword',
-                    )}
-                    returnKeyType={'done'}
-                    onChangeText={(passwordConfirm) =>
-                      this.handleConfirmPassword(passwordConfirm)
-                    }
-                    // secureTextEntry={true}
-                    status={this.state.passwordConfirmStatus}
-                    isEyeIcon={true}
-                  />
-                    {confirmPasswordErr !== null ? (
-                        <Text
-                            style={[
-                                globalStyles.smallLightText,
-                                {
-                                    textAlign: 'left',
-                                    marginTop: -10,
-                                    marginStart: 10,
-                                    marginBottom: 5,
-                                },
-                            ]}
-                        >
-                            {confirmPasswordErr === 'messages.required' ? translate(confirmPasswordErr).replace(
-                                '[missing {{field}} value]',
-                                translate('pages.register.repeatLoginPassword')):
-                                translate('pages.register.toastr.confirmLoginPasswordDoNotMatch')}
-                                </Text>
-                    ) : null}
-                </React.Fragment>
+                </View>
                 <View
                     style={signUpStyles.termsContainer}>
                     <TouchableOpacity  onPress={() => this.onCheckRememberMe()} activeOpacity={1}>
@@ -1031,6 +1070,7 @@ class SignUp extends Component {
                     : this.onSocialSignUp()
                 }
                 loading={this.props.loading}
+                disabled={!this.state.isAgreeWithTerms || userNameErr !== null || userNameStatus === 'wrong' || emailStatus === 'wrong' || passwordStatus === 'wrong'}
               />
             </View>
           </View>
@@ -1064,18 +1104,18 @@ class SignUp extends Component {
                 paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
                 marginTop: 20,
               }}>
-              <View
-                style={{
-                  paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,
-                  marginBottom: 20,
-                }}>
-                <StepIndicator
-                  stepCount={3}
-                  customStyles={stepIndicatorStyle}
-                  currentPosition={currentPosition}
-                />
-              </View>
-              {this.renderPage(currentPosition)}
+              {/*<View*/}
+                {/*style={{*/}
+                  {/*paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,*/}
+                  {/*marginBottom: 20,*/}
+                {/*}}>*/}
+                {/*<StepIndicator*/}
+                  {/*stepCount={3}*/}
+                  {/*customStyles={stepIndicatorStyle}*/}
+                  {/*currentPosition={currentPosition}*/}
+                {/*/>*/}
+              {/*</View>*/}
+              {this.renderPage(2)}
             </View>
               {isWebViewVisible &&
               <WebViewClass
@@ -1110,6 +1150,8 @@ const mapDispatchToProps = {
   userRegister,
   getUserProfile,
   socialRegistration,
+    userNewRegister,
+    socialRegistrationNew
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
