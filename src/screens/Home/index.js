@@ -1092,6 +1092,7 @@ class Home extends Component {
   }
 
   onOpenChannelChats = (item) => {
+    console.log('Home -> onOpenChannelChats -> item', item);
     this.props.setCurrentChannel(item);
     this.props.navigation.navigate('ChannelChats');
   };
@@ -1181,7 +1182,20 @@ class Home extends Component {
   renderUserGroups() {
     const {groupLoading, userGroups} = this.props;
 
-    const filteredGroups = userGroups.filter(
+    const sortChannels = userGroups;
+    sortChannels.sort((a, b) =>
+      new Date(a.timestamp) <= new Date(a.joining_date)
+        ? new Date(a.timestamp)
+        : new Date(a.joining_date) <
+          new Date(b.timestamp) <=
+          new Date(b.joining_date)
+        ? new Date(b.timestamp)
+        : new Date(b.joining_date)
+        ? 1
+        : -1,
+    );
+
+    const filteredGroups = sortChannels.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
 
@@ -1209,7 +1223,7 @@ class Home extends Component {
                     : translate('pages.xchat.audio')
                   : ''
               }
-              date={item.timestamp}
+              date={item.joining_date}
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}
               unreadCount={item.unread_msg}

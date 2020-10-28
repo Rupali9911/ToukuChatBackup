@@ -7,7 +7,7 @@ import {
 } from '../../storage/Service';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
-
+export const UPDATE_CURRENT_CHANNEL_DATA = 'UPDATE_CURRENT_CHANNEL_DATA';
 export const GET_USER_CHANNELS_REQUEST = 'GET_USER_CHANNELS_REQUEST';
 export const GET_USER_CHANNELS_SUCCESS = 'GET_USER_CHANNELS_SUCCESS';
 export const GET_USER_CHANNELS_FAIL = 'GET_USER_CHANNELS_FAIL';
@@ -58,6 +58,16 @@ export default function (state = initialState, action) {
       return {
         ...state,
         currentChannel: action.payload,
+      };
+    case UPDATE_CURRENT_CHANNEL_DATA:
+      return {
+        ...state,
+        currentChannel: {
+          ...state.currentChannel,
+          channel_picture: action.payload.channel_picture,
+          description: action.payload.description,
+          name: action.payload.name,
+        },
       };
 
     //Get Following Channels
@@ -211,6 +221,14 @@ const setCurrentChannelData = (data) => ({
 
 export const setCurrentChannel = (channel) => (dispatch) =>
   dispatch(setCurrentChannelData(channel));
+
+const updateCurrentChannelData = (data) => ({
+  type: UPDATE_CURRENT_CHANNEL_DATA,
+  payload: data,
+});
+
+export const updateCurrentChannel = (channel) => (dispatch) =>
+  dispatch(updateCurrentChannelData(channel));
 
 //Set Unread Friend Msgs Count
 const setUnreadChannelMsgsCounts = (counts) => ({

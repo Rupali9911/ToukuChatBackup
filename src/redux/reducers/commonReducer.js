@@ -104,6 +104,7 @@ export const setCommonChatConversation = () => (dispatch) =>
           sender_display_name: item.sender_display_name,
           mentions: item.mentions,
           reply_to: item.reply_to,
+          joining_date: item.joining_date,
         };
         array = [...array, i];
       });

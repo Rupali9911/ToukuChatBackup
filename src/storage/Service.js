@@ -525,38 +525,52 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
   }
 
   if (array.length > 0) {
-    if(array[0].last_msg !== null &&
-      array[0].last_msg.id !== message.id){
-        realm.write(() => {
-          realm.create(
-            'channels',
-            {
-              id: id,
-              last_msg: last_msg,
-              unread_msg: unreadCount,
-            },
-            'modified',
-          );
-        });
-      } else if(array[0].last_msg == null){
-        realm.write(() => {
-          realm.create(
-            'channels',
-            {
-              id: id,
-              last_msg: last_msg,
-              unread_msg: unreadCount,
-            },
-            'modified',
-          );
-        });
-      }
+    if (array[0].last_msg !== null && array[0].last_msg.id !== message.id) {
+      realm.write(() => {
+        realm.create(
+          'channels',
+          {
+            id: id,
+            last_msg: last_msg,
+            unread_msg: unreadCount,
+          },
+          'modified',
+        );
+      });
+    } else if (array[0].last_msg == null) {
+      realm.write(() => {
+        realm.create(
+          'channels',
+          {
+            id: id,
+            last_msg: last_msg,
+            unread_msg: unreadCount,
+          },
+          'modified',
+        );
+      });
+    }
   }
 };
 
 export const updateChannelTotalMember = (id, total_member) => {
   realm.write(() => {
     realm.create('channels', {id: id, total_member: total_member}, 'modified');
+  });
+};
+
+export const updateChannelDetails = (id, data) => {
+  realm.write(() => {
+    realm.create(
+      'channels',
+      {
+        id: id,
+        channel_picture: data.channel_picture,
+        description: data.description,
+        name: data.name,
+      },
+      'modified',
+    );
   });
 };
 
@@ -618,6 +632,7 @@ export const setGroups = async (channels) => {
                 : item.mentions
               : [],
             reply_to: item.reply_to,
+            joining_date: item.joining_date,
           },
           'modified',
         );
@@ -647,6 +662,7 @@ export const setGroups = async (channels) => {
               : item.mentions
             : [],
           reply_to: item.reply_to,
+          joining_date: item.joining_date,
         });
       });
     }

@@ -3,10 +3,7 @@ import {Images, Icons} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
 
-const {
-  width: SCREEN_WIDTH,
-  height: SCREEN_HEIGHT,
-} = Dimensions.get('window');
+const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 // based on iphone 5s's scale
 const scale = SCREEN_WIDTH / 320;
@@ -59,7 +56,7 @@ export function getImage(source) {
     typeof source === null ||
     source === undefined
   ) {
-    return Images.image_gallery;
+    return Images.channel_background;
   } else {
     return {uri: source};
   }
@@ -81,22 +78,22 @@ export const eventService = {
   getMessage: () => subject.asObservable(),
 };
 
-export function getParamsFromURL (url){
-    let regex = /[?&]([^=#]+)=([^&#]*)/g,
-        params = {},
-        match
-    while ((match = regex.exec(url))) {
-        params[match[1]] = match[2]
-        console.log(match[1], match[2])
-    }
-    return params
+export function getParamsFromURL(url) {
+  let regex = /[?&]([^=#]+)=([^&#]*)/g,
+    params = {},
+    match;
+  while ((match = regex.exec(url))) {
+    params[match[1]] = match[2];
+    console.log(match[1], match[2]);
+  }
+  return params;
 }
 
 export function normalize(size) {
-  const newSize = size * scale 
+  const newSize = size * scale;
   if (Platform.OS === 'ios') {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize))
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
   } else {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2
+    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
   }
 }

@@ -42,6 +42,7 @@ import {
   getLocalFollowingChannels,
   setChannelConversation,
   readAllChannelMessages,
+  updateCurrentChannel,
 } from '../../redux/reducers/channelReducer';
 import {setFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
@@ -121,6 +122,7 @@ import {
   updateLastEventId,
   updateAllFriendMessageRead,
   updateGroupnReadCount,
+  updateChannelDetails,
 } from '../../storage/Service';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
@@ -423,6 +425,9 @@ class Chat extends Component {
       case SocketEvents.UPLOAD_AVTAR:
         this.updateUserAvtar(message);
         break;
+      case SocketEvents.UPDATE_CHANNEL_DETAIL:
+        this.updateChannelDetail(message);
+        break;
       case SocketEvents.MESSAGE_EDITED_IN_THREAD:
         break;
       case SocketEvents.DELETE_MESSAGE_IN_THREAD:
@@ -442,6 +447,31 @@ class Chat extends Component {
     }
   }
 
+  updateChannelDetail(message) {
+    console.log(
+      'updateChannelDetail -> message.text.data.message_details',
+      message.text.data.message_details,
+    );
+    const {currentChannel} = this.props;
+    if (message.text.data.type === SocketEvents.UPDATE_CHANNEL_DETAIL) {
+      updateChannelDetails(
+        message.text.data.message_details.id,
+        message.text.data.message_details,
+      );
+      this.props.getLocalFollowingChannels().then(() => {
+        this.props.setCommonChatConversation();
+      });
+
+      if (
+        this.props.currentRouteName == 'ChannelChats' ||
+        (this.props.currentRouteName == 'ChannelInfo' &&
+          currentChannel &&
+          message.text.data.message_details.id == currentChannel.id)
+      ) {
+        this.props.updateCurrentChannel(message.text.data.message_details);
+      }
+    }
+  }
   updateUserAvtar(message) {
     const {userData, currentFriend} = this.props;
     if (message.text.data.type === SocketEvents.UPLOAD_AVTAR) {
@@ -796,7 +826,7 @@ class Chat extends Component {
   //Message in Following Channel
   messageInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
-    console.log('message_data',JSON.stringify(message))
+    console.log('message_data', JSON.stringify(message));
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       var channel = getChannelsById(message.text.data.message_details.channel);
       if (channel && channel.length > 0) {
@@ -837,7 +867,9 @@ class Chat extends Component {
           this.props.getLocalFollowingChannels().then((res) => {
             this.props.setCommonChatConversation();
           });
-        } else if (message.text.data.message_details.from_user.id == userData.id) {
+        } else if (
+          message.text.data.message_details.from_user.id == userData.id
+        ) {
           // this.getFollowingChannels();
           var result = getChannelsById(
             message.text.data.message_details.channel,
@@ -2144,6 +2176,7 @@ const mapDispatchToProps = {
   markFriendMsgsRead,
   readAllChannelMessages,
   markGroupConversationRead,
+  updateCurrentChannel,
 };
 
 export default connect(

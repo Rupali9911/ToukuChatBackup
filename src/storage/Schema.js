@@ -245,6 +245,7 @@ export const Groups = {
       objectType: 'reply_to',
       default: null,
     },
+    joining_date: 'string?',
   },
 };
 
