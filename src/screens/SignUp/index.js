@@ -290,6 +290,7 @@ class SignUp extends Component {
   checkUserName(username) {
       let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
       let isValid = true;
+      let regex = /^[a-zA-Z0-9- ]*$/
       if (username.length <= 0) {
           console.log('username.length', username.length )
           isValid = false;
@@ -298,6 +299,19 @@ class SignUp extends Component {
               userNameErr: 'messages.required',
           });
       }
+      // else if(regex.test(username) == false) {
+      //     isValid =  false
+      //     this.setState({
+      //         userNameStatus: 'wrong',
+      //         userNameErr: 'null',
+      //     });
+      //
+      //     // Toast.show({
+      //     //     title: translate('common.register'),
+      //     //     text: translate('pages.register.enterValueInEnglish'),
+      //     //     type: 'primary',
+      //     // });
+      // }
       if (isValid) {
           this.setState({ userNameErr: null });
       }
@@ -963,8 +977,6 @@ class SignUp extends Component {
                         status={this.state.emailStatus}
                     />
                 }
-
-
                 <Inputfield
                     ref={(input) => {
                         this.password = input;
@@ -1070,7 +1082,8 @@ class SignUp extends Component {
                     : this.onSocialSignUp()
                 }
                 loading={this.props.loading}
-                disabled={!this.state.isAgreeWithTerms || userNameErr !== null || userNameStatus === 'wrong' || emailStatus === 'wrong' || passwordStatus === 'wrong'}
+                disabled={!this.state.isAgreeWithTerms || userNameErr !== null || userNameStatus === 'wrong' || emailStatus === 'wrong' ||
+                passwordStatus === 'wrong' || passwordErr !== null}
               />
             </View>
           </View>
