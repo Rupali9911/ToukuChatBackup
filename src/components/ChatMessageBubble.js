@@ -232,14 +232,14 @@ class ChatMessageBubble extends Component {
           onDismiss={closeMenu}
           anchor={
             !isUser ? (
-              <View style={styles.talkBubble}>
+              <View style={[styles.talkBubble,message.hyperlink?{marginVertical:5}:{}]}>
                 <View style={{marginLeft: 5}}>
-                  <View
+                  {message.hyperlink?null:<View
                     style={[
                       styles.talkBubbleAbsoluteLeft,
                       message.is_unsent && {borderRightColor: Colors.gray},
                     ]}
-                  />
+                  />}
                   {message.is_unsent ? (
                     <View
                       activeOpacity={0.8}
@@ -266,6 +266,7 @@ class ChatMessageBubble extends Component {
                     <TouchableOpacity
                       activeOpacity={0.8}
                       style={[
+                        message.hyperlink?{marginLeft:-15}:
                         {
                           minHeight: 40,
                           backgroundColor: Colors.white,
@@ -285,7 +286,9 @@ class ChatMessageBubble extends Component {
                         message.msg_type === 'doc'
                           ? this.onDocumentPress(message.message_body)
                           : message.msg_type === 'image'
-                          ? this.onImagePress(
+                          ? message.hyperlink?
+                            Linking.openURL(message.hyperlink)
+                          :this.onImagePress(
                               message.thumbnail === ''
                                 ? message.message_body
                                 : message.thumbnail,
@@ -300,7 +303,8 @@ class ChatMessageBubble extends Component {
                               ? message.message_body
                               : message.thumbnail
                           }
-                          borderRadius={borderRadius}
+                          isHyperlink={message.hyperlink}
+                          borderRadius={message.hyperlink?0:borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
@@ -439,8 +443,7 @@ class ChatMessageBubble extends Component {
                       style={{
                         flex: 1,
                         justifyContent: 'center',
-                        paddingHorizontal:
-                          message.msg_type === 'image' ? 5 : 10,
+                        paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
                         paddingVertical: message.msg_type === 'image' ? 5 : 10,
                       }}
                       onLongPress={() => {

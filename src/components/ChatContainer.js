@@ -257,7 +257,7 @@ class ChatContainer extends Component {
                           ? item.to_user &&
                             item.to_user.id == this.props.userData.id
                             ? false
-                            : true
+                            : item.schedule_post?false:true
                           : false
                       }
                       time={new Date(item.created)}

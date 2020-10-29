@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image'
+
+const WIDTH = Dimensions.get('window').width;
 
 export default class ScalableImage extends Component {
   constructor(props) {
@@ -23,12 +25,12 @@ export default class ScalableImage extends Component {
   };
 
   render() {
-    const { src, borderRadius } = this.props;
+    const { src, borderRadius, isHyperlink } = this.props;
     const { ratio } = this.state;
     return (
         <FastImage
             style={{
-                width: '100%',
+                width: isHyperlink?WIDTH:'100%',
                 aspectRatio: ratio,
                 borderRadius: borderRadius ? borderRadius : 0,
             }}
