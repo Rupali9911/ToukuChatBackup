@@ -288,35 +288,38 @@ class SignUp extends Component {
   }
 
   checkUserName(username) {
-      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
       let isValid = true;
       let regex = /^[a-zA-Z0-9- ]*$/
+      username = username.replace(/\s/g, '')
+      this.setState({username: username});
       if (username.length <= 0) {
           console.log('username.length', username.length )
           isValid = false;
           this.setState({
               userNameStatus: 'normal',
               userNameErr: 'messages.required',
+              userNameSuggestions: []
           });
+          return
+      } else if(regex.test(username) == false) {
+          isValid =  false
+          this.setState({
+              userNameStatus: 'wrong',
+              userNameErr: 'notValid',
+              userNameSuggestions: []
+          });
+          return
+          // Toast.show({
+          //     title: translate('common.register'),
+          //     text: translate('pages.register.enterValueInEnglish'),
+          //     type: 'primary',
+          // });
       }
-      // else if(regex.test(username) == false) {
-      //     isValid =  false
-      //     this.setState({
-      //         userNameStatus: 'wrong',
-      //         userNameErr: 'null',
-      //     });
-      //
-      //     // Toast.show({
-      //     //     title: translate('common.register'),
-      //     //     text: translate('pages.register.enterValueInEnglish'),
-      //     //     type: 'primary',
-      //     // });
-      // }
-      if (isValid) {
+      //if (isValid) {
           this.setState({ userNameErr: null });
-      }
+     // }
 
-    this.setState({username: username.replace(/\s/g, '')});
+
       this.props.userNameCheck(username).then((res) => {
           console.log('userNameCheck res',res, username )
           if (res.status === false) {
@@ -1049,7 +1052,7 @@ class SignUp extends Component {
                             },
                         ]}
                     >
-                        {translate('pages.register.minLengthUserName')}
+                        {userNameErr === 'messages.required'? translate('pages.register.minLengthUserName') : translate('pages.register.enterValueInEnglish')}
                     </Text>
                 ) : null}
 

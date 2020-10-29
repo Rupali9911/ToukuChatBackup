@@ -325,17 +325,21 @@ export const socialRegistration = (socialRegistrationData) => (dispatch) =>
 
 export const socialRegistrationNew = (socialRegistrationData) => (dispatch) =>
   new Promise(function (resolve, reject) {
+      dispatch(getRegisterRequest());
     client
       .post('/xchat/update-touku-username/', socialRegistrationData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);
           AsyncStorage.removeItem('socialToken');
-          // dispatch(getLoginSuccess(res.token))
+            dispatch(getRegisterSuccess());
+        }else{
+            dispatch(getRegisterFailure());
         }
         resolve(res);
       })
       .catch((err) => {
+          dispatch(getRegisterFailure());
         reject(err);
       });
 
