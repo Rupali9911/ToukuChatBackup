@@ -90,6 +90,7 @@ import {
   getLocalUserFriends,
   updateFriendOnlineStatus,
   updateFriendAvtar,
+  updateConversationUserAvtar,
   updateFriendTypingStatus,
   getGroups,
   setGroups,
@@ -428,6 +429,9 @@ class Chat extends Component {
       case SocketEvents.UPDATE_CHANNEL_DETAIL:
         this.updateChannelDetail(message);
         break;
+      case SocketEvents.CREATE_NEW_CHANNEL:
+        this.createNewChannel(message);
+        return;
       case SocketEvents.MESSAGE_EDITED_IN_THREAD:
         break;
       case SocketEvents.DELETE_MESSAGE_IN_THREAD:
@@ -917,9 +921,6 @@ class Chat extends Component {
           });
           setChannelChatConversation([item]);
           updateChannelLastMsg(item.channel, item, channels[0].unread_msg + 1);
-          this.props.getLocalFollowingChannels().then(() => {
-            this.props.setCommonChatConversation();
-          });
         }
         if (
           this.props.currentRouteName == 'ChannelChats' &&
@@ -929,6 +930,9 @@ class Chat extends Component {
           this.getLocalChannelConversations();
         }
       }
+      this.props.getLocalFollowingChannels().then(() => {
+        this.props.setCommonChatConversation();
+      });
     }
   }
 
@@ -1054,7 +1058,17 @@ class Chat extends Component {
   onAddChannelMemmber(message) {
     if (message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER) {
       setChannels([message.text.data.message_details]);
-      updateChannelUnReadCountById(message.text.data.message_details.id, 1);
+      // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
+      this.props.getLocalFollowingChannels().then((res) => {
+        this.props.setCommonChatConversation();
+      });
+    }
+  }
+
+  createNewChannel(message) {
+    if (message.text.data.type === SocketEvents.CREATE_NEW_CHANNEL) {
+      setChannels([message.text.data.message_details]);
+      // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });

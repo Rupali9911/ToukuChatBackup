@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     // backgroundColor: Colors.home_header,
   },
   backIcon: {
-    height: 15
+    height: 15,
   },
 });
 

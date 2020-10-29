@@ -5,7 +5,7 @@ export const ConversationUser = {
     display_name: 'string?',
     email: 'string?',
     id: {type: 'int', default: 0},
-    is_online: 'bool',
+    is_online: 'bool?',
     username: 'string?',
   },
 };

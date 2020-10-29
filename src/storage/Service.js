@@ -243,6 +243,29 @@ export const updateFriendMessageById = (id, text, type) => {
   });
 };
 
+export const updateConversationUserAvtar = (id, data) => {
+  console.log('updateConversationUserAvtar -> id, data', id, data);
+
+  var results = realm.objects('conversation_user').filtered(`id == ${id}`);
+
+  for (let chatUser of results) {
+    realm.write(() => {
+      realm.create(
+        'conversation_user',
+        {id: chatUser.id, avatar: data.avatar},
+        'modified',
+      );
+    });
+  }
+  // realm.write(() => {
+  //   realm.create(
+  //     'conversation_user',
+  //     {id: id, avatar: data.avatar},
+  //     'modified',
+  //   );
+  // });
+};
+
 export const deleteFriendMessageById = async (id) => {
   var message = realm
     .objects('chat_conversation_friend')
@@ -411,10 +434,16 @@ export const setChannels = (channels) => {
             description: item.description,
             chat: item.chat,
             channel_picture: item.channel_picture,
-            last_msg: item.last_msg,
+            last_msg: item.last_msg
+              ? Array.isArray(item.last_msg)
+                ? item.last_msg.lenght
+                  ? item.last_msg[0]
+                  : null
+                : item.last_msg
+              : null,
             is_pined: item.is_pined ? item.is_pined : false,
             created: item.created,
-            joining_date: item.joining_date,
+            joining_date: item.joining_date ? item.joining_date : item.created,
           },
           'modified',
         );
@@ -429,10 +458,16 @@ export const setChannels = (channels) => {
           description: item.description,
           chat: item.chat,
           channel_picture: item.channel_picture,
-          last_msg: item.last_msg,
+          last_msg: item.last_msg
+            ? Array.isArray(item.last_msg)
+              ? item.last_msg.lenght
+                ? item.last_msg[0]
+                : null
+              : item.last_msg
+            : null,
           is_pined: item.is_pined ? item.is_pined : false,
           created: item.created,
-          joining_date: item.joining_date,
+          joining_date: item.joining_date ? item.joining_date : item.created,
         });
       });
     }

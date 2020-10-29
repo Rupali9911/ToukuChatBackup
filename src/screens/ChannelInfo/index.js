@@ -166,12 +166,14 @@ class ChannelInfo extends Component {
     this.props
       .unfollowChannel(this.props.currentChannel.id, user)
       .then((res) => {
+        console.log('ChannelInfo -> onConfirm -> res', res);
         if (res.status === true) {
           this.toggleConfirmationModal();
-          this.props.navigation.goBack();
+          this.props.navigation.popToTop();
         }
       })
       .catch((err) => {
+        console.log('ChannelInfo -> onConfirm -> err', err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
