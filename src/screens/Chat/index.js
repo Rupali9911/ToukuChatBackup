@@ -264,6 +264,7 @@ class Chat extends Component {
 
   componentWillUnmount() {
     // this.SingleSocket && this.SingleSocket.closeSocket();
+    this.events.unsubscribe();
   }
 
   _orientationDidChange = (orientation) => {
@@ -734,12 +735,14 @@ class Chat extends Component {
           this.getLocalGroupConversation();
           this.markGroupMsgsRead();
           unreadCount = 0;
-          this.SingleSocket.sendMessage(JSON.stringify({
-            "type": SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
-            "data": {
-              "group_id": this.props.currentGroup.group_id
-            }
-          }));
+          this.SingleSocket.sendMessage(
+            JSON.stringify({
+              type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
+              data: {
+                group_id: this.props.currentGroup.group_id,
+              },
+            }),
+          );
         }
 
         updateLastMsgGroups(
