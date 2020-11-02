@@ -38,6 +38,36 @@ export default class PostCardHeader extends Component {
     this.setState({visible: false});
   };
 
+    getDate = (date) => {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        const msgDate = new Date(date);
+        if (today.getDate() === msgDate.getDate() &&
+            today.getMonth() === msgDate.getMonth() &&
+            today.getFullYear() === msgDate.getFullYear()) {
+            //console.log('GroupListItem -> getDate -> date', date);
+            return `${msgDate.getHours()}:${
+                msgDate.getMinutes() < 10
+                    ? '0' + msgDate.getMinutes()
+                    : msgDate.getMinutes()
+                }`;
+        }
+        if (
+            yesterday.getDate() === msgDate.getDate() &&
+            yesterday.getMonth() === msgDate.getMonth() &&
+            yesterday.getFullYear() === msgDate.getFullYear()
+        ){
+            return translate('common.yesterday');
+        }
+
+        if(today.getFullYear() === msgDate.getFullYear()){
+            return moment(date).format('MM/DD');
+        }else{
+            return moment(date).format('MM/DD/YY');
+        }
+    };
+
   render() {
     const {post, menuItems, isChannelTimeline} = this.props;
     return (
@@ -67,7 +97,7 @@ export default class PostCardHeader extends Component {
             <RoundedImage
               source={getImage(post.channel_picture_thumb)}
               isRounded={false}
-              size={35}
+              size={40}
             />
           )}
           {/*<RoundedImage*/}
@@ -84,8 +114,10 @@ export default class PostCardHeader extends Component {
           }}>
           <Text
             style={{
-              fontFamily: Fonts.regular,
+              //fontFamily: Fonts.smallNunitoRegularText,
               color: Colors.black,
+                fontSize: 15,
+                fontFamily: Fonts.nunitoSansRegular,
             }}>
             {post.channel_name}
           </Text>
@@ -93,9 +125,10 @@ export default class PostCardHeader extends Component {
             style={{
               fontFamily: Fonts.extralight,
               color: Colors.gray_dark,
-              fontSize: 12,
+              fontSize: 13,
+                marginTop: -5
             }}>
-            {moment(post.created).format('MM/DD')}
+              {this.getDate(post.created)}
           </Text>
         </View>
         {isChannelTimeline ? null : (
@@ -114,8 +147,8 @@ export default class PostCardHeader extends Component {
                     : translate('pages.xchat.follow')
                 }
                 type={'primaryNew'}
-                height={'80%'}
-                fontType={'smallRegularText'}
+                height={'85%'}
+                fontType={'normalRegular15Text'}
               />
             </View>
 

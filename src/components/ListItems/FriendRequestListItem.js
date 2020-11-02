@@ -52,7 +52,7 @@ export default class FriendRequestListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: 13,
+                      //fontSize: 13,
                       fontWeight: '400',
                     },
                   ]}>
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+      backgroundColor: 'white'
   },
   firstView: {
     flexDirection: 'row',

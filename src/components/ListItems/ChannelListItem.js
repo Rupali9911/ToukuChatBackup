@@ -68,7 +68,7 @@ export default class ChannelListItem extends Component {
                   Colors.gradient_3,
                 ]}
                 style={styles.squareImage}>
-                <Text style={globalStyles.normalRegularText}>
+                <Text style={globalStyles.smallNunitoRegularText}>
                   {title && title.charAt(0) && title.charAt(0).toUpperCase()}
                   {/* {secondUpperCase} */}
                 </Text>
@@ -88,7 +88,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: normalize(12),
+                      //fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -100,7 +100,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: normalize(11),
+                     // fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>
@@ -114,7 +114,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: normalize(9),
+                        fontSize: 12,
                       fontWeight: '400',
                     },
                   ]}>
@@ -127,7 +127,7 @@ export default class ChannelListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: normalize(9),
+                          fontSize: 12,
                       },
                     ]}>
                     {unreadCount}

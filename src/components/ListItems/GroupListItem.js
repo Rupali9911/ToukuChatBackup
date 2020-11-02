@@ -21,8 +21,8 @@ export default class GroupListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate() && 
-    today.getMonth() === msgDate.getMonth() && 
+    if (today.getDate() === msgDate.getDate() &&
+    today.getMonth() === msgDate.getMonth() &&
     today.getFullYear() === msgDate.getFullYear()) {
       //console.log('GroupListItem -> getDate -> date', date);
       return `${msgDate.getHours()}:${
@@ -33,12 +33,12 @@ export default class GroupListItem extends Component {
     }
     if (
       yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getMonth() === msgDate.getMonth() &&
       yesterday.getFullYear() === msgDate.getFullYear()
     ){
       return translate('common.yesterday');
     }
-    
+
     if(today.getFullYear() === msgDate.getFullYear()){
       return moment(date).format('MM/DD');
     }else{
@@ -89,7 +89,7 @@ export default class GroupListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: normalize(12),
+                      //fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -102,7 +102,7 @@ export default class GroupListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: normalize(11),
+                      //fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>
@@ -116,7 +116,7 @@ export default class GroupListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: '400',
                     },
                   ]}>
@@ -129,7 +129,7 @@ export default class GroupListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: 11,
+                        fontSize: 12,
                       },
                     ]}>
                     {unreadCount}

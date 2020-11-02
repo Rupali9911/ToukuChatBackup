@@ -88,7 +88,7 @@ export default class HomeHeader extends Component {
               <Text
                 style={[
                   globalStyles.normalRegularText,
-                  {fontWeight: '300', fontSize: 16, color: Colors.white},
+                  {fontWeight: '300', fontSize: 18, color: Colors.white},
                 ]}>
                 {title}
               </Text>

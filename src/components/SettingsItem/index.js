@@ -126,7 +126,7 @@ render() {
                 <View style={{width: 30}}>
                     {conditionalRender()}
                 </View>
-                <Text style={[globalStyles.smallRegularText, {color: Colors.black, fontWeight: '300', fontSize:normalize(11)}]}>
+                <Text style={[globalStyles.smallNunitoRegularFW300Text, {color: Colors.black, fontWeight: '300'}]}>
                     {title}
                 </Text>
             </View>

@@ -799,7 +799,7 @@ class LoginSignUp extends Component {
                     onPress={() => this.onLoginPress()}
                     fontType={
                       selectedLanguageItem.language_name === 'ja'
-                        ? 'bigSemiBoldText'
+                        ? 'normalRegular22Text'
                         : ''
                     }
                   />
@@ -809,7 +809,7 @@ class LoginSignUp extends Component {
                     onPress={() => this.onSignUpPress()}
                     fontType={
                       selectedLanguageItem.language_name === 'ja'
-                        ? 'bigSemiBoldText'
+                        ? 'normalRegular22Text'
                         : ''
                     }
                   />
@@ -876,7 +876,7 @@ class LoginSignUp extends Component {
                         marginTop: 10,
                         marginBottom: 10,
                         backgroundColor: 'white',
-                        height: 44,
+                        height: 48,
                         borderRadius: 10,
                         alignItems: 'center',
                         justifyContent: 'center',

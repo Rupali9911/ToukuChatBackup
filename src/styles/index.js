@@ -13,11 +13,12 @@ export const globalStyles = StyleSheet.create({
 
   //Light Texts for the App
   normalRegularText17: {
-    fontSize: 19,
-    fontFamily: Fonts.arialRegular,
+    fontSize: 17,
+    fontFamily: Fonts.regular,
     textAlign: 'center',
     color: 'black',
     marginLeft: 10,
+      fontWeight: '300'
   },
 
   smallLightText10: {
@@ -42,7 +43,7 @@ export const globalStyles = StyleSheet.create({
   },
 
   smallLightTextTab: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
@@ -61,14 +62,31 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
-
+    smallNunitoRegular17Text: {
+        fontSize: 17,
+        fontFamily: Fonts.nunitoSansRegular,
+        color: Colors.white,
+        textAlign: 'center',
+    },
   smallNunitoRegularText: {
     fontSize: 15,
     fontFamily: Fonts.nunitoSansRegular,
     color: Colors.white,
     textAlign: 'center',
   },
-
+    smallNunitoRegularFW300Text: {
+        fontSize: 15,
+        fontFamily: Fonts.nunitoSansRegular,
+        color: Colors.white,
+        textAlign: 'center',
+        fontWeight: '300',
+    },
+    normalRegular15Text: {
+        fontSize: 15,
+        fontFamily: Fonts.regular,
+        color: Colors.white,
+        textAlign: 'center',
+    },
   normalRegularText: {
     fontSize: 17,
     fontFamily: Fonts.regular,
@@ -90,6 +108,13 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
+    normalRegular22Text: {
+        fontSize: 20,
+        fontFamily: Fonts.regular,
+        color: Colors.white,
+        textAlign: 'center',
+        fontWeight: '400',
+    },
   normalSemiBoldText: {
     fontSize: 17,
     fontFamily: Fonts.semibold,
@@ -123,8 +148,8 @@ export const globalStyles = StyleSheet.create({
   },
 
   iconStyleTab: {
-    width: 26,
-    height: 26,
+    width: 30,
+    height: 30,
     resizeMode: 'contain',
   },
 

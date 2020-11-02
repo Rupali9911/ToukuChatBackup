@@ -1643,8 +1643,10 @@ class Chat extends Component {
   }
 
   onSearch = async (text) => {
+    console.log('onSearch called')
     await this.setState({searchText: text, commonConversation: []});
-    // this.getCommonChat();
+     //this.getCommonChat();
+      this.renderCommonChat();
   };
 
   onOpenChannelChats = (item) => {
@@ -1991,14 +1993,15 @@ class Chat extends Component {
     // if (this.props.currentRouteName !== 'ChatTab') {
     //   return;
     // }
-    let commonConversation = commonChat.filter(
-      createFilter(this.state.searchText, [
-        'name',
-        'group_name',
-        'display_name',
-      ]),
-    );
-    commonConversation = this.sortList();
+      console.log('renderCommonChat with text', this.state.searchText)
+    let commonConversation = this.sortList();
+      commonConversation = commonChat.filter(
+          createFilter(this.state.searchText, [
+              'name',
+              'group_name',
+              'display_name',
+          ]),
+      );
     if (commonConversation.length === 0 && isLoading) {
       return <ListLoader />;
     } else if (commonConversation.length > 0 && isLoading) {

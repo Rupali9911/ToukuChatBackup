@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {
-  View,
-  ImageBackground,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
+    View,
+    ImageBackground,
+    Text,
+    Image,
+    TouchableOpacity,
+    FlatList, Platform, TextInput,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -1462,7 +1462,7 @@ class Home extends Component {
                   color: Colors.black,
                   marginStart: 10,
                   fontSize: 14,
-                  fontWeight: '300',
+                  fontWeight: '600',
                 },
               ]}>
               {userConfig.display_name}
@@ -1588,26 +1588,44 @@ const DropdownHeader = (props) => {
         paddingHorizontal: 15,
       }}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Text
-          style={[
-            globalStyles.smallRegularText,
-            {
-              fontSize: normalize(10),
-              fontWeight: '400',
-              color: '#fff',
-              textShadowColor: 'rgba(0,0,0,.004)',
-              textShadowOffset: {width: 1, height: 1},
-              textShadowRadius: 10,
-            },
-          ]}>
-          {title}
-        </Text>
+          {Platform.OS === 'ios' ?
+          <TextInput
+              pointerEvents="none"
+              editable={false}
+              style={[
+                  globalStyles.smallRegularText,
+                  {
+                      fontSize: 14,
+                      fontWeight: '400',
+                      color: '#fff',
+                      textShadowColor: 'rgba(0,0,0,.004)',
+                      textShadowOffset: {width: 1, height: 1},
+                      textShadowRadius: 10,
+                  },
+              ]}>
+              {title}
+          </TextInput>
+          :
+          <Text
+              style={[
+                  globalStyles.smallRegularText,
+                  {
+                      fontSize: 14,
+                      fontWeight: '400',
+                      color: '#fff',
+                      textShadowColor: 'rgba(0,0,0,.004)',
+                      textShadowOffset: {width: 1, height: 1},
+                      textShadowRadius: 10,
+                  },
+              ]}>
+              {title}
+          </Text>}
         <Text
           style={[
             globalStyles.smallRegularText,
             {
               marginStart: 5,
-              fontSize: normalize(10),
+              fontSize: 14,
               fontWeight: '400',
               textShadowColor: 'rgba(0,0,0,.004)',
               color: '#fff',

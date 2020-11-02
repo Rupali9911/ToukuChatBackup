@@ -1106,6 +1106,11 @@ class Login extends Component {
                   title={translate('common.login')}
                   onPress={() => this.onLoginPress()}
                   loading={this.props.loading}
+                  fontType={
+                      selectedLanguageItem.language_name === 'ja'
+                          ? 'normalRegular22Text'
+                          : ''
+                  }
                 />
                 <View
                   style={{
@@ -1252,7 +1257,7 @@ class Login extends Component {
                                 {translate('common.or')}
                             </Text>
                             <TouchableOpacity onPress={() => this.appleLogin()}
-                                              style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', height: 44, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
+                                              style={{marginTop: 10, marginBottom: 10, backgroundColor: 'white', height: 48, borderRadius: 10, alignItems:'center', justifyContent: 'center'}}>
                                 <View style={{flexDirection: 'row'}}>
                                     <FontAwesome name={'apple'} size={20} color={Colors.black} style={{alignSelf: 'center'}}/>
                                     <View pointerEvents="none">
