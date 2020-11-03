@@ -91,6 +91,27 @@ export default class ChatInput extends Component {
     return null;
   };
 
+  suggestionsDataHeight = (value) => {
+    console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
+    let groupMembersLength;
+    let suggestionRowHeight;
+    groupMembersLength = this.groupMembersMentions(value).length;
+    console.log('render -> groupMembersLength', groupMembersLength);
+    suggestionRowHeight =
+      groupMembersLength < 2
+        ? 35
+        : groupMembersLength < 3
+        ? 70
+        : groupMembersLength < 4
+        ? 105
+        : 140;
+    console.log(
+      'suggestionsDataHeight -> suggestionRowHeight',
+      suggestionRowHeight,
+    );
+    return suggestionRowHeight;
+  };
+
   render() {
     const {
       onAttachmentPress,
@@ -108,6 +129,7 @@ export default class ChatInput extends Component {
     let suggestionRowHeight;
     if (groupMembers) {
       groupMembersLength = this.groupMembersMentions(value).length;
+      console.log('render -> groupMembersLength', groupMembersLength);
       suggestionRowHeight =
         groupMembersLength < 2
           ? 35
@@ -130,6 +152,7 @@ export default class ChatInput extends Component {
           // height: this.newHeight,
           maxHeight: 200,
           backgroundColor: Colors.white,
+          overflow: 'visible',
         }}>
         <LinearGradient
           colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
@@ -141,6 +164,7 @@ export default class ChatInput extends Component {
             chatInput.chatInputContainer,
             {
               alignItems: 'flex-end',
+              overflow: 'visible',
             },
           ]}>
           {/* <View style={chatInput.chatInputContainer}> */}
@@ -194,6 +218,9 @@ export default class ChatInput extends Component {
                   suggestionsPanelStyle={{
                     width: '60%',
                     overflow: 'hidden',
+                    position: 'absolute',
+                    top: -this.suggestionsDataHeight(value),
+                    zIndex: 1,
                   }}
                   loadingComponent={() => null}
                   textInputMinHeight={35}
@@ -256,32 +283,33 @@ export default class ChatInput extends Component {
                       </GHTouchableHighlight>
                     );
                   }}
-                  suggestionRowHeight={suggestionRowHeight}
+                  suggestionRowHeight={this.suggestionsDataHeight(value)}
                   horizontal={false}
                   customOnContentSizeChange={({nativeEvent}) => {
-                    if (nativeEvent.contentSize.height != this.lineHeight) {
-                      this.lineHeight = nativeEvent.contentSize.height;
-                      if (
-                        this.lineHeight > 20 &&
-                        this.lineHeight > this.oldLineHeight &&
-                        this.newHeight <= 200
-                      ) {
-                        this.newHeight = this.newHeight + 15;
-                      }
-                      if (
-                        this.lineHeight > 20 &&
-                        this.lineHeight < this.oldLineHeight
-                      ) {
-                        this.newHeight = this.newHeight - 15;
-                      }
-                      if (
-                        this.lineHeight <= 20 &&
-                        this.lineHeight != this.oldLineHeight
-                      ) {
-                        this.newHeight = isIphoneX() ? 70 : 50;
-                      }
-                      this.oldLineHeight = this.lineHeight;
-                    }
+                    this.forceUpdate();
+                    // if (nativeEvent.contentSize.height != this.lineHeight) {
+                    //   this.lineHeight = nativeEvent.contentSize.height;
+                    //   if (
+                    //     this.lineHeight > 20 &&
+                    //     this.lineHeight > this.oldLineHeight &&
+                    //     this.newHeight <= 200
+                    //   ) {
+                    //     this.newHeight = this.newHeight + 15;
+                    //   }
+                    //   if (
+                    //     this.lineHeight > 20 &&
+                    //     this.lineHeight < this.oldLineHeight
+                    //   ) {
+                    //     this.newHeight = this.newHeight - 15;
+                    //   }
+                    //   if (
+                    //     this.lineHeight <= 20 &&
+                    //     this.lineHeight != this.oldLineHeight
+                    //   ) {
+                    //     this.newHeight = isIphoneX() ? 70 : 50;
+                    //   }
+                    //   this.oldLineHeight = this.lineHeight;
+                    // }
                   }}
                 />
               </View>

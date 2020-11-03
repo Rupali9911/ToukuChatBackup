@@ -411,7 +411,7 @@ class GroupChats extends Component {
         };
       }
       console.log('GroupChats -> msgDataSend', msgDataSend);
-      this.state.conversation.unshift(msgDataSend);
+      // this.state.conversation.unshift(msgDataSend);
       this.props.setGroupConversation([
         msgDataSend,
         ...this.props.chatGroupConversation,
@@ -439,7 +439,7 @@ class GroupChats extends Component {
 
       console.log('GroupChats -> msgDataSend', msgDataSend);
       console.log('GroupChats -> groupMessage', groupMessage);
-      this.state.conversation.unshift(msgDataSend);
+      // this.state.conversation.unshift(msgDataSend);
       this.props.setGroupConversation([
         msgDataSend,
         ...this.props.chatGroupConversation,
@@ -1331,9 +1331,11 @@ class GroupChats extends Component {
   onSelectMention = (selectedMention, length) => {
     this.setState((prevState) => {
       return {
-        newMessageText: `${prevState.newMessageText.slice(0, -length + 1)}${
-          selectedMention.display_name
-        }`,
+        newMessageText: `${
+          length === 1
+            ? prevState.newMessageText
+            : prevState.newMessageText.slice(0, -length + 1)
+        }${selectedMention.display_name}`,
       };
     });
   };

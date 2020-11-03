@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import {
-    View,
-    ImageBackground,
-    Text,
-    Image,
-    TouchableOpacity,
-    FlatList, Platform, TextInput,
+  View,
+  ImageBackground,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Platform,
+  TextInput,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -1183,17 +1185,17 @@ class Home extends Component {
     const {groupLoading, userGroups} = this.props;
 
     const sortChannels = userGroups;
-    sortChannels.sort((a, b) =>
-      new Date(a.timestamp) <= new Date(a.joining_date)
-        ? new Date(a.timestamp)
-        : new Date(a.joining_date) <
-          new Date(b.timestamp) <=
-          new Date(b.joining_date)
-        ? new Date(b.timestamp)
-        : new Date(b.joining_date)
-        ? 1
-        : -1,
-    );
+    // sortChannels.sort((a, b) =>
+    //   new Date(a.timestamp) <= new Date(a.joining_date)
+    //     ? new Date(a.timestamp)
+    //     : new Date(a.joining_date) <
+    //       new Date(b.timestamp) <=
+    //       new Date(b.joining_date)
+    //     ? new Date(b.timestamp)
+    //     : new Date(b.joining_date)
+    //     ? 1
+    //     : -1,
+    // );
 
     const filteredGroups = sortChannels.filter(
       createFilter(this.state.searchText, ['group_name']),
@@ -1223,6 +1225,7 @@ class Home extends Component {
                     : translate('pages.xchat.audio')
                   : ''
               }
+              mentions={item.mentions}
               date={item.joining_date}
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}
@@ -1588,38 +1591,39 @@ const DropdownHeader = (props) => {
         paddingHorizontal: 15,
       }}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {Platform.OS === 'ios' ?
+        {Platform.OS === 'ios' ? (
           <TextInput
-              pointerEvents="none"
-              editable={false}
-              style={[
-                  globalStyles.smallRegularText,
-                  {
-                      fontSize: 14,
-                      fontWeight: '400',
-                      color: '#fff',
-                      textShadowColor: 'rgba(0,0,0,.004)',
-                      textShadowOffset: {width: 1, height: 1},
-                      textShadowRadius: 10,
-                  },
-              ]}>
-              {title}
+            pointerEvents="none"
+            editable={false}
+            style={[
+              globalStyles.smallRegularText,
+              {
+                fontSize: 14,
+                fontWeight: '400',
+                color: '#fff',
+                textShadowColor: 'rgba(0,0,0,.004)',
+                textShadowOffset: {width: 1, height: 1},
+                textShadowRadius: 10,
+              },
+            ]}>
+            {title}
           </TextInput>
-          :
+        ) : (
           <Text
-              style={[
-                  globalStyles.smallRegularText,
-                  {
-                      fontSize: 14,
-                      fontWeight: '400',
-                      color: '#fff',
-                      textShadowColor: 'rgba(0,0,0,.004)',
-                      textShadowOffset: {width: 1, height: 1},
-                      textShadowRadius: 10,
-                  },
-              ]}>
-              {title}
-          </Text>}
+            style={[
+              globalStyles.smallRegularText,
+              {
+                fontSize: 14,
+                fontWeight: '400',
+                color: '#fff',
+                textShadowColor: 'rgba(0,0,0,.004)',
+                textShadowOffset: {width: 1, height: 1},
+                textShadowRadius: 10,
+              },
+            ]}>
+            {title}
+          </Text>
+        )}
         <Text
           style={[
             globalStyles.smallRegularText,

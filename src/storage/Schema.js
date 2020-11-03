@@ -31,6 +31,15 @@ export const MessageBody = {
   },
 };
 
+export const GroupMentions = {
+  name: 'group_mentions',
+  properties: {
+    desplay_name: 'string?',
+    id: 'int?',
+    username: 'string?',
+  },
+};
+
 export const ChatConversation = {
   name: 'chat_conversation',
   primaryKey: 'id',
@@ -239,7 +248,10 @@ export const Groups = {
     sender_id: {type: 'int?'},
     sender_username: 'string?',
     sender_display_name: 'string?',
-    mentions: 'string?[]',
+    mentions: {
+      type: 'list',
+      objectType: 'group_mentions',
+    },
     reply_to: {
       type: 'object?',
       objectType: 'reply_to',

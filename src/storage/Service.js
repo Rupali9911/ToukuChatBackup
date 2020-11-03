@@ -13,6 +13,7 @@ import {
   GroupsLastConversation,
   FriendRequest,
   EventDetail,
+  GroupMentions,
 } from './Schema';
 
 const DB_SCHEMAS = [
@@ -29,6 +30,7 @@ const DB_SCHEMAS = [
   GroupsLastConversation,
   FriendRequest,
   EventDetail,
+  GroupMentions,
 ];
 
 const DB_SCHEMA_VERSION = 1;
@@ -634,10 +636,10 @@ export const deleteChannelConversationById = (id) => {
 };
 
 //#region Groups List
-export const setGroups = async (channels) => {
+export const setGroups = async (group) => {
   //console.log('realm insert data', channels);
   var checkObject = {};
-  for (let item of channels) {
+  for (let item of group) {
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
       //console.log('setGroups -> obj', obj);
@@ -661,11 +663,7 @@ export const setGroups = async (channels) => {
             sender_id: item.sender_id ? item.sender_id : null,
             sender_username: item.sender_username,
             sender_display_name: item.sender_display_name,
-            mentions: item.mentions
-              ? item.mentions instanceof Object
-                ? []
-                : item.mentions
-              : [],
+            mentions: item.mentions.length ? item.mentions : [],
             reply_to: item.reply_to,
             joining_date: item.joining_date,
           },
@@ -691,11 +689,7 @@ export const setGroups = async (channels) => {
           sender_id: item.sender_id ? item.sender_id : null,
           sender_username: item.sender_username,
           sender_display_name: item.sender_display_name,
-          mentions: item.mentions
-            ? item.mentions instanceof Object
-              ? []
-              : item.mentions
-            : [],
+          mentions: item.mentions.length ? item.mentions : [],
           reply_to: item.reply_to,
           joining_date: item.joining_date,
         });
@@ -755,6 +749,7 @@ export const updateLastMsgGroups = (id, message, unreadCount) => {
         group_id: id,
         last_msg: last_msg,
         last_msg_id: message.msg_id,
+        mentions: message.mentions.length ? message.mentions : [],
         unread_msg: unreadCount,
         timestamp: message.timestamp,
       },

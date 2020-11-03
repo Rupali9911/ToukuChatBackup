@@ -26,13 +26,10 @@ import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 import HyperLink from 'react-native-hyperlink';
 import {getAvatar, normalize} from '../utils';
-<<<<<<< Updated upstream
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
-=======
 import ParsedText from 'react-native-parsed-text';
 let borderRadius = 20;
->>>>>>> Stashed changes
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {
@@ -195,94 +192,86 @@ class GroupChatMessageBubble extends Component {
                   width: '95%',
                   marginTop: 5,
                 }}>
-                  {replyMessage.msg_type === 'image' &&
-                  replyMessage.message !== null ? (
-                    <RoundedImage
-                      source={{ url: replyMessage.message }}
-                      isRounded={false}
-                      size={50}
-                    />
-                  ) : replyMessage.msg_type === 'video' ? (
-                    <VideoThumbnailPlayer
-                      url={replyMessage.message}
-                    />
-                  ) : replyMessage.msg_type === 'audio' ? (
-                    <Fragment>
+                {replyMessage.msg_type === 'image' &&
+                replyMessage.message !== null ? (
+                  <RoundedImage
+                    source={{url: replyMessage.message}}
+                    isRounded={false}
+                    size={50}
+                  />
+                ) : replyMessage.msg_type === 'video' ? (
+                  <VideoThumbnailPlayer url={replyMessage.message} />
+                ) : replyMessage.msg_type === 'audio' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {replyMessage.message.split('/').pop().split('%2F').pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'volume-up'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {replyMessage.message
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        Audio
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'volume-up'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          Audio
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : replyMessage.msg_type === 'doc' ? (
-                    <Fragment>
+                    </View>
+                  </Fragment>
+                ) : replyMessage.msg_type === 'doc' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {replyMessage.message.split('/').pop().split('%2F').pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'file-o'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {replyMessage.message
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        File
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'file-o'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          File
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : (
-                        <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-                          {replyMessage.message}
-                        </Text>
-                      )}
+                    </View>
+                  </Fragment>
+                ) : (
+                  <Text
+                    numberOfLines={2}
+                    style={{fontFamily: Fonts.extralight}}>
+                    {replyMessage.message}
+                  </Text>
+                )}
                 {/* <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {replyMessage.message}
                 </Text> */}

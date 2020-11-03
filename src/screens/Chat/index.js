@@ -94,6 +94,7 @@ import {
   updateFriendTypingStatus,
   getGroups,
   setGroups,
+  updateGroup,
   setFriendRequests,
   deleteFriendRequest,
   setChannels,
@@ -755,9 +756,12 @@ class Chat extends Component {
           message.text.data.message_details,
           unreadCount,
         );
+        // updateGroup(message.text.data.message_details).then(() => {
+        //   console.log('onNewMessageInGroup -> updateGroup');
         this.props.getLocalUserGroups().then((res) => {
           this.props.setCommonChatConversation();
         });
+        // });
       }
     }
   }
@@ -1563,25 +1567,26 @@ class Chat extends Component {
   onRemoveGroupMember(message) {
     const {currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.REMOVE_GROUP_MEMBER) {
+      let user_delete = message.text.data.message_details.members_data.filter(
+        (item) => item.id === this.props.userData.id,
+      );
 
-      let user_delete = message.text.data.message_details.members_data.filter(item=>item.id===this.props.userData.id);
-
-      if(user_delete.length>0){
+      if (user_delete.length > 0) {
         deleteGroupById(message.text.data.message_details.group_id);
-          if (
-            this.props.currentRouteName == 'GroupChats' &&
-            currentGroup &&
-            message.text.data.message_details.group_id == currentGroup.group_id
-          ) {
-            NavigationService.pop();
-            this.props.setCurrentGroup(null);
-            this.props.setGroupConversation([]);
-          }
-          this.props.getLocalUserGroups().then((res) => {
-            console.log('local groups update');
-            this.props.setCommonChatConversation();
-          });
-      }else{
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id
+        ) {
+          NavigationService.pop();
+          this.props.setCurrentGroup(null);
+          this.props.setGroupConversation([]);
+        }
+        this.props.getLocalUserGroups().then((res) => {
+          console.log('local groups update');
+          this.props.setCommonChatConversation();
+        });
+      } else {
         if (
           this.props.currentRouteName == 'GroupChats' &&
           currentGroup &&
@@ -1670,10 +1675,10 @@ class Chat extends Component {
   }
 
   onSearch = async (text) => {
-    console.log('onSearch called')
+    console.log('onSearch called');
     await this.setState({searchText: text, commonConversation: []});
-     //this.getCommonChat();
-      this.renderCommonChat();
+    //this.getCommonChat();
+    this.renderCommonChat();
   };
 
   onOpenChannelChats = (item) => {
@@ -2020,15 +2025,15 @@ class Chat extends Component {
     // if (this.props.currentRouteName !== 'ChatTab') {
     //   return;
     // }
-      console.log('renderCommonChat with text', this.state.searchText)
+    console.log('renderCommonChat with text', this.state.searchText);
     let commonConversation = this.sortList();
-      commonConversation = commonChat.filter(
-          createFilter(this.state.searchText, [
-              'name',
-              'group_name',
-              'display_name',
-          ]),
-      );
+    commonConversation = commonChat.filter(
+      createFilter(this.state.searchText, [
+        'name',
+        'group_name',
+        'display_name',
+      ]),
+    );
     if (commonConversation.length === 0 && isLoading) {
       return <ListLoader />;
     } else if (commonConversation.length > 0 && isLoading) {
@@ -2055,6 +2060,7 @@ class Chat extends Component {
                       : translate('pages.xchat.audio')
                     : ''
                 }
+                mentions={item.mentions}
                 date={item.timestamp}
                 image={item.group_picture}
                 onPress={() => this.onOpenGroupChats(item)}
