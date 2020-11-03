@@ -164,9 +164,10 @@ class Chat extends Component {
     };
   };
 
-  UNSAFE_componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
+    // await eventService.subscribe();
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
     });
@@ -306,7 +307,7 @@ class Chat extends Component {
     //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
-      message.text.data.type,
+      JSON.stringify(message.text.data),
       this.props.currentRouteName,
     );
     if (message.text.data.socket_event_id) {
@@ -1557,13 +1558,35 @@ class Chat extends Component {
 
   onRemoveGroupMember(message) {
     const {currentGroup} = this.props;
-    if (
-      this.props.currentRouteName == 'GroupChats' &&
-      currentGroup &&
-      message.text.data.message_details.group_id == currentGroup.group_id
-    ) {
-      this.getGroupDetail();
-      this.getGroupMembers();
+    if (message.text.data.type === SocketEvents.REMOVE_GROUP_MEMBER) {
+
+      let user_delete = message.text.data.message_details.members_data.filter(item=>item.id===this.props.userData.id);
+
+      if(user_delete.length>0){
+        deleteGroupById(message.text.data.message_details.group_id);
+          if (
+            this.props.currentRouteName == 'GroupChats' &&
+            currentGroup &&
+            message.text.data.message_details.group_id == currentGroup.group_id
+          ) {
+            NavigationService.pop();
+            this.props.setCurrentGroup(null);
+            this.props.setGroupConversation([]);
+          }
+          this.props.getLocalUserGroups().then((res) => {
+            console.log('local groups update');
+            this.props.setCommonChatConversation();
+          });
+      }else{
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id
+        ) {
+          this.getGroupDetail();
+          this.getGroupMembers();
+        }
+      }
     }
   }
 

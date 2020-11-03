@@ -234,39 +234,39 @@ class GroupDetails extends Component {
   };
 
   getGroupMembers = (id) => {
-    this.setState({loading: true});
+    this.setState({ loading: true });
     this.props
       .getGroupMembers(id)
       .then((responseArray) => {
         this.props.getUserFriends().then(() => {
           //let arrTemp = [...responseArray, ...this.props.userFriends]
 
-          let arrTemp2 = this.props.userFriends;
-          let arrTemp = [...arrTemp2];
+          let arrTemp2 = this.props.userFriends
+          let arrTemp = [...arrTemp2]
 
-          console.log('arrTemp2', arrTemp2, responseArray);
-          console.log('responseArray', responseArray);
+          console.log('arrTemp2', arrTemp2, responseArray)
+          console.log('responseArray', responseArray)
 
-          responseArray.map((itemRes) => {
-            arrTemp2.map((itemUserFriends) => {
+          responseArray.map(itemRes => {
+            arrTemp2.map(itemUserFriends => {
               if (itemRes.id === itemUserFriends.user_id) {
-                let index = arrTemp.indexOf(itemUserFriends);
+                let index = arrTemp.indexOf(itemUserFriends)
                 if (index !== -1) {
-                  console.log('index ', index);
+                  console.log('index ', index)
                   arrTemp.splice(index, 1);
                 }
               }
-            });
-          });
-          let arrTemp1 = [...responseArray, ...arrTemp];
+            })
+          })
+
+          let members = responseArray.filter(item => item.id !== this.props.userData.id);
+
+          let arrTemp1 = [...members, ...arrTemp]
           //console.log('arrTemp1', arrTemp1)
           this.props.setCurrentGroupMembers(arrTemp1);
-          this.setState({loading: false});
-        });
-      })
-      .catch((err) => {
-        this.setState({loading: false});
-      });
+          this.setState({ loading: false })
+        })
+      }).catch((err) => { this.setState({ loading: false }) });
   };
 
   onAddFriend(isAdded, item) {}

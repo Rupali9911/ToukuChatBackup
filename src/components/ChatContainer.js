@@ -20,6 +20,11 @@ import {translate} from '../redux/reducers/languageReducer';
 import {Colors, Fonts, Images, Icons} from '../constants';
 import {isIphoneX} from '../../src/utils';
 import NoData from './NoData';
+
+import RoundedImage from './RoundedImage';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import VideoThumbnailPlayer from './VideoThumbnailPlayer';
+
 const {height} = Dimensions.get('window');
 
 class ChatContainer extends Component {
@@ -361,7 +366,7 @@ class ChatContainer extends Component {
           {isReply ? (
             <View
               style={{
-                height: 80,
+                height: repliedMessage.msg_type !== 'text'?100:80,
                 width: '100%',
                 backgroundColor: '#FFDBE9',
                 // position: 'absolute',
@@ -408,9 +413,97 @@ class ChatContainer extends Component {
                 </View>
               </View>
               <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
-                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+              {repliedMessage.msg_type === 'image' &&
+                  repliedMessage.message_body !== null ? (
+                    <RoundedImage
+                      source={{ url: repliedMessage.message_body }}
+                      isRounded={false}
+                      size={50}
+                    />
+                  ) : repliedMessage.msg_type === 'video' ? (
+                    <VideoThumbnailPlayer
+                      url={repliedMessage.message_body}
+                    />
+                  ) : repliedMessage.msg_type === 'audio' ? (
+                    <Fragment>
+                      <Text
+                        style={{
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: '500',
+                          fontFamily: Fonts.light,
+                        }}>
+                        {repliedMessage.message_body
+                          .split('/')
+                          .pop()
+                          .split('%2F')
+                          .pop()}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 5,
+                        }}>
+                        <FontAwesome
+                          name={'volume-up'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text
+                          style={{
+                            color: Colors.dark_gray,
+                            fontSize: 13,
+                            marginLeft: 5,
+                            fontFamily: Fonts.light,
+                          }}>
+                          Audio
+                        </Text>
+                      </View>
+                    </Fragment>
+                  ) : repliedMessage.msg_type === 'doc' ? (
+                    <Fragment>
+                      <Text
+                        style={{
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: '500',
+                          fontFamily: Fonts.light,
+                        }}>
+                        {repliedMessage.message_body
+                          .split('/')
+                          .pop()
+                          .split('%2F')
+                          .pop()}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 5,
+                        }}>
+                        <FontAwesome
+                          name={'file-o'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text
+                          style={{
+                            color: Colors.dark_gray,
+                            fontSize: 13,
+                            marginLeft: 5,
+                            fontFamily: Fonts.light,
+                          }}>
+                          File
+                        </Text>
+                      </View>
+                    </Fragment>
+                  ) : (
+                        <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+                          {repliedMessage.message_body}
+                        </Text>
+                      )}
+                {/* <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {repliedMessage.message_body}
-                </Text>
+                </Text> */}
               </View>
             </View>
           ) : null}

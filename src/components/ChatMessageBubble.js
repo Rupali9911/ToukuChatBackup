@@ -26,6 +26,10 @@ import HyperLink from 'react-native-hyperlink';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-viewing';
 import {getAvatar, normalize} from '../utils';
+import VideoThumbnailPlayer from './VideoThumbnailPlayer';
+import RoundedImage from './RoundedImage';
+
+
 let borderRadius = 20;
 
 class ChatMessageBubble extends Component {
@@ -158,7 +162,95 @@ class ChatMessageBubble extends Component {
                   justifyContent: 'center',
                   width: '100%',
                 }}>
-                <Text
+                {replyMessage.msg_type === 'image' &&
+                  replyMessage.message !== null ? (
+                    <RoundedImage
+                      source={{ url: replyMessage.message }}
+                      isRounded={false}
+                      size={50}
+                    />
+                  ) : replyMessage.msg_type === 'video' ? (
+                    <VideoThumbnailPlayer
+                      url={replyMessage.message}
+                    />
+                  ) : replyMessage.msg_type === 'audio' ? (
+                    <Fragment>
+                      <Text
+                        style={{
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: '500',
+                          fontFamily: Fonts.light,
+                        }}>
+                        {replyMessage.message
+                          .split('/')
+                          .pop()
+                          .split('%2F')
+                          .pop()}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 5,
+                        }}>
+                        <FontAwesome
+                          name={'volume-up'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text
+                          style={{
+                            color: Colors.dark_gray,
+                            fontSize: 13,
+                            marginLeft: 5,
+                            fontFamily: Fonts.light,
+                          }}>
+                          Audio
+                        </Text>
+                      </View>
+                    </Fragment>
+                  ) : replyMessage.msg_type === 'doc' ? (
+                    <Fragment>
+                      <Text
+                        style={{
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: '500',
+                          fontFamily: Fonts.light,
+                        }}>
+                        {replyMessage.message
+                          .split('/')
+                          .pop()
+                          .split('%2F')
+                          .pop()}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 5,
+                        }}>
+                        <FontAwesome
+                          name={'file-o'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text
+                          style={{
+                            color: Colors.dark_gray,
+                            fontSize: 13,
+                            marginLeft: 5,
+                            fontFamily: Fonts.light,
+                          }}>
+                          File
+                        </Text>
+                      </View>
+                    </Fragment>
+                  ) : (
+                        <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
+                          {replyMessage.message}
+                        </Text>
+                      )}
+                {/* <Text
                   numberOfLines={2}
                   style={{
                     fontFamily: Fonts.regular,
@@ -166,7 +258,7 @@ class ChatMessageBubble extends Component {
                     fontSize: 15,
                   }}>
                   {replyMessage.message}
-                </Text>
+                </Text> */}
               </View>
             </View>
           </TouchableOpacity>
