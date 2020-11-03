@@ -98,13 +98,9 @@ export default class ChatInput extends Component {
     groupMembersLength = this.groupMembersMentions(value).length;
     console.log('render -> groupMembersLength', groupMembersLength);
     suggestionRowHeight =
-      groupMembersLength < 2
-        ? 35
-        : groupMembersLength < 3
-        ? 70
-        : groupMembersLength < 4
-        ? 105
-        : 140;
+      groupMembersLength < 11
+        ? groupMembersLength * normalize(22) + 5
+        : normalize(220) + 5;
     console.log(
       'suggestionsDataHeight -> suggestionRowHeight',
       suggestionRowHeight,
@@ -125,20 +121,20 @@ export default class ChatInput extends Component {
       sendEnable,
       groupMembers,
     } = this.props;
-    let groupMembersLength;
-    let suggestionRowHeight;
-    if (groupMembers) {
-      groupMembersLength = this.groupMembersMentions(value).length;
-      console.log('render -> groupMembersLength', groupMembersLength);
-      suggestionRowHeight =
-        groupMembersLength < 2
-          ? 35
-          : groupMembersLength < 3
-          ? 70
-          : groupMembersLength < 4
-          ? 105
-          : 140;
-    }
+    // let groupMembersLength;
+    // let suggestionRowHeight;
+    // if (groupMembers) {
+    //   groupMembersLength = this.groupMembersMentions(value).length;
+    //   console.log('render -> groupMembersLength', groupMembersLength);
+    //   suggestionRowHeight =
+    //     groupMembersLength < 2
+    //       ? 35
+    //       : groupMembersLength < 3
+    //       ? 70
+    //       : groupMembersLength < 4
+    //       ? 105
+    //       : 140;
+    // }
     if (value.length === 0) {
       this.newHeight = isIphoneX() ? 70 : 50;
     }
@@ -216,7 +212,7 @@ export default class ChatInput extends Component {
                   multiline={true}
                   textInputStyle={chatInput.textInput}
                   suggestionsPanelStyle={{
-                    width: '60%',
+                    width: '100%',
                     overflow: 'hidden',
                     position: 'absolute',
                     top: -this.suggestionsDataHeight(value),
@@ -224,7 +220,7 @@ export default class ChatInput extends Component {
                   }}
                   loadingComponent={() => null}
                   textInputMinHeight={35}
-                  // textInputMaxHeight={80}
+                  // textInputMaxHeight={500}
                   trigger={'@'}
                   triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
                   value={value}
@@ -247,7 +243,8 @@ export default class ChatInput extends Component {
                           this.setState({highlightItemId: null});
                         }}
                         style={{
-                          backgroundColor: 'white',
+                          backgroundColor: index === 0 ? '#FFB582' : 'white',
+                          paddingTop: index === 0 && 5,
                         }}
                         onPress={() => {
                           hidePanel();
@@ -260,7 +257,7 @@ export default class ChatInput extends Component {
                         }}>
                         <View
                           style={{
-                            height: 35,
+                            height: normalize(22),
                             justifyContent: 'center',
                             alignItems: 'flex-start',
                             width: '100%',
@@ -268,11 +265,15 @@ export default class ChatInput extends Component {
                           }}>
                           <Text
                             style={{
-                              fontSize: 12,
+                              fontSize: normalize(11),
                               paddingHorizontal: 10,
                               // backgroundColor: '#FFB582',
+                              fontFamily: Fonts.regular,
+                              fontWeight: '400',
                               color:
                                 this.state.highlightItemId === item.id
+                                  ? 'white'
+                                  : index === 0
                                   ? 'white'
                                   : 'black',
                               textAlign: 'center',
