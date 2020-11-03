@@ -40,7 +40,7 @@ class GroupChatContainer extends Component {
   }
 
   renderMessage = (messages) => {
-    const {memberCount} = this.props;
+    const {memberCount, groupMembers} = this.props;
     if (!messages || !messages.length) {
       return (
         <NoData
@@ -118,6 +118,7 @@ class GroupChatContainer extends Component {
                 perviousPlayingAudioId: this.state.audioPlayingId,
               });
             }}
+            groupMembers={groupMembers}
           />
         </Fragment>
       );
@@ -167,6 +168,7 @@ class GroupChatContainer extends Component {
       onAttachmentPress,
       sendingImage,
       memberCount,
+      groupMembers,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -181,8 +183,7 @@ class GroupChatContainer extends Component {
           this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
         keyboardOpeningTime={1500}
-        extraHeight={200}
-        >
+        extraHeight={200}>
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -292,7 +293,9 @@ class GroupChatContainer extends Component {
                         this[`message_box_${id}`] &&
                           this[`message_box_${id}`].callBlinking(id);
                       }}
+                      groupMembers={groupMembers}
                     />
+
                     {(messages[index + 1] &&
                       new Date(item.timestamp).getDate() !==
                         new Date(messages[index + 1].timestamp).getDate()) ||
@@ -370,7 +373,9 @@ class GroupChatContainer extends Component {
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.sender_id === this.props.userData.id
                       ? 'You'
-                      : repliedMessage.sender_display_name?repliedMessage.sender_display_name:repliedMessage.sender_username}
+                      : repliedMessage.sender_display_name
+                      ? repliedMessage.sender_display_name
+                      : repliedMessage.sender_username}
                   </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>
@@ -501,6 +506,10 @@ class GroupChatContainer extends Component {
               this.scrollView.scrollToIndex({index: 0, animated: false});
           }}
           value={newMessageText}
+          groupMembers={groupMembers}
+          currentUserData={this.props.userData}
+          useMentionsFunctionality={this.props.useMentionsFunctionality}
+          onSelectMention={this.props.onSelectMention}
           placeholder={translate('pages.xchat.enterMessage')}
           sendingImage={sendingImage}
         />

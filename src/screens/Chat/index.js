@@ -713,6 +713,10 @@ class Chat extends Component {
   onNewMessageInGroup(message) {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
+      console.log(
+        'onNewMessageInGroup -> message.text.data.message_details',
+        message.text.data.message_details,
+      );
       var result = getGroupsById(message.text.data.message_details.group_id);
       let group = result.toJSON();
       if (group && group.length > 0) {
