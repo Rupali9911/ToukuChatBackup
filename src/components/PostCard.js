@@ -19,6 +19,7 @@ import ScalableImage from './ScalableImage';
 import PostCardHeader from './PostCardHeader';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
+import HyperLink from 'react-native-hyperlink';
 const {width, height} = Dimensions.get('window');
 
 export default class PostCard extends Component {

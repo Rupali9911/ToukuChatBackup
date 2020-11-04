@@ -15,6 +15,7 @@ import {Images, Icons, Colors, Fonts} from '../../constants';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import TabBar from '../../components/TabBar';
 import PostCard from '../../components/PostCard';
+import PostChannelCard from '../../components/PostChannelCard';
 import {
   getTrendChannel,
   getFollowingChannel,
@@ -233,21 +234,21 @@ class Channel extends Component {
         <HomeHeader title={translate('pages.xchat.channel')} />
         <View style={globalStyles.container}>
           <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}>
             {activeTab === 'trend' ? (
-              <PostCard
+              <PostChannelCard
                 menuItems={menuItems}
                 posts={trendChannel}
                 isTimeline={false}
               />
             ) : activeTab === 'following' ? (
-              <PostCard
+              <PostChannelCard
                 menuItems={menuItems}
                 posts={followingChannel}
                 isTimeline={false}
               />
             ) : (
-              <PostCard
+              <PostChannelCard
                 menuItems={menuItems}
                 posts={rankingChannel}
                 isTimeline={false}

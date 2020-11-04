@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, ScrollView, Linking, ActivityIndicator} from 'react-native';
+import {
+  View,
+  ImageBackground,
+  ScrollView,
+  Linking,
+  ActivityIndicator,
+} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
@@ -40,7 +46,7 @@ class More extends Component {
       isQRVisible: false,
       isSupport: false,
       isLogOutVisible: false,
-        loggingloggingOutOut: false
+      loggingloggingOutOut: false,
     };
     this.SingleSocket = SingleSocket.getInstance();
   }
@@ -90,22 +96,24 @@ class More extends Component {
   };
 
   actionLogout = async () => {
-    this.setState({loggingOut: true})
+    this.setState({loggingOut: true});
     let fcmToken = await AsyncStorage.getItem('fcmToken');
     let data = {
-        dev_id: fcmToken
-    }
-    this.props.logout(data).then(async (res) => {
+      dev_id: fcmToken,
+    };
+    this.props
+      .logout(data)
+      .then(async (res) => {
         this.updateModalVisibility();
         this.props.navigation.navigate('Auth');
         this.SingleSocket && this.SingleSocket.closeSocket();
         resetData();
         await this.clearAsyncStorage();
-        this.setState({loggingOut: false})
-    })
-        .catch((error) => {
-            this.setState({loggingOut: false})
-        });
+        this.setState({loggingOut: false});
+      })
+      .catch((error) => {
+        this.setState({loggingOut: false});
+      });
   };
 
   actionCancel() {
@@ -123,20 +131,19 @@ class More extends Component {
     Linking.openURL(xanaUrl);
   }
 
-    onNeedSupportClick() {
-        this.setState({isWebViewVisible: true})
-        //Linking.openURL(supportUrl);
-    }
+  onNeedSupportClick() {
+    this.setState({isWebViewVisible: true});
+    //Linking.openURL(supportUrl);
+  }
 
-
-    render() {
+  render() {
     const {
       orientation,
       isWebViewVisible,
       isQRVisible,
       isSupport,
       isLogOutVisible,
-        loggingOut
+      loggingOut,
     } = this.state;
     const {selectedLanguageItem, navigation} = this.props;
     return (
@@ -226,19 +233,18 @@ class More extends Component {
             title={translate('header.logout')}
             onPress={() => this.updateModalVisibility()}
           />
-            {isWebViewVisible &&
+          {isWebViewVisible && (
             <WebViewClass
-                modalVisible={isWebViewVisible}
-                url={supportUrl}
-                closeModal={() => this.setState({isWebViewVisible: false})}
+              modalVisible={isWebViewVisible}
+              url={supportUrl}
+              closeModal={() => this.setState({isWebViewVisible: false})}
             />
-            }
-
+          )}
         </ScrollView>
-          <QRCodeClass
-              modalVisible={isQRVisible}
-              closeModal={() => this.setState({isQRVisible: false})}
-          />
+        <QRCodeClass
+          modalVisible={isQRVisible}
+          closeModal={() => this.setState({isQRVisible: false})}
+        />
         <ConfirmationModal
           orientation={orientation}
           visible={isLogOutVisible}
@@ -248,7 +254,6 @@ class More extends Component {
           message={translate('common.logOutAlert')}
           isLoading={loggingOut}
         />
-
       </View>
       // </ImageBackground>
     );
@@ -267,7 +272,7 @@ const Section = (props) => {
         Colors.header_gradient_1,
       ]}
       style={{
-        height: 27
+        height: 27,
       }}
     />
   );
