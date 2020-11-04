@@ -210,8 +210,8 @@ const styles = StyleSheet.create({
   inputStyle: {
     flex: 1,
     color: Colors.white,
-    fontSize: Platform.isPad ? 17 : 13,
-    fontFamily: Fonts.light,
+    fontSize: Platform.isPad ? 17 : 15,
+    fontFamily: Fonts.nunitoSansLight,
     marginHorizontal: 5,
   },
   iconTriangle: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   placeholderStyle: {
-    fontSize: Platform.isPad ? 17 : 12,
+    fontSize: Platform.isPad ? 17 : 15,
   },
   rightBtnContainer: {
     borderTopRightRadius: Platform.isPad ? 55 / 2 : 45 / 2,

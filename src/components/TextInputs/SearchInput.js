@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingBottom: 10,
+      marginLeft: 10
     // backgroundColor: Colors.home_header,
   },
   searchContainer: {
@@ -148,13 +149,13 @@ const styles = StyleSheet.create({
     flex: 1,
     // width: '100%',
     color: Colors.black,
-    fontSize: 14,
-    fontFamily: Fonts.nunitoSansJPLight,
+    fontSize: 16,
+    fontFamily: Fonts.nunitoSansRegular,
     marginStart: 10,
     //alignSelf: 'center',
       paddingTop: 0,
       paddingBottom: 0,
-    // fontWeight: '200',
+     // fontWeight: '300',
   },
   iconRight: {
     height: 25,

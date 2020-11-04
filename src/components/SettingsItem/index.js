@@ -9,7 +9,7 @@ import {Menu} from "react-native-paper";
 import {setAppLanguage, setI18nConfig, translate, userLanguage} from "../../redux/reducers/languageReducer";
 import {setChannelMode, updateChannelMode, updateConfiguration} from "../../redux/reducers/configurationReducer";
 import {connect} from 'react-redux';
-import {showToast} from '../../utils'
+import {showToast, normalize} from '../../utils'
 import SwitchCustom from '../SwitchCustom'
 import Toast from "../Toast";
 import { version } from '../../../package';
@@ -126,7 +126,7 @@ render() {
                 <View style={{width: 30}}>
                     {conditionalRender()}
                 </View>
-                <Text style={[globalStyles.smallRegularText, {color: Colors.black, fontWeight: '300'}]}>
+                <Text style={[globalStyles.smallNunitoRegularFW300Text, {color: Colors.black, fontWeight: '300'}]}>
                     {title}
                 </Text>
             </View>

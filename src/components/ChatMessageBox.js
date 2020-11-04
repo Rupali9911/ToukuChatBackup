@@ -209,7 +209,7 @@ export default class ChatMessageBox extends Component {
             {isChannel &&
             (currentChannel.channel_picture == null ||
               currentChannel.channel_picture == '') ? (
-              <LinearGradient
+              message.hyperlink?null:<LinearGradient
                 start={{x: 0.1, y: 0.7}}
                 end={{x: 0.5, y: 0.2}}
                 locations={[0.1, 0.6, 1]}
@@ -226,6 +226,7 @@ export default class ChatMessageBox extends Component {
                 </Text>
               </LinearGradient>
             ) : (
+              message.hyperlink?null:
               <Image
                 source={
                   isChannel
@@ -241,7 +242,7 @@ export default class ChatMessageBox extends Component {
                 }}
               />
             )}
-            <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
+            <View style={{alignItems: 'flex-end', flexDirection: message.hyperlink?'column':'row'}}>
               <ChatMessageBubble
                 message={message}
                 isUser={isUser}
@@ -268,7 +269,7 @@ export default class ChatMessageBox extends Component {
                 style={{
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
-                  marginVertical: 15,
+                  marginVertical: message.hyperlink?0:15,
                   alignSelf: 'flex-end',
                   paddingBottom: 5,
                 }}>

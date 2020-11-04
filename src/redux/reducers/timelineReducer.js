@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 
 export const GET_TREND_TIMELINE_REQUEST = 'GET_TREND_TIMELINE_REQUEST';
 export const GET_TREND_TIMELINE_SUCCESS = 'GET_TREND_TIMELINE_SUCCESS';
@@ -174,7 +174,30 @@ const getTrendTimelineSuccess = (data) => ({
 const getTrendTimelineFailure = () => ({
   type: GET_TREND_TIMELINE_FAIL,
 });
-
+//
+export const getChannelTimeline = (groupId, lastId) => {
+  console.log('......................');
+  console.log('......................');
+  console.log('......................');
+  console.log('......................');
+  console.log('......................');
+  console.log(
+    `/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`,
+  );
+  return new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`)
+      .then((res) => {
+        console.log(res);
+        console.log('...................................');
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+//
 export const getTrendTimeline = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendTimelineRequest());
@@ -349,55 +372,55 @@ export const getRankingChannel = () => (dispatch) =>
   });
 
 export const hidePost = (postId) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        let data = {
-            filtered_post: postId
+  new Promise(function (resolve, reject) {
+    let data = {
+      filtered_post: postId,
+    };
+    console.log('filtered_post', data);
+    client
+      .patch(`/xchat/report-timeline-content/`, data)
+      .then((res) => {
+        if (res.status) {
+          resolve(res);
         }
-        console.log('filtered_post', data)
-        client
-            .patch(`/xchat/report-timeline-content/`, data)
-            .then((res) => {
-                if (res.status) {
-                    resolve(res);
-                }
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 
 export const hideAllPost = (postId) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        let data = {
-            filtered_channel: postId
+  new Promise(function (resolve, reject) {
+    let data = {
+      filtered_channel: postId,
+    };
+    console.log('filtered_channel', data);
+    client
+      .patch(`/xchat/report-timeline-content/`, data)
+      .then((res) => {
+        if (res.status) {
+          resolve(res);
         }
-        console.log('filtered_channel', data)
-        client
-            .patch(`/xchat/report-timeline-content/`, data)
-            .then((res) => {
-                if (res.status) {
-                    resolve(res);
-                }
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 
 export const reportPost = (postId) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        let data = {
-            reported_post: postId
+  new Promise(function (resolve, reject) {
+    let data = {
+      reported_post: postId,
+    };
+    console.log('reported_post', data);
+    client
+      .patch(`/xchat/report-timeline-content/`, data)
+      .then((res) => {
+        if (res.status) {
+          resolve(res);
         }
-        console.log('reported_post', data)
-        client
-            .patch(`/xchat/report-timeline-content/`, data)
-            .then((res) => {
-                if (res.status) {
-                    resolve(res);
-                }
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

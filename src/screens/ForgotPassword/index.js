@@ -289,6 +289,9 @@ class ForgotPassword extends Component {
       passwordErr,
       newPasswordErr,
     } = this.state;
+      const {
+          selectedLanguageItem
+      } = this.props
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -464,6 +467,10 @@ class ForgotPassword extends Component {
                   title={translate('pages.resetPassword.resetPassword')}
                   onPress={() => this.onSubmitPress()}
                   loading={this.props.loading}
+                  fontType={
+                      selectedLanguageItem.language_name === 'ja'
+                          ? 'normalRegular22Text'
+                          : ''}
                 />
               </View>
             </View>

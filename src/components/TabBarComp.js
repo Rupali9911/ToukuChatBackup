@@ -21,7 +21,7 @@ import {isIphoneX} from '../utils';
 const S = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: isIphoneX() ? 80 : 56,
+    height: isIphoneX() ? 85 : 60,
     elevation: 2,
   },
   tabButton: {
@@ -69,7 +69,7 @@ class TabBarComp extends Component {
   }
 
   keyboardWillShow = event => {
-    // Platform.OS==='android' && 
+    // Platform.OS==='android' &&
     // this.setState({
     //   isVisible: false
     // })

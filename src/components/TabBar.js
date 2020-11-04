@@ -60,7 +60,7 @@ TabBar.defaultProps = {
 const styles = StyleSheet.create({
   Container: {
     flexDirection: 'row',
-    height: height * 0.06,
+    height: height * 0.08,
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: Colors.white,
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabTitle: {
-    fontSize: 16,
+    fontSize: 18,
     color: Colors.gradient_1,
     fontFamily: Fonts.regular,
   },

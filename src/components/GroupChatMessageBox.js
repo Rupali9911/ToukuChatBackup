@@ -40,7 +40,6 @@ export default class GroupChatMessageBox extends Component {
 
   callBlinking = (id) => {
     console.log('buuble_box', this[`bubble_box_${id}`], id);
-    
     this.callBlinkAnimation();
 
     // this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
@@ -169,6 +168,7 @@ export default class GroupChatMessageBox extends Component {
       closeMenu,
       memberCount,
       onReplyPress,
+      groupMembers,
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -193,74 +193,116 @@ export default class GroupChatMessageBox extends Component {
 
     return !isUser ? (
       <Animated.View style={[animatedStyle]}>
-      <View
-        style={[
-          styles.container,
-          {
-            justifyContent: 'flex-start',
-          },
-        ]}>
         <View
-          style={{
-            alignItems: 'flex-start',
-            marginVertical: 5,
-          }}>
+          style={[
+            styles.container,
+            {
+              justifyContent: 'flex-start',
+            },
+          ]}>
           <View
             style={{
-              flexDirection: 'row',
+              alignItems: 'flex-start',
+              marginVertical: 5,
             }}>
-            {/* <RoundedImage
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              {/* <RoundedImage
               source={getAvatar(message.sender_picture)}
               size={50}
               resizeMode={'cover'}
             /> */}
-            <Image
-              source={getAvatar(message.sender_picture)}
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 25,
-                resizeMode: 'cover',
-              }}
-            />
-            <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
-              <View>
-                <Text
+              <Image
+                source={getAvatar(message.sender_picture)}
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  resizeMode: 'cover',
+                }}
+              />
+              <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: normalize(9),
+                      fontFamily: Fonts.regular,
+                      color: Colors.primary,
+                      textAlign: 'left',
+                      marginStart: 10,
+                      fontWeight: '300',
+                    }}>
+                    {message.sender_display_name}
+                  </Text>
+                  <GroupChatMessageBubble
+                    ref={(view) => {
+                      this[`bubble_box_${message.msg_id}`] = view;
+                    }}
+                    message={message}
+                    isUser={isUser}
+                    onMessageReply={onMessageReply}
+                    onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                    longPressMenu={longPressMenu}
+                    openMenu={this._openMenu}
+                    closeMenu={this._closeMenu}
+                    selectedMessageId={selectedMessageId}
+                    onMessageTranslate={onMessageTranslate}
+                    translatedMessage={translatedMessage}
+                    translatedMessageId={translatedMessageId}
+                    onDelete={onDelete}
+                    onUnSend={onUnSend}
+                    onEditMessage={onEditMessage}
+                    onDownloadMessage={onDownloadMessage}
+                    audioPlayingId={audioPlayingId}
+                    perviousPlayingAudioId={perviousPlayingAudioId}
+                    onAudioPlayPress={onAudioPlayPress}
+                    onReplyPress={onReplyPress}
+                    groupMembers={groupMembers}
+                  />
+                </View>
+                <View
                   style={{
-                    fontSize: 11,
-                    fontFamily: Fonts.regular,
-                    color: Colors.primary,
-                    textAlign: 'left',
-                    marginStart: 10,
-                    fontWeight: '300',
+                    marginHorizontal: '1.5%',
+                    alignItems: 'center',
+                    marginVertical: 15,
+                    alignSelf: 'flex-end',
+                    paddingBottom: 5,
                   }}>
-                  {message.sender_display_name}
-                </Text>
-                <GroupChatMessageBubble
-                  ref={(view) => {
-                    this[`bubble_box_${message.msg_id}`] = view;
-                  }}
-                  message={message}
-                  isUser={isUser}
-                  onMessageReply={onMessageReply}
-                  onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-                  longPressMenu={longPressMenu}
-                  openMenu={this._openMenu}
-                  closeMenu={this._closeMenu}
-                  selectedMessageId={selectedMessageId}
-                  onMessageTranslate={onMessageTranslate}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
-                  onDelete={onDelete}
-                  onUnSend={onUnSend}
-                  onEditMessage={onEditMessage}
-                  onDownloadMessage={onDownloadMessage}
-                  audioPlayingId={audioPlayingId}
-                  perviousPlayingAudioId={perviousPlayingAudioId}
-                  onAudioPlayPress={onAudioPlayPress}
-                  onReplyPress={onReplyPress}
-                />
+                  {/*<Text style={styles.statusText}>{status}</Text>*/}
+                  <Text style={styles.statusText}>{`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}</Text>
+                </View>
               </View>
+            </View>
+            {translatedMessageId &&
+              message.msg_id === translatedMessageId &&
+              this.renderTransltedMessage()}
+          </View>
+        </View>
+      </Animated.View>
+    ) : (
+      <Animated.View style={[animatedStyle]}>
+        <View
+          style={[
+            styles.container,
+            {
+              alignItems: 'flex-end',
+              alignSelf: 'flex-end',
+            },
+          ]}>
+          <View
+            style={{
+              alignItems: 'flex-end',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
               <View
                 style={{
                   marginHorizontal: '1.5%',
@@ -269,96 +311,56 @@ export default class GroupChatMessageBox extends Component {
                   alignSelf: 'flex-end',
                   paddingBottom: 5,
                 }}>
-                {/*<Text style={styles.statusText}>{status}</Text>*/}
-                <Text style={styles.statusText}>{`${time.getHours()}:${
-                  time.getMinutes() < 10
-                    ? '0' + time.getMinutes()
-                    : time.getMinutes()
-                }`}</Text>
-              </View>
-            </View>
-          </View>
-          {translatedMessageId &&
-            message.msg_id === translatedMessageId &&
-            this.renderTransltedMessage()}
-        </View>
-      </View>
-      </Animated.View>
-    ) : (
-      <Animated.View style={[animatedStyle]}>
-      <View
-        style={[
-          styles.container,
-          {
-            alignItems: 'flex-end',
-            alignSelf: 'flex-end',
-          },
-        ]}>
-        <View
-          style={{
-            alignItems: 'flex-end',
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View
-              style={{
-                marginHorizontal: '1.5%',
-                alignItems: 'center',
-                marginVertical: 15,
-                alignSelf: 'flex-end',
-                paddingBottom: 5,
-              }}>
-              {isRead && (
-                <Text style={styles.statusText}>
-                  {message.read_count && message.read_count >= memberCount - 1
-                    ? translate('pages.xchat.read')
-                    : translate('pages.xchat.read') +
-                      ' - ' +
-                      message.read_count}
-                </Text>
-              )}
+                {isRead && (
+                  <Text style={styles.statusText}>
+                    {message.read_count && message.read_count >= memberCount - 1
+                      ? translate('pages.xchat.read')
+                      : translate('pages.xchat.read') +
+                        ' - ' +
+                        message.read_count}
+                  </Text>
+                )}
 
-              <Text style={styles.statusText}>
-                {`${time.getHours()}:${
-                  time.getMinutes() < 10
-                    ? '0' + time.getMinutes()
-                    : time.getMinutes()
-                }`}
-              </Text>
+                <Text style={styles.statusText}>
+                  {`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}
+                </Text>
+              </View>
+              <GroupChatMessageBubble
+                ref={(view) => {
+                  console.log(`bubble_box_${message.msg_id}`);
+                  this[`bubble_box_${message.msg_id}`] = view;
+                }}
+                message={message}
+                isUser={isUser}
+                onMessageReply={onMessageReply}
+                onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                longPressMenu={longPressMenu}
+                openMenu={this._openMenu}
+                closeMenu={this._closeMenu}
+                selectedMessageId={selectedMessageId}
+                onMessageTranslate={onMessageTranslate}
+                translatedMessage={translatedMessage}
+                translatedMessageId={translatedMessageId}
+                onDelete={onDelete}
+                onUnSend={onUnSend}
+                onEditMessage={onEditMessage}
+                onDownloadMessage={onDownloadMessage}
+                audioPlayingId={audioPlayingId}
+                perviousPlayingAudioId={perviousPlayingAudioId}
+                onAudioPlayPress={onAudioPlayPress}
+                onReplyPress={onReplyPress}
+                groupMembers={groupMembers}
+              />
             </View>
-            <GroupChatMessageBubble
-              ref={(view) => {
-                console.log(`bubble_box_${message.msg_id}`);
-                this[`bubble_box_${message.msg_id}`] = view;
-              }}
-              message={message}
-              isUser={isUser}
-              onMessageReply={onMessageReply}
-              onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-              longPressMenu={longPressMenu}
-              openMenu={this._openMenu}
-              closeMenu={this._closeMenu}
-              selectedMessageId={selectedMessageId}
-              onMessageTranslate={onMessageTranslate}
-              translatedMessage={translatedMessage}
-              translatedMessageId={translatedMessageId}
-              onDelete={onDelete}
-              onUnSend={onUnSend}
-              onEditMessage={onEditMessage}
-              onDownloadMessage={onDownloadMessage}
-              audioPlayingId={audioPlayingId}
-              perviousPlayingAudioId={perviousPlayingAudioId}
-              onAudioPlayPress={onAudioPlayPress}
-              onReplyPress={onReplyPress}
-            />
+            {translatedMessageId &&
+              message.msg_id === translatedMessageId &&
+              this.renderTransltedMessage()}
           </View>
-          {translatedMessageId &&
-            message.msg_id === translatedMessageId &&
-            this.renderTransltedMessage()}
         </View>
-      </View>
       </Animated.View>
     );
   }

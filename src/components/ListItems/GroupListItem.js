@@ -8,7 +8,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
-import {getImage,normalize} from '../../utils';
+import {getImage, normalize} from '../../utils';
 
 export default class GroupListItem extends Component {
   constructor(props) {
@@ -21,9 +21,11 @@ export default class GroupListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate() && 
-    today.getMonth() === msgDate.getMonth() && 
-    today.getFullYear() === msgDate.getFullYear()) {
+    if (
+      today.getDate() === msgDate.getDate() &&
+      today.getMonth() === msgDate.getMonth() &&
+      today.getFullYear() === msgDate.getFullYear()
+    ) {
       //console.log('GroupListItem -> getDate -> date', date);
       return `${msgDate.getHours()}:${
         msgDate.getMinutes() < 10
@@ -33,17 +35,42 @@ export default class GroupListItem extends Component {
     }
     if (
       yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getMonth() === msgDate.getMonth() &&
       yesterday.getFullYear() === msgDate.getFullYear()
-    ){
+    ) {
       return translate('common.yesterday');
     }
-    
-    if(today.getFullYear() === msgDate.getFullYear()){
+
+    if (today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('MM/DD');
-    }else{
+    } else {
       return moment(date).format('MM/DD/YY');
     }
+  };
+
+  renderMessageWitMentions = (msg) => {
+    const {mentions} = this.props;
+    let splitNewMessageText = msg.split(' ');
+    let newMessageMentions = [];
+    const newMessageTextWithMention = splitNewMessageText
+      .map((text) => {
+        let mention = null;
+        mentions &&
+          mentions.length &&
+          mentions.forEach((mentionUser) => {
+            if (text === `~${mentionUser.id}~`) {
+              mention = `@${mentionUser.desplay_name}`;
+              newMessageMentions = [...newMessageMentions, mentionUser.id];
+            }
+          });
+        if (mention) {
+          return mention;
+        } else {
+          return text;
+        }
+      })
+      .join(' ');
+    return newMessageTextWithMention;
   };
 
   render() {
@@ -106,7 +133,7 @@ export default class GroupListItem extends Component {
                       fontWeight: '400',
                     },
                   ]}>
-                  {description}
+                  {this.renderMessageWitMentions(description)}
                 </Text>
               </View>
               <View>

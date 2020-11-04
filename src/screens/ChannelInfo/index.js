@@ -15,7 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {channelInfoStyles} from './styles';
 import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import {Images, Icons, Fonts, SocketEvents} from '../../constants';
+import {Images, Icons, Fonts, SocketEvents, Colors} from '../../constants';
 import Button from '../../components/Button';
 import {ListLoader} from '../../components/Loaders';
 import Toast from '../../components/Toast';
@@ -28,7 +28,7 @@ import {
   followChannel,
 } from '../../redux/reducers/channelReducer';
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from '@react-native-community/async-storage';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -63,10 +63,10 @@ class ChannelInfo extends Component {
     };
   }
 
-    async OnBackAction(){
-        await AsyncStorage.removeItem('channelData')
-            this.props.navigation.goBack()
-    }
+  async OnBackAction() {
+    await AsyncStorage.removeItem('channelData');
+    this.props.navigation.goBack();
+  }
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
@@ -166,12 +166,14 @@ class ChannelInfo extends Component {
     this.props
       .unfollowChannel(this.props.currentChannel.id, user)
       .then((res) => {
+        console.log('ChannelInfo -> onConfirm -> res', res);
         if (res.status === true) {
           this.toggleConfirmationModal();
-          this.props.navigation.goBack();
+          this.props.navigation.popToTop();
         }
       })
       .catch((err) => {
+        console.log('ChannelInfo -> onConfirm -> err', err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
@@ -210,6 +212,7 @@ class ChannelInfo extends Component {
       showAffiliateModal,
     } = this.state;
     const {channelLoading, currentChannel, userData} = this.props;
+    console.log('ChannelInfo -> render -> currentChannel', currentChannel);
     const channelCountDetails = [
       {
         id: 1,
@@ -230,8 +233,8 @@ class ChannelInfo extends Component {
 
     //console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
     return (
-      <ImageBackground
-        source={Images.image_home_bg}
+      <View
+        // source={Images.image_home_bg}
         style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HeaderWithBack
@@ -258,13 +261,37 @@ class ChannelInfo extends Component {
                   <View style={channelInfoStyles.channelInfoContainer}>
                     <View style={channelInfoStyles.imageContainer}>
                       <View style={channelInfoStyles.imageView}>
-                        <RoundedImage
-                          source={getImage(channelData.channel_picture)}
-                          style={channelInfoStyles.profileImage}
-                          isRounded={false}
-                          resizeMode={'cover'}
-                          size={'100%'}
-                        />
+                        {/* <View style={channelInfoStyles.imageView}> */}
+                        {!channelData.channel_picture ? (
+                          <View
+                            style={[
+                              {height: '100%', width: '100%'},
+                              {
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: Colors.white,
+                              },
+                            ]}>
+                            <Text
+                              style={[
+                                globalStyles.bigSemiBoldText,
+                                {color: Colors.black},
+                              ]}>
+                              {channelData.name &&
+                                channelData.name.trim().charAt(0).toUpperCase()}
+                              {/* {secondUpperCase} */}
+                            </Text>
+                          </View>
+                        ) : (
+                          <RoundedImage
+                            source={getImage(channelData.channel_picture)}
+                            style={channelInfoStyles.profileImage}
+                            isRounded={false}
+                            resizeMode={'cover'}
+                            size={'100%'}
+                          />
+                        )}
+                        {/* </View> */}
                       </View>
                     </View>
                     <View style={channelInfoStyles.detailView}>
@@ -285,7 +312,11 @@ class ChannelInfo extends Component {
                         <Text
                           style={channelInfoStyles.channelNameText}
                           numberOfLines={1}>
-                          {channelData.channel_status ? channelData.channel_status === '' ? '-' : channelData.channel_status : '-'}
+                          {channelData.channel_status
+                            ? channelData.channel_status === ''
+                              ? '-'
+                              : channelData.channel_status
+                            : '-'}
                         </Text>
                       </View>
                     </View>
@@ -330,7 +361,8 @@ class ChannelInfo extends Component {
                     <TouchableOpacity
                       key={index}
                       style={channelInfoStyles.tabItem}
-                      onPress={item.action}>
+                      onPress={item.action}
+                      activeOpacity={item.title === 'about' ? 1 : 0}>
                       <Image
                         source={item.icon}
                         style={[
@@ -361,7 +393,9 @@ class ChannelInfo extends Component {
                 <Text style={channelInfoStyles.aboutHeading}>
                   {translate('pages.xchat.about')}
                 </Text>
-                <Text style={channelInfoStyles.aboutText}>{currentChannel.description}</Text>
+                <Text style={channelInfoStyles.aboutText}>
+                  {currentChannel.description}
+                </Text>
               </View>
               {channelData.is_vip && (
                 <React.Fragment>
@@ -370,43 +404,48 @@ class ChannelInfo extends Component {
                       {translate('pages.xchat.vipFeature')}
                     </Text>
                     <Text style={channelInfoStyles.aboutText}>
-                        {channelData.vip_description}
+                      {channelData.vip_description}
                     </Text>
                   </View>
                   {/*<View style={channelInfoStyles.followerDetails}>*/}
-                    {/*<Text*/}
-                      {/*style={{fontFamily: Fonts.extralight, marginRight: 5}}>*/}
-                      {/*{translate('pages.xchat.affiliateRewardText')}*/}
-                    {/*</Text>*/}
-                    {/*<Text style={channelInfoStyles.detailText}>1 %</Text>*/}
+                  {/*<Text*/}
+                  {/*style={{fontFamily: Fonts.extralight, marginRight: 5}}>*/}
+                  {/*{translate('pages.xchat.affiliateRewardText')}*/}
+                  {/*</Text>*/}
+                  {/*<Text style={channelInfoStyles.detailText}>1 %</Text>*/}
                   {/*</View>*/}
                 </React.Fragment>
               )}
 
               <View style={channelInfoStyles.buttonContainer}>
                 {/*<Button*/}
-                  {/*isRounded={false}*/}
-                  {/*type={'primary'}*/}
-                  {/*title={translate('pages.xchat.affiliate')}*/}
-                  {/*onPress={this.toggleAffiliateModal}*/}
+                {/*isRounded={false}*/}
+                {/*type={'primary'}*/}
+                {/*title={translate('pages.xchat.affiliate')}*/}
+                {/*onPress={this.toggleAffiliateModal}*/}
                 {/*/>*/}
-                {channelData.is_vip && channelData.subscription_type === 'member' && (
-                  <Button
-                    isRounded={false}
-                    type={'primary'}
-                    title={translate('pages.xchat.vip')}
-                    onPress={() => {}}
-                  />
-                )}
+                {channelData.is_vip &&
+                  channelData.subscription_type === 'member' && (
+                    <Button
+                      isRounded={false}
+                      type={'primary'}
+                      title={translate('pages.xchat.vip')}
+                      onPress={() => {}}
+                    />
+                  )}
               </View>
-              {channelData.is_vip && channelData.subscription_type === 'member' && (
-                <View style={channelInfoStyles.followerDetails}>
-                  <Text style={{fontFamily: Fonts.extralight, marginRight: 5}}>
-                    {translate('pages.xchat.vipMonth')}
-                  </Text>
-                  <Text style={channelInfoStyles.detailText}>{channelData.monthly_vip_fee} TP</Text>
-                </View>
-              )}
+              {channelData.is_vip &&
+                channelData.subscription_type === 'member' && (
+                  <View style={channelInfoStyles.followerDetails}>
+                    <Text
+                      style={{fontFamily: Fonts.extralight, marginRight: 5}}>
+                      {translate('pages.xchat.vipMonth')}
+                    </Text>
+                    <Text style={channelInfoStyles.detailText}>
+                      {channelData.monthly_vip_fee} TP
+                    </Text>
+                  </View>
+                )}
             </KeyboardAwareScrollView>
           ) : (
             <ListLoader large />
@@ -431,7 +470,7 @@ class ChannelInfo extends Component {
             buttonText={translate('common.copy')}
           />
         </View>
-      </ImageBackground>
+      </View>
     );
   }
 }

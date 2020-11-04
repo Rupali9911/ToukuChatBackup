@@ -38,8 +38,38 @@ export default class PostCardHeader extends Component {
     this.setState({visible: false});
   };
 
+    getDate = (date) => {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        const msgDate = new Date(date);
+        if (today.getDate() === msgDate.getDate() &&
+            today.getMonth() === msgDate.getMonth() &&
+            today.getFullYear() === msgDate.getFullYear()) {
+            //console.log('GroupListItem -> getDate -> date', date);
+            return `${msgDate.getHours()}:${
+                msgDate.getMinutes() < 10
+                    ? '0' + msgDate.getMinutes()
+                    : msgDate.getMinutes()
+                }`;
+        }
+        if (
+            yesterday.getDate() === msgDate.getDate() &&
+            yesterday.getMonth() === msgDate.getMonth() &&
+            yesterday.getFullYear() === msgDate.getFullYear()
+        ){
+            return translate('common.yesterday');
+        }
+
+        if(today.getFullYear() === msgDate.getFullYear()){
+            return moment(date).format('MM/DD');
+        }else{
+            return moment(date).format('MM/DD/YY');
+        }
+    };
+
   render() {
-    const {post, menuItems, isMenuRequired} = this.props;
+    const {post, menuItems, isChannelTimeline} = this.props;
     return (
       <View
         style={{
@@ -67,7 +97,7 @@ export default class PostCardHeader extends Component {
             <RoundedImage
               source={getImage(post.channel_picture_thumb)}
               isRounded={false}
-              size={35}
+              size={40}
             />
           )}
           {/*<RoundedImage*/}
@@ -84,8 +114,10 @@ export default class PostCardHeader extends Component {
           }}>
           <Text
             style={{
-              fontFamily: Fonts.regular,
+              //fontFamily: Fonts.smallNunitoRegularText,
               color: Colors.black,
+                fontSize: 15,
+                fontFamily: Fonts.nunitoSansRegular,
             }}>
             {post.channel_name}
           </Text>
@@ -93,80 +125,81 @@ export default class PostCardHeader extends Component {
             style={{
               fontFamily: Fonts.extralight,
               color: Colors.gray_dark,
-              fontSize: 12,
+              fontSize: 13,
+                marginTop: -5
             }}>
-            {moment(post.created).format('MM/DD')}
+              {this.getDate(post.created)}
           </Text>
         </View>
-        <View
-          style={{
-            height: 35,
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
+        {isChannelTimeline ? null : (
+          <View
+            style={{
+              height: 35,
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
             <View style={{width: 100}}>
-          <Button
-            title={
-              post.is_following
-                ? translate('pages.xchat.following')
-                : translate('pages.xchat.follow')
-            }
-            type={'primaryNew'}
-            height={'80%'}
-            fontType={'smallRegularText'}
-          />
+              <Button
+                title={
+                  post.is_following
+                    ? translate('pages.xchat.following')
+                    : translate('pages.xchat.follow')
+                }
+                type={'primaryNew'}
+                height={'85%'}
+                fontType={'normalRegular15Text'}
+              />
             </View>
-            {
-                isMenuRequired &&
-                <Menu
-                    style={{marginTop: 30}}
-                    visible={this.state.visible}
-                    onDismiss={this._closeMenu}
-                    anchor={
-                        <TouchableOpacity
-                            style={{
-                                height: 30,
-                                width: 30,
-                                borderRadius: 20,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginLeft: 5,
-                            }}
-                            onPress={this._openMenu}>
-                            <Image
-                                source={Icons.icon_dots}
-                                style={{
-                                    tintColor: Colors.black_light,
-                                    height: 15,
-                                }}
-                                resizeMode="contain"
-                            />
-                        </TouchableOpacity>
-                    }>
-                    {menuItems &&
-                    menuItems.map((item, index) => {
-                        return (
-                            <React.Fragment>
-                                <Menu.Item
-                                    key={index}
-                                    onPress={() => {
-                                        this._closeMenu();
-                                        item.onPress(post);
-                                    }}
-                                    title={`${item.title}`}
-                                    titleStyle={{
-                                        fontSize: 16,
-                                        fontWeight: '200',
-                                    }}
-                                />
-                                <Divider />
-                            </React.Fragment>
-                        );
-                    })}
-                </Menu>
-            }
-        </View>
+
+            <Menu
+              style={{marginTop: 30}}
+              visible={this.state.visible}
+              onDismiss={this._closeMenu}
+              anchor={
+                <TouchableOpacity
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: 5,
+                  }}
+                  onPress={this._openMenu}>
+                  <Image
+                    source={Icons.icon_dots}
+                    style={{
+                      tintColor: Colors.black_light,
+                      height: 15,
+                    }}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              }>
+              {menuItems &&
+                menuItems.map((item, index) => {
+                  return (
+                    <React.Fragment>
+                      <Menu.Item
+                        key={index}
+                        onPress={() => {
+                          this._closeMenu();
+                          item.onPress(post);
+                        }}
+                        title={`${item.title}`}
+                        titleStyle={{
+                          fontSize: 16,
+                          fontWeight: '200',
+                        }}
+                      />
+                      <Divider />
+                    </React.Fragment>
+                  );
+                })}
+            </Menu>
+          </View>
+        )}
       </View>
     );
   }
@@ -174,12 +207,10 @@ export default class PostCardHeader extends Component {
 
 PostCardHeader.propTypes = {
   value: PropTypes.object,
-    isMenuRequired: PropTypes.bool,
 };
 
 PostCardHeader.defaultProps = {
   value: {},
-    isMenuRequired: true
 };
 
 const styles = StyleSheet.create({

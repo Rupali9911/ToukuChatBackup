@@ -42,6 +42,7 @@ import {
   getLocalFollowingChannels,
   setChannelConversation,
   readAllChannelMessages,
+  updateCurrentChannel,
 } from '../../redux/reducers/channelReducer';
 import {setFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
@@ -61,6 +62,7 @@ import {
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
+  updateCurrentFriendAvtar,
   updateUnreadFriendMsgsCounts,
   getUserFriendsSuccess,
   setUserFriends,
@@ -87,9 +89,12 @@ import {
   setFriendMessageUnsend,
   getLocalUserFriends,
   updateFriendOnlineStatus,
+  updateFriendAvtar,
+  updateConversationUserAvtar,
   updateFriendTypingStatus,
   getGroups,
   setGroups,
+  updateGroup,
   setFriendRequests,
   deleteFriendRequest,
   setChannels,
@@ -111,6 +116,7 @@ import {
   handleRequestAccept,
   getLocalFriendRequests,
   deleteChannelById,
+  deleteChannelConversationById,
   updateChannelTotalMember,
   updateChannelLastMsgWithOutCount,
   getFriendChatConversationById,
@@ -118,6 +124,7 @@ import {
   updateLastEventId,
   updateAllFriendMessageRead,
   updateGroupnReadCount,
+  updateChannelDetails,
 } from '../../storage/Service';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
@@ -158,9 +165,10 @@ class Chat extends Component {
     };
   };
 
-  UNSAFE_componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
+    // await eventService.subscribe();
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
     });
@@ -258,6 +266,7 @@ class Chat extends Component {
 
   componentWillUnmount() {
     // this.SingleSocket && this.SingleSocket.closeSocket();
+    this.events.unsubscribe();
   }
 
   _orientationDidChange = (orientation) => {
@@ -299,7 +308,7 @@ class Chat extends Component {
     //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
-      message.text.data.type,
+      JSON.stringify(message.text.data),
       this.props.currentRouteName,
     );
     if (message.text.data.socket_event_id) {
@@ -417,6 +426,15 @@ class Chat extends Component {
       case SocketEvents.UPDATE_READ_COUNT_IN_GROUP:
         this.onUpdateGroupReadCount(message);
         break;
+      case SocketEvents.UPLOAD_AVTAR:
+        this.updateUserAvtar(message);
+        break;
+      case SocketEvents.UPDATE_CHANNEL_DETAIL:
+        this.updateChannelDetail(message);
+        break;
+      case SocketEvents.CREATE_NEW_CHANNEL:
+        this.createNewChannel(message);
+        return;
       case SocketEvents.MESSAGE_EDITED_IN_THREAD:
         break;
       case SocketEvents.DELETE_MESSAGE_IN_THREAD:
@@ -436,6 +454,54 @@ class Chat extends Component {
     }
   }
 
+  updateChannelDetail(message) {
+    console.log(
+      'updateChannelDetail -> message.text.data.message_details',
+      message.text.data.message_details,
+    );
+    const {currentChannel} = this.props;
+    if (message.text.data.type === SocketEvents.UPDATE_CHANNEL_DETAIL) {
+      updateChannelDetails(
+        message.text.data.message_details.id,
+        message.text.data.message_details,
+      );
+      this.props.getLocalFollowingChannels().then(() => {
+        this.props.setCommonChatConversation();
+      });
+
+      if (
+        this.props.currentRouteName == 'ChannelChats' ||
+        (this.props.currentRouteName == 'ChannelInfo' &&
+          currentChannel &&
+          message.text.data.message_details.id == currentChannel.id)
+      ) {
+        this.props.updateCurrentChannel(message.text.data.message_details);
+      }
+    }
+  }
+  updateUserAvtar(message) {
+    const {userData, currentFriend} = this.props;
+    if (message.text.data.type === SocketEvents.UPLOAD_AVTAR) {
+      if (userData.id === message.text.data.message_details.user_id) {
+        this.props.getUserProfile();
+        return;
+      }
+      var user = getLocalUserFriend(message.text.data.message_details.user_id);
+      if (user && user.length > 0) {
+        updateFriendAvtar(
+          message.text.data.message_details.user_id,
+          message.text.data.message_details,
+        );
+        this.props.getUserFriends().then((res) => {
+          this.setCommonConversation();
+        });
+      }
+      if (currentFriend.user_id === message.text.data.message_details.user_id) {
+        this.props.updateCurrentFriendAvtar(message.text.data.message_details);
+        this.getLocalFriendConversation();
+      }
+    }
+  }
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
     const {userFriends} = this.props;
@@ -461,8 +527,8 @@ class Chat extends Component {
             message.text.data.message_details.user_id,
             false,
           );
-          this.props.setUserFriends().then((res) => {
-            this.props.setCommonChatConversation();
+          this.props.getUserFriends().then((res) => {
+            this.setCommonConversation();
           });
         }
       }
@@ -564,18 +630,16 @@ class Chat extends Component {
   }
 
   readAllMessageChannelSubChat(message) {
-    const {followingChannels,currentChannel} = this.props;
-    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT) {
+    const {followingChannels, currentChannel} = this.props;
+    if (
+      message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT
+    ) {
       var channel = getChannelsById(
         message.text.data.message_details.channel_id,
       );
       if (channel && channel.length > 0) {
-        
-        updateReadByChannelId(
-          message.text.data.message_details.channel_id,
-          0,
-        );
-        
+        updateReadByChannelId(message.text.data.message_details.channel_id, 0);
+
         this.props.getLocalFollowingChannels().then((res) => {
           this.props.setCommonChatConversation();
         });
@@ -651,6 +715,10 @@ class Chat extends Component {
   onNewMessageInGroup(message) {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
+      console.log(
+        'onNewMessageInGroup -> message.text.data.message_details',
+        message.text.data.message_details,
+      );
       var result = getGroupsById(message.text.data.message_details.group_id);
       let group = result.toJSON();
       if (group && group.length > 0) {
@@ -674,6 +742,14 @@ class Chat extends Component {
           this.getLocalGroupConversation();
           this.markGroupMsgsRead();
           unreadCount = 0;
+          this.SingleSocket.sendMessage(
+            JSON.stringify({
+              type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
+              data: {
+                group_id: this.props.currentGroup.group_id,
+              },
+            }),
+          );
         }
 
         updateLastMsgGroups(
@@ -681,9 +757,12 @@ class Chat extends Component {
           message.text.data.message_details,
           unreadCount,
         );
+        // updateGroup(message.text.data.message_details).then(() => {
+        //   console.log('onNewMessageInGroup -> updateGroup');
         this.props.getLocalUserGroups().then((res) => {
           this.props.setCommonChatConversation();
         });
+        // });
       }
     }
   }
@@ -770,31 +849,11 @@ class Chat extends Component {
   //Message in Following Channel
   messageInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
-
+    console.log('message_data', JSON.stringify(message));
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       var channel = getChannelsById(message.text.data.message_details.channel);
       if (channel && channel.length > 0) {
-        if (message.text.data.message_details.from_user.id == userData.id) {
-          // this.getFollowingChannels();
-          var result = getChannelsById(
-            message.text.data.message_details.channel,
-          );
-
-          var channels = [];
-
-          result.map((item) => {
-            channels.push(item);
-          });
-          setChannelChatConversation([message.text.data.message_details]);
-          updateChannelLastMsg(
-            message.text.data.message_details.channel,
-            message.text.data.message_details,
-            channels[0].unread_msg,
-          );
-          this.props.getLocalFollowingChannels().then((res) => {
-            this.props.setCommonChatConversation();
-          });
-        } else if (
+        if (
           message.text.data.message_details.to_user != null &&
           message.text.data.message_details.to_user.id == userData.id
         ) {
@@ -809,7 +868,8 @@ class Chat extends Component {
             channels.push(item);
           });
           setChannelChatConversation([message.text.data.message_details]);
-          if (this.props.currentRouteName == 'ChannelChats' &&
+          if (
+            this.props.currentRouteName == 'ChannelChats' &&
             currentChannel &&
             message.text.data.message_details.channel == currentChannel.id
           ) {
@@ -827,6 +887,28 @@ class Chat extends Component {
               channels[0].unread_msg + 1,
             );
           }
+          this.props.getLocalFollowingChannels().then((res) => {
+            this.props.setCommonChatConversation();
+          });
+        } else if (
+          message.text.data.message_details.from_user.id == userData.id
+        ) {
+          // this.getFollowingChannels();
+          var result = getChannelsById(
+            message.text.data.message_details.channel,
+          );
+
+          var channels = [];
+
+          result.map((item) => {
+            channels.push(item);
+          });
+          setChannelChatConversation([message.text.data.message_details]);
+          updateChannelLastMsg(
+            message.text.data.message_details.channel,
+            message.text.data.message_details,
+            channels[0].unread_msg,
+          );
           this.props.getLocalFollowingChannels().then((res) => {
             this.props.setCommonChatConversation();
           });
@@ -852,14 +934,18 @@ class Chat extends Component {
           });
           setChannelChatConversation([item]);
           updateChannelLastMsg(item.channel, item, channels[0].unread_msg + 1);
-          this.props.getLocalFollowingChannels().then(() => {
-            this.props.setCommonChatConversation();
-          });
         }
-        if (this.props.currentRouteName == 'ChannelChats' && currentChannel && item.channel == currentChannel.id) {
+        if (
+          this.props.currentRouteName == 'ChannelChats' &&
+          currentChannel &&
+          item.channel == currentChannel.id
+        ) {
           this.getLocalChannelConversations();
         }
       }
+      this.props.getLocalFollowingChannels().then(() => {
+        this.props.setCommonChatConversation();
+      });
     }
   }
 
@@ -890,7 +976,8 @@ class Chat extends Component {
           this.props.setCommonChatConversation();
         });
       }
-      if (this.props.currentRouteName == 'ChannelChats' &&
+      if (
+        this.props.currentRouteName == 'ChannelChats' &&
         currentChannel &&
         message.text.data.message_details.channel == currentChannel.id
       ) {
@@ -971,7 +1058,8 @@ class Chat extends Component {
       this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
-      if (this.props.currentRouteName == 'ChannelChats' &&
+      if (
+        this.props.currentRouteName == 'ChannelChats' &&
         currentChannel &&
         message.text.data.message_details.channel == currentChannel.id
       ) {
@@ -983,6 +1071,17 @@ class Chat extends Component {
   onAddChannelMemmber(message) {
     if (message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER) {
       setChannels([message.text.data.message_details]);
+      // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
+      this.props.getLocalFollowingChannels().then((res) => {
+        this.props.setCommonChatConversation();
+      });
+    }
+  }
+
+  createNewChannel(message) {
+    if (message.text.data.type === SocketEvents.CREATE_NEW_CHANNEL) {
+      setChannels([message.text.data.message_details]);
+      // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
@@ -996,6 +1095,9 @@ class Chat extends Component {
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       deleteChannelById(message.text.data.message_details.channel_id);
+      deleteChannelConversationById(
+        message.text.data.message_details.channel_id,
+      );
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
@@ -1461,10 +1563,6 @@ class Chat extends Component {
         }
       }
     }
-  }
-
-  onRemoveGroupMember(message) {
-    const {currentGroup} = this.props;
     if (
       this.props.currentRouteName == 'GroupChats' &&
       currentGroup &&
@@ -1472,6 +1570,41 @@ class Chat extends Component {
     ) {
       this.getGroupDetail();
       this.getGroupMembers();
+    }
+  }
+
+  onRemoveGroupMember(message) {
+    const {currentGroup} = this.props;
+    if (message.text.data.type === SocketEvents.REMOVE_GROUP_MEMBER) {
+      let user_delete = message.text.data.message_details.members_data.filter(
+        (item) => item.id === this.props.userData.id,
+      );
+
+      if (user_delete.length > 0) {
+        deleteGroupById(message.text.data.message_details.group_id);
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id
+        ) {
+          NavigationService.pop();
+          this.props.setCurrentGroup(null);
+          this.props.setGroupConversation([]);
+        }
+        this.props.getLocalUserGroups().then((res) => {
+          console.log('local groups update');
+          this.props.setCommonChatConversation();
+        });
+      } else {
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id
+        ) {
+          this.getGroupDetail();
+          this.getGroupMembers();
+        }
+      }
     }
   }
 
@@ -1550,9 +1683,60 @@ class Chat extends Component {
     this.props.markGroupConversationRead(data);
   }
 
+  onNewFriendRequest = (message) => {
+    const {friendRequest} = this.props;
+    if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
+      setFriendRequests([message.text.data.message_details]);
+      this.props.setFriendRequest();
+    }
+  };
+
+  onAcceptFriendReuqest = (message) => {
+    if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
+      if (
+        message.text.data.message_details.conversation.requested_from ===
+        this.props.userData.username
+      ) {
+        Toast.show({
+          title: translate('pages.xchat.friendRequest'),
+          text: translate(
+            'pages.xchat.toastr.acceptedYourFriendRequest',
+          ).replace(
+            '[missing {{friend}} value]',
+            message.text.data.message_details.conversation.display_name,
+          ),
+          type: 'positive',
+        });
+      }
+      deleteFriendRequest(
+        message.text.data.message_details.conversation.user_id,
+      );
+      this.props.setFriendRequest();
+      handleRequestAccept(message.text.data.message_details.conversation);
+      this.props.setUserFriends().then(() => {
+        this.props.setCommonChatConversation();
+      });
+    }
+  };
+
+  markChannelMsgsRead() {
+    this.props.readAllChannelMessages(this.props.currentChannel.id);
+  }
+
+  markFriendMsgsRead() {
+    this.props.markFriendMsgsRead(this.props.currentFriend.friend);
+  }
+
+  markGroupMsgsRead() {
+    let data = {group_id: this.props.currentGroup.group_id};
+    this.props.markGroupConversationRead(data);
+  }
+
   onSearch = async (text) => {
+    console.log('onSearch called');
     await this.setState({searchText: text, commonConversation: []});
-    // this.getCommonChat();
+    //this.getCommonChat();
+    this.renderCommonChat();
   };
 
   onOpenChannelChats = (item) => {
@@ -1771,18 +1955,18 @@ class Chat extends Component {
         commonConversation.sort((a, b) =>
           a.created &&
           b.created &&
-          new Date(a.last_msg ? a.last_msg.created : a.created) <
-            new Date(b.last_msg ? b.last_msg.created : b.created)
+          new Date(a.last_msg ? a.last_msg.created : a.joining_date) <
+            new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.created &&
               b.timestamp &&
-              new Date(a.last_msg ? a.last_msg.created : a.created) <
+              new Date(a.last_msg ? a.last_msg.created : a.joining_date) <
                 new Date(b.timestamp)
             ? 1
             : a.timestamp &&
               b.created &&
               new Date(a.timestamp) <
-                new Date(b.last_msg ? b.last_msg.created : b.created)
+                new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.timestamp &&
               b.timestamp &&
@@ -1797,18 +1981,18 @@ class Chat extends Component {
         commonConversation.sort((a, b) =>
           a.created &&
           b.created &&
-          new Date(a.last_msg ? a.last_msg.created : a.created) >
-            new Date(b.last_msg ? b.last_msg.created : b.created)
+          new Date(a.last_msg ? a.last_msg.created : a.joining_date) >
+            new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.created &&
               b.timestamp &&
-              new Date(a.last_msg ? a.last_msg.created : a.created) >
+              new Date(a.last_msg ? a.last_msg.created : a.joining_date) >
                 new Date(b.timestamp)
             ? 1
             : a.timestamp &&
               b.created &&
               new Date(a.timestamp) >
-                new Date(b.last_msg ? b.last_msg.created : b.created)
+                new Date(b.last_msg ? b.last_msg.created : b.joining_date)
             ? 1
             : a.timestamp &&
               b.timestamp &&
@@ -1896,17 +2080,18 @@ class Chat extends Component {
   renderCommonChat = () => {
     const {isLoading} = this.state;
     const commonChat = this.props.commonChat;
-    if (this.props.currentRouteName !== 'ChatTab') {
-      return;
-    }
-    let commonConversation = commonChat.filter(
+    // if (this.props.currentRouteName !== 'ChatTab') {
+    //   return;
+    // }
+    console.log('renderCommonChat with text', this.state.searchText);
+    let commonConversation = this.sortList();
+    commonConversation = commonChat.filter(
       createFilter(this.state.searchText, [
         'name',
         'group_name',
         'display_name',
       ]),
     );
-    commonConversation = this.sortList();
     if (commonConversation.length === 0 && isLoading) {
       return <ListLoader />;
     } else if (commonConversation.length > 0 && isLoading) {
@@ -1933,6 +2118,7 @@ class Chat extends Component {
                       : translate('pages.xchat.audio')
                     : ''
                 }
+                mentions={item.mentions}
                 date={item.timestamp}
                 image={item.group_picture}
                 onPress={() => this.onOpenGroupChats(item)}
@@ -1955,7 +2141,7 @@ class Chat extends Component {
                       : translate('pages.xchat.audio')
                     : ''
                 }
-                date={item.last_msg ? item.last_msg.created : item.created}
+                date={item.last_msg ? item.last_msg.created : item.joining_date}
                 image={item.channel_picture}
                 onPress={() => this.onOpenChannelChats(item)}
                 unreadCount={item.unread_msg}
@@ -2041,7 +2227,9 @@ class Chat extends Component {
             navigation={this.props.navigation}
           /> */}
         <View style={globalStyles.container}>
-          <KeyboardAwareScrollView enableOnAndroid={true} showsVerticalScrollIndicator={false}>
+          <KeyboardAwareScrollView
+            enableOnAndroid={true}
+            showsVerticalScrollIndicator={false}>
             {this.renderCommonChat()}
           </KeyboardAwareScrollView>
         </View>
@@ -2081,6 +2269,7 @@ const mapDispatchToProps = {
   getUserFriends,
   getFriendRequests,
   setCurrentFriend,
+  updateCurrentFriendAvtar,
   getUserConfiguration,
   updateConfiguration,
   setCommonChatConversation,
@@ -2104,6 +2293,7 @@ const mapDispatchToProps = {
   markFriendMsgsRead,
   readAllChannelMessages,
   markGroupConversationRead,
+  updateCurrentChannel,
 };
 
 export default connect(

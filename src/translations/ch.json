@@ -226,7 +226,9 @@
       "suggestions":"意见建议",
       "usernameExists":"此用户名已存在",
       "oldAndNewPasswordIsSameText":"旧密码和新密码不能相同",
-      "phoneNumberTextForPlaceholder":"输入电话号码"
+      "phoneNumberTextForPlaceholder":"输入电话号码",
+      "thisIsYourUsername":"这是您的用户名（以后无法更改）",
+      "youCanChangeItUsername":"您可以根据需要现在进行更改。"
     },
     "resetPassword":{
       "changePassword":"更改密码",

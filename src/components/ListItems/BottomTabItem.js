@@ -62,7 +62,7 @@ class BottomTabItem extends Component {
           <Text
             style={[
               globalStyles.smallLightTextTab,
-              {color: titleColor || Colors.white, paddingTop: 2},
+              {color: titleColor || Colors.white, paddingTop: 5},
             ]}>
             {title}
           </Text>

@@ -13,6 +13,7 @@ import {
   GroupsLastConversation,
   FriendRequest,
   EventDetail,
+  GroupMentions,
 } from './Schema';
 
 const DB_SCHEMAS = [
@@ -29,6 +30,7 @@ const DB_SCHEMAS = [
   GroupsLastConversation,
   FriendRequest,
   EventDetail,
+  GroupMentions,
 ];
 
 const DB_SCHEMA_VERSION = 1;
@@ -134,15 +136,17 @@ export const updateMessageById = (id, text, type) => {
 };
 
 export const updateReadByChannelId = (id) => {
-  let results = realm
-    .objects('chat_conversation')
-    .filtered(`channel == ${id}`);
+  let results = realm.objects('chat_conversation').filtered(`channel == ${id}`);
 
-    for (let chat of results) {
-      realm.write(() => {
-        realm.create('chat_conversation', {id: chat.id, is_read: true}, 'modified');
-      });
-    }
+  for (let chat of results) {
+    realm.write(() => {
+      realm.create(
+        'chat_conversation',
+        {id: chat.id, is_read: true},
+        'modified',
+      );
+    });
+  }
 };
 
 export const deleteMessageById = async (id) => {
@@ -241,6 +245,29 @@ export const updateFriendMessageById = (id, text, type) => {
   });
 };
 
+export const updateConversationUserAvtar = (id, data) => {
+  console.log('updateConversationUserAvtar -> id, data', id, data);
+
+  var results = realm.objects('conversation_user').filtered(`id == ${id}`);
+
+  for (let chatUser of results) {
+    realm.write(() => {
+      realm.create(
+        'conversation_user',
+        {id: chatUser.id, avatar: data.avatar},
+        'modified',
+      );
+    });
+  }
+  // realm.write(() => {
+  //   realm.create(
+  //     'conversation_user',
+  //     {id: id, avatar: data.avatar},
+  //     'modified',
+  //   );
+  // });
+};
+
 export const deleteFriendMessageById = async (id) => {
   var message = realm
     .objects('chat_conversation_friend')
@@ -288,27 +315,29 @@ export const setGroupChatConversation = (conversation) => {
     if (obj.length > 0) {
       // alert('matching friend');
       realm.write(() => {
-        realm.create('chat_conversation_group', {
-          msg_id: item.msg_id,
-          sender_id: item.sender_id,
-          group_id: item.group_id,
-          sender_username: item.sender_username,
-          sender_display_name: item.sender_display_name,
-          sender_picture: item.sender_picture,
-          message_body: item.message_body,
-          is_edited: item.is_edited,
-          is_unsent: item.is_unsent,
-          timestamp: item.timestamp,
-          reply_to: item.reply_to,
-          mentions: item.mentions
-            ? item.mentions instanceof Object
-              ? []
-              : item.mentions
-            : [],
-          read_count: item.read_count ? item.read_count : 0,
-          created: item.created,
-        },
-        'modified',
+        realm.create(
+          'chat_conversation_group',
+          {
+            msg_id: item.msg_id,
+            sender_id: item.sender_id,
+            group_id: item.group_id,
+            sender_username: item.sender_username,
+            sender_display_name: item.sender_display_name,
+            sender_picture: item.sender_picture,
+            message_body: item.message_body,
+            is_edited: item.is_edited,
+            is_unsent: item.is_unsent,
+            timestamp: item.timestamp,
+            reply_to: item.reply_to,
+            mentions: item.mentions
+              ? item.mentions instanceof Object
+                ? []
+                : item.mentions
+              : [],
+            read_count: item.read_count ? item.read_count : 0,
+            created: item.created,
+          },
+          'modified',
         );
       });
     } else {
@@ -392,7 +421,7 @@ export const setGroupMessageUnsend = (id) => {
 
 //#region Channels List
 export const setChannels = (channels) => {
-  // console.log('realm insert data',channels);
+  // console.log('realm insert data', channels);
   for (let item of channels) {
     var obj = realm.objects('channels').filtered('id=' + item.id);
     if (obj.length > 0) {
@@ -407,9 +436,16 @@ export const setChannels = (channels) => {
             description: item.description,
             chat: item.chat,
             channel_picture: item.channel_picture,
-            last_msg: item.last_msg,
-            is_pined: item.is_pined,
+            last_msg: item.last_msg
+              ? Array.isArray(item.last_msg)
+                ? item.last_msg.lenght
+                  ? item.last_msg[0]
+                  : null
+                : item.last_msg
+              : null,
+            is_pined: item.is_pined ? item.is_pined : false,
             created: item.created,
+            joining_date: item.joining_date ? item.joining_date : item.created,
           },
           'modified',
         );
@@ -424,9 +460,16 @@ export const setChannels = (channels) => {
           description: item.description,
           chat: item.chat,
           channel_picture: item.channel_picture,
-          last_msg: item.last_msg,
-          is_pined: item.is_pined,
+          last_msg: item.last_msg
+            ? Array.isArray(item.last_msg)
+              ? item.last_msg.lenght
+                ? item.last_msg[0]
+                : null
+              : item.last_msg
+            : null,
+          is_pined: item.is_pined ? item.is_pined : false,
           created: item.created,
+          joining_date: item.joining_date ? item.joining_date : item.created,
         });
       });
     }
@@ -518,28 +561,53 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
     array = [...array, c];
   }
 
-  if (
-    array.length > 0 &&
-    array[0].last_msg !== null &&
-    array[0].last_msg.id != message.id
-  ) {
-    realm.write(() => {
-      realm.create(
-        'channels',
-        {
-          id: id,
-          last_msg: last_msg,
-          unread_msg: unreadCount,
-        },
-        'modified',
-      );
-    });
+  if (array.length > 0) {
+    if (array[0].last_msg !== null && array[0].last_msg.id !== message.id) {
+      realm.write(() => {
+        realm.create(
+          'channels',
+          {
+            id: id,
+            last_msg: last_msg,
+            unread_msg: unreadCount,
+          },
+          'modified',
+        );
+      });
+    } else if (array[0].last_msg == null) {
+      realm.write(() => {
+        realm.create(
+          'channels',
+          {
+            id: id,
+            last_msg: last_msg,
+            unread_msg: unreadCount,
+          },
+          'modified',
+        );
+      });
+    }
   }
 };
 
 export const updateChannelTotalMember = (id, total_member) => {
   realm.write(() => {
     realm.create('channels', {id: id, total_member: total_member}, 'modified');
+  });
+};
+
+export const updateChannelDetails = (id, data) => {
+  realm.write(() => {
+    realm.create(
+      'channels',
+      {
+        id: id,
+        channel_picture: data.channel_picture,
+        description: data.description,
+        name: data.name,
+      },
+      'modified',
+    );
   });
 };
 
@@ -558,11 +626,20 @@ export const deleteChannelById = (id) => {
 };
 //#endregion
 
+export const deleteChannelConversationById = (id) => {
+  var channel = realm.objects('chat_conversation').filtered(`channel == ${id}`);
+  for (let c of channel) {
+    realm.write(() => {
+      realm.delete(c);
+    });
+  }
+};
+
 //#region Groups List
-export const setGroups = async (channels) => {
+export const setGroups = async (group) => {
   //console.log('realm insert data', channels);
   var checkObject = {};
-  for (let item of channels) {
+  for (let item of group) {
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
       //console.log('setGroups -> obj', obj);
@@ -586,12 +663,9 @@ export const setGroups = async (channels) => {
             sender_id: item.sender_id ? item.sender_id : null,
             sender_username: item.sender_username,
             sender_display_name: item.sender_display_name,
-            mentions: item.mentions
-              ? item.mentions instanceof Object
-                ? []
-                : item.mentions
-              : [],
+            mentions: item.mentions.length ? item.mentions : [],
             reply_to: item.reply_to,
+            joining_date: item.joining_date,
           },
           'modified',
         );
@@ -615,12 +689,9 @@ export const setGroups = async (channels) => {
           sender_id: item.sender_id ? item.sender_id : null,
           sender_username: item.sender_username,
           sender_display_name: item.sender_display_name,
-          mentions: item.mentions
-            ? item.mentions instanceof Object
-              ? []
-              : item.mentions
-            : [],
+          mentions: item.mentions.length ? item.mentions : [],
           reply_to: item.reply_to,
+          joining_date: item.joining_date,
         });
       });
     }
@@ -678,6 +749,7 @@ export const updateLastMsgGroups = (id, message, unreadCount) => {
         group_id: id,
         last_msg: last_msg,
         last_msg_id: message.msg_id,
+        mentions: message.mentions.length ? message.mentions : [],
         unread_msg: unreadCount,
         timestamp: message.timestamp,
       },
@@ -848,6 +920,21 @@ export const updateFriendOnlineStatus = (id, status) => {
       {
         user_id: id,
         is_online: status,
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateFriendAvtar = (id, data) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {
+        user_id: id,
+        avatar: data.avatar,
+        display_name: data.display_name,
+        username: data.username,
       },
       'modified',
     );

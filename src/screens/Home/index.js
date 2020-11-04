@@ -6,6 +6,8 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Platform,
+  TextInput,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -1092,6 +1094,7 @@ class Home extends Component {
   }
 
   onOpenChannelChats = (item) => {
+    console.log('Home -> onOpenChannelChats -> item', item);
     this.props.setCurrentChannel(item);
     this.props.navigation.navigate('ChannelChats');
   };
@@ -1121,10 +1124,8 @@ class Home extends Component {
 
     const sortChannels = followingChannels;
     sortChannels.sort((a, b) =>
-      a.created &&
-      b.created &&
-      new Date(a.last_msg ? a.last_msg.updated : a.created) <
-        new Date(b.last_msg ? b.last_msg.updated : b.created)
+      new Date(a.last_msg ? a.last_msg.updated : a.joining_date) <
+      new Date(b.last_msg ? b.last_msg.updated : b.joining_date)
         ? 1
         : -1,
     );
@@ -1158,7 +1159,7 @@ class Home extends Component {
                     : translate('pages.xchat.audio')
                   : ''
               }
-              date={item.last_msg ? item.last_msg.created : item.created}
+              date={item.last_msg ? item.last_msg.created : item.joining_date}
               image={item.channel_picture}
               onPress={() => this.onOpenChannelChats(item)}
               unreadCount={item.unread_msg}
@@ -1183,7 +1184,20 @@ class Home extends Component {
   renderUserGroups() {
     const {groupLoading, userGroups} = this.props;
 
-    const filteredGroups = userGroups.filter(
+    const sortChannels = userGroups;
+    // sortChannels.sort((a, b) =>
+    //   new Date(a.timestamp) <= new Date(a.joining_date)
+    //     ? new Date(a.timestamp)
+    //     : new Date(a.joining_date) <
+    //       new Date(b.timestamp) <=
+    //       new Date(b.joining_date)
+    //     ? new Date(b.timestamp)
+    //     : new Date(b.joining_date)
+    //     ? 1
+    //     : -1,
+    // );
+
+    const filteredGroups = sortChannels.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
 
@@ -1211,7 +1225,8 @@ class Home extends Component {
                     : translate('pages.xchat.audio')
                   : ''
               }
-              date={item.timestamp}
+              mentions={item.mentions}
+              date={item.joining_date}
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}
               unreadCount={item.unread_msg}
@@ -1450,14 +1465,16 @@ class Home extends Component {
                   color: Colors.black,
                   marginStart: 10,
                   fontSize: 14,
-                  fontWeight: '300',
+                  fontWeight: '600',
                 },
               ]}>
               {userConfig.display_name}
             </Text>
           </TouchableOpacity>
           {/* Friend Request */}
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false} enableOnAndroid={true}>
+          <KeyboardAwareScrollView
+            showsVerticalScrollIndicator={false}
+            enableOnAndroid={true}>
             {filteredFriendRequest.length > 0 && (
               <Collapse
                 onToggle={(isColl) =>
@@ -1574,26 +1591,45 @@ const DropdownHeader = (props) => {
         paddingHorizontal: 15,
       }}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Text
-          style={[
-            globalStyles.smallRegularText,
-            {
-              fontSize: normalize(10),
-              fontWeight: '400',
-              color: '#fff',
-              textShadowColor: 'rgba(0,0,0,.004)',
-              textShadowOffset: {width: 1, height: 1},
-              textShadowRadius: 10,
-            },
-          ]}>
-          {title}
-        </Text>
+        {Platform.OS === 'ios' ? (
+          <TextInput
+            pointerEvents="none"
+            editable={false}
+            style={[
+              globalStyles.smallRegularText,
+              {
+                fontSize: 14,
+                fontWeight: '400',
+                color: '#fff',
+                textShadowColor: 'rgba(0,0,0,.004)',
+                textShadowOffset: {width: 1, height: 1},
+                textShadowRadius: 10,
+              },
+            ]}>
+            {title}
+          </TextInput>
+        ) : (
+          <Text
+            style={[
+              globalStyles.smallRegularText,
+              {
+                fontSize: 14,
+                fontWeight: '400',
+                color: '#fff',
+                textShadowColor: 'rgba(0,0,0,.004)',
+                textShadowOffset: {width: 1, height: 1},
+                textShadowRadius: 10,
+              },
+            ]}>
+            {title}
+          </Text>
+        )}
         <Text
           style={[
             globalStyles.smallRegularText,
             {
               marginStart: 5,
-              fontSize: normalize(10),
+              fontSize: 14,
               fontWeight: '400',
               textShadowColor: 'rgba(0,0,0,.004)',
               color: '#fff',

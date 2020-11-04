@@ -139,7 +139,7 @@ export default class ChatHeader extends Component {
                     </Text>
                     <Text
                       numberOfLines={1}
-                      style={[globalStyles.smallRegularText, {fontSize: normalize(9)}]}>
+                      style={[globalStyles.smallRegularText, {fontSize: normalize(10)}]}>
                       {description}
                     </Text>
                   </View>

@@ -98,6 +98,10 @@ class Button extends Component {
         return globalStyles.smallLightText;
       case 'bigSemiBoldText':
         return globalStyles.bigSemiBoldText;
+        case 'normalRegular22Text':
+            return globalStyles.normalRegular22Text;
+            case 'normalRegular15Text':
+            return globalStyles.normalRegular15Text;
       default:
         return globalStyles.normalRegularText;
     }

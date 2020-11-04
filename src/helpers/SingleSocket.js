@@ -128,6 +128,7 @@ export default class SingleSocket extends Component {
   }
 
   onNewMessage(e) {
+    console.log('socket_new_message');
     eventService.sendMessage(JSON.parse(e.data));
   }
 

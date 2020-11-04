@@ -24,9 +24,12 @@ import AudioPlayerCustom from './AudioPlayerCustom';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
-let borderRadius = 20;
 import HyperLink from 'react-native-hyperlink';
-import {getAvatar} from '../utils';
+import {getAvatar, normalize} from '../utils';
+import VideoThumbnailPlayer from './VideoThumbnailPlayer';
+import RoundedImage from './RoundedImage';
+import ParsedText from 'react-native-parsed-text';
+let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
   constructor(props) {
@@ -189,9 +192,89 @@ class GroupChatMessageBubble extends Component {
                   width: '95%',
                   marginTop: 5,
                 }}>
-                <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+                {replyMessage.msg_type === 'image' &&
+                replyMessage.message !== null ? (
+                  <RoundedImage
+                    source={{url: replyMessage.message}}
+                    isRounded={false}
+                    size={50}
+                  />
+                ) : replyMessage.msg_type === 'video' ? (
+                  <VideoThumbnailPlayer url={replyMessage.message} />
+                ) : replyMessage.msg_type === 'audio' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {replyMessage.message.split('/').pop().split('%2F').pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'volume-up'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
+                      <Text
+                        style={{
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
+                          fontFamily: Fonts.light,
+                        }}>
+                        Audio
+                      </Text>
+                    </View>
+                  </Fragment>
+                ) : replyMessage.msg_type === 'doc' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {replyMessage.message.split('/').pop().split('%2F').pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'file-o'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
+                      <Text
+                        style={{
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
+                          fontFamily: Fonts.light,
+                        }}>
+                        File
+                      </Text>
+                    </View>
+                  </Fragment>
+                ) : (
+                  <Text
+                    numberOfLines={2}
+                    style={{fontFamily: Fonts.extralight}}>
+                    {replyMessage.message}
+                  </Text>
+                )}
+                {/* <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {replyMessage.message}
-                </Text>
+                </Text> */}
               </View>
             </View>
           </TouchableOpacity>
@@ -217,6 +300,38 @@ class GroupChatMessageBubble extends Component {
     );
     const url = text.match(urlRE);
     Linking.openURL(url[0]);
+  };
+
+  getMentionsPattern = () => {
+    const {groupMembers} = this.props;
+    const groupMentions = groupMembers.map(
+      (groupMember) => `@${groupMember.display_name}`,
+    );
+    return groupMentions.join('|');
+  };
+
+  renderMessageWitMentions = (msg) => {
+    const {groupMembers} = this.props;
+    let splitNewMessageText = msg.split(' ');
+    let newMessageMentions = [];
+    const newMessageTextWithMention = splitNewMessageText
+      .map((text) => {
+        let mention = null;
+        groupMembers.forEach((groupMember) => {
+          if (text === `~${groupMember.id}~`) {
+            mention = `@${groupMember.display_name}`;
+            newMessageMentions = [...newMessageMentions, groupMember.id];
+          }
+        });
+        if (mention) {
+          return mention;
+        } else {
+          return text;
+        }
+      })
+      .join(' ');
+
+    return newMessageTextWithMention;
   };
 
   render() {
@@ -400,7 +515,7 @@ class GroupChatMessageBubble extends Component {
                             linkStyle={{color: Colors.link_color}}>
                             <Text
                               style={{
-                                fontSize: 15,
+                                fontSize: normalize(12),
                                 fontFamily: Fonts.regular,
                                 fontWeight: '400',
                               }}>
@@ -409,14 +524,32 @@ class GroupChatMessageBubble extends Component {
                           </HyperLink>
                         </TouchableOpacity>
                       ) : (
-                        <Text
+                        // <Text
+                        //   style={{
+                        //     fontSize: normalize(12),
+                        //     fontFamily: Fonts.regular,
+                        //     fontWeight: '400',
+                        //   }}>
+                        //   {message.message_body.text}
+                        // </Text>
+                        <ParsedText
                           style={{
-                            fontSize: 15,
+                            fontSize: normalize(12),
                             fontFamily: Fonts.regular,
                             fontWeight: '400',
-                          }}>
-                          {message.message_body.text}
-                        </Text>
+                          }}
+                          parse={[
+                            {
+                              // pattern: /\B\@([\w\-]+)/gim,
+                              pattern: new RegExp(this.getMentionsPattern()),
+                              style: {color: '#E65497'},
+                            },
+                          ]}
+                          childrenProps={{allowFontScaling: false}}>
+                          {this.renderMessageWitMentions(
+                            message.message_body.text,
+                          )}
+                        </ParsedText>
                       )}
                     </TouchableOpacity>
                   )}
@@ -568,24 +701,43 @@ class GroupChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.black,
-                                fontSize: 15,
+                                fontSize: normalize(12),
                                 fontFamily: Fonts.regular,
-                                fontWeight: '400',
+                                fontWeight: '300',
                               }}>
                               {message.message_body.text}
                             </Text>
                           </HyperLink>
                         </TouchableOpacity>
                       ) : (
-                        <Text
+                        <ParsedText
                           style={{
                             color: Colors.black,
-                            fontSize: 15,
+                            fontSize: normalize(12),
                             fontFamily: Fonts.regular,
-                            fontWeight: '400',
-                          }}>
-                          {message.message_body.text}
-                        </Text>
+                            fontWeight: '300',
+                          }}
+                          parse={[
+                            {
+                              // pattern: /\B\@([\w\-]+)/gim,
+                              pattern: new RegExp(this.getMentionsPattern()),
+                              style: {color: '#E65497'},
+                            },
+                          ]}
+                          childrenProps={{allowFontScaling: false}}>
+                          {this.renderMessageWitMentions(
+                            message.message_body.text,
+                          )}
+                        </ParsedText>
+                        // <Text
+                        //   style={{
+                        //     color: Colors.black,
+                        //     fontSize: normalize(12),
+                        //     fontFamily: Fonts.regular,
+                        //     fontWeight: '300',
+                        //   }}>
+                        //   {message.message_body.text}
+                        // </Text>
                       )}
                     </TouchableOpacity>
                   </View>

@@ -8,7 +8,7 @@ import {Badge, Divider} from 'react-native-paper';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
-import {getImage,normalize} from '../../utils';
+import {getImage, normalize} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 
 export default class ChannelListItem extends Component {
@@ -22,23 +22,25 @@ export default class ChannelListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate() && 
-    today.getMonth() === msgDate.getMonth() && 
-    today.getFullYear() === msgDate.getFullYear()) {
+    if (
+      today.getDate() === msgDate.getDate() &&
+      today.getMonth() === msgDate.getMonth() &&
+      today.getFullYear() === msgDate.getFullYear()
+    ) {
       return moment(date).format('HH:mm');
     }
-    
+
     if (
       yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getMonth() === msgDate.getMonth() &&
       yesterday.getFullYear() === msgDate.getFullYear()
-    ){
+    ) {
       return translate('common.yesterday');
     }
 
-    if(today.getFullYear() === msgDate.getFullYear()){
+    if (today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('MM/DD');
-    }else{
+    } else {
       return moment(date).format('MM/DD/YY');
     }
   };
@@ -66,8 +68,8 @@ export default class ChannelListItem extends Component {
                   Colors.gradient_3,
                 ]}
                 style={styles.squareImage}>
-                <Text style={globalStyles.normalRegularText}>
-                  {title.charAt(0).toUpperCase()}
+                <Text style={globalStyles.smallNunitoRegularText}>
+                  {title && title.charAt(0) && title.charAt(0).toUpperCase()}
                   {/* {secondUpperCase} */}
                 </Text>
               </LinearGradient>
@@ -86,7 +88,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: normalize(12),
+                      //fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -98,7 +100,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: normalize(11),
+                     // fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>
@@ -112,7 +114,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: normalize(9),
+                        fontSize: 12,
                       fontWeight: '400',
                     },
                   ]}>
@@ -125,7 +127,7 @@ export default class ChannelListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: normalize(9),
+                          fontSize: 12,
                       },
                     ]}>
                     {unreadCount}

@@ -39,14 +39,14 @@ export default class FriendListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate() && 
-    today.getMonth() === msgDate.getMonth() && 
+    if (today.getDate() === msgDate.getDate() &&
+    today.getMonth() === msgDate.getMonth() &&
     today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('HH:mm');
     }
     if (
       yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth() && 
+      yesterday.getMonth() === msgDate.getMonth() &&
       yesterday.getFullYear() === msgDate.getFullYear()
     ){
       return translate('common.yesterday');
@@ -89,10 +89,10 @@ export default class FriendListItem extends Component {
                 <Text
                   numberOfLines={1}
                   style={[
-                    globalStyles.smallNunitoRegularText,
+                    globalStyles.smallNunitoRegular17Text,
                     {
                       color: Colors.black_light,
-                      fontSize: normalize(12),
+                      //fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>
@@ -105,7 +105,7 @@ export default class FriendListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: normalize(11),
+                      //fontSize: normalize(11),
                       fontWeight: '400',
                     },
                   ]}>
@@ -120,7 +120,7 @@ export default class FriendListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      fontSize: normalize(9),
+                      fontSize: 12,
                       fontWeight: '400',
                     },
                   ]}>
@@ -133,7 +133,7 @@ export default class FriendListItem extends Component {
                       {
                         backgroundColor: Colors.green,
                         color: Colors.white,
-                        fontSize: normalize(9),
+                        fontSize: 12,
                       },
                     ]}>
                     {unreadCount}

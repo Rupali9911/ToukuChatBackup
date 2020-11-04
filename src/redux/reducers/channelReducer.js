@@ -1,4 +1,4 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 import {
   setChannels,
   getChannels,
@@ -7,7 +7,7 @@ import {
 } from '../../storage/Service';
 
 export const SET_CURRENT_CHANNEL_DATA = 'SET_CURRENT_CHANNEL_DATA';
-
+export const UPDATE_CURRENT_CHANNEL_DATA = 'UPDATE_CURRENT_CHANNEL_DATA';
 export const GET_USER_CHANNELS_REQUEST = 'GET_USER_CHANNELS_REQUEST';
 export const GET_USER_CHANNELS_SUCCESS = 'GET_USER_CHANNELS_SUCCESS';
 export const GET_USER_CHANNELS_FAIL = 'GET_USER_CHANNELS_FAIL';
@@ -58,6 +58,16 @@ export default function (state = initialState, action) {
       return {
         ...state,
         currentChannel: action.payload,
+      };
+    case UPDATE_CURRENT_CHANNEL_DATA:
+      return {
+        ...state,
+        currentChannel: {
+          ...state.currentChannel,
+          channel_picture: action.payload.channel_picture,
+          description: action.payload.description,
+          name: action.payload.name,
+        },
       };
 
     //Get Following Channels
@@ -194,7 +204,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         chatConversation: state.chatConversation.filter(
-          (item) => item.id !== action.payload
+          (item) => item.id !== action.payload,
         ),
       };
     default:
@@ -211,6 +221,14 @@ const setCurrentChannelData = (data) => ({
 
 export const setCurrentChannel = (channel) => (dispatch) =>
   dispatch(setCurrentChannelData(channel));
+
+const updateCurrentChannelData = (data) => ({
+  type: UPDATE_CURRENT_CHANNEL_DATA,
+  payload: data,
+});
+
+export const updateCurrentChannel = (channel) => (dispatch) =>
+  dispatch(updateCurrentChannelData(channel));
 
 //Set Unread Friend Msgs Count
 const setUnreadChannelMsgsCounts = (counts) => ({
@@ -241,67 +259,71 @@ const getFollowingChannelsFailure = () => ({
 });
 
 export const getLocalFollowingChannels = () => (dispatch) =>
-new Promise(function(resolve,reject){
-  let channels = getChannels();
-  if (channels.length) {
-    let array = []
-    let counts = 0;
-    channels.map((item, index) => {
-      counts = counts + item.unread_msg;
-      let i = {
-        id: item.id,
-        name: item.name,
-        unread_msg: item.unread_msg,
-        total_members: item.total_members,
-        description: item.description,
-        chat: item.chat,
-        channel_picture: item.channel_picture,
-        last_msg: item.last_msg,
-        is_pined: item.is_pined,
-        created: item.created,
-      }
-      array = [...array, i];
-    });
-    dispatch(setUnreadChannelMsgsCounts(counts))
-    dispatch(getFollowingChannelsSuccess(array));
-  }
-  resolve();
-});
+  new Promise(function (resolve, reject) {
+    let channels = getChannels();
+    if (channels.length) {
+      let array = [];
+      let counts = 0;
+      channels.map((item, index) => {
+        counts = counts + item.unread_msg;
+        let i = {
+          id: item.id,
+          name: item.name,
+          unread_msg: item.unread_msg,
+          total_members: item.total_members,
+          description: item.description,
+          chat: item.chat,
+          channel_picture: item.channel_picture,
+          last_msg: item.last_msg,
+          is_pined: item.is_pined,
+          created: item.created,
+          joining_date: item.joining_date,
+        };
+        array = [...array, i];
+      });
+      dispatch(setUnreadChannelMsgsCounts(counts));
+      dispatch(getFollowingChannelsSuccess(array));
+    }
+    resolve();
+  });
 
 export const getFollowingChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelsRequest());
-    recursionFollowingChannels(start).then((res)=>{
-      let channels = getChannels();
-      if(channels.length){
-        let array = []
-        let counts = 0;
-        channels.map((item,index)=>{
-          counts = counts + item.unread_msg;
-          let i = {
-            id: item.id,
-            name: item.name,
-            unread_msg: item.unread_msg,
-            total_members: item.total_members,
-            description: item.description,
-            chat: item.chat,
-            channel_picture: item.channel_picture,
-            last_msg: item.last_msg,
-            is_pined: item.is_pined,
-            created: item.created,
-          }
-          array = [...array, i];
-        });
-        dispatch(setUnreadChannelMsgsCounts(counts))
-        dispatch(getFollowingChannelsSuccess(array));
-      }else{
+    recursionFollowingChannels(start)
+      .then((res) => {
+        let channels = getChannels();
+        if (channels.length) {
+          let array = [];
+          let counts = 0;
+          channels.map((item, index) => {
+            counts = counts + item.unread_msg;
+            let i = {
+              id: item.id,
+              name: item.name,
+              unread_msg: item.unread_msg,
+              total_members: item.total_members,
+              description: item.description,
+              chat: item.chat,
+              channel_picture: item.channel_picture,
+              last_msg: item.last_msg,
+              is_pined: item.is_pined,
+              created: item.created,
+              joining_date: item.joining_date,
+            };
+            array = [...array, i];
+          });
+          dispatch(setUnreadChannelMsgsCounts(counts));
+          dispatch(getFollowingChannelsSuccess(array));
+        } else {
+          dispatch(getFollowingChannelsFailure());
+        }
+        resolve(res);
+      })
+      .catch((err) => {
         dispatch(getFollowingChannelsFailure());
-      }
-      resolve(res);
-    }).catch((err)=>{
-      dispatch(getFollowingChannelsFailure());
-      reject(err);
-    });
+        reject(err);
+      });
 
     // client
     //   .get(`/xchat/get-following-channel/?start=` + start)
@@ -355,32 +377,33 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
     //     dispatch(getFollowingChannelsFailure());
     //     reject(err);
     //   });
-
   });
 
 export const recursionFollowingChannels = (start = 0) =>
-  getChannel(start).then((res)=>{
-    if(res.load_more){
-      return recursionFollowingChannels(start+20).then(res=>res);
-    }else{
-      return res;
-    }
-  }).catch(err=>err);
+  getChannel(start)
+    .then((res) => {
+      if (res.load_more) {
+        return recursionFollowingChannels(start + 20).then((res) => res);
+      } else {
+        return res;
+      }
+    })
+    .catch((err) => err);
 
-const getChannel = (start) => new Promise ((resolve,reject)=>{
-  client
+const getChannel = (start) =>
+  new Promise((resolve, reject) => {
+    client
       .get(`/xchat/get-following-channel/?start=` + start)
       .then((res) => {
         if (res.conversations) {
-            setChannels(res.conversations);
+          setChannels(res.conversations);
         }
         resolve(res);
       })
       .catch((err) => {
         reject(err);
       });
-
-})
+  });
 
 export const getMoreFollowingChannels = (start) => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -543,11 +566,11 @@ const deleteMessage = (data) => ({
 export const getChannelConversations = (id, limit = 30) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getChannelConversationsRequest());
-    console.log('id-',id,',limit-',limit)
+    console.log('id-', id, ',limit-', limit);
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + limit)
       .then(async (res) => {
-        console.log('res_channel_conversation',JSON.stringify(res));
+        console.log('res_channel_conversation', JSON.stringify(res));
         setChannelChatConversation(res.conversation);
         dispatch(getChannelConversationsSuccess());
         resolve(res);
@@ -636,7 +659,7 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  export const getLoginBonusOfChannel = () => (dispatch) =>
+export const getLoginBonusOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .get(`xigolo_payment/login_jackpot/`)
@@ -648,7 +671,7 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  export const checkLoginBonusOfChannel = () => (dispatch) =>
+export const checkLoginBonusOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .get(`xigolo_payment/user_login_jackpot/`)
@@ -660,10 +683,10 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  export const selectLoginJackpotOfChannel = (payload) => (dispatch) =>
+export const selectLoginJackpotOfChannel = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .post(`xigolo_payment/select_login_jackpot/`,payload)
+      .post(`xigolo_payment/select_login_jackpot/`, payload)
       .then((res) => {
         resolve(res);
       })
@@ -672,7 +695,7 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  export const assetXPValueOfChannel = () => (dispatch) =>
+export const assetXPValueOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .get(`asset-xp-value/`)

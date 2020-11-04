@@ -67,6 +67,7 @@ class LoginSignUp extends Component {
 
   onSignUpPress() {
     this.props.navigation.navigate('SignUp', {
+        showEmail: true,
       pageNumber: 0,
       isSocial: false,
     });
@@ -150,13 +151,13 @@ class LoginSignUp extends Component {
           if (!status) {
             if (isEmail) {
               this.props.navigation.navigate('SignUp', {
-                pageNumber: 1,
+                  showEmail: true,
                 isSocial: true,
               });
               return;
             }
             this.props.navigation.navigate('SignUp', {
-              pageNumber: 2,
+                showEmail: false,
               isSocial: true,
             });
             return;
@@ -270,18 +271,18 @@ class LoginSignUp extends Component {
             let status = res.status;
             let isEmail = res.email_required;
             if (!status) {
-              if (isEmail) {
+                if (isEmail) {
+                    this.props.navigation.navigate('SignUp', {
+                        showEmail: true,
+                        isSocial: true,
+                    });
+                    return;
+                }
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 1,
-                  isSocial: true,
+                    showEmail: false,
+                    isSocial: true,
                 });
                 return;
-              }
-              this.props.navigation.navigate('SignUp', {
-                pageNumber: 2,
-                isSocial: true,
-              });
-              return;
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
@@ -362,18 +363,18 @@ class LoginSignUp extends Component {
             let status = res.status;
             let isEmail = res.email_required;
             if (!status) {
-              if (isEmail) {
+                if (isEmail) {
+                    this.props.navigation.navigate('SignUp', {
+                        showEmail: true,
+                        isSocial: true,
+                    });
+                    return;
+                }
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 1,
-                  isSocial: true,
+                    showEmail: false,
+                    isSocial: true,
                 });
                 return;
-              }
-              this.props.navigation.navigate('SignUp', {
-                pageNumber: 2,
-                isSocial: true,
-              });
-              return;
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
@@ -439,18 +440,18 @@ class LoginSignUp extends Component {
               let status = res.status;
               let isEmail = res.email_required;
               if (!status) {
-                if (isEmail) {
+                  if (isEmail) {
+                      this.props.navigation.navigate('SignUp', {
+                          showEmail: true,
+                          isSocial: true,
+                      });
+                      return;
+                  }
                   this.props.navigation.navigate('SignUp', {
-                    pageNumber: 1,
-                    isSocial: true,
+                      showEmail: false,
+                      isSocial: true,
                   });
                   return;
-                }
-                this.props.navigation.navigate('SignUp', {
-                  pageNumber: 2,
-                  isSocial: true,
-                });
-                return;
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
@@ -508,18 +509,18 @@ class LoginSignUp extends Component {
               let status = res.status;
               let isEmail = res.email_required;
               if (!status) {
-                if (isEmail) {
+                  if (isEmail) {
+                      this.props.navigation.navigate('SignUp', {
+                          showEmail: true,
+                          isSocial: true,
+                      });
+                      return;
+                  }
                   this.props.navigation.navigate('SignUp', {
-                    pageNumber: 1,
-                    isSocial: true,
+                      showEmail: false,
+                      isSocial: true,
                   });
                   return;
-                }
-                this.props.navigation.navigate('SignUp', {
-                  pageNumber: 2,
-                  isSocial: true,
-                });
-                return;
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
@@ -579,18 +580,18 @@ class LoginSignUp extends Component {
             let status = res.status;
             let isEmail = res.email_required;
             if (!status) {
-              if (isEmail) {
+                if (isEmail) {
+                    this.props.navigation.navigate('SignUp', {
+                        showEmail: true,
+                        isSocial: true,
+                    });
+                    return;
+                }
                 this.props.navigation.navigate('SignUp', {
-                  pageNumber: 1,
-                  isSocial: true,
+                    showEmail: false,
+                    isSocial: true,
                 });
                 return;
-              }
-              this.props.navigation.navigate('SignUp', {
-                pageNumber: 2,
-                isSocial: true,
-              });
-              return;
             }
             await AsyncStorage.setItem('userToken', res.token);
             await AsyncStorage.removeItem('socialToken');
@@ -685,18 +686,18 @@ class LoginSignUp extends Component {
           let status = res.status;
           let isEmail = res.email_required;
           if (!status) {
-            if (isEmail) {
+              if (isEmail) {
+                  this.props.navigation.navigate('SignUp', {
+                      showEmail: true,
+                      isSocial: true,
+                  });
+                  return;
+              }
               this.props.navigation.navigate('SignUp', {
-                pageNumber: 1,
-                isSocial: true,
+                  showEmail: false,
+                  isSocial: true,
               });
               return;
-            }
-            this.props.navigation.navigate('SignUp', {
-              pageNumber: 2,
-              isSocial: true,
-            });
-            return;
           }
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
@@ -704,6 +705,7 @@ class LoginSignUp extends Component {
           return;
         }
         if (res.error) {
+            console.log('')
           Toast.show({
             title: 'Login Failed',
             text: translate(res.error.toString()),
@@ -797,7 +799,7 @@ class LoginSignUp extends Component {
                     onPress={() => this.onLoginPress()}
                     fontType={
                       selectedLanguageItem.language_name === 'ja'
-                        ? 'bigSemiBoldText'
+                        ? 'normalRegular22Text'
                         : ''
                     }
                   />
@@ -807,7 +809,7 @@ class LoginSignUp extends Component {
                     onPress={() => this.onSignUpPress()}
                     fontType={
                       selectedLanguageItem.language_name === 'ja'
-                        ? 'bigSemiBoldText'
+                        ? 'normalRegular22Text'
                         : ''
                     }
                   />
@@ -874,7 +876,7 @@ class LoginSignUp extends Component {
                         marginTop: 10,
                         marginBottom: 10,
                         backgroundColor: 'white',
-                        height: 44,
+                        height: 48,
                         borderRadius: 10,
                         alignItems: 'center',
                         justifyContent: 'center',
