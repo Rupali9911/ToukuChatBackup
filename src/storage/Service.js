@@ -880,6 +880,13 @@ export const getLocalUserFriend = (id) => {
     .filtered(`user_id == ${id}`);
 };
 
+export const getUserFriend = (id) => {
+  return realm
+    .objects('user_friends')
+    .sorted('timestamp', {ascending: true})
+    .filtered(`friend == ${id}`);
+};
+
 export const handleRequestAccept = (item) => {
   var obj = realm.objects('user_friends').filtered('user_id=' + item.user_id);
   if (obj.length > 0) {
@@ -935,6 +942,19 @@ export const updateFriendAvtar = (id, data) => {
         avatar: data.avatar,
         display_name: data.display_name,
         username: data.username,
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateFriendDisplayName = (data) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {
+        freind: data.friend_id,
+        display_name: data.display_name,
       },
       'modified',
     );

@@ -161,10 +161,10 @@ export const UserFriends = {
     last_msg: {type: 'string?', default: null},
     last_msg_type: 'string?',
     display_name: 'string?',
-    isChecked: 'bool',
-    is_online: 'bool',
-    is_typing: 'bool',
-    timestamp: 'string',
+    isChecked: 'bool?',
+    is_online: 'bool?',
+    is_typing: 'bool?',
+    timestamp: 'string?',
   },
 };
 

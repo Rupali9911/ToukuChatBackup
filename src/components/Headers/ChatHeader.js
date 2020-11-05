@@ -139,7 +139,10 @@ export default class ChatHeader extends Component {
                     </Text>
                     <Text
                       numberOfLines={1}
-                      style={[globalStyles.smallRegularText, {fontSize: normalize(10)}]}>
+                      style={[
+                        globalStyles.smallRegularText,
+                        {fontSize: normalize(10)},
+                      ]}>
                       {description}
                     </Text>
                   </View>
@@ -152,7 +155,9 @@ export default class ChatHeader extends Component {
                 visible={this.state.visible}
                 onDismiss={this._closeMenu}
                 anchor={
-                  <TouchableOpacity onPress={this._openMenu} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                  <TouchableOpacity
+                    onPress={this._openMenu}
+                    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                     <Image
                       source={Icons.icon_dots}
                       style={globalStyles.smallIcon}

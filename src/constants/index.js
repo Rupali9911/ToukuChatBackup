@@ -277,6 +277,10 @@ export const SocketEvents = {
   UPDATE_CHANNEL_MODE: 'Update configration channel mode',
   PINED_CHANNEL: 'pined channel',
   UNPINED_CHANNEL: 'unpined channel',
+  GROUP_NOTE_DATA: 'group note data',
+  FRIEND_NOTE_DATA: 'friend note data',
+  FRIEND_NOTE_DATA_DELETED: 'friend note data deleted',
+  FRIEND_DISPLAY_NAME_DATA: 'friend display name data',
 };
 
 export const NotificationType = {

@@ -389,7 +389,7 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
 
 export const getGroupConversation = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getGroupConversationRequest())
+    dispatch(getGroupConversationRequest());
     console.log('groupId', groupId);
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
@@ -456,7 +456,6 @@ export const getGroupDetail = (groupId) => (dispatch) =>
         reject(err);
       });
   });
-
 
 //Get Group Members
 export const getGroupMembers = (groupId, offset = 0, limit = 20) => (
@@ -581,13 +580,60 @@ export const unSendGroupMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  export const deleteMultipleGroupMessage = (payload) => (dispatch) =>
+export const deleteMultipleGroupMessage = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/delete-multiple-message-from-group/`, payload)
       .then((res) => {
         resolve(res);
         // dispatch(deleteMessage(id));
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+export const getGroupNotes = (id, limit, offset) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(`/xchat/group-note/?group=${id}&limit=${limit}&offset=${offset}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const postGroupNotes = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/group-note/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const editGroupNotes = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/group-note/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const deleteGroupNotes = (id) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .delete(`/xchat/group-note/?id=${id}`)
+      .then((res) => {
+        resolve(res);
       })
       .catch((err) => {
         reject(err);

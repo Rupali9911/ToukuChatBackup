@@ -27,9 +27,9 @@ import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import Button from '../../components/Button';
 import GroupFriend from '../../components/GroupFriend';
 import NoData from '../../components/NoData';
+import CommonNotes from '../../components/CommonNotes';
 import {ListLoader, ImageLoader} from '../../components/Loaders';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
-
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
 import {
@@ -42,12 +42,16 @@ import {
   setCurrentGroupMembers,
   setCurrentGroupDetail,
   getGroupMembers,
+  getGroupNotes,
+  postGroupNotes,
+  editGroupNotes,
+  deleteGroupNotes,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ConfirmationModal} from '../../components/Modals';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ActivityIndicator} from 'react-native-paper';
-
+import moment from 'moment';
 const {width, height} = Dimensions.get('window');
 
 class GroupDetails extends Component {
@@ -62,11 +66,19 @@ class GroupDetails extends Component {
       addedFriends: [],
       isMyGroup: false,
       isManage: false,
+      isNotes: false,
+      isAbout: true,
+      deleteIndex: null,
+      deleteItem: null,
       isEdit: false,
+      editNoteIndex: null,
       showDeleteGroupConfirmationModal: false,
       showLeaveGroupConfirmationModal: false,
+      showDeleteNoteConfirmationModal: false,
       loading: false,
       filePath: {uri: this.props.currentGroupDetail.group_picture}, //For Image Picker
+      showTextBox: false,
+      data: null,
       memberOption: [
         {
           title: translate('pages.xchat.admin'),
@@ -118,6 +130,11 @@ class GroupDetails extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getGroupMembers(this.props.currentGroupDetail.id);
+    this.props.getGroupNotes(this.props.currentGroupDetail.id).then((res) => {
+      this.setState({
+        data: res,
+      });
+    });
     for (let admin of this.props.currentGroupDetail.admin_details) {
       if (admin.id === this.props.userData.id) {
         //this.props.getUserFriends();
@@ -130,7 +147,7 @@ class GroupDetails extends Component {
       this.props.navigation.state.params &&
       this.props.navigation.state.params.isInvite
     ) {
-      this.setState({isManage: true});
+      this.setState({isManage: true, isAbout: false, isNotes: false});
     }
   }
 
@@ -166,9 +183,27 @@ class GroupDetails extends Component {
         this.getGroupMembers(message.text.data.message_details.group_id);
         break;
       }
+      case SocketEvents.GROUP_NOTE_DATA: {
+        if (message.text.data.message_details.created) {
+          console.log(
+            'GroupDetails -> checkEventTypes -> message.text.data.message_details.created',
+            message.text.data.message_details.created,
+          );
+          this.hendleNewNote(message.text.data.message_details);
+          break;
+        } else if (message.text.data.message_details.note_id) {
+          console.log(
+            'GroupDetails -> checkEventTypes -> message.text.data.message_details.note_id',
+            message.text.data.message_details.note_id,
+          );
+          this.hendleDeleteNote(message.text.data.message_details);
+          break;
+        }
+        this.hendleEditNote(message.text.data.message_details);
+        break;
+      }
     }
   }
-
   setAdmin = (id, type) => {
     const {currentGroupDetail} = this.props;
     let addAdminData;
@@ -234,39 +269,44 @@ class GroupDetails extends Component {
   };
 
   getGroupMembers = (id) => {
-    this.setState({ loading: true });
+    this.setState({loading: true});
     this.props
       .getGroupMembers(id)
       .then((responseArray) => {
         this.props.getUserFriends().then(() => {
           //let arrTemp = [...responseArray, ...this.props.userFriends]
 
-          let arrTemp2 = this.props.userFriends
-          let arrTemp = [...arrTemp2]
+          let arrTemp2 = this.props.userFriends;
+          let arrTemp = [...arrTemp2];
 
-          console.log('arrTemp2', arrTemp2, responseArray)
-          console.log('responseArray', responseArray)
+          console.log('arrTemp2', arrTemp2, responseArray);
+          console.log('responseArray', responseArray);
 
-          responseArray.map(itemRes => {
-            arrTemp2.map(itemUserFriends => {
+          responseArray.map((itemRes) => {
+            arrTemp2.map((itemUserFriends) => {
               if (itemRes.id === itemUserFriends.user_id) {
-                let index = arrTemp.indexOf(itemUserFriends)
+                let index = arrTemp.indexOf(itemUserFriends);
                 if (index !== -1) {
-                  console.log('index ', index)
+                  console.log('index ', index);
                   arrTemp.splice(index, 1);
                 }
               }
-            })
-          })
+            });
+          });
 
-          let members = responseArray.filter(item => item.id !== this.props.userData.id);
+          let members = responseArray.filter(
+            (item) => item.id !== this.props.userData.id,
+          );
 
-          let arrTemp1 = [...members, ...arrTemp]
+          let arrTemp1 = [...members, ...arrTemp];
           //console.log('arrTemp1', arrTemp1)
           this.props.setCurrentGroupMembers(arrTemp1);
-          this.setState({ loading: false })
-        })
-      }).catch((err) => { this.setState({ loading: false }) });
+          this.setState({loading: false});
+        });
+      })
+      .catch((err) => {
+        this.setState({loading: false});
+      });
   };
 
   onAddFriend(isAdded, item) {
@@ -457,7 +497,7 @@ class GroupDetails extends Component {
                       .member_type
                   : translate('pages.xchat.add')
               }
-              isRightDropDown={true}
+              isRightDropDown={this.state.isMyGroup}
               dropDownData={
                 this.isMemberCheck(item.id ? item.id : item.user_Id)
                   ? this.isMemberCheck(item.id ? item.id : item.user_Id)
@@ -501,9 +541,208 @@ class GroupDetails extends Component {
     return [];
   };
 
+  hendleNewNote = (detail) => {
+    const {userData, currentGroup} = this.props;
+    const {data} = this.state;
+
+    if (detail.group != currentGroup.group_id) {
+      return;
+    }
+    const isNote = data.results.filter((item, index) => {
+      return item.id === detail.id;
+    });
+    if (isNote.length) {
+      return;
+    }
+    this.setState({
+      data: {
+        ...data,
+        count: data ? data.count + 1 : 1,
+        results:
+          data && data.results.length ? [detail, ...data.results] : [detail],
+      },
+    });
+  };
+
+  hendleDeleteNote = (detail) => {
+    const {data} = this.state;
+
+    const deleteNoteIndex = data.results.findIndex(
+      (item, index) => item.id === detail.note_id,
+    );
+    if (deleteNoteIndex === null || deleteNoteIndex === undefined) {
+      return;
+    }
+    this.setState({
+      data: {
+        ...data,
+        count: data.count - 1,
+        results: data.results.filter((item, noteIndex) => {
+          return deleteNoteIndex !== noteIndex;
+        }),
+      },
+    });
+  };
+
+  hendleEditNote = (detail) => {
+    const {userData, currentGroup} = this.props;
+    const {data} = this.state;
+
+    if (detail.group_id != currentGroup.group_id) {
+      return;
+    }
+    const noteIndex = data.results.findIndex(
+      (item, index) => item.id === detail.id,
+    );
+    if (noteIndex === null || noteIndex === 'undefined') {
+      return;
+    }
+
+    let updatedNote = data.results[noteIndex];
+    updatedNote.text = detail.text;
+    updatedNote.updated = moment().format();
+    const updatedNotesData = [
+      ...data.results.slice(0, noteIndex),
+      updatedNote,
+      ...data.results.slice(noteIndex + 1),
+    ];
+
+    this.setState({
+      data: {
+        ...data,
+        results: updatedNotesData,
+      },
+    });
+  };
+
+  onCancelDeleteNotePress = () => {
+    this.setState({
+      showDeleteNoteConfirmationModal: false,
+    });
+  };
+
+  toggleDeleteNoteConfirmationModal = (index = null, item = null) => {
+    this.setState((prevState) => ({
+      showDeleteNoteConfirmationModal: !prevState.showDeleteNoteConfirmationModal,
+      deleteIndex: index,
+      deleteItem: item,
+    }));
+  };
+
+  onConfirmDeleteNote = () => {
+    this.onDeleteNote(this.state.deleteIndex, this.state.deleteItem);
+  };
+
+  onPostNote = (text) => {
+    const {userData, currentGroup} = this.props;
+    const {data, editNoteIndex} = this.state;
+    if (editNoteIndex !== null) {
+      const payload = {
+        group_id: currentGroup.group_id,
+        text: text,
+        created_by: data.results[editNoteIndex].created_by,
+        id: data.results[editNoteIndex].id,
+      };
+      this.props
+        .editGroupNotes(payload)
+        .then((res) => {
+          console.log('onPostNote -> edit notes res', res);
+          data.results[editNoteIndex] = res;
+          // data.results[
+          //   editNoteIndex
+          // ].updated = moment().format();
+          this.setState({
+            editNoteIndex: null,
+            showTextBox: false,
+          });
+          Toast.show({
+            title: translate('pages.xchat.groupDetails'),
+            text: translate('pages.xchat.toastr.noteUpdated'),
+            type: 'positive',
+          });
+          return;
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+      return;
+    }
+
+    const payload = {group: currentGroup.group_id, text: text};
+
+    this.props
+      .postGroupNotes(payload)
+      .then((res) => {
+        this.setState({
+          data: {
+            ...data,
+            count: data ? data.count + 1 : 1,
+            results:
+              data && data.results.length ? [res, ...data.results] : [res],
+          },
+          showTextBox: false,
+        });
+        Toast.show({
+          title: translate('pages.xchat.groupDetails'),
+          text: translate('pages.xchat.toastr.notePosted'),
+          type: 'positive',
+        });
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
+  };
+  onEditNote = (index) => {
+    this.setState({
+      editNoteIndex: index,
+    });
+  };
+  onDeleteNote = (index, item) => {
+    const {data} = this.state;
+
+    this.props
+      .deleteGroupNotes(item.id)
+      .then((res) => {
+        this.setState({
+          data: {
+            ...data,
+            count: data.count - 1,
+            results: data.results.filter((item, noteIndex) => {
+              return noteIndex != index;
+            }),
+          },
+          deleteIndex: null,
+          deleteItem: null,
+        });
+        this.toggleDeleteNoteConfirmationModal();
+        Toast.show({
+          title: translate('pages.xchat.groupDetails'),
+          text: translate('pages.xchat.toastr.noteDeleted'),
+          type: 'positive',
+        });
+      })
+      .catch((err) => {
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+      });
+  };
+
   render() {
     const {
       isManage,
+      isAbout,
+      isNotes,
       isMyGroup,
       isEdit,
       groupName,
@@ -512,9 +751,11 @@ class GroupDetails extends Component {
       orientation,
       showDeleteGroupConfirmationModal,
       showLeaveGroupConfirmationModal,
+      showDeleteNoteConfirmationModal,
     } = this.state;
     return (
-      <View style={[globalStyles.container, {backgroundColor: 'white'}]}>
+      <View
+        style={[globalStyles.container, {backgroundColor: Colors.light_pink}]}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
@@ -570,54 +811,83 @@ class GroupDetails extends Component {
                 </TouchableOpacity>
               )}
             </View>
-            {isMyGroup ? (
-              <View style={groupDetailStyles.tabBar}>
-                <TouchableOpacity
+            <View style={groupDetailStyles.tabBar}>
+              <TouchableOpacity
+                style={[
+                  groupDetailStyles.tabItem,
+                  isAbout && {
+                    borderBottomWidth: 5,
+                    borderBottomColor: Colors.gradient_2,
+                  },
+                ]}
+                onPress={() => {
+                  this.setState({
+                    isAbout: true,
+                    isManage: false,
+                    isNotes: false,
+                  });
+                }}>
+                <Text
                   style={[
-                    groupDetailStyles.tabItem,
-                    !isManage && {
-                      borderBottomWidth: 5,
-                      borderBottomColor: Colors.gradient_2,
+                    groupDetailStyles.tabTitle,
+                    {
+                      fontFamily: Fonts.regular,
                     },
-                  ]}
-                  onPress={() => {
-                    this.setState({isManage: false});
-                  }}>
-                  <Text
-                    style={[
-                      groupDetailStyles.tabTitle,
-                      {
-                        fontFamily: Fonts.regular,
-                      },
-                    ]}>
-                    {translate(`pages.xchat.about`)}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                  ]}>
+                  {translate(`pages.xchat.about`)}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  groupDetailStyles.tabItem,
+                  isManage && {
+                    borderBottomWidth: 5,
+                    borderBottomColor: Colors.gradient_2,
+                  },
+                ]}
+                onPress={() => {
+                  this.setState({
+                    isAbout: false,
+                    isManage: true,
+                    isNotes: false,
+                  });
+                }}>
+                <Text
                   style={[
-                    groupDetailStyles.tabItem,
-                    isManage && {
-                      borderBottomWidth: 5,
-                      borderBottomColor: Colors.gradient_2,
+                    groupDetailStyles.tabTitle,
+                    {
+                      fontFamily: Fonts.regular,
                     },
-                  ]}
-                  onPress={() => {
-                    this.setState({isManage: true});
-                  }}>
-                  <Text
-                    style={[
-                      groupDetailStyles.tabTitle,
-                      {
-                        fontFamily: Fonts.regular,
-                      },
-                    ]}>
-                    {translate(`pages.xchat.manage`)}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{height: 20}} />
-            )}
+                  ]}>
+                  {translate(`pages.xchat.manage`)}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  groupDetailStyles.tabItem,
+                  isNotes && {
+                    borderBottomWidth: 5,
+                    borderBottomColor: Colors.gradient_2,
+                  },
+                ]}
+                onPress={() => {
+                  this.setState({
+                    isAbout: false,
+                    isManage: false,
+                    isNotes: true,
+                  });
+                }}>
+                <Text
+                  style={[
+                    groupDetailStyles.tabTitle,
+                    {
+                      fontFamily: Fonts.regular,
+                    },
+                  ]}>
+                  {translate(`pages.xchat.notes`)}
+                </Text>
+              </TouchableOpacity>
+            </View>
             {isManage ? (
               <React.Fragment>
                 <View
@@ -645,7 +915,7 @@ class GroupDetails extends Component {
                   {this.renderUserFriends()}
                 </View>
               </React.Fragment>
-            ) : (
+            ) : isAbout ? (
               <React.Fragment>
                 {isEdit ? (
                   isMyGroup && (
@@ -769,6 +1039,27 @@ class GroupDetails extends Component {
                   />
                 )}
               </React.Fragment>
+            ) : (
+              <CommonNotes
+                data={this.state.data}
+                onPost={this.onPostNote}
+                onEdit={this.onEditNote}
+                onDelete={this.toggleDeleteNoteConfirmationModal}
+                onAdd={() =>
+                  this.setState({
+                    showTextBox: true,
+                  })
+                }
+                onCancel={() =>
+                  this.setState({
+                    showTextBox: false,
+                    editNoteIndex: null,
+                  })
+                }
+                editNoteIndex={this.state.editNoteIndex}
+                showTextBox={this.state.showTextBox}
+                userData={this.props.userData}
+              />
             )}
           </KeyboardAwareScrollView>
           <ConfirmationModal
@@ -786,6 +1077,14 @@ class GroupDetails extends Component {
             onConfirm={this.onConfirmLeaveGroup.bind(this)}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.wantToLeaveText')}
+          />
+          <ConfirmationModal
+            orientation={orientation}
+            visible={showDeleteNoteConfirmationModal}
+            onCancel={this.onCancelDeleteNotePress.bind(this)}
+            onConfirm={this.onConfirmDeleteNote.bind(this)}
+            title={translate('pages.xchat.deleteNote')}
+            message={translate('pages.xchat.deleteNoteText')}
           />
         </View>
       </View>
@@ -816,6 +1115,10 @@ const mapDispatchToProps = {
   getGroupDetail,
   setCurrentGroupDetail,
   setCurrentGroupMembers,
+  getGroupNotes,
+  postGroupNotes,
+  editGroupNotes,
+  deleteGroupNotes,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);

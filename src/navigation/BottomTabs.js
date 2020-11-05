@@ -117,7 +117,7 @@ const Tabs = createBottomTabNavigator(
       tabStyle: {
         backgroundColor: Colors.home_header,
       },
-      style: {position:'absolute'},
+      style: {position: 'absolute'},
       activeTintColor: Colors.indigo,
       inactiveTintColor: Colors.white,
       safeAreaInset: {right: 'never', left: 'never', bottom: 'always'},

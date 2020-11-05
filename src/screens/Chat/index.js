@@ -63,6 +63,7 @@ import {
   getFriendRequests,
   setCurrentFriend,
   updateCurrentFriendAvtar,
+  updateCurrentFriendDisplayName,
   updateUnreadFriendMsgsCounts,
   getUserFriendsSuccess,
   setUserFriends,
@@ -90,6 +91,8 @@ import {
   getLocalUserFriends,
   updateFriendOnlineStatus,
   updateFriendAvtar,
+  updateFriendDisplayName,
+  getUserFriend,
   updateConversationUserAvtar,
   updateFriendTypingStatus,
   getGroups,
@@ -443,7 +446,10 @@ class Chat extends Component {
         break;
       case SocketEvents.CREATE_NEW_CHANNEL:
         this.createNewChannel(message);
-        return;
+        break;
+      case SocketEvents.FRIEND_DISPLAY_NAME_DATA:
+        this.onFriendDisplayNameUpdate(message);
+        break;
       case SocketEvents.MESSAGE_EDITED_IN_THREAD:
         break;
       case SocketEvents.DELETE_MESSAGE_IN_THREAD:
@@ -660,7 +666,6 @@ class Chat extends Component {
         ) {
           this.getLocalChannelConversations();
         }
-
       }
     }
   }
@@ -1228,6 +1233,26 @@ class Chat extends Component {
       }
     }
   }
+
+  onFriendDisplayNameUpdate = (message) => {
+    const {userFriends, currentFriend, userData} = this.props;
+    if (message.text.data.type === SocketEvents.FRIEND_DISPLAY_NAME_DATA) {
+      var user = getUserFriend(message.text.data.message_details.friend_id);
+      if (user && user.length > 0) {
+        updateFriendDisplayName(message.text.data.message_details);
+        this.props.getUserFriends().then((res) => {
+          this.setCommonConversation();
+        });
+      }
+      if (
+        currentFriend.friend === message.text.data.message_details.friend_id
+      ) {
+        this.props.updateCurrentFriendDisplayName(
+          message.text.data.message_details,
+        );
+      }
+    }
+  };
 
   getLocalFriendConversation = () => {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
@@ -1885,6 +1910,12 @@ class Chat extends Component {
     this.props.navigation.navigate('FriendChats');
   };
 
+  onOpenFriendDetails = (item) => {
+    console.log('onOpenFriendDetails -> item chat');
+    this.props.setCurrentFriend(item);
+    this.props.navigation.navigate('FriendNotes');
+  };
+
   getLocalChannelConversations = () => {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
@@ -2299,6 +2330,7 @@ class Chat extends Component {
                 date={item.timestamp}
                 isOnline={item.is_online}
                 onPress={() => this.onOpenFriendChats(item)}
+                onAvtarPress={() => this.onOpenFriendDetails(item)}
                 unreadCount={item.unread_msg}
                 isTyping={item.is_typing}
                 callTypingStop={(id) => {
@@ -2401,6 +2433,7 @@ const mapDispatchToProps = {
   getFriendRequests,
   setCurrentFriend,
   updateCurrentFriendAvtar,
+  updateCurrentFriendDisplayName,
   getUserConfiguration,
   updateConfiguration,
   setCommonChatConversation,

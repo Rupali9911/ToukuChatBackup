@@ -1109,6 +1109,11 @@ class Home extends Component {
     this.props.navigation.navigate('FriendChats');
   };
 
+  onOpenFriendDetails = (item) => {
+    this.props.setCurrentFriend(item);
+    this.props.navigation.navigate('FriendNotes');
+  };
+
   handleLoadMoreChannels = () => {
     this.start = this.start + 20;
     this.props.getMoreFollowingChannels(this.start).then((res) => {
@@ -1286,6 +1291,7 @@ class Home extends Component {
                 updateFriendTypingStatus(id, false);
                 this.props.setUserFriends();
               }}
+              onAvtarPress={() => this.onOpenFriendDetails(item)}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}

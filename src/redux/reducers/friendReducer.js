@@ -19,6 +19,8 @@ export const GET_PERSONAL_CONVERSATION_FAIL = 'GET_PERSONAL_CONVERSATION_FAIL';
 
 export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
 export const UPDATE_CURRENT_FRIEND_AVTAR = 'UPDATE_CURRENT_FRIEND_AVTAR';
+export const UPDATE_CURRENT_FRIEND_DISPLAY_NAME =
+  'UPDATE_CURRENT_FRIEND_DISPLAY_NAME';
 export const SET_UNREAD_FRIEND_MSG_COUNTS = 'SET_UNREAD_FRIEND_MSG_COUNTS';
 
 export const GET_FRIEND_CONVERSATION = 'GET_FRIEND_CONVERSATION';
@@ -57,6 +59,15 @@ export default function (state = initialState, action) {
           profile_picture: action.payload.avatar,
           display_name: action.payload.display_name,
           username: action.payload.username,
+        },
+      };
+
+    case UPDATE_CURRENT_FRIEND_DISPLAY_NAME:
+      return {
+        ...state,
+        currentFriend: {
+          ...state.currentFriend,
+          display_name: action.payload.display_name,
         },
       };
 
@@ -160,6 +171,10 @@ export const updateCurrentFriendAvtar = (data) => ({
   type: UPDATE_CURRENT_FRIEND_AVTAR,
   payload: data,
 });
+
+export const updateCurrentFriendDisplayName = (data) => {
+  return {type: UPDATE_CURRENT_FRIEND_DISPLAY_NAME, payload: data};
+};
 
 export const setCurrentFriend = (friend) => (dispatch) =>
   dispatch(setCurrentFriendData(friend));
@@ -375,7 +390,7 @@ const getPersonalConversationFailure = () => ({
 
 export const getPersonalConversation = (friend) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    dispatch(getPersonalConversationRequest())
+    dispatch(getPersonalConversationRequest());
     client
       .get(`/xchat/personal-conversation/${friend}/`)
       .then((res) => {
@@ -482,14 +497,75 @@ export const deletePersonalMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  //delete multiple message
-  export const deleteMultiplePersonalMessage = (payload) => (dispatch) =>
+//delete multiple message
+export const deleteMultiplePersonalMessage = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/delete-multiple-message-from-friend/`, payload)
       .then((res) => {
         resolve(res);
-        // dispatch(deleteMessage(id));
+        // dispatch(deleteMessage(id));})
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+export const getFriendNotes = (id, limit, offset) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .get(
+        `/xchat/friend-notes/?friend_id=${id}&limit=${limit}&offset=${offset}`,
+      )
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const postFriendNotes = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/friend-notes/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const editFriendNotes = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/friend-notes/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const deleteFriendNotes = (id) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .delete(`/xchat/friend-notes/?note_id=${id}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const updateFriendDisplayName = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`/xchat/update-user-display-name/`, payload)
+      .then((res) => {
+        resolve(res);
       })
       .catch((err) => {
         reject(err);

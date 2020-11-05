@@ -98,10 +98,10 @@ class Button extends Component {
         return globalStyles.smallLightText;
       case 'bigSemiBoldText':
         return globalStyles.bigSemiBoldText;
-        case 'normalRegular22Text':
-            return globalStyles.normalRegular22Text;
-            case 'normalRegular15Text':
-            return globalStyles.normalRegular15Text;
+      case 'normalRegular22Text':
+        return globalStyles.normalRegular22Text;
+      case 'normalRegular15Text':
+        return globalStyles.normalRegular15Text;
       default:
         return globalStyles.normalRegularText;
     }
@@ -135,6 +135,7 @@ class Button extends Component {
               borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
               borderColor: this.getBorderColor(),
               opacity: disabled ? 0.5 : 1,
+              paddingHorizontal: 5,
             },
           ]}>
           {loading ? (
@@ -144,29 +145,28 @@ class Button extends Component {
                 color={this.getIndicatorColor()}
               />
             </View>
-          ) : (
-              Platform.OS === 'ios' ?
+          ) : Platform.OS === 'ios' ? (
             <TextInput
-                pointerEvents="none"
-                editable={false}
-                style={[
+              pointerEvents="none"
+              editable={false}
+              style={[
                 this.getFont(),
                 {
-                  color: this.getTitleColor()
+                  color: this.getTitleColor(),
                 },
               ]}>
               {title}
             </TextInput>
-                  :
-                  <Text
-                      style={[
-                          this.getFont(),
-                          {
-                              color: this.getTitleColor(),
-                          },
-                      ]}>
-                      {title}
-                  </Text>
+          ) : (
+            <Text
+              style={[
+                this.getFont(),
+                {
+                  color: this.getTitleColor(),
+                },
+              ]}>
+              {title}
+            </Text>
           )}
         </LinearGradient>
       </TouchableOpacity>

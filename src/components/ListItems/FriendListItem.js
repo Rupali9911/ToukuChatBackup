@@ -8,7 +8,7 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
-import { normalize } from '../../utils';
+import {normalize} from '../../utils';
 export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
@@ -39,22 +39,24 @@ export default class FriendListItem extends Component {
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate() &&
-    today.getMonth() === msgDate.getMonth() &&
-    today.getFullYear() === msgDate.getFullYear()) {
+    if (
+      today.getDate() === msgDate.getDate() &&
+      today.getMonth() === msgDate.getMonth() &&
+      today.getFullYear() === msgDate.getFullYear()
+    ) {
       return moment(date).format('HH:mm');
     }
     if (
       yesterday.getDate() === msgDate.getDate() &&
       yesterday.getMonth() === msgDate.getMonth() &&
       yesterday.getFullYear() === msgDate.getFullYear()
-    ){
+    ) {
       return translate('common.yesterday');
     }
 
-    if(today.getFullYear() === msgDate.getFullYear()){
+    if (today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('MM/DD');
-    }else{
+    } else {
       return moment(date).format('MM/DD/YY');
     }
   };
@@ -70,21 +72,21 @@ export default class FriendListItem extends Component {
       isTyping,
       unreadCount,
       callTypingStop,
+      onAvtarPress,
     } = this.props;
     return (
       <Fragment>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onPress}
-          style={styles.container}>
-          <View style={styles.firstView}>
-            <RoundedImage
-              source={image}
-              size={50}
-              isBadge={true}
-              isOnline={isOnline}
-            />
-            <View style={styles.secondView}>
+        <View activeOpacity={0.8} style={styles.container}>
+          <View style={[styles.firstView]}>
+            <TouchableOpacity onPress={onAvtarPress}>
+              <RoundedImage
+                source={image}
+                size={50}
+                isBadge={true}
+                isOnline={isOnline}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondView} onPress={onPress}>
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Text
                   numberOfLines={1}
@@ -140,9 +142,9 @@ export default class FriendListItem extends Component {
                   </Badge>
                 )}
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
         <Divider />
       </Fragment>
     );

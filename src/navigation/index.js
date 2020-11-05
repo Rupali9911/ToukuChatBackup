@@ -1,5 +1,5 @@
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
 
 import Authentication from '../screens/Authentication';
 import LoginSignUp from '../screens/LoginSignUp';
@@ -11,6 +11,7 @@ import NeedSupport from '../screens/NeedSupport';
 import ChannelChats from '../screens/ChannelChats';
 import GroupChats from '../screens/GroupChats';
 import FriendChats from '../screens/FriendChats';
+import FriendNotes from '../screens/FriendNotes';
 import CreateFriendGroup from '../screens/CreateFriendGroup';
 import ChannelInfo from '../screens/ChannelInfo';
 import GroupDetails from '../screens/GroupDetails';
@@ -27,7 +28,7 @@ const ChannelStack = createStackNavigator(
     defaultNavigationOptions: {
       headerShown: false,
     },
-  }
+  },
 );
 
 const AppStack = createStackNavigator(
@@ -40,13 +41,14 @@ const AppStack = createStackNavigator(
     ChannelInfo: ChannelInfo,
     ChannelTimeline: ChannelTimeline,
     GroupDetails: GroupDetails,
+    FriendNotes: FriendNotes,
   },
   {
     initialRouteName: 'Drawer',
     defaultNavigationOptions: {
       headerShown: false,
     },
-  }
+  },
 );
 
 const AuthStack = createStackNavigator(
@@ -63,7 +65,7 @@ const AuthStack = createStackNavigator(
     defaultNavigationOptions: {
       headerShown: false,
     },
-  }
+  },
 );
 
 export default createAppContainer(
@@ -75,6 +77,6 @@ export default createAppContainer(
     },
     {
       initialRouteName: 'Authentication',
-    }
-  )
+    },
+  ),
 );
