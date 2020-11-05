@@ -24,6 +24,8 @@ import NoData from './NoData';
 import RoundedImage from './RoundedImage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
+import CheckBox from './CheckBox';
+import Button from './Button';
 
 const {height} = Dimensions.get('window');
 
@@ -170,6 +172,11 @@ class ChatContainer extends Component {
       sendingImage,
       currentChannel,
       sendEnable,
+      isMultiSelect,
+      onSelect,
+      selectedIds,
+      onSelectedCancel,
+      onSelectedDelete
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -248,8 +255,17 @@ class ChatContainer extends Component {
                   return moment(msgDate).format('MM/DD');
                 };
                 const conversationLength = messages.length;
+                let isSelected = selectedIds.includes(item.id+'');
                 return (
                   <Fragment>
+                    <View style={{flexDirection:'row',alignItems:'center'}}>
+                    {isMultiSelect?
+                        <CheckBox
+                          isChecked={isSelected}
+                          onCheck={()=>onSelect(item.id)}
+                        />
+                    :null}
+                    <View style={{flex:1}}>
                     <ChatMessageBox
                       ref={(view) => {
                         this[`message_box_${item.id}`] = view;
@@ -303,6 +319,8 @@ class ChatContainer extends Component {
                           this[`message_box_${id}`].callBlinking(id);
                       }}
                     />
+                    </View>
+                    </View>
                     {(messages[index + 1] &&
                       new Date(item.created).getDate() !==
                         new Date(messages[index + 1].created).getDate()) ||
@@ -508,7 +526,39 @@ class ChatContainer extends Component {
             </View>
           ) : null}
         </View>
-        <ChatInput
+        {isMultiSelect?
+          <View style={{ 
+            backgroundColor:Colors.light_pink, 
+            flexDirection:'row', 
+            borderTopColor:Colors.pink_chat, 
+            borderTopWidth:3, 
+            paddingBottom:20, 
+            justifyContent:'space-between',
+            padding:10
+            }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                title={translate(`common.cancel`)}
+                onPress={onSelectedCancel}
+                isRounded={true}
+                type={'secondary'}
+                fontType={'smallRegularText'}
+                height={40}
+              />
+            </View>
+            <View style={{flex:0.3}}/>
+            <View style={{flex: 1 }}>
+              <Button
+                title={translate(`common.delete`)+` (${selectedIds.length})`}
+                onPress={onSelectedDelete}
+                isRounded={true}
+                fontType={'smallRegularText'}
+                height={40}
+              />
+            </View>
+            
+          </View>
+        :<ChatInput
           onAttachmentPress={() => onAttachmentPress()}
           onCameraPress={() => onCameraPress()}
           onGalleryPress={() => onGalleryPress()}
@@ -523,7 +573,7 @@ class ChatContainer extends Component {
           sendEnable={sendEnable}
           placeholder={translate('pages.xchat.enterMessage')}
           sendingImage={sendingImage}
-        />
+        />}
       </KeyboardAwareScrollView>
     );
   }

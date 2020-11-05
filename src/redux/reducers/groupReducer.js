@@ -580,3 +580,16 @@ export const unSendGroupMessage = (id, payload) => (dispatch) =>
         reject(err);
       });
   });
+
+  export const deleteMultipleGroupMessage = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/delete-multiple-message-from-group/`, payload)
+      .then((res) => {
+        resolve(res);
+        // dispatch(deleteMessage(id));
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

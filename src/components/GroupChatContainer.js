@@ -26,6 +26,8 @@ import RoundedImage from './RoundedImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
+import CheckBox from './CheckBox';
+import Button from './Button';
 
 const {width, height} = Dimensions.get('window');
 
@@ -169,6 +171,11 @@ class GroupChatContainer extends Component {
       sendingImage,
       memberCount,
       groupMembers,
+      isMultiSelect,
+      onSelect,
+      selectedIds,
+      onSelectedCancel,
+      onSelectedDelete
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -223,6 +230,7 @@ class GroupChatContainer extends Component {
               onScrollEndDrag={() => {
                 this.closeMenuFalse();
               }}
+              extraData={this.state}
               data={messages}
               inverted={true}
               renderItem={({item, index}) => {
@@ -244,8 +252,18 @@ class GroupChatContainer extends Component {
                   return moment(msgDate).format('MM/DD');
                 };
                 const conversationLength = messages.length;
+
+                let isSelected = selectedIds.includes(item.msg_id+'');
                 return (
                   <Fragment key={index}>
+                    <View style={{flexDirection:'row',alignItems:'center'}}>
+                    {isMultiSelect?
+                        <CheckBox
+                          isChecked={isSelected}
+                          onCheck={()=>onSelect(item.msg_id)}
+                        />
+                    :null}
+                    <View style={{flex:1}}>
                     <GroupChatMessageBox
                       ref={(view) => {
                         this[`message_box_${item.msg_id}`] = view;
@@ -295,7 +313,8 @@ class GroupChatContainer extends Component {
                       }}
                       groupMembers={groupMembers}
                     />
-
+                    </View>
+                    </View>
                     {(messages[index + 1] &&
                       new Date(item.timestamp).getDate() !==
                         new Date(messages[index + 1].timestamp).getDate()) ||
@@ -494,7 +513,39 @@ class GroupChatContainer extends Component {
             </View>
           ) : null}
         </View>
-        <ChatInput
+        {isMultiSelect?
+          <View style={{ 
+            backgroundColor:Colors.light_pink, 
+            flexDirection:'row', 
+            borderTopColor:Colors.pink_chat, 
+            borderTopWidth:3, 
+            paddingBottom:20, 
+            justifyContent:'space-between',
+            padding:10
+            }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                title={translate(`common.cancel`)}
+                onPress={onSelectedCancel}
+                isRounded={true}
+                type={'secondary'}
+                fontType={'smallRegularText'}
+                height={40}
+              />
+            </View>
+            <View style={{flex:0.3}}/>
+            <View style={{flex: 1 }}>
+              <Button
+                title={translate(`common.delete`)+` (${selectedIds.length})`}
+                onPress={onSelectedDelete}
+                isRounded={true}
+                fontType={'smallRegularText'}
+                height={40}
+              />
+            </View>
+            
+          </View>
+        :<ChatInput
           onAttachmentPress={() => onAttachmentPress()}
           onCameraPress={() => onCameraPress()}
           onGalleryPress={() => onGalleryPress()}
@@ -512,7 +563,7 @@ class GroupChatContainer extends Component {
           onSelectMention={this.props.onSelectMention}
           placeholder={translate('pages.xchat.enterMessage')}
           sendingImage={sendingImage}
-        />
+        />}
       </KeyboardAwareScrollView>
     );
   }

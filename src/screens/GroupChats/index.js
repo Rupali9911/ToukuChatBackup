@@ -53,6 +53,7 @@ import {
   setGroupConversation,
   resetGroupConversation,
   getGroupConversationRequest,
+  deleteMultipleGroupMessage
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
@@ -98,6 +99,8 @@ class GroupChats extends Component {
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
       isChatLoading: false,
+      isMultiSelect: false,
+      selectedIds: [],
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -954,6 +957,17 @@ class GroupChats extends Component {
     }));
   };
 
+  onSelectChatConversation = (id) => {
+    let array = this.state.selectedIds;
+    if (this.state.selectedIds.includes(id + '')) {
+      let index = array.indexOf(id + '');
+      array.splice(index, 1);
+    } else {
+      array.push(id + '');
+    }
+    this.setState({ selectedIds: array });
+  }
+
   onConfirmLeaveGroup = () => {
     const payload = {
       group_id: this.props.currentGroup.group_id,
@@ -1031,6 +1045,12 @@ class GroupChats extends Component {
     });
   };
 
+  onDeleteMultipleMessagePressed = () => {
+    this.setState({
+      showMessageDeleteConfirmationModal: true
+    });
+  };
+
   onUnsendMessagePressed = (messageId) => {
     this.setState({
       showMessageUnsendConfirmationModal: true,
@@ -1069,6 +1089,47 @@ class GroupChats extends Component {
                 this.props.setCommonChatConversation();
               });
             }
+          }
+          // this.getGroupConversation();
+        });
+    }
+  };
+
+  onConfirmMultipleMessageDelete = () => {
+    this.setState({showMessageDeleteConfirmationModal: false});
+    if (this.state.selectedIds.length > 0) {
+      let payload = {message_ids: this.state.selectedIds};
+      this.props
+        .deleteMultipleGroupMessage(payload)
+        .then((res) => {
+          if(res && res.status){
+            this.state.selectedIds.map(item => {
+              deleteGroupMessageById(item);
+              if (
+                this.props.currentGroup.last_msg_id == item
+              ) {
+                let chat = getGroupChatConversationById(
+                  this.props.currentGroup.group_id,
+                );
+  
+                let array = chat.toJSON();
+  
+                if (array && array.length > 0) {
+                  updateLastMsgGroupsWithoutCount(
+                    this.props.currentGroup.group_id,
+                    array[0].message_body.type,
+                    array[0].message_body.text,
+                    array[0].msg_id,
+                    array[0].timestamp,
+                  );
+                  this.props.getLocalUserGroups().then((res) => {
+                    this.props.setCommonChatConversation();
+                  });
+                }
+              }
+            })
+            this.getLocalGroupConversation();
+            this.setState({isMultiSelect:false,selectedIds:[]});
           }
           // this.getGroupConversation();
         });
@@ -1357,6 +1418,7 @@ class GroupChats extends Component {
       uploadFile,
       sendingMedia,
       isChatLoading,
+      isMultiSelect
     } = this.state;
     const {
       chatGroupConversation,
@@ -1398,7 +1460,10 @@ class GroupChats extends Component {
             repliedMessage={repliedMessage}
             isReply={isReply}
             cancelReply={this.cancelReply.bind(this)}
-            onDelete={(id) => this.onDeleteMessagePressed(id)}
+            onDelete={(id) => {
+              this.setState({isMultiSelect:true,selectedIds:[...this.state.selectedIds,id+'']});
+              // this.onDeleteMessagePressed(id)
+            }}
             onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onEditMessage={(msg) => this.onEdit(msg)}
@@ -1414,6 +1479,13 @@ class GroupChats extends Component {
             groupMembers={currentGroupMembers}
             useMentionsFunctionality={true}
             onSelectMention={this.onSelectMention}
+            isMultiSelect={isMultiSelect}
+            onSelect={this.onSelectChatConversation}
+            selectedIds={this.state.selectedIds}
+            onSelectedCancel={()=>{
+              this.setState({isMultiSelect:false,selectedIds:[]});
+            }}
+            onSelectedDelete={this.onDeleteMultipleMessagePressed}
           />
         )}
 
@@ -1439,7 +1511,7 @@ class GroupChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelPress.bind(this)}
-          onConfirm={this.onConfirmMessageDelete.bind(this)}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
@@ -1520,6 +1592,7 @@ const mapDispatchToProps = {
   editGroupMessage,
   markGroupConversationRead,
   unSendGroupMessage,
+  deleteMultipleGroupMessage,
   setGroupConversation,
   resetGroupConversation,
   setCommonChatConversation,

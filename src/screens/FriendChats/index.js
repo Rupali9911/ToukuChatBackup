@@ -38,6 +38,7 @@ import {
   resetFriendConversation,
   updateUnreadFriendMsgsCounts,
   setUserFriends,
+  deleteMultiplePersonalMessage
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
@@ -80,6 +81,8 @@ class FriendChats extends Component {
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
       isChatLoading:false,
+      isMultiSelect: false,
+      selectedIds: [],
       headerRightIconMenu: this.props.userData.id === appleStoreUserId ? [
         {
           id: 1,
@@ -578,26 +581,27 @@ class FriendChats extends Component {
             this.props.currentFriend.friend,
           );
           let conversations = [];
-          chat.map((item, index) => {
-            let i = {
-              created: item.created,
-              deleted_for: item.deleted_for,
-              friend: item.friend,
-              from_user: item.from_user,
-              id: item.id,
-              is_edited: item.is_edited,
-              is_read: item.is_read,
-              is_unsent: item.is_unsent,
-              local_id: item.local_id,
-              message_body: item.message_body,
-              msg_type: item.msg_type,
-              reply_to: item.reply_to,
-              thumbnail: item.thumbnail,
-              to_user: item.to_user,
-              updated: item.updated,
-            };
-            conversations = [...conversations, i];
-          });
+          conversations = chat.toJSON();
+          // chat.map((item, index) => {
+          //   let i = {
+          //     created: item.created,
+          //     deleted_for: item.deleted_for,
+          //     friend: item.friend,
+          //     from_user: item.from_user,
+          //     id: item.id,
+          //     is_edited: item.is_edited,
+          //     is_read: item.is_read,
+          //     is_unsent: item.is_unsent,
+          //     local_id: item.local_id,
+          //     message_body: item.message_body,
+          //     msg_type: item.msg_type,
+          //     reply_to: item.reply_to,
+          //     thumbnail: item.thumbnail,
+          //     to_user: item.to_user,
+          //     updated: item.updated,
+          //   };
+          //   conversations = [...conversations, i];
+          // });
           this.props.setFriendConversation(conversations);
         }
       });
@@ -607,26 +611,27 @@ class FriendChats extends Component {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
-      chat.map((item, index) => {
-        let i = {
-          created: item.created,
-          deleted_for: item.deleted_for,
-          friend: item.friend,
-          from_user: item.from_user,
-          id: item.id,
-          is_edited: item.is_edited,
-          is_read: item.is_read,
-          is_unsent: item.is_unsent,
-          local_id: item.local_id,
-          message_body: item.message_body,
-          msg_type: item.msg_type,
-          reply_to: item.reply_to,
-          thumbnail: item.thumbnail,
-          to_user: item.to_user,
-          updated: item.updated,
-        };
-        conversations = [...conversations, i];
-      });
+      conversations = chat.toJSON();
+      // chat.map((item, index) => {
+      //   let i = {
+      //     created: item.created,
+      //     deleted_for: item.deleted_for,
+      //     friend: item.friend,
+      //     from_user: item.from_user,
+      //     id: item.id,
+      //     is_edited: item.is_edited,
+      //     is_read: item.is_read,
+      //     is_unsent: item.is_unsent,
+      //     local_id: item.local_id,
+      //     message_body: item.message_body,
+      //     msg_type: item.msg_type,
+      //     reply_to: item.reply_to,
+      //     thumbnail: item.thumbnail,
+      //     to_user: item.to_user,
+      //     updated: item.updated,
+      //   };
+      //   conversations = [...conversations, i];
+      // });
       this.props.setFriendConversation(conversations);
     }
   };
@@ -636,26 +641,27 @@ class FriendChats extends Component {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
-      chat.map((item, index) => {
-        let i = {
-          created: item.created,
-          deleted_for: item.deleted_for,
-          friend: item.friend,
-          from_user: item.from_user,
-          id: item.id,
-          is_edited: item.is_edited,
-          is_read: item.is_read,
-          is_unsent: item.is_unsent,
-          local_id: item.local_id,
-          message_body: item.message_body,
-          msg_type: item.msg_type,
-          reply_to: item.reply_to,
-          thumbnail: item.thumbnail,
-          to_user: item.to_user,
-          updated: item.updated,
-        };
-        conversations = [...conversations, i];
-      });
+      conversations = chat.toJSON();
+      // chat.map((item, index) => {
+      //   let i = {
+      //     created: item.created,
+      //     deleted_for: item.deleted_for,
+      //     friend: item.friend,
+      //     from_user: item.from_user,
+      //     id: item.id,
+      //     is_edited: item.is_edited,
+      //     is_read: item.is_read,
+      //     is_unsent: item.is_unsent,
+      //     local_id: item.local_id,
+      //     message_body: item.message_body,
+      //     msg_type: item.msg_type,
+      //     reply_to: item.reply_to,
+      //     thumbnail: item.thumbnail,
+      //     to_user: item.to_user,
+      //     updated: item.updated,
+      //   };
+      //   conversations = [...conversations, i];
+      // });
       this.props.setFriendConversation(conversations);
       this.setState({isChatLoading:false});
     }
@@ -670,26 +676,27 @@ class FriendChats extends Component {
             this.props.currentFriend.friend,
           );
           let conversations = [];
-          chat.map((item, index) => {
-            let i = {
-              created: item.created,
-              deleted_for: item.deleted_for,
-              friend: item.friend,
-              from_user: item.from_user,
-              id: item.id,
-              is_edited: item.is_edited,
-              is_read: item.is_read,
-              is_unsent: item.is_unsent,
-              local_id: item.local_id,
-              message_body: item.message_body,
-              msg_type: item.msg_type,
-              reply_to: item.reply_to,
-              thumbnail: item.thumbnail,
-              to_user: item.to_user,
-              updated: item.updated,
-            };
-            conversations = [...conversations, i];
-          });
+          conversations = chat.toJSON();
+          // chat.map((item, index) => {
+          //   let i = {
+          //     created: item.created,
+          //     deleted_for: item.deleted_for,
+          //     friend: item.friend,
+          //     from_user: item.from_user,
+          //     id: item.id,
+          //     is_edited: item.is_edited,
+          //     is_read: item.is_read,
+          //     is_unsent: item.is_unsent,
+          //     local_id: item.local_id,
+          //     message_body: item.message_body,
+          //     msg_type: item.msg_type,
+          //     reply_to: item.reply_to,
+          //     thumbnail: item.thumbnail,
+          //     to_user: item.to_user,
+          //     updated: item.updated,
+          //   };
+          //   conversations = [...conversations, i];
+          // });
           this.props.setFriendConversation(conversations);
         }
         this.setState({isChatLoading:false});
@@ -717,6 +724,17 @@ class FriendChats extends Component {
   toggleConfirmationModal = () => {
     this.setState({showConfirmationModal: !this.state.showConfirmationModal});
   };
+
+  onSelectChatConversation = (id) => {
+    let array = this.state.selectedIds;
+    if (this.state.selectedIds.includes(id + '')) {
+      let index = array.indexOf(id + '');
+      array.splice(index, 1);
+    } else {
+      array.push(id + '');
+    }
+    this.setState({ selectedIds: array });
+  }
 
   onCancel = () => {
     this.toggleConfirmationModal();
@@ -804,6 +822,48 @@ class FriendChats extends Component {
     }
   };
 
+  onConfirmMultipleMessageDelete = () => {
+    this.setState({showMessageDeleteConfirmationModal: false});
+    if (this.state.selectedIds.length > 0) {
+      let payload = {message_ids: this.state.selectedIds};
+      this.props
+        .deleteMultiplePersonalMessage(payload)
+        .then((res) => {
+          console.log(res);
+          if(res && res.status){
+            this.state.selectedIds.map(item => {
+              deleteFriendMessageById(item);
+
+              if (this.props.currentFriend.last_msg_id == item) {
+                let chat = getFriendChatConversationById(
+                  this.props.currentFriend.friend,
+                );
+
+                let array = chat.toJSON();
+
+                if (array && array.length > 0) {
+                  updateFriendLastMsgWithoutCount(
+                    this.props.currentFriend.user_id,
+                    {
+                      id: array[0].id,
+                      msg_type: array[0].msg_type,
+                      message_body: array[0].message_body,
+                      created: array[0].timestamp,
+                    },
+                  );
+                  this.props.setUserFriends().then((res) => {
+                    this.props.setCommonChatConversation();
+                  });
+                }
+              }
+            })
+            this.getLocalFriendConversation();
+            this.setState({isMultiSelect:false,selectedIds:[]});
+          }
+        });
+    }
+  };
+
   onCancelUnSend = () => {
     this.setState({showMessageUnSendConfirmationModal: false});
   };
@@ -833,6 +893,12 @@ class FriendChats extends Component {
     this.setState({
       showMessageDeleteConfirmationModal: true,
       selectedMessageId: messageId,
+    });
+  };
+
+  onDeleteMultipleMessagePressed = () => {
+    this.setState({
+      showMessageDeleteConfirmationModal: true
     });
   };
 
@@ -1153,7 +1219,8 @@ class FriendChats extends Component {
       translatedMessageId,
       uploadFile,
       sendingMedia,
-      isChatLoading
+      isChatLoading,
+      isMultiSelect
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
     console.log('chatsLoading',chatsLoading);
@@ -1189,7 +1256,10 @@ class FriendChats extends Component {
             repliedMessage={this.state.repliedMessage}
             isReply={this.state.isReply}
             cancelReply={this.cancelReply}
-            onDelete={(id) => this.onDeletePressed(id)}
+            onDelete={(id) => {
+              this.setState({isMultiSelect:true,selectedIds:[...this.state.selectedIds,id+'']});
+              // this.onDeletePressed(id)
+            }}
             onUnSendMsg={(id) => this.onUnSendPressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
@@ -1201,6 +1271,13 @@ class FriendChats extends Component {
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
+            isMultiSelect={isMultiSelect}
+            onSelect={this.onSelectChatConversation}
+            selectedIds={this.state.selectedIds}
+            onSelectedCancel={()=>{
+              this.setState({isMultiSelect:false,selectedIds:[]});
+            }}
+            onSelectedDelete={this.onDeleteMultipleMessagePressed}
           />
         )}
         <ConfirmationModal
@@ -1216,7 +1293,7 @@ class FriendChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelDelete.bind(this)}
-          onConfirm={this.onConfirmDelete.bind(this)}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
@@ -1291,6 +1368,7 @@ const mapDispatchToProps = {
   markFriendMsgsRead,
   unSendPersonalMessage,
   deletePersonalMessage,
+  deleteMultiplePersonalMessage,
   setFriendConversation,
   addNewSendMessage,
   resetFriendConversation,

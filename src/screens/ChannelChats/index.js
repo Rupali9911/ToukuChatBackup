@@ -51,6 +51,7 @@ import {
   selectLoginJackpotOfChannel,
   assetXPValueOfChannel,
   getLocalFollowingChannels,
+  deleteMultipleChannelMessage
 } from '../../redux/reducers/channelReducer';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
 import {
@@ -69,6 +70,7 @@ import {
   deleteMessageById,
   setMessageUnsend,
   updateChannelUnReadCountById,
+  updateChannelLastMsgWithOutCount,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 import bonusImage from '../../../assets/images/bonus_bg.png';
@@ -105,6 +107,8 @@ class ChannelChats extends Component {
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
       isChatLoading:false,
+      isMultiSelect: false,
+      selectedIds: [],
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -1046,7 +1050,8 @@ class ChannelChats extends Component {
       showMessageDeleteConfirmationModal,
       uploadFile,
       sendingMedia,
-      isChatLoading
+      isChatLoading,
+      isMultiSelect
     } = this.state;
     if (!this.props.chatConversation) {
       return null;
@@ -1064,7 +1069,10 @@ class ChannelChats extends Component {
             messages={chatConversation}
             orientation={orientation}
             repliedMessage={repliedMessage}
-            onDelete={(id) => this.onDeletePressed(id)}
+            onDelete={(id) => {
+              this.setState({isMultiSelect:true,selectedIds:[...this.state.selectedIds,id+'']});
+              // this.onDeletePressed(id)
+            }}
             onUnSendMsg={(id) => this.onUnSendPressed(id)}
             onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
             onMessageTranslateClose={this.onMessageTranslateClose}
@@ -1077,6 +1085,13 @@ class ChannelChats extends Component {
             onGalleryPress={() => this.onGalleryPress()}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
+            isMultiSelect={isMultiSelect}
+            onSelect={this.onSelectChatConversation}
+            selectedIds={this.state.selectedIds}
+            onSelectedCancel={()=>{
+              this.setState({isMultiSelect:false,selectedIds:[]});
+            }}
+            onSelectedDelete={this.onDeleteMultipleMessagePressed}
           />
 
           <ConfirmationModal
@@ -1100,7 +1115,7 @@ class ChannelChats extends Component {
           <ConfirmationModal
             visible={showMessageDeleteConfirmationModal}
             onCancel={this.onCancel.bind(this)}
-            onConfirm={this.onConfirmDeleteMessage.bind(this)}
+            onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
             orientation={orientation}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.youWantToDeleteThisMessage')}
@@ -1162,6 +1177,23 @@ class ChannelChats extends Component {
     }));
   };
 
+  onSelectChatConversation = (id) => {
+    let array = this.state.selectedIds;
+    if (this.state.selectedIds.includes(id + '')) {
+      let index = array.indexOf(id + '');
+      array.splice(index, 1);
+    } else {
+      array.push(id + '');
+    }
+    this.setState({ selectedIds: array });
+  }
+
+  onDeleteMultipleMessagePressed = () => {
+    this.setState({
+      showMessageDeleteConfirmationModal: true
+    });
+  };
+
   onCancel = () => {
     this.setState({
       showConfirmationModal: false,
@@ -1200,6 +1232,43 @@ class ChannelChats extends Component {
         .deleteChannelMessage(this.state.selectedMessageId, payload)
         .then((res) => {
           this.getChannelConversations();
+        });
+    }
+  };
+
+  onConfirmMultipleMessageDelete = () => {
+    this.setState({showMessageDeleteConfirmationModal: false});
+    if (this.state.selectedIds.length > 0) {
+      let payload = {message_ids: this.state.selectedIds};
+      this.props
+        .deleteMultipleChannelMessage(payload)
+        .then((res) => {
+          console.log(res);
+          if(res && res.status){
+            this.state.selectedIds.map(item => {
+              deleteMessageById(item);
+
+              if (this.props.currentChannel.last_msg.id == item) {
+                let chat = getChannelChatConversationById(
+                  this.props.currentChannel.id,
+                );
+
+                let array = chat.toJSON();
+
+                if (array && array.length > 0) {
+                  updateChannelLastMsgWithOutCount(
+                    this.props.currentChannel.id,
+                    array[0],
+                  );
+                  this.props.getLocalFollowingChannels().then(() => {
+                    this.props.setCommonChatConversation();
+                  });
+                }
+              }
+            })
+            this.getLocalChannelConversations();
+            this.setState({isMultiSelect:false,selectedIds:[]});
+          }
         });
     }
   };
@@ -1584,6 +1653,7 @@ const mapDispatchToProps = {
   translateMessage,
   editChannelMessage,
   deleteChannelMessage,
+  deleteMultipleChannelMessage,
   setChannelConversation,
   resetChannelConversation,
   addNewSendMessage,

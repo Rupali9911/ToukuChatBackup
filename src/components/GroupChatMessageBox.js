@@ -169,6 +169,7 @@ export default class GroupChatMessageBox extends Component {
       memberCount,
       onReplyPress,
       groupMembers,
+      isMultiSelect
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -193,13 +194,21 @@ export default class GroupChatMessageBox extends Component {
 
     return !isUser ? (
       <Animated.View style={[animatedStyle]}>
-        <View
+      <View
+        style={[
+          styles.container,
+          {
+            maxWidth: message.msg_type==='text' ? width * 0.80 : width * 0.65,
+            justifyContent: 'flex-start',
+          },
+        ]}>
+        {/* <View
           style={[
             styles.container,
             {
               justifyContent: 'flex-start',
             },
-          ]}>
+          ]}> */}
           <View
             style={{
               alignItems: 'flex-start',
@@ -291,6 +300,7 @@ export default class GroupChatMessageBox extends Component {
           style={[
             styles.container,
             {
+              maxWidth: message.msg_type === 'text' ? width * 0.93 : width * 0.75,
               alignItems: 'flex-end',
               alignSelf: 'flex-end',
             },
@@ -320,7 +330,6 @@ export default class GroupChatMessageBox extends Component {
                         message.read_count}
                   </Text>
                 )}
-
                 <Text style={styles.statusText}>
                   {`${time.getHours()}:${
                     time.getMinutes() < 10

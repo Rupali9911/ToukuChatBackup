@@ -17,7 +17,7 @@ export default class VideoThumbnailPlayer extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.url){
+    if(nextProps.url && nextProps.url!==this.props.url){
       this.generateThumbnail(nextProps.url);
     }
   }

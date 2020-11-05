@@ -343,6 +343,9 @@ class Chat extends Component {
       case SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL:
         this.messageDeleteInFollowingChannel(message);
         break;
+      case SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.multipleMessageDeleteInFollowingChannel(message);
+        break;
       case SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL:
         this.messageUnsentInFollowingChannel(message);
         break;
@@ -367,6 +370,9 @@ class Chat extends Component {
       case SocketEvents.DELETE_MESSAGE_IN_FRIEND:
         this.onDeleteMessageInFriend(message);
         break;
+      case SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FRIEND:
+        this.onDeleteMultipleMessageInFriend(message);
+        break;
       case SocketEvents.UNSENT_MESSAGE_IN_FRIEND:
         this.onUnsentMessageInFriend(message);
         break;
@@ -387,6 +393,9 @@ class Chat extends Component {
         break;
       case SocketEvents.DELETE_MESSAGE_IN_GROUP:
         this.onDeleteMessageInGroup(message);
+        break;
+      case SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_GROUP:
+        this.onDeleteMultipleMessageInGroup(message);
         break;
       case SocketEvents.UNSENT_MESSAGE_FROM_GROUP:
         this.UnsentMessageFromGroup(message);
@@ -1030,6 +1039,48 @@ class Chat extends Component {
     }
   }
 
+  multipleMessageDeleteInFollowingChannel(message) {
+    const {userData, followingChannels, currentChannel} = this.props;
+    if (
+      message.text.data.type ===
+      SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+    ) {
+      message.text.data.message_details.map(item => {
+        if (item.deleted_for.includes(this.props.userData.id)) {
+          let result = getChannelsById(item.channel);
+          let channels = [];
+          channels = result.toJSON();
+          deleteMessageById(item.id);
+          if (channels[0].last_msg.id == item.id) {
+            var chats = getChannelChatConversationById(
+              item.channel,
+            );
+            var array = [];
+            for (let chat of chats) {
+              array = [...array, chat];
+            }
+            console.log('updated_last_messgae', JSON.stringify(array[0]));
+            updateChannelLastMsgWithOutCount(
+              item.channel,
+              array[0],
+            );
+
+            this.props.getLocalFollowingChannels().then(() => {
+              this.props.setCommonChatConversation();
+            });
+          }
+          if (
+            currentChannel &&
+            item.channel == currentChannel.id
+          ) {
+            let chat = getChannelChatConversationById(currentChannel.id);
+            this.props.setChannelConversation(chat);
+          }
+        }
+      });
+    }
+  }
+
   messageUnsentInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
     if (
@@ -1182,26 +1233,27 @@ class Chat extends Component {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
-      chat.map((item, index) => {
-        let i = {
-          created: item.created,
-          deleted_for: item.deleted_for,
-          friend: item.friend,
-          from_user: item.from_user,
-          id: item.id,
-          is_edited: item.is_edited,
-          is_read: item.is_read,
-          is_unsent: item.is_unsent,
-          local_id: item.local_id,
-          message_body: item.message_body,
-          msg_type: item.msg_type,
-          reply_to: item.reply_to,
-          thumbnail: item.thumbnail,
-          to_user: item.to_user,
-          updated: item.updated,
-        };
-        conversations = [...conversations, i];
-      });
+      conversations = chat.toJSON();
+      // chat.map((item, index) => {
+      //   let i = {
+      //     created: item.created,
+      //     deleted_for: item.deleted_for,
+      //     friend: item.friend,
+      //     from_user: item.from_user,
+      //     id: item.id,
+      //     is_edited: item.is_edited,
+      //     is_read: item.is_read,
+      //     is_unsent: item.is_unsent,
+      //     local_id: item.local_id,
+      //     message_body: item.message_body,
+      //     msg_type: item.msg_type,
+      //     reply_to: item.reply_to,
+      //     thumbnail: item.thumbnail,
+      //     to_user: item.to_user,
+      //     updated: item.updated,
+      //   };
+      //   conversations = [...conversations, i];
+      // });
       this.props.setFriendConversation(conversations);
     }
   };
@@ -1361,6 +1413,46 @@ class Chat extends Component {
     }
   }
 
+  onDeleteMultipleMessageInFriend(message) {
+    const {userFriends, currentFriend, userData} = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FRIEND) {
+      message.text.data.message_details.map(item=>{
+        if(item.deleted_for.includes(userData.id)){
+          deleteFriendMessageById(item.id);
+
+          var user_id;
+          if(item.from_user.id == userData.id){
+            user_id = item.to_user.id;
+          }else if(item.to_user.id == userData.id){
+            user_id = item.from_user.id;
+          }
+
+          users = getLocalUserFriend(user_id);
+          var array = [];
+          array = users.toJSON();
+          if (array[0].last_msg_id == item.id) {
+            var chats = getFriendChatConversationById(item.friend);
+            var chats_array = [];
+            chats_array = chats.toJSON();
+            updateFriendLastMsgWithoutCount(
+              user_id,
+              chats_array[0],
+            );
+            this.props.setUserFriends().then((res) => {
+              this.props.setCommonChatConversation();
+            });
+          }
+          if (
+            this.props.currentRouteName == 'FriendChats' && 
+            currentFriend && user_id == currentFriend.user_id
+          ) {
+            this.getLocalFriendConversation();
+          }
+        }
+      })
+    }
+  }
+
   //Unsent message on friend
   onUnsentMessageInFriend(message) {
     const {userFriends, currentFriend, userData} = this.props;
@@ -1455,6 +1547,45 @@ class Chat extends Component {
       ) {
         this.getLocalGroupConversation();
       }
+    }
+  }
+
+  onDeleteMultipleMessageInGroup(message){
+    const {userGroups, userData, currentGroup} = this.props;
+    if (message.text.data.type === SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_GROUP) {
+      message.text.data.message_details.map(item => {
+        deleteGroupMessageById(item.msg_id);
+
+        var result = getGroupsById(item.group_id);
+        let group = result.toJSON();
+
+        if (group && group.length > 0) {
+          let chat = getGroupChatConversationById(item.group_id);
+          let array = chat.toJSON();
+
+          if(group[0].last_msg_id == item.msg_id){
+            updateLastMsgGroupsWithoutCount(
+              item.group_id,
+              array[0].message_body.type,
+              array[0].message_body.text,
+              array[0].msg_id,
+              array[0].timestamp,
+            );
+            this.props.getLocalUserGroups().then((res) => {
+              this.props.setCommonChatConversation();
+            });
+          }
+        }
+
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          item.group_id == currentGroup.group_id
+        ) {
+          this.getLocalGroupConversation();
+        }
+
+      });
     }
   }
 

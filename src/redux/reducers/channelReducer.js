@@ -659,6 +659,20 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       });
   });
 
+  export const deleteMultipleChannelMessage = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/delete-multiple-message-from-channel/`, payload)
+      .then((res) => {
+        // alert(JSON.stringify(res));
+        resolve(res);
+        // dispatch(deleteMessage(id));
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
 export const getLoginBonusOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
