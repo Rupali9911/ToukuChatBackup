@@ -359,10 +359,7 @@ export default class ChatInput extends Component {
             }}>
             <Image
               source={Icons.icon_send_button}
-              style={[
-                chatInput.sandButtonImage,
-                (value || sendingImage.uri) && {tintColor: null},
-              ]}
+              style={[chatInput.sandButtonImage]}
               resizeMode={'contain'}
             />
           </TouchableOpacity>
@@ -446,6 +443,6 @@ const chatInput = StyleSheet.create({
   sandButtonImage: {
     // height: '50%',
     width: '70%',
-    tintColor: Colors.gray,
+    // tintColor: Colors.gray,
   },
 });

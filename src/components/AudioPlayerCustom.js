@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Slider from 'react-native-slider';
-import { Colors, Fonts, Images, Icons } from '../constants';
+import {Colors, Fonts, Images, Icons} from '../constants';
 import SoundPlayer from 'react-native-sound-player';
 
 export default class AudioPlayerCustom extends Component {
@@ -33,14 +33,14 @@ export default class AudioPlayerCustom extends Component {
 
     this._onFinishedPlayingSubscription = SoundPlayer.addEventListener(
       'FinishedPlaying',
-      ({ success }) => {
+      ({success}) => {
         console.log('finished playing', success);
-      }
+      },
     );
   }
 
   onPlaySound = async (url) => {
-    const { onAudioPlayPress, postId, audioPlayingId } = this.props;
+    const {onAudioPlayPress, postId, audioPlayingId} = this.props;
 
     var plarUrl =
       'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
@@ -122,7 +122,7 @@ export default class AudioPlayerCustom extends Component {
       console.log('App has come to the foreground!');
     }
     console.log('App run in: ', nextAppState);
-    this.setState({ appState: nextAppState });
+    this.setState({appState: nextAppState});
     if (nextAppState === 'background') {
       SoundPlayer.stop();
     }
@@ -162,21 +162,20 @@ export default class AudioPlayerCustom extends Component {
       isSmall,
       audioPlayingId,
     } = this.props;
-    const { isLoading, isPlaying, isPaused } = this.state;
+    const {isLoading, isPlaying, isPaused} = this.state;
     return (
       <View
         style={{
-          backgroundColor: Colors.gray,
+          backgroundColor: Colors.white,
           width: '100%',
           flexDirection: 'row',
           alignItems: 'center',
           paddingVertical: 10,
           paddingHorizontal: isSmall ? '5%' : '10%',
-          height: 50,
+          height: 45,
           borderRadius: 100,
-        }}
-      >
-        <View style={{ flex: 0.08 }}>
+        }}>
+        <View style={{flex: 0.1}}>
           {isLoading ? (
             <TouchableOpacity onPress={() => {}} style={{}}>
               <ActivityIndicator size="small" color={Colors.black} />
@@ -195,20 +194,19 @@ export default class AudioPlayerCustom extends Component {
               style={{}}
               onPress={() =>
                 isPaused ? this.onResume() : this.onPlaySound(url)
-              }
-            >
+              }>
               <FontAwesome5 name="play" color={Colors.black} size={15} />
             </TouchableOpacity>
           )}
         </View>
-        <View style={{ flex: 0.27 }}>
-          <Text style={{ fontFamily: Fonts.light, fontSize: 12 }}>
+        <View style={{flex: 0.29}}>
+          <Text style={{fontFamily: Fonts.light, fontSize: 12}}>
             {this.currentTime == 0 ? '0.00' : this.currentTime}/
             {this.state.duration == 0 ? '0.00' : this.state.duration}
           </Text>
         </View>
 
-        <View style={{ flex: isSmall ? 0.53 : 0.63 }}>
+        <View style={{flex: isSmall ? 0.53 : 0.63}}>
           <Slider
             style={{
               width: '100%',
@@ -218,10 +216,10 @@ export default class AudioPlayerCustom extends Component {
             minimumValue={0}
             maximumValue={this.state.duration}
             value={this.currentTime}
-            onValueChange={(value) => this.updateValue({ value })}
-            style={{ height: 30 }}
+            onValueChange={(value) => this.updateValue({value})}
+            style={{height: 30}}
             minimumTrackTintColor={Colors.black}
-            thumbTouchSize={{ width: 50, height: 40 }}
+            thumbTouchSize={{width: 50, height: 40}}
             trackStyle={{
               height: 2,
               backgroundColor: Colors.gray_dark,
@@ -232,7 +230,7 @@ export default class AudioPlayerCustom extends Component {
               backgroundColor: Colors.black,
               borderRadius: 10 / 2,
               shadowColor: Colors.black,
-              shadowOffset: { width: 0, height: 0 },
+              shadowOffset: {width: 0, height: 0},
               shadowRadius: 2,
               shadowOpacity: 1,
             }}
@@ -253,8 +251,7 @@ export default class AudioPlayerCustom extends Component {
           style={{
             flex: 0.1,
             alignItems: 'flex-end',
-          }}
-        >
+          }}>
           <TouchableOpacity style={{}} onPress={() => {}}>
             <Image
               source={Icons.icon_dots}

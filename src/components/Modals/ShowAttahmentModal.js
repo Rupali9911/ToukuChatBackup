@@ -60,13 +60,13 @@ class ShowAttahmentModal extends Component {
                 flex: 0.05,
                 alignItems: 'center',
                 width: '100%',
-                backgroundColor: Colors.light_gray,
+                backgroundColor: Colors.gray,
                 flexDirection: 'row',
               }}>
               <View style={{flex: 0.8, paddingHorizontal: 10}}>
                 <Text
                   style={{
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 14,
                     fontFamily: Fonts.regular,
                   }}>
@@ -83,7 +83,7 @@ class ShowAttahmentModal extends Component {
                   <Image
                     source={Icons.icon_close}
                     style={{
-                      tintColor: Colors.white,
+                      tintColor: Colors.black,
                       height: 10,
                       width: 10,
                     }}
@@ -94,7 +94,7 @@ class ShowAttahmentModal extends Component {
             <View
               style={{
                 flex: 0.85,
-                padding: 10,
+                paddingVertical: 10,
               }}>
               <View style={{flex: 1}}>
                 {data.length ? (
@@ -107,17 +107,37 @@ class ShowAttahmentModal extends Component {
                               flexDirection: 'row',
                               alignItems: 'center',
                               marginBottom: 5,
+                              paddingRight: 10,
+                              height: 50,
                             }}>
-                            <FontAwesome
-                              name="file"
-                              size={30}
-                              color={Colors.black}
+                            <View
                               style={{
-                                marginRight: 10,
-                              }}
-                            />
+                                flex: 0.2,
+                                borderWidth: 0.4,
+                                borderColor: '#eaeaea',
+                                height: '100%',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginRight: 5,
+                              }}>
+                              <FontAwesome
+                                name="file"
+                                size={30}
+                                color={Colors.gray_dark}
+                                style={{
+                                  marginRight: 10,
+                                }}
+                              />
+                            </View>
                             <View style={{flex: 0.8}}>
-                              <Text style={{marginBottom: 5}}>{item.name}</Text>
+                              <Text
+                                style={{
+                                  marginBottom: 5,
+                                  color: Colors.black_light,
+                                }}
+                                numberOfLines={1}>
+                                {item.name}
+                              </Text>
                               <TouchableOpacity
                                 style={{
                                   flexDirection: 'row',
@@ -129,7 +149,12 @@ class ShowAttahmentModal extends Component {
                                   size={15}
                                   style={{marginRight: 5}}
                                 />
-                                <Text>{translate('pages.xchat.remove')}</Text>
+                                <Text
+                                  style={{
+                                    color: Colors.gray_dark,
+                                  }}>
+                                  {translate('pages.xchat.remove')}
+                                </Text>
                               </TouchableOpacity>
                             </View>
                             {index === 0 && (
@@ -153,7 +178,6 @@ class ShowAttahmentModal extends Component {
                               </View>
                             )}
                           </View>
-                          <Divider />
                         </View>
                       );
                     })}
