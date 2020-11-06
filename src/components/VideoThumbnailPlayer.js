@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import { Image } from 'react-native';
+import React, {Component} from 'react';
+import {Image} from 'react-native';
 import VideoPlayer from 'react-native-video-player';
-import { createThumbnail } from "react-native-create-thumbnail";
+import {createThumbnail} from 'react-native-create-thumbnail';
 import RoundedImage from './RoundedImage';
 
 export default class VideoThumbnailPlayer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      thumbnailUrl: ''
+      thumbnailUrl: '',
     };
   }
 
@@ -16,8 +16,8 @@ export default class VideoThumbnailPlayer extends Component {
     this.generateThumbnail(this.props.url);
   }
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.url && nextProps.url!==this.props.url){
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.url && nextProps.url !== this.props.url) {
       this.generateThumbnail(nextProps.url);
     }
   }
@@ -26,19 +26,22 @@ export default class VideoThumbnailPlayer extends Component {
     createThumbnail({
       url: url,
       timeStamp: 1000,
-    }).then(response => {
-      console.log(response);
-      this.setState({thumbnailUrl: response.path});
-    }).catch(err => console.log({ err }));
-  }
+    })
+      .then((response) => {
+        console.log(response);
+        this.setState({thumbnailUrl: response.path});
+      })
+      .catch((err) => console.log({err}));
+  };
 
   render() {
-    const { url, size, thumbnailImage } = this.props;
+    const {url, size, thumbnailImage, showPlayButton} = this.props;
     return (
       <RoundedImage
-        source={this.state.thumbnailUrl?{ url: this.state.thumbnailUrl }:''}
+        source={this.state.thumbnailUrl ? {url: this.state.thumbnailUrl} : ''}
         isRounded={false}
-        size={size?size:50}
+        size={size ? size : 50}
+        showPlayButton={showPlayButton ? true : false}
       />
     );
   }

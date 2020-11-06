@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import Button from '../Button';
 import {Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
 class ShowGalleryModal extends Component {
   constructor(props) {
     super(props);
@@ -125,15 +126,11 @@ class ShowGalleryModal extends Component {
                                 style={{
                                   width: 50,
                                   height: 50,
-                                  backgroundColor: Colors.black,
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
                                   marginRight: 10,
                                 }}>
-                                <FontAwesome
-                                  name="play"
-                                  size={15}
-                                  color={Colors.white}
+                                <VideoThumbnailPlayer
+                                  url={item.path}
+                                  showPlayButton
                                 />
                               </View>
                             )}

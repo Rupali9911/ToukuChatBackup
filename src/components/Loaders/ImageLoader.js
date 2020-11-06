@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Image, ImageBackground, ActivityIndicator, View} from 'react-native';
-import {Images} from '../../constants';
-
+import {Colors, Images} from '../../constants';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 class ImageLoader extends React.Component {
   static propTypes = {
     isShowActivity: PropTypes.bool,
@@ -43,6 +43,7 @@ class ImageLoader extends React.Component {
       placeholderSource,
       placeholderStyle,
       customImagePlaceholderDefaultStyle,
+      showPlayButton,
     } = this.props;
     return (
       <ImageBackground
@@ -81,6 +82,16 @@ class ImageLoader extends React.Component {
         )}
         {this.props.children && (
           <View style={styles.viewChildrenStyles}>{this.props.children}</View>
+        )}
+        {showPlayButton && (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <FontAwesome name="play" size={15} color={Colors.white} />
+          </View>
         )}
       </ImageBackground>
     );

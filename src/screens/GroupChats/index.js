@@ -53,7 +53,7 @@ import {
   setGroupConversation,
   resetGroupConversation,
   getGroupConversationRequest,
-  deleteMultipleGroupMessage
+  deleteMultipleGroupMessage,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
@@ -292,7 +292,7 @@ class GroupChats extends Component {
       uploadProgress: 0,
     });
     if (sentMessageType === 'image') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
@@ -965,8 +965,8 @@ class GroupChats extends Component {
     } else {
       array.push(id + '');
     }
-    this.setState({ selectedIds: array });
-  }
+    this.setState({selectedIds: array});
+  };
 
   onConfirmLeaveGroup = () => {
     const payload = {
@@ -1047,7 +1047,7 @@ class GroupChats extends Component {
 
   onDeleteMultipleMessagePressed = () => {
     this.setState({
-      showMessageDeleteConfirmationModal: true
+      showMessageDeleteConfirmationModal: true,
     });
   };
 
@@ -1099,40 +1099,36 @@ class GroupChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
-      this.props
-        .deleteMultipleGroupMessage(payload)
-        .then((res) => {
-          if(res && res.status){
-            this.state.selectedIds.map(item => {
-              deleteGroupMessageById(item);
-              if (
-                this.props.currentGroup.last_msg_id == item
-              ) {
-                let chat = getGroupChatConversationById(
+      this.props.deleteMultipleGroupMessage(payload).then((res) => {
+        if (res && res.status) {
+          this.state.selectedIds.map((item) => {
+            deleteGroupMessageById(item);
+            if (this.props.currentGroup.last_msg_id == item) {
+              let chat = getGroupChatConversationById(
+                this.props.currentGroup.group_id,
+              );
+
+              let array = chat.toJSON();
+
+              if (array && array.length > 0) {
+                updateLastMsgGroupsWithoutCount(
                   this.props.currentGroup.group_id,
+                  array[0].message_body.type,
+                  array[0].message_body.text,
+                  array[0].msg_id,
+                  array[0].timestamp,
                 );
-  
-                let array = chat.toJSON();
-  
-                if (array && array.length > 0) {
-                  updateLastMsgGroupsWithoutCount(
-                    this.props.currentGroup.group_id,
-                    array[0].message_body.type,
-                    array[0].message_body.text,
-                    array[0].msg_id,
-                    array[0].timestamp,
-                  );
-                  this.props.getLocalUserGroups().then((res) => {
-                    this.props.setCommonChatConversation();
-                  });
-                }
+                this.props.getLocalUserGroups().then((res) => {
+                  this.props.setCommonChatConversation();
+                });
               }
-            })
-            this.getLocalGroupConversation();
-            this.setState({isMultiSelect:false,selectedIds:[]});
-          }
-          // this.getGroupConversation();
-        });
+            }
+          });
+          this.getLocalGroupConversation();
+          this.setState({isMultiSelect: false, selectedIds: []});
+        }
+        // this.getGroupConversation();
+      });
     }
   };
 
@@ -1299,7 +1295,10 @@ class GroupChats extends Component {
       let fileType = file.mime;
       if (fileType.includes('image')) {
         let source = {
-          uri: 'data:image/jpeg;base64,' + file.data,
+          uri:
+            file.mime === 'image/gif'
+              ? 'data:image/gif;base64,' + file.data
+              : 'data:image/jpeg;base64,' + file.data,
           type: file.mime,
           name: null,
         };
@@ -1418,7 +1417,7 @@ class GroupChats extends Component {
       uploadFile,
       sendingMedia,
       isChatLoading,
-      isMultiSelect
+      isMultiSelect,
     } = this.state;
     const {
       chatGroupConversation,
@@ -1461,7 +1460,10 @@ class GroupChats extends Component {
             isReply={isReply}
             cancelReply={this.cancelReply.bind(this)}
             onDelete={(id) => {
-              this.setState({isMultiSelect:true,selectedIds:[...this.state.selectedIds,id+'']});
+              this.setState({
+                isMultiSelect: true,
+                selectedIds: [...this.state.selectedIds, id + ''],
+              });
               // this.onDeleteMessagePressed(id)
             }}
             onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
@@ -1482,8 +1484,8 @@ class GroupChats extends Component {
             isMultiSelect={isMultiSelect}
             onSelect={this.onSelectChatConversation}
             selectedIds={this.state.selectedIds}
-            onSelectedCancel={()=>{
-              this.setState({isMultiSelect:false,selectedIds:[]});
+            onSelectedCancel={() => {
+              this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
           />
@@ -1559,7 +1561,7 @@ class GroupChats extends Component {
           removeUploadData={(index) => this.removeUploadData(index)}
           onAttachmentPress={() => this.onAttachmentPress()}
         />
-        {sendingMedia && <UploadLoader/>}
+        {sendingMedia && <UploadLoader />}
       </ImageBackground>
     );
   }

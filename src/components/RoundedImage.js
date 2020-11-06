@@ -24,6 +24,7 @@ export default class RoundedImage extends Component {
       resizeMode,
       borderSize,
       borderColor,
+      showPlayButton,
     } = this.props;
     return (
       <TouchableOpacity
@@ -49,6 +50,7 @@ export default class RoundedImage extends Component {
             overflow: 'hidden',
           }}
           source={source}
+          showPlayButton={showPlayButton ? true : false}
         />
         {isBadge ? (
           <View

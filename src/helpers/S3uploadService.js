@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import React, {Component} from 'react';
+import {View, Text} from 'react-native';
 import * as S3 from 'aws-sdk/clients/s3';
 import moment from 'moment';
-import { environment } from '../constants';
+import {environment} from '../constants';
 import ImageResizer from 'react-native-image-resizer';
-import { RNS3 } from 'react-native-aws3';
+import {RNS3} from 'react-native-aws3';
 
 export default class S3uploadService extends Component {
   constructor(props) {
@@ -12,40 +12,47 @@ export default class S3uploadService extends Component {
     this.state = {};
   }
 
-  async uploadImagesOnS3Bucket(files,onProgress) {
-    const imagesFiles = { image: [] };
+  async uploadImagesOnS3Bucket(files, onProgress) {
+    const imagesFiles = {image: []};
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+      const file = files[i].uri;
       const fileName = `image_${moment().valueOf()}_${i + 1}`;
-
-      console.log('fileName', fileName)
       const originResizedImage = await this.uploadImage(
         file,
         fileName,
         800,
         800,
-        onProgress
+        onProgress,
+        files[i].type,
       );
       const originResizedImage_2 = await this.uploadImage(
         file,
         `thumb_${fileName}`,
         360,
         360,
-        onProgress
+        onProgress,
+        files[i].type,
       );
 
-      console.log('originResizedImage, originResizedImage_2', originResizedImage, originResizedImage_2)
+      console.log(
+        'originResizedImage, originResizedImage_2',
+        originResizedImage,
+        originResizedImage_2,
+      );
       imagesFiles.image.push({
         image: originResizedImage.body.postResponse.location,
         thumbnail: originResizedImage_2.body.postResponse.location,
       });
-      console.log('imagesFiles', imagesFiles)
+      console.log('imagesFiles', imagesFiles);
     }
     return imagesFiles;
   }
 
-  async uploadImage(file, fileName, width, height, onProgress) {
-    const imageFile = await this.resizeImage(file, width, height);
+  async uploadImage(file, fileName, width, height, onProgress, type) {
+    let imageFile = file;
+    if (type != 'image/gif') {
+      imageFile = await this.resizeImage(file, width, height, type);
+    }
     return await this.uploadFile(imageFile, fileName, 'image/png', onProgress);
   }
 
@@ -99,7 +106,7 @@ export default class S3uploadService extends Component {
 
     return await RNS3.put(File, options)
       .progress((e) => {
-        console.log(e.percent)
+        console.log(e.percent);
         onProgress && onProgress(e);
       })
       .then(async (response) => {
@@ -114,9 +121,9 @@ export default class S3uploadService extends Component {
       width,
       height,
       'JPEG',
-      30
+      30,
     )
-      .then(async ({ uri }) => {
+      .then(async ({uri}) => {
         return await uri;
       })
       .catch((err) => {

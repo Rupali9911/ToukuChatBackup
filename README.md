@@ -22,40 +22,44 @@
      style="float: left; margin-right: 5px; width:200px"/>
 
 ### Phone field customisation
-- Update onChangePhoneNumber from ./node_modules/react-native-phone-input/lib/index.js to 
- 
- onChangePhoneNumber(number) {
-      this.props.onChangePhoneNumber(number);
-    // const actionAfterSetState = this.props.onChangePhoneNumber
-    //   ? () => {
-    //       this.props.onChangePhoneNumber(number);
-    //     }
-    //   : null;
-    // this.updateFlagAndFormatNumber(number, actionAfterSetState);
-  }
-  
+
+- Update onChangePhoneNumber from ./node_modules/react-native-phone-input/lib/index.js to
+
+onChangePhoneNumber(number) {
+this.props.onChangePhoneNumber(number);
+// const actionAfterSetState = this.props.onChangePhoneNumber
+// ? () => {
+// this.props.onChangePhoneNumber(number);
+// }
+// : null;
+// this.updateFlagAndFormatNumber(number, actionAfterSetState);
+}
+
 ### [iOS] Fixes TextInput Text Rendering Issue when typing Japanese, Chinese etc
+
 Update only the lines with the + operator at the start of them
 
 -Goto ./node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m
 
-(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
+(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> \*)defaultTextAttributes
 {
- + if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
- +   return;
- +  }
-  _defaultTextAttributes = defaultTextAttributes;
+
+- if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
+- return;
+- }
+  \_defaultTextAttributes = defaultTextAttributes;
   self.typingAttributes = defaultTextAttributes;
   [self _updatePlaceholder];
 
 -Goto ./node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.m
 
-(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
+(void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> \*)defaultTextAttributes
 {
-+  if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
-+    return;
-+  }
-  _defaultTextAttributes = defaultTextAttributes;
+
+- if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
+- return;
+- }
+  \_defaultTextAttributes = defaultTextAttributes;
   [super setDefaultTextAttributes:defaultTextAttributes];
   [self _updatePlaceholder];
 
@@ -63,3 +67,11 @@ Update only the lines with the + operator at the start of them
 
 - Update build.gradle of react-native-twitter-signin, react-native-doc-viewer, react-native-orientation, and react-native-line-sdk modules
   Go to the ./node_module/moduleName/android/build.gradle and replace the compileSdkVersion, buildToolsVersion, minSdkVersion, and targetSdkVersion to your compileSdkVersion, buildToolsVersion, minSdkVersion, and targetSdkVersion of main build.gradle. For going to your build.gradle, go to android/build.gradle
+
+### To properly use Mentions Functionality
+
+- Please replace the file from\LineLibChanges\react-native-mentions to \node_modules\react-native-mentions\src
+
+### To upload gif image
+
+- copy ImageCropPicker.m from ./LineLibChanges/react-native-image-crop-picker/ImageCropPicker.m and replace it with ./node_modules/react-native-image-crop-picker/ios/src/ImageCropPicker.m

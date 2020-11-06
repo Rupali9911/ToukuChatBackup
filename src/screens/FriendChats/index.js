@@ -236,7 +236,7 @@ class FriendChats extends Component {
 
     let imgThumb = '';
     if (sentMessageType === 'image') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
@@ -1132,7 +1132,10 @@ class FriendChats extends Component {
       let fileType = file.mime;
       if (fileType.includes('image')) {
         let source = {
-          uri: 'data:image/jpeg;base64,' + file.data,
+          uri:
+            file.mime === 'image/gif'
+              ? 'data:image/gif;base64,' + file.data
+              : 'data:image/jpeg;base64,' + file.data,
           type: file.mime,
           name: null,
         };

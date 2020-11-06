@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Image } from 'react-native';
+import React, {Component} from 'react';
+import {Image} from 'react-native';
 import VideoPlayer from 'react-native-video-player';
 
 export default class VideoPlayerCustom extends Component {
@@ -13,7 +13,7 @@ export default class VideoPlayerCustom extends Component {
   getAspectRatio = () => {};
 
   render() {
-    const { url, width, height, thumbnailImage } = this.props;
+    const {url, width, height, thumbnailImage} = this.props;
     return (
       <VideoPlayer
         video={{

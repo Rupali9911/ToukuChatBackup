@@ -51,7 +51,7 @@ import {
   selectLoginJackpotOfChannel,
   assetXPValueOfChannel,
   getLocalFollowingChannels,
-  deleteMultipleChannelMessage
+  deleteMultipleChannelMessage,
 } from '../../redux/reducers/channelReducer';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
 import {
@@ -106,7 +106,7 @@ class ChannelChats extends Component {
       sendingMedia: false,
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
-      isChatLoading:false,
+      isChatLoading: false,
       isMultiSelect: false,
       selectedIds: [],
       headerRightIconMenu:
@@ -461,14 +461,14 @@ class ChannelChats extends Component {
       uploadFile: {uri: null, type: null, name: null},
     });
     if (sentMessageType === 'image') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
         files,
-        (e)=>{
-          console.log('progress_bar_percentage',e)
+        (e) => {
+          console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
-        }
+        },
       );
       msgText = uploadedImages.image[0].image;
     }
@@ -480,10 +480,10 @@ class ChannelChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
-        (e)=>{
-          console.log('progress_bar_percentage',e)
+        (e) => {
+          console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
-        }
+        },
       );
       msgText = uploadedAudio;
     }
@@ -496,10 +496,10 @@ class ChannelChats extends Component {
         files,
         uploadFile.name,
         uploadFile.type,
-        (e)=>{
-          console.log('progress_bar_percentage',e)
+        (e) => {
+          console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
-        }
+        },
       );
       msgText = uploadedApplication;
     }
@@ -510,10 +510,10 @@ class ChannelChats extends Component {
       const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
         files,
         uploadFile.type,
-        (e)=>{
-          console.log('progress_bar_percentage',e)
+        (e) => {
+          console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
-        }
+        },
       );
       msgText = uploadedVideo;
     }
@@ -809,7 +809,7 @@ class ChannelChats extends Component {
   };
 
   getChannelConversationsInitial = async () => {
-    this.setState({isChatLoading:true});
+    this.setState({isChatLoading: true});
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
       let conversations = [];
@@ -818,7 +818,7 @@ class ChannelChats extends Component {
       // });
       conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
-      this.setState({isChatLoading:false});
+      this.setState({isChatLoading: false});
     }
     await this.props
       .getChannelConversations(this.props.currentChannel.id)
@@ -836,7 +836,7 @@ class ChannelChats extends Component {
           conversations = chat.toJSON();
           this.props.setChannelConversation(conversations);
         }
-        this.setState({isChatLoading:false});
+        this.setState({isChatLoading: false});
       });
   };
 
@@ -939,7 +939,10 @@ class ChannelChats extends Component {
       let fileType = file.mime;
       if (fileType.includes('image')) {
         let source = {
-          uri: 'data:image/jpeg;base64,' + file.data,
+          uri:
+            file.mime === 'image/gif'
+              ? 'data:image/gif;base64,' + file.data
+              : 'data:image/jpeg;base64,' + file.data,
           type: file.mime,
           name: null,
         };
@@ -1051,7 +1054,7 @@ class ChannelChats extends Component {
       uploadFile,
       sendingMedia,
       isChatLoading,
-      isMultiSelect
+      isMultiSelect,
     } = this.state;
     if (!this.props.chatConversation) {
       return null;
@@ -1070,7 +1073,10 @@ class ChannelChats extends Component {
             orientation={orientation}
             repliedMessage={repliedMessage}
             onDelete={(id) => {
-              this.setState({isMultiSelect:true,selectedIds:[...this.state.selectedIds,id+'']});
+              this.setState({
+                isMultiSelect: true,
+                selectedIds: [...this.state.selectedIds, id + ''],
+              });
               // this.onDeletePressed(id)
             }}
             onUnSendMsg={(id) => this.onUnSendPressed(id)}
@@ -1088,8 +1094,8 @@ class ChannelChats extends Component {
             isMultiSelect={isMultiSelect}
             onSelect={this.onSelectChatConversation}
             selectedIds={this.state.selectedIds}
-            onSelectedCancel={()=>{
-              this.setState({isMultiSelect:false,selectedIds:[]});
+            onSelectedCancel={() => {
+              this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
           />
@@ -1153,7 +1159,7 @@ class ChannelChats extends Component {
             removeUploadData={(index) => this.removeUploadData(index)}
             onAttachmentPress={() => this.onAttachmentPress()}
           />
-          {sendingMedia && <UploadLoader/>}
+          {sendingMedia && <UploadLoader />}
         </View>
       );
     }
@@ -1185,12 +1191,12 @@ class ChannelChats extends Component {
     } else {
       array.push(id + '');
     }
-    this.setState({ selectedIds: array });
-  }
+    this.setState({selectedIds: array});
+  };
 
   onDeleteMultipleMessagePressed = () => {
     this.setState({
-      showMessageDeleteConfirmationModal: true
+      showMessageDeleteConfirmationModal: true,
     });
   };
 
@@ -1240,36 +1246,34 @@ class ChannelChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
-      this.props
-        .deleteMultipleChannelMessage(payload)
-        .then((res) => {
-          console.log(res);
-          if(res && res.status){
-            this.state.selectedIds.map(item => {
-              deleteMessageById(item);
+      this.props.deleteMultipleChannelMessage(payload).then((res) => {
+        console.log(res);
+        if (res && res.status) {
+          this.state.selectedIds.map((item) => {
+            deleteMessageById(item);
 
-              if (this.props.currentChannel.last_msg.id == item) {
-                let chat = getChannelChatConversationById(
+            if (this.props.currentChannel.last_msg.id == item) {
+              let chat = getChannelChatConversationById(
+                this.props.currentChannel.id,
+              );
+
+              let array = chat.toJSON();
+
+              if (array && array.length > 0) {
+                updateChannelLastMsgWithOutCount(
                   this.props.currentChannel.id,
+                  array[0],
                 );
-
-                let array = chat.toJSON();
-
-                if (array && array.length > 0) {
-                  updateChannelLastMsgWithOutCount(
-                    this.props.currentChannel.id,
-                    array[0],
-                  );
-                  this.props.getLocalFollowingChannels().then(() => {
-                    this.props.setCommonChatConversation();
-                  });
-                }
+                this.props.getLocalFollowingChannels().then(() => {
+                  this.props.setCommonChatConversation();
+                });
               }
-            })
-            this.getLocalChannelConversations();
-            this.setState({isMultiSelect:false,selectedIds:[]});
-          }
-        });
+            }
+          });
+          this.getLocalChannelConversations();
+          this.setState({isMultiSelect: false, selectedIds: []});
+        }
+      });
     }
   };
 
