@@ -61,6 +61,7 @@ class ChannelInfo extends Component {
         },
       ],
     };
+    this.isUnfollowing = false;
   }
 
   async OnBackAction() {
@@ -160,17 +161,21 @@ class ChannelInfo extends Component {
   };
 
   onConfirm = () => {
+    if (this.isUnfollowing) {
+      return;
+    }
+    this.isUnfollowing = true;
     let user = {
       user_id: this.props.userData.id,
     };
     this.props
       .unfollowChannel(this.props.currentChannel.id, user)
-      .then((res) => {
-        console.log('ChannelInfo -> onConfirm -> res', res);
+      .then(async (res) => {
         if (res.status === true) {
-          this.toggleConfirmationModal();
+          await this.toggleConfirmationModal();
           this.props.navigation.popToTop();
         }
+        return;
       })
       .catch((err) => {
         console.log('ChannelInfo -> onConfirm -> err', err);
@@ -179,6 +184,8 @@ class ChannelInfo extends Component {
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
+        this.isUnfollowing = false;
+        this.toggleConfirmationModal();
       });
   };
 
@@ -212,7 +219,6 @@ class ChannelInfo extends Component {
       showAffiliateModal,
     } = this.state;
     const {channelLoading, currentChannel, userData} = this.props;
-    console.log('ChannelInfo -> render -> currentChannel', currentChannel);
     const channelCountDetails = [
       {
         id: 1,
@@ -455,6 +461,7 @@ class ChannelInfo extends Component {
             onCancel={this.onCancel.bind(this)}
             onConfirm={this.onConfirm.bind(this)}
             orientation={orientation}
+            isLoading={this.isUnfollowing}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.toLeaveThisChannel')}
           />
