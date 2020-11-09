@@ -13,6 +13,8 @@ import {Colors, Fonts} from '../constants';
 import {Images} from '../constants/index';
 import {globalStyles} from '../styles';
 import {ListLoader} from './Loaders';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+
 export default class PostChannelCard extends React.Component {
   constructor(props) {
     super(props);
@@ -22,46 +24,51 @@ export default class PostChannelCard extends React.Component {
   }
   _renderItem = ({item}) => (
     <View style={styles.gridView}>
-      {item.channel_picture_thumb ? (
-        <Image
-          defaultSource={Images.header_bg}
-          style={styles.gridImageView}
-          source={{uri: item.channel_picture_thumb}}
-        />
-      ) : (
-        <LinearGradient
-          start={{x: 0.1, y: 0.7}}
-          end={{x: 0.5, y: 0.2}}
-          locations={[0.1, 0.6, 1]}
-          colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-          style={styles.squareImage}>
-          <Text
-            style={{
-              fontSize: 60,
-              fontWeight: '400',
-              color: 'white',
-              fontFamily: Fonts.light,
-            }}>
-            {item.channel_name[0].toUpperCase()}
-          </Text>
-        </LinearGradient>
-      )}
-      {item.channel_picture_thumb ? (
-        <LinearGradient
-          colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0)']}
-          start={{x: 0, y: 1}}
-          end={{x: 0, y: 0}}
-          style={styles.linearGradientVisible}>
-          <Text style={[styles.gridImageText]}>{item.channel_name}</Text>
-        </LinearGradient>
-      ) : (
-        <Text style={styles.textLinearGradient}>{item.channel_name} </Text>
-      )}
+      <TouchableOpacity
+        onPress={() =>
+          this.props.navigation.navigate('ChannelInfo', {channelItem: item})
+        }>
+        {item.channel_picture_thumb ? (
+          <Image
+            defaultSource={Images.header_bg}
+            style={styles.gridImageView}
+            source={{uri: item.channel_picture_thumb}}
+          />
+        ) : (
+          <LinearGradient
+            start={{x: 0.1, y: 0.7}}
+            end={{x: 0.5, y: 0.2}}
+            locations={[0.1, 0.6, 1]}
+            colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+            style={styles.squareImage}>
+            <Text
+              style={{
+                fontSize: 60,
+                fontWeight: '400',
+                color: 'white',
+                fontFamily: Fonts.light,
+              }}>
+              {item.channel_name[0].toUpperCase()}
+            </Text>
+          </LinearGradient>
+        )}
+        {item.channel_picture_thumb ? (
+          <LinearGradient
+            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0)']}
+            start={{x: 0, y: 1}}
+            end={{x: 0, y: 0}}
+            style={styles.linearGradientVisible}>
+            <Text style={[styles.gridImageText]}>{item.channel_name}</Text>
+          </LinearGradient>
+        ) : (
+          <Text style={styles.textLinearGradient}>{item.channel_name} </Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 
   render() {
-    const {posts, isTimeline} = this.props;
+    const {posts, isTimeline, navigation} = this.props;
     return (
       <SafeAreaView style={styles.Container}>
         {posts.length > 0 ? (

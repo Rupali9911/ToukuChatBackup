@@ -33,7 +33,10 @@ import {
   getUserConfiguration,
   updateConfiguration,
 } from '../../redux/reducers/configurationReducer';
-import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
+import {
+  setCommonChatConversation,
+  setDeleteChat,
+} from '../../redux/reducers/commonReducer';
 import {
   getUserChannels,
   getFollowingChannels,
@@ -139,6 +142,7 @@ let channelId = [];
 let friendId = [];
 let groupId = [];
 let deleteObj = null;
+let count = 0;
 
 class Chat extends Component {
   constructor(props) {
@@ -155,7 +159,8 @@ class Chat extends Component {
       isVisible: false,
       isUncheck: true,
       isDeleteVisible: false,
-      commonChat: this.props.commonChat,
+      commonChatsData: this.props.commonChat,
+      countChat: 0,
       // sortOptions: [
       //   {
       //     title: translate('pages.xchat.timeReceived'),
@@ -2369,22 +2374,41 @@ class Chat extends Component {
     let group_ids = groupId;
 
     deleteObj = {channel_ids, friend_ids, group_ids};
+    let i = [item];
 
-    console.log('data', deleteObj);
+    if (isCheck == 'check') {
+      count = count + i.length;
+    } else {
+      count = count - i.length;
+    }
+    this.setState({countChat: count});
   };
 
   onCanclePressButton = () => {
-    this.setState({isVisible: false, isUncheck: false});
+    this.setState({isVisible: false, isUncheck: false, countChat: 0});
     deleteObj = null;
     channelId = [];
     friendId = [];
     groupId = [];
+    count = 0;
   };
 
   manageDelete = () => {
-    if (deleteObj == null) {
-      alert('please select the chat for delete!');
-      this.setState({isVisible: false});
+    if (
+      deleteObj == null ||
+      (deleteObj &&
+        deleteObj.channel_ids.length === 0 &&
+        deleteObj &&
+        deleteObj.group_ids.length === 0 &&
+        deleteObj &&
+        deleteObj.friend_ids.length === 0)
+    ) {
+      Toast.show({
+        title: 'Touku',
+        text: translate('pages.xchat.toastr.selectChatText'),
+      });
+      deleteObj = null;
+      this.setState({isVisible: true});
     } else {
       this.updateModalVisibility();
     }
@@ -2421,33 +2445,25 @@ class Chat extends Component {
         }
 
         this.setState({commonChat: commonData});
+        this.props.setDeleteChat(this.state.commonChat);
       }
     });
     this.updateModalVisibility();
     this.setState({isVisible: false});
-    // deteleObj = null;
-    // channelId = [];
-    // friendId = [];
-    // groupId = [];
   };
 
   actionCancel() {
     this.updateModalVisibility();
-    this.setState({isVisible: false});
-    deleteObj = null;
-    channelId = [];
-    friendId = [];
-    groupId = [];
   }
 
   renderCommonChat = () => {
-    const {isLoading, isVisible, isUncheck, commonChat} = this.state;
-    // const commonChat = this.props.commonChat;
+    const {isLoading, isVisible, isUncheck} = this.state;
+    const commonChat = this.props.commonChat;
 
     // if (this.props.currentRouteName !== 'ChatTab') {
     //   return;
     // }
-    console.log('renderCommonChat with text', this.state.searchText);
+    // console.log('renderCommonChat with text', this.state.searchText)
     let commonConversation = this.sortList();
     commonConversation = commonChat.filter(
       createFilter(this.state.searchText, [
@@ -2573,7 +2589,14 @@ class Chat extends Component {
   };
 
   render() {
-    const {orientation, sortBy, isDeleteVisible, isLoading} = this.state;
+    const {
+      orientation,
+      sortBy,
+      isDeleteVisible,
+      isLoading,
+      isVisible,
+      countChat,
+    } = this.state;
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -2599,6 +2622,7 @@ class Chat extends Component {
               isSorted: sortBy === 'name' ? true : false,
             },
           ]}
+          countObject={countChat}
           onChangeText={this.onSearch.bind(this)}
           navigation={this.props.navigation}
           isSearchBar
@@ -2613,6 +2637,7 @@ class Chat extends Component {
             this.manageDelete();
           }}
           isDeleteVisible={isLoading ? false : true}
+          isVisibleButton={isVisible}
         />
         {/* <SearchInput
             onChangeText={this.onSearch.bind(this)}
@@ -2632,7 +2657,7 @@ class Chat extends Component {
           onCancel={this.actionCancel.bind(this)}
           onConfirm={this.actionDelete.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
-          message={translate('pages.xchat.toastr.deleteComposeStepMail')}
+          message={translate('pages.xchat.toastr.chatHistoryDelete')}
         />
       </View>
       // </ImageBackground>
@@ -2698,6 +2723,7 @@ const mapDispatchToProps = {
   updateCurrentChannel,
   deleteChat,
   multipleData,
+  setDeleteChat,
 };
 
 export default connect(

@@ -58,6 +58,8 @@ export default class HomeHeader extends Component {
       onDeletePress,
       onDeleteConfrimPress,
       isDeleteVisible,
+      isVisibleButton,
+      countObject,
     } = this.props;
 
     return (
@@ -197,6 +199,8 @@ export default class HomeHeader extends Component {
               onCanclePress={onCanclePress}
               onDeleteConfrimPress={onDeleteConfrimPress}
               isDeleteVisible={isDeleteVisible}
+              isVisibleButton={isVisibleButton}
+              countObject={countObject}
             />
           )}
         </ImageBackground>
