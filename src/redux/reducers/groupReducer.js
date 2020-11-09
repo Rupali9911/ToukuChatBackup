@@ -417,6 +417,21 @@ export const deleteGroup = (groupId) => (dispatch) =>
       });
   });
 
+//Delete Chat
+export const deleteChat = (data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    console.log('data api', data);
+    client
+      .post(`/xchat/delete-multiple-chats/`, data)
+      .then((res) => {
+        console.log('resposne ', res);
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
 //Edit Group
 export const editGroup = (groupId, data) => (dispatch) =>
   new Promise(function (resolve, reject) {

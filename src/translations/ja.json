@@ -589,6 +589,7 @@
         "pleaseSelectCoverImage":"カバー画像を選択してください",
         "postDeleteSuccessfully":"投稿を削除しました",
         "sure":"はい",
+        "chatDelete" :"選択したチャットのチャット履歴が削除されます",
         "saveDraftMessage":"保留中の変更があります。下書きとして保存しますか？",
         "selectedUserWillBeRemoved":"選択したユーザーが削除されます",
         "selectValidDateRange":"有効な日付範囲を選択してください",

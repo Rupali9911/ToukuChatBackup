@@ -52,9 +52,14 @@ export default class HomeHeader extends Component {
       menuItems,
       onChangeText,
       onIconRightClick,
+      onCanclePress,
       navigation,
       isSearchBar,
+      onDeletePress,
+      onDeleteConfrimPress,
+      isDeleteVisible,
     } = this.props;
+
     return (
       <View style={styles.headerContainer}>
         <ImageBackground
@@ -104,7 +109,10 @@ export default class HomeHeader extends Component {
                   visible={this.state.visible}
                   onDismiss={this._closeMenu}
                   anchor={
-                    <TouchableOpacity style={{paddingHorizontal:10, paddingVertical:5}} onPress={this._openMenu} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                    <TouchableOpacity
+                      style={{paddingHorizontal: 10, paddingVertical: 5}}
+                      onPress={this._openMenu}
+                      hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                       <Image
                         source={Icons.icon_triangle_up}
                         style={{
@@ -184,6 +192,11 @@ export default class HomeHeader extends Component {
               onChangeText={onChangeText}
               navigation={navigation}
               onIconRightClick={onIconRightClick}
+              title={title}
+              onDeletePress={onDeletePress}
+              onCanclePress={onCanclePress}
+              onDeleteConfrimPress={onDeleteConfrimPress}
+              isDeleteVisible={isDeleteVisible}
             />
           )}
         </ImageBackground>

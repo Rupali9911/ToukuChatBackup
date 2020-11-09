@@ -589,6 +589,7 @@
         "pleaseSelectCoverImage":"Please select cover image",
         "postDeleteSuccessfully":"Post delete successfully",
         "sure":"Sure",
+        "chatDelete":"The chat history of selected chats will be deleted.",
         "saveDraftMessage":"There are pending changes, do you wish to save as draft?",
         "selectedUserWillBeRemoved":"selected user will be removed",
         "selectValidDateRange":"Select valid date range",

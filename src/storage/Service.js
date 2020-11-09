@@ -135,6 +135,45 @@ export const updateMessageById = (id, text, type) => {
   });
 };
 
+export const multipleData = (type, multichat) => {
+  console.log('type', type, multichat);
+  if (type === 'channel') {
+    realm.write(() => {
+      realm.create(
+        'channels',
+        {id: multichat.id, last_msg: null, timestamp: null},
+        'modified',
+      );
+    });
+  } else if (type === 'friend') {
+    realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: multichat.user_id,
+          last_msg: null,
+          last_msg_id: null,
+          timestamp: null,
+        },
+        'modified',
+      );
+    });
+  } else {
+    realm.write(() => {
+      realm.create(
+        'groups',
+        {
+          groups_id: multichat.group_id,
+          last_msg: null,
+          last_msg_id: null,
+          timestamp: null,
+        },
+        'modified',
+      );
+    });
+  }
+};
+
 export const updateReadByChannelId = (id) => {
   let results = realm.objects('chat_conversation').filtered(`channel == ${id}`);
 

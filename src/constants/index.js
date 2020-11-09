@@ -65,6 +65,7 @@ export const Icons = {
   gallery_icon_select: require('../../assets/icons/gallery_icon_select.png'),
   plus_icon_select: require('../../assets/icons/plus_icon_select.png'),
   icon_apple: require('../../assets/icons/apple.png'),
+  icon_bin: require('../../assets/icons/bin.png'),
 };
 
 export const Images = {
@@ -220,7 +221,8 @@ export const SocketEvents = {
   DELETE_MESSAGE_IN_THREAD: 'Delete message in thread',
   DELETE_MESSAGE_IN_MY_CHANNEL: 'Delete message in my channel',
   DELETE_MESSAGE_IN_FOLLOWING_CHANNEL: 'Delete message in following channel',
-  DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL: 'Delete multiple message in following channel',
+  DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
+    'Delete multiple message in following channel',
   DELETE_MULTIPLE_MESSAGE_IN_THREAD: 'Delete multiple message in thread',
   UNSENT_MESSAGE_IN_MY_CHANNEL: 'Unsent message in my channel',
   UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL: 'Unsent message in following channel',
@@ -281,6 +283,7 @@ export const SocketEvents = {
   FRIEND_NOTE_DATA: 'friend note data',
   FRIEND_NOTE_DATA_DELETED: 'friend note data deleted',
   FRIEND_DISPLAY_NAME_DATA: 'friend display name data',
+  DELETE_MULTIPLE_CHATS: 'delete multiple chats',
 };
 
 export const NotificationType = {

@@ -296,7 +296,7 @@ export const getTrendChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendChannelRequest());
     client
-      .get(`/xchat/channel-listing-trend/?last_id=0`)
+      .get(`/xchat/channel-listing-trend-for-testers/?start=0`)
       .then((res) => {
         if (res.status) {
           dispatch(getTrendChannelSuccess(res.posts));
@@ -358,7 +358,7 @@ export const getRankingChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getRankingChannelRequest());
     client
-      .get(`/xchat/channel-listing-ranked/?last_id=0`)
+      .get(`/xchat/channel-listing-ranked-for-testers/?last_id=0`)
       .then((res) => {
         if (res.status) {
           dispatch(getRankingChannelSuccess(res.posts));

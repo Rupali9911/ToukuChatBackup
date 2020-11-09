@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {Badge, Divider} from 'react-native-paper';
@@ -9,10 +10,21 @@ import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
 import {normalize} from '../../utils';
+import Icon from 'react-native-vector-icons/Feather';
+
 export default class FriendListItem extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isChecked: false,
+      newItem: {...this.props.item, isCheck: false},
+    };
+  }
+
+  componentDidUpdate(props) {
+    if (props.isVisible != this.props.isVisible) {
+      this.setState({newItem: {...this.props.item, isCheck: false}});
+    }
   }
 
   checkTyping = (typing) => {
@@ -61,6 +73,15 @@ export default class FriendListItem extends Component {
     }
   };
 
+  manageRecord = (item, isCheck) => {
+    if (isCheck === 'check') {
+      this.setState({newItem: {...item, isCheck: true}});
+    } else if (isCheck === 'unCheck') {
+      this.setState({newItem: {...item, isCheck: false}});
+    }
+    this.props.onCheckChange('friend', isCheck, item);
+  };
+
   render() {
     const {
       title,
@@ -72,81 +93,121 @@ export default class FriendListItem extends Component {
       isTyping,
       unreadCount,
       callTypingStop,
-      onAvtarPress,
+      isVisible,
+      item,
+      last_msg_id,
     } = this.props;
+    const {newItem} = this.state;
+
     return (
-      <Fragment>
-        <View activeOpacity={0.8} style={styles.container}>
-          <View style={[styles.firstView]}>
-            <TouchableOpacity onPress={onAvtarPress}>
+      last_msg_id !== null && (
+        <Fragment>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={onPress}
+            style={styles.container}
+            disabled={isVisible}>
+            <View style={styles.firstView}>
+              {isVisible && newItem.isCheck === false ? (
+                <TouchableOpacity
+                  style={styles.checkBox}
+                  onPress={() => {
+                    // this.setState({isChecked: true});
+                    this.manageRecord(item, 'check');
+                  }}
+                />
+              ) : (
+                isVisible &&
+                newItem.isCheck === true && (
+                  <TouchableOpacity
+                    style={{alignSelf: 'center', justifyContent: 'center'}}
+                    onPress={() => {
+                      // this.setState({isChecked: false});
+                      this.manageRecord(item, 'unCheck');
+                    }}>
+                    <LinearGradient
+                      start={{x: 0.1, y: 0.7}}
+                      end={{x: 0.5, y: 0.2}}
+                      locations={[0.1, 0.6, 1]}
+                      colors={[
+                        Colors.gradient_1,
+                        Colors.gradient_2,
+                        Colors.gradient_3,
+                      ]}
+                      style={styles.checkBoxIscheck}>
+                      <Icon size={17} name="check" style={{color: '#fff'}} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                )
+              )}
               <RoundedImage
                 source={image}
                 size={50}
                 isBadge={true}
                 isOnline={isOnline}
               />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.secondView} onPress={onPress}>
-              <View style={{flex: 1, alignItems: 'flex-start'}}>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegular17Text,
-                    {
-                      color: Colors.black_light,
-                      //fontSize: normalize(12),
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {title}
-                </Text>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.message_gray,
-                      textAlign: 'left',
-                      //fontSize: normalize(11),
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {isTyping ? 'Typing...' : description}
-                  {/* {description} */}
-                </Text>
-              </View>
-              <View>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.message_gray,
-                      fontSize: 12,
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {this.getDate(date)}
-                </Text>
-                {unreadCount !== 0 && unreadCount != null && (
-                  <Badge
+              <View style={styles.secondView}>
+                <View style={{flex: 1, alignItems: 'flex-start'}}>
+                  <Text
+                    numberOfLines={1}
                     style={[
-                      globalStyles.smallLightText,
+                      globalStyles.smallNunitoRegular17Text,
                       {
-                        backgroundColor: Colors.green,
-                        color: Colors.white,
-                        fontSize: 12,
+                        color: Colors.black_light,
+                        //fontSize: normalize(12),
+                        fontWeight: '400',
                       },
                     ]}>
-                    {unreadCount}
-                  </Badge>
-                )}
+                    {title}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      globalStyles.smallNunitoRegularText,
+                      {
+                        color: Colors.message_gray,
+                        textAlign: 'left',
+                        //fontSize: normalize(11),
+                        fontWeight: '400',
+                      },
+                    ]}>
+                    {isTyping ? 'Typing...' : description}
+                    {/* {description} */}
+                  </Text>
+                </View>
+                <View>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      globalStyles.smallNunitoRegularText,
+                      {
+                        color: Colors.message_gray,
+                        fontSize: 12,
+                        fontWeight: '400',
+                      },
+                    ]}>
+                    {this.getDate(date)}
+                  </Text>
+                  {unreadCount !== 0 && unreadCount != null && (
+                    <Badge
+                      style={[
+                        globalStyles.smallLightText,
+                        {
+                          backgroundColor: Colors.green,
+                          color: Colors.white,
+                          fontSize: 12,
+                        },
+                      ]}>
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </View>
               </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <Divider />
-      </Fragment>
+            </View>
+          </TouchableOpacity>
+          <Divider />
+        </Fragment>
+      )
     );
   }
 }
@@ -171,6 +232,26 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkBox: {
+    height: 20,
+    width: 20,
+    borderRadius: 20 / 2,
+    borderColor: '#ff62a5',
+    borderWidth: 1,
+    alignSelf: 'center',
+    margin: 5,
+    marginRight: 15,
+  },
+  checkBoxIscheck: {
+    height: 20,
+    width: 20,
+    borderRadius: 20 / 2,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    margin: 5,
+    marginRight: 15,
   },
 });
 

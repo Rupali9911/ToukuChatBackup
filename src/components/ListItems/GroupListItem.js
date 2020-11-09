@@ -9,11 +9,26 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
 import {getImage, normalize} from '../../utils';
+import Icon from 'react-native-vector-icons/Feather';
 
+let groupId = [];
 export default class GroupListItem extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isChecked: false,
+      newItem: {...this.props.item, isCheck: false},
+    };
+  }
+
+  componentDidUpdate(props) {
+    if (props.isVisible != this.props.isVisible) {
+      this.setState({newItem: {...this.props.item, isCheck: false}});
+    }
+  }
+  componentDidMount(prevProps) {
+    this.setState({isChecked: false});
+    groupId = [];
   }
 
   getDate = (date) => {
@@ -73,101 +88,158 @@ export default class GroupListItem extends Component {
     return newMessageTextWithMention;
   };
 
+  manageRecord = (item, isCheck) => {
+    if (isCheck === 'check') {
+      this.setState({newItem: {...item, isCheck: true}});
+    } else if (isCheck === 'unCheck') {
+      this.setState({newItem: {...item, isCheck: false}});
+    }
+    this.props.onCheckChange('group', isCheck, item);
+  };
+
   render() {
-    const {title, description, date, image, onPress, unreadCount} = this.props;
+    const {
+      title,
+      description,
+      date,
+      image,
+      onPress,
+      unreadCount,
+      isVisible,
+      item,
+      last_msg_id,
+    } = this.props;
+    const {newItem} = this.state;
+    console.log('data', last_msg_id == null);
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
     return (
-      <Fragment>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onPress}
-          style={styles.container}>
-          <View style={styles.firstView}>
-            {image === null || image === '' || typeof image === undefined ? (
-              <LinearGradient
-                start={{x: 0.1, y: 0.7}}
-                end={{x: 0.5, y: 0.2}}
-                locations={[0.1, 0.6, 1]}
-                colors={[
-                  Colors.gradient_1,
-                  Colors.gradient_2,
-                  Colors.gradient_3,
-                ]}
-                style={styles.squareImage}>
-                <Text style={globalStyles.normalRegularText}>
-                  {title.charAt(0).toUpperCase()}
-                  {/* {secondUpperCase} */}
-                </Text>
-              </LinearGradient>
-            ) : (
-              <RoundedImage
-                source={getImage(image)}
-                isRounded={false}
-                size={50}
-              />
-            )}
-            <View style={styles.secondView}>
-              <View style={{flex: 1, alignItems: 'flex-start'}}>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.black_light,
-                      fontSize: normalize(12),
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {title}
-                </Text>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.message_gray,
-                      textAlign: 'left',
-                      fontSize: normalize(11),
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {this.renderMessageWitMentions(description)}
-                </Text>
-              </View>
-              <View>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.message_gray,
-                      fontSize: 11,
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {this.getDate(date)}
-                </Text>
-                {unreadCount !== 0 && unreadCount != null && (
-                  <Badge
+      last_msg_id !== null && (
+        <Fragment>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={onPress}
+            style={styles.container}
+            disabled={isVisible}>
+            <View style={styles.firstView}>
+              {isVisible && newItem.isCheck === false ? (
+                <TouchableOpacity
+                  style={styles.checkBox}
+                  onPress={() => {
+                    // this.setState({isChecked: true});
+                    this.manageRecord(item, 'check');
+                  }}
+                />
+              ) : (
+                isVisible &&
+                newItem.isCheck === true && (
+                  <TouchableOpacity
+                    style={{alignSelf: 'center', justifyContent: 'center'}}
+                    onPress={() => {
+                      // this.setState({isChecked: false});
+                      this.manageRecord(item, 'unCheck');
+                    }}>
+                    <LinearGradient
+                      start={{x: 0.1, y: 0.7}}
+                      end={{x: 0.5, y: 0.2}}
+                      locations={[0.1, 0.6, 1]}
+                      colors={[
+                        Colors.gradient_1,
+                        Colors.gradient_2,
+                        Colors.gradient_3,
+                      ]}
+                      style={styles.checkBoxIscheck}>
+                      <Icon size={17} name="check" style={{color: '#fff'}} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                )
+              )}
+
+              {image === null || image === '' || typeof image === undefined ? (
+                <LinearGradient
+                  start={{x: 0.1, y: 0.7}}
+                  end={{x: 0.5, y: 0.2}}
+                  locations={[0.1, 0.6, 1]}
+                  colors={[
+                    Colors.gradient_1,
+                    Colors.gradient_2,
+                    Colors.gradient_3,
+                  ]}
+                  style={styles.squareImage}>
+                  <Text style={globalStyles.normalRegularText}>
+                    {title.charAt(0).toUpperCase()}
+                    {/* {secondUpperCase} */}
+                  </Text>
+                </LinearGradient>
+              ) : (
+                <RoundedImage
+                  source={getImage(image)}
+                  isRounded={false}
+                  size={50}
+                />
+              )}
+              <View style={styles.secondView}>
+                <View style={{flex: 1, alignItems: 'flex-start'}}>
+                  <Text
+                    numberOfLines={1}
                     style={[
-                      globalStyles.smallLightText,
+                      globalStyles.smallNunitoRegularText,
                       {
-                        backgroundColor: Colors.green,
-                        color: Colors.white,
-                        fontSize: 11,
+                        color: Colors.black_light,
+                        fontSize: normalize(12),
+                        fontWeight: '400',
                       },
                     ]}>
-                    {unreadCount}
-                  </Badge>
-                )}
+                    {title}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      globalStyles.smallNunitoRegularText,
+                      {
+                        color: Colors.message_gray,
+                        textAlign: 'left',
+                        fontSize: normalize(11),
+                        fontWeight: '400',
+                      },
+                    ]}>
+                    {this.renderMessageWitMentions(description)}
+                  </Text>
+                </View>
+                <View>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      globalStyles.smallNunitoRegularText,
+                      {
+                        color: Colors.message_gray,
+                        fontSize: 11,
+                        fontWeight: '400',
+                      },
+                    ]}>
+                    {this.getDate(date)}
+                  </Text>
+                  {unreadCount !== 0 && unreadCount != null && (
+                    <Badge
+                      style={[
+                        globalStyles.smallLightText,
+                        {
+                          backgroundColor: Colors.green,
+                          color: Colors.white,
+                          fontSize: 11,
+                        },
+                      ]}>
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </View>
               </View>
             </View>
-          </View>
-        </TouchableOpacity>
-        <Divider />
-      </Fragment>
+          </TouchableOpacity>
+          <Divider />
+        </Fragment>
+      )
     );
   }
 }
@@ -192,6 +264,26 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkBox: {
+    height: 20,
+    width: 20,
+    borderRadius: 20 / 2,
+    borderColor: '#ff62a5',
+    borderWidth: 1,
+    alignSelf: 'center',
+    margin: 5,
+    marginRight: 15,
+  },
+  checkBoxIscheck: {
+    height: 20,
+    width: 20,
+    borderRadius: 20 / 2,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    margin: 5,
+    marginRight: 15,
   },
 });
 

@@ -1,10 +1,10 @@
 import * as RNLocalize from 'react-native-localize';
 import i18n from 'i18n-js';
 import memoize from 'lodash.memoize';
-import { Icons } from '../../constants/index.js';
-import { client } from '../../helpers/api.js';
-import { translationGetters } from '../../screens/Authentication/index.js';
-import { batch } from 'react-redux'
+import {Icons} from '../../constants/index.js';
+import {client} from '../../helpers/api.js';
+import {translationGetters} from '../../screens/Authentication/index.js';
+import {batch} from 'react-redux';
 // const writeJsonFile = require('../../translations/en.json');
 
 let languages = [
@@ -16,11 +16,11 @@ let languages = [
 ];
 
 let languageRequests = languages.map((name) =>
-  fetch(`https://cdn.angelium.net/lang/touku/${name}`)
+  fetch(`https://cdn.angelium.net/lang/touku/${name}`),
 );
 
 let languageRequestsBackend = languages.map((name) =>
-  fetch(`https://cdn.angelium.net/lang/backendMessage/${name}`)
+  fetch(`https://cdn.angelium.net/lang/backendMessage/${name}`),
 );
 
 // export const translationGetters = {
@@ -33,18 +33,18 @@ let languageRequestsBackend = languages.map((name) =>
 
 export const translate = memoize(
   (key, config) => i18n.t(key, config),
-  (key, config) => (config ? key + JSON.stringify(config) : key)
+  (key, config) => (config ? key + JSON.stringify(config) : key),
 );
 
 export function setI18nConfig(tag) {
-  const fallback = { languageTag: tag || 'en' };
-  const { languageTag } =
+  const fallback = {languageTag: tag || 'en'};
+  const {languageTag} =
     // RNLocalize.findBestAvailableLanguage(Object.keys(translationGetters)) ||
     fallback;
 
   translate.cache.clear();
 
-  i18n.translations = { [languageTag]: translationGetters[languageTag]() };
+  i18n.translations = {[languageTag]: translationGetters[languageTag]()};
   i18n.locale = languageTag;
 }
 
@@ -136,34 +136,34 @@ export default function (state = initialState, action) {
         tw: action.payload.data,
       };
 
-      case SET_ENGLISH_LANGUAGE_BACKEND:
+    case SET_ENGLISH_LANGUAGE_BACKEND:
       return {
         ...state,
-        en: {...state.en, "backend": action.payload.data},
+        en: {...state.en, backend: action.payload.data},
       };
 
     case SET_JAPAN_LANGUAGE_BACKEND:
       return {
         ...state,
-        ja: {...state.ja, "backend": action.payload.data},
+        ja: {...state.ja, backend: action.payload.data},
       };
 
     case SET_KOREA_LANGUAGE_BACKEND:
       return {
         ...state,
-        ko: {...state.ko, "backend": action.payload.data},
+        ko: {...state.ko, backend: action.payload.data},
       };
 
     case SET_CHINA_LANGUAGE_BACKEND:
       return {
         ...state,
-        ch: {...state.ch, "backend": action.payload.data},
+        ch: {...state.ch, backend: action.payload.data},
       };
 
     case SET_TAIWAN_LANGUAGE_BACKEND:
       return {
         ...state,
-        tw: {...state.tw, "backend": action.payload.data},
+        tw: {...state.tw, backend: action.payload.data},
       };
 
     default:
@@ -201,13 +201,13 @@ export const getAllLanguages = () => (dispatch) =>
         });
       }
       //console.log('Languages',JSON.stringify(languages))
-        batch(() => {
-            dispatch(setEnglishLanguage(languages[0]));
-            dispatch(setJapanLanguage(languages[1]));
-            dispatch(setKoreaLanguage(languages[2]));
-            dispatch(setChinaLanguage(languages[3]));
-            dispatch(setTaiwanLanguage(languages[4]));
-        })
+      batch(() => {
+        dispatch(setEnglishLanguage(languages[0]));
+        dispatch(setJapanLanguage(languages[1]));
+        dispatch(setKoreaLanguage(languages[2]));
+        dispatch(setChinaLanguage(languages[3]));
+        dispatch(setTaiwanLanguage(languages[4]));
+      });
     });
 
 // export const getTranslator = () => (dispatch) =>
@@ -223,30 +223,30 @@ export const getAllLanguages = () => (dispatch) =>
 //     });
 
 export const getAllLanguagesBackend = () => (dispatch) =>
-Promise.all(languageRequestsBackend)
+  Promise.all(languageRequestsBackend)
     .then((responses) => {
-        return responses;
+      return responses;
     })
     .then((responses) => Promise.all(responses.map((r) => r.json())))
     .then((languages) => {
-        if (languages && languages.length > 0) {
-            languages = languages.map(function (el) {
-                var o = Object.assign(el);
-                // o.selected = false;
-                return o;
-            });
-        }
-         // console.log('Backend messages',JSON.stringify(languages[0]))
-        batch(() => {
-            dispatch(setEnglishLanguageBackend(languages[0]));
-            dispatch(setJapanLanguageBackend(languages[1]));
-            dispatch(setKoreaLanguageBackend(languages[2]));
-            dispatch(setChinaLanguageBackend(languages[3]));
-            dispatch(setTaiwanLanguageBackend(languages[4]));
-        })
-        // (async () => {
-        //     await writeJsonFile('en.json', {foo: true});
-        // })();
+      if (languages && languages.length > 0) {
+        languages = languages.map(function (el) {
+          var o = Object.assign(el);
+          // o.selected = false;
+          return o;
+        });
+      }
+      // console.log('Backend messages',JSON.stringify(languages[0]))
+      batch(() => {
+        dispatch(setEnglishLanguageBackend(languages[0]));
+        dispatch(setJapanLanguageBackend(languages[1]));
+        dispatch(setKoreaLanguageBackend(languages[2]));
+        dispatch(setChinaLanguageBackend(languages[3]));
+        dispatch(setTaiwanLanguageBackend(languages[4]));
+      });
+      // (async () => {
+      //     await writeJsonFile('en.json', {foo: true});
+      // })();
     });
 
 export const userLanguage = () => (dispatch) =>
@@ -276,7 +276,6 @@ export const translateMessage = (data) => (dispatch) =>
 //Set Selected Language
 export const setAppLanguage = (data) => (dispatch) =>
   dispatch(setSelectedLanguage(data));
-
 
 const setSelectedLanguage = (data) => ({
   type: SET_LANGUAGE_SELECTED,
@@ -321,36 +320,36 @@ const setTaiwanLanguage = (data) => ({
 });
 
 const setEnglishLanguageBackend = (data) => ({
-    type: SET_ENGLISH_LANGUAGE_BACKEND,
-    payload: {
-        data: data,
-    },
+  type: SET_ENGLISH_LANGUAGE_BACKEND,
+  payload: {
+    data: data,
+  },
 });
 
 const setJapanLanguageBackend = (data) => ({
-    type: SET_JAPAN_LANGUAGE_BACKEND,
-    payload: {
-        data: data,
-    },
+  type: SET_JAPAN_LANGUAGE_BACKEND,
+  payload: {
+    data: data,
+  },
 });
 
 const setKoreaLanguageBackend = (data) => ({
-    type: SET_KOREA_LANGUAGE_BACKEND,
-    payload: {
-        data: data,
-    },
+  type: SET_KOREA_LANGUAGE_BACKEND,
+  payload: {
+    data: data,
+  },
 });
 
 const setChinaLanguageBackend = (data) => ({
-    type: SET_CHINA_LANGUAGE_BACKEND,
-    payload: {
-        data: data,
-    },
+  type: SET_CHINA_LANGUAGE_BACKEND,
+  payload: {
+    data: data,
+  },
 });
 
 const setTaiwanLanguageBackend = (data) => ({
-    type: SET_TAIWAN_LANGUAGE_BACKEND,
-    payload: {
-        data: data,
-    },
+  type: SET_TAIWAN_LANGUAGE_BACKEND,
+  payload: {
+    data: data,
+  },
 });

@@ -1151,6 +1151,7 @@ class Home extends Component {
             <ChannelListItem
               key={index}
               title={item.name}
+              last_msg={item.last_msg}
               description={
                 item.last_msg
                   ? item.last_msg.msg_type === 'text'
@@ -1205,7 +1206,6 @@ class Home extends Component {
     const filteredGroups = sortChannels.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
-
     if (filteredGroups.length === 0 && groupLoading) {
       return <ListLoader />;
     } else if (filteredGroups.length > 0) {
@@ -1217,6 +1217,7 @@ class Home extends Component {
             <GroupListItem
               key={index}
               title={item.group_name}
+              last_msg_id={item.last_msg_id}
               description={
                 item.last_msg
                   ? item.last_msg.type === 'text'
@@ -1266,6 +1267,7 @@ class Home extends Component {
             <FriendListItem
               key={index}
               user_id={item.user_id}
+              last_msg_id={item.last_msg_id}
               title={item.display_name}
               description={
                 item.last_msg
@@ -1318,6 +1320,7 @@ class Home extends Component {
         <FlatList
           data={filteredFriendRequest}
           extraData={this.state}
+          last_msg_id={last_msg_id}
           renderItem={({item, index}) => (
             <FriendRequestListItem
               key={index}

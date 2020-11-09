@@ -6,16 +6,19 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  Text,
 } from 'react-native';
-import {Colors, Icons, Fonts} from '../../constants';
+import {Colors, Icons, Fonts, Images} from '../../constants';
 import {globalStyles} from '../../styles';
 import {Menu} from 'react-native-paper';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import Icon from 'react-native-vector-icons/EvilIcons';
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      isVisibleLeft: false,
     };
   }
 
@@ -46,32 +49,69 @@ export default class SearchInput extends Component {
       placeholder,
       onChangeText,
       isIconRight,
+      isIconLeft,
+      onIconLeftClick,
       onIconRightClick,
       onSubmitEditing,
       navigation,
+      isIconDelete,
+      title,
+      onDeletePress,
+      onCanclePress,
+      onDeleteConfrimPress,
+      isDeleteVisible,
     } = this.props;
+
+    const {isVisibleLeft} = this.state;
+
     return (
       <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <Image source={Icons.icon_search} style={styles.iconSearch} />
-          <View style={{flex: 1,}}>
-          <TextInput
-            style={styles.inputStyle}
-            placeholder={placeholder || translate('pages.xchat.search')}
-            // placeholderTextColor={Colors.gray}
-            onChangeText={onChangeText}
-            ref={(input) => (this.textInput = input)}
-            onSubmitEditing={onSubmitEditing}
-            returnKeyType={'done'}
-            autoCorrect={false}
-            onFocus={() => this.onFocus()}
-            onBlur={() => this.onBlur()}
-            autoCapitalize={'none'}
-            underlineColorAndroid={'transparent'}
-          />
+        {title === 'Chat' && !isVisibleLeft && isDeleteVisible && (
+          <Menu
+            style={{marginTop: 40}}
+            contentStyle={{}}
+            visible={this.state.isVisibleLeft}
+            // onDismiss={() => {
+            //   this.setState({isVisibleLeft: false});
+            // }}
+            anchor={
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={[
+                  styles.iconRightContainer,
+                  {marginStart: -5, marginEnd: 5},
+                ]}
+                onPress={() =>
+                  this.setState({isVisibleLeft: true}, () => onDeletePress())
+                }
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                <Image source={Icons.icon_bin} style={styles.deleteIcon} />
+              </TouchableOpacity>
+            }></Menu>
+        )}
+
+        {!isVisibleLeft && (
+          <View style={styles.searchContainer}>
+            <Image source={Icons.icon_search} style={styles.iconSearch} />
+            <View style={{flex: 1}}>
+              <TextInput
+                style={styles.inputStyle}
+                placeholder={placeholder || translate('pages.xchat.search')}
+                // placeholderTextColor={Colors.gray}
+                onChangeText={onChangeText}
+                ref={(input) => (this.textInput = input)}
+                onSubmitEditing={onSubmitEditing}
+                returnKeyType={'done'}
+                autoCorrect={false}
+                onFocus={() => this.onFocus()}
+                onBlur={() => this.onBlur()}
+                autoCapitalize={'none'}
+                underlineColorAndroid={'transparent'}
+              />
+            </View>
           </View>
-        </View>
-        {!isIconRight ? (
+        )}
+        {!isIconRight && !isVisibleLeft && (
           // <TouchableOpacity
           //   activeOpacity={0.8}
           //   style={styles.iconRightContainer}
@@ -119,7 +159,35 @@ export default class SearchInput extends Component {
               title={translate('pages.xchat.addFriend')}
             />
           </Menu>
-        ) : null}
+        )}
+
+        {isVisibleLeft && (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <TouchableOpacity
+                style={styles.buttonStyle}
+                onPress={() => {
+                  this.setState({isVisibleLeft: false}, () =>
+                    onDeleteConfrimPress(),
+                  );
+                }}>
+                <Text style={styles.buttonTextStyle}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonStyle}
+                onPress={() => {
+                  this.setState({isVisibleLeft: false}, () => onCanclePress());
+                }}>
+                <Text style={styles.buttonTextStyle}>Cancle</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
     );
   }
@@ -131,7 +199,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingBottom: 10,
-      marginLeft: 10
+    marginLeft: 10,
     // backgroundColor: Colors.home_header,
   },
   searchContainer: {
@@ -153,9 +221,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.nunitoSansRegular,
     marginStart: 10,
     //alignSelf: 'center',
-      paddingTop: 0,
-      paddingBottom: 0,
-     // fontWeight: '300',
+    paddingTop: 0,
+    paddingBottom: 0,
+    // fontWeight: '300',
   },
   iconRight: {
     height: 25,
@@ -172,4 +240,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 35,
   },
+
+  buttonStyle: {
+    flex: 1,
+    borderWidth: 1,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    borderColor: '#fff',
+  },
+  buttonTextStyle: {
+    fontFamily: Fonts.light,
+    fontSize: 14,
+    color: '#fff',
+    fontWeight: '300',
+  },
+  deleteIcon: {height: 28, width: 28, tintColor: 'white'},
 });

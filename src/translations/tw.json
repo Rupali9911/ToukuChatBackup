@@ -589,6 +589,7 @@
         "pleaseSelectCoverImage":"請選擇封面圖片",
         "postDeleteSuccessfully":"發表刪除成功",
         "sure":"當然",
+        "chatDelete" : "所選聊天的聊天記錄將被刪除。",
         "saveDraftMessage":"有待更改，是否要另存为草稿？",
         "selectedUserWillBeRemoved":"所選用戶將被刪除",
         "selectValidDateRange":"选择有效的日期范围",
