@@ -692,29 +692,9 @@ class FriendChats extends Component {
 
   getLocalFriendConversation = () => {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
-    if (chat.length) {
+    if (chat) {
       let conversations = [];
       conversations = chat.toJSON();
-      // chat.map((item, index) => {
-      //   let i = {
-      //     created: item.created,
-      //     deleted_for: item.deleted_for,
-      //     friend: item.friend,
-      //     from_user: item.from_user,
-      //     id: item.id,
-      //     is_edited: item.is_edited,
-      //     is_read: item.is_read,
-      //     is_unsent: item.is_unsent,
-      //     local_id: item.local_id,
-      //     message_body: item.message_body,
-      //     msg_type: item.msg_type,
-      //     reply_to: item.reply_to,
-      //     thumbnail: item.thumbnail,
-      //     to_user: item.to_user,
-      //     updated: item.updated,
-      //   };
-      //   conversations = [...conversations, i];
-      // });
       this.props.setFriendConversation(conversations);
     }
   };
@@ -911,37 +891,42 @@ class FriendChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
+
+      this.state.selectedIds.map((item) => {
+        deleteFriendMessageById(item);
+
+        if (this.props.currentFriend.last_msg_id == item) {
+          let chat = getFriendChatConversationById(
+            this.props.currentFriend.friend,
+          );
+
+          let array = chat.toJSON();
+
+          if (array && array.length > 0) {
+            updateFriendLastMsgWithoutCount(
+              this.props.currentFriend.user_id,
+              {
+                id: array[0].id,
+                msg_type: array[0].msg_type,
+                message_body: array[0].message_body,
+                created: array[0].timestamp,
+              },
+            );
+            this.props.setUserFriends().then((res) => {
+              this.props.setCommonChatConversation();
+            });
+          }
+        }
+      });
+      this.getLocalFriendConversation();
+      this.setState({isMultiSelect: false, selectedIds: []});
+
       this.props.deleteMultiplePersonalMessage(payload).then((res) => {
         console.log(res);
         if (res && res.status) {
-          this.state.selectedIds.map((item) => {
-            deleteFriendMessageById(item);
 
-            if (this.props.currentFriend.last_msg_id == item) {
-              let chat = getFriendChatConversationById(
-                this.props.currentFriend.friend,
-              );
-
-              let array = chat.toJSON();
-
-              if (array && array.length > 0) {
-                updateFriendLastMsgWithoutCount(
-                  this.props.currentFriend.user_id,
-                  {
-                    id: array[0].id,
-                    msg_type: array[0].msg_type,
-                    message_body: array[0].message_body,
-                    created: array[0].timestamp,
-                  },
-                );
-                this.props.setUserFriends().then((res) => {
-                  this.props.setCommonChatConversation();
-                });
-              }
-            }
-          });
-          this.getLocalFriendConversation();
-          this.setState({isMultiSelect: false, selectedIds: []});
+        }else{
+          this.getPersonalConversation();
         }
       });
     }

@@ -1015,6 +1015,14 @@ class Chat extends Component {
           this.props.getLocalFollowingChannels().then((res) => {
             this.props.setCommonChatConversation();
           });
+
+          if (
+            this.props.currentRouteName == 'ChannelChats' &&
+            currentChannel &&
+            message.text.data.message_details.channel == currentChannel.id
+          ) {
+            this.getLocalChannelConversations();
+          }
         }
       }
     }
@@ -1145,14 +1153,16 @@ class Chat extends Component {
           let channels = [];
           channels = result.toJSON();
           deleteMessageById(item.id);
-          if (channels[0].last_msg.id == item.id) {
+          if (channels[0].last_msg && channels[0].last_msg.id == item.id) {
             var chats = getChannelChatConversationById(item.channel);
             var array = [];
-            for (let chat of chats) {
-              array = [...array, chat];
+            array = chats.toJSON();
+
+            if(array.length>0){
+              updateChannelLastMsgWithOutCount(item.channel, array[0]);
+            }else{
+              updateChannelLastMsgWithOutCount(item.channel, null);
             }
-            console.log('updated_last_messgae', JSON.stringify(array[0]));
-            updateChannelLastMsgWithOutCount(item.channel, array[0]);
 
             this.props.getLocalFollowingChannels().then(() => {
               this.props.setCommonChatConversation();
@@ -1160,7 +1170,7 @@ class Chat extends Component {
           }
           if (currentChannel && item.channel == currentChannel.id) {
             let chat = getChannelChatConversationById(currentChannel.id);
-            this.props.setChannelConversation(chat);
+            this.props.setChannelConversation(chat.toJSON());
           }
         }
       });
@@ -1542,15 +1552,18 @@ class Chat extends Component {
             var chats = getFriendChatConversationById(item.friend);
             var chats_array = [];
             chats_array = chats.toJSON();
-            updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
+            if(chats_array.length>0){
+              updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
+            }else{
+              updateFriendLastMsgWithoutCount(user_id, null);
+            }
             this.props.setUserFriends().then((res) => {
               this.props.setCommonChatConversation();
             });
           }
           if (
             this.props.currentRouteName == 'FriendChats' &&
-            currentFriend &&
-            user_id == currentFriend.user_id
+            currentFriend
           ) {
             this.getLocalFriendConversation();
           }
@@ -1672,13 +1685,25 @@ class Chat extends Component {
           let array = chat.toJSON();
 
           if (group[0].last_msg_id == item.msg_id) {
-            updateLastMsgGroupsWithoutCount(
-              item.group_id,
-              array[0].message_body.type,
-              array[0].message_body.text,
-              array[0].msg_id,
-              array[0].timestamp,
-            );
+
+            if(array && array.length>0){
+              updateLastMsgGroupsWithoutCount(
+                item.group_id,
+                array[0].message_body.type,
+                array[0].message_body.text,
+                array[0].msg_id,
+                array[0].timestamp,
+              );
+            }else{
+              updateLastMsgGroupsWithoutCount(
+                item.group_id,
+                null,
+                null,
+                null,
+                group[0].timestamp,
+              );
+            }
+            
             this.props.getLocalUserGroups().then((res) => {
               this.props.setCommonChatConversation();
             });
@@ -2186,27 +2211,29 @@ class Chat extends Component {
 
   getLocalGroupConversation = () => {
     let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
-    if (chat.length) {
+    if (chat) {
       let conversations = [];
-      chat.map((item, index) => {
-        let i = {
-          msg_id: item.msg_id,
-          sender_id: item.sender_id,
-          group_id: item.group_id,
-          sender_username: item.sender_username,
-          sender_display_name: item.sender_display_name,
-          sender_picture: item.sender_picture,
-          message_body: item.message_body,
-          is_edited: item.is_edited,
-          is_unsent: item.is_unsent,
-          timestamp: item.timestamp,
-          reply_to: item.reply_to,
-          mentions: item.mentions,
-          read_count: item.read_count,
-          created: item.created,
-        };
-        conversations = [...conversations, i];
-      });
+      // chat.map((item, index) => {
+      //   let i = {
+      //     msg_id: item.msg_id,
+      //     sender_id: item.sender_id,
+      //     group_id: item.group_id,
+      //     sender_username: item.sender_username,
+      //     sender_display_name: item.sender_display_name,
+      //     sender_picture: item.sender_picture,
+      //     message_body: item.message_body,
+      //     is_edited: item.is_edited,
+      //     is_unsent: item.is_unsent,
+      //     timestamp: item.timestamp,
+      //     reply_to: item.reply_to,
+      //     mentions: item.mentions,
+      //     read_count: item.read_count,
+      //     created: item.created,
+      //   };
+      //   conversations = [...conversations, i];
+      // });
+
+      conversations = chat.toJSON();
 
       this.props.setGroupConversation(conversations);
     }

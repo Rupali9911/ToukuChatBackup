@@ -266,21 +266,24 @@ export const getLocalFollowingChannels = () => (dispatch) =>
       let counts = 0;
       channels.map((item, index) => {
         counts = counts + item.unread_msg;
-        let i = {
-          id: item.id,
-          name: item.name,
-          unread_msg: item.unread_msg,
-          total_members: item.total_members,
-          description: item.description,
-          chat: item.chat,
-          channel_picture: item.channel_picture,
-          last_msg: item.last_msg,
-          is_pined: item.is_pined,
-          created: item.created,
-          joining_date: item.joining_date,
-        };
-        array = [...array, i];
+        // let i = {
+        //   id: item.id,
+        //   name: item.name,
+        //   unread_msg: item.unread_msg,
+        //   total_members: item.total_members,
+        //   description: item.description,
+        //   chat: item.chat,
+        //   channel_picture: item.channel_picture,
+        //   last_msg: item.last_msg,
+        //   is_pined: item.is_pined,
+        //   created: item.created,
+        //   joining_date: item.joining_date,
+        // };
+        // array = [...array, i];
       });
+
+      array = channels.toJSON();
+
       dispatch(setUnreadChannelMsgsCounts(counts));
       dispatch(getFollowingChannelsSuccess(array));
     }
@@ -298,21 +301,24 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
           let counts = 0;
           channels.map((item, index) => {
             counts = counts + item.unread_msg;
-            let i = {
-              id: item.id,
-              name: item.name,
-              unread_msg: item.unread_msg,
-              total_members: item.total_members,
-              description: item.description,
-              chat: item.chat,
-              channel_picture: item.channel_picture,
-              last_msg: item.last_msg,
-              is_pined: item.is_pined,
-              created: item.created,
-              joining_date: item.joining_date,
-            };
-            array = [...array, i];
+            // let i = {
+            //   id: item.id,
+            //   name: item.name,
+            //   unread_msg: item.unread_msg,
+            //   total_members: item.total_members,
+            //   description: item.description,
+            //   chat: item.chat,
+            //   channel_picture: item.channel_picture,
+            //   last_msg: item.last_msg,
+            //   is_pined: item.is_pined,
+            //   created: item.created,
+            //   joining_date: item.joining_date,
+            // };
+            // array = [...array, i];
           });
+
+          array = channels.toJSON();
+
           dispatch(setUnreadChannelMsgsCounts(counts));
           dispatch(getFollowingChannelsSuccess(array));
         } else {

@@ -530,30 +530,33 @@ export const getChannelsById = (id) => {
 
 export const updateChannelLastMsgWithOutCount = (id, message) => {
   console.log('last_msg_update');
-  var last_msg = {
-    bonus_message: message.bonus_message,
-    channel: message.channel,
-    created: message.created,
-    deleted_for: message.deleted_for,
-    from_user: message.from_user.id,
-    greeting: message.greeting,
-    hyperlink: message.hyperlink,
-    id: message.id,
-    is_edited: message.is_edited,
-    is_multilanguage: message.is_multilanguage,
-    is_read: message.is_read,
-    is_unsent: message.is_unsent,
-    message_body: message.message_body,
-    msg_type: message.msg_type,
-    read_by: message.read_by,
-    read_by_in_replies: message.read_by_in_replies,
-    reply_to: message.reply_to,
-    schedule_post: message.schedule_post,
-    subchat: message.subchat,
-    thumbnail: message.thumbnail,
-    to_user: message.to_user ? message.to_user.id : null,
-    updated: message.updated,
-  };
+  var last_msg = null;
+  if (message) {
+    last_msg = {
+      bonus_message: message.bonus_message,
+      channel: message.channel,
+      created: message.created,
+      deleted_for: message.deleted_for,
+      from_user: message.from_user.id,
+      greeting: message.greeting,
+      hyperlink: message.hyperlink,
+      id: message.id,
+      is_edited: message.is_edited,
+      is_multilanguage: message.is_multilanguage,
+      is_read: message.is_read,
+      is_unsent: message.is_unsent,
+      message_body: message.message_body,
+      msg_type: message.msg_type,
+      read_by: message.read_by,
+      read_by_in_replies: message.read_by_in_replies,
+      reply_to: message.reply_to,
+      schedule_post: message.schedule_post,
+      subchat: message.subchat,
+      thumbnail: message.thumbnail,
+      to_user: message.to_user ? message.to_user.id : null,
+      updated: message.updated,
+    };
+  }
 
   realm.write(() => {
     realm.create(
@@ -1046,20 +1049,34 @@ export const updateFriendsUnReadCount = (id, unreadCount) => {
 
 export const updateFriendLastMsgWithoutCount = async (id, message) => {
   // var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
-
-  await realm.write(() => {
-    realm.create(
-      'user_friends',
-      {
-        user_id: id,
-        last_msg_id: message.id,
-        last_msg: message.message_body ? message.message_body : '',
-        last_msg_type: message.msg_type,
-        timestamp: message.created,
-      },
-      'modified',
-    );
-  });
+  if(message){
+    await realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: id,
+          last_msg_id: message.id,
+          last_msg: message.message_body ? message.message_body : '',
+          last_msg_type: message.msg_type,
+          timestamp: message.created,
+        },
+        'modified',
+      );
+    });
+  }else{
+    await realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: id,
+          last_msg_id: null,
+          last_msg: '',
+          last_msg_type: null,
+        },
+        'modified',
+      );
+    });
+  }
 };
 
 export const updateFriendLastMsg = (id, message, updateCount) => {

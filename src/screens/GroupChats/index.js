@@ -827,27 +827,30 @@ class GroupChats extends Component {
 
   getLocalGroupConversation = () => {
     let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
-    if (chat.length) {
+    if (chat) {
       let conversations = [];
-      chat.map((item, index) => {
-        let i = {
-          msg_id: item.msg_id,
-          sender_id: item.sender_id,
-          group_id: item.group_id,
-          sender_username: item.sender_username,
-          sender_display_name: item.sender_display_name,
-          sender_picture: item.sender_picture,
-          message_body: item.message_body,
-          is_edited: item.is_edited,
-          is_unsent: item.is_unsent,
-          timestamp: item.timestamp,
-          reply_to: item.reply_to,
-          mentions: item.mentions,
-          read_count: item.read_count,
-          created: item.created,
-        };
-        conversations = [...conversations, i];
-      });
+      // chat.map((item, index) => {
+      //   let i = {
+      //     msg_id: item.msg_id,
+      //     sender_id: item.sender_id,
+      //     group_id: item.group_id,
+      //     sender_username: item.sender_username,
+      //     sender_display_name: item.sender_display_name,
+      //     sender_picture: item.sender_picture,
+      //     message_body: item.message_body,
+      //     is_edited: item.is_edited,
+      //     is_unsent: item.is_unsent,
+      //     timestamp: item.timestamp,
+      //     reply_to: item.reply_to,
+      //     mentions: item.mentions,
+      //     read_count: item.read_count,
+      //     created: item.created,
+      //   };
+      //   conversations = [...conversations, i];
+      // });
+
+      conversations = chat.toJSON();
+
       this.props.setGroupConversation(conversations);
     }
   };
@@ -871,25 +874,27 @@ class GroupChats extends Component {
             this.props.currentGroup.group_id,
           );
           let conversations = [];
-          chat.map((item, index) => {
-            let i = {
-              msg_id: item.msg_id,
-              sender_id: item.sender_id,
-              group_id: item.group_id,
-              sender_username: item.sender_username,
-              sender_display_name: item.sender_display_name,
-              sender_picture: item.sender_picture,
-              message_body: item.message_body,
-              is_edited: item.is_edited,
-              is_unsent: item.is_unsent,
-              timestamp: item.timestamp,
-              reply_to: item.reply_to,
-              mentions: item.mentions,
-              read_count: item.read_count,
-              created: item.created,
-            };
-            conversations = [...conversations, i];
-          });
+          // chat.map((item, index) => {
+          //   let i = {
+          //     msg_id: item.msg_id,
+          //     sender_id: item.sender_id,
+          //     group_id: item.group_id,
+          //     sender_username: item.sender_username,
+          //     sender_display_name: item.sender_display_name,
+          //     sender_picture: item.sender_picture,
+          //     message_body: item.message_body,
+          //     is_edited: item.is_edited,
+          //     is_unsent: item.is_unsent,
+          //     timestamp: item.timestamp,
+          //     reply_to: item.reply_to,
+          //     mentions: item.mentions,
+          //     read_count: item.read_count,
+          //     created: item.created,
+          //   };
+          //   conversations = [...conversations, i];
+          // });
+
+          conversations = chat.toJSON();
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
@@ -904,27 +909,29 @@ class GroupChats extends Component {
   getGroupConversationInitial = async () => {
     this.setState({isChatLoading: true});
     let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
-    if (chat.length) {
+    if (chat) {
       let conversations = [];
-      chat.map((item, index) => {
-        let i = {
-          msg_id: item.msg_id,
-          sender_id: item.sender_id,
-          group_id: item.group_id,
-          sender_username: item.sender_username,
-          sender_display_name: item.sender_display_name,
-          sender_picture: item.sender_picture,
-          message_body: item.message_body,
-          is_edited: item.is_edited,
-          is_unsent: item.is_unsent,
-          timestamp: item.timestamp,
-          reply_to: item.reply_to,
-          mentions: item.mentions,
-          read_count: item.read_count,
-          created: item.created,
-        };
-        conversations = [...conversations, i];
-      });
+      // chat.map((item, index) => {
+      //   let i = {
+      //     msg_id: item.msg_id,
+      //     sender_id: item.sender_id,
+      //     group_id: item.group_id,
+      //     sender_username: item.sender_username,
+      //     sender_display_name: item.sender_display_name,
+      //     sender_picture: item.sender_picture,
+      //     message_body: item.message_body,
+      //     is_edited: item.is_edited,
+      //     is_unsent: item.is_unsent,
+      //     timestamp: item.timestamp,
+      //     reply_to: item.reply_to,
+      //     mentions: item.mentions,
+      //     read_count: item.read_count,
+      //     created: item.created,
+      //   };
+      //   conversations = [...conversations, i];
+      // });
+
+      conversations = chat.toJSON();
 
       // this.setState({ conversation: conversations });
       this.props.setGroupConversation(conversations);
@@ -949,25 +956,27 @@ class GroupChats extends Component {
             this.props.currentGroup.group_id,
           );
           let conversations = [];
-          chat.map((item, index) => {
-            let i = {
-              msg_id: item.msg_id,
-              sender_id: item.sender_id,
-              group_id: item.group_id,
-              sender_username: item.sender_username,
-              sender_display_name: item.sender_display_name,
-              sender_picture: item.sender_picture,
-              message_body: item.message_body,
-              is_edited: item.is_edited,
-              is_unsent: item.is_unsent,
-              timestamp: item.timestamp,
-              reply_to: item.reply_to,
-              mentions: item.mentions,
-              read_count: item.read_count,
-              created: item.created,
-            };
-            conversations = [...conversations, i];
-          });
+          // chat.map((item, index) => {
+          //   let i = {
+          //     msg_id: item.msg_id,
+          //     sender_id: item.sender_id,
+          //     group_id: item.group_id,
+          //     sender_username: item.sender_username,
+          //     sender_display_name: item.sender_display_name,
+          //     sender_picture: item.sender_picture,
+          //     message_body: item.message_body,
+          //     is_edited: item.is_edited,
+          //     is_unsent: item.is_unsent,
+          //     timestamp: item.timestamp,
+          //     reply_to: item.reply_to,
+          //     mentions: item.mentions,
+          //     read_count: item.read_count,
+          //     created: item.created,
+          //   };
+          //   conversations = [...conversations, i];
+          // });
+
+          conversations = chat.toJSON();
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
@@ -1175,33 +1184,39 @@ class GroupChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
+      
+      this.state.selectedIds.map((item) => {
+        deleteGroupMessageById(item);
+        if (this.props.currentGroup.last_msg_id == item) {
+          let chat = getGroupChatConversationById(
+            this.props.currentGroup.group_id,
+          );
+
+          let array = chat.toJSON();
+
+          if (array && array.length > 0) {
+            updateLastMsgGroupsWithoutCount(
+              this.props.currentGroup.group_id,
+              array[0].message_body.type,
+              array[0].message_body.text,
+              array[0].msg_id,
+              array[0].timestamp,
+            );
+            this.props.getLocalUserGroups().then((res) => {
+              this.props.setCommonChatConversation();
+            });
+          }else{
+
+          }
+        }
+      });
+      this.getLocalGroupConversation();
+      this.setState({isMultiSelect: false, selectedIds: []});
+
       this.props.deleteMultipleGroupMessage(payload).then((res) => {
         if (res && res.status) {
-          this.state.selectedIds.map((item) => {
-            deleteGroupMessageById(item);
-            if (this.props.currentGroup.last_msg_id == item) {
-              let chat = getGroupChatConversationById(
-                this.props.currentGroup.group_id,
-              );
-
-              let array = chat.toJSON();
-
-              if (array && array.length > 0) {
-                updateLastMsgGroupsWithoutCount(
-                  this.props.currentGroup.group_id,
-                  array[0].message_body.type,
-                  array[0].message_body.text,
-                  array[0].msg_id,
-                  array[0].timestamp,
-                );
-                this.props.getLocalUserGroups().then((res) => {
-                  this.props.setCommonChatConversation();
-                });
-              }
-            }
-          });
-          this.getLocalGroupConversation();
-          this.setState({isMultiSelect: false, selectedIds: []});
+        }else{
+          this.getGroupConversation();
         }
         // this.getGroupConversation();
       });

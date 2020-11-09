@@ -838,11 +838,8 @@ class ChannelChats extends Component {
 
   getLocalChannelConversations = () => {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
-    if (chat.length) {
+    if (chat) {
       let conversations = [];
-      // chat.map((item, index) => {
-      //   conversations = [...conversations, item];
-      // });
       conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
     }
@@ -859,9 +856,6 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
           let conversations = [];
-          // chat.map((item, index) => {
-          //   conversations = [...conversations, item];
-          // });
 
           conversations = chat.toJSON();
 
@@ -873,11 +867,8 @@ class ChannelChats extends Component {
   getChannelConversationsInitial = async () => {
     this.setState({isChatLoading: true});
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
-    if (chat.length) {
+    if (chat) {
       let conversations = [];
-      // chat.map((item, index) => {
-      //   conversations = [...conversations, item];
-      // });
       conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
       this.setState({isChatLoading: false});
@@ -892,9 +883,6 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
           let conversations = [];
-          // chat.map((item, index) => {
-          //   conversations = [...conversations, item];
-          // });
           conversations = chat.toJSON();
           this.props.setChannelConversation(conversations);
         }
@@ -1124,6 +1112,7 @@ class ChannelChats extends Component {
     if (isChatLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
+      console.log('chats_object',chatConversation);
       return (
         <View style={{flex: 1}}>
           <ChatContainer
@@ -1308,32 +1297,36 @@ class ChannelChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
+      
+      this.state.selectedIds.map((item) => {
+        deleteMessageById(item);
+
+        if (this.props.currentChannel.last_msg && this.props.currentChannel.last_msg.id == item) {
+          let chat = getChannelChatConversationById(
+            this.props.currentChannel.id,
+          );
+
+          let array = chat.toJSON();
+
+          if (array && array.length > 0) {
+            updateChannelLastMsgWithOutCount(
+              this.props.currentChannel.id,
+              array[0],
+            );
+            this.props.getLocalFollowingChannels().then(() => {
+              this.props.setCommonChatConversation();
+            });
+          }
+        }
+      });
+      this.getLocalChannelConversations();
+      this.setState({isMultiSelect: false, selectedIds: []});
+
       this.props.deleteMultipleChannelMessage(payload).then((res) => {
         console.log(res);
-        if (res && res.status) {
-          this.state.selectedIds.map((item) => {
-            deleteMessageById(item);
-
-            if (this.props.currentChannel.last_msg.id == item) {
-              let chat = getChannelChatConversationById(
-                this.props.currentChannel.id,
-              );
-
-              let array = chat.toJSON();
-
-              if (array && array.length > 0) {
-                updateChannelLastMsgWithOutCount(
-                  this.props.currentChannel.id,
-                  array[0],
-                );
-                this.props.getLocalFollowingChannels().then(() => {
-                  this.props.setCommonChatConversation();
-                });
-              }
-            }
-          });
-          this.getLocalChannelConversations();
-          this.setState({isMultiSelect: false, selectedIds: []});
+        if (res && res.status) { 
+        }else{
+          this.getChannelConversations();
         }
       });
     }
