@@ -556,13 +556,13 @@ class GroupChatMessageBubble extends Component {
                 </View>
               </Animated.View>
             ) : (
-              <Animated.View style={[styles.talkBubble, animatedStyle]}>
-                <View
+              <Animated.View style={[styles.talkBubble, (message.message_body && message.message_body.type === 'image')?{marginVertical:5}:{}, animatedStyle]}>
+                {(message.message_body && message.message_body.type === 'image')?null:<View
                   style={[
                     styles.talkBubbleAbsoluteRight,
                     message.is_unsent && {borderLeftColor: Colors.gray},
                   ]}
-                />
+                />}
                 {message.is_unsent ? (
                   <View
                     style={[
@@ -600,7 +600,7 @@ class GroupChatMessageBubble extends Component {
                       {
                         minHeight: 40,
                         borderRadius: borderRadius,
-                        backgroundColor: Colors.pink_chat,
+                        backgroundColor: (message.message_body && message.message_body.type === 'image')?'transparent':Colors.pink_chat,
                       },
                       message.message_body.type === 'audio' && {
                         minWidth: '100%',
@@ -611,9 +611,9 @@ class GroupChatMessageBubble extends Component {
                         flex: 1,
                         justifyContent: 'center',
                         paddingHorizontal:
-                          message.message_body.type === 'image' ? 5 : 10,
+                          message.message_body.type === 'image' ? 0 : 10,
                         paddingVertical:
-                          message.message_body.type === 'image' ? 5 : 10,
+                          message.message_body.type === 'image' ? 0 : 10,
                       }}
                       onLongPress={(msg_id) => {
                         onMessagePress(message.msg_id);
@@ -636,7 +636,7 @@ class GroupChatMessageBubble extends Component {
                       message.message_body.text !== null ? (
                         <ScalableImage
                           src={message.message_body.text}
-                          borderRadius={borderRadius}
+                          // borderRadius={borderRadius}
                         />
                       ) : message.message_body.type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body.text} />

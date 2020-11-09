@@ -482,13 +482,13 @@ class ChatMessageBubble extends Component {
                 </View>
               </View>
             ) : (
-              <View style={styles.talkBubble}>
-                <View
+              <View style={[styles.talkBubble,message.msg_type === 'image'?{marginVertical:5}:{}]}>
+                {message.msg_type === 'image'?null:<View
                   style={[
                     styles.talkBubbleAbsoluteRight,
                     message.is_unsent && {borderLeftColor: Colors.gray},
                   ]}
-                />
+                />}
                 {message.is_unsent ? (
                   <View
                     style={[
@@ -526,8 +526,8 @@ class ChatMessageBubble extends Component {
                       {
                         minHeight: 40,
                         borderRadius: borderRadius,
-                        backgroundColor: Colors.pink_chat,
-                        padding: 5,
+                        backgroundColor: message.msg_type === 'image'?'transparent':Colors.pink_chat,
+                        // padding: 5,
                       },
                       message.msg_type === 'audio' && {minWidth: '100%'},
                     ]}>
@@ -535,8 +535,8 @@ class ChatMessageBubble extends Component {
                       style={{
                         flex: 1,
                         justifyContent: 'center',
-                        paddingHorizontal: message.msg_type === 'image' ? 5 : 10,
-                        paddingVertical: message.msg_type === 'image' ? 5 : 10,
+                        paddingHorizontal: message.msg_type === 'image' ? 0 : 10,
+                        paddingVertical: message.msg_type === 'image' ? 0 : 10,
                       }}
                       onLongPress={() => {
                         onMessagePress(message.id);
@@ -563,7 +563,7 @@ class ChatMessageBubble extends Component {
                               ? message.message_body
                               : message.thumbnail
                           }
-                          borderRadius={borderRadius}
+                          // borderRadius={borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />

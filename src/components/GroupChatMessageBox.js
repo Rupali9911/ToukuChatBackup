@@ -198,7 +198,7 @@ export default class GroupChatMessageBox extends Component {
         style={[
           styles.container,
           {
-            maxWidth: message.msg_type==='text' ? width * 0.80 : width * 0.65,
+            maxWidth: (message.message_body && message.message_body.type === 'text') ? width * 0.80 : (message.message_body && message.message_body.type === 'image') ? width-40 : width * 0.65,
             justifyContent: 'flex-start',
           },
         ]}>
@@ -212,10 +212,9 @@ export default class GroupChatMessageBox extends Component {
           <View
             style={{
               alignItems: 'flex-start',
-              marginVertical: 5,
+              marginVertical: (message.message_body && message.message_body.type === 'image') ? 0 : 5,
             }}>
-            <View
-              style={{
+            <View style={{
                 flexDirection: 'row',
               }}>
               {/* <RoundedImage
@@ -226,13 +225,14 @@ export default class GroupChatMessageBox extends Component {
               <Image
                 source={getAvatar(message.sender_picture)}
                 style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 25,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
                   resizeMode: 'cover',
+                  marginRight:5
                 }}
               />
-              <View style={{alignItems: 'flex-end', flexDirection: 'row'}}>
+              <View style={{alignItems: 'flex-end', flexDirection: (message.message_body && message.message_body.type === 'image')?'column':'row'}}>
                 <View>
                   <Text
                     style={{
@@ -275,7 +275,7 @@ export default class GroupChatMessageBox extends Component {
                   style={{
                     marginHorizontal: '1.5%',
                     alignItems: 'center',
-                    marginVertical: 15,
+                    marginVertical: (message.message_body && message.message_body.type === 'image')?0:15,
                     alignSelf: 'flex-end',
                     paddingBottom: 5,
                   }}>
@@ -300,20 +300,24 @@ export default class GroupChatMessageBox extends Component {
           style={[
             styles.container,
             {
-              maxWidth: message.msg_type === 'text' ? width * 0.93 : width * 0.75,
-              alignItems: 'flex-end',
-              alignSelf: 'flex-end',
+              maxWidth: (message.message_body && message.message_body.type === 'text') ? width * 0.93 : (message.message_body && message.message_body.type === 'image') ? width : width * 0.75,
             },
+            (message.message_body && message.message_body.type === 'image') ? {
+              flexDirection:'row',alignSelf:'flex-end',paddingHorizontal:0} : {
+                alignItems: 'flex-end',
+                alignSelf: 'flex-end',
+            }
           ]}>
           <View
-            style={{
+            style={[(message.message_body && message.message_body.type === 'image')?{}:
+              {
               alignItems: 'flex-end',
-            }}>
+            }]}>
             <View
               style={{
-                flexDirection: 'row',
+                flexDirection: (message.message_body && message.message_body.type === 'image')?'column':'row',
               }}>
-              <View
+              {(message.message_body && message.message_body.type !== 'image')?<View
                 style={{
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
@@ -337,7 +341,7 @@ export default class GroupChatMessageBox extends Component {
                       : time.getMinutes()
                   }`}
                 </Text>
-              </View>
+              </View>:null}
               <GroupChatMessageBubble
                 ref={(view) => {
                   console.log(`bubble_box_${message.msg_id}`);
@@ -364,6 +368,31 @@ export default class GroupChatMessageBox extends Component {
                 onReplyPress={onReplyPress}
                 groupMembers={groupMembers}
               />
+              {(message.message_body && message.message_body.type === 'image')?<View
+                style={{
+                  marginHorizontal: '1.5%',
+                  alignItems: 'center',
+                  // marginVertical: 15,
+                  alignSelf: 'flex-end',
+                  paddingBottom: 5,
+                }}>
+                {isRead && (
+                  <Text style={styles.statusText}>
+                    {message.read_count && message.read_count >= memberCount - 1
+                      ? translate('pages.xchat.read')
+                      : translate('pages.xchat.read') +
+                        ' - ' +
+                        message.read_count}
+                  </Text>
+                )}
+                <Text style={styles.statusText}>
+                  {`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}
+                </Text>
+              </View>:null}
             </View>
             {translatedMessageId &&
               message.msg_id === translatedMessageId &&
@@ -377,7 +406,7 @@ export default class GroupChatMessageBox extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    maxWidth: width * 0.65,
+    // maxWidth: width * 0.65,
     paddingHorizontal: '3%',
   },
   statusText: {

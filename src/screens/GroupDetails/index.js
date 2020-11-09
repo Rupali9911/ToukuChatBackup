@@ -273,7 +273,7 @@ class GroupDetails extends Component {
     this.props
       .getGroupMembers(id)
       .then((responseArray) => {
-        this.props.getUserFriends().then(() => {
+        // this.props.getUserFriends().then(() => {
           //let arrTemp = [...responseArray, ...this.props.userFriends]
 
           let arrTemp2 = this.props.userFriends;
@@ -302,7 +302,7 @@ class GroupDetails extends Component {
           //console.log('arrTemp1', arrTemp1)
           this.props.setCurrentGroupMembers(arrTemp1);
           this.setState({loading: false});
-        });
+        // })
       })
       .catch((err) => {
         this.setState({loading: false});
@@ -479,7 +479,7 @@ class GroupDetails extends Component {
     }
 
     //console.log('filteredFriends & userFriends', filteredFriends, currentGroupMembers)
-    if ((filteredFriends.length && filteredFriends.length === 0) || loading) {
+    if ((filteredFriends.length && filteredFriends.length === 0) && loading) {
       return <ListLoader />;
     } else if (filteredFriends.length > 0) {
       return (

@@ -191,14 +191,14 @@ export default class ChatMessageBox extends Component {
         style={[
           styles.container,
           {
-            maxWidth: message.msg_type==='text' ? width * 0.80 : width * 0.65,
+            maxWidth: message.msg_type==='text' ? width * 0.80 : message.msg_type === 'image' ? width-40 : width * 0.65,
             justifyContent: 'flex-start',
           },
         ]}>
         <View
           style={{
             alignItems: 'flex-start',
-            marginVertical: 5,
+            marginVertical: message.msg_type==='image'?0:5,
           }}>
           <View style={{flexDirection: 'row'}}>
             {/* <RoundedImage
@@ -218,7 +218,11 @@ export default class ChatMessageBox extends Component {
                   Colors.gradient_2,
                   Colors.gradient_3,
                 ]}
-                style={styles.squareImage}>
+                style={[styles.squareImage,{
+                  marginHorizontal:0,
+                  marginTop: 10,
+                  marginRight:5
+                  }]}>
                 <Text style={globalStyles.normalRegularText15}>
                   {currentChannel.name &&
                     currentChannel.name.charAt(0).toUpperCase()}
@@ -238,11 +242,12 @@ export default class ChatMessageBox extends Component {
                   height: 40,
                   borderRadius: 20,
                   resizeMode: 'cover',
-                  marginTop: 15,
+                  marginTop: 10,
+                  marginRight:5
                 }}
               />
             )}
-            <View style={{alignItems: 'flex-end', flexDirection: message.hyperlink?'column':'row'}}>
+            <View style={{alignItems: 'flex-end', flexDirection: message.msg_type==='image'?'column':'row'}}>
               <ChatMessageBubble
                 message={message}
                 isUser={isUser}
@@ -269,7 +274,7 @@ export default class ChatMessageBox extends Component {
                 style={{
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
-                  marginVertical: message.hyperlink?0:15,
+                  marginVertical: message.msg_type==='image'?0:15,
                   alignSelf: 'flex-end',
                   paddingBottom: 5,
                 }}>
@@ -296,17 +301,20 @@ export default class ChatMessageBox extends Component {
           style={[
             styles.containerSelf,
             {
-              maxWidth: message.msg_type === 'text' ? width * 0.93 : width * 0.75,
+              maxWidth: message.msg_type === 'text' ? width * 0.93 : message.msg_type === 'image'?width:width * 0.75,
+            },
+            message.msg_type === 'image'?{flexDirection:'row',alignSelf:'flex-end',paddingHorizontal:0}:{
               alignItems: 'flex-end',
               alignSelf: 'flex-end',
-            },
+            }
           ]}>
           <View
-            style={{
-              alignItems: 'flex-end',
-            }}>
-            <View style={{flexDirection: 'row'}}>
-              <View
+            style={[
+              message.msg_type === 'image'?{}:
+              { alignItems: 'flex-end',}
+            ]}>
+            <View style={{flexDirection: message.msg_type === 'image'?'column':'row'}}>
+              {message.msg_type !== 'image'?<View
                 style={{
                   marginHorizontal: '1.5%',
                   alignItems: 'center',
@@ -327,7 +335,7 @@ export default class ChatMessageBox extends Component {
                       : time.getMinutes()
                   }`}
                 </Text>
-              </View>
+              </View>:null}
               <ChatMessageBubble
                 message={message}
                 isUser={isUser}
@@ -350,6 +358,28 @@ export default class ChatMessageBox extends Component {
                 onAudioPlayPress={onAudioPlayPress}
                 onReplyPress={onReplyPress}
               />
+              {message.msg_type === 'image'?<View
+                style={{
+                  marginHorizontal: '1.5%',
+                  alignItems: 'center',
+                  // marginVertical: 15,
+                  alignSelf: 'flex-end',
+                  paddingBottom: 5,
+                }}>
+                {is_read && (
+                  <Text style={styles.statusText}>
+                    {translate('pages.xchat.read')}
+                  </Text>
+                )}
+
+                <Text style={styles.statusText}>
+                  {`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}
+                </Text>
+              </View>:null}
             </View>
             {translatedMessageId &&
               message.id === translatedMessageId &&
