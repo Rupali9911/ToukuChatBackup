@@ -19,6 +19,7 @@ import {globalStyles} from '../../styles';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {Menu} from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default class ChatHeader extends Component {
   constructor(props) {
@@ -55,6 +56,8 @@ export default class ChatHeader extends Component {
       image,
       menuItems,
       navigation,
+      isPined,
+      chatType,
     } = this.props;
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
@@ -175,11 +178,19 @@ export default class ChatHeader extends Component {
                         key={index}
                         icon={() =>
                           !item.isLocalIcon ? (
-                            <FontAwesome5
-                              name={item.icon}
-                              size={16}
-                              color={Colors.black}
-                            />
+                            item.pinUnpinItem ? (
+                              <MaterialCommunityIcon
+                                name={isPined ? 'pin-off' : 'pin'}
+                                size={18}
+                                color={Colors.black}
+                              />
+                            ) : (
+                              <FontAwesome5
+                                name={item.icon}
+                                size={16}
+                                color={Colors.black}
+                              />
+                            )
                           ) : (
                             <Image
                               source={item.icon}
@@ -191,7 +202,9 @@ export default class ChatHeader extends Component {
                           item.onPress();
                           this._closeMenu();
                         }}
-                        title={`${item.title}`}
+                        title={
+                          item.pinUnpinItem ? `${chatType}` : `${item.title}`
+                        }
                         titleStyle={{
                           marginLeft: -25,
                           fontSize: 16,

@@ -654,3 +654,26 @@ export const deleteGroupNotes = (id) => (dispatch) =>
         reject(err);
       });
   });
+
+export const pinGroup = (groupId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xchat/pin-group/${groupId}/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+export const unpinGroup = (groupId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xchat/unpin-group/${groupId}/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

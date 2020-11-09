@@ -54,6 +54,8 @@ import {
   resetGroupConversation,
   getGroupConversationRequest,
   deleteMultipleGroupMessage,
+  pinGroup,
+  unpinGroup,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
@@ -72,6 +74,8 @@ import {
   deleteAllGroupMessageByGroupId,
   updateLastMsgGroupsWithoutCount,
   setGroupLastMessageUnsend,
+  updateGroupsWhenPined,
+  updateGroupsWhenUnpined,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -132,6 +136,13 @@ class GroupChats extends Component {
                   });
                 },
               },
+              {
+                id: 4,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
+              },
             ]
           : [
               {
@@ -148,6 +159,13 @@ class GroupChats extends Component {
                 icon: 'user-slash',
                 onPress: () => {
                   this.toggleLeaveGroupConfirmationModal();
+                },
+              },
+              {
+                id: 3,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
                 },
               },
             ],
@@ -201,6 +219,13 @@ class GroupChats extends Component {
                   });
                 },
               },
+              {
+                id: 6,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
+              },
             ]
           : [
               {
@@ -238,6 +263,13 @@ class GroupChats extends Component {
                   this.toggleLeaveGroupConfirmationModal();
                 },
               },
+              {
+                id: 5,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
+              },
             ],
       isReply: false,
       repliedMessage: null,
@@ -248,6 +280,50 @@ class GroupChats extends Component {
     this.props.resetGroupConversation();
     this.isUploading = false;
   }
+
+  onPinUnpinGroup = () => {
+    const {userData, currentGroup} = this.props;
+    const data = {};
+    if (currentGroup.is_pined) {
+      this.props
+        .unpinGroup(currentGroup.group_id, data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyUnPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    } else {
+      this.props
+        .pinGroup(currentGroup.group_id, data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
 
   onMessageSend = async () => {
     const {newMessageText, editMessageId, conversation} = this.state;
@@ -1444,6 +1520,12 @@ class GroupChats extends Component {
               : this.state.headerRightIconMenu
           }
           image={currentGroupDetail.group_picture}
+          isPined={currentGroup.is_pined}
+          chatType={
+            currentGroup.is_pined
+              ? translate('pages.xchat.unPinThisGroup')
+              : translate('pages.xchat.pinThisGroup')
+          }
         />
         {isChatLoading && chatGroupConversation.length <= 0 ? (
           <ListLoader />
@@ -1600,6 +1682,8 @@ const mapDispatchToProps = {
   setCommonChatConversation,
   getLocalUserGroups,
   updateUnreadGroupMsgsCounts,
+  pinGroup,
+  unpinGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

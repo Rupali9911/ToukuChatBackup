@@ -240,6 +240,7 @@ class Channel extends Component {
                 menuItems={menuItems}
                 posts={trendChannel}
                 isTimeline={false}
+                navigation={this.props.navigation}
               />
             ) : activeTab === 'following' ? (
               <PostChannelCard

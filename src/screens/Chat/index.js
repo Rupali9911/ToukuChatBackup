@@ -33,7 +33,10 @@ import {
   getUserConfiguration,
   updateConfiguration,
 } from '../../redux/reducers/configurationReducer';
-import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
+import {
+  setCommonChatConversation,
+  setDeleteChat,
+} from '../../redux/reducers/commonReducer';
 import {
   getUserChannels,
   getFollowingChannels,
@@ -130,6 +133,12 @@ import {
   updateGroupnReadCount,
   updateChannelDetails,
   multipleData,
+  updateUserFriendsWhenPined,
+  updateUserFriendsWhenUnpined,
+  updateGroupsWhenPined,
+  updateGroupsWhenUnpined,
+  updateChannelsWhenPined,
+  updateChannelsWhenUnpined,
 } from '../../storage/Service';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
@@ -139,6 +148,7 @@ let channelId = [];
 let friendId = [];
 let groupId = [];
 let deleteObj = null;
+let count = 0;
 
 class Chat extends Component {
   constructor(props) {
@@ -155,7 +165,8 @@ class Chat extends Component {
       isVisible: false,
       isUncheck: true,
       isDeleteVisible: false,
-      commonChat: this.props.commonChat,
+      commonChatsData: this.props.commonChat,
+      countChat: 0,
       // sortOptions: [
       //   {
       //     title: translate('pages.xchat.timeReceived'),
@@ -477,9 +488,23 @@ class Chat extends Component {
         break;
       case SocketEvents.READ_ALL_MESSAGE_CHANNEL_SUBCHAT:
         break;
+      case SocketEvents.PINED_FRIEND:
+        this.onPinFriend(message);
+        break;
+      case SocketEvents.UNPINED_FRIEND:
+        this.onUnpinFriend(message);
+        break;
+      case SocketEvents.PINED_GROUP:
+        this.onPinGroup(message);
+        break;
+      case SocketEvents.UNPINED_GROUP:
+        this.onUnpinGroup(message);
+        break;
       case SocketEvents.PINED_CHANNEL:
+        this.onPinChannel(message);
         break;
       case SocketEvents.UNPINED_CHANNEL:
+        this.onUnpinChannel(message);
         break;
     }
   }
@@ -1945,6 +1970,71 @@ class Chat extends Component {
     this.props.markGroupConversationRead(data);
   }
 
+  onPinFriend = (message) => {
+    console.log('onPinFriend -> message', message);
+    const currentFriend = JSON.parse(JSON.stringify(this.props.currentFriend));
+    currentFriend.is_pined = true;
+    this.props.setCurrentFriend(currentFriend);
+    updateUserFriendsWhenPined(message.text.data.message_details);
+    this.props.getUserFriends().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+  onUnpinFriend = (message) => {
+    console.log('onUnpinFriend -> message', message);
+    const currentFriend = JSON.parse(JSON.stringify(this.props.currentFriend));
+    currentFriend.is_pined = false;
+    this.props.setCurrentFriend(currentFriend);
+    updateUserFriendsWhenUnpined(message.text.data.message_details);
+    this.props.getUserFriends().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+  onPinGroup = (message) => {
+    console.log('onPinGroup -> message', message);
+    const currentGroup = JSON.parse(JSON.stringify(this.props.currentGroup));
+    currentGroup.is_pined = true;
+    this.props.setCurrentGroup(currentGroup);
+    updateGroupsWhenPined(message.text.data.message_details);
+    this.props.getLocalUserGroups().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+  onUnpinGroup = (message) => {
+    console.log('onUnpinGroup -> message', message);
+    const currentGroup = JSON.parse(JSON.stringify(this.props.currentGroup));
+    currentGroup.is_pined = false;
+    this.props.setCurrentGroup(currentGroup);
+    updateGroupsWhenUnpined(message.text.data.message_details);
+    this.props.getLocalUserGroups().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+  onPinChannel = (message) => {
+    console.log('onPinChannel -> message', message);
+    const currentChannel = JSON.parse(
+      JSON.stringify(this.props.currentChannel),
+    );
+    currentChannel.is_pined = true;
+    this.props.setCurrentChannel(currentChannel);
+    updateChannelsWhenPined(message.text.data.message_details);
+    this.props.getLocalFollowingChannels().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+  onUnpinChannel = (message) => {
+    console.log('onUnpinChannel -> message', message);
+    const currentChannel = JSON.parse(
+      JSON.stringify(this.props.currentChannel),
+    );
+    currentChannel.is_pined = false;
+    this.props.setCurrentChannel(currentChannel);
+    updateChannelsWhenUnpined(message.text.data.message_details);
+    this.props.getLocalFollowingChannels().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+
   onSearch = async (text) => {
     console.log('onSearch called');
     await this.setState({searchText: text, commonConversation: []});
@@ -2369,22 +2459,41 @@ class Chat extends Component {
     let group_ids = groupId;
 
     deleteObj = {channel_ids, friend_ids, group_ids};
+    let i = [item];
 
-    console.log('data', deleteObj);
+    if (isCheck == 'check') {
+      count = count + i.length;
+    } else {
+      count = count - i.length;
+    }
+    this.setState({countChat: count});
   };
 
   onCanclePressButton = () => {
-    this.setState({isVisible: false, isUncheck: false});
+    this.setState({isVisible: false, isUncheck: false, countChat: 0});
     deleteObj = null;
     channelId = [];
     friendId = [];
     groupId = [];
+    count = 0;
   };
 
   manageDelete = () => {
-    if (deleteObj == null) {
-      alert('please select the chat for delete!');
-      this.setState({isVisible: false});
+    if (
+      deleteObj == null ||
+      (deleteObj &&
+        deleteObj.channel_ids.length === 0 &&
+        deleteObj &&
+        deleteObj.group_ids.length === 0 &&
+        deleteObj &&
+        deleteObj.friend_ids.length === 0)
+    ) {
+      Toast.show({
+        title: 'Touku',
+        text: translate('pages.xchat.toastr.selectChatText'),
+      });
+      deleteObj = null;
+      this.setState({isVisible: true});
     } else {
       this.updateModalVisibility();
     }
@@ -2421,33 +2530,25 @@ class Chat extends Component {
         }
 
         this.setState({commonChat: commonData});
+        this.props.setDeleteChat(this.state.commonChat);
       }
     });
     this.updateModalVisibility();
     this.setState({isVisible: false});
-    // deteleObj = null;
-    // channelId = [];
-    // friendId = [];
-    // groupId = [];
   };
 
   actionCancel() {
     this.updateModalVisibility();
-    this.setState({isVisible: false});
-    deleteObj = null;
-    channelId = [];
-    friendId = [];
-    groupId = [];
   }
 
   renderCommonChat = () => {
-    const {isLoading, isVisible, isUncheck, commonChat} = this.state;
-    // const commonChat = this.props.commonChat;
+    const {isLoading, isVisible, isUncheck} = this.state;
+    const commonChat = this.props.commonChat;
 
     // if (this.props.currentRouteName !== 'ChatTab') {
     //   return;
     // }
-    console.log('renderCommonChat with text', this.state.searchText);
+    // console.log('renderCommonChat with text', this.state.searchText)
     let commonConversation = this.sortList();
     commonConversation = commonChat.filter(
       createFilter(this.state.searchText, [
@@ -2456,15 +2557,19 @@ class Chat extends Component {
         'display_name',
       ]),
     );
-
-    if (commonConversation.length === 0 && isLoading) {
+    const pinedConversations = commonConversation.filter((cc) => cc.is_pined);
+    const unpinedConversations = commonConversation.filter(
+      (cc) => !cc.is_pined,
+    );
+    const conversations = [...pinedConversations, ...unpinedConversations];
+    if (conversations.length === 0 && isLoading) {
       return <ListLoader />;
-    } else if (commonConversation.length > 0 && isLoading) {
+    } else if (conversations.length > 0 && isLoading) {
       return <ListLoader />;
-    } else if (commonConversation.length > 0) {
+    } else if (conversations.length > 0) {
       return (
         <FlatList
-          data={commonConversation}
+          data={conversations}
           renderItem={({item, index}) =>
             item.chat === 'group' ? (
               <GroupListItem
@@ -2493,6 +2598,7 @@ class Chat extends Component {
                 isVisible={isVisible}
                 isUncheck={isUncheck}
                 item={item}
+                isPined={item.is_pined}
               />
             ) : item.chat === 'channel' ? (
               <ChannelListItem
@@ -2520,6 +2626,7 @@ class Chat extends Component {
                 isVisible={isVisible}
                 isUncheck={isUncheck}
                 item={item}
+                isPined={item.is_pined}
               />
             ) : (
               <FriendListItem
@@ -2557,6 +2664,7 @@ class Chat extends Component {
                 isVisible={isVisible}
                 isUncheck={isUncheck}
                 item={item}
+                isPined={item.is_pined}
               />
             )
           }
@@ -2573,7 +2681,14 @@ class Chat extends Component {
   };
 
   render() {
-    const {orientation, sortBy, isDeleteVisible, isLoading} = this.state;
+    const {
+      orientation,
+      sortBy,
+      isDeleteVisible,
+      isLoading,
+      isVisible,
+      countChat,
+    } = this.state;
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -2599,6 +2714,7 @@ class Chat extends Component {
               isSorted: sortBy === 'name' ? true : false,
             },
           ]}
+          countObject={countChat}
           onChangeText={this.onSearch.bind(this)}
           navigation={this.props.navigation}
           isSearchBar
@@ -2613,6 +2729,7 @@ class Chat extends Component {
             this.manageDelete();
           }}
           isDeleteVisible={isLoading ? false : true}
+          isVisibleButton={isVisible}
         />
         {/* <SearchInput
             onChangeText={this.onSearch.bind(this)}
@@ -2632,7 +2749,7 @@ class Chat extends Component {
           onCancel={this.actionCancel.bind(this)}
           onConfirm={this.actionDelete.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
-          message={translate('pages.xchat.toastr.deleteComposeStepMail')}
+          message={translate('pages.xchat.toastr.chatHistoryDelete')}
         />
       </View>
       // </ImageBackground>
@@ -2698,6 +2815,7 @@ const mapDispatchToProps = {
   updateCurrentChannel,
   deleteChat,
   multipleData,
+  setDeleteChat,
 };
 
 export default connect(

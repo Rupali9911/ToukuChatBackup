@@ -18,8 +18,17 @@ export default class SearchInput extends Component {
     super(props);
     this.state = {
       visible: false,
-      isVisibleLeft: false,
+      isVisibleLeft: props.isVisibleButton,
     };
+  }
+
+  componentDidUpdate(props) {
+    if (props.isVisibleButton != this.props.isVisibleButton) {
+      if (props.isVisibleButton === true) {
+        this.setState({isVisibleLeft: false});
+      } else {
+      }
+    }
   }
 
   _openMenu = () => this.setState({visible: true});
@@ -60,10 +69,10 @@ export default class SearchInput extends Component {
       onCanclePress,
       onDeleteConfrimPress,
       isDeleteVisible,
+      countObject,
     } = this.props;
 
     const {isVisibleLeft} = this.state;
-
     return (
       <View style={styles.container}>
         {title === 'Chat' && !isVisibleLeft && isDeleteVisible && (
@@ -172,18 +181,26 @@ export default class SearchInput extends Component {
               <TouchableOpacity
                 style={styles.buttonStyle}
                 onPress={() => {
-                  this.setState({isVisibleLeft: false}, () =>
-                    onDeleteConfrimPress(),
-                  );
+                  this.setState({}, () => onDeleteConfrimPress());
                 }}>
-                <Text style={styles.buttonTextStyle}>Delete</Text>
+                <Text style={styles.buttonTextStyle}>
+                  {countObject == 0
+                    ? translate('common.delete')
+                    : translate('common.delete') +
+                      ' ' +
+                      '(' +
+                      countObject +
+                      ')'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonStyle}
                 onPress={() => {
                   this.setState({isVisibleLeft: false}, () => onCanclePress());
                 }}>
-                <Text style={styles.buttonTextStyle}>Cancle</Text>
+                <Text style={styles.buttonTextStyle}>
+                  {translate('common.cancel')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

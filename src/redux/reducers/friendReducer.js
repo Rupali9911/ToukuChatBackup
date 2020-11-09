@@ -245,6 +245,7 @@ export const setUserFriends = () => (dispatch) =>
         unread_msg: item.unread_msg,
         user_id: item.user_id,
         username: item.username,
+        is_pined: item.is_pined,
       };
       friends.push(item2);
     });
@@ -564,6 +565,29 @@ export const updateFriendDisplayName = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .patch(`/xchat/update-user-display-name/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const pinFriend = (friendKey, friendId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xchat/pin-friend/${friendKey}/${friendId}/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+export const unpinFriend = (friendKey, friendId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xchat/unpin-friend/${friendKey}/${friendId}/`, data)
       .then((res) => {
         resolve(res);
       })

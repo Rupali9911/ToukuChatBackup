@@ -39,6 +39,8 @@ import {
   updateUnreadFriendMsgsCounts,
   setUserFriends,
   deleteMultiplePersonalMessage,
+  pinFriend,
+  unpinFriend,
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
@@ -53,7 +55,8 @@ import {
   updateAllFriendMessageRead,
   updateFriendsUnReadCount,
   updateFriendLastMsgWithoutCount,
-  realm,
+  updateUserFriendsWhenPined,
+  updateUserFriendsWhenUnpined,
 } from '../../storage/Service';
 
 // let uuid = require('react-native-uuid')
@@ -136,6 +139,13 @@ class FriendChats extends Component {
                   });
                 },
               },
+              {
+                id: 6,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinFriend();
+                },
+              },
             ]
           : [
               {
@@ -155,13 +165,20 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 2,
+                id: 3,
                 title: translate('pages.xchat.addNote'),
                 icon: 'sticky-note',
                 onPress: () => {
                   this.props.navigation.navigate('FriendNotes', {
                     showAdd: true,
                   });
+                },
+              },
+              {
+                id: 4,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinFriend();
                 },
               },
             ],
@@ -195,6 +212,50 @@ class FriendChats extends Component {
     this.updateUnReadFriendChatCount();
     // alert(JSON.stringify(this.props.userData));
   }
+
+  onPinUnpinFriend = () => {
+    const {currentFriend, userData} = this.props;
+    const data = {};
+    if (currentFriend.is_pined) {
+      this.props
+        .unpinFriend(currentFriend.friend, currentFriend.user_id, data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyUnPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    } else {
+      this.props
+        .pinFriend(currentFriend.friend, currentFriend.user_id, data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
 
   updateUnReadFriendChatCount = () => {
     updateFriendsUnReadCount(this.props.currentFriend.friend, 0);
@@ -1267,6 +1328,12 @@ class FriendChats extends Component {
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
           navigation={this.props.navigation}
+          isPined={currentFriend.is_pined}
+          chatType={
+            currentFriend.is_pined
+              ? translate('pages.xchat.unPinThisChat')
+              : translate('pages.xchat.pinThisChat')
+          }
         />
         {isChatLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />
@@ -1404,6 +1471,8 @@ const mapDispatchToProps = {
   setCommonChatConversation,
   updateUnreadFriendMsgsCounts,
   setUserFriends,
+  pinFriend,
+  unpinFriend,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

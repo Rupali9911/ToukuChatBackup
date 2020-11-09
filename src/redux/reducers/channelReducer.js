@@ -659,7 +659,7 @@ export const deleteChannelMessage = (id, payload) => (dispatch) =>
       });
   });
 
-  export const deleteMultipleChannelMessage = (payload) => (dispatch) =>
+export const deleteMultipleChannelMessage = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/delete-multiple-message-from-channel/`, payload)
@@ -713,6 +713,30 @@ export const assetXPValueOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .get(`asset-xp-value/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const pinChannel = (channelId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xchat/pin-channel/${channelId}/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+// Unpin Channel
+export const unpinChannel = (channelId, data) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .patch(`xchat/unpin-channel/${channelId}/`, data)
       .then((res) => {
         resolve(res);
       })

@@ -876,6 +876,7 @@ export const setUserFriendsFromApi = (friends) => {
               is_online: item.is_online,
               is_typing: false,
               timestamp: item.timestamp,
+              is_pined: item.is_pined ? item.is_pined : false,
             },
             'modified',
           );
@@ -898,6 +899,7 @@ export const setUserFriendsFromApi = (friends) => {
             is_online: item.is_online,
             is_typing: false,
             timestamp: item.timestamp,
+            is_pined: item.is_pined ? item.is_pined : false,
           });
         });
       }
@@ -954,6 +956,7 @@ export const handleRequestAccept = (item) => {
         is_online: item.is_online,
         is_typing: false,
         timestamp: item.timestamp,
+        is_pined: item.is_pined ? item.is_pined : false,
       });
     });
   }
@@ -1170,5 +1173,57 @@ export const getLastEventId = () => {
 
 export const getUserFriendByFriendId = (id) => {
   return realm.objects('user_friends').filtered(`friend == ${id}`);
+};
+
+export const updateUserFriendsWhenPined = (item) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {user_id: item.user_id, is_pined: true},
+      'modified',
+    );
+  });
+};
+
+export const updateUserFriendsWhenUnpined = (item) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {user_id: item.user_id, is_pined: false},
+      'modified',
+    );
+  });
+};
+export const updateGroupsWhenPined = (item) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {group_id: item.group_id, is_pined: true},
+      'modified',
+    );
+  });
+};
+export const updateGroupsWhenUnpined = (item) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {group_id: item.group_id, is_pined: false},
+      'modified',
+    );
+  });
+};
+export const updateChannelsWhenPined = (item) => {
+  realm.write(() => {
+    realm.create('channels', {id: item.channel_id, is_pined: true}, 'modified');
+  });
+};
+export const updateChannelsWhenUnpined = (item) => {
+  realm.write(() => {
+    realm.create(
+      'channels',
+      {id: item.channel_id, is_pined: false},
+      'modified',
+    );
+  });
 };
 //#endregion

@@ -111,7 +111,9 @@ class ChannelInfo extends Component {
 
   getChannelDetails() {
     this.props
-      .getChannelDetails(this.props.currentChannel.id)
+      .getChannelDetails(
+        this.props.navigation.state.params.channelItem.channel_id,
+      )
       .then((res) => {
         this.setState({channelData: res});
       })
@@ -219,6 +221,7 @@ class ChannelInfo extends Component {
       showAffiliateModal,
     } = this.state;
     const {channelLoading, currentChannel, userData} = this.props;
+
     const channelCountDetails = [
       {
         id: 1,

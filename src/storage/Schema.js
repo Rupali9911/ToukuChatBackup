@@ -164,6 +164,7 @@ export const UserFriends = {
     isChecked: 'bool?',
     is_online: 'bool?',
     is_typing: 'bool?',
+    is_pined: 'bool?',
     timestamp: 'string?',
   },
 };
@@ -244,7 +245,7 @@ export const Groups = {
     timestamp: 'string',
     event: 'string',
     no_msgs: 'bool',
-    is_pined: 'bool',
+    is_pined: 'bool?',
     sender_id: {type: 'int?'},
     sender_username: 'string?',
     sender_display_name: 'string?',

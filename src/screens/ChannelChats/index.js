@@ -52,6 +52,8 @@ import {
   assetXPValueOfChannel,
   getLocalFollowingChannels,
   deleteMultipleChannelMessage,
+  pinChannel,
+  unpinChannel,
 } from '../../redux/reducers/channelReducer';
 import {ListLoader, UploadLoader} from '../../components/Loaders';
 import {
@@ -71,6 +73,8 @@ import {
   setMessageUnsend,
   updateChannelUnReadCountById,
   updateChannelLastMsgWithOutCount,
+  updateChannelsWhenPined,
+  updateChannelsWhenUnpined,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 import bonusImage from '../../../assets/images/bonus_bg.png';
@@ -132,6 +136,13 @@ class ChannelChats extends Component {
                   });
                 },
               },
+              {
+                id: 3,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinChannel();
+                },
+              },
             ]
           : [
               {
@@ -140,6 +151,13 @@ class ChannelChats extends Component {
                 icon: 'bars',
                 onPress: () => {
                   this.props.navigation.navigate('ChannelInfo');
+                },
+              },
+              {
+                id: 2,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinChannel();
                 },
               },
             ],
@@ -171,6 +189,50 @@ class ChannelChats extends Component {
     // this.getLoginBonus();
     this.updateUnReadChannelCount();
   }
+
+  onPinUnpinChannel = () => {
+    const {currentChannel, userData} = this.props;
+    const data = {};
+    if (currentChannel.is_pined) {
+      this.props
+        .unpinChannel(currentChannel.id, data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyUnPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    } else {
+      this.props
+        .pinChannel(currentChannel.id, data)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
 
   updateUnReadChannelCount = () => {
     updateChannelUnReadCountById(this.props.currentChannel.id, 0);
@@ -1335,6 +1397,12 @@ class ChannelChats extends Component {
           menuItems={this.state.headerRightIconMenu}
           navigation={this.props.navigation}
           image={currentChannel.channel_picture}
+          isPined={currentChannel.is_pined}
+          chatType={
+            currentChannel.is_pined
+              ? translate('pages.xchat.unPinThisChannel')
+              : translate('pages.xchat.pinThisChannel')
+          }
         />
         {this.props.chatConversation && this.renderConversations()}
 
@@ -1667,6 +1735,8 @@ const mapDispatchToProps = {
   assetXPValueOfChannel,
   setCommonChatConversation,
   getLocalFollowingChannels,
+  pinChannel,
+  unpinChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

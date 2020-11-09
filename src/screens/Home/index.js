@@ -1139,13 +1139,21 @@ class Home extends Component {
       createFilter(this.state.searchText, ['name']),
     );
 
-    if (filteredChannels.length === 0 && channelLoading) {
+    const pinedChannels = filteredChannels.filter(
+      (channel) => channel.is_pined,
+    );
+    const unpinedChannels = filteredChannels.filter(
+      (channel) => !channel.is_pined,
+    );
+    const channels = [...pinedChannels, ...unpinedChannels];
+    //
+    if (channels.length === 0 && channelLoading) {
       return <ListLoader />;
-    } else if (filteredChannels.length > 0) {
+    } else if (channels.length > 0) {
       return (
         <FlatList
           contentContainerStyle={{display: 'flex'}}
-          data={filteredChannels}
+          data={channels}
           extraData={this.state}
           renderItem={({item, index}) => (
             <ChannelListItem
@@ -1167,6 +1175,7 @@ class Home extends Component {
               }
               date={item.last_msg ? item.last_msg.created : item.joining_date}
               image={item.channel_picture}
+              isPined={item.is_pined}
               onPress={() => this.onOpenChannelChats(item)}
               unreadCount={item.unread_msg}
             />
@@ -1206,12 +1215,17 @@ class Home extends Component {
     const filteredGroups = sortChannels.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
-    if (filteredGroups.length === 0 && groupLoading) {
+
+    const pinedGroups = filteredGroups.filter((group) => group.is_pined);
+    const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
+    const groups = [...pinedGroups, ...unpinedGroups];
+
+    if (groups.length === 0 && groups) {
       return <ListLoader />;
-    } else if (filteredGroups.length > 0) {
+    } else if (groups.length > 0) {
       return (
         <FlatList
-          data={filteredGroups}
+          data={groups}
           extraData={this.state}
           renderItem={({item, index}) => (
             <GroupListItem
@@ -1236,6 +1250,7 @@ class Home extends Component {
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}
               unreadCount={item.unread_msg}
+              isPined={item.is_pined}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -1255,13 +1270,15 @@ class Home extends Component {
     const filteredFriends = userFriends.filter(
       createFilter(this.state.searchText, ['username']),
     );
-
-    if (filteredFriends.length === 0 && friendLoading) {
+    const pinedFriends = filteredFriends.filter((friend) => friend.is_pined);
+    const unpinedFriends = filteredFriends.filter((friend) => !friend.is_pined);
+    const friends = [...pinedFriends, ...unpinedFriends];
+    if (friends.length === 0 && friendLoading) {
       return <ListLoader />;
-    } else if (filteredFriends.length > 0) {
+    } else if (friends.length > 0) {
       return (
         <FlatList
-          data={filteredFriends}
+          data={friends}
           extraData={this.state}
           renderItem={({item, index}) => (
             <FriendListItem
@@ -1294,6 +1311,7 @@ class Home extends Component {
                 this.props.setUserFriends();
               }}
               onAvtarPress={() => this.onOpenFriendDetails(item)}
+              isPined={item.is_pined}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
