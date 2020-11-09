@@ -96,17 +96,14 @@ export default class FriendListItem extends Component {
       isVisible,
       item,
       last_msg_id,
+      onAvtarPress,
     } = this.props;
     const {newItem} = this.state;
 
     return (
       last_msg_id !== null && (
         <Fragment>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onPress}
-            style={styles.container}
-            disabled={isVisible}>
+          <View activeOpacity={0.8} style={styles.container}>
             <View style={styles.firstView}>
               {isVisible && newItem.isCheck === false ? (
                 <TouchableOpacity
@@ -140,13 +137,18 @@ export default class FriendListItem extends Component {
                   </TouchableOpacity>
                 )
               )}
-              <RoundedImage
-                source={image}
-                size={50}
-                isBadge={true}
-                isOnline={isOnline}
-              />
-              <View style={styles.secondView}>
+              <TouchableOpacity onPress={onAvtarPress} disabled={isVisible}>
+                <RoundedImage
+                  source={image}
+                  size={50}
+                  isBadge={true}
+                  isOnline={isOnline}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.secondView}
+                onPress={onPress}
+                disabled={isVisible}>
                 <View style={{flex: 1, alignItems: 'flex-start'}}>
                   <Text
                     numberOfLines={1}
@@ -202,9 +204,9 @@ export default class FriendListItem extends Component {
                     </Badge>
                   )}
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </View>
           <Divider />
         </Fragment>
       )

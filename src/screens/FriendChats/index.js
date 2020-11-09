@@ -1266,6 +1266,7 @@ class FriendChats extends Component {
           image={currentFriend.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={this.state.headerRightIconMenu}
+          navigation={this.props.navigation}
         />
         {isChatLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />

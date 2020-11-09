@@ -54,6 +54,7 @@ export default class ChatHeader extends Component {
       onRightIconPress,
       image,
       menuItems,
+      navigation,
     } = this.props;
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
@@ -92,7 +93,10 @@ export default class ChatHeader extends Component {
               {type === 'friend' ? (
                 <View style={styles.subContainer}>
                   <View style={{marginHorizontal: 10}}>
-                    <RoundedImage size={40} source={getAvatar(image)} />
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('FriendNotes')}>
+                      <RoundedImage size={40} source={getAvatar(image)} />
+                    </TouchableOpacity>
                   </View>
                   <Text style={globalStyles.normalRegularText15}>{title}</Text>
                 </View>
