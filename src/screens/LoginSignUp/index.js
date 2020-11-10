@@ -856,48 +856,54 @@ class LoginSignUp extends Component {
                     IconSrc={Icons.icon_kakao}
                     onPress={() => this.kakaoLogin()}
                   />
+                    {Platform.OS === 'ios' &&
+                    <SocialLogin
+                        IconSrc={Icons.icon_apple_logo}
+                        onPress={() => this.appleLogin()}
+                    />
+                    }
                 </View>
-                {Platform.OS === 'ios' && (
-                  <View style={{alignSelf: 'center', width: '80%'}}>
-                    <Text
-                      style={
-                        selectedLanguageItem.language_name === 'ja'
-                          ? [globalStyles.normalLightText, {marginTop: 10}]
-                          : [
-                              globalStyles.smallLightText,
-                              {marginTop: 10, fontSize: 14},
-                            ]
-                      }>
-                      {translate('common.or')}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => this.appleLogin()}
-                      style={{
-                        marginTop: 10,
-                        marginBottom: 10,
-                        backgroundColor: 'white',
-                        height: 48,
-                        borderRadius: 10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <View style={{flexDirection: 'row'}}>
-                        <FontAwesome
-                          name={'apple'}
-                          size={20}
-                          color={Colors.black}
-                          style={{alignSelf: 'center'}}
-                        />
-                          <View pointerEvents="none">
-                              <TextInput
-                          style={globalStyles.normalRegularText17}>
-                          {translate('common.continueWithApple')}
-                              </TextInput>
-                          </View>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                )}
+                {/*{Platform.OS === 'ios' && (*/}
+                  {/*<View style={{alignSelf: 'center', width: '80%'}}>*/}
+                    {/*<Text*/}
+                      {/*style={*/}
+                        {/*selectedLanguageItem.language_name === 'ja'*/}
+                          {/*? [globalStyles.normalLightText, {marginTop: 10}]*/}
+                          {/*: [*/}
+                              {/*globalStyles.smallLightText,*/}
+                              {/*{marginTop: 10, fontSize: 14},*/}
+                            {/*]*/}
+                      {/*}>*/}
+                      {/*{translate('common.or')}*/}
+                    {/*</Text>*/}
+                    {/*<TouchableOpacity*/}
+                      {/*onPress={() => this.appleLogin()}*/}
+                      {/*style={{*/}
+                        {/*marginTop: 10,*/}
+                        {/*marginBottom: 10,*/}
+                        {/*backgroundColor: 'white',*/}
+                        {/*height: 48,*/}
+                        {/*borderRadius: 10,*/}
+                        {/*alignItems: 'center',*/}
+                        {/*justifyContent: 'center',*/}
+                      {/*}}>*/}
+                      {/*<View style={{flexDirection: 'row'}}>*/}
+                        {/*<FontAwesome*/}
+                          {/*name={'apple'}*/}
+                          {/*size={20}*/}
+                          {/*color={Colors.black}*/}
+                          {/*style={{alignSelf: 'center'}}*/}
+                        {/*/>*/}
+                          {/*<View pointerEvents="none">*/}
+                              {/*<TextInput*/}
+                          {/*style={globalStyles.normalRegularText17}>*/}
+                          {/*{translate('common.continueWithApple')}*/}
+                              {/*</TextInput>*/}
+                          {/*</View>*/}
+                      {/*</View>*/}
+                    {/*</TouchableOpacity>*/}
+                  {/*</View>*/}
+                {/*)}*/}
               </View>
             </View>
               {isLoading && (
@@ -918,7 +924,7 @@ export const SocialLogin = (props) => {
         source={props.IconSrc}
         style={[
           globalStyles.iconStyle,
-          {marginHorizontal: 10, width: 35, height: 35},
+          {marginHorizontal: 5, width: 45, height: 45},
         ]}
       />
     </TouchableOpacity>

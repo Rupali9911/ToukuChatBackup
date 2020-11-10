@@ -319,6 +319,7 @@ class FriendNotes extends Component {
       isChangeNameModalVisible,
     } = this.state;
     const {currentFriend} = this.props;
+    console.log('currentFriend.avatar', currentFriend.avatar)
     return (
       <View
         style={[
@@ -359,7 +360,7 @@ class FriendNotes extends Component {
             <View style={{alignSelf: 'center', marginTop: -70}}>
               <RoundedImage
                 size={140}
-                source={getAvatar(currentFriend.avatar)}
+                source={getAvatar(currentFriend.avatar ? currentFriend.avatar : currentFriend.profile_picture )}
                 // clickable={true}
               />
             </View>

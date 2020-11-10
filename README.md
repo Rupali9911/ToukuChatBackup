@@ -75,3 +75,27 @@ Update only the lines with the + operator at the start of them
 ### To upload gif image
 
 - copy ImageCropPicker.m from ./LineLibChanges/react-native-image-crop-picker/ImageCropPicker.m and replace it with ./node_modules/react-native-image-crop-picker/ios/src/ImageCropPicker.m
+
+### Fix image not visible issue in iOS 14
+- Replace displayLayer method from ./node_module/react-native/Libraries/Image/RCTUIImageViewAnimated.m
+
+from this: 
+- (void)displayLayer:(CALayer *)layer 
+ { 
+   if (_currentFrame) { 
+     layer.contentsScale = self.animatedImageScale; 
+     layer.contents = (__bridge id)_currentFrame.CGImage; 
+   } 
+ } 
+ 
+ to this:
+ 
+ - (void)displayLayer:(CALayer *)layer 
+  { 
+    if (_currentFrame) { 
+      layer.contentsScale = self.animatedImageScale; 
+      layer.contents = (__bridge id)_currentFrame.CGImage; 
+    } else {
+           [super displayLayer:layer];
+         }
+  } 

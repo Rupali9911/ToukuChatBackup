@@ -66,6 +66,7 @@ export const Icons = {
   plus_icon_select: require('../../assets/icons/plus_icon_select.png'),
   icon_apple: require('../../assets/icons/apple.png'),
   icon_bin: require('../../assets/icons/bin.png'),
+    icon_apple_logo: require('../../assets/icons/apple_icon.png'),
 };
 
 export const Images = {

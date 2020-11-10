@@ -60,6 +60,7 @@ export default class HomeHeader extends Component {
       isDeleteVisible,
       isVisibleButton,
       countObject,
+        currentRouteName
     } = this.props;
 
     return (
@@ -201,6 +202,7 @@ export default class HomeHeader extends Component {
               isDeleteVisible={isDeleteVisible}
               isVisibleButton={isVisibleButton}
               countObject={countObject}
+              currentRouteName={currentRouteName}
             />
           )}
         </ImageBackground>

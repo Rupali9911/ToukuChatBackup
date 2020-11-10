@@ -70,12 +70,13 @@ export default class SearchInput extends Component {
       onDeleteConfrimPress,
       isDeleteVisible,
       countObject,
+        currentRouteName
     } = this.props;
 
     const {isVisibleLeft} = this.state;
     return (
       <View style={styles.container}>
-        {title === 'Chat' && !isVisibleLeft && isDeleteVisible && (
+        {currentRouteName === 'ChatTab' && !isVisibleLeft && isDeleteVisible && (
           <Menu
             style={{marginTop: 40}}
             contentStyle={{}}

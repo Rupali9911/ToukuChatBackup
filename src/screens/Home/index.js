@@ -1110,6 +1110,7 @@ class Home extends Component {
   };
 
   onOpenFriendDetails = (item) => {
+    console.log('item', item)
     this.props.setCurrentFriend(item);
     this.props.navigation.navigate('FriendNotes');
   };
@@ -1241,9 +1242,10 @@ class Home extends Component {
                     : item.last_msg.type === 'video'
                     ? translate('pages.xchat.video')
                     : item.last_msg.type === 'doc'
-                    ? translate('pages.xchat.document')
-                    : translate('pages.xchat.audio')
-                  : ''
+                                ? translate('pages.xchat.document')
+                                : item.last_msg.type === 'audio'
+                                    ? translate('pages.xchat.audio')
+                                    : '' : ''
               }
               mentions={item.mentions}
               date={item.joining_date}
@@ -1295,9 +1297,10 @@ class Home extends Component {
                     : item.last_msg_type === 'video'
                     ? translate('pages.xchat.video')
                     : item.last_msg_type === 'doc'
-                    ? translate('pages.xchat.document')
-                    : translate('pages.xchat.audio')
-                  : ''
+                                ? translate('pages.xchat.document')
+                                : item.last_msg.type === 'audio'
+                                    ? translate('pages.xchat.audio')
+                                    : '' : ''
               }
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}

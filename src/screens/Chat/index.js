@@ -1703,7 +1703,7 @@ class Chat extends Component {
                 group[0].timestamp,
               );
             }
-            
+
             this.props.getLocalUserGroups().then((res) => {
               this.props.setCommonChatConversation();
             });
@@ -2614,8 +2614,9 @@ class Chat extends Component {
                       ? translate('pages.xchat.video')
                       : item.last_msg.type === 'doc'
                       ? translate('pages.xchat.document')
-                      : translate('pages.xchat.audio')
-                    : ''
+                      : item.last_msg.type === 'audio'
+                      ? translate('pages.xchat.audio')
+                    : '' : ''
                 }
                 mentions={item.mentions}
                 date={item.timestamp}
@@ -2642,9 +2643,10 @@ class Chat extends Component {
                       : item.last_msg.msg_type === 'video'
                       ? translate('pages.xchat.video')
                       : item.last_msg.msg_type === 'doc'
-                      ? translate('pages.xchat.document')
-                      : translate('pages.xchat.audio')
-                    : ''
+                                  ? translate('pages.xchat.document')
+                                  : item.last_msg.type === 'audio'
+                                      ? translate('pages.xchat.audio')
+                                      : '' : ''
                 }
                 date={item.last_msg ? item.last_msg.created : item.joining_date}
                 image={item.channel_picture}
@@ -2671,9 +2673,10 @@ class Chat extends Component {
                       : item.last_msg_type === 'video'
                       ? translate('pages.xchat.video')
                       : item.last_msg_type === 'doc'
-                      ? translate('pages.xchat.document')
-                      : translate('pages.xchat.audio')
-                    : ''
+                                  ? translate('pages.xchat.document')
+                                  : item.last_msg.type === 'audio'
+                                      ? translate('pages.xchat.audio')
+                                      : '' : ''
                 }
                 image={getAvatar(item.profile_picture)}
                 date={item.timestamp}
@@ -2757,6 +2760,7 @@ class Chat extends Component {
           }}
           isDeleteVisible={isLoading ? false : true}
           isVisibleButton={isVisible}
+          currentRouteName= {this.props.currentRouteName}
         />
         {/* <SearchInput
             onChangeText={this.onSearch.bind(this)}
