@@ -1220,7 +1220,18 @@ class Home extends Component {
     const pinedGroups = filteredGroups.filter((group) => group.is_pined);
     const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
     const groups = [...pinedGroups, ...unpinedGroups];
-
+    groups.sort((a, b) =>
+      a.timestamp &&
+      b.timestamp &&
+      (new Date(a.timestamp) > new Date(a.joining_date)
+        ? new Date(a.timestamp)
+        : new Date(a.joining_date)) <
+        (new Date(b.timestamp) > new Date(b.joining_date)
+          ? new Date(b.timestamp)
+          : new Date(b.joining_date))
+        ? 1
+        : -1,
+    );
     if (groups.length === 0 && groups) {
       return <ListLoader />;
     } else if (groups.length > 0) {
@@ -1248,7 +1259,11 @@ class Home extends Component {
                                     : '' : ''
               }
               mentions={item.mentions}
-              date={item.joining_date}
+              date={
+                item.timestamp >= item.joining_date
+                  ? item.timestamp
+                  : item.joining_date
+              }
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}
               unreadCount={item.unread_msg}

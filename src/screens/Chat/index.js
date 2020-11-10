@@ -1158,9 +1158,9 @@ class Chat extends Component {
             var array = [];
             array = chats.toJSON();
 
-            if(array.length>0){
+            if (array.length > 0) {
               updateChannelLastMsgWithOutCount(item.channel, array[0]);
-            }else{
+            } else {
               updateChannelLastMsgWithOutCount(item.channel, null);
             }
 
@@ -1330,7 +1330,10 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.FRIEND_DISPLAY_NAME_DATA) {
       var user = getUserFriend(message.text.data.message_details.friend_id);
       if (user && user.length > 0) {
-        updateFriendDisplayName(message.text.data.message_details);
+        updateFriendDisplayName(
+          user[0].user_id,
+          message.text.data.message_details,
+        );
         this.props.getUserFriends().then((res) => {
           this.setCommonConversation();
         });
@@ -1552,19 +1555,16 @@ class Chat extends Component {
             var chats = getFriendChatConversationById(item.friend);
             var chats_array = [];
             chats_array = chats.toJSON();
-            if(chats_array.length>0){
+            if (chats_array.length > 0) {
               updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
-            }else{
+            } else {
               updateFriendLastMsgWithoutCount(user_id, null);
             }
             this.props.setUserFriends().then((res) => {
               this.props.setCommonChatConversation();
             });
           }
-          if (
-            this.props.currentRouteName == 'FriendChats' &&
-            currentFriend
-          ) {
+          if (this.props.currentRouteName == 'FriendChats' && currentFriend) {
             this.getLocalFriendConversation();
           }
         }
@@ -1685,8 +1685,7 @@ class Chat extends Component {
           let array = chat.toJSON();
 
           if (group[0].last_msg_id == item.msg_id) {
-
-            if(array && array.length>0){
+            if (array && array.length > 0) {
               updateLastMsgGroupsWithoutCount(
                 item.group_id,
                 array[0].message_body.type,
@@ -1694,7 +1693,7 @@ class Chat extends Component {
                 array[0].msg_id,
                 array[0].timestamp,
               );
-            }else{
+            } else {
               updateLastMsgGroupsWithoutCount(
                 item.group_id,
                 null,
@@ -1738,6 +1737,7 @@ class Chat extends Component {
             last_msg: null,
             last_msg_id: null,
             timestamp: item.timestamp,
+            joining_date: item.timestamp,
             event: `group_${item.id}`,
             no_msgs: true,
             is_pined: false,

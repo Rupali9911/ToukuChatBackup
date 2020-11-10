@@ -1,18 +1,8 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Platform,
-} from 'react-native';
+import {StyleSheet, View, Text, TextInput, Platform} from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {Colors, Fonts, Images, Icons} from '../../constants';
 import {globalStyles} from '../../styles';
@@ -21,7 +11,6 @@ import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {updateFriendDisplayName} from '../../redux/reducers/friendReducer';
-import {updateConfiguration} from '../../redux/reducers/configurationReducer';
 import Toast from '../ToastModal';
 import {ClickableImage} from '../ImageComponents';
 
@@ -29,6 +18,7 @@ class ChangeFriendDisplayNameModal extends Component {
   constructor(props) {
     super(props);
     this.state = this.initialState;
+    this.isLoading = false;
   }
 
   get initialState() {
@@ -38,7 +28,11 @@ class ChangeFriendDisplayNameModal extends Component {
     };
   }
 
-  onChangePress = () => {
+  onChangePress = async () => {
+    if (this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
     const {displayName} = this.state;
     if (displayName.trim() === '') {
       this.setState({
@@ -52,27 +46,28 @@ class ChangeFriendDisplayNameModal extends Component {
       this.props
         .updateFriendDisplayName(payload)
         .then((res) => {
-          this.props.onRequestClose();
           if (res.status === true) {
             Toast.show({
               title: translate('pages.changeDisplayName'),
               text: translate('pages.setting.toastr.nameUpdatedSuccessfully'),
               type: 'positive',
             });
-            // setTimeout(() => {
-            //   this.props.onRequestClose();
-            // }, 2000);
+            setTimeout(() => {
+              this.props.onRequestClose();
+              this.isLoading = false;
+            }, 1500);
+            return;
           }
+          this.props.onRequestClose();
         })
         .catch((err) => {
           this.props.onRequestClose();
-          // setTimeout(() => {
-          // }, 2000);
           Toast.show({
             title: translate('pages.changeDisplayName'),
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
+          this.isLoading = false;
         });
     }
   };
@@ -97,7 +92,11 @@ class ChangeFriendDisplayNameModal extends Component {
 
   render() {
     const {visible, loading, currentFriend} = this.props;
-    const {displayName, displayNameErr} = this.state;
+    const {displayName, isLoading, displayNameErr} = this.state;
+    console.log(
+      'ChangeFriendDisplayNameModal -> render -> isLoading',
+      isLoading,
+    );
     return (
       <Modal
         isVisible={visible}
@@ -167,8 +166,8 @@ class ChangeFriendDisplayNameModal extends Component {
             <Button
               isRounded={false}
               title={translate('pages.changeDisplayName')}
-              onPress={this.onChangePress.bind(this)}
-              loading={loading}
+              onPress={this.isLoading ? null : this.onChangePress.bind(this)}
+              loading={this.isLoading}
             />
           </View>
         </View>

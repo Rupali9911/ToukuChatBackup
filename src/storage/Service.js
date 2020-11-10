@@ -993,12 +993,12 @@ export const updateFriendAvtar = (id, data) => {
   });
 };
 
-export const updateFriendDisplayName = (data) => {
+export const updateFriendDisplayName = (userId, data) => {
   realm.write(() => {
     realm.create(
       'user_friends',
       {
-        freind: data.friend_id,
+        user_id: userId,
         display_name: data.display_name,
       },
       'modified',
@@ -1049,7 +1049,7 @@ export const updateFriendsUnReadCount = (id, unreadCount) => {
 
 export const updateFriendLastMsgWithoutCount = async (id, message) => {
   // var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
-  if(message){
+  if (message) {
     await realm.write(() => {
       realm.create(
         'user_friends',
@@ -1063,7 +1063,7 @@ export const updateFriendLastMsgWithoutCount = async (id, message) => {
         'modified',
       );
     });
-  }else{
+  } else {
     await realm.write(() => {
       realm.create(
         'user_friends',
