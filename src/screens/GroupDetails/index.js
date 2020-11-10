@@ -87,6 +87,7 @@ class GroupDetails extends Component {
       loading: false,
       filePath: {uri: this.props.currentGroupDetail.group_picture}, //For Image Picker
       showTextBox: false,
+      isLoading: false,
       data: null,
       memberOption: [
         {
@@ -128,6 +129,7 @@ class GroupDetails extends Component {
     };
 
     this.S3uploadService = new S3uploadService();
+    this.isLeaveLoading = false;
   }
 
   static navigationOptions = () => {
@@ -340,7 +342,13 @@ class GroupDetails extends Component {
     });
   };
 
-  onConfirmLeaveGroup = () => {
+  onConfirmLeaveGroup = async () => {
+    if (this.isLeaveLoading) {
+      return;
+    }
+    this.isLeaveLoading = true;
+    await this.setState({isLeaveLoading: true});
+
     const payload = {
       group_id: this.props.currentGroup.group_id,
     };
@@ -357,6 +365,8 @@ class GroupDetails extends Component {
           this.props.getUserGroups();
           this.props.navigation.popToTop();
         }
+        this.isLeaveLoading = false;
+        this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       })
       .catch((err) => {
@@ -365,6 +375,8 @@ class GroupDetails extends Component {
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
+        this.isLeaveLoading = false;
+        this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       });
   };
@@ -462,8 +474,12 @@ class GroupDetails extends Component {
     });
   };
 
-  onConfirmDeleteGroup = () => {
-    this.toggleDeleteGroupConfirmationModal();
+  onConfirmDeleteGroup = async () => {
+    if (this.isLeaveLoading) {
+      return;
+    }
+    this.isLeaveLoading = true;
+    await this.setState({isLeaveLoading: true});
     this.props
       .deleteGroup(this.props.currentGroup.group_id)
       .then((res) => {
@@ -476,6 +492,9 @@ class GroupDetails extends Component {
           this.props.getUserGroups();
           this.props.navigation.popToTop();
         }
+        this.isLeaveLoading = false;
+        this.setState({isLeaveLoading: false});
+        this.toggleDeleteGroupConfirmationModal();
       })
       .catch((err) => {
         Toast.show({
@@ -483,6 +502,9 @@ class GroupDetails extends Component {
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
+        this.isLeaveLoading = false;
+        this.setState({isLeaveLoading: false});
+        this.toggleDeleteGroupConfirmationModal();
       });
   };
 
@@ -1087,6 +1109,7 @@ class GroupDetails extends Component {
             onConfirm={this.onConfirmDeleteGroup.bind(this)}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.toastr.groupWillBeDeleted')}
+            isLoading={this.state.isLeaveLoading}
           />
           <ConfirmationModal
             orientation={orientation}
@@ -1095,6 +1118,7 @@ class GroupDetails extends Component {
             onConfirm={this.onConfirmLeaveGroup.bind(this)}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.wantToLeaveText')}
+            isLoading={this.state.isLeaveLoading}
           />
           <ConfirmationModal
             orientation={orientation}

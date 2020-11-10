@@ -279,6 +279,7 @@ class GroupChats extends Component {
     this.S3uploadService = new S3uploadService();
     this.props.resetGroupConversation();
     this.isUploading = false;
+    this.isLeaveLoading = false;
   }
 
   onPinUnpinGroup = () => {
@@ -1053,11 +1054,15 @@ class GroupChats extends Component {
     this.setState({selectedIds: array});
   };
 
-  onConfirmLeaveGroup = () => {
+  onConfirmLeaveGroup = async () => {
+    if (this.isLeaveLoading) {
+      return;
+    }
+    this.isLeaveLoading = true;
+    await this.setState({isLeaveLoading: true});
     const payload = {
       group_id: this.props.currentGroup.group_id,
     };
-    this.setState({isLeaveLoading: true});
     this.props
       .leaveGroup(payload)
       .then((res) => {
@@ -1071,6 +1076,7 @@ class GroupChats extends Component {
           this.props.getUserGroups();
           this.props.navigation.goBack();
         }
+        this.isLeaveLoading = false;
         this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       })
@@ -1080,6 +1086,7 @@ class GroupChats extends Component {
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
+        this.isLeaveLoading = false;
         this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       });
@@ -1092,8 +1099,12 @@ class GroupChats extends Component {
     }));
   };
 
-  onConfirmDeleteGroup = () => {
-    this.toggleDeleteGroupConfirmationModal();
+  onConfirmDeleteGroup = async () => {
+    if (this.isLeaveLoading) {
+      return;
+    }
+    this.isLeaveLoading = true;
+    await this.setState({isLeaveLoading: true});
     console.log(
       'onConfirmDeleteGroup -> this.props.currentGroup',
       this.props.currentGroup,
@@ -1111,6 +1122,9 @@ class GroupChats extends Component {
           this.props.getUserGroups();
           this.props.navigation.goBack();
         }
+        this.isLeaveLoading = false;
+        this.setState({isLeaveLoading: false});
+        this.toggleDeleteGroupConfirmationModal();
       })
       .catch((err) => {
         console.log('onConfirmDeleteGroup -> err', err);
@@ -1119,6 +1133,9 @@ class GroupChats extends Component {
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
+        this.isLeaveLoading = false;
+        this.setState({isLeaveLoading: false});
+        this.toggleDeleteGroupConfirmationModal();
       });
   };
 
@@ -1613,6 +1630,7 @@ class GroupChats extends Component {
           onConfirm={this.onConfirmDeleteGroup.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.groupWillBeDeleted')}
+          isLoading={this.state.isLeaveLoading}
         />
 
         <ConfirmationModal
