@@ -1110,7 +1110,7 @@ class Home extends Component {
   };
 
   onOpenFriendDetails = (item) => {
-    console.log('item', item)
+    console.log('item', item);
     this.props.setCurrentFriend(item);
     this.props.navigation.navigate('FriendNotes');
   };
@@ -1213,14 +1213,7 @@ class Home extends Component {
     //     : -1,
     // );
 
-    const filteredGroups = sortChannels.filter(
-      createFilter(this.state.searchText, ['group_name']),
-    );
-
-    const pinedGroups = filteredGroups.filter((group) => group.is_pined);
-    const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
-    const groups = [...pinedGroups, ...unpinedGroups];
-    groups.sort((a, b) =>
+    sortChannels.sort((a, b) =>
       a.timestamp &&
       b.timestamp &&
       (new Date(a.timestamp) > new Date(a.joining_date)
@@ -1232,6 +1225,13 @@ class Home extends Component {
         ? 1
         : -1,
     );
+    const filteredGroups = sortChannels.filter(
+      createFilter(this.state.searchText, ['group_name']),
+    );
+
+    const pinedGroups = filteredGroups.filter((group) => group.is_pined);
+    const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
+    const groups = [...pinedGroups, ...unpinedGroups];
     if (groups.length === 0 && groups) {
       return <ListLoader />;
     } else if (groups.length > 0) {
@@ -1253,10 +1253,11 @@ class Home extends Component {
                     : item.last_msg.type === 'video'
                     ? translate('pages.xchat.video')
                     : item.last_msg.type === 'doc'
-                                ? translate('pages.xchat.document')
-                                : item.last_msg.type === 'audio'
-                                    ? translate('pages.xchat.audio')
-                                    : '' : ''
+                    ? translate('pages.xchat.document')
+                    : item.last_msg.type === 'audio'
+                    ? translate('pages.xchat.audio')
+                    : ''
+                  : ''
               }
               mentions={item.mentions}
               date={
@@ -1312,10 +1313,11 @@ class Home extends Component {
                     : item.last_msg_type === 'video'
                     ? translate('pages.xchat.video')
                     : item.last_msg_type === 'doc'
-                                ? translate('pages.xchat.document')
-                                : item.last_msg.type === 'audio'
-                                    ? translate('pages.xchat.audio')
-                                    : '' : ''
+                    ? translate('pages.xchat.document')
+                    : item.last_msg.type === 'audio'
+                    ? translate('pages.xchat.audio')
+                    : ''
+                  : ''
               }
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}

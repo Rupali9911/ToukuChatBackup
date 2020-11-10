@@ -1094,6 +1094,10 @@ class GroupChats extends Component {
 
   onConfirmDeleteGroup = () => {
     this.toggleDeleteGroupConfirmationModal();
+    console.log(
+      'onConfirmDeleteGroup -> this.props.currentGroup',
+      this.props.currentGroup,
+    );
     this.props
       .deleteGroup(this.props.currentGroup.group_id)
       .then((res) => {
@@ -1103,12 +1107,13 @@ class GroupChats extends Component {
             text: translate('pages.xchat.toastr.groupIsRemoved'),
             type: 'positive',
           });
-          this.deleteLocalGroup(this.props.currentGroup.group_id);
+          // this.deleteLocalGroup(this.props.currentGroup.group_id);
           this.props.getUserGroups();
           this.props.navigation.goBack();
         }
       })
       .catch((err) => {
+        console.log('onConfirmDeleteGroup -> err', err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
@@ -1184,7 +1189,7 @@ class GroupChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
-      
+
       this.state.selectedIds.map((item) => {
         deleteGroupMessageById(item);
         if (this.props.currentGroup.last_msg_id == item) {
@@ -1205,8 +1210,7 @@ class GroupChats extends Component {
             this.props.getLocalUserGroups().then((res) => {
               this.props.setCommonChatConversation();
             });
-          }else{
-
+          } else {
           }
         }
       });
@@ -1215,7 +1219,7 @@ class GroupChats extends Component {
 
       this.props.deleteMultipleGroupMessage(payload).then((res) => {
         if (res && res.status) {
-        }else{
+        } else {
           this.getGroupConversation();
         }
         // this.getGroupConversation();
@@ -1535,9 +1539,13 @@ class GroupChats extends Component {
               : this.state.headerRightIconMenu
           }
           image={currentGroupDetail.group_picture}
-          isPined={currentGroup.is_pined}
+          isPined={
+            currentGroup && currentGroup.is_pined
+              ? currentGroup.is_pined
+              : false
+          }
           chatType={
-            currentGroup.is_pined
+            currentGroup && currentGroup.is_pined
               ? translate('pages.xchat.unPinThisGroup')
               : translate('pages.xchat.pinThisGroup')
           }

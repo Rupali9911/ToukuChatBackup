@@ -32,6 +32,7 @@ import {ListLoader, ImageLoader} from '../../components/Loaders';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   editGroup,
   deleteGroup,
@@ -46,11 +47,19 @@ import {
   postGroupNotes,
   editGroupNotes,
   deleteGroupNotes,
+  setCurrentGroup,
+  setGroupConversation,
+  getLocalUserGroups,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ConfirmationModal} from '../../components/Modals';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ActivityIndicator} from 'react-native-paper';
+import {
+  deleteGroupById,
+  deleteAllGroupMessageByGroupId,
+} from '../../storage/Service';
+
 import moment from 'moment';
 const {width, height} = Dimensions.get('window');
 
@@ -274,34 +283,34 @@ class GroupDetails extends Component {
       .getGroupMembers(id)
       .then((responseArray) => {
         // this.props.getUserFriends().then(() => {
-          //let arrTemp = [...responseArray, ...this.props.userFriends]
+        //let arrTemp = [...responseArray, ...this.props.userFriends]
 
-          let arrTemp2 = this.props.userFriends;
-          let arrTemp = [...arrTemp2];
+        let arrTemp2 = this.props.userFriends;
+        let arrTemp = [...arrTemp2];
 
-          console.log('arrTemp2', arrTemp2, responseArray);
-          console.log('responseArray', responseArray);
+        console.log('arrTemp2', arrTemp2, responseArray);
+        console.log('responseArray', responseArray);
 
-          responseArray.map((itemRes) => {
-            arrTemp2.map((itemUserFriends) => {
-              if (itemRes.id === itemUserFriends.user_id) {
-                let index = arrTemp.indexOf(itemUserFriends);
-                if (index !== -1) {
-                  console.log('index ', index);
-                  arrTemp.splice(index, 1);
-                }
+        responseArray.map((itemRes) => {
+          arrTemp2.map((itemUserFriends) => {
+            if (itemRes.id === itemUserFriends.user_id) {
+              let index = arrTemp.indexOf(itemUserFriends);
+              if (index !== -1) {
+                console.log('index ', index);
+                arrTemp.splice(index, 1);
               }
-            });
+            }
           });
+        });
 
-          let members = responseArray.filter(
-            (item) => item.id !== this.props.userData.id,
-          );
+        let members = responseArray.filter(
+          (item) => item.id !== this.props.userData.id,
+        );
 
-          let arrTemp1 = [...members, ...arrTemp];
-          //console.log('arrTemp1', arrTemp1)
-          this.props.setCurrentGroupMembers(arrTemp1);
-          this.setState({loading: false});
+        let arrTemp1 = [...members, ...arrTemp];
+        //console.log('arrTemp1', arrTemp1)
+        this.props.setCurrentGroupMembers(arrTemp1);
+        this.setState({loading: false});
         // })
       })
       .catch((err) => {
@@ -309,9 +318,7 @@ class GroupDetails extends Component {
       });
   };
 
-  onAddFriend(isAdded, item) {
-
-  }
+  onAddFriend(isAdded, item) {}
 
   onLeaveGroup = () => {
     this.toggleLeaveGroupConfirmationModal();
@@ -323,6 +330,16 @@ class GroupDetails extends Component {
     }));
   };
 
+  deleteLocalGroup = (id) => {
+    this.props.setCurrentGroup(null);
+    this.props.setGroupConversation([]);
+    deleteGroupById(id);
+    deleteAllGroupMessageByGroupId(id);
+    this.props.getLocalUserGroups().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+  };
+
   onConfirmLeaveGroup = () => {
     const payload = {
       group_id: this.props.currentGroup.group_id,
@@ -331,11 +348,12 @@ class GroupDetails extends Component {
       .leaveGroup(payload)
       .then((res) => {
         if (res.status === true) {
-          // Toast.show({
-          //   title: 'Touku',
-          //   text: translate('common.success'),
-          //   type: 'positive',
-          // });
+          Toast.show({
+            title: 'Touku',
+            text: translate(res.message),
+            type: 'positive',
+          });
+          this.deleteLocalGroup(this.props.currentGroup.group_id);
           this.props.getUserGroups();
           this.props.navigation.popToTop();
         }
@@ -479,7 +497,7 @@ class GroupDetails extends Component {
     }
 
     //console.log('filteredFriends & userFriends', filteredFriends, currentGroupMembers)
-    if ((filteredFriends.length && filteredFriends.length === 0) && loading) {
+    if (filteredFriends.length && filteredFriends.length === 0 && loading) {
       return <ListLoader />;
     } else if (filteredFriends.length > 0) {
       return (
@@ -1019,16 +1037,16 @@ class GroupDetails extends Component {
                         fontType={'smallRegularText'}
                         height={40}
                       />
-                        <Button
-                            title={translate(`pages.xchat.deleteGroup`)}
-                            onPress={this.toggleDeleteGroupConfirmationModal.bind(
-                                this,
-                            )}
-                            isRounded={false}
-                            type={'secondary'}
-                            fontType={'smallRegularText'}
-                            height={40}
-                        />
+                      <Button
+                        title={translate(`pages.xchat.deleteGroup`)}
+                        onPress={this.toggleDeleteGroupConfirmationModal.bind(
+                          this,
+                        )}
+                        isRounded={false}
+                        type={'secondary'}
+                        fontType={'smallRegularText'}
+                        height={40}
+                      />
                     </React.Fragment>
                   )
                 ) : (
@@ -1119,6 +1137,10 @@ const mapDispatchToProps = {
   postGroupNotes,
   editGroupNotes,
   deleteGroupNotes,
+  setCurrentGroup,
+  setGroupConversation,
+  getLocalUserGroups,
+  setCommonChatConversation,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);
