@@ -1,6 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons, Fonts } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons, Fonts} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const channelInfoStyles = StyleSheet.create({
   mainContainer: {
@@ -111,8 +111,9 @@ export const channelInfoStyles = StyleSheet.create({
     marginVertical: 10,
   },
   aboutHeading: {
-    color: Colors.gradient_2,
-    fontSize: 16,
+    color: '#E26161',
+    fontWeight: '500',
+    fontSize: 20,
     fontFamily: Fonts.regular,
   },
   aboutText: {

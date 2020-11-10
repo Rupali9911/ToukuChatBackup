@@ -96,7 +96,6 @@ class ChannelInfo extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-
     this.getChannelDetails();
   }
 
@@ -242,7 +241,7 @@ class ChannelInfo extends Component {
       },
     ];
 
-    //console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
+    // console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
     return (
       <View
         // source={Images.image_home_bg}
@@ -267,6 +266,15 @@ class ChannelInfo extends Component {
                 <ImageBackground
                   style={channelInfoStyles.channelCoverContainer}
                   source={getImage(channelData.cover_image)}>
+
+
+                <LinearGradient
+                  colors={['rgba(255, 98, 165, 0.8)', 'rgba(0,0,0,0)']}
+                  start={{x: 0, y: 1}}
+                  end={{x: 0, y: 0}}
+                  style={[{position:'absolute', width:"100%", height:"100%"}]}>
+                </LinearGradient>
+
                   <View
                     style={channelInfoStyles.updateBackgroundContainer}></View>
                   <View style={channelInfoStyles.channelInfoContainer}>
@@ -364,10 +372,14 @@ class ChannelInfo extends Component {
                       />
                     </View>
                   </View>
-                </ImageBackground>
+                  
+                </ImageBackground>               
               </LinearGradient>
+              
+                          
               <View style={channelInfoStyles.tabBar}>
                 {tabBarItem.map((item, index) => {
+                 if( this.props.navigation.state.params && item.title !== 'chat'){
                   return (
                     <TouchableOpacity
                       key={index}
@@ -397,7 +409,38 @@ class ChannelInfo extends Component {
                         {translate(`pages.xchat.${item.title}`)}
                       </Text>
                     </TouchableOpacity>
-                  );
+                  );}
+                  if(!this.props.navigation.state.params){
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        style={channelInfoStyles.tabItem}
+                        onPress={item.action}
+                        activeOpacity={item.title === 'about' ? 1 : 0}>
+                        <Image
+                          source={item.icon}
+                          style={[
+                            channelInfoStyles.tabIamge,
+                            {
+                              opacity: item.title === 'about' ? 1 : 0.5,
+                            },
+                          ]}
+                          resizeMode={'center'}
+                        />
+                        <Text
+                          style={[
+                            channelInfoStyles.tabTitle,
+                            {
+                              fontFamily:
+                                item.title === 'about'
+                                  ? Fonts.regular
+                                  : Fonts.extralight,
+                            },
+                          ]}>
+                          {translate(`pages.xchat.${item.title}`)}
+                        </Text>
+                      </TouchableOpacity>
+                    );}
                 })}
               </View>
               <View style={channelInfoStyles.about}>
@@ -405,8 +448,29 @@ class ChannelInfo extends Component {
                   {translate('pages.xchat.about')}
                 </Text>
                 <Text style={channelInfoStyles.aboutText}>
-                  {currentChannel.description}
+                  {channelData.description}
                 </Text>
+
+                <TouchableOpacity style={{justifyContent:'center', alignItems:'center'}}>
+                  <LinearGradient
+                    start={{x: 0.1, y: 0.7}}
+                    end={{x: 0.5, y: 0.2}}
+                    locations={[0.1, 0.6, 1]}
+                    colors={[Colors.gradient_3 , Colors.gradient_2, Colors.gradient_1]}
+                    style={{ padding:10,borderRadius:5, width:"60%", alignItems:'center', justifyContent:'center', marginTop:15}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontWeight: '400',
+                          color: 'white',
+                          fontFamily: Fonts.light,
+                        }}>
+                        {translate('pages.xchat.follow')}
+                      </Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+
+
               </View>
               {channelData.is_vip && (
                 <React.Fragment>
@@ -482,7 +546,9 @@ class ChannelInfo extends Component {
             buttonText={translate('common.copy')}
           />
         </View>
+        
       </View>
+      
     );
   }
 }
