@@ -7,6 +7,7 @@ import {
   Image,
   Platform,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {Menu, Divider} from 'react-native-paper';
@@ -33,72 +34,24 @@ export default class ConfirmationModal extends Component {
     } = this.props;
     return (
       <Modal isVisible={visible}>
-        <View
-          style={{
-            height: orientation === 'PORTRAIT' ? 250 : '80%',
-            backgroundColor: Colors.white,
-            borderRadius: 5,
-            paddingVertical: '5%',
-          }}>
-          <View
-            style={{
-              flex: 0.5,
-              alignItems: 'center',
-            }}>
+        <View style={style.container}>
+          <View style={style.innerContainer}>
             <Image
               source={Icons.icon_info}
-              style={{
-                height: '50%',
-                width: '20%',
-                tintColor: Colors.orange_light,
-              }}
+              style={style.alertImage}
               resizeMode={'contain'}
             />
-          </View>
-          <View
-            style={{
-              flex: 0.5,
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              backgroundColor: 'transparent',
-            }}>
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                flex: 0.5,
-                width: '100%',
-              }}>
-              <Text
-                style={{
-                  fontFamily: Fonts.medium,
-                  fontSize: 24,
-                  marginBottom: 10,
-                }}>
-                {title}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: Fonts.light,
-                  fontSize: 16,
-                  color: Colors.black,
-                }}>
+
+            <View style={style.detailsAreaView}>
+              <Text style={style.alertTitleTextStyle}>{title}</Text>
+              <Text style={style.alertmessageTextStyel}>
                 {message ? message : ''}
               </Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: '20%',
-                alignItems: 'flex-end',
-                flex: 0.5,
-                marginTop: 20,
-                backgroundColor: 'transparent',
-              }}>
+            <View style={{flexDirection: 'row', marginTop: 20}}>
               <View
                 style={{
-                  flex: 0.5,
-                  marginHorizontal: 5,
+                  flex: 1,
                 }}>
                 <Button
                   title={translate('common.cancel')}
@@ -109,8 +62,8 @@ export default class ConfirmationModal extends Component {
               </View>
               <View
                 style={{
-                  flex: 0.5,
-                  marginHorizontal: 5,
+                  flex: 1,
+                  marginLeft: 10,
                 }}>
                 <Button
                   title={translate('pages.xchat.toastr.sure')}
@@ -127,3 +80,36 @@ export default class ConfirmationModal extends Component {
     );
   }
 }
+
+const style = StyleSheet.create({
+  container: {flex: 1, alignItems: 'center', justifyContent: 'center'},
+  innerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 25,
+    borderRadius: 5,
+  },
+  alertImage: {
+    height: 70,
+    width: 70,
+    tintColor: Colors.orange_light,
+    marginBottom: 25,
+  },
+  detailsAreaView: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    width: '100%',
+  },
+  alertTitleTextStyle: {
+    fontFamily: Fonts.medium,
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  alertmessageTextStyel: {
+    fontFamily: Fonts.light,
+    fontSize: 16,
+    color: Colors.black,
+    textAlign: 'center',
+  },
+});

@@ -42,77 +42,83 @@ export const setCommonChatConversation = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     let array = [];
     let channels = getChannels();
+
     if (channels.length) {
-      array = [...array, ...channels.toJSON()];
-      // channels.map((item, index) => {
-      //   let i = {
-      //     id: item.id,
-      //     name: item.name,
-      //     unread_msg: item.unread_msg,
-      //     total_members: item.total_members,
-      //     description: item.description,
-      //     chat: item.chat,
-      //     channel_picture: item.channel_picture,
-      //     last_msg: item.last_msg,
-      //     is_pined: item.is_pined,
-      //     created: item.created,
-      //     joining_date: item.joining_date,
-      //   };
-      //   array = [...array, i];
-      // });
+      // array = [...array, ...channels.toJSON()];
+      channels.map((item, index) => {
+        if (item.last_msg !== null) {
+          let i = {
+            id: item.id,
+            name: item.name,
+            unread_msg: item.unread_msg,
+            total_members: item.total_members,
+            description: item.description,
+            chat: item.chat,
+            channel_picture: item.channel_picture,
+            last_msg: item.last_msg,
+            is_pined: item.is_pined,
+            created: item.created,
+            joining_date: item.joining_date,
+          };
+          array = [...array, i];
+        }
+      });
     }
     var friends = getLocalUserFriends();
     if (friends.length) {
-      // friends.map((item) => {
-      //   let i = {
-      //     user_id: item.user_id,
-      //     friend: item.friend,
-      //     unread_msg: item.unread_msg,
-      //     last_msg_id: item.last_msg_id,
-      //     username: item.username,
-      //     avatar: item.avatar,
-      //     profile_picture: item.profile_picture,
-      //     background_image: item.background_image,
-      //     last_msg: item.last_msg,
-      //     last_msg_type: item.last_msg_type,
-      //     display_name: item.display_name,
-      //     isChecked: item.isChecked,
-      //     is_online: item.is_online,
-      //     is_typing: item.is_typing,
-      //     timestamp: item.timestamp,
-      //   };
-      //   array = [...array, i];
-      // });
-      array = [...array, ...friends.toJSON()];
+      friends.map((item) => {
+        if (item.last_msg_id !== null) {
+          let i = {
+            user_id: item.user_id,
+            friend: item.friend,
+            unread_msg: item.unread_msg,
+            last_msg_id: item.last_msg_id,
+            username: item.username,
+            avatar: item.avatar,
+            profile_picture: item.profile_picture,
+            background_image: item.background_image,
+            last_msg: item.last_msg,
+            last_msg_type: item.last_msg_type,
+            display_name: item.display_name,
+            isChecked: item.isChecked,
+            is_online: item.is_online,
+            is_typing: item.is_typing,
+            timestamp: item.timestamp,
+          };
+          array = [...array, i];
+        }
+      });
+      // array = [...array, ...friends.toJSON()];
     }
     var groups = getGroups();
     if (groups.length) {
-      array = [...array, ...groups.toJSON()];
-      // groups.map((item, index) => {
-      //   let i = {
-      //     group_id: item.group_id,
-      //     group_name: item.group_name,
-      //     unread_msg: item.unread_msg,
-      //     total_members: item.total_members,
-      //     description: item.description,
-      //     chat: item.chat,
-      //     group_picture: item.group_picture,
-      //     last_msg: item.last_msg,
-      //     last_msg_id: item.last_msg_id,
-      //     timestamp: item.timestamp,
-      //     event: item.event,
-      //     no_msgs: item.no_msgs,
-      //     is_pined: item.is_pined,
-      //     sender_id: item.sender_id,
-      //     sender_username: item.sender_username,
-      //     sender_display_name: item.sender_display_name,
-      //     mentions: item.mentions,
-      //     reply_to: item.reply_to,
-      //     joining_date: item.joining_date,
-      //   };
-      //   array = [...array, i];
-      // });
-
+      // array = [...array, ...groups.toJSON()];
+      groups.map((item, index) => {
+        if (item.last_msg_id !== null) {
+          let i = {
+            group_id: item.group_id,
+            group_name: item.group_name,
+            unread_msg: item.unread_msg,
+            total_members: item.total_members,
+            description: item.description,
+            chat: item.chat,
+            group_picture: item.group_picture,
+            last_msg: item.last_msg,
+            last_msg_id: item.last_msg_id,
+            timestamp: item.timestamp,
+            event: item.event,
+            no_msgs: item.no_msgs,
+            is_pined: item.is_pined,
+            sender_id: item.sender_id,
+            sender_username: item.sender_username,
+            sender_display_name: item.sender_display_name,
+            mentions: item.mentions,
+            reply_to: item.reply_to,
+            joining_date: item.joining_date,
+          };
+          array = [...array, i];
+        }
+      });
       // array.sort((a, b) =>
       //   a.timestamp &&
       //   b.timestamp &&

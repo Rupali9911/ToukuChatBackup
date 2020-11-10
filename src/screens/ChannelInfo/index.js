@@ -112,7 +112,9 @@ class ChannelInfo extends Component {
   getChannelDetails() {
     this.props
       .getChannelDetails(
-        this.props.navigation.state.params.channelItem.channel_id,
+        this.props.navigation.state.params
+          ? this.props.navigation.state.params.channelItem.channel_id
+          : this.props.currentChannel.id,
       )
       .then((res) => {
         this.setState({channelData: res});
