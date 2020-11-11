@@ -207,6 +207,7 @@ export default class ChatHeader extends Component {
                         }
                         titleStyle={{
                           marginLeft: -25,
+                          marginTop: -3,
                           fontSize: 16,
                           fontWeight: '200',
                         }}
