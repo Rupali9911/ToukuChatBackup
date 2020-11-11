@@ -283,9 +283,13 @@ export const getLocalFollowingChannels = () => (dispatch) =>
       });
 
       array = channels.toJSON();
+      console.log('array', array);
 
       dispatch(setUnreadChannelMsgsCounts(counts));
       dispatch(getFollowingChannelsSuccess(array));
+    } else {
+      dispatch(setUnreadChannelMsgsCounts(0));
+      dispatch(getFollowingChannelsSuccess([]));
     }
     resolve();
   });

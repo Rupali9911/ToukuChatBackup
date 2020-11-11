@@ -1238,7 +1238,7 @@ class Chat extends Component {
   //On Remove Channel Member
   onRemoveChannelMember(message) {
     if (
-      message.text.data.type === SocketEvents.REMOVE_MEMBER_FROM_CHANNEL &&
+      message.text.data.type === SocketEvents.REMOVE_CHANNEL_MEMBER &&
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       deleteChannelById(message.text.data.message_details.channel_id);
@@ -2616,7 +2616,8 @@ class Chat extends Component {
                       ? translate('pages.xchat.document')
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
-                    : '' : ''
+                      : ''
+                    : ''
                 }
                 mentions={item.mentions}
                 date={item.timestamp}
@@ -2643,10 +2644,11 @@ class Chat extends Component {
                       : item.last_msg.msg_type === 'video'
                       ? translate('pages.xchat.video')
                       : item.last_msg.msg_type === 'doc'
-                                  ? translate('pages.xchat.document')
-                                  : item.last_msg.type === 'audio'
-                                      ? translate('pages.xchat.audio')
-                                      : '' : ''
+                      ? translate('pages.xchat.document')
+                      : item.last_msg.type === 'audio'
+                      ? translate('pages.xchat.audio')
+                      : ''
+                    : ''
                 }
                 date={item.last_msg ? item.last_msg.created : item.joining_date}
                 image={item.channel_picture}
@@ -2673,10 +2675,11 @@ class Chat extends Component {
                       : item.last_msg_type === 'video'
                       ? translate('pages.xchat.video')
                       : item.last_msg_type === 'doc'
-                                  ? translate('pages.xchat.document')
-                                  : item.last_msg.type === 'audio'
-                                      ? translate('pages.xchat.audio')
-                                      : '' : ''
+                      ? translate('pages.xchat.document')
+                      : item.last_msg.type === 'audio'
+                      ? translate('pages.xchat.audio')
+                      : ''
+                    : ''
                 }
                 image={getAvatar(item.profile_picture)}
                 date={item.timestamp}
@@ -2760,7 +2763,7 @@ class Chat extends Component {
           }}
           isDeleteVisible={isLoading ? false : true}
           isVisibleButton={isVisible}
-          currentRouteName= {this.props.currentRouteName}
+          currentRouteName={this.props.currentRouteName}
         />
         {/* <SearchInput
             onChangeText={this.onSearch.bind(this)}

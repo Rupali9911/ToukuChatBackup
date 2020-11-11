@@ -60,30 +60,42 @@ class ShowAttahmentModal extends Component {
                 flex: 0.05,
                 alignItems: 'center',
                 width: '100%',
-                backgroundColor: Colors.gray,
+                backgroundColor: Colors.light_gray,
                 flexDirection: 'row',
               }}>
-              <View style={{flex: 0.8, paddingHorizontal: 10}}>
-                <Text
+              <View
+                style={{
+                  flex: 0.8,
+                  paddingHorizontal: 10,
+                }}>
+                <View
                   style={{
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontFamily: Fonts.regular,
+                    flex: 1,
+                    justifyContent: 'center',
                   }}>
-                  {translate('common.upload')}
-                </Text>
+                  <Text
+                    style={{
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontFamily: Fonts.regular,
+                    }}>
+                    {translate('common.upload')}
+                  </Text>
+                </View>
               </View>
               <View style={{flex: 0.2}}>
                 <TouchableOpacity
                   style={{
+                    flex: 1,
                     paddingHorizontal: 5,
+                    justifyContent: 'center',
                     alignItems: 'center',
                   }}
                   onPress={() => toggleAttachmentModal(false)}>
                   <Image
                     source={Icons.icon_close}
                     style={{
-                      tintColor: Colors.black,
+                      tintColor: Colors.white,
                       height: 10,
                       width: 10,
                     }}
@@ -215,13 +227,14 @@ class ShowAttahmentModal extends Component {
                 flexDirection: 'row',
                 paddingHorizontal: '20%',
                 alignItems: 'center',
+                justifyContent: 'center',
                 flex: 0.1,
                 // marginTop: 20,
-                backgroundColor: 'transparent',
               }}>
               <View
                 style={{
-                  flex: 0.5,
+                  // flex: 0.5,
+                  width: '70%',
                   marginHorizontal: 5,
                 }}>
                 <Button
@@ -234,8 +247,9 @@ class ShowAttahmentModal extends Component {
               </View>
               <View
                 style={{
-                  flex: 0.5,
+                  // flex: 0.5,
                   marginHorizontal: 5,
+                  width: '70%',
                 }}>
                 <Button
                   title={translate('common.cancel')}

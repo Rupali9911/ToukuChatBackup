@@ -222,7 +222,6 @@ class Home extends Component {
       channels.map((item, index) => {
         array = [...array, item];
       });
-      console.log('channels', array);
       dispatch(getFollowingChannelsSuccess(array));
     }
     this.props.getFollowingChannels().then((res) => {

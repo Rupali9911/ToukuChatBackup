@@ -63,6 +63,7 @@ class ChannelInfo extends Component {
       ],
     };
     this.isUnfollowing = false;
+    this.isFollowing = false;
   }
 
   async OnBackAction() {
@@ -129,10 +130,17 @@ class ChannelInfo extends Component {
       });
   }
 
-  onFollowUnfollow() {
+  onFollowUnfollow = async () => {
     if (this.state.channelData.is_member) {
       this.setState({showConfirmationModal: true});
     } else {
+      if (this.isFollowing) {
+        return;
+      }
+      this.isFollowing = true;
+      await this.setState({
+        isLoading: true,
+      });
       let data = {
         channel_id: this.props.currentChannel.id,
         referral_code: 'ISGLGA2V',
@@ -149,6 +157,10 @@ class ChannelInfo extends Component {
             });
             this.getChannelDetails();
           }
+          this.isFollowing = false;
+          this.setState({
+            isLoading: false,
+          });
         })
         .catch((err) => {
           Toast.show({
@@ -156,9 +168,13 @@ class ChannelInfo extends Component {
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
+          this.isFollowing = false;
+          this.setState({
+            isLoading: false,
+          });
         });
     }
-  }
+  };
 
   onCancel = () => {
     this.toggleConfirmationModal();
@@ -379,6 +395,7 @@ class ChannelInfo extends Component {
                         type={'transparent'}
                         height={30}
                         onPress={() => this.onFollowUnfollow()}
+                        loading={this.isFollowing}
                       />
                     </View>
                   </View>

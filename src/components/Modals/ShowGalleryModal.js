@@ -64,20 +64,32 @@ class ShowGalleryModal extends Component {
                 backgroundColor: Colors.light_gray,
                 flexDirection: 'row',
               }}>
-              <View style={{flex: 0.8, paddingHorizontal: 10}}>
-                <Text
+              <View
+                style={{
+                  flex: 0.8,
+                  paddingHorizontal: 10,
+                }}>
+                <View
                   style={{
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontFamily: Fonts.regular,
+                    flex: 1,
+                    justifyContent: 'center',
                   }}>
-                  {translate('common.upload')}
-                </Text>
+                  <Text
+                    style={{
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontFamily: Fonts.regular,
+                    }}>
+                    {translate('common.upload')}
+                  </Text>
+                </View>
               </View>
               <View style={{flex: 0.2}}>
                 <TouchableOpacity
                   style={{
+                    flex: 1,
                     paddingHorizontal: 5,
+                    justifyContent: 'center',
                     alignItems: 'center',
                   }}
                   onPress={() => toggleGalleryModal(false)}>
@@ -211,13 +223,14 @@ class ShowGalleryModal extends Component {
                 flexDirection: 'row',
                 paddingHorizontal: '20%',
                 alignItems: 'center',
+                justifyContent: 'center',
                 flex: 0.1,
                 // marginTop: 20,
-                backgroundColor: 'transparent',
               }}>
               <View
                 style={{
-                  flex: 0.5,
+                  // flex: 0.5,
+                  width: '70%',
                   marginHorizontal: 5,
                 }}>
                 <Button
@@ -230,8 +243,9 @@ class ShowGalleryModal extends Component {
               </View>
               <View
                 style={{
-                  flex: 0.5,
+                  // flex: 0.5,
                   marginHorizontal: 5,
+                  width: '70%',
                 }}>
                 <Button
                   title={translate('common.cancel')}

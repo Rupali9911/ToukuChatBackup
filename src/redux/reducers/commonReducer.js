@@ -84,6 +84,7 @@ export const setCommonChatConversation = () => (dispatch) =>
             is_online: item.is_online,
             is_typing: item.is_typing,
             timestamp: item.timestamp,
+            is_pined: item.is_pined,
           };
           array = [...array, i];
         }
