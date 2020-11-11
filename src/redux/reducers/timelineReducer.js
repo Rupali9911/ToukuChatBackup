@@ -292,11 +292,16 @@ const getTrendChannelFailure = () => ({
   type: GET_TREND_CHANNEL_FAIL,
 });
 
-export const getTrendChannel = () => (dispatch) =>
+export const getTrendChannel = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendChannelRequest());
+    let url =
+      userType === 'tester' || userType === 'owner' || userType === 'company'
+        ? `/xchat/channel-listing-trend-for-testers/?start=0`
+        : `/xchat/channel-listing-trend/?start=0`;
+
     client
-      .get(`/xchat/channel-listing-trend-for-testers/?start=0`)
+      .get(url)
       .then((res) => {
         if (res.status) {
           dispatch(getTrendChannelSuccess(res.posts));
@@ -326,6 +331,7 @@ const getFollowingChannelFailure = () => ({
 export const getFollowingChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelRequest());
+
     client
       .get(`/xchat/channel-listing-following/?last_id=0`)
       .then((res) => {
@@ -354,11 +360,17 @@ const getRankingChannelFailure = () => ({
   type: GET_RANKING_CHANNEL_FAIL,
 });
 
-export const getRankingChannel = () => (dispatch) =>
+export const getRankingChannel = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getRankingChannelRequest());
+    let url =
+      userType === 'tester' || userType === 'owner' || userType === 'company'
+        ? `/xchat/channel-listing-ranked-for-testers/?start=0`
+        : `/xchat/channel-listing-ranked/?start=0`;
+
+    console.log('url', url);
     client
-      .get(`/xchat/channel-listing-ranked-for-testers/?last_id=0`)
+      .get(url)
       .then((res) => {
         if (res.status) {
           dispatch(getRankingChannelSuccess(res.posts));

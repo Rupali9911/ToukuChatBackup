@@ -43,7 +43,9 @@ class Channel extends Component {
           icon: Icons.icon_chat,
           action: () => {
             this.setState({activeTab: 'trend'});
-            this.props.getTrendChannel().then((res) => {});
+            this.props
+              .getTrendChannel(this.props.userData.user_type)
+              .then((res) => {});
           },
         },
         {
@@ -61,7 +63,9 @@ class Channel extends Component {
           icon: Icons.icon_timeline,
           action: () => {
             this.setState({activeTab: 'ranking'});
-            this.props.getRankingChannel().then((res) => {});
+            this.props
+              .getRankingChannel(this.props.userData.user_type)
+              .then((res) => {});
           },
         },
       ],
@@ -113,17 +117,22 @@ class Channel extends Component {
     // this.props.getRankingChannel();
     // this.showData();
 
-    await this.props.getTrendChannel().then((res) => {
-      this.props.getFollowingChannel().then((res) => {
-        this.props.getRankingChannel().then((res) => {
-          this.showData();
+    await this.props
+      .getTrendChannel(this.props.userData.user_type)
+      .then((res) => {
+        this.props.getFollowingChannel().then((res) => {
+          this.props
+            .getRankingChannel(this.props.userData.user_type)
+            .then((res) => {
+              this.showData();
+            });
         });
       });
-    });
   }
 
   componentWillReceiveProps(nextProps) {
     const {trendChannel, followingChannel, rankingChannel} = this.props;
+
     if (
       nextProps.trendChannel !== trendChannel ||
       nextProps.followingChannel !== followingChannel ||
@@ -199,7 +208,7 @@ class Channel extends Component {
     const {activeTab} = this.state;
     if (activeTab === 'trend') {
       console.log('trend selected');
-      this.props.getTrendChannel().then((res) => {
+      this.props.getTrendChannel(this.props.userData.user_type).then((res) => {
         this.showData();
       });
     } else if (activeTab === 'following') {
@@ -209,9 +218,11 @@ class Channel extends Component {
       });
     } else if (activeTab === 'ranking') {
       console.log('ranking selected');
-      this.props.getRankingChannel().then((res) => {
-        this.showData();
-      });
+      this.props
+        .getRankingChannel(this.props.userData.user_type)
+        .then((res) => {
+          this.showData();
+        });
     }
   }
 
@@ -225,6 +236,8 @@ class Channel extends Component {
       followingChannel,
       rankingChannel,
     } = this.state;
+
+    console.log('userData', this.props.userData.user_type);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -247,13 +260,17 @@ class Channel extends Component {
                 menuItems={menuItems}
                 posts={followingChannel}
                 isTimeline={false}
+                navigation={this.props.navigation}
               />
             ) : (
-              <PostChannelCard
-                menuItems={menuItems}
-                posts={rankingChannel}
-                isTimeline={false}
-              />
+              activeTab === 'ranking' && (
+                <PostChannelCard
+                  menuItems={menuItems}
+                  posts={rankingChannel}
+                  isTimeline={false}
+                  navigation={this.props.navigation}
+                />
+              )
             )}
           </ScrollView>
         </View>
@@ -270,6 +287,7 @@ const mapStateToProps = (state) => {
     trendChannel: state.timelineReducer.trendChannel,
     followingChannel: state.timelineReducer.followingChannel,
     rankingChannel: state.timelineReducer.rankingChannel,
+    userData: state.userReducer.userData,
   };
 };
 
