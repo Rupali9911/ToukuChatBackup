@@ -222,11 +222,13 @@ class Chat extends Component {
       // this.props.getFriendRequest();
 
       this.props.getFollowingChannels().then((res) => {
-        this.props.getUserGroups().then((res) => {
-          this.props.getUserFriends().then((res) => {
-            this.setCommonConversation();
-          });
-        });
+        this.setCommonConversation();
+      });
+      this.props.getUserGroups().then((res) => {
+        this.setCommonConversation();
+      });
+      this.props.getUserFriends().then((res) => {
+        this.setCommonConversation();
       });
     });
   }
