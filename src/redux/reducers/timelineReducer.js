@@ -32,6 +32,9 @@ const initialState = {
   trendChannel: [],
   followingChannel: [],
   rankingChannel: [],
+  trendLoadMore: false,
+  followingLoadMore: false,
+  rankingLoadMore: false,
 };
 
 export default function (state = initialState, action) {
@@ -104,9 +107,24 @@ export default function (state = initialState, action) {
       };
 
     case GET_TREND_CHANNEL_SUCCESS:
+      const {trendChannel} = state;
+
+      let newTrend = [];
+      if (trendChannel.length > 0) {
+        trendChannel.map((followingItem) => {
+          let list = action.payload.posts.filter((item) => {
+            return item.id != followingItem.channel_id;
+          });
+          newTrend = [...trendChannel, ...list];
+        });
+      } else {
+        newTrend = action.payload.posts;
+      }
+
       return {
         ...state,
-        trendChannel: action.payload,
+        trendChannel: newTrend,
+        trendLoadMore: action.payload.load_more,
         loading: false,
       };
 
@@ -124,9 +142,24 @@ export default function (state = initialState, action) {
       };
 
     case GET_FOLLOWING_CHANNEL_SUCCESS:
+      const {followingChannel} = state;
+
+      let newFollowing = [];
+      if (followingChannel.length > 0) {
+        followingChannel.map((followingItem) => {
+          let list = action.payload.posts.filter((item) => {
+            return item.id != followingItem.channel_id;
+          });
+          newFollowing = [...followingChannel, ...list];
+        });
+      } else {
+        newFollowing = action.payload.posts;
+      }
+
       return {
         ...state,
-        followingChannel: action.payload,
+        followingChannel: newFollowing,
+        followingLoadMore: action.payload.load_more,
         loading: false,
       };
 
@@ -144,9 +177,24 @@ export default function (state = initialState, action) {
       };
 
     case GET_RANKING_CHANNEL_SUCCESS:
+      const {rankingChannel} = state;
+
+      let newRanking = [];
+      if (rankingChannel.length > 0) {
+        rankingChannel.map((followingItem) => {
+          let list = action.payload.posts.filter((item) => {
+            return item.id != followingItem.channel_id;
+          });
+          newRanking = [...rankingChannel, ...list];
+        });
+      } else {
+        newRanking = action.payload.posts;
+      }
+
       return {
         ...state,
-        rankingChannel: action.payload,
+        rankingChannel: newRanking,
+        rankingLoadMore: action.payload.load_more,
         loading: false,
       };
 
@@ -292,19 +340,20 @@ const getTrendChannelFailure = () => ({
   type: GET_TREND_CHANNEL_FAIL,
 });
 
-export const getTrendChannel = (userType) => (dispatch) =>
+export const getTrendChannel = (userType, pageCount) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendChannelRequest());
-    let url =
-      userType === 'tester' || userType === 'owner' || userType === 'company'
-        ? `/xchat/channel-listing-trend-for-testers/?start=0`
-        : `/xchat/channel-listing-trend/?start=0`;
+    let page = pageCount ? pageCount : 0;
+
+    let url = ['tester', 'owner', 'company'].includes(userType)
+      ? `/xchat/channel-listing-trend-for-testers/?start=${page}`
+      : `/xchat/channel-listing-trend/?start=${page}`;
 
     client
       .get(url)
       .then((res) => {
         if (res.status) {
-          dispatch(getTrendChannelSuccess(res.posts));
+          dispatch(getTrendChannelSuccess(res));
         }
         resolve(res);
       })
@@ -328,15 +377,17 @@ const getFollowingChannelFailure = () => ({
   type: GET_FOLLOWING_CHANNEL_FAIL,
 });
 
-export const getFollowingChannel = () => (dispatch) =>
+export const getFollowingChannel = (pageCount) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelRequest());
 
+    let page = pageCount ? pageCount : 0;
+
     client
-      .get(`/xchat/channel-listing-following/?last_id=0`)
+      .get(`/xchat/channel-listing-following/?last_id=${page}`)
       .then((res) => {
         if (res.status) {
-          dispatch(getFollowingChannelSuccess(res.posts));
+          dispatch(getFollowingChannelSuccess(res));
         }
         resolve(res);
       })
@@ -360,20 +411,22 @@ const getRankingChannelFailure = () => ({
   type: GET_RANKING_CHANNEL_FAIL,
 });
 
-export const getRankingChannel = (userType) => (dispatch) =>
+export const getRankingChannel = (userType, pageCount) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getRankingChannelRequest());
-    let url =
-      userType === 'tester' || userType === 'owner' || userType === 'company'
-        ? `/xchat/channel-listing-ranked-for-testers/?start=0`
-        : `/xchat/channel-listing-ranked/?start=0`;
+
+    let page = pageCount ? pageCount : 0;
+
+    let url = ['tester', 'owner', 'company'].includes(userType)
+      ? `/xchat/channel-listing-ranked-for-testers/?start=${page}`
+      : `/xchat/channel-listing-ranked/?start=${page}`;
 
     console.log('url', url);
     client
       .get(url)
       .then((res) => {
         if (res.status) {
-          dispatch(getRankingChannelSuccess(res.posts));
+          dispatch(getRankingChannelSuccess(res));
         }
         resolve(res);
       })
@@ -388,7 +441,6 @@ export const hidePost = (postId) => (dispatch) =>
     let data = {
       filtered_post: postId,
     };
-    console.log('filtered_post', data);
     client
       .patch(`/xchat/report-timeline-content/`, data)
       .then((res) => {
@@ -406,7 +458,6 @@ export const hideAllPost = (postId) => (dispatch) =>
     let data = {
       filtered_channel: postId,
     };
-    console.log('filtered_channel', data);
     client
       .patch(`/xchat/report-timeline-content/`, data)
       .then((res) => {

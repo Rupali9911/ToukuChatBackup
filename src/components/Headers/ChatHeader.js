@@ -132,9 +132,9 @@ export default class ChatHeader extends Component {
                   )}
                   <View
                     style={{
+                      flex: 1,
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
-                      width: '80%',
                     }}>
                     <Text
                       numberOfLines={1}

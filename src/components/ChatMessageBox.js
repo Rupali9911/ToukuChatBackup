@@ -40,7 +40,7 @@ export default class ChatMessageBox extends Component {
 
   callBlinking = (id) => {
     console.log('buuble_box', this[`bubble_box_${id}`], id);
-    
+
     this.callBlinkAnimation();
 
     // this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
@@ -187,206 +187,242 @@ export default class ChatMessageBox extends Component {
 
     return !isUser ? (
       <Animated.View style={[animatedStyle]}>
-      <View
-        style={[
-          styles.container,
-          {
-            maxWidth: message.msg_type==='text' ? width * 0.80 : message.msg_type === 'image' ? width-40 : width * 0.65,
-            justifyContent: 'flex-start',
-          },
-        ]}>
         <View
-          style={{
-            alignItems: 'flex-start',
-            marginVertical: message.msg_type==='image'?0:5,
-          }}>
-          <View style={{flexDirection: 'row'}}>
-            {/* <RoundedImage
+          style={[
+            styles.container,
+            {
+              maxWidth:
+                message.msg_type === 'text'
+                  ? width * 0.8
+                  : message.msg_type === 'image'
+                  ? width - 40
+                  : width * 0.65,
+              justifyContent: 'flex-start',
+            },
+          ]}>
+          <View
+            style={{
+              alignItems: 'flex-start',
+              marginVertical: message.msg_type === 'image' ? 0 : 5,
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              {/* <RoundedImage
               source={getAvatar(message.from_user.avatar)}
               size={50}
               resizeMode={'cover'}
             /> */}
-            {isChannel &&
-            (currentChannel.channel_picture == null ||
-              currentChannel.channel_picture == '') ? (
-              message.hyperlink?null:<LinearGradient
-                start={{x: 0.1, y: 0.7}}
-                end={{x: 0.5, y: 0.2}}
-                locations={[0.1, 0.6, 1]}
-                colors={[
-                  Colors.gradient_1,
-                  Colors.gradient_2,
-                  Colors.gradient_3,
-                ]}
-                style={[styles.squareImage,{
-                  marginHorizontal:0,
-                  marginTop: 10,
-                  marginRight:5
-                  }]}>
-                <Text style={globalStyles.normalRegularText15}>
-                  {currentChannel.name &&
-                    currentChannel.name.charAt(0).toUpperCase()}
-                  {/* {secondUpperCase} */}
-                </Text>
-              </LinearGradient>
-            ) : (
-              message.hyperlink?null:
-              <Image
-                source={
-                  isChannel
-                    ? getAvatar(currentChannel.channel_picture)
-                    : getAvatar(message.from_user.avatar)
-                }
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  resizeMode: 'cover',
-                  marginTop: 10,
-                  marginRight:5
-                }}
-              />
-            )}
-            <View style={{alignItems: 'flex-end', flexDirection: message.msg_type==='image'?'column':'row'}}>
-              <ChatMessageBubble
-                message={message}
-                isUser={isUser}
-                onMessageReply={onMessageReply}
-                onMessagePress={(id) => this.onMessagePress(id)}
-                longPressMenu={longPressMenu}
-                openMenu={this._openMenu}
-                closeMenu={this._closeMenu}
-                selectedMessageId={selectedMessageId}
-                isChannel={isChannel}
-                onMessageTranslate={onMessageTranslate}
-                onEditMessage={onEditMessage}
-                onDownloadMessage={onDownloadMessage}
-                translatedMessage={translatedMessage}
-                translatedMessageId={translatedMessageId}
-                onDelete={onDelete}
-                onUnSend={onUnSend}
-                audioPlayingId={audioPlayingId}
-                perviousPlayingAudioId={perviousPlayingAudioId}
-                onAudioPlayPress={onAudioPlayPress}
-                onReplyPress={onReplyPress}
-              />
+              {isChannel &&
+              (currentChannel.channel_picture == null ||
+                currentChannel.channel_picture == '') ? (
+                message.hyperlink ? null : (
+                  <LinearGradient
+                    start={{x: 0.1, y: 0.7}}
+                    end={{x: 0.5, y: 0.2}}
+                    locations={[0.1, 0.6, 1]}
+                    colors={[
+                      Colors.gradient_1,
+                      Colors.gradient_2,
+                      Colors.gradient_3,
+                    ]}
+                    style={[
+                      styles.squareImage,
+                      {
+                        marginHorizontal: 0,
+                        marginTop: 10,
+                        marginRight: 5,
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        globalStyles.normalRegularText15,
+                        {marginTop: 2},
+                      ]}>
+                      {currentChannel.name &&
+                        currentChannel.name.charAt(0).toUpperCase()}
+                      {/* {secondUpperCase} */}
+                    </Text>
+                  </LinearGradient>
+                )
+              ) : message.hyperlink ? null : (
+                <Image
+                  source={
+                    isChannel
+                      ? getAvatar(currentChannel.channel_picture)
+                      : getAvatar(message.from_user.avatar)
+                  }
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    resizeMode: 'cover',
+                    marginTop: 10,
+                    marginRight: 5,
+                  }}
+                />
+              )}
               <View
                 style={{
-                  marginHorizontal: '1.5%',
-                  alignItems: 'center',
-                  marginVertical: message.msg_type==='image'?0:15,
-                  alignSelf: 'flex-end',
-                  paddingBottom: 5,
+                  alignItems: 'flex-end',
+                  flexDirection:
+                    message.msg_type === 'image' ? 'column' : 'row',
                 }}>
-                {/*<Text style={styles.statusText}>{status}</Text>*/}
-                <Text style={styles.statusText}>{`${time.getHours()}:${
-                  time.getMinutes() < 10
-                    ? '0' + time.getMinutes()
-                    : time.getMinutes()
-                }`}</Text>
+                <ChatMessageBubble
+                  message={message}
+                  isUser={isUser}
+                  onMessageReply={onMessageReply}
+                  onMessagePress={(id) => this.onMessagePress(id)}
+                  longPressMenu={longPressMenu}
+                  openMenu={this._openMenu}
+                  closeMenu={this._closeMenu}
+                  selectedMessageId={selectedMessageId}
+                  isChannel={isChannel}
+                  onMessageTranslate={onMessageTranslate}
+                  onEditMessage={onEditMessage}
+                  onDownloadMessage={onDownloadMessage}
+                  translatedMessage={translatedMessage}
+                  translatedMessageId={translatedMessageId}
+                  onDelete={onDelete}
+                  onUnSend={onUnSend}
+                  audioPlayingId={audioPlayingId}
+                  perviousPlayingAudioId={perviousPlayingAudioId}
+                  onAudioPlayPress={onAudioPlayPress}
+                  onReplyPress={onReplyPress}
+                />
+                <View
+                  style={{
+                    marginHorizontal: '1.5%',
+                    alignItems: 'center',
+                    marginVertical: message.msg_type === 'image' ? 0 : 15,
+                    alignSelf: 'flex-end',
+                    paddingBottom: 5,
+                  }}>
+                  {/*<Text style={styles.statusText}>{status}</Text>*/}
+                  <Text style={styles.statusText}>{`${time.getHours()}:${
+                    time.getMinutes() < 10
+                      ? '0' + time.getMinutes()
+                      : time.getMinutes()
+                  }`}</Text>
+                </View>
               </View>
             </View>
-          </View>
-          {/* )} */}
-          {translatedMessageId &&
-            message.id === translatedMessageId &&
-            this.renderTransltedMessage()}
-        </View>
-      </View>
-      </Animated.View>
-    ) : (
-      <Animated.View style={[animatedStyle]}>
-      <View>
-        <View
-          style={[
-            styles.containerSelf,
-            {
-              maxWidth: message.msg_type === 'text' ? width * 0.93 : message.msg_type === 'image'?width:width * 0.75,
-            },
-            message.msg_type === 'image'?{flexDirection:'row',alignSelf:'flex-end',paddingHorizontal:0}:{
-              alignItems: 'flex-end',
-              alignSelf: 'flex-end',
-            }
-          ]}>
-          <View
-            style={[
-              message.msg_type === 'image'?{}:
-              { alignItems: 'flex-end',}
-            ]}>
-            <View style={{flexDirection: message.msg_type === 'image'?'column':'row'}}>
-              {message.msg_type !== 'image'?<View
-                style={{
-                  marginHorizontal: '1.5%',
-                  alignItems: 'center',
-                  marginVertical: 15,
-                  alignSelf: 'flex-end',
-                  paddingBottom: 5,
-                }}>
-                {is_read && (
-                  <Text style={styles.statusText}>
-                    {translate('pages.xchat.read')}
-                  </Text>
-                )}
-
-                <Text style={styles.statusText}>
-                  {`${time.getHours()}:${
-                    time.getMinutes() < 10
-                      ? '0' + time.getMinutes()
-                      : time.getMinutes()
-                  }`}
-                </Text>
-              </View>:null}
-              <ChatMessageBubble
-                message={message}
-                isUser={isUser}
-                onMessageReply={onMessageReply}
-                onMessagePress={(id) => this.onMessagePress(id)}
-                longPressMenu={longPressMenu}
-                openMenu={this._openMenu}
-                closeMenu={this._closeMenu}
-                selectedMessageId={selectedMessageId}
-                isChannel={isChannel}
-                onMessageTranslate={onMessageTranslate}
-                onEditMessage={onEditMessage}
-                onDownloadMessage={onDownloadMessage}
-                translatedMessage={translatedMessage}
-                translatedMessageId={translatedMessageId}
-                onDelete={onDelete}
-                onUnSend={onUnSend}
-                audioPlayingId={audioPlayingId}
-                perviousPlayingAudioId={perviousPlayingAudioId}
-                onAudioPlayPress={onAudioPlayPress}
-                onReplyPress={onReplyPress}
-              />
-              {message.msg_type === 'image'?<View
-                style={{
-                  marginHorizontal: '1.5%',
-                  alignItems: 'center',
-                  // marginVertical: 15,
-                  alignSelf: 'flex-end',
-                  paddingBottom: 5,
-                }}>
-                {is_read && (
-                  <Text style={styles.statusText}>
-                    {translate('pages.xchat.read')}
-                  </Text>
-                )}
-
-                <Text style={styles.statusText}>
-                  {`${time.getHours()}:${
-                    time.getMinutes() < 10
-                      ? '0' + time.getMinutes()
-                      : time.getMinutes()
-                  }`}
-                </Text>
-              </View>:null}
-            </View>
+            {/* )} */}
             {translatedMessageId &&
               message.id === translatedMessageId &&
               this.renderTransltedMessage()}
           </View>
         </View>
-      </View>
+      </Animated.View>
+    ) : (
+      <Animated.View style={[animatedStyle]}>
+        <View>
+          <View
+            style={[
+              styles.containerSelf,
+              {
+                maxWidth:
+                  message.msg_type === 'text'
+                    ? width * 0.93
+                    : message.msg_type === 'image'
+                    ? width
+                    : width * 0.75,
+              },
+              message.msg_type === 'image'
+                ? {
+                    flexDirection: 'row',
+                    alignSelf: 'flex-end',
+                    paddingHorizontal: 0,
+                  }
+                : {
+                    alignItems: 'flex-end',
+                    alignSelf: 'flex-end',
+                  },
+            ]}>
+            <View
+              style={[
+                message.msg_type === 'image' ? {} : {alignItems: 'flex-end'},
+              ]}>
+              <View
+                style={{
+                  flexDirection:
+                    message.msg_type === 'image' ? 'column' : 'row',
+                }}>
+                {message.msg_type !== 'image' ? (
+                  <View
+                    style={{
+                      marginHorizontal: '1.5%',
+                      alignItems: 'center',
+                      marginVertical: 15,
+                      alignSelf: 'flex-end',
+                      paddingBottom: 5,
+                    }}>
+                    {is_read && (
+                      <Text style={styles.statusText}>
+                        {translate('pages.xchat.read')}
+                      </Text>
+                    )}
+
+                    <Text style={styles.statusText}>
+                      {`${time.getHours()}:${
+                        time.getMinutes() < 10
+                          ? '0' + time.getMinutes()
+                          : time.getMinutes()
+                      }`}
+                    </Text>
+                  </View>
+                ) : null}
+                <ChatMessageBubble
+                  message={message}
+                  isUser={isUser}
+                  onMessageReply={onMessageReply}
+                  onMessagePress={(id) => this.onMessagePress(id)}
+                  longPressMenu={longPressMenu}
+                  openMenu={this._openMenu}
+                  closeMenu={this._closeMenu}
+                  selectedMessageId={selectedMessageId}
+                  isChannel={isChannel}
+                  onMessageTranslate={onMessageTranslate}
+                  onEditMessage={onEditMessage}
+                  onDownloadMessage={onDownloadMessage}
+                  translatedMessage={translatedMessage}
+                  translatedMessageId={translatedMessageId}
+                  onDelete={onDelete}
+                  onUnSend={onUnSend}
+                  audioPlayingId={audioPlayingId}
+                  perviousPlayingAudioId={perviousPlayingAudioId}
+                  onAudioPlayPress={onAudioPlayPress}
+                  onReplyPress={onReplyPress}
+                />
+                {message.msg_type === 'image' ? (
+                  <View
+                    style={{
+                      marginHorizontal: '1.5%',
+                      alignItems: 'center',
+                      // marginVertical: 15,
+                      alignSelf: 'flex-end',
+                      paddingBottom: 5,
+                    }}>
+                    {is_read && (
+                      <Text style={styles.statusText}>
+                        {translate('pages.xchat.read')}
+                      </Text>
+                    )}
+
+                    <Text style={styles.statusText}>
+                      {`${time.getHours()}:${
+                        time.getMinutes() < 10
+                          ? '0' + time.getMinutes()
+                          : time.getMinutes()
+                      }`}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+              {translatedMessageId &&
+                message.id === translatedMessageId &&
+                this.renderTransltedMessage()}
+            </View>
+          </View>
+        </View>
       </Animated.View>
     );
   }
