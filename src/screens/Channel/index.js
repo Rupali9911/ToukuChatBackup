@@ -28,6 +28,7 @@ import {
 class Channel extends Component {
   constructor(props) {
     super(props);
+    this.pageCount = '0';
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
@@ -43,9 +44,10 @@ class Channel extends Component {
           icon: Icons.icon_chat,
           action: () => {
             this.setState({activeTab: 'trend'});
-            this.props
-              .getTrendChannel(this.props.userData.user_type)
-              .then((res) => {});
+            this.pageCount = 0;
+            // this.props
+            //   .getTrendChannel(this.props.userData.user_type, this.pageCount)
+            //   .then((res) => {});
           },
         },
         {
@@ -54,7 +56,8 @@ class Channel extends Component {
           icon: Icons.icon_setting,
           action: () => {
             this.setState({activeTab: 'following'});
-            this.props.getFollowingChannel().then((res) => {});
+            this.pageCount = 0;
+            // this.props.getFollowingChannel(this.pageCount).then((res) => {});
           },
         },
         {
@@ -63,9 +66,10 @@ class Channel extends Component {
           icon: Icons.icon_timeline,
           action: () => {
             this.setState({activeTab: 'ranking'});
-            this.props
-              .getRankingChannel(this.props.userData.user_type)
-              .then((res) => {});
+            this.pageCount = 0;
+            // this.props
+            //   .getRankingChannel(this.props.userData.user_type, this.pageCount)
+            //   .then((res) => {});
           },
         },
       ],
@@ -99,10 +103,52 @@ class Channel extends Component {
     };
   }
 
+  componentDidMount() {
+    if (
+      this.props.trendChannel.length === 0 &&
+      this.props.rankingChannel.length === 0 &&
+      this.props.followingChannel.length === 0
+    ) {
+      this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
+      this.props.getFollowingChannel(this.pageCount);
+      this.props.getRankingChannel(
+        this.props.userData.user_type,
+        this.pageCount,
+      );
+    }
+  }
+
   static navigationOptions = () => {
     return {
       headerShown: false,
     };
+  };
+
+  pagination = (pageno) => {
+    console.log('page ', pageno);
+
+    if (this.state.activeTab === 'trend') {
+      if (this.props.trendLoadMore) {
+        this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
+        this.props.getTrendChannel(
+          this.props.userData.user_type,
+          this.pageCount,
+        );
+      }
+    } else if (this.state.activeTab === 'following') {
+      if (this.props.followingLoadMore) {
+        this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
+        this.props.getFollowingChannel(this.pageCount);
+      }
+    } else if (this.state.activeTab === 'ranking') {
+      if (this.props.rankingLoadMore) {
+        this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
+        this.props.getRankingChannel(
+          this.props.userData.user_type,
+          this.pageCount,
+        );
+      }
+    }
   };
 
   UNSAFE_componentWillMount() {
@@ -120,9 +166,9 @@ class Channel extends Component {
     await this.props
       .getTrendChannel(this.props.userData.user_type)
       .then((res) => {
-        this.props.getFollowingChannel().then((res) => {
+        this.props.getFollowingChannel(this.pageCount).then((res) => {
           this.props
-            .getRankingChannel(this.props.userData.user_type)
+            .getRankingChannel(this.props.userData.user_type, this.pageCount)
             .then((res) => {
               this.showData();
             });
@@ -208,18 +254,20 @@ class Channel extends Component {
     const {activeTab} = this.state;
     if (activeTab === 'trend') {
       console.log('trend selected');
-      this.props.getTrendChannel(this.props.userData.user_type).then((res) => {
-        this.showData();
-      });
+      this.props
+        .getTrendChannel(this.props.userData.user_type, this.pageCount)
+        .then((res) => {
+          this.showData();
+        });
     } else if (activeTab === 'following') {
       console.log('following selected');
-      this.props.getFollowingChannel().then((res) => {
+      this.props.getFollowingChannel(this.pageCount).then((res) => {
         this.showData();
       });
     } else if (activeTab === 'ranking') {
       console.log('ranking selected');
       this.props
-        .getRankingChannel(this.props.userData.user_type)
+        .getRankingChannel(this.props.userData.user_type, this.pageCount)
         .then((res) => {
           this.showData();
         });
@@ -237,7 +285,6 @@ class Channel extends Component {
       rankingChannel,
     } = this.state;
 
-    console.log('userData', this.props.userData.user_type);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -247,13 +294,22 @@ class Channel extends Component {
         <HomeHeader title={translate('pages.xchat.channel')} />
         <View style={globalStyles.container}>
           <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <View
+            style={{flex: 1}}
+            // showsVerticalScrollIndicator={false}
+            // onScrollEndDrag={() => this.setState({pageCount: pageCount + 20})}
+            // onScrollBeginDrag={() => this.setState({pageCount: pageCount - 20})}
+            // initialNumToRender={4}
+            // maxToRenderPerBatch={1}
+            // onEndReachedThreshold={1}
+          >
             {activeTab === 'trend' ? (
               <PostChannelCard
                 menuItems={menuItems}
                 posts={trendChannel}
                 isTimeline={false}
                 navigation={this.props.navigation}
+                pagination={this.pagination}
               />
             ) : activeTab === 'following' ? (
               <PostChannelCard
@@ -261,6 +317,7 @@ class Channel extends Component {
                 posts={followingChannel}
                 isTimeline={false}
                 navigation={this.props.navigation}
+                pagination={this.pagination}
               />
             ) : (
               activeTab === 'ranking' && (
@@ -269,10 +326,11 @@ class Channel extends Component {
                   posts={rankingChannel}
                   isTimeline={false}
                   navigation={this.props.navigation}
+                  pagination={this.pagination}
                 />
               )
             )}
-          </ScrollView>
+          </View>
         </View>
       </View>
       // </ImageBackground>
@@ -288,6 +346,9 @@ const mapStateToProps = (state) => {
     followingChannel: state.timelineReducer.followingChannel,
     rankingChannel: state.timelineReducer.rankingChannel,
     userData: state.userReducer.userData,
+    trendLoadMore: state.timelineReducer.trendLoadMore,
+    followingLoadMore: state.timelineReducer.followingLoadMore,
+    rankingLoadMore: state.timelineReducer.rankingLoadMore,
   };
 };
 
