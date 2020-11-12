@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   Clipboard,
+  Linking,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -29,6 +30,7 @@ import {
 } from '../../redux/reducers/channelReducer';
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
 import AsyncStorage from '@react-native-community/async-storage';
+import HyperLink from 'react-native-hyperlink';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -477,9 +479,13 @@ class ChannelInfo extends Component {
                 <Text style={channelInfoStyles.aboutHeading}>
                   {translate('pages.xchat.about')}
                 </Text>
-                <Text style={channelInfoStyles.aboutText}>
-                  {channelData.description}
-                </Text>
+                <HyperLink
+                  onPress={(url, text) => { Linking.openURL(url); }}
+                  linkStyle={{ color: 'blue' }}>
+                  <Text style={channelInfoStyles.aboutText}>
+                    {currentChannel.description}
+                  </Text>
+                </HyperLink>
 
                 {/* <TouchableOpacity
                   style={{justifyContent: 'center', alignItems: 'center'}}

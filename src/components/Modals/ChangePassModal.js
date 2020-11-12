@@ -72,6 +72,7 @@ class ChangePassModal extends Component {
   }
 
   onChangePasswordPress = () => {
+    const {isSetPassword} = this.props;
     const {
       oldPassword,
       newPassword,
@@ -83,7 +84,7 @@ class ChangePassModal extends Component {
 
     let isValid = true;
 
-    if (oldPassword.trim() === '') {
+    if (!isSetPassword && oldPassword.trim() === '') {
       isValid = false;
       this.setState({oldPasswordErr: 'messages.required'});
     }
@@ -146,7 +147,7 @@ class ChangePassModal extends Component {
   };
 
   render() {
-    const {visible, loading} = this.props;
+    const {visible, loading, isSetPassword} = this.props;
     const {
       oldPassword,
       newPassword,
@@ -193,7 +194,7 @@ class ChangePassModal extends Component {
           </LinearGradient>
 
             <View style={{padding: 15}}>
-              <View style={styles.inputContainer}>
+              {isSetPassword?null:<View style={styles.inputContainer}>
                 <TextInput
                   placeholder={translate('pages.setting.oldPassword')}
                   value={oldPassword}
@@ -207,7 +208,7 @@ class ChangePassModal extends Component {
                   secureTextEntry={true}
                   returnKeyType={'next'}
                 />
-              </View>
+              </View>}
               {oldPasswordErr !== null ? (
                 <Text
                   style={[

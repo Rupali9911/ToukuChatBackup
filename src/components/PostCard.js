@@ -74,13 +74,17 @@ export default class PostCard extends Component {
           </View>
         ) : null}
         <View style={{marginHorizontal: '4%', marginVertical: 5}}>
-          <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
-            {post.text && post.text.length > 0
-              ? post.text[0].text
-              : post.mutlilanguage_message_body
-              ? post.mutlilanguage_message_body.en
-              : ''}
-          </Text>
+          <HyperLink onPress={(url, text) => {
+            Linking.openURL(url);
+          }} linkStyle={{ color: Colors.link_color }}>
+            <Text style={{ fontFamily: Fonts.regular, fontSize: 16 }}>
+              {post.text && post.text.length > 0
+                ? post.text[0].text
+                : post.mutlilanguage_message_body
+                  ? post.mutlilanguage_message_body.en
+                  : ''}
+            </Text>
+          </HyperLink>
         </View>
       </View>
     );

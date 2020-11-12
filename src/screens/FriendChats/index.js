@@ -726,7 +726,7 @@ class FriendChats extends Component {
       //   conversations = [...conversations, i];
       // });
       this.props.setFriendConversation(conversations);
-      this.setState({isChatLoading: false});
+      // this.setState({isChatLoading: false});
     }
 
     await this.props

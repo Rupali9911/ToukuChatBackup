@@ -244,7 +244,7 @@ export default class ChatInput extends Component {
                         }}
                         style={{
                           backgroundColor: index === 0 ? '#FFB582' : 'white',
-                          paddingTop: index === 0 && 5,
+                          paddingTop: index === 0 ? 5 : 0,
                         }}
                         onPress={() => {
                           hidePanel();

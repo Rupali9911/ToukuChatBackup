@@ -189,7 +189,7 @@ class GroupChatMessageBubble extends Component {
                 style={{
                   flex: 7,
                   justifyContent: 'center',
-                  width: '95%',
+                  width: '100%',
                   marginTop: 5,
                 }}>
                 {replyMessage.msg_type === 'image' &&
@@ -310,7 +310,7 @@ class GroupChatMessageBubble extends Component {
     return groupMentions.join('|');
   };
 
-  renderMessageWitMentions = (msg) => {
+  renderMessageWitMentions = (msg='') => {
     const {groupMembers} = this.props;
     let splitNewMessageText = msg.split(' ');
     let newMessageMentions = [];

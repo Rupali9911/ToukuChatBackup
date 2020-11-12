@@ -284,7 +284,7 @@ export const getUserProfile = () => (dispatch) =>
     client
       .get(`/profile/`)
       .then((res) => {
-        // console.log('getUserProfile response', res);
+        console.log('getUserProfile response', res);
         if (res.id) {
           dispatch(setUserData(res));
         }

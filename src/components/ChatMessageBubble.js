@@ -124,7 +124,7 @@ class ChatMessageBubble extends Component {
               marginBottom: 5,
               flexDirection: 'row',
             }}>
-            <View style={{}}>
+            {/* <View style={{}}>
               <Image
                 source={getAvatar(
                   replyMessage.sender_id === this.props.userData.id
@@ -140,7 +140,7 @@ class ChatMessageBubble extends Component {
                   marginRight: 5,
                 }}
               />
-            </View>
+            </View> */}
             <View style={{}}>
               <View
                 style={{

@@ -871,7 +871,7 @@ class ChannelChats extends Component {
       let conversations = [];
       conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
-      this.setState({isChatLoading: false});
+      // this.setState({isChatLoading: false});
     }
     await this.props
       .getChannelConversations(this.props.currentChannel.id)

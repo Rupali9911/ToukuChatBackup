@@ -1357,7 +1357,7 @@ class Home extends Component {
         <FlatList
           data={filteredFriendRequest}
           extraData={this.state}
-          last_msg_id={last_msg_id}
+          // last_msg_id={last_msg_id}
           renderItem={({item, index}) => (
             <FriendRequestListItem
               key={index}

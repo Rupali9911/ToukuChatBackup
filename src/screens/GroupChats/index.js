@@ -936,7 +936,7 @@ class GroupChats extends Component {
 
       // this.setState({ conversation: conversations });
       this.props.setGroupConversation(conversations);
-      this.setState({isChatLoading: false});
+      // this.setState({isChatLoading: false});
     }
 
     await this.props
