@@ -30,9 +30,9 @@ export default class WebViewClass extends Component {
         const { webViewLoaded} = this.state
         if (!this.state.webViewLoaded) {
             console.log('Webview loaded')
-            setTimeout( () => {
+           // setTimeout( () => {
                 this.setState({ webViewLoaded: true })
-            },1500);
+           // },1500);
         }
     }
 

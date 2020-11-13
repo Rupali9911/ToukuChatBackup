@@ -224,11 +224,6 @@ const getTrendTimelineFailure = () => ({
 });
 //
 export const getChannelTimeline = (groupId, lastId) => {
-  console.log('......................');
-  console.log('......................');
-  console.log('......................');
-  console.log('......................');
-  console.log('......................');
   console.log(
     `/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`,
   );
@@ -237,7 +232,6 @@ export const getChannelTimeline = (groupId, lastId) => {
       .get(`/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`)
       .then((res) => {
         console.log(res);
-        console.log('...................................');
         resolve(res);
       })
       .catch((err) => {

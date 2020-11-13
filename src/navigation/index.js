@@ -17,6 +17,7 @@ import ChannelInfo from '../screens/ChannelInfo';
 import GroupDetails from '../screens/GroupDetails';
 import ChannelTimeline from '../screens/ChannelTimeline';
 import Drawer from './DrawerNavigation';
+import BottomTabs from "./BottomTabs";
 
 const ChannelStack = createStackNavigator(
   {
@@ -33,7 +34,8 @@ const ChannelStack = createStackNavigator(
 
 const AppStack = createStackNavigator(
   {
-    Drawer: Drawer,
+      Tabs: BottomTabs,
+   // Drawer: Drawer,
     GroupChats: GroupChats,
     FriendChats: FriendChats,
     CreateFriendGroup: CreateFriendGroup,
@@ -44,9 +46,11 @@ const AppStack = createStackNavigator(
     FriendNotes: FriendNotes,
   },
   {
-    initialRouteName: 'Drawer',
+    //initialRouteName: 'Drawer',
+    initialRouteName: 'Tabs',
     defaultNavigationOptions: {
       headerShown: false,
+        disableGestures: true
     },
   },
 );
