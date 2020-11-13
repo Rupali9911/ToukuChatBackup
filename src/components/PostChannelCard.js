@@ -6,12 +6,16 @@ import {
   View,
   Image,
   StyleSheet,
+  RefreshControl,
+  Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {translate} from '../redux/reducers/languageReducer';
 import {Colors, Fonts} from '../constants';
 import {Images} from '../constants/index';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+
+const {width, height} = Dimensions.get('window');
 
 export default class PostChannelCard extends React.Component {
   constructor(props) {
@@ -67,32 +71,45 @@ export default class PostChannelCard extends React.Component {
     );
   };
 
+  EmptyList = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: height,
+        }}>
+        <Text
+          style={{
+            fontFamily: Fonts.thin,
+            fontSize: 12,
+          }}>
+          {translate('pages.xchat.noChannelFound')}
+        </Text>
+      </View>
+    );
+  };
+
   render() {
-    const {posts} = this.props;
+    const {posts, onLoad} = this.props;
 
     return (
       <SafeAreaView style={styles.Container}>
-        {posts.length > 0 ? (
-          <FlatList
-            data={posts}
-            showsVerticalScrollIndicator={false}
-            renderItem={this._renderItem}
-            // keyExtractor={(item, index) => index.toString()}
-            numColumns={2}
-            style={{flex: 1}}
-            contentContainerStyle={{margin: 5}}
-          />
-        ) : (
-          <Text
-            style={{
-              fontFamily: Fonts.thin,
-              fontSize: 12,
-              marginTop: 20,
-              textAlign: 'center',
-            }}>
-            {translate('pages.xchat.noChannelFound')}
-          </Text>
-        )}
+        <FlatList
+          data={posts}
+          showsVerticalScrollIndicator={false}
+          renderItem={this._renderItem}
+          // keyExtractor={(item, index) => index.toString()}
+          numColumns={2}
+          style={{flex: 1}}
+          contentContainerStyle={{margin: 5}}
+          refreshing={onLoad}
+          onRefresh={() => this.props.onRefresh()}
+          onEndReachedThreshold={0.4}
+          onEndReached={() => this.props.pagination(20)}
+          ListEmptyComponent={this.EmptyList()}
+        />
       </SafeAreaView>
     );
   }

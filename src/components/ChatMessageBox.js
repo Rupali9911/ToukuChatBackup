@@ -187,14 +187,19 @@ export default class ChatMessageBox extends Component {
 
     return !isUser ? (
       <Animated.View style={[animatedStyle]}>
-      <View
-        style={[
-          styles.container,
-          {
-            maxWidth: message.msg_type==='text' ? width * 0.77 : message.msg_type === 'image' ? width-40 : width * 0.65,
-            justifyContent: 'flex-start',
-          },
-        ]}>
+        <View
+          style={[
+            styles.container,
+            {
+              maxWidth:
+                message.msg_type === 'text'
+                  ? width * 0.77
+                  : message.msg_type === 'image'
+                  ? width - 40
+                  : width * 0.65,
+              justifyContent: 'flex-start',
+            },
+          ]}>
           <View
             style={{
               alignItems: 'flex-start',
@@ -309,18 +314,29 @@ export default class ChatMessageBox extends Component {
       </Animated.View>
     ) : (
       <Animated.View style={[animatedStyle]}>
-      <View>
-        <View
-          style={[
-            styles.containerSelf,
-            {
-              maxWidth: message.msg_type === 'text' ? width * 0.90 : message.msg_type === 'image'?width:width * 0.75,
-            },
-            message.msg_type === 'image'?{flexDirection:'row',alignSelf:'flex-end',paddingHorizontal:0}:{
-              alignItems: 'flex-end',
-              alignSelf: 'flex-end',
-            }
-          ]}>
+        <View>
+          <View
+            style={[
+              styles.containerSelf,
+              {
+                maxWidth:
+                  message.msg_type === 'text'
+                    ? width * 0.9
+                    : message.msg_type === 'image'
+                    ? width
+                    : width * 0.75,
+              },
+              message.msg_type === 'image'
+                ? {
+                    flexDirection: 'row',
+                    alignSelf: 'flex-end',
+                    paddingHorizontal: 0,
+                  }
+                : {
+                    alignItems: 'flex-end',
+                    alignSelf: 'flex-end',
+                  },
+            ]}>
             <View
               style={[
                 message.msg_type === 'image' ? {} : {alignItems: 'flex-end'},

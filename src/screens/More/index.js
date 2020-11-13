@@ -34,7 +34,7 @@ import {resetData} from '../../storage/Service';
 import LinearGradient from 'react-native-linear-gradient';
 import SingleSocket from '../../helpers/SingleSocket';
 import messaging from '@react-native-firebase/messaging';
-import { eventService } from '../../utils';
+import {eventService} from '../../utils';
 
 class More extends Component {
   constructor(props) {

@@ -110,17 +110,20 @@ export default function (state = initialState, action) {
       const {trendChannel} = state;
 
       let newTrend = [];
-      if (trendChannel.length > 0) {
-        trendChannel.map((followingItem) => {
-          let list = action.payload.posts.filter((item) => {
-            return item.id != followingItem.channel_id;
-          });
-          newTrend = [...trendChannel, ...list];
-        });
-      } else {
+      if (action.payload.type !== undefined) {
         newTrend = action.payload.posts;
+      } else {
+        if (trendChannel.length > 0) {
+          trendChannel.map((followingItem) => {
+            let list = action.payload.posts.filter((item) => {
+              return item.id != followingItem.channel_id;
+            });
+            newTrend = [...trendChannel, ...list];
+          });
+        } else {
+          newTrend = action.payload.posts;
+        }
       }
-
       return {
         ...state,
         trendChannel: newTrend,
@@ -145,17 +148,20 @@ export default function (state = initialState, action) {
       const {followingChannel} = state;
 
       let newFollowing = [];
-      if (followingChannel.length > 0) {
-        followingChannel.map((followingItem) => {
-          let list = action.payload.posts.filter((item) => {
-            return item.id != followingItem.channel_id;
-          });
-          newFollowing = [...followingChannel, ...list];
-        });
-      } else {
+      if (action.payload.type !== undefined) {
         newFollowing = action.payload.posts;
+      } else {
+        if (followingChannel.length > 0) {
+          followingChannel.map((followingItem) => {
+            let list = action.payload.posts.filter((item) => {
+              return item.id != followingItem.channel_id;
+            });
+            newFollowing = [...followingChannel, ...list];
+          });
+        } else {
+          newFollowing = action.payload.posts;
+        }
       }
-
       return {
         ...state,
         followingChannel: newFollowing,
@@ -180,17 +186,20 @@ export default function (state = initialState, action) {
       const {rankingChannel} = state;
 
       let newRanking = [];
-      if (rankingChannel.length > 0) {
-        rankingChannel.map((followingItem) => {
-          let list = action.payload.posts.filter((item) => {
-            return item.id != followingItem.channel_id;
-          });
-          newRanking = [...rankingChannel, ...list];
-        });
-      } else {
+      if (action.payload.type !== undefined) {
         newRanking = action.payload.posts;
+      } else {
+        if (rankingChannel.length > 0) {
+          rankingChannel.map((followingItem) => {
+            let list = action.payload.posts.filter((item) => {
+              return item.id != followingItem.channel_id;
+            });
+            newRanking = [...rankingChannel, ...list];
+          });
+        } else {
+          newRanking = action.payload.posts;
+        }
       }
-
       return {
         ...state,
         rankingChannel: newRanking,
@@ -334,7 +343,7 @@ const getTrendChannelFailure = () => ({
   type: GET_TREND_CHANNEL_FAIL,
 });
 
-export const getTrendChannel = (userType, pageCount) => (dispatch) =>
+export const getTrendChannel = (userType, pageCount, type) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendChannelRequest());
     let page = pageCount ? pageCount : 0;
@@ -346,8 +355,10 @@ export const getTrendChannel = (userType, pageCount) => (dispatch) =>
     client
       .get(url)
       .then((res) => {
+        console.log('res', res);
         if (res.status) {
-          dispatch(getTrendChannelSuccess(res));
+          const newRes = {...res, type: type};
+          dispatch(getTrendChannelSuccess(newRes));
         }
         resolve(res);
       })
@@ -371,7 +382,7 @@ const getFollowingChannelFailure = () => ({
   type: GET_FOLLOWING_CHANNEL_FAIL,
 });
 
-export const getFollowingChannel = (pageCount) => (dispatch) =>
+export const getFollowingChannel = (pageCount, type) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingChannelRequest());
 
@@ -381,7 +392,8 @@ export const getFollowingChannel = (pageCount) => (dispatch) =>
       .get(`/xchat/channel-listing-following/?last_id=${page}`)
       .then((res) => {
         if (res.status) {
-          dispatch(getFollowingChannelSuccess(res));
+          const newRes = {...res, type: type};
+          dispatch(getFollowingChannelSuccess(newRes));
         }
         resolve(res);
       })
@@ -405,7 +417,7 @@ const getRankingChannelFailure = () => ({
   type: GET_RANKING_CHANNEL_FAIL,
 });
 
-export const getRankingChannel = (userType, pageCount) => (dispatch) =>
+export const getRankingChannel = (userType, pageCount, type) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getRankingChannelRequest());
 
@@ -419,8 +431,10 @@ export const getRankingChannel = (userType, pageCount) => (dispatch) =>
     client
       .get(url)
       .then((res) => {
+        console.log('response rchannel', res);
         if (res.status) {
-          dispatch(getRankingChannelSuccess(res));
+          const newRes = {...res, type: type};
+          dispatch(getRankingChannelSuccess(newRes));
         }
         resolve(res);
       })

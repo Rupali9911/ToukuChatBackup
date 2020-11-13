@@ -4,6 +4,7 @@ import {
   ImageBackground,
   StyleSheet,
   Image,
+  Text,
   ScrollView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
@@ -24,7 +25,10 @@ import {
   hideAllPost,
   reportPost,
 } from '../../redux/reducers/timelineReducer';
+import LinearGradient from 'react-native-linear-gradient';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
+// let visibleNewPost = null;
 class Channel extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +41,8 @@ class Channel extends Component {
       trendChannel: [],
       followingChannel: [],
       rankingChannel: [],
+      onRefreshLoad: false,
+      showPostsVisible: false,
       tabBarItem: [
         {
           id: 1,
@@ -45,9 +51,9 @@ class Channel extends Component {
           action: () => {
             this.setState({activeTab: 'trend'});
             this.pageCount = 0;
-            // this.props
-            //   .getTrendChannel(this.props.userData.user_type, this.pageCount)
-            //   .then((res) => {});
+            this.props
+              .getTrendChannel(this.props.userData.user_type, this.pageCount)
+              .then((res) => {});
           },
         },
         {
@@ -104,18 +110,15 @@ class Channel extends Component {
   }
 
   componentDidMount() {
-    if (
-      this.props.trendChannel.length === 0 &&
-      this.props.rankingChannel.length === 0 &&
-      this.props.followingChannel.length === 0
-    ) {
-      this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
-      this.props.getFollowingChannel(this.pageCount);
-      this.props.getRankingChannel(
-        this.props.userData.user_type,
-        this.pageCount,
-      );
-    }
+    // if (
+    //   this.props.trendChannel.length === 0 &&
+    //   this.props.rankingChannel.length === 0 &&
+    //   this.props.followingChannel.length === 0
+    // ) {
+    this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
+    this.props.getFollowingChannel(this.pageCount);
+    this.props.getRankingChannel(this.props.userData.user_type, this.pageCount);
+    // }
   }
 
   static navigationOptions = () => {
@@ -125,8 +128,6 @@ class Channel extends Component {
   };
 
   pagination = (pageno) => {
-    console.log('page ', pageno);
-
     if (this.state.activeTab === 'trend') {
       if (this.props.trendLoadMore) {
         this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
@@ -162,6 +163,10 @@ class Channel extends Component {
     // this.props.getFollowingChannel();
     // this.props.getRankingChannel();
     // this.showData();
+
+    // visibleNewPost = setInterval(() => {
+    //   this.setState({showPostsVisible: true});
+    // }, 15000);
 
     await this.props
       .getTrendChannel(this.props.userData.user_type)
@@ -274,6 +279,43 @@ class Channel extends Component {
     }
   }
 
+  onRefreshChannel = () => {
+    const {activeTab} = this.state;
+    this.setState({onRefreshLoad: true});
+    console.log('log');
+    this.pageCount = 0;
+    if (activeTab === 'trend') {
+      this.props
+        .getTrendChannel(this.props.userData.user_type, 0, activeTab)
+        .then((res) => {
+          if (res.status) {
+            this.setState({showPostsVisible: false, onRefreshLoad: false});
+            clearInterval(visibleNewPost);
+          }
+        });
+    } else if (activeTab === 'following') {
+      this.props.getFollowingChannel(this.pageCount, activeTab).then((res) => {
+        if (res.status) {
+          this.setState({showPostsVisible: false, onRefreshLoad: false});
+          clearInterval(visibleNewPost);
+        }
+      });
+    } else if (activeTab === 'ranking') {
+      this.props
+        .getRankingChannel(
+          this.props.userData.user_type,
+          this.pageCount,
+          activeTab,
+        )
+        .then((res) => {
+          if (res.status) {
+            this.setState({showPostsVisible: false, onRefreshLoad: false});
+            clearInterval(visibleNewPost);
+          }
+        });
+    }
+  };
+
   render() {
     const {
       tabBarItem,
@@ -283,6 +325,7 @@ class Channel extends Component {
       trendChannel,
       followingChannel,
       rankingChannel,
+      showPostsVisible,
     } = this.state;
 
     return (
@@ -303,6 +346,47 @@ class Channel extends Component {
             // maxToRenderPerBatch={1}
             // onEndReachedThreshold={1}
           >
+            {/* {showPostsVisible && (
+              <LinearGradient
+                start={{x: 0.1, y: 0.7}}
+                end={{x: 0.5, y: 0.2}}
+                locations={[0.1, 0.6, 1]}
+                colors={[
+                  Colors.gradient_1,
+                  Colors.gradient_2,
+                  Colors.gradient_3,
+                ]}
+                style={{
+                  position: 'absolute',
+                  zIndex: 15,
+                  alignSelf: 'center',
+                  marginTop: 10,
+                  borderRadius: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 5,
+                  shadowColor: '#fff',
+                  borderWidth: 1,
+                  borderColor: Colors.gradient_1,
+                }}>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    this.onRefreshChannel();
+                    this.setState({showPostsVisible: false});
+                  }}
+                  hitSlop={{top: 200, bottom: 200, left: 200, right: 200}}>
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontSize: 15,
+                      fontWeight: '400',
+                      paddingHorizontal: 15,
+                    }}>
+                    {'New Posts'}
+                  </Text>
+                </TouchableWithoutFeedback>
+              </LinearGradient>
+            )} */}
             {activeTab === 'trend' ? (
               <PostChannelCard
                 menuItems={menuItems}
@@ -310,6 +394,8 @@ class Channel extends Component {
                 isTimeline={false}
                 navigation={this.props.navigation}
                 pagination={this.pagination}
+                onRefresh={this.onRefreshChannel}
+                onLoad={this.state.onRefreshLoad}
               />
             ) : activeTab === 'following' ? (
               <PostChannelCard
@@ -318,6 +404,8 @@ class Channel extends Component {
                 isTimeline={false}
                 navigation={this.props.navigation}
                 pagination={this.pagination}
+                onRefresh={this.onRefreshChannel}
+                onLoad={this.state.onRefreshLoad}
               />
             ) : (
               activeTab === 'ranking' && (
@@ -327,6 +415,8 @@ class Channel extends Component {
                   isTimeline={false}
                   navigation={this.props.navigation}
                   pagination={this.pagination}
+                  onRefresh={this.onRefreshChannel}
+                  onLoad={this.state.onRefreshLoad}
                 />
               )
             )}

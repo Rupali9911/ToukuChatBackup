@@ -43,6 +43,7 @@ export default class PostCard extends Component {
           backgroundColor: Colors.white,
           marginVertical: 10,
           paddingVertical: 10,
+          flex: 1,
         }}>
         <PostCardHeader
           menuItems={menuItems}
@@ -50,7 +51,7 @@ export default class PostCard extends Component {
           isChannelTimeline={isChannelTimeline}
         />
         {post.media.audio && post.media.audio.length ? (
-          <View style={{margin: 10}}>
+          <View style={{marginTop: 10}}>
             <AudioPlayerCustom
               onAudioPlayPress={(id) =>
                 this.setState({
@@ -74,21 +75,46 @@ export default class PostCard extends Component {
           </View>
         ) : null}
         <View style={{marginHorizontal: '4%', marginVertical: 5}}>
-          <HyperLink onPress={(url, text) => {
-            Linking.openURL(url);
-          }} linkStyle={{ color: Colors.link_color }}>
-            <Text style={{ fontFamily: Fonts.regular, fontSize: 16 }}>
+          <HyperLink
+            onPress={(url, text) => {
+              Linking.openURL(url);
+            }}
+            linkStyle={{color: Colors.link_color}}>
+            <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
               {post.text && post.text.length > 0
                 ? post.text[0].text
                 : post.mutlilanguage_message_body
-                  ? post.mutlilanguage_message_body.en
-                  : ''}
+                ? post.mutlilanguage_message_body.en
+                : ''}
             </Text>
           </HyperLink>
         </View>
       </View>
     );
   };
+
+  EmptyList = (isTimeline) => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: height / 1.2,
+        }}>
+        <Text
+          style={{
+            fontFamily: Fonts.thin,
+            fontSize: 12,
+          }}>
+          {isTimeline
+            ? translate('pages.xchat.noTimelineFound')
+            : translate('pages.xchat.noChannelFound')}
+        </Text>
+      </View>
+    );
+  };
+
   render() {
     const {
       menuItems,
@@ -100,85 +126,85 @@ export default class PostCard extends Component {
       onEndReached,
     } = this.props;
     // console.log('POST', posts);
-    return posts.length ? (
-      useFlatlist ? (
-        <FlatList
-          data={posts}
-          renderItem={this.renderPostItem}
-          onEndReached={onEndReached}
-          onMomentumScrollBegin={onMomentumScrollBegin}
-          onEndReachedThreshold={0.1}
-          bounces={false}
-          keyExtractor={(item, index) => `${item.id}`}
-        />
-      ) : (
-        posts.map((post, index) => {
-          return this.renderPostItem({item: post, index: index});
-        })
-        // posts.map((post, index) => {
-        //   // console.log('POST TEXT', post.text);
-        //   return (
-        //     <View
-        //       style={{
-        //         backgroundColor: Colors.white,
-        //         marginVertical: 10,
-        //         paddingVertical: 10,
-        //       }}>
-        //       <PostCardHeader
-        //         menuItems={menuItems}
-        //         post={post}
-        //         isChannelTimeline={isChannelTimeline}
-        //       />
-        //       {post.media.audio && post.media.audio.length ? (
-        //         <View style={{margin: 10}}>
-        //           <AudioPlayerCustom
-        //             onAudioPlayPress={(id) =>
-        //               this.setState({
-        //                 audioPlayingId: id,
-        //                 perviousPlayingAudioId: this.state.audioPlayingId,
-        //               })
-        //             }
-        //             audioPlayingId={this.state.audioPlayingId}
-        //             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-        //             postId={post.id}
-        //             url={post.media.audio[0]}
-        //           />
-        //         </View>
-        //       ) : post.media.image && post.media.image.length ? (
-        //         <View style={{margin: 5}}>
-        //           <ScalableImage src={post.media.image[0]} />
-        //         </View>
-        //       ) : post.media.video && post.media.video.length ? (
-        //         <View style={{margin: 5}}>
-        //           <VideoPlayerCustom url={post.media.video[0]} />
-        //         </View>
-        //       ) : null}
-        //       <View style={{marginHorizontal: '4%', marginVertical: 5}}>
-        //         <Text style={{fontFamily: Fonts.light}}>
-        //           {post.text && post.text.length > 0
-        //             ? post.text[0].text
-        //             : post.mutlilanguage_message_body
-        //             ? post.mutlilanguage_message_body.en
-        //             : ''}
-        //         </Text>
-        //       </View>
-        //     </View>
-        //   );
-        // })
-      )
+    return useFlatlist ? (
+      <FlatList
+        data={posts}
+        renderItem={this.renderPostItem}
+        onEndReached={onEndReached}
+        onMomentumScrollBegin={onMomentumScrollBegin}
+        onEndReachedThreshold={0.1}
+        bounces={false}
+        keyExtractor={(item, index) => `${item.id}`}
+        ListEmptyComponent={this.EmptyList(isTimeline)}
+      />
     ) : (
-      <Text
-        style={{
-          fontFamily: Fonts.thin,
-          fontSize: 12,
-          marginTop: 20,
-          textAlign: 'center',
-        }}>
-        {isTimeline
-          ? translate('pages.xchat.noTimelineFound')
-          : translate('pages.xchat.noChannelFound')}
-      </Text>
+      posts.map((post, index) => {
+        return this.renderPostItem({item: post, index: index});
+      })
+      // posts.map((post, index) => {
+      //   // console.log('POST TEXT', post.text);
+      //   return (
+      //     <View
+      //       style={{
+      //         backgroundColor: Colors.white,
+      //         marginVertical: 10,
+      //         paddingVertical: 10,
+      //       }}>
+      //       <PostCardHeader
+      //         menuItems={menuItems}
+      //         post={post}
+      //         isChannelTimeline={isChannelTimeline}
+      //       />
+      //       {post.media.audio && post.media.audio.length ? (
+      //         <View style={{margin: 10}}>
+      //           <AudioPlayerCustom
+      //             onAudioPlayPress={(id) =>
+      //               this.setState({
+      //                 audioPlayingId: id,
+      //                 perviousPlayingAudioId: this.state.audioPlayingId,
+      //               })
+      //             }
+      //             audioPlayingId={this.state.audioPlayingId}
+      //             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+      //             postId={post.id}
+      //             url={post.media.audio[0]}
+      //           />
+      //         </View>
+      //       ) : post.media.image && post.media.image.length ? (
+      //         <View style={{margin: 5}}>
+      //           <ScalableImage src={post.media.image[0]} />
+      //         </View>
+      //       ) : post.media.video && post.media.video.length ? (
+      //         <View style={{margin: 5}}>
+      //           <VideoPlayerCustom url={post.media.video[0]} />
+      //         </View>
+      //       ) : null}
+      //       <View style={{marginHorizontal: '4%', marginVertical: 5}}>
+      //         <Text style={{fontFamily: Fonts.light}}>
+      //           {post.text && post.text.length > 0
+      //             ? post.text[0].text
+      //             : post.mutlilanguage_message_body
+      //             ? post.mutlilanguage_message_body.en
+      //             : ''}
+      //         </Text>
+      //       </View>
+      //     </View>
+      //   );
+      // })
     );
+    // ) : (
+    //   <Text
+    //     style={{
+    //       fontFamily: Fonts.thin,
+    //       fontSize: 12,
+    //       marginTop: 20,
+    //       textAlign: 'center',
+    //     }}>
+    //     {isTimeline
+    //       ? translate('pages.xchat.noTimelineFound')
+    //       : translate('pages.xchat.noChannelFound')}
+    //   </Text>
+    // );
   }
 }
 
