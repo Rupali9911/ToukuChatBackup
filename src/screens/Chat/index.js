@@ -142,7 +142,11 @@ import {
 } from '../../storage/Service';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
-import {ConfirmationModal, ChangePassModal, ChangeEmailModal} from '../../components/Modals';
+import {
+  ConfirmationModal,
+  ChangePassModal,
+  ChangeEmailModal,
+} from '../../components/Modals';
 import PasswordConfirmationModal from '../../components/Modals/PasswordConfirmationModal';
 import EmailConfirmationModal from '../../components/Modals/EmailConfirmationModal';
 
@@ -203,12 +207,12 @@ class Chat extends Component {
       this.checkEventTypes(message);
     });
 
-    this.props.getUserProfile().then((res)=>{
-      if(res){
-        if(res.id){
-          if(!res.email){
+    this.props.getUserProfile().then((res) => {
+      if (res) {
+        if (res.id) {
+          if (!res.email) {
             // this.setState({isSetEmailVisible: true});
-          }else{
+          } else {
             this.setState({isSetPasswordVisible: !res.is_have_password});
           }
         }
@@ -2439,11 +2443,15 @@ class Chat extends Component {
   }
 
   updateChangePasswordModalVisibility() {
-    this.setState({isChangePassModalVisible: !this.state.isChangePassModalVisible});
+    this.setState({
+      isChangePassModalVisible: !this.state.isChangePassModalVisible,
+    });
   }
 
   updateChangeEmailModalVisibility() {
-    this.setState({isChangeEmailModalVisible: !this.state.isChangeEmailModalVisible});
+    this.setState({
+      isChangeEmailModalVisible: !this.state.isChangeEmailModalVisible,
+    });
   }
 
   onCheckChange = (type, isCheck, item) => {
@@ -2827,16 +2835,18 @@ class Chat extends Component {
           message={translate('pages.xchat.toastr.chatHistoryDelete')}
         />
 
-        <PasswordConfirmationModal 
+        <PasswordConfirmationModal
           orientation={orientation}
           visible={isSetPasswordVisible}
           onCancel={this.actionPasswordCancel.bind(this)}
-          onConfirm={()=>{
-            this.setState({isSetPasswordVisible: !isSetPasswordVisible},()=>{
-              setTimeout(()=>{
-                this.setState({isChangePassModalVisible: !isChangePassModalVisible});
-              },500);
-            })
+          onConfirm={() => {
+            this.setState({isSetPasswordVisible: !isSetPasswordVisible}, () => {
+              setTimeout(() => {
+                this.setState({
+                  isChangePassModalVisible: !isChangePassModalVisible,
+                });
+              }, 500);
+            });
           }}
           title={translate('pages.xchat.toastr.setPassword')}
           message={translate('pages.xchat.toastr.setPasswordText')}
@@ -2853,22 +2863,23 @@ class Chat extends Component {
           visible={isSetEmailVisible}
           onCancel={this.actionEmailCancel.bind(this)}
           onConfirm={() => {
-            this.setState({ isSetEmailVisible: !isSetEmailVisible }, () => {
+            this.setState({isSetEmailVisible: !isSetEmailVisible}, () => {
               setTimeout(() => {
-                this.setState({ isChangeEmailModalVisible: !isChangeEmailModalVisible });
+                this.setState({
+                  isChangeEmailModalVisible: !isChangeEmailModalVisible,
+                });
               }, 500);
-            })
+            });
           }}
           title={translate('pages.xchat.toastr.setEmail')}
           message={translate('pages.xchat.toastr.setEmailText')}
         />
 
-        <ChangeEmailModal 
+        <ChangeEmailModal
           visible={isChangeEmailModalVisible}
           onRequestClose={this.updateChangeEmailModalVisibility.bind(this)}
           isSetEmail
         />
-
       </View>
       // </ImageBackground>
     );

@@ -1012,7 +1012,8 @@
       "deleteNoteText": "Are you sure you want to delete this note?",
       "notes": "Notes",
       "reallyWannaRelease": "Do you really want to release it?",
-      "ifYouCancelIt": "If you cancel it, you will not be able to see the same channel unless you follow it again."
+      "ifYouCancelIt": "If you cancel it, you will not be able to see the same channel unless you follow it again.",
+      "post": "Post"
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",

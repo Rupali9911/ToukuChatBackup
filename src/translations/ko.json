@@ -1014,7 +1014,8 @@
       "deleteNoteText": "이 메모를 삭제 하시겠습니까?",
       "notes": "노트",
       "reallyWannaRelease": "정말 해제 하시겠습니까?",
-      "ifYouCancelIt": "해제하면 다시 보충하지 않으면 같은 채널을 볼 수 없습니다."
+      "ifYouCancelIt": "해제하면 다시 보충하지 않으면 같은 채널을 볼 수 없습니다.",
+      "post": "우편"
     },
     "welcome": {
       "theWorldIsConnected": "\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

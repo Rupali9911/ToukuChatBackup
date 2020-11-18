@@ -1013,7 +1013,8 @@
       "deleteNoteText": "你確定要刪除這條筆記麼？",
       "notes": "筆記",
       "reallyWannaRelease": "您真的要释放它吗？",
-      "ifYouCancelIt": "如果取消它，除非再次关注它，否则将无法看到相同的频道。"
+      "ifYouCancelIt": "如果取消它，除非再次关注它，否则将无法看到相同的频道。",
+      "post": "發布"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

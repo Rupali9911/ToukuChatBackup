@@ -1014,7 +1014,8 @@
       "deleteNoteText": "このメモを削除してもよろしいですか？",
       "notes": "ノート",
       "reallyWannaRelease": "本当に解除しますか？",
-      "ifYouCancelIt": "解除すると再フォローしない限り、同じチャンネルが見れません。"
+      "ifYouCancelIt": "解除すると再フォローしない限り、同じチャンネルが見れません。",
+      "post": "確定"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",
