@@ -666,7 +666,9 @@
         "whenTheChannelModeGetsTurnedOn": "频道模式打开时，用户屏幕和用户通知将被隐藏",
         "noteUpdated": "注意已成功更新。",
         "noteDeleted": "注释已成功删除。",
-        "notePosted": "注释已成功发布。"
+        "notePosted": "注释已成功发布。",
+        "selectChatText": "选择聊天以删除聊天记录",
+        "chatHistoryDelete": "所选聊天的聊天记录将被删除。"
       },
       "totalMessages": "消息总数",
       "toukuPoints": "TOUKU积分",
@@ -1009,7 +1011,9 @@
       "channelReported": "频道已报告",
       "deleteNote": "删除记事",
       "deleteNoteText": "你确定要删除这条笔记么？",
-      "notes": "笔记"
+      "notes": "笔记",
+      "reallyWannaRelease": "您真的要釋放它嗎？",
+      "ifYouCancelIt": "如果取消，則除非再次關注，否則將無法看到相同的頻道。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",

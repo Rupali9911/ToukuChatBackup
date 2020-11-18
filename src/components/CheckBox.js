@@ -20,29 +20,36 @@ export default class CheckBox extends Component {
   }
 
   render() {
-    const {onCheck, isChecked} = this.props;
-
-    return (
-      <TouchableOpacity
-        style={{
-          width: 25,
-          height: 25,
-          borderRadius: 12.5,
-          borderColor:'#ccc',
-          borderWidth:isChecked?0:1,
-          margin: 5,
-        }}
-        onPress={onCheck}>
-        {/*<LinearGradient*/}
-          {/*start={{x: 0.1, y: 0.7}}*/}
-          {/*end={{x: 0.5, y: 0.8}}*/}
-          {/*locations={[0.1, 0.6, 1]}*/}
-          {/*colors={this.getGradientColors()}*/}
-          {/*style={{flex: 1, borderRadius: 4}}*/}
-        {/*/>*/}
-          <FontAwesome name={isChecked ? 'check-circle' : 'circle' }  color= {isChecked?Colors.primary:Colors.white} size={25}/>
+    const {onCheck, isChecked, isFromSignUp} = this.props;
+      if(isFromSignUp){
+          return (
+              <TouchableOpacity
+          style={{
+              width: 25,
+                  height: 25,
+                  borderRadius: 4,
+                  margin: 5,
+          }}
+          onPress={onCheck}>
+              <FontAwesome5 name={isChecked ? 'check-square' : 'square' }  color= {Colors.green} size={25}/>
       </TouchableOpacity>
-    );
+          )
+      }else{
+          return(
+              <TouchableOpacity
+                  style={{
+                      width: 25,
+                      height: 25,
+                      borderRadius: 12.5,
+                      borderColor:'#ccc',
+                      borderWidth:isChecked?0:1,
+                      margin: 5,
+                  }}
+                  onPress={onCheck}>
+                  <FontAwesome name={isChecked ? 'check-circle' : 'circle' }  color= {isChecked?Colors.primary:Colors.white} size={25}/>
+              </TouchableOpacity>
+          )
+      }
   }
 }
 

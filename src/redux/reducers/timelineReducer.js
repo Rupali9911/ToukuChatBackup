@@ -24,6 +24,10 @@ export const GET_RANKING_CHANNEL_REQUEST = 'GET_RANKING_CHANNEL_REQUEST';
 export const GET_RANKING_CHANNEL_SUCCESS = 'GET_RANKING_CHANNEL_SUCCESS';
 export const GET_RANKING_CHANNEL_FAIL = 'GET_RANKING_CHANNEL_FAIL';
 
+export const HIDE_POST_REQUEST = 'HIDE_POST_REQUEST';
+export const HIDE_POST_SUCCESS = 'HIDE_POST_SUCCESS';
+export const HIDE_POST_FAIL = 'HIDE_POST_FAIL';
+
 const initialState = {
   loading: false,
   trendTimline: [],
@@ -213,6 +217,24 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+      case HIDE_POST_REQUEST:
+          return {
+              ...state,
+              loading: true,
+          };
+
+      case HIDE_POST_SUCCESS:
+          return {
+              ...state,
+              loading: false,
+          };
+
+      case HIDE_POST_FAIL:
+          return {
+              ...state,
+              loading: false,
+          };
+
     default:
       return state;
   }
@@ -232,6 +254,20 @@ const getTrendTimelineFailure = () => ({
   type: GET_TREND_TIMELINE_FAIL,
 });
 //
+
+const hidePostRequest = () => ({
+    type: HIDE_POST_REQUEST,
+});
+
+const hidePostSuccess = (data) => ({
+    type: HIDE_POST_SUCCESS,
+    payload: data,
+});
+
+const hidePostFailure = () => ({
+    type: HIDE_POST_FAIL,
+});
+
 export const getChannelTimeline = (groupId, lastId) => {
   console.log(
     `/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`,
@@ -446,6 +482,7 @@ export const getRankingChannel = (userType, pageCount, type) => (dispatch) =>
 
 export const hidePost = (postId) => (dispatch) =>
   new Promise(function (resolve, reject) {
+      dispatch(hidePostRequest());
     let data = {
       filtered_post: postId,
     };
@@ -454,9 +491,11 @@ export const hidePost = (postId) => (dispatch) =>
       .then((res) => {
         if (res.status) {
           resolve(res);
+            dispatch(hidePostSuccess());
         }
       })
       .catch((err) => {
+          dispatch(hidePostFailure());
         reject(err);
       });
   });

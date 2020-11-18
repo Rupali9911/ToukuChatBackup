@@ -140,14 +140,15 @@ export default class App extends Component {
 
         if (url.indexOf(loginUrl) > -1) {
             //setTimeout(() => {
-            NavigationService.navigate('Login', { url: event.url });
+            NavigationService.navigate('Login', { url: url });
             // }, 1000 );
         } else if (url.indexOf(registerUrl) > -1) {
-            let suffixUrl = event.url.split(registerUrl)[1].trim()
+            let suffixUrl = url.split(registerUrl)[1].trim()
             let invitationCode = suffixUrl.split('/').length > 0 ? suffixUrl.split('/')[0].trim() : suffixUrl
             await AsyncStorage.setItem('invitationCode', invitationCode);
             //setTimeout(() => {
             NavigationService.navigate('SignUp', {
+                showEmail: true,
                 pageNumber: 0,
                 isSocial: false, invitationCode: invitationCode
             });
@@ -178,7 +179,7 @@ export default class App extends Component {
             } else {
                 await AsyncStorage.setItem('channelData', JSON.stringify(data));
                 // setTimeout(() => {
-                NavigationService.navigate('Login', { url: event.url });
+                NavigationService.navigate('Login', { url: url });
                 // }, 1000 );
             }
         }

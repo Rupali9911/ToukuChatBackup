@@ -23,6 +23,9 @@ import {
   hideAllPost,
   reportPost,
 } from '../../redux/reducers/timelineReducer';
+import ConfirmationModal from "../../components/Modals/ConfirmationModal";
+import AsyncStorage from "@react-native-community/async-storage";
+import {resetData} from "../../storage/Service";
 
 class Timeline extends Component {
   constructor(props) {
@@ -70,24 +73,27 @@ class Timeline extends Component {
           onPress: (res) => {
             this.hidePost(res);
           },
-        },
-        {
-          id: 1,
-          title: translate('pages.xchat.hideAllPost'),
-          icon: 'bars',
-          onPress: (res) => {
-            this.hideAllPost(res);
-          },
-        },
-        {
-          id: 1,
-          title: translate('pages.xchat.reportContent'),
-          icon: 'bars',
-          onPress: (res) => {
-            this.reportContent(res);
-          },
-        },
+        }
+        // ,
+        // {
+        //   id: 1,
+        //   title: translate('pages.xchat.hideAllPost'),
+        //   icon: 'bars',
+        //   onPress: (res) => {
+        //     this.hideAllPost(res);
+        //   },
+        // },
+        // {
+        //   id: 1,
+        //   title: translate('pages.xchat.reportContent'),
+        //   icon: 'bars',
+        //   onPress: (res) => {
+        //     this.reportContent(res);
+        //   },
+        // },
       ],
+        showConfirmation: false,
+        currentPost: null
     };
   }
 
@@ -147,11 +153,7 @@ class Timeline extends Component {
   };
 
   hidePost(post) {
-    const {activeTab} = this.state;
-    this.props.hidePost(post.id).then((res) => {
-      console.log('Hide post server response', res);
-      this.refreshContent();
-    });
+    this.setState({showConfirmation: true, currentPost: post})
   }
 
   hideAllPost(post) {
@@ -190,9 +192,28 @@ class Timeline extends Component {
     }
   }
 
+    updateModalVisibility() {
+        this.setState({showConfirmation: !this.state.showConfirmation});
+    }
+
+    actionSure = async () => {
+    const {currentPost} = this.state
+        this.props.hidePost(currentPost.id).then((res) => {
+            console.log('Hide post server response', res);
+            this.refreshContent();
+            this.setState({showConfirmation: false});
+        }).catch((err) => {
+            this.setState({showConfirmation: false});
+        });
+    };
+
+    actionCancel() {
+        this.updateModalVisibility();
+    }
+
   render() {
-    const {tabBarItem, activeTab, menuItems, posts} = this.state;
-    const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
+    const {tabBarItem, activeTab, menuItems, posts, orientation, showConfirmation} = this.state;
+    const {trendTimline, followingTimeline, rankingTimeLine, loading} = this.props;
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -224,6 +245,15 @@ class Timeline extends Component {
             )}
           </ScrollView>
         </View>
+          <ConfirmationModal
+              orientation={orientation}
+              visible={showConfirmation}
+              onCancel={this.actionCancel.bind(this)}
+              onConfirm={this.actionSure.bind(this)}
+              title={translate('pages.xchat.reallyWannaRelease')}
+              message={translate('pages.xchat.ifYouCancelIt')}
+              isLoading={loading}
+          />
       </View>
       // </ImageBackground>
     );

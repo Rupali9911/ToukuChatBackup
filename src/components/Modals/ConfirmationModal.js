@@ -105,6 +105,7 @@ const style = StyleSheet.create({
     fontFamily: Fonts.medium,
     fontSize: 24,
     marginBottom: 10,
+      textAlign: 'center'
   },
   alertmessageTextStyel: {
     fontFamily: Fonts.light,

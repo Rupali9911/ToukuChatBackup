@@ -1064,6 +1064,7 @@ class SignUp extends Component {
                     <CheckBox
                         onCheck={() => this.onCheckRememberMe()}
                         isChecked={this.state.isAgreeWithTerms}
+                        isFromSignUp={true}
                     />
                     </TouchableOpacity>
                     <TouchableOpacity  onPress={() => this.onTermsAndCondition()} activeOpacity={1}>

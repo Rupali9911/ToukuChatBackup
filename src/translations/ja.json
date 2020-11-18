@@ -666,7 +666,9 @@
         "whenTheChannelModeGetsTurnedOn": "チャンネルモードがオンになると、ユーザーの画面とユーザーへの通知が非表示になります",
         "noteUpdated": "メモは正常に更新されました。",
         "noteDeleted": "メモは正常に削除されました。",
-        "notePosted": "メモは正常に投稿されました。"
+        "notePosted": "メモは正常に投稿されました。",
+        "selectChatText": "チャットを選択してチャット履歴を削除します",
+        "chatHistoryDelete": "選択したチャットのチャット履歴が削除されます。"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",
@@ -1010,7 +1012,9 @@
       "channelReported": "報告されたチャネル",
       "deleteNote": "メモを削除",
       "deleteNoteText": "このメモを削除してもよろしいですか？",
-      "notes": "ノート"
+      "notes": "ノート",
+      "reallyWannaRelease": "本当に解除しますか？",
+      "ifYouCancelIt": "解除すると再フォローしない限り、同じチャンネルが見れません。"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

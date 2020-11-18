@@ -666,7 +666,9 @@
         "whenTheChannelModeGetsTurnedOn": "The users screen and the notification for users will be hidden when the channel mode gets turned on",
         "noteUpdated": "Note has been updated successfully.",
         "noteDeleted": "Note has been deleted successfully.",
-        "notePosted": "Note has been posted successfully."
+        "notePosted": "Note has been posted successfully.",
+        "selectChatText": "Select chat to delete chat history",
+        "chatHistoryDelete": "The chat history of selected chats will be deleted."
       },
       "totalMessages": "Total messages",
       "toukuPoints": "TOUKU Points",
@@ -1008,7 +1010,9 @@
       "channelReported": "Channel reported",
       "deleteNote": "Delete Note",
       "deleteNoteText": "Are you sure you want to delete this note?",
-      "notes": "Notes"
+      "notes": "Notes",
+      "reallyWannaRelease": "Do you really want to release it?",
+      "ifYouCancelIt": "If you cancel it, you will not be able to see the same channel unless you follow it again."
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",
