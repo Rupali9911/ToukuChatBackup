@@ -668,7 +668,9 @@
         "noteDeleted": "註釋已成功刪除。",
         "notePosted": "註釋已成功發布。",
         "selectChatText": "選擇聊天以刪除聊天記錄",
-        "chatHistoryDelete": "所選聊天的聊天記錄將被刪除。"
+        "chatHistoryDelete": "所選聊天的聊天記錄將被刪除。",
+        "enterChannelId": "請輸入頻道ID。",
+        "alreadyFollowed": "您已經關注了該頻道。"
       },
       "totalMessages": "消息總數",
       "toukuPoints": "TOUKU积分",
@@ -1014,7 +1016,12 @@
       "notes": "筆記",
       "reallyWannaRelease": "您真的要释放它吗？",
       "ifYouCancelIt": "如果取消它，除非再次关注它，否则将无法看到相同的频道。",
-      "post": "發布"
+      "post": "發布",
+      "followChannel": "關注頻道",
+      "channelId": "頻道編號",
+      "referralCode": "推薦碼",
+      "enterChannelId": "請輸入頻道編號",
+      "optional": "可選的"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

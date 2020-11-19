@@ -481,7 +481,7 @@ class ChannelInfo extends Component {
                 </Text>
                 <HyperLink
                   onPress={(url, text) => { Linking.openURL(url); }}
-                  linkStyle={{ color: 'blue' }}>
+                  linkStyle={{ color: 'blue', textDecorationLine:'underline' }}>
                   <Text style={channelInfoStyles.aboutText}>
                     {currentChannel.description}
                   </Text>

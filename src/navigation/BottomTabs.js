@@ -8,6 +8,7 @@ import HomeScreen from '../screens/Home';
 import ChatScreen from '../screens/Chat';
 import CreateGroupChatScreen from '../screens/CreateGroupChat';
 import CreateChannelScreen from '../screens/CreateChannel';
+import FollowChannel from '../screens/FollowChannel';
 import TimelineScreen from '../screens/Timeline';
 import ChannelScreen from '../screens/Channel';
 import {Icons, Colors, Fonts} from '../constants';
@@ -59,6 +60,7 @@ const MoreTab = createStackNavigator({
   AddFriend: AddFriend,
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
+  FollowChannel: FollowChannel
 });
 
 MoreTab.navigationOptions = ({navigation}) => {

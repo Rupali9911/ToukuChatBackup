@@ -668,7 +668,9 @@
         "noteDeleted": "Note has been deleted successfully.",
         "notePosted": "Note has been posted successfully.",
         "selectChatText": "Select chat to delete chat history",
-        "chatHistoryDelete": "The chat history of selected chats will be deleted."
+        "chatHistoryDelete": "The chat history of selected chats will be deleted.",
+        "enterChannelId": "Please enter channel ID.",
+        "alreadyFollowed": "You have already followed this channel."
       },
       "totalMessages": "Total messages",
       "toukuPoints": "TOUKU Points",
@@ -1013,7 +1015,12 @@
       "notes": "Notes",
       "reallyWannaRelease": "Do you really want to release it?",
       "ifYouCancelIt": "If you cancel it, you will not be able to see the same channel unless you follow it again.",
-      "post": "Post"
+      "post": "Post",
+      "followChannel": "Follow Channel",
+      "channelId": "Channel ID",
+      "referralCode": "Referral Code",
+      "enterChannelId": "Please enter channel ID",
+      "optional": "Optional"
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",

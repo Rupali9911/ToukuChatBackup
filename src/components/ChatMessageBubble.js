@@ -456,7 +456,7 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color}}>
+                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
                             <Text
                               style={{
                                 fontFamily: Fonts.regular,
@@ -623,7 +623,7 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color}}>
+                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
                             <Text
                               style={{
                                 color: Colors.black,

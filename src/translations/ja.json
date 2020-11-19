@@ -668,7 +668,9 @@
         "noteDeleted": "メモは正常に削除されました。",
         "notePosted": "メモは正常に投稿されました。",
         "selectChatText": "チャットを選択してチャット履歴を削除します",
-        "chatHistoryDelete": "選択したチャットのチャット履歴が削除されます。"
+        "chatHistoryDelete": "選択したチャットのチャット履歴が削除されます。",
+        "enterChannelId": "チャネルIDを入力してください。",
+        "alreadyFollowed": "あなたはすでにこのチャンネルをフォローしています。"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",
@@ -1015,7 +1017,12 @@
       "notes": "ノート",
       "reallyWannaRelease": "本当に解除しますか？",
       "ifYouCancelIt": "解除すると再フォローしない限り、同じチャンネルが見れません。",
-      "post": "確定"
+      "post": "確定",
+      "followChannel": "チャンネルをフォロー",
+      "channelId": "チャネルID",
+      "referralCode": "紹介コード",
+      "enterChannelId": "チャネルIDを入力してください",
+      "optional": "オプション"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

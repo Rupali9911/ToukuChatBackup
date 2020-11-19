@@ -169,6 +169,14 @@ class More extends Component {
             onPress={() => navigation.navigate('CreateGroupChat')}
             isImage={Icons.icon_create_group_chat}
           />
+
+          <SettingsItem
+            icon_name={'user'}
+            title={translate('pages.xchat.followChannel')}
+            onPress={() => navigation.navigate('FollowChannel')}
+            isImage={Icons.icon_follow_channel}
+          />
+
           {/*<SettingsItem*/}
           {/*icon_name={'user'}*/}
           {/*title={translate('pages.xchat.createChannel')}*/}

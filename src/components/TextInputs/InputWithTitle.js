@@ -24,14 +24,15 @@ export default class InputWithTitle extends Component {
   }
 
   render() {
-    const { onChangeText, title, value, placeholder } = this.props;
+    const { onChangeText, title, titleStyle, value, placeholder, keyboardType } = this.props;
     return (
       <View style={styles.container}>
-        {title && <Text style={styles.title}>{title}</Text>}
+        {title && <Text style={titleStyle?titleStyle:styles.title}>{title}</Text>}
         <TextInput
           style={styles.inputBox}
           onChangeText={onChangeText}
           value={value}
+          keyboardType={keyboardType?keyboardType:'default'}
           placeholder={placeholder ? placeholder : ''}
         />
       </View>

@@ -512,7 +512,7 @@ class GroupChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color}}>
+                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
                             <Text
                               style={{
                                 fontSize: normalize(12),
@@ -697,7 +697,7 @@ class GroupChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color}}>
+                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
                             <Text
                               style={{
                                 color: Colors.black,
