@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { View, TextInput, StyleSheet, Text, Platform } from 'react-native';
-import { Fonts, Colors } from '../../constants';
+import React, {Component} from 'react';
+import {View, TextInput, StyleSheet, Text, Platform} from 'react-native';
+import {Fonts, Colors} from '../../constants';
 
 export default class TextAreaWithTitle extends Component {
   constructor(props) {
@@ -28,30 +28,27 @@ export default class TextAreaWithTitle extends Component {
     } = this.props;
     return (
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <View
             style={{
               flex: rightTitle ? 0.5 : 1,
-            }}
-          >
+            }}>
             <Text
               style={[
                 styles.title,
-                titleFontColor && { color: titleFontColor },
-                titleFontSize && { fontSize: titleFontSize },
-              ]}
-            >
+                titleFontColor && {color: titleFontColor},
+                titleFontSize && {fontSize: titleFontSize},
+              ]}>
               {title}
             </Text>
           </View>
           {rightTitle && (
-            <View style={{ flex: 0.5, alignItems: 'flex-end' }}>
+            <View style={{flex: 0.5, alignItems: 'flex-end'}}>
               <Text
                 style={[
                   styles.rightFont,
-                  titleFontSize && { fontSize: titleFontSize - 2 },
-                ]}
-              >
+                  titleFontSize && {fontSize: titleFontSize - 2},
+                ]}>
                 {rightTitle}
               </Text>
             </View>
@@ -60,8 +57,8 @@ export default class TextAreaWithTitle extends Component {
         <TextInput
           style={[
             styles.textBox,
-            extraHeight && { height: extraHeight },
-            isBorder && { borderWidth: 1, borderColor: Colors.orange },
+            extraHeight && {height: extraHeight},
+            isBorder && {borderWidth: 1, borderColor: Colors.orange},
           ]}
           multiline={true}
           numberOfLines={10}

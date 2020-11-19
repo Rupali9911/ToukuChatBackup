@@ -70,6 +70,7 @@ export default class GroupFriend extends Component {
       dropDownData,
       isSelected,
       memberType,
+      isSmall,
     } = this.props;
     const {isAdded, onChecked} = this.state;
 
@@ -118,11 +119,22 @@ export default class GroupFriend extends Component {
           </View>
         )}
         <View style={[styles.subContainer, isRightDropDown && {flex: 0.7}]}>
-          <RoundedImage source={getAvatar(user.profile_picture ? user.profile_picture : user.avatar)} size={50} />
+          <RoundedImage
+            source={getAvatar(
+              user.profile_picture ? user.profile_picture : user.avatar,
+            )}
+            size={isSmall ? 38 : 50}
+          />
           <Text
             style={[
               globalStyles.smallLightText,
-              {color: Colors.black, textAlign: 'left', marginStart: 15,flexWrap: 'wrap', flex: 1,},
+              {
+                color: Colors.black,
+                textAlign: 'left',
+                marginStart: 15,
+                flexWrap: 'wrap',
+                flex: 1,
+              },
             ]}>
             {user.display_name}
           </Text>
@@ -150,7 +162,7 @@ export default class GroupFriend extends Component {
               }
               type={isMember ? 'primary' : 'translucent'}
               memberType={memberType}
-              height={30}
+              height={isSmall ? 23 : 30}
               onPress={this.onAddPress.bind(this)}
               dropDownData={dropDownData}
             />
@@ -171,6 +183,6 @@ const styles = StyleSheet.create({
   subContainer: {
     flex: 0.8,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 });

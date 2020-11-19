@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   View,
@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
-import { Menu } from 'react-native-paper';
-import { Colors, Fonts, Icons } from '../constants';
-import { globalStyles } from '../styles';
-const { width, height } = Dimensions.get('window');
+import {Menu} from 'react-native-paper';
+import {Colors, Fonts, Icons} from '../constants';
+import {globalStyles} from '../styles';
+const {width, height} = Dimensions.get('window');
 
 export default class ButtonWithArrow extends Component {
   constructor(props) {
@@ -27,7 +27,7 @@ export default class ButtonWithArrow extends Component {
   getGradientColors() {
     switch (this.props.type) {
       case 'primary':
-        return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
+        return [Colors.gradient_1, Colors.gradient_2, Colors.gradient_3];
       case 'secondary':
         return [Colors.gray, Colors.gray, Colors.gray];
       case 'transparent':
@@ -35,7 +35,7 @@ export default class ButtonWithArrow extends Component {
       case 'translucent':
         return ['transparent', 'transparent', 'transparent'];
       default:
-        return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
+        return [Colors.gradient_1, Colors.gradient_2, Colors.gradient_3];
     }
   }
 
@@ -109,7 +109,7 @@ export default class ButtonWithArrow extends Component {
       dropDownData,
       memberType,
     } = this.props;
-    const { visible } = this.state;
+    const {visible} = this.state;
     let renderMenu = (dropDownData) => {
       return dropDownData.map((item, index) => {
         return (
@@ -140,7 +140,7 @@ export default class ButtonWithArrow extends Component {
             title={item.title}
             onPress={() => {
               item.onPress(user.user_id ? user.user_id : user.id, memberType);
-              this.setState({ visible: false });
+              this.setState({visible: false});
             }}
           />
         );
@@ -163,19 +163,20 @@ export default class ButtonWithArrow extends Component {
           width: '51%',
           elevation: 0,
         }}
-        theme={{ animation: { scale: 0 } }}
+        theme={{animation: {scale: 0}}}
         visible={visible}
-        onDismiss={() => this.setState({ visible: false })}
+        onDismiss={() => this.setState({visible: false})}
         anchor={
           <TouchableOpacity
             disabled={disabled}
             activeOpacity={0.8}
-            onPress={() => this.setState({ visible: true })}
-          >
+            onPress={() => this.setState({visible: true})}>
             <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.5, y: 0.8 }}
-              locations={[0.1, 0.6, 1]}
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.5, y: 0.8}}
+              locations={[0.3, 0.5, 1]}
+              useAngle={true}
+              // angle={222.28}
               colors={this.getGradientColors()}
               style={[
                 styles.linearGradient,
@@ -194,37 +195,34 @@ export default class ButtonWithArrow extends Component {
                   borderBottomLeftRadius: 0,
                   borderBottomRightRadius: 0,
                 },
-              ]}
-            >
+              ]}>
               {loading ? (
                 <ActivityIndicator
                   size={'small'}
                   color={this.getIndicatorColor()}
                 />
               ) : (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text
                     style={[
                       globalStyles.normalRegularText,
-                      { color: this.getTitleColor(), flex: 0.9, fontSize: 14 },
+                      {color: this.getTitleColor(), flex: 0.9, fontSize: 14},
                     ]}
-                    adjustsFontSizeToFit
-                  >
+                    adjustsFontSizeToFit>
                     {title[0].toUpperCase() + title.slice(1)}
                   </Text>
                   <Image
                     source={Icons.icon_triangle_down}
                     style={[
                       styles.channelIcon,
-                      { tintColor: this.getImageTintColor() },
+                      {tintColor: this.getImageTintColor()},
                     ]}
                   />
                 </View>
               )}
             </LinearGradient>
           </TouchableOpacity>
-        }
-      >
+        }>
         <Menu.Item
           style={[
             styles.txtDrpDwn,
@@ -235,7 +233,7 @@ export default class ButtonWithArrow extends Component {
               minWidth: '100%',
             },
           ]}
-          onPress={() => this.setState({ visible: false })}
+          onPress={() => this.setState({visible: false})}
         />
         {renderMenu(dropDownData)}
       </Menu>

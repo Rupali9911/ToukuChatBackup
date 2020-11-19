@@ -1,6 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons, Fonts } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons, Fonts} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const groupDetailStyles = StyleSheet.create({
   mainContainer: {
@@ -8,16 +8,16 @@ export const groupDetailStyles = StyleSheet.create({
     paddingBottom: 50,
   },
   imageContainer: {
-    height: height * 0.18,
+    height: height * 0.13,
     justifyContent: 'center',
     alignItems: 'flex-end',
     flexDirection: 'row',
     marginBottom: 20,
   },
   imageView: {
-    height: height * 0.13,
-    width: height * 0.13,
-    borderWidth: 3,
+    height: height * 0.1,
+    width: height * 0.1,
+    borderWidth: 2,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -43,18 +43,18 @@ export const groupDetailStyles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 10,
     justifyContent: 'space-evenly',
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderBottomColor: Colors.gray,
     // paddingBottom: 10,
   },
   tabItem: {
     marginHorizontal: 10,
     alignItems: 'center',
-    paddingBottom: 10,
-    paddingHorizontal: 20,
+    paddingBottom: 5,
+    paddingHorizontal: 30,
   },
   tabTitle: {
-    fontSize: 16,
+    fontSize: 13,
     color: Colors.gradient_2,
   },
   searchContainer: {
@@ -82,5 +82,8 @@ export const groupDetailStyles = StyleSheet.create({
     width: 18,
     height: 18,
     resizeMode: 'contain',
+  },
+  frindListContainer: {
+    paddingHorizontal: 15,
   },
 });

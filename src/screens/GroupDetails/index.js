@@ -527,32 +527,35 @@ class GroupDetails extends Component {
           keyExtractor={(item, index) => index.toString()}
           data={filteredFriends}
           renderItem={({item, index}) => (
-            <GroupFriend
-              user={item}
-              onAddPress={(isAdded) => this.onAddFriend(isAdded, item)}
-              isMember={this.isMemberCheck(item.id ? item.id : item.user_Id)}
-              memberTitle={
-                this.isMemberCheck(item.id ? item.id : item.user_Id)
-                  ? this.isMemberCheck(item.id ? item.id : item.user_Id)
-                      .member_type
-                  : translate('pages.xchat.add')
-              }
-              isRightDropDown={this.state.isMyGroup}
-              dropDownData={
-                this.isMemberCheck(item.id ? item.id : item.user_Id)
-                  ? this.isMemberCheck(item.id ? item.id : item.user_Id)
-                      .member_type == 'member'
-                    ? memberOption
-                    : adminOption
-                  : addOption
-              }
-              memberType={
-                this.isMemberCheck(item.id ? item.id : item.user_Id)
-                  ? this.isMemberCheck(item.id ? item.id : item.user_Id)
-                      .member_type
-                  : 'add'
-              }
-            />
+            <View style={{marginVertical: 5}}>
+              <GroupFriend
+                user={item}
+                onAddPress={(isAdded) => this.onAddFriend(isAdded, item)}
+                isMember={this.isMemberCheck(item.id ? item.id : item.user_Id)}
+                memberTitle={
+                  this.isMemberCheck(item.id ? item.id : item.user_Id)
+                    ? this.isMemberCheck(item.id ? item.id : item.user_Id)
+                        .member_type
+                    : translate('pages.xchat.add')
+                }
+                isRightDropDown={this.state.isMyGroup}
+                dropDownData={
+                  this.isMemberCheck(item.id ? item.id : item.user_Id)
+                    ? this.isMemberCheck(item.id ? item.id : item.user_Id)
+                        .member_type == 'member'
+                      ? memberOption
+                      : adminOption
+                    : addOption
+                }
+                memberType={
+                  this.isMemberCheck(item.id ? item.id : item.user_Id)
+                    ? this.isMemberCheck(item.id ? item.id : item.user_Id)
+                        .member_type
+                    : 'add'
+                }
+                isSmall={true}
+              />
+            </View>
           )}
           ListFooterComponent={() => (
             <View>{loading ? <ListLoader /> : null}</View>
@@ -814,11 +817,13 @@ class GroupDetails extends Component {
                   <LinearGradient
                     start={{x: 0.1, y: 0.7}}
                     end={{x: 0.5, y: 0.2}}
-                    locations={[0.1, 0.6, 1]}
+                    locations={[0.1, 0.2, 1]}
+                    useAngle={true}
+                    angle={222.28}
                     colors={[
-                      Colors.gradient_1,
-                      Colors.gradient_2,
-                      Colors.gradient_3,
+                      Colors.header_gradient_1,
+                      Colors.header_gradient_2,
+                      Colors.header_gradient_3,
                     ]}
                     style={[
                       groupDetailStyles.profileImage,
@@ -856,7 +861,7 @@ class GroupDetails extends Component {
                 style={[
                   groupDetailStyles.tabItem,
                   isAbout && {
-                    borderBottomWidth: 5,
+                    borderBottomWidth: 4,
                     borderBottomColor: Colors.gradient_2,
                   },
                 ]}
@@ -881,7 +886,7 @@ class GroupDetails extends Component {
                 style={[
                   groupDetailStyles.tabItem,
                   isManage && {
-                    borderBottomWidth: 5,
+                    borderBottomWidth: 4,
                     borderBottomColor: Colors.gradient_2,
                   },
                 ]}
@@ -906,7 +911,7 @@ class GroupDetails extends Component {
                 style={[
                   groupDetailStyles.tabItem,
                   isNotes && {
-                    borderBottomWidth: 5,
+                    borderBottomWidth: 4,
                     borderBottomColor: Colors.gradient_2,
                   },
                 ]}
@@ -956,7 +961,7 @@ class GroupDetails extends Component {
                 </View>
               </React.Fragment>
             ) : isAbout ? (
-              <React.Fragment>
+              <View style={{paddingLeft: 10}}>
                 {isEdit ? (
                   isMyGroup && (
                     <View style={{marginBottom: 10}}>
@@ -970,9 +975,10 @@ class GroupDetails extends Component {
 
                       <TextAreaWithTitle
                         onChangeText={(text) => this.setState({note: text})}
-                        title={translate(`pages.xchat.note`)}
+                        title={translate(`pages.xchat.description`)}
                         value={note}
                         rightTitle={`${note.length}/3000`}
+                        titleFontColor={Colors.gradient_2}
                         maxLength={3000}
                       />
                     </View>
@@ -981,7 +987,11 @@ class GroupDetails extends Component {
                   <React.Fragment>
                     <View style={{marginBottom: 10}}>
                       <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginBottom: 10,
+                        }}>
                         <Text
                           style={{
                             color: Colors.gradient_2,
@@ -1010,14 +1020,18 @@ class GroupDetails extends Component {
                     </View>
                     <View style={{marginBottom: 10}}>
                       <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginBottom: 10,
+                        }}>
                         <Text
                           style={{
                             color: Colors.gradient_2,
                             fontSize: 16,
                             fontFamily: Fonts.regular,
                           }}>
-                          {translate(`pages.xchat.note`)}
+                          {translate(`pages.xchat.description`)}
                         </Text>
                         {isMyGroup && (
                           <TouchableOpacity
@@ -1059,16 +1073,6 @@ class GroupDetails extends Component {
                         fontType={'smallRegularText'}
                         height={40}
                       />
-                      <Button
-                        title={translate(`pages.xchat.deleteGroup`)}
-                        onPress={this.toggleDeleteGroupConfirmationModal.bind(
-                          this,
-                        )}
-                        isRounded={false}
-                        type={'secondary'}
-                        fontType={'smallRegularText'}
-                        height={40}
-                      />
                     </React.Fragment>
                   )
                 ) : (
@@ -1078,7 +1082,7 @@ class GroupDetails extends Component {
                     isRounded={false}
                   />
                 )}
-              </React.Fragment>
+              </View>
             ) : (
               <CommonNotes
                 data={this.state.data}
