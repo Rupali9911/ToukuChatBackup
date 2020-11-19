@@ -1,8 +1,8 @@
 import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import {KAKAO_API_KEY,apiRoot} from '../../helpers/api'
-import Toast from "../../components/Toast";
-import {translate} from "./languageReducer";
+import {KAKAO_API_KEY, apiRoot} from '../../helpers/api';
+import Toast from '../../components/Toast';
+import {translate} from './languageReducer';
 import axios from 'axios';
 
 export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
@@ -231,32 +231,32 @@ export const kakaoRegister = (socialLoginData) => (dispatch) =>
   });
 
 export const appleRegister = (socialLoginData) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        client
-            .post(`/xchat/apple-login-auth/`, socialLoginData)
-            .then((res) => {
-                if (res.token) {
-                    AsyncStorage.setItem('socialToken', res.token);
-                    // dispatch(getLoginSuccess(res.token))
-                }
-                resolve(res);
-            })
-            .catch((err) => {
-                // reject(err);
-                console.log('Error from Apple login', err)
-                if (err.response) {
-                    console.log('Error from Apple login', err.response)
-                    if (err.response.data) {
-                        console.log('Error from Apple login', err.response.data)
-                        Toast.show({
-                            title: 'Login Failed',
-                            text: translate(err.response.data.toString()),
-                            type: 'primary',
-                        });
-                    }
-                }
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/apple-login-auth/`, socialLoginData)
+      .then((res) => {
+        if (res.token) {
+          AsyncStorage.setItem('socialToken', res.token);
+          // dispatch(getLoginSuccess(res.token))
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        // reject(err);
+        console.log('Error from Apple login', err);
+        if (err.response) {
+          console.log('Error from Apple login', err.response);
+          if (err.response.data) {
+            console.log('Error from Apple login', err.response.data);
+            Toast.show({
+              title: 'Login Failed',
+              text: translate(err.response.data.toString()),
+              type: 'primary',
             });
-          })
+          }
+        }
+      });
+  });
 
 export const getAccessCodeKakao = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -296,56 +296,60 @@ export const getUserProfile = () => (dispatch) =>
   });
 
 export const uploadAvatar = (data, token) => (dispatch) =>
-    new Promise(function (resolve, reject) {
-        dispatch(getUploadAvatarRequest());
-        // client
-        //   .post(`/avatar-upload/`, data)
-        //   .then((res) => {
-        //     dispatch(getUploadAvatarSuccess());
-        //     resolve(res);
-        //   })
-        //   .catch((err) => {
-        //     dispatch(getUploadAvatarFailure());
-        //     reject(err);
-        //   });
+  new Promise(function (resolve, reject) {
+    dispatch(getUploadAvatarRequest());
+    // client
+    //   .post(`/avatar-upload/`, data)
+    //   .then((res) => {
+    //     dispatch(getUploadAvatarSuccess());
+    //     resolve(res);
+    //   })
+    //   .catch((err) => {
+    //     dispatch(getUploadAvatarFailure());
+    //     reject(err);
+    //   });
 
-        let name = uuid.v4()
-         let formData = new FormData();
-         formData.append('avatar_thumbnail', {
-             uri: data.replace('file://', ''),
-             mineType: 'image/jpeg',
-             fileType: 'image/jpg',
-             type: 'image/jpg',
-             name: name + '.jpg'
-         });
-         formData.append('avatar', {
-             uri: data.replace('file://', ''),
-             mineType: 'image/jpeg',
-             fileType: 'image/jpg',
-             type: 'image/jpg',
-             name: name + '.jpg'
-         });
+    let name = uuid.v4();
+    let formData = new FormData();
+    formData.append('avatar_thumbnail', {
+      uri: data.replace('file://', ''),
+      mineType: 'image/jpeg',
+      fileType: 'image/jpg',
+      type: 'image/jpg',
+      name: name + '.jpg',
+    });
+    formData.append('avatar', {
+      uri: data.replace('file://', ''),
+      mineType: 'image/jpeg',
+      fileType: 'image/jpg',
+      type: 'image/jpg',
+      name: name + '.jpg',
+    });
 
-        setTimeout(() => {
-
-         console.log('Token and Form Data', token, formData)
-         axios.post(`${apiRoot}/avatar-upload/`,formData, {headers: {
-                 'Content-Type': 'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
-                 'User-Agent': userAgent,
-                 'Origin': 'touku',
-                 'Authorization': token,
-             },
-         }).then((resp) => {
-             console.log('uploadAvatar API responser', resp);
-             dispatch(getUploadAvatarSuccess());
-             resolve(resp);
-         }).catch(err => {
-             console.log('uploadAvatar API response',err.response);
-             dispatch(getUploadAvatarFailure());
-             reject(err);
-         });
-        }, 1000);
-});
+    setTimeout(() => {
+      console.log('Token and Form Data', token, formData);
+      axios
+        .post(`${apiRoot}/avatar-upload/`, formData, {
+          headers: {
+            'Content-Type':
+              'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
+            'User-Agent': userAgent,
+            Origin: 'touku',
+            Authorization: token,
+          },
+        })
+        .then((resp) => {
+          console.log('uploadAvatar API responser', resp);
+          dispatch(getUploadAvatarSuccess());
+          resolve(resp);
+        })
+        .catch((err) => {
+          console.log('uploadAvatar API response', err.response);
+          dispatch(getUploadAvatarFailure());
+          reject(err);
+        });
+    }, 1000);
+  });
 
 export const changeNameDetails = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {

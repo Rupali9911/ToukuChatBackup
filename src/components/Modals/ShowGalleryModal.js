@@ -42,8 +42,8 @@ class ShowGalleryModal extends Component {
     return (
       <Modal
         isVisible={visible}
-        onBackButtonPress={() => toggleGalleryModal(false)}
-        onBackdropPress={() => toggleGalleryModal(false)}>
+        onBackButtonPress={onCancel}
+        onBackdropPress={onCancel}>
         <SafeAreaView
           style={{
             // flex: '10%',
@@ -91,8 +91,10 @@ class ShowGalleryModal extends Component {
                     paddingHorizontal: 5,
                     justifyContent: 'center',
                     alignItems: 'center',
+                    paddingRight: 10,
+                    alignItems: 'flex-end',
                   }}
-                  onPress={() => toggleGalleryModal(false)}>
+                  onPress={onCancel}>
                   <Image
                     source={Icons.icon_close}
                     style={{

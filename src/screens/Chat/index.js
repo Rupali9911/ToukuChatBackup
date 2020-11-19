@@ -355,7 +355,7 @@ class Chat extends Component {
     //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
-      JSON.stringify(message.text.data),
+      message.text.data.type,
       this.props.currentRouteName,
     );
     if (message.text.data.socket_event_id) {
@@ -1054,8 +1054,22 @@ class Chat extends Component {
     const {userData, followingChannels, currentChannel} = this.props;
     if (
       message.text.data.type ===
-      SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
+        SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL &&
+      message.text.data.message_details.length > 0
     ) {
+      var channelUpdated = getChannelsById(
+        message.text.data.message_details[
+          message.text.data.message_details.length - 1
+        ].channel,
+      );
+      if (
+        channelUpdated[0].last_msg &&
+        message.text.data.message_details[
+          message.text.data.message_details.length - 1
+        ].id === channelUpdated[0].last_msg.id
+      ) {
+        return;
+      }
       for (let item of message.text.data.message_details) {
         var channel = getChannelsById(item.channel);
         if (channel && channel.length > 0) {

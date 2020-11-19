@@ -41,8 +41,8 @@ class ShowAttahmentModal extends Component {
     return (
       <Modal
         isVisible={visible}
-        onBackButtonPress={() => toggleAttachmentModal(false)}
-        onBackdropPress={() => toggleAttachmentModal(false)}>
+        onBackButtonPress={onCancel}
+        onBackdropPress={onCancel}>
         <SafeAreaView
           style={{
             // flex: '10%',
@@ -89,9 +89,10 @@ class ShowAttahmentModal extends Component {
                     flex: 1,
                     paddingHorizontal: 5,
                     justifyContent: 'center',
-                    alignItems: 'center',
+                    paddingRight: 10,
+                    alignItems: 'flex-end',
                   }}
-                  onPress={() => toggleAttachmentModal(false)}>
+                  onPress={onCancel}>
                   <Image
                     source={Icons.icon_close}
                     style={{
