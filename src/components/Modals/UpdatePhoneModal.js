@@ -145,7 +145,7 @@ class UpdatePhoneModal extends Component {
           Toast.show({
             title: translate('pages.xchat.toukuPoints'),
             text: translate('pages.register.toastr.phoneNumberAdded'),
-            type: 'primary',
+            type: 'positive',
           });
           setTimeout(() => {
             this.props.onRequestClose();
