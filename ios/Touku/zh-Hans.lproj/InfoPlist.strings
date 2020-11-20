@@ -1,0 +1,13 @@
+/* 
+  InfoPlist.strings
+  Touku
+
+  Created by Apple on 26/08/20.
+  
+*/
+NSCameraUsageDescription = "App requires to access your camera to show image on profile and send via chat";
+NSDocumentsFolderUsageDescription = "App requires to access your documents folder to documents files";
+NSDownloadsFolderUsageDescription = "App requires to access your download folder to download files";
+NSFileProviderDomainUsageDescription = "App requires to access your flis to documents files";
+NSLocationWhenInUseUsageDescription = "App requires to access your location for better user experience";
+NSPhotoLibraryUsageDescription = "App requires to access your photo library to show image on profile and send via chat";

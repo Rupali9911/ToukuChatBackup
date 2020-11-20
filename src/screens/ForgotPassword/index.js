@@ -332,6 +332,7 @@ class ForgotPassword extends Component {
                 <Inputfield
                   isRightSideBtn={true}
                   rightBtnText={translate('common.sms')}
+                  //rightBtnText={'OTP'}
                   placeholder={translate('common.enterUsername')}
                   value={this.state.userName}
                   onChangeText={(userName) => this.handleUserName(userName)}
