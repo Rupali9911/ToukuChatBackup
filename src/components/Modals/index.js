@@ -9,6 +9,7 @@ import AffilicateModal from './AffilicateModal';
 import UploadSelectModal from './UploadSelectModal';
 import ShowAttahmentModal from './ShowAttahmentModal';
 import ShowGalleryModal from './ShowGalleryModal';
+import UpdatePhoneModal from './UpdatePhoneModal';
 
 export {
   ProfileModal,
@@ -22,4 +23,5 @@ export {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
+  UpdatePhoneModal
 };

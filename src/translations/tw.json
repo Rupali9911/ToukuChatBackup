@@ -220,7 +220,8 @@
         "emailExist": "該電子郵件已被註冊。",
         "termsAndCondition": "您尚未接受條款和條件",
         "enterCorrectOTP": "請輸入正確的驗證碼",
-        "enterUsername": "輸入用戶名"
+        "enterUsername": "輸入用戶名",
+        "phoneNumberAdded": "電話號碼已成功添加。"
       },
       "reEnterLoginPassword": "重新輸入登錄密碼",
       "suggestions": "意見建議",
@@ -1021,7 +1022,9 @@
       "channelId": "頻道編號",
       "referralCode": "推薦碼",
       "enterChannelId": "請輸入頻道編號",
-      "optional": "可選的"
+      "optional": "可選的",
+      "PleaseEnterOtp": "請輸入OTP。",
+      "verify": "校驗"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",
@@ -1055,7 +1058,8 @@
     "yesSure": "是的，當然！",
     "ok": "好的",
     "agree": "同意",
-    "goBack": "返回"
+    "goBack": "返回",
+    "NeedToAddPhoneNumber": "您必須添加電話號碼才能獲得登錄獎勵。"
   },
   "toastr": {
     "pleaseEnterYourPassword": "請輸入您的密碼",

@@ -146,7 +146,8 @@
     "or": "Or",
     "continueWithApple": "Continue with Apple",
     "usernameText": "username",
-    "resetPasswordToaster": "Reset Password"
+    "resetPasswordToaster": "Reset Password",
+    "verify": "Verify"
   },
   "messages": {
     "required": "{{field}} is required"
@@ -220,7 +221,8 @@
         "emailExist": "The email is already registered.",
         "termsAndCondition": "You have not accepted terms and conditions",
         "enterCorrectOTP": "Please enter correct verification code",
-        "enterUsername": "Please enter your username"
+        "enterUsername": "Please enter your username",
+        "phoneNumberAdded": "Phone number added successfully."
       },
       "reEnterLoginPassword": "Re-enter log in password",
       "suggestions": "Suggestions",
@@ -1020,7 +1022,8 @@
       "channelId": "Channel ID",
       "referralCode": "Referral Code",
       "enterChannelId": "Please enter channel ID",
-      "optional": "Optional"
+      "optional": "Optional",
+      "PleaseEnterOtp": "Please enter OTP."
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",
@@ -1054,7 +1057,8 @@
     "yesSure": "Yes, Sure!",
     "ok": "Okay",
     "agree": "Agree",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "NeedToAddPhoneNumber": "You must need to add phone number to earn login bonus."
   },
   "toastr": {
     "pleaseEnterYourPassword": "Please enter your password",

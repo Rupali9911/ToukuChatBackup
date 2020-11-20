@@ -21,7 +21,7 @@ import * as moment from 'moment';
 import {Colors, Fonts, Images, Icons, environment} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
-import {ChangePassModal, ChangeEmailModal, ChangeNameModal} from '../Modals';
+import {ChangePassModal, ChangeEmailModal, ChangeNameModal, UpdatePhoneModal} from '../Modals';
 import {getAvatar, getImage, normalize} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
@@ -31,6 +31,7 @@ import {getUserProfile, uploadAvatar} from '../../redux/reducers/userReducer';
 import AsyncStorage from '@react-native-community/async-storage';
 import Toast from '../ToastModal';
 import Modal from 'react-native-modal';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -39,6 +40,7 @@ class UserProfile extends Component {
       isChangePassModalVisible: false,
       isChangeEmailModalVisible: false,
       isChangeNameModalVisible: false,
+      isUpdatePhoneModalVisible: false,
       backgroundImagePath: {uri: this.props.userConfig.background_image},
       profileImagePath: {uri: this.props.userData.avatar},
     };
@@ -164,6 +166,7 @@ class UserProfile extends Component {
       isChangePassModalVisible,
       isChangeEmailModalVisible,
       isChangeNameModalVisible,
+      isUpdatePhoneModalVisible,
       backgroundImagePath,
       profileImagePath,
       uploadLoading,
@@ -319,17 +322,34 @@ class UserProfile extends Component {
             onEditIconPress={() => this.onShowChangeEmailModal()}
           />
 
-          <ProfileItem
+          {userData.country?<ProfileItem
             title={translate('common.country')}
             value={userData.country}
             editable={false}
-          />
+          />:null}
 
-          <ProfileItem
+          {userData.phone ? <ProfileItem
             title={translate('common.phone')}
             value={userData.phone}
             editable={false}
           />
+            : <View style={styles.inputTextContainer}>
+              <View style={{ flex: 1 }}>
+                <Text style={[globalStyles.smallRegularText, styles.textNormal, { fontFamily: Fonts.nunitoSansJPLight }]}>
+                  {translate('common.phone')}
+                </Text>
+              </View>
+                <FontAwesome
+                  name={'plus'}
+                  size={18}
+                  color={'#638bbb'}
+                  style={{padding:5}}
+                  onPress={()=>{
+                    this.setState({isUpdatePhoneModalVisible:true});
+                  }}
+                />
+            </View>}
+
         </KeyboardAwareScrollView>
         <View style={{position: 'absolute', width: '100%', top: 0}}>
           <Toast
@@ -354,6 +374,12 @@ class UserProfile extends Component {
           visible={isChangeNameModalVisible}
           onRequestClose={() =>
             this.setState({isChangeNameModalVisible: false})
+          }
+        />
+        <UpdatePhoneModal
+          visible={isUpdatePhoneModalVisible}
+          onRequestClose={() =>
+            this.setState({ isUpdatePhoneModalVisible: false })
           }
         />
       </View>

@@ -61,6 +61,7 @@ import {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
+  UpdatePhoneModal
 } from '../../components/Modals';
 import {eventService, normalize} from '../../utils';
 import Toast from '../../components/Toast';
@@ -100,6 +101,8 @@ class ChannelChats extends Component {
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showPhoneUpdateModal: false,
+      isUpdatePhoneModalVisible: false,
       showSelectModal: false,
       uploadedFiles: [],
       showAttachmentModal: false,
@@ -769,7 +772,14 @@ class ChannelChats extends Component {
   };
 
   selectedLoginBonus = (key) => {
+
+    if(!this.props.userData.phone){
+      this.setState({showPhoneUpdateModal:true});
+      return;
+    }
+
     this.setState({loadingJackpot: true});
+
     this.props
       .selectLoginJackpotOfChannel({picked_option: key})
       .then((res) => {
@@ -1101,6 +1111,7 @@ class ChannelChats extends Component {
       showConfirmationModal,
       showMessageUnSendConfirmationModal,
       showMessageDeleteConfirmationModal,
+      showPhoneUpdateModal,
       uploadFile,
       sendingMedia,
       isChatLoading,
@@ -1256,6 +1267,7 @@ class ChannelChats extends Component {
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showPhoneUpdateModal: false,
     });
   };
 
@@ -1375,6 +1387,7 @@ class ChannelChats extends Component {
 
   render() {
     const {currentChannel} = this.props;
+    const {showPhoneUpdateModal,orientation,isUpdatePhoneModalVisible} = this.state;
     return (
       <View
         // source={Images.image_home_bg}
@@ -1649,8 +1662,30 @@ class ChannelChats extends Component {
                 />
               </TouchableOpacity>
             </ImageBackground>
+            <ConfirmationModal
+              visible={showPhoneUpdateModal}
+              onCancel={this.onCancel.bind(this)}
+              onConfirm={()=>{
+                this.setState({showPhoneUpdateModal:false},()=>{
+                  setTimeout(()=>{
+                    this.setState({isUpdatePhoneModalVisible:true});
+                  },500);
+                });
+              }}
+              orientation={orientation}
+              confirmText={translate('swal.ok')}
+              title={translate('pages.xchat.touku')}
+              message={translate('swal.NeedToAddPhoneNumber')}
+            />
+            <UpdatePhoneModal
+              visible={isUpdatePhoneModalVisible}
+              onRequestClose={() =>
+                this.setState({ isUpdatePhoneModalVisible: false })
+              }
+            />
           </View>
         </Modal>
+
       </View>
     );
   }

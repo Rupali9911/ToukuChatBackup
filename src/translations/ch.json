@@ -146,7 +146,8 @@
     "or": "要么",
     "continueWithApple": "使用Apple登录",
     "usernameText": "输入用户名",
-    "resetPasswordToaster": "重置密码"
+    "resetPasswordToaster": "重置密码",
+    "verify": "校验"
   },
   "messages": {
     "required": "规定的（必填）"
@@ -220,7 +221,8 @@
         "emailExist": "该电子邮件已被注册。",
         "termsAndCondition": "您尚未接受条款和条件",
         "enterCorrectOTP": "请输入正确的验证码",
-        "enterUsername": "输入用户名"
+        "enterUsername": "输入用户名",
+        "phoneNumberAdded": "电话号码已成功添加。"
       },
       "reEnterLoginPassword": "重新输入登录密码",
       "suggestions": "意见建议",
@@ -1021,7 +1023,8 @@
       "channelId": "频道编号",
       "referralCode": "推荐码",
       "enterChannelId": "请输入频道编号",
-      "optional": "可选的"
+      "optional": "可选的",
+      "PleaseEnterOtp": "请输入OTP。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",
@@ -1055,7 +1058,8 @@
     "yesSure": "是的，当然！",
     "ok": "好的",
     "agree": "同意",
-    "goBack": "返回"
+    "goBack": "返回",
+    "NeedToAddPhoneNumber": "您必须添加电话号码才能获得登录奖励。"
   },
   "toastr": {
     "pleaseEnterYourPassword": "请输入您的密码",

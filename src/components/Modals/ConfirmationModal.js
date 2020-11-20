@@ -28,6 +28,7 @@ export default class ConfirmationModal extends Component {
       onCancel,
       onConfirm,
       title,
+      confirmText,
       message,
       orientation,
       isLoading,
@@ -66,7 +67,7 @@ export default class ConfirmationModal extends Component {
                   marginLeft: 10,
                 }}>
                 <Button
-                  title={translate('pages.xchat.toastr.sure')}
+                  title={confirmText?confirmText:translate('pages.xchat.toastr.sure')}
                   type={'primary'}
                   onPress={isLoading ? null : onConfirm}
                   isRounded={false}

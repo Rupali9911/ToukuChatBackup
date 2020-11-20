@@ -7,7 +7,7 @@ import SingleSocket from './SingleSocket';
 import {resetData} from '../storage/Service';
 
 /* switch this for testing on staging or production */
-export const staging = true;
+export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -66,7 +66,7 @@ client.interceptors.request.use(
 // Add a response interceptor
 client.interceptors.response.use(
   function (response) {
-    //alert(JSON.stringify(response));
+    console.log(JSON.stringify(response));
     if (response.data) {
       return response.data;
     } else if (response.status === 401) {

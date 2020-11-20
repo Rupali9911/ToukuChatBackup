@@ -146,7 +146,8 @@
     "or": "\ub610\ub294",
     "continueWithApple": "Apple 계속",
     "usernameText": "\uc0ac\uc6a9\uc790 \uc774\ub984\uc744 \uc785\ub825",
-    "resetPasswordToaster": "\ube44\ubc00\ubc88\ud638 \uc7ac\uc124\uc815"
+    "resetPasswordToaster": "\ube44\ubc00\ubc88\ud638 \uc7ac\uc124\uc815",
+    "verify": "검증"
   },
   "messages": {
     "required": "{{field}} \uc774(\uac00) \ud544\uc694\ud569\ub2c8\ub2e4"
@@ -220,7 +221,8 @@
         "emailExist": "\uc774\uba54\uc77c\uc774 \uc774\ubbf8 \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
         "termsAndCondition": "\uc774\uc6a9\uc57d\uad00\uc5d0 \ub3d9\uc758\ud558\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4",
         "enterCorrectOTP": "\uc62c\ubc14\ub978 \uc778\uc99d \ucf54\ub4dc\ub97c \uc785\ub825\ud558\uc2ed\uc2dc\uc624",
-        "enterUsername": "\uc0ac\uc6a9\uc790\uba85\uc744 \uc785\ub825\ud558\uc2ed\uc2dc\uc624"
+        "enterUsername": "\uc0ac\uc6a9\uc790\uba85\uc744 \uc785\ub825\ud558\uc2ed\uc2dc\uc624",
+        "phoneNumberAdded": "전화 번호가 성공적으로 추가되었습니다."
       },
       "reEnterLoginPassword": "\ube44\ubc00\ubc88\ud638\ub97c \ub2e4\uc2dc \uc785\ub825\ud574\uc8fc\uc138\uc694",
       "suggestions": "\uc81c\uc548",
@@ -1022,7 +1024,8 @@
       "channelId": "채널 ID",
       "referralCode": "추천 코드",
       "enterChannelId": "채널 ID를 입력하세요",
-      "optional": "선택 과목"
+      "optional": "선택 과목",
+      "PleaseEnterOtp": "OTP를 입력하세요."
     },
     "welcome": {
       "theWorldIsConnected": "\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",
@@ -1056,7 +1059,8 @@
     "yesSure": "\ub124, \ubb3c\ub860\uc785\ub2c8\ub2e4!",
     "ok": "\ub124",
     "agree": "\ub3d9\uc758\ud568",
-    "goBack": "\ub3cc\uc544\uac00\uae30"
+    "goBack": "\ub3cc\uc544\uac00\uae30",
+    "NeedToAddPhoneNumber": "로그인 보너스를 받으려면 전화 번호를 추가해야합니다."
   },
   "toastr": {
     "pleaseEnterYourPassword": "\ube44\ubc00\ubc88\ud638\ub97c \uc785\ub825\ud574 \uc8fc\uc138\uc694 ",

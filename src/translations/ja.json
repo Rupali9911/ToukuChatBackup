@@ -146,7 +146,8 @@
     "or": "または",
     "continueWithApple": "Appleでサインイン",
     "usernameText": "ユーザーネームを入力",
-    "resetPasswordToaster": "認証コードを送信"
+    "resetPasswordToaster": "認証コードを送信",
+    "verify": "確認"
   },
   "messages": {
     "required": "{{field}} 必須"
@@ -220,7 +221,8 @@
         "emailExist": "メールは既に登録されています。",
         "termsAndCondition": "利用規約に同意していません",
         "enterCorrectOTP": "正しい確認コードを入力してください",
-        "enterUsername": "ユーザー名を入力してください"
+        "enterUsername": "ユーザー名を入力してください",
+        "phoneNumberAdded": "電話番号が正常に追加されました。"
       },
       "reEnterLoginPassword": "確認用に同じログインパスワードを再入力",
       "suggestions": "提案",
@@ -1022,7 +1024,8 @@
       "channelId": "チャネルID",
       "referralCode": "紹介コード",
       "enterChannelId": "チャネルIDを入力してください",
-      "optional": "オプション"
+      "optional": "オプション",
+      "PleaseEnterOtp": "OTPを入力してください。"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",
@@ -1056,7 +1059,8 @@
     "yesSure": "はい",
     "ok": "はい",
     "agree": "同意",
-    "goBack": "戻る"
+    "goBack": "戻る",
+    "NeedToAddPhoneNumber": "ログインボーナスを獲得するには、電話番号を追加する必要があります。"
   },
   "toastr": {
     "pleaseEnterYourPassword": "パスワードを入力",
