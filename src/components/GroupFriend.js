@@ -162,7 +162,7 @@ export default class GroupFriend extends Component {
               }
               type={isMember ? 'primary' : 'translucent'}
               memberType={memberType}
-              height={isSmall ? 23 : 30}
+              height={30}
               onPress={this.onAddPress.bind(this)}
               dropDownData={dropDownData}
             />

@@ -435,7 +435,7 @@ export default class App extends Component {
             <Root>
               <View style={{flex: 1}}>
                 <StatusBar barStyle="light-content" translucent />
-                <InternetInfo />
+                {/* <InternetInfo /> */}
                 <Routes
                   ref={(navigatorRef) => {
                     NavigationService.setTopLevelNavigator(navigatorRef);

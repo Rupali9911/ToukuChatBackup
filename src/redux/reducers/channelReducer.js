@@ -326,6 +326,8 @@ export const getFollowingChannels = (start = 0) => (dispatch) =>
           dispatch(setUnreadChannelMsgsCounts(counts));
           dispatch(getFollowingChannelsSuccess(array));
         } else {
+          dispatch(setUnreadChannelMsgsCounts(0));
+          dispatch(getFollowingChannelsSuccess([]));
           dispatch(getFollowingChannelsFailure());
         }
         resolve(res);

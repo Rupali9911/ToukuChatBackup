@@ -310,7 +310,7 @@ class GroupChatMessageBubble extends Component {
     return groupMentions.join('|');
   };
 
-  renderMessageWitMentions = (msg='') => {
+  renderMessageWitMentions = (msg = '') => {
     const {groupMembers} = this.props;
     let splitNewMessageText = msg.split(' ');
     let newMessageMentions = [];
@@ -512,7 +512,10 @@ class GroupChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
+                            linkStyle={{
+                              color: Colors.link_color,
+                              textDecorationLine: 'underline',
+                            }}>
                             <Text
                               style={{
                                 fontSize: normalize(12),
@@ -556,13 +559,23 @@ class GroupChatMessageBubble extends Component {
                 </View>
               </Animated.View>
             ) : (
-              <Animated.View style={[styles.talkBubble, (message.message_body && message.message_body.type === 'image')?{marginVertical:5}:{}, animatedStyle]}>
-                {(message.message_body && message.message_body.type === 'image')?null:<View
-                  style={[
-                    styles.talkBubbleAbsoluteRight,
-                    message.is_unsent && {borderLeftColor: Colors.gray},
-                  ]}
-                />}
+              <Animated.View
+                style={[
+                  styles.talkBubble,
+                  message.message_body && message.message_body.type === 'image'
+                    ? {marginVertical: 5}
+                    : {},
+                  animatedStyle,
+                ]}>
+                {message.message_body &&
+                message.message_body.type === 'image' ? null : (
+                  <View
+                    style={[
+                      styles.talkBubbleAbsoluteRight,
+                      message.is_unsent && {borderLeftColor: Colors.gray},
+                    ]}
+                  />
+                )}
                 {message.is_unsent ? (
                   <View
                     style={[
@@ -600,7 +613,11 @@ class GroupChatMessageBubble extends Component {
                       {
                         minHeight: 40,
                         borderRadius: borderRadius,
-                        backgroundColor: (message.message_body && message.message_body.type === 'image')?'transparent':Colors.pink_chat,
+                        backgroundColor:
+                          message.message_body &&
+                          message.message_body.type === 'image'
+                            ? 'transparent'
+                            : Colors.pink_chat,
                       },
                       message.message_body.type === 'audio' && {
                         minWidth: '100%',
@@ -697,7 +714,10 @@ class GroupChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
+                            linkStyle={{
+                              color: Colors.link_color,
+                              textDecorationLine: 'underline',
+                            }}>
                             <Text
                               style={{
                                 color: Colors.black,

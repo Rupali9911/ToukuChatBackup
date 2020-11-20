@@ -1093,25 +1093,69 @@ class Home extends Component {
   }
 
   onOpenChannelChats = (item) => {
-    console.log('Home -> onOpenChannelChats -> item', item);
-    this.props.setCurrentChannel(item);
-    this.props.navigation.navigate('ChannelChats');
+    NetInfo.fetch().then((state) => {
+      console.log('Is connected?', state.isConnected);
+      if (state.isConnected) {
+        console.log('Home -> onOpenChannelChats -> item', item);
+        this.props.setCurrentChannel(item);
+        this.props.navigation.navigate('ChannelChats');
+      } else {
+        Toast.show({
+          title: 'Touku',
+          text: translate(`common.networkError`),
+          type: 'primary',
+        });
+      }
+    });
   };
 
   onOpenGroupChats = (item) => {
-    this.props.setCurrentGroup(item);
-    this.props.navigation.navigate('GroupChats');
+    NetInfo.fetch().then((state) => {
+      console.log('Is connected?', state.isConnected);
+      if (state.isConnected) {
+        this.props.setCurrentGroup(item);
+        this.props.navigation.navigate('GroupChats');
+      } else {
+        Toast.show({
+          title: 'Touku',
+          text: translate(`common.networkError`),
+          type: 'primary',
+        });
+      }
+    });
   };
 
   onOpenFriendChats = (item) => {
-    this.props.setCurrentFriend(item);
-    this.props.navigation.navigate('FriendChats');
+    NetInfo.fetch().then((state) => {
+      console.log('Is connected?', state.isConnected);
+      if (state.isConnected) {
+        this.props.setCurrentFriend(item);
+        this.props.navigation.navigate('FriendChats');
+      } else {
+        Toast.show({
+          title: 'Touku',
+          text: translate(`common.networkError`),
+          type: 'primary',
+        });
+      }
+    });
   };
 
   onOpenFriendDetails = (item) => {
-    console.log('item', item);
-    this.props.setCurrentFriend(item);
-    this.props.navigation.navigate('FriendNotes');
+    NetInfo.fetch().then((state) => {
+      console.log('Is connected?', state.isConnected);
+      if (state.isConnected) {
+        console.log('item', item);
+        this.props.setCurrentFriend(item);
+        this.props.navigation.navigate('FriendNotes');
+      } else {
+        Toast.show({
+          title: 'Touku',
+          text: translate(`common.networkError`),
+          type: 'primary',
+        });
+      }
+    });
   };
 
   handleLoadMoreChannels = () => {

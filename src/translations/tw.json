@@ -146,7 +146,9 @@
     "or": "要么",
     "continueWithApple": "使用Apple登錄",
     "usernameText": "輸入用戶名",
-    "resetPasswordToaster": "重置密碼"
+    "resetPasswordToaster": "重置密碼",
+    "verify": "校驗",
+    "networkError": "互联网连接速度慢或没有。请检查您的互联网连接"
   },
   "messages": {
     "required": "規定的（必填）"
@@ -959,7 +961,7 @@
       "notes": "筆記",
       "addTags": "添加標籤",
       "noNotesFound": "找不到筆記。",
-      "notesFoundText": "單擊右上角的“ +”創建一個。",
+      "notesFoundText": "單擊“ +”創建一個。",
       "createResponse": "建立回應",
       "addNote": "加註",
       "pinThisChat": "固定此聊天",
@@ -1024,7 +1026,8 @@
       "enterChannelId": "請輸入頻道編號",
       "optional": "可選的",
       "PleaseEnterOtp": "請輸入OTP。",
-      "verify": "校驗"
+      "verify": "校驗",
+      "addNewNote": "在這裡寫新筆記"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

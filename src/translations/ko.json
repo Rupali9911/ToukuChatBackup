@@ -147,7 +147,8 @@
     "continueWithApple": "Apple 계속",
     "usernameText": "\uc0ac\uc6a9\uc790 \uc774\ub984\uc744 \uc785\ub825",
     "resetPasswordToaster": "\ube44\ubc00\ubc88\ud638 \uc7ac\uc124\uc815",
-    "verify": "검증"
+    "verify": "검증",
+    "networkError": "인터넷 연결이 느리거나 없습니다. 인터넷 연결을 확인하십시오"
   },
   "messages": {
     "required": "{{field}} \uc774(\uac00) \ud544\uc694\ud569\ub2c8\ub2e4"
@@ -961,7 +962,7 @@
       "notes": "\ub178\ud2b8",
       "addTags": "\ud0dc\uadf8 \ucd94\uac00",
       "noNotesFound": "\uba54\ubaa8\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.",
-      "notesFoundText": "\uc624\ub978\ucabd \uc0c1\ub2e8\uc758 \"+\"\ub97c \ud074\ub9ad\ud558\uc5ec \ud558\ub098\ub97c \ub9cc\ub4ed\ub2c8\ub2e4.",
+      "notesFoundText": "하나를 만들려면 \"+\"를 클릭하십시오.",
       "createResponse": "\uc751\ub2f5 \ub9cc\ub4e4\uae30",
       "addNote": "\uba54\ubaa8\ub97c \ucd94\uac00",
       "pinThisChat": "\uc774 \ucc44\ud305 \ud540",
@@ -1025,7 +1026,8 @@
       "referralCode": "추천 코드",
       "enterChannelId": "채널 ID를 입력하세요",
       "optional": "선택 과목",
-      "PleaseEnterOtp": "OTP를 입력하세요."
+      "PleaseEnterOtp": "OTP를 입력하세요.",
+      "addNewNote": "여기에 새 메모 작성"
     },
     "welcome": {
       "theWorldIsConnected": "\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

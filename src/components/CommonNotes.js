@@ -84,6 +84,7 @@ export default class CommonNotes extends Component {
                 value={text}
                 rightTitle={`${text.length}/300`}
                 maxLength={300}
+                placeholder={translate('pages.xchat.addNewNote')}
               />
               <View
                 style={{
