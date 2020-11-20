@@ -61,7 +61,7 @@ import {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
-  UpdatePhoneModal
+  UpdatePhoneModal,
 } from '../../components/Modals';
 import {eventService, normalize} from '../../utils';
 import Toast from '../../components/Toast';
@@ -772,9 +772,8 @@ class ChannelChats extends Component {
   };
 
   selectedLoginBonus = (key) => {
-
-    if(!this.props.userData.phone){
-      this.setState({showPhoneUpdateModal:true});
+    if (!this.props.userData.phone) {
+      this.setState({showPhoneUpdateModal: true});
       return;
     }
 
@@ -1123,7 +1122,6 @@ class ChannelChats extends Component {
     if (isChatLoading && chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
-      console.log('chats_object',chatConversation);
       return (
         <View style={{flex: 1}}>
           <ChatContainer
@@ -1309,11 +1307,14 @@ class ChannelChats extends Component {
     this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
       let payload = {message_ids: this.state.selectedIds};
-      
+
       this.state.selectedIds.map((item) => {
         deleteMessageById(item);
 
-        if (this.props.currentChannel.last_msg && this.props.currentChannel.last_msg.id == item) {
+        if (
+          this.props.currentChannel.last_msg &&
+          this.props.currentChannel.last_msg.id == item
+        ) {
           let chat = getChannelChatConversationById(
             this.props.currentChannel.id,
           );
@@ -1336,8 +1337,8 @@ class ChannelChats extends Component {
 
       this.props.deleteMultipleChannelMessage(payload).then((res) => {
         console.log(res);
-        if (res && res.status) { 
-        }else{
+        if (res && res.status) {
+        } else {
           this.getChannelConversations();
         }
       });
@@ -1387,7 +1388,11 @@ class ChannelChats extends Component {
 
   render() {
     const {currentChannel} = this.props;
-    const {showPhoneUpdateModal,orientation,isUpdatePhoneModalVisible} = this.state;
+    const {
+      showPhoneUpdateModal,
+      orientation,
+      isUpdatePhoneModalVisible,
+    } = this.state;
     return (
       <View
         // source={Images.image_home_bg}
@@ -1665,11 +1670,11 @@ class ChannelChats extends Component {
             <ConfirmationModal
               visible={showPhoneUpdateModal}
               onCancel={this.onCancel.bind(this)}
-              onConfirm={()=>{
-                this.setState({showPhoneUpdateModal:false},()=>{
-                  setTimeout(()=>{
-                    this.setState({isUpdatePhoneModalVisible:true});
-                  },500);
+              onConfirm={() => {
+                this.setState({showPhoneUpdateModal: false}, () => {
+                  setTimeout(() => {
+                    this.setState({isUpdatePhoneModalVisible: true});
+                  }, 500);
                 });
               }}
               orientation={orientation}
@@ -1680,12 +1685,11 @@ class ChannelChats extends Component {
             <UpdatePhoneModal
               visible={isUpdatePhoneModalVisible}
               onRequestClose={() =>
-                this.setState({ isUpdatePhoneModalVisible: false })
+                this.setState({isUpdatePhoneModalVisible: false})
               }
             />
           </View>
         </Modal>
-
       </View>
     );
   }
