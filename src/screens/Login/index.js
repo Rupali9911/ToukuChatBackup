@@ -1009,7 +1009,7 @@ class Login extends Component {
                     : 0,
               }}
             >
-              <Text style={globalStyles.logoText}>
+              <Text allowFontScaling={false} style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
               <View

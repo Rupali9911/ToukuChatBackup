@@ -146,7 +146,8 @@
     "or": "要么",
     "continueWithApple": "使用Apple登錄",
     "usernameText": "輸入用戶名",
-    "resetPasswordToaster": "重置密碼"
+    "resetPasswordToaster": "重置密碼",
+    "verify": "校驗"
   },
   "messages": {
     "required": "規定的（必填）"
@@ -956,7 +957,6 @@
       "whatIsLoginBonus": "什麼是登錄獎金？",
       "autoResponse": "自動回應",
       "viewProfileDetail": "查看個人資料詳細信息",
-      "notes": "筆記",
       "addTags": "添加標籤",
       "noNotesFound": "找不到筆記。",
       "notesFoundText": "單擊右上角的“ +”創建一個。",
@@ -981,8 +981,6 @@
       "useKeywords": "使用關鍵字",
       "editName": "編輯名稱",
       "enterName": "輸入名字",
-      "deleteNote": "刪除記事",
-      "deleteNoteText": "你確定要刪除這條筆記麼？",
       "userDisplayName": "用戶的顯示名稱",
       "saveResponse": "保存回复",
       "gamePlatformText": "直到可以使用積分的遊戲開始",
@@ -1023,8 +1021,7 @@
       "referralCode": "推薦碼",
       "enterChannelId": "請輸入頻道編號",
       "optional": "可選的",
-      "PleaseEnterOtp": "請輸入OTP。",
-      "verify": "校驗"
+      "PleaseEnterOtp": "請輸入OTP。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

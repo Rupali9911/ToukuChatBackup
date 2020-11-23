@@ -161,7 +161,7 @@ export default class FriendListItem extends Component {
                     globalStyles.smallNunitoRegular17Text,
                     {
                       color: Colors.black_light,
-                      //fontSize: normalize(12),
+                      fontSize: normalize(11.5),
                       fontWeight: '400',
                     },
                   ]}>

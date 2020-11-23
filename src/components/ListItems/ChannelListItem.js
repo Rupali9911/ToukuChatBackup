@@ -165,7 +165,7 @@ export default class ChannelListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.message_gray,
-                      // fontSize: normalize(11),
+                      fontSize: normalize(11.5),
                       fontWeight: '400',
                     },
                   ]}>

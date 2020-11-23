@@ -199,7 +199,7 @@ export default class GroupListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: normalize(11),
+                      fontSize: normalize(11.5),
                       fontWeight: '400',
                     },
                   ]}>

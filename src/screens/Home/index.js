@@ -1162,15 +1162,17 @@ class Home extends Component {
               last_msg={item.last_msg}
               description={
                 item.last_msg
-                  ? item.last_msg.msg_type === 'text'
-                    ? item.last_msg.message_body
-                    : item.last_msg.msg_type === 'image'
-                    ? translate('pages.xchat.photo')
-                    : item.last_msg.msg_type === 'video'
-                    ? translate('pages.xchat.video')
-                    : item.last_msg.msg_type === 'doc'
-                    ? translate('pages.xchat.document')
-                    : translate('pages.xchat.audio')
+                  ? item.last_msg.is_unsent
+                    ? translate('pages.xchat.messageUnsent')
+                    : item.last_msg.msg_type === 'text'
+                      ? item.last_msg.message_body
+                      : item.last_msg.msg_type === 'image'
+                        ? translate('pages.xchat.photo')
+                        : item.last_msg.msg_type === 'video'
+                          ? translate('pages.xchat.video')
+                          : item.last_msg.msg_type === 'doc'
+                            ? translate('pages.xchat.document')
+                            : translate('pages.xchat.audio')
                   : ''
               }
               date={item.last_msg ? item.last_msg.created : item.joining_date}
@@ -1256,7 +1258,7 @@ class Home extends Component {
                     : item.last_msg.type === 'audio'
                     ? translate('pages.xchat.audio')
                     : ''
-                  : ''
+                  : item.no_msgs ? '' : translate('pages.xchat.messageUnsent')
               }
               mentions={item.mentions}
               date={
@@ -1316,7 +1318,7 @@ class Home extends Component {
                     : item.last_msg.type === 'audio'
                     ? translate('pages.xchat.audio')
                     : ''
-                  : ''
+                  : item.last_msg_id ? translate('pages.xchat.messageUnsent') : ''
               }
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}

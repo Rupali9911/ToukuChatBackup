@@ -319,6 +319,7 @@ class ChatContainer extends Component {
                         this[`message_box_${id}`] &&
                           this[`message_box_${id}`].callBlinking(id);
                       }}
+                      isMultiSelect={isMultiSelect}
                     />
                     </View>
                     </View>

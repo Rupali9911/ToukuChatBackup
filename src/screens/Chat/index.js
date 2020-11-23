@@ -2676,7 +2676,7 @@ class Chat extends Component {
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
-                    : ''
+                    : item.no_msgs ? '' : translate('pages.xchat.messageUnsent')
                 }
                 mentions={item.mentions}
                 date={item.timestamp}
@@ -2696,7 +2696,9 @@ class Chat extends Component {
                 onCheckChange={this.onCheckChange}
                 description={
                   item.last_msg
-                    ? item.last_msg.msg_type === 'text'
+                    ? item.last_msg.is_unsent 
+                      ? translate('pages.xchat.messageUnsent')
+                      : item.last_msg.msg_type === 'text'
                       ? item.last_msg.message_body
                       : item.last_msg.msg_type === 'image'
                       ? translate('pages.xchat.photo')
@@ -2738,7 +2740,7 @@ class Chat extends Component {
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
-                    : ''
+                    : item.last_msg_id ? translate('pages.xchat.messageUnsent') : ''
                 }
                 image={getAvatar(item.profile_picture)}
                 date={item.timestamp}

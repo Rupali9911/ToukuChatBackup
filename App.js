@@ -1,5 +1,5 @@
 import React, {Component, useEffect} from 'react';
-import {View, Text, StatusBar, AppState, Linking, Alert} from 'react-native';
+import {View, Text, StatusBar, AppState, Linking, Alert, TextInput} from 'react-native';
 import Routes from './src/navigation';
 import {Provider} from 'react-redux';
 import {Provider as PaperProvider} from 'react-native-paper';
@@ -39,6 +39,12 @@ import {
 } from './src/redux/reducers/userReducer';
 import SingleSocket from './src/helpers/SingleSocket';
 import {eventService} from './src/utils';
+
+Text.defaultProps = Text.defaultProps || {};
+Text.defaultProps.allowFontScaling = false;
+
+TextInput.defaultProps = TextInput.defaultProps || {};
+TextInput.defaultProps.allowFontScaling = false;
 
 export default class App extends Component {
   constructor(props) {

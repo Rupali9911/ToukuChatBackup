@@ -171,6 +171,7 @@ export default class ChatMessageBox extends Component {
       closeMenu,
       currentChannel,
       onReplyPress,
+      isMultiSelect
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -195,7 +196,7 @@ export default class ChatMessageBox extends Component {
                 message.msg_type === 'text'
                   ? width * 0.77
                   : message.msg_type === 'image'
-                  ? width - 40
+                  ? isMultiSelect?width-80:width - 40
                   : width * 0.65,
               justifyContent: 'flex-start',
             },
@@ -321,9 +322,9 @@ export default class ChatMessageBox extends Component {
               {
                 maxWidth:
                   message.msg_type === 'text'
-                    ? width * 0.9
+                    ? isMultiSelect?width * 0.80:width * 0.9
                     : message.msg_type === 'image'
-                    ? width
+                    ? isMultiSelect?width-40:width
                     : width * 0.75,
               },
               message.msg_type === 'image'

@@ -256,64 +256,65 @@ class GroupChatContainer extends Component {
                 let isSelected = selectedIds.includes(item.msg_id+'');
                 return (
                   <Fragment key={index}>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                    {isMultiSelect?
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {isMultiSelect ?
                         <CheckBox
                           isChecked={isSelected}
-                          onCheck={()=>onSelect(item.msg_id)}
+                          onCheck={() => onSelect(item.msg_id)}
                         />
-                    :null}
-                    <View style={{flex:1}}>
-                    <GroupChatMessageBox
-                      ref={(view) => {
-                        this[`message_box_${item.msg_id}`] = view;
-                      }}
-                      key={item.msg_id}
-                      message={item}
-                      isUser={
-                        item.sender_id === this.props.userData.id ? true : false
-                      }
-                      time={new Date(item.timestamp)}
-                      isRead={
-                        item.read_count && item.read_count > 0 ? true : false
-                      }
-                      memberCount={memberCount}
-                      onMessageReply={(id) => this.props.onMessageReply(id)}
-                      orientation={this.props.orientation}
-                      onMessageTranslate={(msg) =>
-                        this.props.onMessageTranslate(msg)
-                      }
-                      onMessageTranslateClose={
-                        this.props.onMessageTranslateClose
-                      }
-                      translatedMessage={this.props.translatedMessage}
-                      translatedMessageId={this.props.translatedMessageId}
-                      onDelete={(id) => this.props.onDelete(id)}
-                      onUnSend={(id) => this.props.onUnSendMsg(id)}
-                      onEditMessage={(msg) => this.props.onEditMessage(msg)}
-                      onDownloadMessage={(msg) => {
-                        this.props.onDownloadMessage(msg);
-                      }}
-                      audioPlayingId={this.state.audioPlayingId}
-                      perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-                      closeMenu={this.state.closeMenu}
-                      onAudioPlayPress={(id) => {
-                        this.setState({
-                          audioPlayingId: id,
-                          perviousPlayingAudioId: this.state.audioPlayingId,
-                        });
-                      }}
-                      onReplyPress={(id) => {
-                        this.scrollView.scrollToIndex({
-                          animated: true,
-                          index: this.searchItemIndex(messages, id, index),
-                        });
-                        this[`message_box_${id}`] &&
-                          this[`message_box_${id}`].callBlinking(id);
-                      }}
-                      groupMembers={groupMembers}
-                    />
-                    </View>
+                        : null}
+                      <View style={{ flex: 1 }}>
+                        <GroupChatMessageBox
+                          ref={(view) => {
+                            this[`message_box_${item.msg_id}`] = view;
+                          }}
+                          key={item.msg_id}
+                          message={item}
+                          isUser={
+                            item.sender_id === this.props.userData.id ? true : false
+                          }
+                          time={new Date(item.timestamp)}
+                          isRead={
+                            item.read_count && item.read_count > 0 ? true : false
+                          }
+                          memberCount={memberCount}
+                          onMessageReply={(id) => this.props.onMessageReply(id)}
+                          orientation={this.props.orientation}
+                          onMessageTranslate={(msg) =>
+                            this.props.onMessageTranslate(msg)
+                          }
+                          onMessageTranslateClose={
+                            this.props.onMessageTranslateClose
+                          }
+                          translatedMessage={this.props.translatedMessage}
+                          translatedMessageId={this.props.translatedMessageId}
+                          onDelete={(id) => this.props.onDelete(id)}
+                          onUnSend={(id) => this.props.onUnSendMsg(id)}
+                          onEditMessage={(msg) => this.props.onEditMessage(msg)}
+                          onDownloadMessage={(msg) => {
+                            this.props.onDownloadMessage(msg);
+                          }}
+                          audioPlayingId={this.state.audioPlayingId}
+                          perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                          closeMenu={this.state.closeMenu}
+                          onAudioPlayPress={(id) => {
+                            this.setState({
+                              audioPlayingId: id,
+                              perviousPlayingAudioId: this.state.audioPlayingId,
+                            });
+                          }}
+                          onReplyPress={(id) => {
+                            this.scrollView.scrollToIndex({
+                              animated: true,
+                              index: this.searchItemIndex(messages, id, index),
+                            });
+                            this[`message_box_${id}`] &&
+                              this[`message_box_${id}`].callBlinking(id);
+                          }}
+                          groupMembers={groupMembers}
+                          isMultiSelect={isMultiSelect}
+                        />
+                      </View>
                     </View>
                     {(messages[index + 1] &&
                       new Date(item.timestamp).getDate() !==
