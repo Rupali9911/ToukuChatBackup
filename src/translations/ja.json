@@ -95,7 +95,7 @@
     "xchange": "取引所",
     "maintenanceTitle": "システムのアップグレード中です",
     "maintenanceSubtitle": "技術的な問題が発生しており、まもなく再稼働しますのでしばらくお待ちください",
-    "sms": "送信",
+    "sms": "OTP",
     "smsVerificationCode": "SMSで届いた、認証コードを入力",
     "next": "次",
     "emailConfirmation": "確認用に同じメールアドレスを再入力",

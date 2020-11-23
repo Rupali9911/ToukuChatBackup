@@ -171,7 +171,7 @@ class Home extends Component {
     this.props.getUserProfile();
     // this.SingleSocket.create({ user_id: this.props.userData.id });
     Orientation.addOrientationListener(this._orientationDidChange);
-    // this.getFriendRequest();
+    this.getFriendRequest();
     this.getLocalRequest();
     this.getFollowingChannels();
     this.getUserGroups();
@@ -1393,7 +1393,7 @@ class Home extends Component {
   }
 
   renderFriendRequestList() {
-    const {friendRequestLoading, friendRequest} = this.props;
+    const {friendRequestLoading, friendRequest,isAcceptLoading, isRejectLoading } = this.props;
     const filteredFriendRequest = friendRequest.filter(
       createFilter(this.state.searchText, ['from_user_display_name']),
     );
@@ -1413,6 +1413,8 @@ class Home extends Component {
               date={item.created}
               onAcceptPress={() => this.onAcceptPress(item)}
               onRejectPress={() => this.onRejectPress(item)}
+              isRejectLoading={isRejectLoading}
+              isAcceptLoading={isAcceptLoading}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -1773,6 +1775,8 @@ const mapStateToProps = (state) => {
     friendLoading: state.friendReducer.loading,
     friendRequest: state.addFriendReducer.friendRequest,
     friendRequestLoading: state.addFriendReducer.loading,
+      isAcceptLoading: state.addFriendReducer.isAcceptLoading,
+      isRejectLoading: state.addFriendReducer.isRejectLoading,
   };
 };
 

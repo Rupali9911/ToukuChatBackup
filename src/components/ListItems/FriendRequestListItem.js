@@ -33,7 +33,7 @@ export default class FriendRequestListItem extends Component {
   };
 
   render() {
-    const {title, date, image, onAcceptPress, onRejectPress} = this.props;
+    const {title, date, image, onAcceptPress, onRejectPress, isAcceptLoading, isRejectLoading} = this.props;
     return (
       <Fragment>
         <View style={styles.container}>
@@ -69,6 +69,7 @@ export default class FriendRequestListItem extends Component {
                       isRounded={false}
                       type={'secondary'}
                       height={Platform.isPad ? 40 : 30}
+                      loading={isRejectLoading}
                     />
                   </View>
                   <View style={{marginRight: 10, width: 100}}>
@@ -78,6 +79,7 @@ export default class FriendRequestListItem extends Component {
                       isRounded={false}
                       type={'primary'}
                       height={Platform.isPad ? 40 : 30}
+                      loading={isAcceptLoading}
                     />
                   </View>
                 </View>
@@ -154,6 +156,8 @@ FriendRequestListItem.propTypes = {
    * Callbacks
    */
   onPress: PropTypes.func,
+    isRejectLoading: PropTypes.bool,
+    isAcceptLoading: PropTypes.bool
 };
 
 FriendRequestListItem.defaultProps = {
@@ -164,4 +168,6 @@ FriendRequestListItem.defaultProps = {
   isOnline: false,
   isTyping: false,
   onPress: null,
+    isRejectLoading: false,
+    isAcceptLoading: false
 };
