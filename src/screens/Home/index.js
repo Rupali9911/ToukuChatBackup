@@ -23,6 +23,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {createFilter} from 'react-native-search-filter';
 import {Badge} from 'react-native-paper';
 import {withNavigationFocus} from 'react-navigation';
+import NetInfo from '@react-native-community/netinfo';
 
 import {homeStyles} from './styles';
 import {globalStyles} from '../../styles';
