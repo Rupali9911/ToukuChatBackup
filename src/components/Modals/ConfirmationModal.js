@@ -29,6 +29,7 @@ export default class ConfirmationModal extends Component {
       onConfirm,
       title,
       confirmText,
+      cancelText,
       message,
       orientation,
       isLoading,
@@ -55,7 +56,7 @@ export default class ConfirmationModal extends Component {
                   flex: 1,
                 }}>
                 <Button
-                  title={translate('common.cancel')}
+                  title={cancelText?cancelText:translate('common.cancel')}
                   type={'secondary'}
                   onPress={onCancel}
                   isRounded={false}

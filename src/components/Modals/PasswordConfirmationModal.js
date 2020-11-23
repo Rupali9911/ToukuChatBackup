@@ -78,6 +78,7 @@ export default class PasswordConfirmationModal extends Component {
                     fontFamily: Fonts.medium,
                     fontSize: 24,
                     marginBottom: 10,
+                    textAlign: 'center'
                   }}>
                   {title}
                 </Text>
@@ -106,7 +107,7 @@ export default class PasswordConfirmationModal extends Component {
                     marginHorizontal: 5,
                   }}>
                   <Button
-                    title={translate('common.cancel')}
+                    title={translate('swal.cancel')}
                     type={'secondary'}
                     onPress={onCancel}
                     isRounded={false}
@@ -118,7 +119,7 @@ export default class PasswordConfirmationModal extends Component {
                     marginHorizontal: 5,
                   }}>
                   <Button
-                    title={translate('pages.xchat.toastr.setPassword')}
+                    title={translate('common.setPassword')}
                     type={'primary'}
                     onPress={isLoading ? null : onConfirm}
                     isRounded={false}

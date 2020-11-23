@@ -200,7 +200,7 @@ export const getAllLanguages = () => (dispatch) =>
           return o;
         });
       }
-      //console.log('Languages',JSON.stringify(languages))
+      // console.log('Languages',JSON.stringify(languages))
       batch(() => {
         dispatch(setEnglishLanguage(languages[0]));
         dispatch(setJapanLanguage(languages[1]));
@@ -236,7 +236,7 @@ export const getAllLanguagesBackend = () => (dispatch) =>
           return o;
         });
       }
-      // console.log('Backend messages',JSON.stringify(languages[0]))
+      // console.log('Backend messages',JSON.stringify(languages[1]))
       batch(() => {
         dispatch(setEnglishLanguageBackend(languages[0]));
         dispatch(setJapanLanguageBackend(languages[1]));

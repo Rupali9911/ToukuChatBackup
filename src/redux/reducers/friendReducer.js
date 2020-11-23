@@ -41,7 +41,7 @@ const initialState = {
   unreadFriendMsgsCounts: 0,
 };
 
-var realm = new Realm({path: 'ToukuDB.realm'});
+// var realm = new Realm({path: 'ToukuDB.realm'});
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -350,7 +350,7 @@ export const getUserFriends = () => (dispatch) =>
           //   }
           // }
 
-          var user_friends = realm.objects('user_friends');
+          // var user_friends = realm.objects('user_friends');
           // console.log('user_friends', user_friends);
 
           dispatch(getUserFriendsSuccess(friends));

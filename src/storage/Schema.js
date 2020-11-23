@@ -188,6 +188,7 @@ export const Channels = {
     is_pined: 'bool?',
     created: 'string?',
     joining_date: 'string?',
+    subject_message: 'string?',
   },
 };
 

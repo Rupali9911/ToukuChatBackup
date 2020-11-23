@@ -1080,6 +1080,7 @@ class Chat extends Component {
   //Multiple Message in Following Channel
   multipleMessageInFollowingChannel(message) {
     const {userData, followingChannels, currentChannel} = this.props;
+    console.log('message_data', JSON.stringify(message));
     if (
       message.text.data.type ===
         SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL &&
@@ -2770,21 +2771,22 @@ class Chat extends Component {
                 title={item.name}
                 onCheckChange={this.onCheckChange}
                 description={
-                  item.last_msg
-                    ? item.last_msg.is_unsent
-                      ? translate('pages.xchat.messageUnsent')
-                      : item.last_msg.msg_type === 'text'
-                      ? item.last_msg.message_body
-                      : item.last_msg.msg_type === 'image'
-                      ? translate('pages.xchat.photo')
-                      : item.last_msg.msg_type === 'video'
-                      ? translate('pages.xchat.video')
-                      : item.last_msg.msg_type === 'doc'
-                      ? translate('pages.xchat.document')
-                      : item.last_msg.type === 'audio'
-                      ? translate('pages.xchat.audio')
+                  item.subject_message ? item.subject_message :
+                    item.last_msg
+                      ? item.last_msg.is_unsent
+                        ? translate('pages.xchat.messageUnsent')
+                        : item.last_msg.msg_type === 'text'
+                          ? item.last_msg.message_body
+                          : item.last_msg.msg_type === 'image'
+                            ? translate('pages.xchat.photo')
+                            : item.last_msg.msg_type === 'video'
+                              ? translate('pages.xchat.video')
+                              : item.last_msg.msg_type === 'doc'
+                                ? translate('pages.xchat.document')
+                                : item.last_msg.type === 'audio'
+                                  ? translate('pages.xchat.audio')
+                                  : ''
                       : ''
-                    : ''
                 }
                 date={item.last_msg ? item.last_msg.created : item.joining_date}
                 image={item.channel_picture}

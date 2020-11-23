@@ -59,6 +59,7 @@ export const setCommonChatConversation = () => (dispatch) =>
             is_pined: item.is_pined,
             created: item.created,
             joining_date: item.joining_date,
+            subject_message: item.subject_message
           };
           array = [...array, i];
         }

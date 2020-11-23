@@ -40,6 +40,7 @@ const realm = new Realm({
   path: 'ToukuDB.realm',
   schema: DB_SCHEMAS,
   schemaVersion: DB_SCHEMA_VERSION,
+  deleteRealmIfMigrationNeeded: true
 });
 
 export const resetData = () => {
@@ -485,6 +486,7 @@ export const setChannels = (channels) => {
             is_pined: item.is_pined ? item.is_pined : false,
             created: item.created,
             joining_date: item.joining_date ? item.joining_date : item.created,
+            subject_message: item.subject_message
           },
           'modified',
         );
@@ -509,6 +511,7 @@ export const setChannels = (channels) => {
           is_pined: item.is_pined ? item.is_pined : false,
           created: item.created,
           joining_date: item.joining_date ? item.joining_date : item.created,
+          subject_message: item.subject_message
         });
       });
     }
@@ -545,7 +548,7 @@ export const updateChannelLastMsgWithOutCount = (id, message) => {
       is_multilanguage: message.is_multilanguage,
       is_read: message.is_read,
       is_unsent: message.is_unsent,
-      message_body: message.last_msg?message.last_msg:message.message_body,
+      message_body: message.message_body,
       msg_type: message.msg_type,
       read_by: message.read_by,
       read_by_in_replies: message.read_by_in_replies,
@@ -564,6 +567,7 @@ export const updateChannelLastMsgWithOutCount = (id, message) => {
       {
         id: id,
         last_msg: last_msg,
+        subject_message: message.last_msg
       },
       'modified',
     );
@@ -585,7 +589,7 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
     is_multilanguage: message.is_multilanguage,
     is_read: message.is_read,
     is_unsent: message.is_unsent,
-    message_body: message.last_msg?message.last_msg:message.message_body,
+    message_body: message.message_body,
     msg_type: message.msg_type,
     read_by: message.read_by,
     read_by_in_replies: message.read_by_in_replies,
@@ -611,6 +615,7 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
           {
             id: id,
             last_msg: last_msg,
+            subject_message: message.last_msg,
             unread_msg: unreadCount,
           },
           'modified',
@@ -623,6 +628,7 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
           {
             id: id,
             last_msg: last_msg,
+            subject_message: message.last_msg,
             unread_msg: unreadCount,
           },
           'modified',

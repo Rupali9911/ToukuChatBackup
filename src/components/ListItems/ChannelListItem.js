@@ -51,7 +51,7 @@ export default class ChannelListItem extends Component {
     if (today.getFullYear() === msgDate.getFullYear()) {
       return moment(date).format('MM/DD');
     } else {
-      return moment(date).format('MM/DD/YY');
+      return moment(date).format('YYYY/MM/DD');
     }
   };
 

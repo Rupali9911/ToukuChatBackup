@@ -1206,6 +1206,7 @@ class Home extends Component {
               title={item.name}
               last_msg={item.last_msg}
               description={
+                item.subject_message ? item.subject_message :
                 item.last_msg
                   ? item.last_msg.is_unsent
                     ? translate('pages.xchat.messageUnsent')
