@@ -242,12 +242,39 @@ class Chat extends Component {
 
       this.props.getFollowingChannels().then((res) => {
         this.setCommonConversation();
+        console.log(
+          'Chat -> UNSAFE_componentWillMount -> getFollowingChannels length',
+          res.length,
+        );
+        if (res.length) {
+          this.setState({
+            isLoading: false,
+          });
+        }
       });
       this.props.getUserGroups().then((res) => {
         this.setCommonConversation();
+        console.log(
+          'Chat -> UNSAFE_componentWillMount -> getUserGroups length',
+          res.length,
+        );
+        if (res.length) {
+          this.setState({
+            isLoading: false,
+          });
+        }
       });
       this.props.getUserFriends().then((res) => {
         this.setCommonConversation();
+        console.log(
+          'Chat -> UNSAFE_componentWillMount -> getUserFriends length',
+          res.length,
+        );
+        if (res.length) {
+          this.setState({
+            isLoading: false,
+          });
+        }
       });
     });
   }
@@ -346,9 +373,9 @@ class Chat extends Component {
 
   setCommonConversation = () => {
     this.props.setCommonChatConversation().then(async () => {
-      await this.setState({
-        isLoading: false,
-      });
+      // await this.setState({
+      //   isLoading: false,
+      // });
     });
   };
 
@@ -2693,9 +2720,10 @@ class Chat extends Component {
       (cc) => !cc.is_pined,
     );
     const conversations = [...pinedConversations, ...unpinedConversations];
+    console.log('renderCommonChat -> conversations', conversations);
     if (conversations.length === 0 && isLoading) {
       return <ListLoader />;
-    } else if (conversations.length > 0 && isLoading) {
+    } else if (conversations.length === 0) {
       return <ListLoader />;
     } else if (conversations.length > 0) {
       return (
@@ -2721,7 +2749,9 @@ class Chat extends Component {
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
-                    : item.no_msgs ? '' : translate('pages.xchat.messageUnsent')
+                    : item.no_msgs
+                    ? ''
+                    : translate('pages.xchat.messageUnsent')
                 }
                 mentions={item.mentions}
                 date={item.timestamp}
@@ -2741,7 +2771,7 @@ class Chat extends Component {
                 onCheckChange={this.onCheckChange}
                 description={
                   item.last_msg
-                    ? item.last_msg.is_unsent 
+                    ? item.last_msg.is_unsent
                       ? translate('pages.xchat.messageUnsent')
                       : item.last_msg.msg_type === 'text'
                       ? item.last_msg.message_body
@@ -2785,7 +2815,9 @@ class Chat extends Component {
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
-                    : item.last_msg_id ? translate('pages.xchat.messageUnsent') : ''
+                    : item.last_msg_id
+                    ? translate('pages.xchat.messageUnsent')
+                    : ''
                 }
                 image={getAvatar(item.profile_picture)}
                 date={item.timestamp}
