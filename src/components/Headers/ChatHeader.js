@@ -102,7 +102,21 @@ export default class ChatHeader extends Component {
                       <RoundedImage size={40} source={getAvatar(image)} />
                     </TouchableOpacity>
                   </View>
-                  <Text style={globalStyles.normalRegularText15}>{title}</Text>
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}>
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        globalStyles.normalRegularText15,
+                        {fontSize: normalize(12)},
+                      ]}>
+                      {title}
+                    </Text>
+                  </View>
                 </View>
               ) : (
                 <View style={styles.subContainer}>
@@ -126,7 +140,8 @@ export default class ChatHeader extends Component {
                       ]}
                       style={styles.squareImage}>
                       <Text style={globalStyles.normalRegularText15}>
-                        {title.charAt(0).toUpperCase()}
+                        {title.charAt(0).toUpperCase() +
+                          title.substring(title.length - 1).toUpperCase()}
                         {/* {secondUpperCase} */}
                       </Text>
                     </LinearGradient>

@@ -21,7 +21,12 @@ import * as moment from 'moment';
 import {Colors, Fonts, Images, Icons, environment} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
-import {ChangePassModal, ChangeEmailModal, ChangeNameModal, UpdatePhoneModal} from '../Modals';
+import {
+  ChangePassModal,
+  ChangeEmailModal,
+  ChangeNameModal,
+  UpdatePhoneModal,
+} from '../Modals';
 import {getAvatar, getImage, normalize} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
@@ -279,7 +284,11 @@ class UserProfile extends Component {
             <Text
               style={[
                 globalStyles.normalSemiBoldText,
-                {color: Colors.black, marginHorizontal: 10,fontSize:normalize(15)},
+                {
+                  color: Colors.black,
+                  marginHorizontal: 10,
+                  fontSize: normalize(15),
+                },
               ]}>
               {/* {userData.first_name + ' '}
               {userData.last_name} */}
@@ -303,7 +312,12 @@ class UserProfile extends Component {
             <Text
               style={[
                 globalStyles.smallRegularText,
-                {color: Colors.black, marginBottom: 10,fontSize:normalize(12), fontFamily: Fonts.nunitoSansJPLight},
+                {
+                  color: Colors.black,
+                  marginBottom: 10,
+                  fontSize: normalize(12),
+                  fontFamily: Fonts.nunitoSansJPLight,
+                },
               ]}>
               {userData.username}
             </Text>
@@ -322,34 +336,43 @@ class UserProfile extends Component {
             onEditIconPress={() => this.onShowChangeEmailModal()}
           />
 
-          {userData.country?<ProfileItem
-            title={translate('common.country')}
-            value={userData.country}
-            editable={false}
-          />:null}
+          {userData.country ? (
+            <ProfileItem
+              title={translate('common.country')}
+              value={userData.country}
+              editable={false}
+            />
+          ) : null}
 
-          {userData.phone ? <ProfileItem
-            title={translate('common.phone')}
-            value={userData.phone}
-            editable={false}
-          />
-            : <View style={styles.inputTextContainer}>
-              <View style={{ flex: 1 }}>
-                <Text style={[globalStyles.smallRegularText, styles.textNormal, { fontFamily: Fonts.nunitoSansJPLight }]}>
+          {userData.phone ? (
+            <ProfileItem
+              title={translate('common.phone')}
+              value={userData.phone}
+              editable={false}
+            />
+          ) : (
+            <View style={styles.inputTextContainer}>
+              <View style={{flex: 1}}>
+                <Text
+                  style={[
+                    globalStyles.smallRegularText,
+                    styles.textNormal,
+                    {fontFamily: Fonts.nunitoSansJPLight},
+                  ]}>
                   {translate('common.phone')}
                 </Text>
               </View>
-                <FontAwesome
-                  name={'plus'}
-                  size={18}
-                  color={'#638bbb'}
-                  style={{padding:5}}
-                  onPress={()=>{
-                    this.setState({isUpdatePhoneModalVisible:true});
-                  }}
-                />
-            </View>}
-
+              <FontAwesome
+                name={'plus'}
+                size={18}
+                color={'#638bbb'}
+                style={{padding: 5}}
+                onPress={() => {
+                  this.setState({isUpdatePhoneModalVisible: true});
+                }}
+              />
+            </View>
+          )}
         </KeyboardAwareScrollView>
         <View style={{position: 'absolute', width: '100%', top: 0}}>
           <Toast
@@ -379,7 +402,7 @@ class UserProfile extends Component {
         <UpdatePhoneModal
           visible={isUpdatePhoneModalVisible}
           onRequestClose={() =>
-            this.setState({ isUpdatePhoneModalVisible: false })
+            this.setState({isUpdatePhoneModalVisible: false})
           }
         />
       </View>
@@ -392,10 +415,24 @@ const ProfileItem = (props) => {
   return (
     <View style={styles.inputTextContainer}>
       <View style={{flex: 1}}>
-        <Text style={[globalStyles.smallRegularText, styles.textNormal,{fontFamily: Fonts.nunitoSansJPLight}]}>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            styles.textNormal,
+            {fontFamily: Fonts.nunitoSansJPLight},
+          ]}>
           {title}
         </Text>
-        <Text style={[globalStyles.smallRegularText, styles.textNormal, {fontSize:normalize(13),fontFamily: Fonts.nunitoSansJPLight,}]}>
+        <Text
+          style={[
+            globalStyles.smallRegularText,
+            styles.textNormal,
+            {
+              fontSize: normalize(13),
+              fontFamily: Fonts.nunitoSansJPLight,
+              color: 'rgba(87,132,178,1)',
+            },
+          ]}>
           {value}
         </Text>
       </View>

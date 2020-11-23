@@ -60,7 +60,7 @@ export default class HomeHeader extends Component {
       isDeleteVisible,
       isVisibleButton,
       countObject,
-        currentRouteName
+      currentRouteName,
     } = this.props;
 
     return (
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: 10,
     // backgroundColor: Colors.home_header,
   },
 });

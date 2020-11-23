@@ -217,23 +217,23 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
-      case HIDE_POST_REQUEST:
-          return {
-              ...state,
-              loading: true,
-          };
+    case HIDE_POST_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
 
-      case HIDE_POST_SUCCESS:
-          return {
-              ...state,
-              loading: false,
-          };
+    case HIDE_POST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
 
-      case HIDE_POST_FAIL:
-          return {
-              ...state,
-              loading: false,
-          };
+    case HIDE_POST_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
 
     default:
       return state;
@@ -256,16 +256,16 @@ const getTrendTimelineFailure = () => ({
 //
 
 const hidePostRequest = () => ({
-    type: HIDE_POST_REQUEST,
+  type: HIDE_POST_REQUEST,
 });
 
 const hidePostSuccess = (data) => ({
-    type: HIDE_POST_SUCCESS,
-    payload: data,
+  type: HIDE_POST_SUCCESS,
+  payload: data,
 });
 
 const hidePostFailure = () => ({
-    type: HIDE_POST_FAIL,
+  type: HIDE_POST_FAIL,
 });
 
 export const getChannelTimeline = (groupId, lastId) => {
@@ -391,7 +391,6 @@ export const getTrendChannel = (userType, pageCount, type) => (dispatch) =>
     client
       .get(url)
       .then((res) => {
-        console.log('res', res);
         if (res.status) {
           const newRes = {...res, type: type};
           dispatch(getTrendChannelSuccess(newRes));
@@ -463,11 +462,9 @@ export const getRankingChannel = (userType, pageCount, type) => (dispatch) =>
       ? `/xchat/channel-listing-ranked-for-testers/?start=${page}`
       : `/xchat/channel-listing-ranked/?start=${page}`;
 
-    console.log('url', url);
     client
       .get(url)
       .then((res) => {
-        console.log('response rchannel', res);
         if (res.status) {
           const newRes = {...res, type: type};
           dispatch(getRankingChannelSuccess(newRes));
@@ -482,7 +479,7 @@ export const getRankingChannel = (userType, pageCount, type) => (dispatch) =>
 
 export const hidePost = (postId) => (dispatch) =>
   new Promise(function (resolve, reject) {
-      dispatch(hidePostRequest());
+    dispatch(hidePostRequest());
     let data = {
       filtered_post: postId,
     };
@@ -491,11 +488,11 @@ export const hidePost = (postId) => (dispatch) =>
       .then((res) => {
         if (res.status) {
           resolve(res);
-            dispatch(hidePostSuccess());
+          dispatch(hidePostSuccess());
         }
       })
       .catch((err) => {
-          dispatch(hidePostFailure());
+        dispatch(hidePostFailure());
         reject(err);
       });
   });

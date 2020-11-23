@@ -206,7 +206,10 @@ export default class ChatMessageBox extends Component {
               alignItems: 'flex-start',
               marginVertical: message.msg_type === 'image' ? 0 : 5,
             }}>
-            <View style={{flexDirection: 'row'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
               {/* <RoundedImage
               source={getAvatar(message.from_user.avatar)}
               size={50}
@@ -239,7 +242,10 @@ export default class ChatMessageBox extends Component {
                         {marginTop: 2},
                       ]}>
                       {currentChannel.name &&
-                        currentChannel.name.charAt(0).toUpperCase()}
+                        currentChannel.name.charAt(0).toUpperCase() +
+                          currentChannel.name
+                            .substring(currentChannel.name.length - 1)
+                            .toUpperCase()}
                       {/* {secondUpperCase} */}
                     </Text>
                   </LinearGradient>
@@ -432,7 +438,7 @@ export default class ChatMessageBox extends Component {
 const styles = StyleSheet.create({
   container: {
     // maxWidth: width * 0.65,
-    paddingHorizontal: '3%',
+    paddingHorizontal: '1.5%',
   },
   containerSelf: {
     // maxWidth: width * 0.75,

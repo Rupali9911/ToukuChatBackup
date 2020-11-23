@@ -198,6 +198,7 @@ export default class ChannelListItem extends Component {
                         backgroundColor: Colors.green,
                         color: Colors.white,
                         fontSize: 12,
+                        marginTop: 5,
                       },
                     ]}>
                     {unreadCount}

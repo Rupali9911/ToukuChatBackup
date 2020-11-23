@@ -70,7 +70,7 @@ export default class SearchInput extends Component {
       onDeleteConfrimPress,
       isDeleteVisible,
       countObject,
-        currentRouteName
+      currentRouteName,
     } = this.props;
 
     const {isVisibleLeft} = this.state;
@@ -252,6 +252,8 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     resizeMode: 'contain',
+    marginTop: 2,
+    marginLeft: 5,
   },
   iconRightContainer: {
     marginStart: 15,

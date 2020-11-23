@@ -232,6 +232,7 @@ export default class GroupListItem extends Component {
                         backgroundColor: Colors.green,
                         color: Colors.white,
                         fontSize: 11,
+                        marginTop: 5,
                       },
                     ]}>
                     {unreadCount}

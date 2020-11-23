@@ -51,9 +51,9 @@ class Channel extends Component {
           action: () => {
             this.setState({activeTab: 'trend'});
             this.pageCount = 0;
-            this.props
-              .getTrendChannel(this.props.userData.user_type, this.pageCount)
-              .then((res) => {});
+            // this.props
+            //   .getTrendChannel(this.props.userData.user_type, this.pageCount)
+            //   .then((res) => {});
           },
         },
         {
@@ -110,15 +110,18 @@ class Channel extends Component {
   }
 
   componentDidMount() {
-    // if (
-    //   this.props.trendChannel.length === 0 &&
-    //   this.props.rankingChannel.length === 0 &&
-    //   this.props.followingChannel.length === 0
-    // ) {
-    this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
-    this.props.getFollowingChannel(this.pageCount);
-    this.props.getRankingChannel(this.props.userData.user_type, this.pageCount);
-    // }
+    if (
+      this.props.trendChannel.length === 0 &&
+      this.props.rankingChannel.length === 0 &&
+      this.props.followingChannel.length === 0
+    ) {
+      this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
+      this.props.getFollowingChannel(this.pageCount);
+      this.props.getRankingChannel(
+        this.props.userData.user_type,
+        this.pageCount,
+      );
+    }
   }
 
   static navigationOptions = () => {

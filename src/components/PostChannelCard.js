@@ -78,7 +78,7 @@ export default class PostChannelCard extends React.Component {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          height: height,
+          height: height / 1.5,
         }}>
         <Text
           style={{
@@ -93,14 +93,13 @@ export default class PostChannelCard extends React.Component {
 
   render() {
     const {posts, onLoad} = this.props;
-
     return (
       <SafeAreaView style={styles.Container}>
         <FlatList
           data={posts}
           showsVerticalScrollIndicator={false}
           renderItem={this._renderItem}
-          // keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => index.toString()}
           numColumns={2}
           style={{flex: 1}}
           contentContainerStyle={{margin: 5}}

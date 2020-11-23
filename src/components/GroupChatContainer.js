@@ -175,7 +175,7 @@ class GroupChatContainer extends Component {
       onSelect,
       selectedIds,
       onSelectedCancel,
-      onSelectedDelete
+      onSelectedDelete,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -253,17 +253,17 @@ class GroupChatContainer extends Component {
                 };
                 const conversationLength = messages.length;
 
-                let isSelected = selectedIds.includes(item.msg_id+'');
+                let isSelected = selectedIds.includes(item.msg_id + '');
                 return (
                   <Fragment key={index}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {isMultiSelect ?
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      {isMultiSelect ? (
                         <CheckBox
                           isChecked={isSelected}
                           onCheck={() => onSelect(item.msg_id)}
                         />
-                        : null}
-                      <View style={{ flex: 1 }}>
+                      ) : null}
+                      <View style={{flex: 1}}>
                         <GroupChatMessageBox
                           ref={(view) => {
                             this[`message_box_${item.msg_id}`] = view;
@@ -271,11 +271,15 @@ class GroupChatContainer extends Component {
                           key={item.msg_id}
                           message={item}
                           isUser={
-                            item.sender_id === this.props.userData.id ? true : false
+                            item.sender_id === this.props.userData.id
+                              ? true
+                              : false
                           }
                           time={new Date(item.timestamp)}
                           isRead={
-                            item.read_count && item.read_count > 0 ? true : false
+                            item.read_count && item.read_count > 0
+                              ? true
+                              : false
                           }
                           memberCount={memberCount}
                           onMessageReply={(id) => this.props.onMessageReply(id)}
@@ -295,7 +299,9 @@ class GroupChatContainer extends Component {
                             this.props.onDownloadMessage(msg);
                           }}
                           audioPlayingId={this.state.audioPlayingId}
-                          perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                          perviousPlayingAudioId={
+                            this.state.perviousPlayingAudioId
+                          }
                           closeMenu={this.state.closeMenu}
                           onAudioPlayPress={(id) => {
                             this.setState({
@@ -312,7 +318,6 @@ class GroupChatContainer extends Component {
                               this[`message_box_${id}`].callBlinking(id);
                           }}
                           groupMembers={groupMembers}
-                          isMultiSelect={isMultiSelect}
                         />
                       </View>
                     </View>
@@ -374,7 +379,7 @@ class GroupChatContainer extends Component {
           {isReply ? (
             <View
               style={{
-                height: repliedMessage.message_body.type !== 'text'?100:80,
+                height: repliedMessage.message_body.type !== 'text' ? 100 : 80,
                 width: '100%',
                 backgroundColor: '#FFDBE9',
                 // position: 'absolute',
@@ -423,108 +428,111 @@ class GroupChatContainer extends Component {
               </View>
               <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
                 {repliedMessage.message_body.type === 'image' &&
-                  repliedMessage.message_body.text !== null ? (
-                    <RoundedImage
-                      source={{ url: repliedMessage.message_body.text }}
-                      isRounded={false}
-                      size={50}
-                    />
-                  ) : repliedMessage.message_body.type === 'video' ? (
-                    <VideoThumbnailPlayer
-                      url={repliedMessage.message_body.text}
-                    />
-                  ) : repliedMessage.message_body.type === 'audio' ? (
-                    <Fragment>
+                repliedMessage.message_body.text !== null ? (
+                  <RoundedImage
+                    source={{url: repliedMessage.message_body.text}}
+                    isRounded={false}
+                    size={50}
+                  />
+                ) : repliedMessage.message_body.type === 'video' ? (
+                  <VideoThumbnailPlayer
+                    url={repliedMessage.message_body.text}
+                  />
+                ) : repliedMessage.message_body.type === 'audio' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {repliedMessage.message_body.text
+                        .split('/')
+                        .pop()
+                        .split('%2F')
+                        .pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'volume-up'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {repliedMessage.message_body.text
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        Audio
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'volume-up'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          Audio
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : repliedMessage.message_body.type === 'doc' ? (
-                    <Fragment>
+                    </View>
+                  </Fragment>
+                ) : repliedMessage.message_body.type === 'doc' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {repliedMessage.message_body.text
+                        .split('/')
+                        .pop()
+                        .split('%2F')
+                        .pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'file-o'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {repliedMessage.message_body.text
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        File
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'file-o'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          File
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : (
-                        <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-                          {repliedMessage.message_body.text}
-                        </Text>
-                      )}
+                    </View>
+                  </Fragment>
+                ) : (
+                  <Text
+                    numberOfLines={2}
+                    style={{fontFamily: Fonts.extralight}}>
+                    {repliedMessage.message_body.text}
+                  </Text>
+                )}
               </View>
             </View>
           ) : null}
         </View>
-        {isMultiSelect?
-          <View style={{ 
-            backgroundColor:Colors.light_pink, 
-            flexDirection:'row', 
-            borderTopColor:Colors.pink_chat, 
-            borderTopWidth:3, 
-            paddingBottom:20, 
-            justifyContent:'space-between',
-            padding:10
+        {isMultiSelect ? (
+          <View
+            style={{
+              backgroundColor: Colors.light_pink,
+              flexDirection: 'row',
+              borderTopColor: Colors.pink_chat,
+              borderTopWidth: 3,
+              paddingBottom: 20,
+              justifyContent: 'space-between',
+              padding: 10,
             }}>
-            <View style={{ flex: 1 }}>
+            <View style={{flex: 1}}>
               <Button
                 title={translate(`common.cancel`)}
                 onPress={onSelectedCancel}
@@ -534,37 +542,38 @@ class GroupChatContainer extends Component {
                 height={40}
               />
             </View>
-            <View style={{flex:0.3}}/>
-            <View style={{flex: 1 }}>
+            <View style={{flex: 0.3}} />
+            <View style={{flex: 1}}>
               <Button
-                title={translate(`common.delete`)+` (${selectedIds.length})`}
+                title={translate(`common.delete`) + ` (${selectedIds.length})`}
                 onPress={onSelectedDelete}
                 isRounded={true}
                 fontType={'smallRegularText'}
                 height={40}
               />
             </View>
-            
           </View>
-        :<ChatInput
-          onAttachmentPress={() => onAttachmentPress()}
-          onCameraPress={() => onCameraPress()}
-          onGalleryPress={() => onGalleryPress()}
-          onChangeText={(message) => handleMessage(message)}
-          onSend={() => {
-            onMessageSend();
-            messages.length > 0 &&
-              this.scrollView &&
-              this.scrollView.scrollToIndex({index: 0, animated: false});
-          }}
-          value={newMessageText}
-          groupMembers={groupMembers}
-          currentUserData={this.props.userData}
-          useMentionsFunctionality={this.props.useMentionsFunctionality}
-          onSelectMention={this.props.onSelectMention}
-          placeholder={translate('pages.xchat.enterMessage')}
-          sendingImage={sendingImage}
-        />}
+        ) : (
+          <ChatInput
+            onAttachmentPress={() => onAttachmentPress()}
+            onCameraPress={() => onCameraPress()}
+            onGalleryPress={() => onGalleryPress()}
+            onChangeText={(message) => handleMessage(message)}
+            onSend={() => {
+              onMessageSend();
+              messages.length > 0 &&
+                this.scrollView &&
+                this.scrollView.scrollToIndex({index: 0, animated: false});
+            }}
+            value={newMessageText}
+            groupMembers={groupMembers}
+            currentUserData={this.props.userData}
+            useMentionsFunctionality={this.props.useMentionsFunctionality}
+            onSelectMention={this.props.onSelectMention}
+            placeholder={translate('pages.xchat.enterMessage')}
+            sendingImage={sendingImage}
+          />
+        )}
       </KeyboardAwareScrollView>
     );
   }

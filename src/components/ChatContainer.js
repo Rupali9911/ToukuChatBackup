@@ -176,7 +176,7 @@ class ChatContainer extends Component {
       onSelect,
       selectedIds,
       onSelectedCancel,
-      onSelectedDelete
+      onSelectedDelete,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -256,72 +256,75 @@ class ChatContainer extends Component {
                   return moment(msgDate).format('MM/DD');
                 };
                 const conversationLength = messages.length;
-                let isSelected = selectedIds.includes(item.id+'');
+                let isSelected = selectedIds.includes(item.id + '');
                 return (
                   <Fragment>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                    {isMultiSelect?
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      {isMultiSelect ? (
                         <CheckBox
                           isChecked={isSelected}
-                          onCheck={()=>onSelect(item.id)}
+                          onCheck={() => onSelect(item.id)}
                         />
-                    :null}
-                    <View style={{flex:1}}>
-                    <ChatMessageBox
-                      ref={(view) => {
-                        this[`message_box_${item.id}`] = view;
-                      }}
-                      key={item.id}
-                      message={item}
-                      isUser={
-                        item.from_user.id == this.props.userData.id ||
-                        item.from_user == this.props.userData.id
-                          ? item.to_user &&
-                            item.to_user.id == this.props.userData.id
-                            ? false
-                            : item.schedule_post?false:true
-                          : false
-                      }
-                      time={new Date(item.created)}
-                      isChannel={this.props.isChannel}
-                      currentChannel={this.props.currentChannel}
-                      is_read={item.is_read}
-                      onMessageReply={(id) => this.props.onMessageReply(id)}
-                      onMessageTranslate={(msg) =>
-                        this.props.onMessageTranslate(msg)
-                      }
-                      onMessageTranslateClose={
-                        this.props.onMessageTranslateClose
-                      }
-                      onEditMessage={(msg) => this.props.onEditMessage(msg)}
-                      onDownloadMessage={(msg) => {
-                        this.props.onDownloadMessage(msg);
-                      }}
-                      translatedMessage={this.props.translatedMessage}
-                      translatedMessageId={this.props.translatedMessageId}
-                      onDelete={(id) => this.props.onDelete(id)}
-                      onUnSend={(id) => this.props.onUnSendMsg(id)}
-                      orientation={this.props.orientation}
-                      audioPlayingId={this.state.audioPlayingId}
-                      closeMenu={this.state.closeMenu}
-                      perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-                      onAudioPlayPress={(id) => {
-                        this.setState({
-                          audioPlayingId: id,
-                          perviousPlayingAudioId: this.state.audioPlayingId,
-                        });
-                      }}
-                      onReplyPress={(id) => {
-                        this.scrollView.scrollToIndex({
-                          animated: true,
-                          index: this.searchItemIndex(messages, id, index),
-                        });
-                        this[`message_box_${id}`] &&
-                          this[`message_box_${id}`].callBlinking(id);
-                      }}
-                      isMultiSelect={isMultiSelect}
-                    />
-                    </View>
+                      ) : null}
+                      <View style={{flex: 1}}>
+                        <ChatMessageBox
+                          ref={(view) => {
+                            this[`message_box_${item.id}`] = view;
+                          }}
+                          key={item.id}
+                          message={item}
+                          isUser={
+                            item.from_user.id == this.props.userData.id ||
+                            item.from_user == this.props.userData.id
+                              ? item.to_user &&
+                                item.to_user.id == this.props.userData.id
+                                ? false
+                                : item.schedule_post
+                                ? false
+                                : true
+                              : false
+                          }
+                          time={new Date(item.created)}
+                          isChannel={this.props.isChannel}
+                          currentChannel={this.props.currentChannel}
+                          is_read={item.is_read}
+                          onMessageReply={(id) => this.props.onMessageReply(id)}
+                          onMessageTranslate={(msg) =>
+                            this.props.onMessageTranslate(msg)
+                          }
+                          onMessageTranslateClose={
+                            this.props.onMessageTranslateClose
+                          }
+                          onEditMessage={(msg) => this.props.onEditMessage(msg)}
+                          onDownloadMessage={(msg) => {
+                            this.props.onDownloadMessage(msg);
+                          }}
+                          translatedMessage={this.props.translatedMessage}
+                          translatedMessageId={this.props.translatedMessageId}
+                          onDelete={(id) => this.props.onDelete(id)}
+                          onUnSend={(id) => this.props.onUnSendMsg(id)}
+                          orientation={this.props.orientation}
+                          audioPlayingId={this.state.audioPlayingId}
+                          closeMenu={this.state.closeMenu}
+                          perviousPlayingAudioId={
+                            this.state.perviousPlayingAudioId
+                          }
+                          onAudioPlayPress={(id) => {
+                            this.setState({
+                              audioPlayingId: id,
+                              perviousPlayingAudioId: this.state.audioPlayingId,
+                            });
+                          }}
+                          onReplyPress={(id) => {
+                            this.scrollView.scrollToIndex({
+                              animated: true,
+                              index: this.searchItemIndex(messages, id, index),
+                            });
+                            this[`message_box_${id}`] &&
+                              this[`message_box_${id}`].callBlinking(id);
+                          }}
+                        />
+                      </View>
                     </View>
                     {(messages[index + 1] &&
                       new Date(item.created).getDate() !==
@@ -386,7 +389,7 @@ class ChatContainer extends Component {
           {isReply ? (
             <View
               style={{
-                height: repliedMessage.msg_type !== 'text'?100:80,
+                height: repliedMessage.msg_type !== 'text' ? 100 : 80,
                 width: '100%',
                 backgroundColor: '#FFDBE9',
                 // position: 'absolute',
@@ -433,94 +436,94 @@ class ChatContainer extends Component {
                 </View>
               </View>
               <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
-              {repliedMessage.msg_type === 'image' &&
-                  repliedMessage.message_body !== null ? (
-                    <RoundedImage
-                      source={{ url: repliedMessage.message_body }}
-                      isRounded={false}
-                      size={50}
-                    />
-                  ) : repliedMessage.msg_type === 'video' ? (
-                    <VideoThumbnailPlayer
-                      url={repliedMessage.message_body}
-                    />
-                  ) : repliedMessage.msg_type === 'audio' ? (
-                    <Fragment>
+                {repliedMessage.msg_type === 'image' &&
+                repliedMessage.message_body !== null ? (
+                  <RoundedImage
+                    source={{url: repliedMessage.message_body}}
+                    isRounded={false}
+                    size={50}
+                  />
+                ) : repliedMessage.msg_type === 'video' ? (
+                  <VideoThumbnailPlayer url={repliedMessage.message_body} />
+                ) : repliedMessage.msg_type === 'audio' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {repliedMessage.message_body
+                        .split('/')
+                        .pop()
+                        .split('%2F')
+                        .pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'volume-up'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {repliedMessage.message_body
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        Audio
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'volume-up'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          Audio
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : repliedMessage.msg_type === 'doc' ? (
-                    <Fragment>
+                    </View>
+                  </Fragment>
+                ) : repliedMessage.msg_type === 'doc' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {repliedMessage.message_body
+                        .split('/')
+                        .pop()
+                        .split('%2F')
+                        .pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'file-o'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {repliedMessage.message_body
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        File
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'file-o'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          File
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : (
-                        <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-                          {repliedMessage.message_body}
-                        </Text>
-                      )}
+                    </View>
+                  </Fragment>
+                ) : (
+                  <Text
+                    numberOfLines={2}
+                    style={{fontFamily: Fonts.extralight}}>
+                    {repliedMessage.message_body}
+                  </Text>
+                )}
                 {/* <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
                   {repliedMessage.message_body}
                 </Text> */}
@@ -528,17 +531,18 @@ class ChatContainer extends Component {
             </View>
           ) : null}
         </View>
-        {isMultiSelect?
-          <View style={{ 
-            backgroundColor:Colors.light_pink, 
-            flexDirection:'row', 
-            borderTopColor:Colors.pink_chat, 
-            borderTopWidth:3, 
-            paddingBottom:20, 
-            justifyContent:'space-between',
-            padding:10
+        {isMultiSelect ? (
+          <View
+            style={{
+              backgroundColor: Colors.light_pink,
+              flexDirection: 'row',
+              borderTopColor: Colors.pink_chat,
+              borderTopWidth: 3,
+              paddingBottom: 20,
+              justifyContent: 'space-between',
+              padding: 10,
             }}>
-            <View style={{ flex: 1 }}>
+            <View style={{flex: 1}}>
               <Button
                 title={translate(`common.cancel`)}
                 onPress={onSelectedCancel}
@@ -548,34 +552,35 @@ class ChatContainer extends Component {
                 height={40}
               />
             </View>
-            <View style={{flex:0.3}}/>
-            <View style={{flex: 1 }}>
+            <View style={{flex: 0.3}} />
+            <View style={{flex: 1}}>
               <Button
-                title={translate(`common.delete`)+` (${selectedIds.length})`}
+                title={translate(`common.delete`) + ` (${selectedIds.length})`}
                 onPress={onSelectedDelete}
                 isRounded={true}
                 fontType={'smallRegularText'}
                 height={40}
               />
             </View>
-            
           </View>
-        :<ChatInput
-          onAttachmentPress={() => onAttachmentPress()}
-          onCameraPress={() => onCameraPress()}
-          onGalleryPress={() => onGalleryPress()}
-          onChangeText={(message) => handleMessage(message)}
-          onSend={() => {
-            onMessageSend();
-            messages.length > 0 &&
-              this.scrollView &&
-              this.scrollView.scrollToIndex({index: 0, animated: false});
-          }}
-          value={newMessageText}
-          sendEnable={sendEnable}
-          placeholder={translate('pages.xchat.enterMessage')}
-          sendingImage={sendingImage}
-        />}
+        ) : (
+          <ChatInput
+            onAttachmentPress={() => onAttachmentPress()}
+            onCameraPress={() => onCameraPress()}
+            onGalleryPress={() => onGalleryPress()}
+            onChangeText={(message) => handleMessage(message)}
+            onSend={() => {
+              onMessageSend();
+              messages.length > 0 &&
+                this.scrollView &&
+                this.scrollView.scrollToIndex({index: 0, animated: false});
+            }}
+            value={newMessageText}
+            sendEnable={sendEnable}
+            placeholder={translate('pages.xchat.enterMessage')}
+            sendingImage={sendingImage}
+          />
+        )}
       </KeyboardAwareScrollView>
     );
   }

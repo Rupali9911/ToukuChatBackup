@@ -18,7 +18,7 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     marginLeft: 10,
-      fontWeight: '300'
+    fontWeight: '300',
   },
 
   smallLightText10: {
@@ -62,31 +62,31 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
-    smallNunitoRegular17Text: {
-        fontSize: 17,
-        fontFamily: Fonts.nunitoSansRegular,
-        color: Colors.white,
-        textAlign: 'center',
-    },
+  smallNunitoRegular17Text: {
+    fontSize: 17,
+    fontFamily: Fonts.nunitoSansRegular,
+    color: Colors.white,
+    textAlign: 'center',
+  },
   smallNunitoRegularText: {
     fontSize: 15,
     fontFamily: Fonts.nunitoSansRegular,
     color: Colors.white,
     textAlign: 'center',
   },
-    smallNunitoRegularFW300Text: {
-        fontSize: 15,
-        fontFamily: Fonts.nunitoSansRegular,
-        color: Colors.white,
-        textAlign: 'center',
-        fontWeight: '300',
-    },
-    normalRegular15Text: {
-        fontSize: 15,
-        fontFamily: Fonts.regular,
-        color: Colors.white,
-        textAlign: 'center',
-    },
+  smallNunitoRegularFW300Text: {
+    fontSize: 15,
+    fontFamily: Fonts.nunitoSansRegular,
+    color: Colors.white,
+    textAlign: 'center',
+    fontWeight: '300',
+  },
+  normalRegular15Text: {
+    fontSize: 15,
+    fontFamily: Fonts.regular,
+    color: Colors.white,
+    textAlign: 'center',
+  },
   normalRegularText: {
     fontSize: 17,
     fontFamily: Fonts.regular,
@@ -108,13 +108,13 @@ export const globalStyles = StyleSheet.create({
     color: Colors.white,
     textAlign: 'center',
   },
-    normalRegular22Text: {
-        fontSize: 20,
-        fontFamily: Fonts.regular,
-        color: Colors.white,
-        textAlign: 'center',
-        fontWeight: '400',
-    },
+  normalRegular22Text: {
+    fontSize: 20,
+    fontFamily: Fonts.regular,
+    color: Colors.white,
+    textAlign: 'center',
+    fontWeight: '400',
+  },
   normalSemiBoldText: {
     fontSize: 17,
     fontFamily: Fonts.semibold,

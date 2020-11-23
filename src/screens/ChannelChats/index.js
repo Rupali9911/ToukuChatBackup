@@ -1469,7 +1469,7 @@ class ChannelChats extends Component {
                       style={{
                         marginHorizontal: 10,
                         justifyContent: 'center',
-                        flexDirection: 'row',
+                        flexDirection: 'row', 
                         alignItems: 'center',
                       }}>
                       <View style={{flex: 1, alignItems: 'center'}}>

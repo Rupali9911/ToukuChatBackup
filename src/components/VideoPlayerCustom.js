@@ -19,6 +19,8 @@ export default class VideoPlayerCustom extends Component {
         video={{
           uri: url,
         }}
+        autoplay
+        fullScreenOnLongPress
         videoWidth={width ? width : 1600}
         videoHeight={height ? height : 900}
         thumbnail={{

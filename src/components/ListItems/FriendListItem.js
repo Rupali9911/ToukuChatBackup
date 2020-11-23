@@ -208,6 +208,7 @@ export default class FriendListItem extends Component {
                         backgroundColor: Colors.green,
                         color: Colors.white,
                         fontSize: 12,
+                        marginTop: 5,
                       },
                     ]}>
                     {unreadCount}
