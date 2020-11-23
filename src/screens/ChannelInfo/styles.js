@@ -7,25 +7,26 @@ export const channelInfoStyles = StyleSheet.create({
     paddingBottom: 50,
   },
   channelImageContainer: {
-    height: height * 0.45,
+    height: height * 0.35,
   },
   channelCoverContainer: {
     flex: 1,
   },
   updateBackgroundContainer: {
-    flex: 0.6,
+    flex: 0.65,
   },
   channelInfoContainer: {
     flex: 0.25,
     flexDirection: 'row',
   },
   imageContainer: {
-    flex: 0.35,
+    // flex: 0.35,
+    paddingHorizontal: '2%',
     alignItems: 'center',
   },
   imageView: {
-    height: height * 0.12,
-    width: height * 0.12,
+    height: height * 0.09,
+    width: height * 0.09,
   },
   profileImage: {
     height: '100%',
@@ -58,12 +59,11 @@ export const channelInfoStyles = StyleSheet.create({
   channelInfoDetail: {
     flex: 0.15,
     flexDirection: 'row',
-    paddingHorizontal: '3%',
     alignItems: 'center',
     paddingVertical: '2%',
   },
   channelDetailStatus: {
-    flex: 0.65,
+    flex: 0.75,
     flexDirection: 'row',
     paddingHorizontal: '2%',
   },
@@ -84,12 +84,13 @@ export const channelInfoStyles = StyleSheet.create({
     fontFamily: Fonts.regular,
   },
   channelDetailButton: {
-    flex: 0.35,
+    flex: 0.25,
+    paddingHorizontal: '1%',
     justifyContent: 'center',
   },
   tabBar: {
     flexDirection: 'row',
-    marginVertical: 10,
+    marginVertical: 5,
     justifyContent: 'space-evenly',
   },
   tabItem: {
@@ -99,21 +100,21 @@ export const channelInfoStyles = StyleSheet.create({
   tabIamge: {
     tintColor: Colors.gradient_2,
     marginVertical: 5,
-    height: 30,
-    width: 30,
+    height: 20,
+    width: 20,
   },
   tabTitle: {
-    fontSize: 16,
+    fontSize: 13,
     color: Colors.gradient_2,
   },
   about: {
     marginHorizontal: '5%',
-    marginVertical: 10,
+    marginVertical: 15,
   },
   aboutHeading: {
     color: '#E26161',
     fontWeight: '500',
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: Fonts.regular,
   },
   aboutText: {

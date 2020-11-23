@@ -108,6 +108,7 @@ export default class ButtonWithArrow extends Component {
       disabled,
       dropDownData,
       memberType,
+      isSmall,
     } = this.props;
     const {visible} = this.state;
     let renderMenu = (dropDownData) => {
@@ -120,6 +121,7 @@ export default class ButtonWithArrow extends Component {
                 justifyContent: 'center',
                 alignItems: 'center',
                 minWidth: '100%',
+                height: isSmall ? 40 : 30,
               },
               index === 0 && {
                 borderTopWidth: 1,
@@ -160,7 +162,7 @@ export default class ButtonWithArrow extends Component {
           borderWidth: 1.5,
           paddingVertical: 0,
           alignSelf: 'flex-end',
-          width: '51%',
+          width: '48.5%',
           elevation: 0,
         }}
         theme={{animation: {scale: 0}}}
@@ -185,6 +187,7 @@ export default class ButtonWithArrow extends Component {
                   borderRadius: isRounded ? 30 / 2 : 4,
                   borderColor: this.getBorderColor(),
                   opacity: disabled ? 0.5 : 1,
+                  // width: '100%',
                 },
                 this.state.visible && {
                   // borderWidth: 0,
@@ -225,8 +228,8 @@ export default class ButtonWithArrow extends Component {
         }>
         <Menu.Item
           style={[
-            styles.txtDrpDwn,
             {
+              height: 30,
               backgroundColor: 'transprent',
               borderTopStartRadius: 10,
               borderTopEndRadius: 10,
@@ -253,9 +256,6 @@ const styles = StyleSheet.create({
     flex: 0.1,
     height: 8,
     resizeMode: 'contain',
-  },
-  txtDrpDwn: {
-    height: 30,
   },
 });
 

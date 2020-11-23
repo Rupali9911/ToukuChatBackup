@@ -147,7 +147,8 @@
     "continueWithApple": "Continue with Apple",
     "usernameText": "username",
     "resetPasswordToaster": "Reset Password",
-    "verify": "Verify"
+    "verify": "Verify",
+    "networkError": "Slow or no internet connection. Please check your internet connection"
   },
   "messages": {
     "required": "{{field}} is required"
@@ -958,7 +959,7 @@
       "viewProfileDetail": "View Profile Detail",
       "addTags": "Add tags",
       "noNotesFound": "No notes found.",
-      "notesFoundText": "Click \"+\" in the top right to create one.",
+      "notesFoundText": "Click \"+\" to create one.",
       "createResponse": "Create response",
       "addNote": "Add Note",
       "pinThisChat": "Pin this chat",
@@ -1020,7 +1021,8 @@
       "referralCode": "Referral Code",
       "enterChannelId": "Please enter channel ID",
       "optional": "Optional",
-      "PleaseEnterOtp": "Please enter OTP."
+      "PleaseEnterOtp": "Please enter OTP.",
+      "addNewNote": "Write a  new note here"
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",

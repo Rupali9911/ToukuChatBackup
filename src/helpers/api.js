@@ -5,6 +5,8 @@ import NavigationService from '../navigation/NavigationService';
 import Toast from '../components/Toast';
 import SingleSocket from './SingleSocket';
 import {resetData} from '../storage/Service';
+import {translate} from '../redux/reducers/languageReducer';
+import NetInfo from '@react-native-community/netinfo';
 
 /* switch this for testing on staging or production */
 export const staging = true;
@@ -48,17 +50,30 @@ export const client = axios.create({
 client.interceptors.request.use(
   async function (config) {
     // Do something before request is sent
-    var basicAuth = await AsyncStorage.getItem('userToken');
-    var socialAuth = await AsyncStorage.getItem('socialToken');
-    if (socialAuth && socialAuth != null) {
-      config.headers.Authorization = `JWT ${socialAuth}`;
-    } else if (basicAuth && basicAuth != null) {
-      config.headers.Authorization = `JWT ${basicAuth}`;
-    }
-    config.headers.Origin = 'touku';
-    return config;
+    return NetInfo.fetch().then(async (state) => {
+      console.log('Is connected?', state.isConnected);
+      if (state.isConnected) {
+        var basicAuth = await AsyncStorage.getItem('userToken');
+        var socialAuth = await AsyncStorage.getItem('socialToken');
+        if (socialAuth && socialAuth != null) {
+          config.headers.Authorization = `JWT ${socialAuth}`;
+        } else if (basicAuth && basicAuth != null) {
+          config.headers.Authorization = `JWT ${basicAuth}`;
+        }
+        config.headers.Origin = 'touku';
+        return config;
+      } else {
+        Toast.show({
+          title: 'Touku',
+          text: translate(`common.networkError`),
+          type: 'primary',
+        });
+        return;
+      }
+    });
   },
   function (error) {
+    console.log('error', error);
     return Promise.reject(error);
   },
 );
@@ -96,6 +111,13 @@ client.interceptors.response.use(
   },
   function (error) {
     console.log('response_console_from_interceptor_error', error);
+    if (error.toString() === 'Error: Network Error') {
+      Toast.show({
+        title: 'Touku',
+        text: translate(`common.networkError`),
+        type: 'primary',
+      });
+    }
     return Promise.reject(error);
   },
 );

@@ -33,7 +33,7 @@ class Button extends Component {
       case 'secondary':
         return [Colors.gray, Colors.gray, Colors.gray];
       case 'transparent':
-        return ['rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)', 'rgba(0,0,0, 0.4)'];
+        return ['rgba(0,0,0, 0.2)', 'rgba(0,0,0, 0.2)', 'rgba(0,0,0, 0.2)'];
       case 'translucent':
         return ['transparent', 'transparent', 'transparent'];
       default:
@@ -117,6 +117,7 @@ class Button extends Component {
       disabled,
       fontType,
       type,
+      borderColor,
     } = this.props;
     return (
       <TouchableOpacity
@@ -133,7 +134,7 @@ class Button extends Component {
             {
               height: height,
               borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
-              borderColor: this.getBorderColor(),
+              borderColor: borderColor ? borderColor : this.getBorderColor(),
               opacity: disabled ? 0.5 : 1,
               paddingHorizontal: 5,
             },

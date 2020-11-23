@@ -87,6 +87,12 @@
 		18AA3EBE24F6A55F005594FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		18DC27FE24EEC0BF002341DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Touku/Info.plist; sourceTree = "<group>"; };
 		18DC280224EEC0F4002341DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Touku/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		18F414F525678A380030C437 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = Touku/ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		18F414F625678A380030C437 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		18F414F725678A410030C437 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Touku/zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		18F414F825678A410030C437 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		18F414F925678A4D0030C437 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "Touku/zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		18F414FA25678A4D0030C437 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		19ECDF9A3D86473B8171C4F5 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		1C76BD82576B411094635396 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
 		22C574DD245546E8B0D72BDB /* OpenSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Light.ttf"; path = "../assets/fonts/OpenSans-Light.ttf"; sourceTree = "<group>"; };
@@ -470,6 +476,9 @@
 				en,
 				Base,
 				ja,
+				ko,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -937,6 +946,9 @@
 			children = (
 				186DF23024F67F4700CAAECA /* ja */,
 				18AA3EBE24F6A55F005594FE /* en */,
+				18F414F625678A380030C437 /* ko */,
+				18F414F825678A410030C437 /* zh-Hans */,
+				18F414FA25678A4D0030C437 /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			path = Touku;
@@ -947,6 +959,9 @@
 			children = (
 				18DC280224EEC0F4002341DD /* Base */,
 				186DF22B24F67ED800CAAECA /* ja */,
+				18F414F525678A380030C437 /* ko */,
+				18F414F725678A410030C437 /* zh-Hans */,
+				18F414F925678A4D0030C437 /* zh-Hant */,
 			);
 			name = LaunchScreen.xib;
 			sourceTree = "<group>";

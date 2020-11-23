@@ -395,9 +395,11 @@ class ChannelInfo extends Component {
                             : translate('pages.xchat.follow')
                         }
                         type={'transparent'}
-                        height={30}
+                        height={28}
                         onPress={() => this.onFollowUnfollow()}
                         loading={this.isFollowing}
+                        fontType={'normalRegular15Text'}
+                        borderColor={Colors.gradient_3}
                       />
                     </View>
                   </View>
@@ -480,8 +482,10 @@ class ChannelInfo extends Component {
                   {translate('pages.xchat.about')}
                 </Text>
                 <HyperLink
-                  onPress={(url, text) => { Linking.openURL(url); }}
-                  linkStyle={{ color: 'blue', textDecorationLine:'underline' }}>
+                  onPress={(url, text) => {
+                    Linking.openURL(url);
+                  }}
+                  linkStyle={{color: 'blue', textDecorationLine: 'underline'}}>
                   <Text style={channelInfoStyles.aboutText}>
                     {currentChannel.description}
                   </Text>

@@ -19,6 +19,7 @@ import {globalStyles} from '../../styles';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {Menu} from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default class ChatHeader extends Component {
@@ -182,6 +183,12 @@ export default class ChatHeader extends Component {
                               <MaterialCommunityIcon
                                 name={isPined ? 'pin-off' : 'pin'}
                                 size={18}
+                                color={Colors.black}
+                              />
+                            ) : item.icon === 'sticky-note' ? (
+                              <FontAwesome
+                                name={item.icon}
+                                size={16}
                                 color={Colors.black}
                               />
                             ) : (

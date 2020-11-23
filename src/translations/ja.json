@@ -147,7 +147,8 @@
     "continueWithApple": "Appleでサインイン",
     "usernameText": "ユーザーネームを入力",
     "resetPasswordToaster": "認証コードを送信",
-    "verify": "確認"
+    "verify": "確認",
+    "networkError": "インターネット接続が遅い、またはまったくない。インターネット接続を確認してください"
   },
   "messages": {
     "required": "{{field}} 必須"
@@ -960,7 +961,7 @@
       "viewProfileDetail": "プロファイルの詳細を表示",
       "addTags": "タグを追加する",
       "noNotesFound": "メモが見つかりませんでした。",
-      "notesFoundText": "右上の「+」をクリックして作成します。",
+      "notesFoundText": "「+」をクリックして作成します。",
       "createResponse": "回答を作成",
       "addNote": "メモを追加",
       "pinThisChat": "このチャットを固定",
@@ -1022,7 +1023,8 @@
       "referralCode": "紹介コード",
       "enterChannelId": "チャネルIDを入力してください",
       "optional": "オプション",
-      "PleaseEnterOtp": "OTPを入力してください。"
+      "PleaseEnterOtp": "OTPを入力してください。",
+      "addNewNote": "ここに新しいメモを書く"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

@@ -25,6 +25,7 @@ export default class TextAreaWithTitle extends Component {
       titleFontColor,
       titleFontSize,
       isBorder,
+      placeholder,
     } = this.props;
     return (
       <View style={styles.container}>
@@ -65,6 +66,7 @@ export default class TextAreaWithTitle extends Component {
           onChangeText={onChangeText}
           value={value}
           maxLength={maxLength}
+          placeholder={placeholder ? placeholder : ''}
         />
       </View>
     );

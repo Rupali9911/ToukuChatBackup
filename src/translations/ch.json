@@ -147,7 +147,8 @@
     "continueWithApple": "使用Apple登录",
     "usernameText": "输入用户名",
     "resetPasswordToaster": "重置密码",
-    "verify": "校验"
+    "verify": "校验",
+    "networkError": "互联网连接速度慢或没有。请检查您的互联网连接"
   },
   "messages": {
     "required": "规定的（必填）"
@@ -959,7 +960,7 @@
       "viewProfileDetail": "查看个人资料详细信息",
       "addTags": "添加标签",
       "noNotesFound": "找不到笔记。",
-      "notesFoundText": "单击右上角的“ +”创建一个。",
+      "notesFoundText": "单击“ +”创建一个。",
       "createResponse": "建立回应",
       "addNote": "加注",
       "pinThisChat": "固定此聊天",
@@ -1021,7 +1022,8 @@
       "referralCode": "推荐码",
       "enterChannelId": "请输入频道编号",
       "optional": "可选的",
-      "PleaseEnterOtp": "请输入OTP。"
+      "PleaseEnterOtp": "请输入OTP。",
+      "addNewNote": "在这里写新笔记"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",
