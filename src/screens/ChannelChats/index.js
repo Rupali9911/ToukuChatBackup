@@ -543,7 +543,6 @@ class ChannelChats extends Component {
       let files = [file];
       const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
         files,
-        uploadFile.name,
         uploadFile.type,
         (e) => {
           console.log('progress_bar_percentage', e);
@@ -559,7 +558,6 @@ class ChannelChats extends Component {
       let fileType = uploadFile.type;
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
-        uploadFile.name,
         uploadFile.type,
         (e) => {
           console.log('progress_bar_percentage', e);
@@ -932,7 +930,6 @@ class ChannelChats extends Component {
     });
   };
   onAttachmentPress = async () => {
-    console.log('ChannelChats -> onAttachmentPress -> onAttachmentPress');
     try {
       const results = await DocumentPicker.pickMultiple({
         type: [
@@ -1051,13 +1048,6 @@ class ChannelChats extends Component {
     this.toggleAttachmentModal(false);
     for (const res of this.state.uploadedFiles) {
       let fileType = res.type.substr(0, res.type.indexOf('/'));
-      console.log(
-        res.uri,
-        res.type, // mime type
-        res.name,
-        res.size,
-        res.type.substr(0, res.type.indexOf('/')),
-      );
       let source = {uri: res.uri, type: res.type, name: res.name};
       if (fileType === 'audio') {
         await this.setState(

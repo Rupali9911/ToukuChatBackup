@@ -385,7 +385,6 @@ class GroupChats extends Component {
       let files = [file];
       const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
         files,
-        uploadFile.name,
         uploadFile.type,
         (e) => {
           console.log('progress_bar_percentage', e);
@@ -400,7 +399,6 @@ class GroupChats extends Component {
       let files = [file];
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
-        uploadFile.name,
         uploadFile.type,
         (e) => {
           console.log('progress_bar_percentage', e);
@@ -490,7 +488,6 @@ class GroupChats extends Component {
           reply_to: repliedMessage.msg_id,
         };
       }
-      console.log('GroupChats -> msgDataSend', msgDataSend);
       // this.state.conversation.unshift(msgDataSend);
       this.props.setGroupConversation([
         msgDataSend,
@@ -516,9 +513,6 @@ class GroupChats extends Component {
           msg_type: sentMessageType,
         };
       }
-
-      console.log('GroupChats -> msgDataSend', msgDataSend);
-      console.log('GroupChats -> groupMessage', groupMessage);
       // this.state.conversation.unshift(msgDataSend);
       this.props.setGroupConversation([
         msgDataSend,
@@ -943,7 +937,6 @@ class GroupChats extends Component {
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
         if (res.status) {
-          console.log('response', JSON.stringify(res));
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&
@@ -1105,10 +1098,6 @@ class GroupChats extends Component {
     }
     this.isLeaveLoading = true;
     await this.setState({isLeaveLoading: true});
-    console.log(
-      'onConfirmDeleteGroup -> this.props.currentGroup',
-      this.props.currentGroup,
-    );
     this.props
       .deleteGroup(this.props.currentGroup.group_id)
       .then((res) => {

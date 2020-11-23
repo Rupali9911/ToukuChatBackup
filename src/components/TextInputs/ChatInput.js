@@ -401,15 +401,16 @@ const chatInput = StyleSheet.create({
     // height: isIphoneX() ? 40 : 30,
     width: '25%',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 5,
+    marginRight: 5,
   },
   chatAttachmentButton: {
     // height: '100%',
-    width: '30%',
+    width: '29%',
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   attachmentImage: {
     // height: '80%',
@@ -443,7 +444,7 @@ const chatInput = StyleSheet.create({
   },
   sandButtonImage: {
     // height: '50%',
-    width: '70%',
+    width: '65%',
     // tintColor: Colors.gray,
   },
 });

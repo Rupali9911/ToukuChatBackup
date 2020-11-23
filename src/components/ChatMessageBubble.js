@@ -29,7 +29,6 @@ import {getAvatar, normalize} from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
 
-
 let borderRadius = 20;
 
 class ChatMessageBubble extends Component {
@@ -152,7 +151,9 @@ class ChatMessageBubble extends Component {
                   {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You' */}
                   {/* :  */}
-                  {(replyMessage.display_name && replyMessage.display_name!=='')?replyMessage.display_name:replyMessage.name}
+                  {replyMessage.display_name && replyMessage.display_name !== ''
+                    ? replyMessage.display_name
+                    : replyMessage.name}
                   {/* } */}
                 </Text>
               </View>
@@ -163,93 +164,85 @@ class ChatMessageBubble extends Component {
                   width: '100%',
                 }}>
                 {replyMessage.msg_type === 'image' &&
-                  replyMessage.message !== null ? (
-                    <RoundedImage
-                      source={{ url: replyMessage.message }}
-                      isRounded={false}
-                      size={50}
-                    />
-                  ) : replyMessage.msg_type === 'video' ? (
-                    <VideoThumbnailPlayer
-                      url={replyMessage.message}
-                    />
-                  ) : replyMessage.msg_type === 'audio' ? (
-                    <Fragment>
+                replyMessage.message !== null ? (
+                  <RoundedImage
+                    source={{url: replyMessage.message}}
+                    isRounded={false}
+                    size={50}
+                  />
+                ) : replyMessage.msg_type === 'video' ? (
+                  <VideoThumbnailPlayer url={replyMessage.message} />
+                ) : replyMessage.msg_type === 'audio' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {replyMessage.message.split('/').pop().split('%2F').pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'volume-up'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {replyMessage.message
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        Audio
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'volume-up'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          Audio
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : replyMessage.msg_type === 'doc' ? (
-                    <Fragment>
+                    </View>
+                  </Fragment>
+                ) : replyMessage.msg_type === 'doc' ? (
+                  <Fragment>
+                    <Text
+                      style={{
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: '500',
+                        fontFamily: Fonts.light,
+                      }}>
+                      {replyMessage.message.split('/').pop().split('%2F').pop()}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}>
+                      <FontAwesome
+                        name={'file-o'}
+                        size={15}
+                        color={Colors.black_light}
+                      />
                       <Text
                         style={{
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: '500',
+                          color: Colors.dark_gray,
+                          fontSize: 13,
+                          marginLeft: 5,
                           fontFamily: Fonts.light,
                         }}>
-                        {replyMessage.message
-                          .split('/')
-                          .pop()
-                          .split('%2F')
-                          .pop()}
+                        File
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: 5,
-                        }}>
-                        <FontAwesome
-                          name={'file-o'}
-                          size={15}
-                          color={Colors.black_light}
-                        />
-                        <Text
-                          style={{
-                            color: Colors.dark_gray,
-                            fontSize: 13,
-                            marginLeft: 5,
-                            fontFamily: Fonts.light,
-                          }}>
-                          File
-                        </Text>
-                      </View>
-                    </Fragment>
-                  ) : (
-                        <Text numberOfLines={2} style={{ fontFamily: Fonts.extralight }}>
-                          {replyMessage.message}
-                        </Text>
-                      )}
+                    </View>
+                  </Fragment>
+                ) : (
+                  <Text
+                    numberOfLines={2}
+                    style={{fontFamily: Fonts.extralight}}>
+                    {replyMessage.message}
+                  </Text>
+                )}
                 {/* <Text
                   numberOfLines={2}
                   style={{
@@ -324,14 +317,20 @@ class ChatMessageBubble extends Component {
           onDismiss={closeMenu}
           anchor={
             !isUser ? (
-              <View style={[styles.talkBubble,message.hyperlink?{marginVertical:5}:{}]}>
+              <View
+                style={[
+                  styles.talkBubble,
+                  message.hyperlink ? {marginVertical: 5} : {},
+                ]}>
                 <View style={{marginLeft: 5}}>
-                  {message.hyperlink?null:<View
-                    style={[
-                      styles.talkBubbleAbsoluteLeft,
-                      message.is_unsent && {borderRightColor: Colors.gray},
-                    ]}
-                  />}
+                  {message.hyperlink ? null : (
+                    <View
+                      style={[
+                        styles.talkBubbleAbsoluteLeft,
+                        message.is_unsent && {borderRightColor: Colors.gray},
+                      ]}
+                    />
+                  )}
                   {message.is_unsent ? (
                     <View
                       activeOpacity={0.8}
@@ -358,17 +357,18 @@ class ChatMessageBubble extends Component {
                     <TouchableOpacity
                       activeOpacity={0.8}
                       style={[
-                        message.hyperlink?{marginLeft:-15}:
-                        {
-                          minHeight: 40,
-                          backgroundColor: Colors.white,
-                          borderRadius: borderRadius,
-                          justifyContent: 'center',
-                          paddingHorizontal:
-                            message.msg_type === 'image' ? 5 : 10,
-                          paddingVertical:
-                            message.msg_type === 'image' ? 5 : 10,
-                        },
+                        message.hyperlink
+                          ? {marginLeft: -15}
+                          : {
+                              minHeight: 40,
+                              backgroundColor: Colors.white,
+                              borderRadius: borderRadius,
+                              justifyContent: 'center',
+                              paddingHorizontal:
+                                message.msg_type === 'image' ? 5 : 10,
+                              paddingVertical:
+                                message.msg_type === 'image' ? 5 : 10,
+                            },
                         message.msg_type === 'audio' && {minWidth: '100%'},
                       ]}
                       onLongPress={(id) => {
@@ -378,13 +378,13 @@ class ChatMessageBubble extends Component {
                         message.msg_type === 'doc'
                           ? this.onDocumentPress(message.message_body)
                           : message.msg_type === 'image'
-                          ? message.hyperlink?
-                            Linking.openURL(message.hyperlink)
-                          :this.onImagePress(
-                              message.thumbnail === ''
-                                ? message.message_body
-                                : message.thumbnail,
-                            )
+                          ? message.hyperlink
+                            ? Linking.openURL(message.hyperlink)
+                            : this.onImagePress(
+                                message.thumbnail === ''
+                                  ? message.message_body
+                                  : message.thumbnail,
+                              )
                           : null
                       }>
                       {message.reply_to && this.renderReplyMessage(message)}
@@ -396,7 +396,7 @@ class ChatMessageBubble extends Component {
                               : message.thumbnail
                           }
                           isHyperlink={message.hyperlink}
-                          borderRadius={message.hyperlink?0:borderRadius}
+                          borderRadius={message.hyperlink ? 0 : borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
@@ -445,8 +445,7 @@ class ChatMessageBubble extends Component {
                             </Text>
                           </View>
                         </Fragment>
-                      ) : this.isContainUrl(message.message_body) ?
-                          (
+                      ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
                           // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {
@@ -456,7 +455,10 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
+                            linkStyle={{
+                              color: Colors.link_color,
+                              textDecorationLine: 'underline',
+                            }}>
                             <Text
                               style={{
                                 fontFamily: Fonts.regular,
@@ -482,13 +484,19 @@ class ChatMessageBubble extends Component {
                 </View>
               </View>
             ) : (
-              <View style={[styles.talkBubble,message.msg_type === 'image'?{marginVertical:5}:{}]}>
-                {message.msg_type === 'image'?null:<View
-                  style={[
-                    styles.talkBubbleAbsoluteRight,
-                    message.is_unsent && {borderLeftColor: Colors.gray},
-                  ]}
-                />}
+              <View
+                style={[
+                  styles.talkBubble,
+                  message.msg_type === 'image' ? {marginVertical: 5} : {},
+                ]}>
+                {message.msg_type === 'image' ? null : (
+                  <View
+                    style={[
+                      styles.talkBubbleAbsoluteRight,
+                      message.is_unsent && {borderLeftColor: Colors.gray},
+                    ]}
+                  />
+                )}
                 {message.is_unsent ? (
                   <View
                     style={[
@@ -526,7 +534,10 @@ class ChatMessageBubble extends Component {
                       {
                         minHeight: 40,
                         borderRadius: borderRadius,
-                        backgroundColor: message.msg_type === 'image'?'transparent':Colors.pink_chat,
+                        backgroundColor:
+                          message.msg_type === 'image'
+                            ? 'transparent'
+                            : Colors.pink_chat,
                         // padding: 5,
                       },
                       message.msg_type === 'audio' && {minWidth: '100%'},
@@ -535,7 +546,8 @@ class ChatMessageBubble extends Component {
                       style={{
                         flex: 1,
                         justifyContent: 'center',
-                        paddingHorizontal: message.msg_type === 'image' ? 0 : 10,
+                        paddingHorizontal:
+                          message.msg_type === 'image' ? 0 : 10,
                         paddingVertical: message.msg_type === 'image' ? 0 : 10,
                       }}
                       onLongPress={() => {
@@ -623,7 +635,10 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               Linking.openURL(url);
                             }}
-                            linkStyle={{color: Colors.link_color, textDecorationLine:'underline'}}>
+                            linkStyle={{
+                              color: Colors.link_color,
+                              textDecorationLine: 'underline',
+                            }}>
                             <Text
                               style={{
                                 color: Colors.black,
