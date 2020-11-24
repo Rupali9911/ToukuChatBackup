@@ -55,7 +55,7 @@ import {
   pinChannel,
   unpinChannel,
 } from '../../redux/reducers/channelReducer';
-import {ListLoader, UploadLoader} from '../../components/Loaders';
+import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
 import {
   ConfirmationModal,
   UploadSelectModal,
@@ -116,6 +116,7 @@ class ChannelChats extends Component {
       isChatLoading: false,
       isMultiSelect: false,
       selectedIds: [],
+      openDoc: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -1105,6 +1106,7 @@ class ChannelChats extends Component {
       sendingMedia,
       isChatLoading,
       isMultiSelect,
+      openDoc,
     } = this.state;
     if (!this.props.chatConversation) {
       return null;
@@ -1148,6 +1150,7 @@ class ChannelChats extends Component {
               this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
+            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
           />
 
           <ConfirmationModal
@@ -1210,6 +1213,7 @@ class ChannelChats extends Component {
             onAttachmentPress={() => this.onAttachmentPress()}
           />
           {sendingMedia && <UploadLoader />}
+          {openDoc && <OpenLoader />}
         </View>
       );
     }
@@ -1469,7 +1473,7 @@ class ChannelChats extends Component {
                       style={{
                         marginHorizontal: 10,
                         justifyContent: 'center',
-                        flexDirection: 'row', 
+                        flexDirection: 'row',
                         alignItems: 'center',
                       }}>
                       <View style={{flex: 1, alignItems: 'center'}}>

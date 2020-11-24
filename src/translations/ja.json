@@ -148,7 +148,7 @@
     "usernameText": "ユーザーネームを入力",
     "resetPasswordToaster": "認証コードを送信",
     "verify": "確認",
-    "networkError": "インターネット接続が遅い、またはまったくない。インターネット接続を確認してください"
+    "networkError": "インターネット接続が遅い、またはまったくない。 インターネット接続を確認してください"
   },
   "messages": {
     "required": "{{field}} 必須"
@@ -1024,7 +1024,8 @@
       "enterChannelId": "チャネルIDを入力してください",
       "optional": "オプション",
       "PleaseEnterOtp": "OTPを入力してください。",
-      "addNewNote": "ここに新しいメモを書く"
+      "addNewNote": "ここに新しいメモを書く",
+      "donloading": "ダウンロード"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

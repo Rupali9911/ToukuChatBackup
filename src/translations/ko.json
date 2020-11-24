@@ -1024,7 +1024,8 @@
       "enterChannelId": "채널 ID를 입력하세요",
       "optional": "선택 과목",
       "PleaseEnterOtp": "OTP를 입력하세요.",
-      "addNewNote": "여기에 새 메모 작성"
+      "addNewNote": "여기에 새 메모 작성",
+      "donloading": "다운로드"
     },
     "welcome": {
       "theWorldIsConnected": "\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

@@ -122,6 +122,7 @@ class ChatContainer extends Component {
                 perviousPlayingAudioId: this.state.audioPlayingId,
               });
             }}
+            showOpenLoader={this.props.showOpenLoader}
           />
         </Fragment>
       );
@@ -323,6 +324,7 @@ class ChatContainer extends Component {
                             this[`message_box_${id}`] &&
                               this[`message_box_${id}`].callBlinking(id);
                           }}
+                          showOpenLoader={this.props.showOpenLoader}
                         />
                       </View>
                     </View>

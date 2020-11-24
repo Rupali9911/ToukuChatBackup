@@ -58,7 +58,7 @@ import {
   unpinGroup,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import {ListLoader, UploadLoader} from '../../components/Loaders';
+import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
 import {eventService} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import SingleSocket from '../../helpers/SingleSocket';
@@ -105,6 +105,7 @@ class GroupChats extends Component {
       isChatLoading: false,
       isMultiSelect: false,
       selectedIds: [],
+      openDoc: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -1519,6 +1520,7 @@ class GroupChats extends Component {
       sendingMedia,
       isChatLoading,
       isMultiSelect,
+      openDoc,
     } = this.state;
     const {
       chatGroupConversation,
@@ -1599,6 +1601,7 @@ class GroupChats extends Component {
               this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
+            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
           />
         )}
 
@@ -1674,6 +1677,7 @@ class GroupChats extends Component {
           onAttachmentPress={() => this.onAttachmentPress()}
         />
         {sendingMedia && <UploadLoader />}
+        {openDoc && <OpenLoader />}
       </ImageBackground>
     );
   }

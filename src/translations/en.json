@@ -1022,7 +1022,8 @@
       "enterChannelId": "Please enter channel ID",
       "optional": "Optional",
       "PleaseEnterOtp": "Please enter OTP.",
-      "addNewNote": "Write a  new note here"
+      "addNewNote": "Write a  new note here",
+      "donloading": "downloading"
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",

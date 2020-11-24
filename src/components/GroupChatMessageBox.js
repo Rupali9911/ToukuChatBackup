@@ -170,6 +170,7 @@ export default class GroupChatMessageBox extends Component {
       onReplyPress,
       groupMembers,
       isMultiSelect,
+      showOpenLoader,
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -287,6 +288,7 @@ export default class GroupChatMessageBox extends Component {
                     onAudioPlayPress={onAudioPlayPress}
                     onReplyPress={onReplyPress}
                     groupMembers={groupMembers}
+                    showOpenLoader={showOpenLoader}
                   />
                 </View>
                 <View
@@ -409,6 +411,7 @@ export default class GroupChatMessageBox extends Component {
                 onAudioPlayPress={onAudioPlayPress}
                 onReplyPress={onReplyPress}
                 groupMembers={groupMembers}
+                showOpenLoader={showOpenLoader}
               />
               {message.message_body && message.message_body.type === 'image' ? (
                 <View

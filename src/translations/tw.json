@@ -148,7 +148,7 @@
     "usernameText": "輸入用戶名",
     "resetPasswordToaster": "重置密碼",
     "verify": "校驗",
-    "networkError": "互联网连接速度慢或没有。请检查您的互联网连接"
+    "networkError": "互聯網連接速度慢或沒有。 請檢查您的互聯網連接"
   },
   "messages": {
     "required": "規定的（必填）"
@@ -1023,7 +1023,8 @@
       "enterChannelId": "請輸入頻道編號",
       "optional": "可選的",
       "PleaseEnterOtp": "請輸入OTP。",
-      "addNewNote": "在這裡寫新筆記"
+      "addNewNote": "在這裡寫新筆記",
+      "donloading": "正在下载"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

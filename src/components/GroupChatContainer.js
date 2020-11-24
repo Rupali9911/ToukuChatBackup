@@ -121,6 +121,7 @@ class GroupChatContainer extends Component {
               });
             }}
             groupMembers={groupMembers}
+            showOpenLoader={this.props.showOpenLoader}
           />
         </Fragment>
       );
@@ -318,6 +319,7 @@ class GroupChatContainer extends Component {
                               this[`message_box_${id}`].callBlinking(id);
                           }}
                           groupMembers={groupMembers}
+                          showOpenLoader={this.props.showOpenLoader}
                         />
                       </View>
                     </View>

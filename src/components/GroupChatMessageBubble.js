@@ -9,6 +9,8 @@ import {
   Image,
   Clipboard,
   Linking,
+  NativeModules,
+  NativeEventEmitter,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Menu, Divider} from 'react-native-paper';
@@ -41,7 +43,39 @@ class GroupChatMessageBubble extends Component {
       images: null,
       animation: new Animated.Value(1),
     };
+    this.eventEmitter = new NativeEventEmitter(
+      NativeModules.RNReactNativeDocViewer,
+    );
+    this.eventEmitter.addListener('DoneButtonEvent', (data) => {
+      /*
+       *Done Button Clicked
+       * return true
+       */
+      console.log('ChatMessageBubble -> constructor -> data', data.close);
+      // this.props.showOpenLoader(false);
+      // this.setState({donebuttonclicked: data.close});
+    });
   }
+
+  componentDidMount() {
+    // download progress
+    this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
+      // this.props.showOpenLoader(true);
+      console.log(
+        'ChatMessageBubble -> componentDidMount -> Event.progress',
+        Event.progress,
+      );
+      if (Event.progress === 100) {
+        this.props.showOpenLoader(false);
+      }
+      // this.setState({progress: Event.progress + ' %'});
+    });
+  }
+
+  componentWillUnmount() {
+    this.eventEmitter.removeListener();
+  }
+
   hideImage() {
     console.log('hideImage called');
     this.setState({showImage: false});
@@ -88,6 +122,7 @@ class GroupChatMessageBubble extends Component {
   };
 
   onDocumentPress = (url) => {
+    this.props.showOpenLoader(true);
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
         [
@@ -469,9 +504,9 @@ class GroupChatMessageBubble extends Component {
                         <Fragment>
                           <Text
                             style={{
+                              fontFamily: Fonts.regular,
+                              fontWeight: '300',
                               fontSize: 15,
-                              fontFamily: Fonts.light,
-                              fontWeight: '500',
                             }}>
                             {message.message_body.text
                               .split('/')
@@ -670,10 +705,9 @@ class GroupChatMessageBubble extends Component {
                         <Fragment>
                           <Text
                             style={{
-                              color: Colors.black,
+                              fontFamily: Fonts.regular,
+                              fontWeight: '300',
                               fontSize: 15,
-                              fontWeight: '500',
-                              fontFamily: Fonts.light,
                             }}>
                             {message.message_body.text
                               .split('/')

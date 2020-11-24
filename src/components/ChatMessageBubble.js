@@ -8,6 +8,8 @@ import {
   Image,
   Linking,
   Modal,
+  NativeModules,
+  NativeEventEmitter,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Menu, Divider} from 'react-native-paper';
@@ -38,6 +40,37 @@ class ChatMessageBubble extends Component {
       showImage: false,
       images: null,
     };
+    this.eventEmitter = new NativeEventEmitter(
+      NativeModules.RNReactNativeDocViewer,
+    );
+    this.eventEmitter.addListener('DoneButtonEvent', (data) => {
+      /*
+       *Done Button Clicked
+       * return true
+       */
+      console.log('ChatMessageBubble -> constructor -> data', data.close);
+      // this.props.showOpenLoader(false);
+      // this.setState({donebuttonclicked: data.close});
+    });
+  }
+
+  componentDidMount() {
+    // download progress
+    this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
+      // this.props.showOpenLoader(true);
+      console.log(
+        'ChatMessageBubble -> componentDidMount -> Event.progress',
+        Event.progress,
+      );
+      if (Event.progress === 100) {
+        this.props.showOpenLoader(false);
+      }
+      // this.setState({progress: Event.progress + ' %'});
+    });
+  }
+
+  componentWillUnmount() {
+    this.eventEmitter.removeListener();
   }
 
   onCopy = (message) => {
@@ -58,6 +91,7 @@ class ChatMessageBubble extends Component {
   };
 
   onDocumentPress = (url) => {
+    this.props.showOpenLoader(true);
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
         [

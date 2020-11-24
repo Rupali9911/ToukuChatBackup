@@ -19,6 +19,7 @@ import {
 } from '../../components/Modals';
 import {ListLoader} from '../../components/Loaders';
 import {UploadLoader} from '../../components/Loaders';
+import {OpenLoader} from '../../components/Loaders';
 import {
   translate,
   translateMessage,
@@ -86,6 +87,7 @@ class FriendChats extends Component {
       isChatLoading: false,
       isMultiSelect: false,
       selectedIds: [],
+      openDoc: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -1276,6 +1278,7 @@ class FriendChats extends Component {
       sendingMedia,
       isChatLoading,
       isMultiSelect,
+      openDoc,
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
     return (
@@ -1342,6 +1345,7 @@ class FriendChats extends Component {
               this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
+            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
           />
         )}
         <ConfirmationModal
@@ -1406,6 +1410,7 @@ class FriendChats extends Component {
           onAttachmentPress={() => this.onAttachmentPress()}
         />
         {sendingMedia && <UploadLoader />}
+        {openDoc && <OpenLoader />}
       </ImageBackground>
     );
   }
