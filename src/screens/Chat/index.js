@@ -242,11 +242,7 @@ class Chat extends Component {
 
       this.props.getFollowingChannels().then((res) => {
         this.setCommonConversation();
-        console.log(
-          'Chat -> UNSAFE_componentWillMount -> getFollowingChannels length',
-          res.length,
-        );
-        if (res.length) {
+        if (res.conversations.length) {
           this.setState({
             isLoading: false,
           });
@@ -254,11 +250,7 @@ class Chat extends Component {
       });
       this.props.getUserGroups().then((res) => {
         this.setCommonConversation();
-        console.log(
-          'Chat -> UNSAFE_componentWillMount -> getUserGroups length',
-          res.length,
-        );
-        if (res.length) {
+        if (res.conversations.length) {
           this.setState({
             isLoading: false,
           });
@@ -266,10 +258,6 @@ class Chat extends Component {
       });
       this.props.getUserFriends().then((res) => {
         this.setCommonConversation();
-        console.log(
-          'Chat -> UNSAFE_componentWillMount -> getUserFriends length',
-          res.length,
-        );
         if (res.length) {
           this.setState({
             isLoading: false,
@@ -2721,7 +2709,6 @@ class Chat extends Component {
       (cc) => !cc.is_pined,
     );
     const conversations = [...pinedConversations, ...unpinedConversations];
-    console.log('renderCommonChat -> conversations', conversations);
     if (conversations.length === 0 && isLoading) {
       return <ListLoader />;
     } else if (conversations.length === 0) {
@@ -2771,22 +2758,23 @@ class Chat extends Component {
                 title={item.name}
                 onCheckChange={this.onCheckChange}
                 description={
-                  item.subject_message ? item.subject_message :
-                    item.last_msg
-                      ? item.last_msg.is_unsent
-                        ? translate('pages.xchat.messageUnsent')
-                        : item.last_msg.msg_type === 'text'
-                          ? item.last_msg.message_body
-                          : item.last_msg.msg_type === 'image'
-                            ? translate('pages.xchat.photo')
-                            : item.last_msg.msg_type === 'video'
-                              ? translate('pages.xchat.video')
-                              : item.last_msg.msg_type === 'doc'
-                                ? translate('pages.xchat.document')
-                                : item.last_msg.type === 'audio'
-                                  ? translate('pages.xchat.audio')
-                                  : ''
+                  item.subject_message
+                    ? item.subject_message
+                    : item.last_msg
+                    ? item.last_msg.is_unsent
+                      ? translate('pages.xchat.messageUnsent')
+                      : item.last_msg.msg_type === 'text'
+                      ? item.last_msg.message_body
+                      : item.last_msg.msg_type === 'image'
+                      ? translate('pages.xchat.photo')
+                      : item.last_msg.msg_type === 'video'
+                      ? translate('pages.xchat.video')
+                      : item.last_msg.msg_type === 'doc'
+                      ? translate('pages.xchat.document')
+                      : item.last_msg.type === 'audio'
+                      ? translate('pages.xchat.audio')
                       : ''
+                    : ''
                 }
                 date={item.last_msg ? item.last_msg.created : item.joining_date}
                 image={item.channel_picture}
