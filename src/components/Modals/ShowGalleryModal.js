@@ -47,14 +47,20 @@ class ShowGalleryModal extends Component {
         <SafeAreaView
           style={{
             // flex: '10%',
-            height: '90%',
-            alignSelf: 'center',
-            width: '90%',
+            // height: '90%',
+            // alignSelf: 'center',
+            // width: '90%',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}>
           <View
             style={{
-              flex: this.state.orientation === 'LANDSCAPE' ? 0.9 : 0.95,
+              // flex: this.state.orientation === 'LANDSCAPE' ? 0.9 : 0.95,
+              flex: 1,
+              width: '100%',
               backgroundColor: Colors.white,
+              justifyContent: 'center',
             }}>
             <View
               style={{

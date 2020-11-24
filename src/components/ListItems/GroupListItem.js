@@ -186,7 +186,7 @@ export default class GroupListItem extends Component {
                     globalStyles.smallNunitoRegularText,
                     {
                       color: Colors.black_light,
-                      fontSize: normalize(12),
+                      // fontSize: normalize(12),
                       fontWeight: '400',
                     },
                   ]}>

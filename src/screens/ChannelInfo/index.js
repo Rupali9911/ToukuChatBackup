@@ -303,8 +303,8 @@ class ChannelInfo extends Component {
                       {position: 'absolute', width: '100%', height: '100%'},
                     ]}></LinearGradient>
 
-                  <View
-                    style={channelInfoStyles.updateBackgroundContainer}></View>
+                  {/* <View
+                    style={channelInfoStyles.updateBackgroundContainer}></View> */}
                   <View style={channelInfoStyles.channelInfoContainer}>
                     <View style={channelInfoStyles.imageContainer}>
                       <View style={channelInfoStyles.imageView}>

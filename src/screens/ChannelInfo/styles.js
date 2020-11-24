@@ -11,12 +11,14 @@ export const channelInfoStyles = StyleSheet.create({
   },
   channelCoverContainer: {
     flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
   },
   updateBackgroundContainer: {
-    flex: 0.65,
+    flex: 0.4,
   },
   channelInfoContainer: {
-    flex: 0.25,
+    // flex: 0.25,
     flexDirection: 'row',
   },
   imageContainer: {
@@ -40,30 +42,30 @@ export const channelInfoStyles = StyleSheet.create({
     width: 70,
   },
   detailView: {
-    flex: 0.65,
+    flex: 1,
     paddingLeft: 5,
     paddingVertical: 5,
   },
   changeChannelContainer: {
-    paddingVertical: 5,
+    // paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },
   channelNameText: {
     fontSize: 18,
-    maxWidth: '80%',
+    // maxWidth: '80%',
     marginRight: 5,
     fontFamily: Fonts.regular,
     color: Colors.white,
   },
   channelInfoDetail: {
-    flex: 0.15,
+    // flex: 0.15,
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: '2%',
+    // alignItems: 'center',
+    // paddingVertical: '2%',
   },
   channelDetailStatus: {
-    flex: 0.75,
+    flex: 0.65,
     flexDirection: 'row',
     paddingHorizontal: '2%',
   },
@@ -84,7 +86,7 @@ export const channelInfoStyles = StyleSheet.create({
     fontFamily: Fonts.regular,
   },
   channelDetailButton: {
-    flex: 0.25,
+    flex: 0.35,
     paddingHorizontal: '1%',
     justifyContent: 'center',
   },
@@ -100,8 +102,8 @@ export const channelInfoStyles = StyleSheet.create({
   tabIamge: {
     tintColor: Colors.gradient_2,
     marginVertical: 5,
-    height: 20,
-    width: 20,
+    height: 30,
+    width: 30,
   },
   tabTitle: {
     fontSize: 13,
