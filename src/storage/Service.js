@@ -40,7 +40,7 @@ const realm = new Realm({
   path: 'ToukuDB.realm',
   schema: DB_SCHEMAS,
   schemaVersion: DB_SCHEMA_VERSION,
-  deleteRealmIfMigrationNeeded: true
+  deleteRealmIfMigrationNeeded: true,
 });
 
 export const resetData = () => {
@@ -134,45 +134,6 @@ export const updateMessageById = (id, text, type) => {
   realm.write(() => {
     realm.create('chat_conversation', {id: id, message_body: text}, 'modified');
   });
-};
-
-export const multipleData = (type, multichat) => {
-  console.log('type', type, multichat);
-  if (type === 'channel') {
-    realm.write(() => {
-      realm.create(
-        'channels',
-        {id: multichat.id, last_msg: null, timestamp: null},
-        'modified',
-      );
-    });
-  } else if (type === 'friend') {
-    realm.write(() => {
-      realm.create(
-        'user_friends',
-        {
-          user_id: multichat.user_id,
-          last_msg: null,
-          last_msg_id: null,
-          timestamp: null,
-        },
-        'modified',
-      );
-    });
-  } else {
-    realm.write(() => {
-      realm.create(
-        'groups',
-        {
-          groups_id: multichat.group_id,
-          last_msg: null,
-          last_msg_id: null,
-          timestamp: null,
-        },
-        'modified',
-      );
-    });
-  }
 };
 
 export const updateReadByChannelId = (id) => {
@@ -486,7 +447,7 @@ export const setChannels = (channels) => {
             is_pined: item.is_pined ? item.is_pined : false,
             created: item.created,
             joining_date: item.joining_date ? item.joining_date : item.created,
-            subject_message: item.subject_message
+            subject_message: item.subject_message,
           },
           'modified',
         );
@@ -511,7 +472,7 @@ export const setChannels = (channels) => {
           is_pined: item.is_pined ? item.is_pined : false,
           created: item.created,
           joining_date: item.joining_date ? item.joining_date : item.created,
-          subject_message: item.subject_message
+          subject_message: item.subject_message,
         });
       });
     }
@@ -567,7 +528,7 @@ export const updateChannelLastMsgWithOutCount = (id, message) => {
       {
         id: id,
         last_msg: last_msg,
-        subject_message: message.subject_message?message.subject_message:null,
+        subject_message: message.last_msg,
       },
       'modified',
     );
@@ -615,7 +576,9 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
           {
             id: id,
             last_msg: last_msg,
-            subject_message: message.subject_message?message.subject_message:null,
+            subject_message: message.subject_message
+              ? message.subject_message
+              : null,
             unread_msg: unreadCount,
           },
           'modified',
@@ -628,7 +591,9 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
           {
             id: id,
             last_msg: last_msg,
-            subject_message: message.subject_message?message.subject_message:null,
+            subject_message: message.subject_message
+              ? message.subject_message
+              : null,
             unread_msg: unreadCount,
           },
           'modified',
@@ -1249,4 +1214,45 @@ export const updateChannelsWhenUnpined = (item) => {
     );
   });
 };
+
+export const multipleData = (type, multichat) => {
+  console.log('type', type, multichat);
+  if (type === 'channel') {
+    realm.write(() => {
+      realm.create(
+        'channels',
+        {id: multichat.id, last_msg: null, timestamp: multichat[0].timestamp},
+        'modified',
+      );
+    });
+  } else if (type === 'friend') {
+    console.log('data', multichat[0].friend);
+    realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: multichat[0].friend,
+          last_msg: null,
+          last_msg_id: null,
+        },
+        'modified',
+      );
+    });
+  } else {
+    realm.write(() => {
+      console.log('data', multichat[0].group_id);
+      realm.create(
+        'groups',
+        {
+          group_id: multichat.group_id,
+          last_msg: null,
+          last_msg_id: null,
+          timestamp: multichat[0].timestamp,
+        },
+        'modified',
+      );
+    });
+  }
+};
+
 //#endregion

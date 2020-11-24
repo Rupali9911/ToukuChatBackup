@@ -371,8 +371,9 @@ class Chat extends Component {
     //console.log(JSON.stringify(message));
     console.log(
       'checkEventTypes -> message.text.data.type',
-      message.text.data.type,
-      this.props.currentRouteName,
+      // message.text.data.type,
+      // this.props.currentRouteName,
+      message,
     );
     if (message.text.data.socket_event_id) {
       updateLastEventId(message.text.data.socket_event_id);
@@ -655,7 +656,7 @@ class Chat extends Component {
     ) {
       message.text.data.message_details.friend_ids.map((friendItem, index) => {
         let commonData2 = commonData.filter(
-          (item) => item.user_id === friendItem,
+          (item) => item.friend === friendItem,
         );
         if (commonData2.length > 0) {
           multipleData('friend', commonData2);
@@ -664,8 +665,11 @@ class Chat extends Component {
     }
 
     // group
-    if (deleteObj.group_ids && deleteObj.group_ids.length > 0) {
-      deleteObj.group_ids.map((groupItem, index) => {
+    if (
+      message.text.data.message_details.group_ids &&
+      message.text.data.message_details.group_ids.length > 0
+    ) {
+      message.text.data.message_details.group_ids.map((groupItem, index) => {
         let commonData3 = commonData.filter(
           (item) => item.group_id === groupItem,
         );
@@ -2575,9 +2579,9 @@ class Chat extends Component {
     //// friend
     if (isCheck == 'check' && type === 'friend') {
       if (friendId.length === 0) {
-        friendId = [item.user_id];
+        friendId = [item.friend];
       } else {
-        friendId.push(item.user_id);
+        friendId.push(item.friend);
       }
     } else if (isCheck == 'unCheck' && type === 'friend') {
       if (friendId.length > 0) {
@@ -2596,10 +2600,11 @@ class Chat extends Component {
     let channel_ids = channelId;
     let friend_ids = friendId;
     let group_ids = groupId;
-
-    deleteObj = {channel_ids, friend_ids, group_ids};
+    let replies_ids = [];
+    deleteObj = {channel_ids, friend_ids, group_ids, replies_ids};
     let i = [item];
 
+    console.log('data item', deleteObj);
     if (isCheck == 'check') {
       count = count + i.length;
     } else {
@@ -2654,7 +2659,7 @@ class Chat extends Component {
         if (deleteObj.friend_ids && deleteObj.friend_ids.length > 0) {
           deleteObj.friend_ids.map((friendItem, index) => {
             commonData = commonData.filter(
-              (item) => item.user_id !== friendItem,
+              (item) => item.friend !== friendItem,
             );
           });
         }
@@ -2668,7 +2673,7 @@ class Chat extends Component {
           });
         }
 
-        this.setState({commonChat: commonData});
+        this.setState({commonChat: commonData, countChat: 0});
         this.props.setDeleteChat(this.state.commonChat);
       }
     });
@@ -2710,8 +2715,6 @@ class Chat extends Component {
     );
     const conversations = [...pinedConversations, ...unpinedConversations];
     if (conversations.length === 0 && isLoading) {
-      return <ListLoader />;
-    } else if (conversations.length === 0) {
       return <ListLoader />;
     } else if (conversations.length > 0) {
       return (
