@@ -23,9 +23,9 @@ import {
   hideAllPost,
   reportPost,
 } from '../../redux/reducers/timelineReducer';
-import ConfirmationModal from "../../components/Modals/ConfirmationModal";
-import AsyncStorage from "@react-native-community/async-storage";
-import {resetData} from "../../storage/Service";
+import ConfirmationModal from '../../components/Modals/ConfirmationModal';
+import AsyncStorage from '@react-native-community/async-storage';
+import {resetData} from '../../storage/Service';
 
 class Timeline extends Component {
   constructor(props) {
@@ -42,7 +42,9 @@ class Timeline extends Component {
           icon: Icons.icon_chat,
           action: () => {
             this.setState({activeTab: 'trend'});
-            this.props.getTrendTimeline().then((res) => {});
+            this.props
+              .getTrendTimeline(this.props.userData.user_type)
+              .then((res) => {});
           },
         },
         {
@@ -60,7 +62,9 @@ class Timeline extends Component {
           icon: Icons.icon_timeline,
           action: () => {
             this.setState({activeTab: 'ranking'});
-            this.props.getRankingTimeline().then((res) => {});
+            this.props
+              .getRankingTimeline(this.props.userData.user_type)
+              .then((res) => {});
           },
         },
       ],
@@ -73,7 +77,7 @@ class Timeline extends Component {
           onPress: (res) => {
             this.hidePost(res);
           },
-        }
+        },
         // ,
         // {
         //   id: 1,
@@ -92,8 +96,8 @@ class Timeline extends Component {
         //   },
         // },
       ],
-        showConfirmation: false,
-        currentPost: null
+      showConfirmation: false,
+      currentPost: null,
     };
   }
 
@@ -109,19 +113,24 @@ class Timeline extends Component {
   }
 
   async componentDidMount() {
+    console.log('userData', this.props.userData);
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getTrendTimeline();
     // this.props.getFollowingTimeline();
     // this.props.getRankingTimeline();
     // this.showData();
 
-    await this.props.getTrendTimeline().then((res) => {
-      this.props.getFollowingTimeline().then((res) => {
-        this.props.getRankingTimeline().then((res) => {
-          this.showData();
+    await this.props
+      .getTrendTimeline(this.props.userData.user_type)
+      .then((res) => {
+        this.props.getFollowingTimeline().then((res) => {
+          this.props
+            .getRankingTimeline(this.props.userData.user_type)
+            .then((res) => {
+              this.showData();
+            });
         });
       });
-    });
   }
 
   showData() {
@@ -153,7 +162,7 @@ class Timeline extends Component {
   };
 
   hidePost(post) {
-    this.setState({showConfirmation: true, currentPost: post})
+    this.setState({showConfirmation: true, currentPost: post});
   }
 
   hideAllPost(post) {
@@ -176,7 +185,7 @@ class Timeline extends Component {
     const {activeTab} = this.state;
     if (activeTab === 'trend') {
       console.log('trend selected');
-      this.props.getTrendTimeline().then((res) => {
+      this.props.getTrendTimeline(this.props.userData.user_type).then((res) => {
         this.showData();
       });
     } else if (activeTab === 'following') {
@@ -186,34 +195,51 @@ class Timeline extends Component {
       });
     } else if (activeTab === 'ranking') {
       console.log('ranking selected');
-      this.props.getRankingTimeline().then((res) => {
-        this.showData();
-      });
+      this.props
+        .getRankingTimeline(this.props.userData.user_type)
+        .then((res) => {
+          this.showData();
+        });
     }
   }
 
-    updateModalVisibility() {
-        this.setState({showConfirmation: !this.state.showConfirmation});
-    }
+  updateModalVisibility() {
+    this.setState({showConfirmation: !this.state.showConfirmation});
+  }
 
-    actionSure = async () => {
-    const {currentPost} = this.state
-        this.props.hidePost(currentPost.id).then((res) => {
-            console.log('Hide post server response', res);
-            this.refreshContent();
-            this.setState({showConfirmation: false});
-        }).catch((err) => {
-            this.setState({showConfirmation: false});
-        });
-    };
+  actionSure = async () => {
+    const {currentPost} = this.state;
+    this.props
+      .hidePost(currentPost.id)
+      .then((res) => {
+        console.log('Hide post server response', res);
+        this.refreshContent();
+        this.setState({showConfirmation: false});
+      })
+      .catch((err) => {
+        this.setState({showConfirmation: false});
+      });
+  };
 
-    actionCancel() {
-        this.updateModalVisibility();
-    }
+  actionCancel() {
+    this.updateModalVisibility();
+  }
 
   render() {
-    const {tabBarItem, activeTab, menuItems, posts, orientation, showConfirmation} = this.state;
-    const {trendTimline, followingTimeline, rankingTimeLine, loading} = this.props;
+    const {
+      tabBarItem,
+      activeTab,
+      menuItems,
+      posts,
+      orientation,
+      showConfirmation,
+    } = this.state;
+    const {
+      trendTimline,
+      followingTimeline,
+      rankingTimeLine,
+      loading,
+    } = this.props;
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -245,15 +271,15 @@ class Timeline extends Component {
             )}
           </ScrollView>
         </View>
-          <ConfirmationModal
-              orientation={orientation}
-              visible={showConfirmation}
-              onCancel={this.actionCancel.bind(this)}
-              onConfirm={this.actionSure.bind(this)}
-              title={translate('pages.xchat.reallyWannaRelease')}
-              message={translate('pages.xchat.ifYouCancelIt')}
-              isLoading={loading}
-          />
+        <ConfirmationModal
+          orientation={orientation}
+          visible={showConfirmation}
+          onCancel={this.actionCancel.bind(this)}
+          onConfirm={this.actionSure.bind(this)}
+          title={translate('pages.xchat.reallyWannaRelease')}
+          message={translate('pages.xchat.ifYouCancelIt')}
+          isLoading={loading}
+        />
       </View>
       // </ImageBackground>
     );
@@ -267,6 +293,7 @@ const mapStateToProps = (state) => {
     trendTimline: state.timelineReducer.trendTimline,
     followingTimeline: state.timelineReducer.followingTimeline,
     rankingTimeLine: state.timelineReducer.rankingTimeLine,
+    userData: state.userReducer.userData,
   };
 };
 

@@ -285,11 +285,17 @@ export const getChannelTimeline = (groupId, lastId) => {
   });
 };
 //
-export const getTrendTimeline = () => (dispatch) =>
+export const getTrendTimeline = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendTimelineRequest());
+
+    console.log('userType', userType);
+
+    let url = ['tester', 'owner', 'company'].includes(userType)
+      ? `/xchat/timeline-trend-for-testers/?last_id=0`
+      : `/xchat/timeline-trend/?last_id=0`;
     client
-      .get(`/xchat/timeline-trend/?last_id=0`)
+      .get(url)
       .then((res) => {
         if (res.status) {
           dispatch(getTrendTimelineSuccess(res.posts));
@@ -347,12 +353,17 @@ const getRankingTimelineFailure = () => ({
   type: GET_RANKING_TIMELINE_FAIL,
 });
 
-export const getRankingTimeline = () => (dispatch) =>
+export const getRankingTimeline = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {
     console.log('getRankingTimeline');
     dispatch(getRankingTimelineRequest());
+
+    let url = ['tester', 'owner', 'company'].includes(userType)
+      ? `/xchat/timeline-rank-for-testers/?last_id=0`
+      : `/xchat/timeline-rank/?last_id=0`;
+
     client
-      .get(`/xchat/timeline-rank/?last_id=0`)
+      .get(url)
       .then((res) => {
         if (res.status) {
           dispatch(getRankingTimelineSuccess(res.posts));

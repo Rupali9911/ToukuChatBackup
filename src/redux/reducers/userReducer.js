@@ -284,8 +284,50 @@ export const getUserProfile = () => (dispatch) =>
     client
       .get(`/profile/`)
       .then((res) => {
-        console.log('getUserProfile response', res);
         if (res.id) {
+          if (res.user_type === 'user') {
+            res.user_category = 'anx';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company') {
+            res.user_category = 'anx';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner') {
+            res.user_category = 'anx';
+            res.user_type = 'owner';
+          }
+          // For ANV users
+          if (res.user_type === 'user_anv') {
+            res.user_category = 'anv';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company_anv') {
+            res.user_category = 'anv';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner_anv') {
+            res.user_category = 'anv';
+            res.user_type = 'owner';
+          }
+          // For ANT users
+          if (res.user_type === 'user_ant') {
+            res.user_category = 'ant';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company_ant') {
+            res.user_category = 'ant';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner_ant') {
+            res.user_category = 'ant';
+            res.user_type = 'owner';
+          }
+          // For general users
+          if (res.user_type === 'user_general') {
+            res.user_category = 'general';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company_general') {
+            res.user_category = 'general';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner_general') {
+            res.user_category = 'general';
+            res.user_type = 'owner';
+          }
           dispatch(setUserData(res));
         }
         resolve(res);
