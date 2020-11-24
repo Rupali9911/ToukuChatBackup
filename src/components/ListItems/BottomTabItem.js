@@ -5,6 +5,7 @@ import {Badge} from 'react-native-paper';
 
 import {Colors} from '../../constants';
 import {globalStyles} from '../../styles';
+import { normalize } from '../../utils';
 
 class BottomTabItem extends Component {
   constructor(props) {
@@ -60,9 +61,10 @@ class BottomTabItem extends Component {
             ]}
           />
           <Text
+            numberOfLines={1}
             style={[
               globalStyles.smallLightTextTab,
-              {color: titleColor || Colors.white, paddingTop: 5},
+              {color: titleColor || Colors.white, paddingTop: 5, fontSize: normalize(10)},
             ]}>
             {title}
           </Text>

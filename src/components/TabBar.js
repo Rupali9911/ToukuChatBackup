@@ -38,7 +38,7 @@ export default class TabBar extends Component {
               ]}
               onPress={item.action}
             >
-              <Text style={[styles.tabTitle]}>
+              <Text numberOfLines={1} style={[styles.tabTitle]}>
                 {translate(`pages.xchat.${item.title}`)}
               </Text>
             </TouchableOpacity>

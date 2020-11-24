@@ -567,7 +567,7 @@ export const updateChannelLastMsgWithOutCount = (id, message) => {
       {
         id: id,
         last_msg: last_msg,
-        subject_message: message.last_msg
+        subject_message: message.subject_message?message.subject_message:null,
       },
       'modified',
     );
@@ -615,7 +615,7 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
           {
             id: id,
             last_msg: last_msg,
-            subject_message: message.last_msg,
+            subject_message: message.subject_message?message.subject_message:null,
             unread_msg: unreadCount,
           },
           'modified',
@@ -628,7 +628,7 @@ export const updateChannelLastMsg = (id, message, unreadCount) => {
           {
             id: id,
             last_msg: last_msg,
-            subject_message: message.last_msg,
+            subject_message: message.subject_message?message.subject_message:null,
             unread_msg: unreadCount,
           },
           'modified',
