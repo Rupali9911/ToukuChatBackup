@@ -208,9 +208,17 @@ class Chat extends Component {
       this.checkEventTypes(message);
     });
 
+    let isSocketCalled = false;
+
     this.props.getUserProfile().then((res) => {
       if (res) {
+        console.log('user_profile',res);
         if (res.id) {
+          console.log('user_id_from_res',this.props.userData.id);
+
+          if(!isSocketCalled)
+          this.SingleSocket.create({user_id: res.id});
+
           if (!res.email) {
             // this.setState({isSetEmailVisible: true});
           } else {
@@ -219,7 +227,13 @@ class Chat extends Component {
         }
       }
     });
-    this.SingleSocket.create({user_id: this.props.userData.id});
+
+    if(this.props.userData.id && !isSocketCalled){
+      console.log('user_id',this.props.userData.id);
+      isSocketCalled = true;
+      this.SingleSocket.create({user_id: this.props.userData.id});
+    }
+
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.getFollowingChannels();
     // this.getUserGroups();
@@ -240,36 +254,61 @@ class Chat extends Component {
       }
       // this.props.getFriendRequest();
 
+      let channelLoadingStatus = true;
+      let groupLoadingStatus = true;
+      let userLoadingStatus = true;
+
       this.props.getFollowingChannels().then((res) => {
-        this.setCommonConversation();
-        if (res.conversations.length) {
-          this.setState({
-            isLoading: false,
-          });
-        }
+        // this.setCommonConversation();
+        channelLoadingStatus = false;
+        this.props.setCommonChatConversation().then(async () => {
+          if (this.props.commonChat.length) {
+            this.setState({
+              isLoading: false,
+            });
+          }else{
+            this.setState({
+              isLoading: channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
+            });
+          }  
+        });
       });
       this.props.getUserGroups().then((res) => {
-        this.setCommonConversation();
-        if (res.conversations.length) {
-          this.setState({
-            isLoading: false,
-          });
-        }
+        // this.setCommonConversation();
+        groupLoadingStatus = false;
+        this.props.setCommonChatConversation().then(async () => {
+          if (this.props.commonChat.length) {
+            this.setState({
+              isLoading: false,
+            });
+          }else{
+            this.setState({
+              isLoading: channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
+            });
+          }  
+        });
       });
       this.props.getUserFriends().then((res) => {
-        this.setCommonConversation();
-        if (res.length) {
-          this.setState({
-            isLoading: false,
-          });
-        }
+        // this.setCommonConversation();
+        userLoadingStatus = false;
+        this.props.setCommonChatConversation().then(async () => {
+          if (this.props.commonChat.length) {
+            this.setState({
+              isLoading: false,
+            });
+          }else{
+            this.setState({
+              isLoading: channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
+            });
+          }  
+        });
       });
     });
   }
 
   async componentDidMount() {
     // this.props.getUserProfile();
-    this.SingleSocket.create({user_id: this.props.userData.id});
+    // this.SingleSocket.create({user_id: this.props.userData.id});
     Orientation.addOrientationListener(this._orientationDidChange);
 
     // this.getFollowingChannels();
@@ -2714,9 +2753,7 @@ class Chat extends Component {
       (cc) => !cc.is_pined,
     );
     const conversations = [...pinedConversations, ...unpinedConversations];
-    if (conversations.length === 0 && isLoading) {
-      return <ListLoader />;
-    } else if (conversations.length > 0) {
+    if (conversations.length > 0) {
       return (
         <FlatList
           data={conversations}
@@ -2839,8 +2876,10 @@ class Chat extends Component {
           keyExtractor={(item, index) => String(index)}
         />
       );
+    } else if (conversations.length === 0 && isLoading) {
+      return <ListLoader />;
     } else {
-      return <NoData title={translate('pages.xchat.noChannelFound')} />;
+      return <NoData title={translate('pages.xchat.noChatFound')} />;
     }
   };
 
