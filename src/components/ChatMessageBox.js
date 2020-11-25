@@ -245,9 +245,13 @@ export default class ChatMessageBox extends Component {
                         {marginTop: 2},
                       ]}>
                       {currentChannel.name &&
-                        currentChannel.name.charAt(0).toUpperCase() +
+                      !currentChannel.name
+                        .charAt(currentChannel.name.length - 1)
+                        .match(/[a-z]/i)
+                        ? currentChannel.name.charAt(0).toUpperCase()
+                        : currentChannel.name.charAt(0).toUpperCase() +
                           currentChannel.name
-                            .substring(currentChannel.name.length - 1)
+                            .charAt(currentChannel.name.length - 1)
                             .toUpperCase()}
                       {/* {secondUpperCase} */}
                     </Text>

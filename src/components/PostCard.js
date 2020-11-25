@@ -20,6 +20,7 @@ import PostCardHeader from './PostCardHeader';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
+import ReadMore from 'react-native-read-more-text';
 const {width, height} = Dimensions.get('window');
 
 export default class PostCard extends Component {
@@ -35,6 +36,31 @@ export default class PostCard extends Component {
   _openMenu = () => this.setState({visible: true});
 
   _closeMenu = () => this.setState({visible: false});
+
+  _renderTruncatedFooter = (handlePress) => {
+    return (
+      <Text
+        style={{color: Colors.tintColor, marginTop: 5}}
+        onPress={handlePress}>
+        ...Show more
+      </Text>
+    );
+  };
+
+  _renderRevealedFooter = (handlePress) => {
+    return (
+      <Text
+        style={{color: Colors.tintColor, marginTop: 5}}
+        onPress={handlePress}>
+        ...Show less
+      </Text>
+    );
+  };
+
+  _handleTextReady = () => {
+    // ...
+  };
+
   renderPostItem = ({item: post, index}) => {
     const {menuItems, isChannelTimeline} = this.props;
     return (
@@ -83,13 +109,19 @@ export default class PostCard extends Component {
               color: Colors.link_color,
               textDecorationLine: 'underline',
             }}>
-            <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
-              {post.text && post.text.length > 0
-                ? post.text[0].text
-                : post.mutlilanguage_message_body
-                ? post.mutlilanguage_message_body.en
-                : ''}
-            </Text>
+            <ReadMore
+              numberOfLines={1.5}
+              renderTruncatedFooter={this._renderTruncatedFooter}
+              renderRevealedFooter={this._renderRevealedFooter}
+              onReady={this._handleTextReady}>
+              <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
+                {post.text && post.text.length > 0
+                  ? post.text[0].text
+                  : post.mutlilanguage_message_body
+                  ? post.mutlilanguage_message_body.en
+                  : ''}
+              </Text>
+            </ReadMore>
           </HyperLink>
         </View>
       </View>

@@ -128,7 +128,13 @@ export default class SearchInput extends Component {
           //   onPress={onIconRightClick}>
           //   <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
           <Menu
-            style={{marginTop: 40}}
+            style={{
+              marginTop: 20,
+              marginLeft: -40,
+              shadowOffset: {width: 0.5, height: 0.5},
+              shadowColor: 'black',
+              shadowOpacity: 0.5,
+            }}
             contentStyle={{}}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
