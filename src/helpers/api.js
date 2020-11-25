@@ -9,7 +9,7 @@ import {translate} from '../redux/reducers/languageReducer';
 import NetInfo from '@react-native-community/netinfo';
 
 /* switch this for testing on staging or production */
-export const staging = true;
+export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -81,7 +81,7 @@ client.interceptors.request.use(
 // Add a response interceptor
 client.interceptors.response.use(
   function (response) {
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
     if (response.data) {
       return response.data;
     } else if (response.status === 401) {
