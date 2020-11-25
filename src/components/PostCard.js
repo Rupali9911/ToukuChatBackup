@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   Linking,
+  ImageBackground,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -21,6 +22,7 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
 import ReadMore from 'react-native-read-more-text';
+
 const {width, height} = Dimensions.get('window');
 
 export default class PostCard extends Component {
@@ -128,25 +130,27 @@ export default class PostCard extends Component {
     );
   };
 
-  EmptyList = (isTimeline) => {
+  EmptyList = () => {
+    console.log('isTimeline');
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: height / 1.2,
-        }}>
-        <Text
+      <>
+        <ImageBackground
+          source={Images.image_home_bg}
           style={{
-            fontFamily: Fonts.thin,
-            fontSize: 12,
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: height / 1.3,
           }}>
-          {isTimeline
-            ? translate('pages.xchat.noTimelineFound')
-            : translate('pages.xchat.noChannelFound')}
-        </Text>
-      </View>
+          <Text
+            style={{
+              fontFamily: Fonts.thin,
+              fontSize: 12,
+            }}>
+            {translate('pages.xchat.noTimelineFound')}
+          </Text>
+        </ImageBackground>
+      </>
     );
   };
 
@@ -160,10 +164,11 @@ export default class PostCard extends Component {
       onMomentumScrollBegin,
       onEndReached,
     } = this.props;
-    // console.log('POST', posts);
-    return useFlatlist ? (
+    console.log('POST', posts);
+    return (
       <FlatList
         data={posts}
+        scrollEnabled={posts.length > 0 ? true : false}
         renderItem={this.renderPostItem}
         onEndReached={onEndReached}
         onMomentumScrollBegin={onMomentumScrollBegin}
@@ -172,61 +177,74 @@ export default class PostCard extends Component {
         keyExtractor={(item, index) => `${item.id}`}
         ListEmptyComponent={this.EmptyList(isTimeline)}
       />
-    ) : (
-      posts.map((post, index) => {
-        return this.renderPostItem({item: post, index: index});
-      })
-      // posts.map((post, index) => {
-      //   // console.log('POST TEXT', post.text);
-      //   return (
-      //     <View
-      //       style={{
-      //         backgroundColor: Colors.white,
-      //         marginVertical: 10,
-      //         paddingVertical: 10,
-      //       }}>
-      //       <PostCardHeader
-      //         menuItems={menuItems}
-      //         post={post}
-      //         isChannelTimeline={isChannelTimeline}
-      //       />
-      //       {post.media.audio && post.media.audio.length ? (
-      //         <View style={{margin: 10}}>
-      //           <AudioPlayerCustom
-      //             onAudioPlayPress={(id) =>
-      //               this.setState({
-      //                 audioPlayingId: id,
-      //                 perviousPlayingAudioId: this.state.audioPlayingId,
-      //               })
-      //             }
-      //             audioPlayingId={this.state.audioPlayingId}
-      //             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-      //             postId={post.id}
-      //             url={post.media.audio[0]}
-      //           />
-      //         </View>
-      //       ) : post.media.image && post.media.image.length ? (
-      //         <View style={{margin: 5}}>
-      //           <ScalableImage src={post.media.image[0]} />
-      //         </View>
-      //       ) : post.media.video && post.media.video.length ? (
-      //         <View style={{margin: 5}}>
-      //           <VideoPlayerCustom url={post.media.video[0]} />
-      //         </View>
-      //       ) : null}
-      //       <View style={{marginHorizontal: '4%', marginVertical: 5}}>
-      //         <Text style={{fontFamily: Fonts.light}}>
-      //           {post.text && post.text.length > 0
-      //             ? post.text[0].text
-      //             : post.mutlilanguage_message_body
-      //             ? post.mutlilanguage_message_body.en
-      //             : ''}
-      //         </Text>
-      //       </View>
-      //     </View>
-      //   );
-      // })
     );
+
+    // useFlatlist ? (
+    //   <FlatList
+    //     data={posts}
+    //     renderItem={this.renderPostItem}
+    //     onEndReached={onEndReached}
+    //     onMomentumScrollBegin={onMomentumScrollBegin}
+    //     onEndReachedThreshold={0.1}
+    //     bounces={false}
+    //     keyExtractor={(item, index) => `${item.id}`}
+    //     ListEmptyComponent={this.EmptyList(isTimeline)}
+    //   />
+    // ) : (
+    //   posts.map((post, index) => {
+    //     return this.renderPostItem({item: post, index: index});
+    //   })
+    // posts.map((post, index) => {
+    //   // console.log('POST TEXT', post.text);
+    //   return (
+    //     <View
+    //       style={{
+    //         backgroundColor: Colors.white,
+    //         marginVertical: 10,
+    //         paddingVertical: 10,
+    //       }}>
+    //       <PostCardHeader
+    //         menuItems={menuItems}
+    //         post={post}
+    //         isChannelTimeline={isChannelTimeline}
+    //       />
+    //       {post.media.audio && post.media.audio.length ? (
+    //         <View style={{margin: 10}}>
+    //           <AudioPlayerCustom
+    //             onAudioPlayPress={(id) =>
+    //               this.setState({
+    //                 audioPlayingId: id,
+    //                 perviousPlayingAudioId: this.state.audioPlayingId,
+    //               })
+    //             }
+    //             audioPlayingId={this.state.audioPlayingId}
+    //             perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+    //             postId={post.id}
+    //             url={post.media.audio[0]}
+    //           />
+    //         </View>
+    //       ) : post.media.image && post.media.image.length ? (
+    //         <View style={{margin: 5}}>
+    //           <ScalableImage src={post.media.image[0]} />
+    //         </View>
+    //       ) : post.media.video && post.media.video.length ? (
+    //         <View style={{margin: 5}}>
+    //           <VideoPlayerCustom url={post.media.video[0]} />
+    //         </View>
+    //       ) : null}
+    //       <View style={{marginHorizontal: '4%', marginVertical: 5}}>
+    //         <Text style={{fontFamily: Fonts.light}}>
+    //           {post.text && post.text.length > 0
+    //             ? post.text[0].text
+    //             : post.mutlilanguage_message_body
+    //             ? post.mutlilanguage_message_body.en
+    //             : ''}
+    //         </Text>
+    //       </View>
+    //     </View>
+    //   );
+    // })
+    // );
     // ) : (
     //   <Text
     //     style={{

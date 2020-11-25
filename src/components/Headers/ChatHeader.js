@@ -63,6 +63,14 @@ export default class ChatHeader extends Component {
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
+
+    // let lastChar = ;
+
+    // if (lastChar) {
+    //   console.log('true', 'true');
+    // } else {
+    //   console.log('true', 'false');
+    // }
     return (
       <View style={styles.headerContainer}>
         <ImageBackground
@@ -140,8 +148,10 @@ export default class ChatHeader extends Component {
                       ]}
                       style={styles.squareImage}>
                       <Text style={globalStyles.normalRegularText15}>
-                        {title.charAt(0).toUpperCase() +
-                          title.substring(title.length - 1).toUpperCase()}
+                        {!title.charAt(title.length - 1).match(/[a-z]/i)
+                          ? title.charAt(0).toUpperCase()
+                          : title.charAt(0).toUpperCase() +
+                            title.charAt(title.length - 1).toUpperCase()}
                         {/* {secondUpperCase} */}
                       </Text>
                     </LinearGradient>

@@ -8044,7 +8044,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.4"
 
-prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.7.x:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   dependencies:
@@ -8197,6 +8197,11 @@ react-native-aws3@^0.0.9:
     buffer "^4.5.1"
     crypto-js "^3.1.6"
 
+react-native-create-thumbnail@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-create-thumbnail/-/react-native-create-thumbnail-1.2.2.tgz#4944e1e815dc494be8cb5864682a13c351c402ae"
+  integrity sha512-V5Ty3cfHnLRzP2xh4wZzMG4V1It+sqiK6weqRDIAGSKikABcB+Ho8koiidd6Bbqk0tZuBzW/WPwT/e6LsWC2nw==
+
 react-native-doc-viewer@^2.7.8:
   version "2.7.8"
   resolved "https://registry.yarnpkg.com/react-native-doc-viewer/-/react-native-doc-viewer-2.7.8.tgz#43d065328fb1b7ec90d321e5bd234711e807c8f6"
@@ -8232,10 +8237,10 @@ react-native-hyperlink@0.0.19:
     linkify-it "^2.2.0"
     mdurl "^1.0.0"
 
-react-native-image-crop-picker@^0.32.2:
-  version "0.32.2"
-  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.32.2.tgz#862bddc99f7a8e17b7f584846a0c46bfad233917"
-  integrity sha512-x1rwdpVKL6v1AY38rLNYUkLEJIxOK/3C8ipmNbcYFUKunVcmsEvhGLX2ll9kMjp/q+vGOmx4YO38eGp0axYoxg==
+react-native-image-crop-picker@^0.35.1:
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.35.1.tgz#590b6ed7af7b63a505132c73819c9166347bf1e3"
+  integrity sha512-5HY2NnkmgL/Nw1IpU9CkTWj4qgFYPF8KxDaHoaufEWNjvOCRGziMoui55cO7k4KdwsIKmb1UbDzkCYemJqcyow==
 
 react-native-image-pan-zoom@^2.1.12:
   version "2.1.12"
@@ -8285,6 +8290,11 @@ react-native-localize@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-native-localize/-/react-native-localize-1.4.0.tgz#4653596d066d0941c48f5404dc1c0d08b6950443"
 
+react-native-mentions@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-mentions/-/react-native-mentions-1.1.4.tgz#dc50ef2f096a2ebf8819a44794f6b3046bc69308"
+  integrity sha1-3FDvLwlqLr+IGaRHlPazBGvGkwg=
+
 react-native-modal@^11.5.6:
   version "11.5.6"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-11.5.6.tgz#bb25a78c35a5e24f45de060e5f64284397d38a87"
@@ -8303,6 +8313,13 @@ react-native-paper@^3.10.1:
     "@callstack/react-theme-provider" "^3.0.5"
     color "^3.1.2"
     react-native-safe-area-view "^0.14.9"
+
+react-native-parsed-text@0.0.22:
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/react-native-parsed-text/-/react-native-parsed-text-0.0.22.tgz#a23c756eaa5d6724296814755085127f9072e5f5"
+  integrity sha512-hfD83RDXZf9Fvth3DowR7j65fMnlqM9PpxZBGWkzVcUTFtqe6/yPcIoIAgrJbKn6YmtzkivmhWE2MCE4JKBXrQ==
+  dependencies:
+    prop-types "^15.7.x"
 
 react-native-phone-input@^0.2.4:
   version "0.2.4"
@@ -8325,6 +8342,11 @@ react-native-qrcode-svg@^6.0.6:
   dependencies:
     prop-types "^15.5.10"
     qrcode "^1.3.2"
+
+react-native-read-more-text@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-read-more-text/-/react-native-read-more-text-1.1.2.tgz#3f64aee61ec4d3109437f4125f10e49eccdee65a"
+  integrity sha512-FIQhOpvikUanwPRl9QVBYmx6Wx7IXxXH/jlzElOLcP+NSgFLw2fRzSekQUq0yicymZsi7cAWW5TtIj8FHWtNDw==
 
 react-native-reanimated@^1.8.0:
   version "1.8.0"
@@ -8366,6 +8388,11 @@ react-native-sound-player@^0.10.4:
 react-native-splash-screen@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
+
+react-native-status-bar-height@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.6.0.tgz#b6afd25b6e3d533c43d0fcdcfd5cafd775592cea"
+  integrity sha512-z3SGLF0mHT+OlJDq7B7h/jXPjWcdBT3V14Le5L2PjntjjWM3+EJzq2BcXDwV+v67KFNJic5pgA26cCmseYek6w==
 
 react-native-step-indicator@0.0.11:
   version "0.0.11"

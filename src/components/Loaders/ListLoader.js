@@ -9,14 +9,14 @@ export default class ListLoader extends Component {
   }
 
   render() {
-    const {large} = this.props;
+    const {large, justifyContent} = this.props;
     return (
       <View
         style={{
           flex: 1,
           padding: 15,
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: justifyContent || 'center',
         }}>
         <ActivityIndicator
           color={Colors.primary}

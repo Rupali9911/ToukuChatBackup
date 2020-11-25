@@ -26,15 +26,16 @@ import {
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {resetData} from '../../storage/Service';
+import {ListLoader} from '../../components/Loaders';
 
 class Timeline extends Component {
   constructor(props) {
     super(props);
-
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
       activeTab: 'trend',
+      isLoading: true,
       tabBarItem: [
         {
           id: 1,
@@ -44,7 +45,9 @@ class Timeline extends Component {
             this.setState({activeTab: 'trend'});
             this.props
               .getTrendTimeline(this.props.userData.user_type)
-              .then((res) => {});
+              .then((res) => {
+                this.setState({isLoading: false});
+              });
           },
         },
         {
@@ -53,7 +56,9 @@ class Timeline extends Component {
           icon: Icons.icon_setting,
           action: () => {
             this.setState({activeTab: 'following'});
-            this.props.getFollowingTimeline().then((res) => {});
+            this.props.getFollowingTimeline().then((res) => {
+              this.setState({isLoading: false});
+            });
           },
         },
         {
@@ -64,7 +69,9 @@ class Timeline extends Component {
             this.setState({activeTab: 'ranking'});
             this.props
               .getRankingTimeline(this.props.userData.user_type)
-              .then((res) => {});
+              .then((res) => {
+                this.setState({isLoading: false});
+              });
           },
         },
       ],
@@ -122,10 +129,13 @@ class Timeline extends Component {
     await this.props
       .getTrendTimeline(this.props.userData.user_type)
       .then((res) => {
+        this.setState({isLoading: false});
         this.props.getFollowingTimeline().then((res) => {
+          this.setState({isLoading: false});
           this.props
             .getRankingTimeline(this.props.userData.user_type)
             .then((res) => {
+              this.setState({isLoading: false});
               this.showData();
             });
         });
@@ -232,6 +242,7 @@ class Timeline extends Component {
       rankingTimeLine,
       loading,
     } = this.props;
+    console.log('POST', trendTimline);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -241,27 +252,32 @@ class Timeline extends Component {
         <HomeHeader title={translate('pages.xchat.timeline')} />
         <View style={globalStyles.container}>
           <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
-          <ScrollView>
-            {activeTab === 'trend' ? (
-              <PostCard
-                menuItems={menuItems}
-                posts={trendTimline}
-                isTimeline={true}
-              />
-            ) : activeTab === 'following' ? (
-              <PostCard
-                menuItems={menuItems}
-                posts={followingTimeline}
-                isTimeline={true}
-              />
-            ) : (
-              <PostCard
-                menuItems={menuItems}
-                posts={rankingTimeLine}
-                isTimeline={true}
-              />
-            )}
-          </ScrollView>
+
+          {this.state.isLoading ? (
+            <ListLoader justifyContent={'flex-start'} />
+          ) : (
+            <ScrollView>
+              {activeTab === 'trend' ? (
+                <PostCard
+                  menuItems={menuItems}
+                  posts={trendTimline}
+                  isTimeline={true}
+                />
+              ) : activeTab === 'following' ? (
+                <PostCard
+                  menuItems={menuItems}
+                  posts={followingTimeline}
+                  isTimeline={true}
+                />
+              ) : (
+                <PostCard
+                  menuItems={menuItems}
+                  posts={rankingTimeLine}
+                  isTimeline={true}
+                />
+              )}
+            </ScrollView>
+          )}
         </View>
         <ConfirmationModal
           orientation={orientation}

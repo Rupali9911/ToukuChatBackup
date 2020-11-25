@@ -21,7 +21,7 @@ class ChannelTimeline extends Component {
       //   load_more: false,
       //   posts: [],
       // },
-        posts: [],
+      posts: [],
     };
   }
 
