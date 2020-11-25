@@ -113,7 +113,6 @@ class Timeline extends Component {
   }
 
   async componentDidMount() {
-    console.log('userData', this.props.userData);
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getTrendTimeline();
     // this.props.getFollowingTimeline();
@@ -135,7 +134,6 @@ class Timeline extends Component {
 
   showData() {
     const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
-    console.log('Timeline -> showData -> trendTimline', trendTimline);
   }
 
   _orientationDidChange = (orientation) => {
@@ -168,7 +166,6 @@ class Timeline extends Component {
   hideAllPost(post) {
     const {activeTab} = this.state;
     this.props.hideAllPost(post.channel_id).then((res) => {
-      console.log('hideAllPost post server response', res);
       this.refreshContent();
     });
   }
@@ -176,7 +173,6 @@ class Timeline extends Component {
   reportContent(post) {
     const {activeTab} = this.state;
     this.props.reportPost(post.id).then((res) => {
-      console.log('reportContent server response', res);
       this.refreshContent();
     });
   }
@@ -184,17 +180,14 @@ class Timeline extends Component {
   refreshContent() {
     const {activeTab} = this.state;
     if (activeTab === 'trend') {
-      console.log('trend selected');
       this.props.getTrendTimeline(this.props.userData.user_type).then((res) => {
         this.showData();
       });
     } else if (activeTab === 'following') {
-      console.log('following selected');
       this.props.getFollowingTimeline().then((res) => {
         this.showData();
       });
     } else if (activeTab === 'ranking') {
-      console.log('ranking selected');
       this.props
         .getRankingTimeline(this.props.userData.user_type)
         .then((res) => {
@@ -212,7 +205,6 @@ class Timeline extends Component {
     this.props
       .hidePost(currentPost.id)
       .then((res) => {
-        console.log('Hide post server response', res);
         this.refreshContent();
         this.setState({showConfirmation: false});
       })

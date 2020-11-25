@@ -269,14 +269,14 @@ const hidePostFailure = () => ({
 });
 
 export const getChannelTimeline = (groupId, lastId) => {
-  console.log(
-    `/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`,
-  );
+  // console.log(
+  //   `/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`,
+  // );
   return new Promise(function (resolve, reject) {
     client
       .get(`/xchat/channel-timeline/${groupId}/?last_id=${lastId ? lastId : 0}`)
       .then((res) => {
-        console.log(res);
+       // console.log(res);
         resolve(res);
       })
       .catch((err) => {
@@ -288,9 +288,6 @@ export const getChannelTimeline = (groupId, lastId) => {
 export const getTrendTimeline = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendTimelineRequest());
-
-    console.log('userType', userType);
-
     let url = ['tester', 'owner', 'company'].includes(userType)
       ? `/xchat/timeline-trend-for-testers/?last_id=0`
       : `/xchat/timeline-trend/?last_id=0`;
@@ -355,7 +352,6 @@ const getRankingTimelineFailure = () => ({
 
 export const getRankingTimeline = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {
-    console.log('getRankingTimeline');
     dispatch(getRankingTimelineRequest());
 
     let url = ['tester', 'owner', 'company'].includes(userType)
@@ -530,7 +526,7 @@ export const reportPost = (postId) => (dispatch) =>
     let data = {
       reported_post: postId,
     };
-    console.log('reported_post', data);
+    //console.log('reported_post', data);
     client
       .patch(`/xchat/report-timeline-content/`, data)
       .then((res) => {

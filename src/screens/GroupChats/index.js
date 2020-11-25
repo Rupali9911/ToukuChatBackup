@@ -1117,7 +1117,6 @@ class GroupChats extends Component {
         this.toggleDeleteGroupConfirmationModal();
       })
       .catch((err) => {
-        console.log('onConfirmDeleteGroup -> err', err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),

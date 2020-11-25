@@ -918,7 +918,7 @@ class FriendChats extends Component {
       this.setState({isMultiSelect: false, selectedIds: []});
 
       this.props.deleteMultiplePersonalMessage(payload).then((res) => {
-        console.log(res);
+        //console.log(res);
         if (res && res.status) {
         } else {
           this.getPersonalConversation();

@@ -177,7 +177,7 @@ class LoginSignUp extends Component {
       }) .catch((err) => {
           this.setState({isLoading: false})
           if (err.response) {
-              console.log(err.response)
+             // console.log(err.response)
               if (err.response.data) {
                   Toast.show({
                       title: 'Login Failed',
@@ -705,7 +705,6 @@ class LoginSignUp extends Component {
           return;
         }
         if (res.error) {
-            console.log('')
           Toast.show({
             title: 'Login Failed',
             text: translate(res.error.toString()),

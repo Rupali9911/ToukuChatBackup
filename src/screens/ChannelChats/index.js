@@ -1330,7 +1330,7 @@ class ChannelChats extends Component {
       this.setState({isMultiSelect: false, selectedIds: []});
 
       this.props.deleteMultipleChannelMessage(payload).then((res) => {
-        console.log(res);
+        //console.log(res);
         if (res && res.status) {
         } else {
           this.getChannelConversations();
