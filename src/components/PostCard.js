@@ -108,21 +108,49 @@ export default class PostCard extends Component {
               Linking.openURL(url);
             }}
             linkStyle={{
-              color: Colors.link_color,
+              color: 'rgba(0,248,159,1)',
               textDecorationLine: 'underline',
             }}>
             <ReadMore
-              numberOfLines={1.5}
+              numberOfLines={2}
               renderTruncatedFooter={this._renderTruncatedFooter}
               renderRevealedFooter={this._renderRevealedFooter}
               onReady={this._handleTextReady}>
-              <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
+              {post.text && post.text.length > 0 ? (
+                post.text.map((data, index) => {
+                  return index == 0 ? (
+                    <Text
+                      style={{
+                        fontFamily: Fonts.regular,
+                        fontSize: 16,
+                      }}>
+                      {data.text}
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        fontFamily: Fonts.regular,
+                        fontSize: 16,
+                      }}>
+                      {data.text}
+                      {'\n'}
+                    </Text>
+                  );
+                })
+              ) : (
+                <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
+                  {post.mutlilanguage_message_body
+                    ? post.mutlilanguage_message_body.en
+                    : ''}
+                </Text>
+              )}
+              {/* <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
                 {post.text && post.text.length > 0
                   ? post.text[0].text
                   : post.mutlilanguage_message_body
                   ? post.mutlilanguage_message_body.en
                   : ''}
-              </Text>
+              </Text> */}
             </ReadMore>
           </HyperLink>
         </View>

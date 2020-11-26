@@ -245,13 +245,11 @@ export default class ChatMessageBox extends Component {
                         {marginTop: 2},
                       ]}>
                       {currentChannel.name &&
-                      !currentChannel.name
-                        .charAt(currentChannel.name.length - 1)
-                        .match(/[a-z]/i)
+                      currentChannel.name.indexOf(' ') === -1
                         ? currentChannel.name.charAt(0).toUpperCase()
                         : currentChannel.name.charAt(0).toUpperCase() +
                           currentChannel.name
-                            .charAt(currentChannel.name.length - 1)
+                            .charAt(currentChannel.name.indexOf(' ') + 1)
                             .toUpperCase()}
                       {/* {secondUpperCase} */}
                     </Text>
@@ -465,7 +463,7 @@ const styles = StyleSheet.create({
   squareImage: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    // borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 10,

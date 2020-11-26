@@ -144,7 +144,9 @@ class ChannelInfo extends Component {
         isLoading: true,
       });
       let data = {
-        channel_id: this.props.currentChannel.id,
+        channel_id: this.props.navigation.state.params
+          ? this.props.navigation.state.params.channelItem.channel_id
+          : this.props.currentChannel.id,
         referral_code: 'ISGLGA2V',
         user_id: this.props.userData.id,
       };
@@ -153,7 +155,9 @@ class ChannelInfo extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: this.props.currentChannel.name,
+              title: this.props.navigation.state.params
+                ? this.props.navigation.state.params.channelItem.channel_name
+                : this.props.currentChannel.name,
               text: translate('pages.xchat.toastr.AddedToNewChannel'),
               type: 'positive',
             });
@@ -194,8 +198,15 @@ class ChannelInfo extends Component {
       user_id: this.props.userData.id,
     };
     this.props
-      .unfollowChannel(this.props.currentChannel.id, user)
+      .unfollowChannel(
+        this.props.navigation.state.params
+          ? this.props.navigation.state.params.channelItem.channel_id
+          : this.props.currentChannel.id,
+        user,
+      )
       .then(async (res) => {
+        console.log('res', res);
+
         if (res.status === true) {
           await this.toggleConfirmationModal();
           this.isUnfollowing = false;
