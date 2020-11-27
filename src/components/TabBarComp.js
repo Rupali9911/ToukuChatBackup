@@ -38,10 +38,10 @@ class TabBarComp extends Component {
     isVisible: true,
   };
 
-  constructor(props){
-    super(props)
-    this.keyboardWillShow = this.keyboardWillShow.bind(this)
-    this.keyboardWillHide = this.keyboardWillHide.bind(this)
+  constructor(props) {
+    super(props);
+    this.keyboardWillShow = this.keyboardWillShow.bind(this);
+    this.keyboardWillHide = this.keyboardWillHide.bind(this);
   }
 
   componentDidMount() {
@@ -49,9 +49,14 @@ class TabBarComp extends Component {
     const {routes} = navigation.state;
     this.setState({routes});
 
-    this.keyboardWillShowListener = Keyboard.addListener('keyboardDidShow',this.keyboardWillShow)
-    this.keyboardWillHideListener = Keyboard.addListener('keyboardDidHide',this.keyboardWillHide)
-
+    this.keyboardWillShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this.keyboardWillShow,
+    );
+    this.keyboardWillHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this.keyboardWillHide,
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -63,28 +68,28 @@ class TabBarComp extends Component {
     }
   }
 
-  componentWillUnmount(){
-    this.keyboardWillShowListener && this.keyboardWillShowListener.remove()
-    this.keyboardWillHideListener && this.keyboardWillHideListener.remove()
+  componentWillUnmount() {
+    this.keyboardWillShowListener && this.keyboardWillShowListener.remove();
+    this.keyboardWillHideListener && this.keyboardWillHideListener.remove();
   }
 
-  keyboardWillShow = event => {
+  keyboardWillShow = (event) => {
     // Platform.OS==='android' &&
     // this.setState({
     //   isVisible: false
     // })
-  }
+  };
 
-  keyboardWillHide = event => {
+  keyboardWillHide = (event) => {
     this.setState({
-      isVisible: true
-    })
-  }
+      isVisible: true,
+    });
+  };
 
   render() {
     const dimen = Dimensions.get('window');
     console.log('dimen.height', isIphoneX());
-    const {routes,isVisible} = this.state;
+    const {routes, isVisible} = this.state;
     const {
       renderIcon,
       getLabelText,
@@ -97,7 +102,7 @@ class TabBarComp extends Component {
     } = this.props;
     console.log(routes);
     const {index: activeRouteIndex} = navigation.state;
-    return (isVisible?
+    return isVisible ? (
       <LinearGradient
         //   start={{ x: 0.1, y: 0.7 }}
         //   end={{ x: 0.5, y: 0.2 }}
@@ -131,8 +136,7 @@ class TabBarComp extends Component {
           );
         })}
       </LinearGradient>
-      :null
-    );
+    ) : null;
   }
 }
 

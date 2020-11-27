@@ -27,6 +27,7 @@ import {
 } from '../../redux/reducers/timelineReducer';
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {ListLoader} from '../../components/Loaders';
 
 // let visibleNewPost = null;
 class Channel extends Component {
@@ -43,6 +44,7 @@ class Channel extends Component {
       rankingChannel: [],
       onRefreshLoad: false,
       showPostsVisible: false,
+      isLoading: true,
       tabBarItem: [
         {
           id: 1,
@@ -109,20 +111,20 @@ class Channel extends Component {
     };
   }
 
-  componentDidMount() {
-    if (
-      this.props.trendChannel.length === 0 &&
-      this.props.rankingChannel.length === 0 &&
-      this.props.followingChannel.length === 0
-    ) {
-      this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
-      this.props.getFollowingChannel(this.pageCount);
-      this.props.getRankingChannel(
-        this.props.userData.user_type,
-        this.pageCount,
-      );
-    }
-  }
+  // componentDidMount() {
+  //   if (
+  //     this.props.trendChannel.length === 0 &&
+  //     this.props.rankingChannel.length === 0 &&
+  //     this.props.followingChannel.length === 0
+  //   ) {
+  //     this.props.getTrendChannel(this.props.userData.user_type, this.pageCount);
+  //     this.props.getFollowingChannel(this.pageCount);
+  //     this.props.getRankingChannel(
+  //       this.props.userData.user_type,
+  //       this.pageCount,
+  //     );
+  //   }
+  // }
 
   static navigationOptions = () => {
     return {
@@ -174,10 +176,15 @@ class Channel extends Component {
     await this.props
       .getTrendChannel(this.props.userData.user_type)
       .then((res) => {
+        this.setState({isLoading: false});
         this.props.getFollowingChannel(this.pageCount).then((res) => {
+          this.setState({isLoading: false});
+
           this.props
             .getRankingChannel(this.props.userData.user_type, this.pageCount)
             .then((res) => {
+              this.setState({isLoading: false});
+
               this.showData();
             });
         });
@@ -390,7 +397,9 @@ class Channel extends Component {
                 </TouchableWithoutFeedback>
               </LinearGradient>
             )} */}
-            {activeTab === 'trend' ? (
+            {this.state.isLoading ? (
+              <ListLoader justifyContent={'flex-start'} />
+            ) : activeTab === 'trend' ? (
               <PostChannelCard
                 menuItems={menuItems}
                 posts={trendChannel}

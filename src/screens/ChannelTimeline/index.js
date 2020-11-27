@@ -11,12 +11,15 @@ import {Images, Icons, Colors, Fonts} from '../../constants';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
 import PostCard from '../../components/PostCard';
+import {ListLoader} from '../../components/Loaders';
+
 class ChannelTimeline extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
       orientation: 'PORTRAIT',
+      isLoading: true,
       // posts: {
       //   load_more: false,
       //   posts: [],
@@ -41,16 +44,20 @@ class ChannelTimeline extends Component {
     this.getCurrentChannelTimeline();
   }
   getCurrentChannelTimeline = (lastId) => {
-    getChannelTimeline(this.props.currentChannel.id, lastId)
+    console.log('data', this.props.navigation.state.params.ChannelTimelineId);
+    getChannelTimeline(
+      this.props.navigation.state.params.ChannelTimelineId,
+      lastId,
+    )
       .then((res) => {
         if (res.load_more) {
           const posts = [...this.state.posts, ...res.posts];
-          this.setState({posts});
+          this.setState({posts, isLoading: false});
         }
         if (res.load_more === false && this.noMorePosts !== true) {
           this.noMorePosts = true;
           const posts = [...this.state.posts, ...res.posts];
-          this.setState({posts});
+          this.setState({posts, isLoading: false});
         }
       })
       .catch((e) => {
@@ -93,14 +100,18 @@ class ChannelTimeline extends Component {
               {translate('pages.xchat.noTimelineFound')}
             </Text>
           </KeyboardAwareScrollView> */}
-          <PostCard
-            posts={posts}
-            isTimeline={true}
-            useFlatlist={true}
-            isChannelTimeline={true}
-            onMomentumScrollBegin={this.onMomentumScrollBegin}
-            onEndReached={this.onEndReached}
-          />
+          {this.state.isLoading ? (
+            <ListLoader justifyContent={'flex-start'} />
+          ) : (
+            <PostCard
+              posts={posts}
+              isTimeline={true}
+              useFlatlist={true}
+              isChannelTimeline={true}
+              onMomentumScrollBegin={this.onMomentumScrollBegin}
+              onEndReached={this.onEndReached}
+            />
+          )}
         </View>
       </ImageBackground>
     );

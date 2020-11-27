@@ -212,12 +212,11 @@ class Chat extends Component {
 
     this.props.getUserProfile().then((res) => {
       if (res) {
-        console.log('user_profile',res);
+        console.log('user_profile', res);
         if (res.id) {
-          console.log('user_id_from_res',this.props.userData.id);
+          console.log('user_id_from_res', this.props.userData.id);
 
-          if(!isSocketCalled)
-          this.SingleSocket.create({user_id: res.id});
+          if (!isSocketCalled) this.SingleSocket.create({user_id: res.id});
 
           if (!res.email) {
             // this.setState({isSetEmailVisible: true});
@@ -228,8 +227,8 @@ class Chat extends Component {
       }
     });
 
-    if(this.props.userData.id && !isSocketCalled){
-      console.log('user_id',this.props.userData.id);
+    if (this.props.userData.id && !isSocketCalled) {
+      console.log('user_id', this.props.userData.id);
       isSocketCalled = true;
       this.SingleSocket.create({user_id: this.props.userData.id});
     }
@@ -266,11 +265,12 @@ class Chat extends Component {
             this.setState({
               isLoading: false,
             });
-          }else{
+          } else {
             this.setState({
-              isLoading: channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
+              isLoading:
+                channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
             });
-          }  
+          }
         });
       });
       this.props.getUserGroups().then((res) => {
@@ -281,11 +281,12 @@ class Chat extends Component {
             this.setState({
               isLoading: false,
             });
-          }else{
+          } else {
             this.setState({
-              isLoading: channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
+              isLoading:
+                channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
             });
-          }  
+          }
         });
       });
       this.props.getUserFriends().then((res) => {
@@ -296,11 +297,12 @@ class Chat extends Component {
             this.setState({
               isLoading: false,
             });
-          }else{
+          } else {
             this.setState({
-              isLoading: channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
+              isLoading:
+                channelLoadingStatus || groupLoadingStatus || userLoadingStatus,
             });
-          }  
+          }
         });
       });
     });
@@ -2684,7 +2686,7 @@ class Chat extends Component {
 
   actionDelete = async () => {
     this.props.deleteChat(deleteObj).then((res) => {
-      if (res && res.status) {
+s      if (res && res.status) {
         let commonData = [...this.props.commonChat];
 
         // channel
@@ -2709,15 +2711,18 @@ class Chat extends Component {
             commonData = commonData.filter(
               (item) => item.group_id !== groupItem,
             );
+            console.log('common', commonData);
           });
         }
 
         this.setState({commonChat: commonData, countChat: 0});
         this.props.setDeleteChat(this.state.commonChat);
+        deleteObj = null;
+        count = 0;
       }
     });
     this.updateModalVisibility();
-    this.setState({isVisible: false});
+    this.setState({isVisible: false, countChat: 0});
   };
 
   actionCancel() {

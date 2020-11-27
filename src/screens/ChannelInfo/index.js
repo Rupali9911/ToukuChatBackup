@@ -31,6 +31,7 @@ import {
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
 import AsyncStorage from '@react-native-community/async-storage';
 import HyperLink from 'react-native-hyperlink';
+import ChannelTimeline from '../ChannelTimeline';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -60,7 +61,12 @@ class ChannelInfo extends Component {
           id: 3,
           title: 'timeline',
           icon: Icons.icon_timeline,
-          action: () => this.props.navigation.navigate('ChannelTimeline'),
+          action: () =>
+            this.props.navigation.navigate('ChannelTimeline', {
+              ChannelTimelineId: this.props.navigation.state.params
+                ? this.props.navigation.state.params.channelItem.channel_id
+                : this.props.currentChannel.id,
+            }),
         },
       ],
     };
@@ -282,6 +288,7 @@ class ChannelInfo extends Component {
     ];
 
     // console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
+
     return (
       <View
         // source={Images.image_home_bg}

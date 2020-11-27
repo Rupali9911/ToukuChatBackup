@@ -1221,7 +1221,11 @@ export const multipleData = (type, multichat) => {
     realm.write(() => {
       realm.create(
         'channels',
-        {id: multichat.id, last_msg: null, timestamp: multichat[0].timestamp},
+        {
+          id: multichat[0].id,
+          last_msg: null,
+          timestamp: multichat[0].timestamp,
+        },
         'modified',
       );
     });
@@ -1244,7 +1248,7 @@ export const multipleData = (type, multichat) => {
       realm.create(
         'groups',
         {
-          group_id: multichat.group_id,
+          group_id: multichat[0].group_id,
           last_msg: null,
           last_msg_id: null,
           timestamp: multichat[0].timestamp,

@@ -60,7 +60,7 @@ const MoreTab = createStackNavigator({
   AddFriend: AddFriend,
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
-  FollowChannel: FollowChannel
+  FollowChannel: FollowChannel,
 });
 
 MoreTab.navigationOptions = ({navigation}) => {

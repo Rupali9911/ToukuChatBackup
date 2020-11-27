@@ -1,7 +1,7 @@
-import { client } from '../../helpers/api';
+import {client} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import Toast from "../../components/Toast";
-import {translate} from "./languageReducer";
+import Toast from '../../components/Toast';
+import {translate} from './languageReducer';
 
 export const GET_SEND_OTP_REQUEST = 'GET_SEND_OTP_REQUEST';
 export const GET_SEND_OTP_SUCCESS = 'GET_SEND_OTP_SUCCESS';
@@ -214,22 +214,22 @@ export const userVerifyOTP = (verifyData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getVerifyOtpFailure());
-       // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  if (err.response.data.detail) {
-                      Toast.show({
-                          title: '',
-                          text: err.response.data.detail.toString(),
-                          type: 'primary',
-                      });
-                  }
-              }
+        // reject(err);
+        if (err.response) {
+          if (err.response.data) {
+            if (err.response.data.detail) {
+              Toast.show({
+                title: '',
+                text: err.response.data.detail.toString(),
+                type: 'primary',
+              });
+            }
           }
+        }
       });
   });
 
-  export const userVerifyOTPAndAddNumber = (verifyData) => (dispatch) =>
+export const userVerifyOTPAndAddNumber = (verifyData) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getVerifyOtpRequest());
     client
@@ -244,18 +244,18 @@ export const userVerifyOTP = (verifyData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getVerifyOtpFailure());
-       // reject(err);
-          if (err.response) {
-              if (err.response.data) {
-                  if (err.response.data.detail) {
-                      Toast.show({
-                          title: '',
-                          text: err.response.data.detail.toString(),
-                          type: 'primary',
-                      });
-                  }
-              }
+        // reject(err);
+        if (err.response) {
+          if (err.response.data) {
+            if (err.response.data.detail) {
+              Toast.show({
+                title: '',
+                text: err.response.data.detail.toString(),
+                type: 'primary',
+              });
+            }
           }
+        }
       });
   });
 
@@ -306,19 +306,19 @@ export const userRegister = (registerData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getRegisterFailure());
-         reject(err);
-      //   if (err.response) {
-      //     if (err.response.data) {
-      //       console.log('error_data',err.response.data);
-      //       // if (err.response.data.detail) {
-      //         //     Toast.show({
-      //         //         title: '',
-      //         //         text: err.response.data.detail.toString(),
-      //         //         type: 'primary',
-      //         //     });
-      //         // }
-      //     }
-      // }
+        reject(err);
+        //   if (err.response) {
+        //     if (err.response.data) {
+        //       console.log('error_data',err.response.data);
+        //       // if (err.response.data.detail) {
+        //         //     Toast.show({
+        //         //         title: '',
+        //         //         text: err.response.data.detail.toString(),
+        //         //         type: 'primary',
+        //         //     });
+        //         // }
+        //     }
+        // }
       });
   });
 
@@ -338,19 +338,19 @@ export const userNewRegister = (registerData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getRegisterFailure());
-         reject(err);
-      //   if (err.response) {
-      //     if (err.response.data) {
-      //       console.log('error_data',err.response.data);
-      //       // if (err.response.data.detail) {
-      //         //     Toast.show({
-      //         //         title: '',
-      //         //         text: err.response.data.detail.toString(),
-      //         //         type: 'primary',
-      //         //     });
-      //         // }
-      //     }
-      // }
+        reject(err);
+        //   if (err.response) {
+        //     if (err.response.data) {
+        //       console.log('error_data',err.response.data);
+        //       // if (err.response.data.detail) {
+        //         //     Toast.show({
+        //         //         title: '',
+        //         //         text: err.response.data.detail.toString(),
+        //         //         type: 'primary',
+        //         //     });
+        //         // }
+        //     }
+        // }
       });
   });
 
@@ -369,27 +369,25 @@ export const socialRegistration = (socialRegistrationData) => (dispatch) =>
       .catch((err) => {
         reject(err);
       });
-
   });
 
 export const socialRegistrationNew = (socialRegistrationData) => (dispatch) =>
   new Promise(function (resolve, reject) {
-      dispatch(getRegisterRequest());
+    dispatch(getRegisterRequest());
     client
       .post('/xchat/update-touku-username/', socialRegistrationData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);
           AsyncStorage.removeItem('socialToken');
-            dispatch(getRegisterSuccess());
-        }else{
-            dispatch(getRegisterFailure());
+          dispatch(getRegisterSuccess());
+        } else {
+          dispatch(getRegisterFailure());
         }
         resolve(res);
       })
       .catch((err) => {
-          dispatch(getRegisterFailure());
+        dispatch(getRegisterFailure());
         reject(err);
       });
-
   });
