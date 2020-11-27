@@ -1051,7 +1051,10 @@
       "usersCanClickOrTabThisButtonText": "\uc0ac\uc6a9\uc790\ub294 \uc774 \ubc84\ud2bc\uc744 \ud074\ub9ad\ud558\uac70\ub098 \ud0ed\ud558\uc5ec \ud574\ub2f9 \uacc4\uc815\uacfc \uce5c\uad6c\uac00 \ub418\uc5b4 HTML \ud0dc\uadf8\ub97c \ubcf5\uc0ac\ud558\uc5ec \uc6f9 \uc0ac\uc774\ud2b8, \ube14\ub85c\uadf8 \ub4f1\uc5d0 \ucd94\uac00 \ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
       "invitationPage": "\ucd08\ub300",
       "linkViaLp": "LP\ub97c \ud1b5\ud55c \ucd08\ub300",
-      "invitationToChannel": "\ucc44\ub110 \ucd08\ub300"
+      "invitationToChannel": "\ucc44\ub110 \ucd08\ub300",
+      "findOutAllTheNewWayForFollower": "사용자를 채널에 초대 할 수있는 모든 방법에 대해 알아보십시오. QR 코드를 스캔하거나 버튼을 탭하는 것만 큼 간단 할 수 있습니다.",
+      "copyTextForFollower": "이 링크를 복사하여 소셜 미디어, 이메일 등을 통해 공유하세요.",
+      "scanImageForFollower": "사용자는 QR 코드 리더로이 이미지를 스캔하여이 계정을 찾을 수 있습니다. 이미지를 다운로드하거나 HTML 태그를 복사하여 소셜 미디어, 이메일 등을 통해 공유하세요."
     },
     "changeDisplayName": "\ud45c\uc2dc \uc774\ub984 \ubcc0\uacbd"
   },

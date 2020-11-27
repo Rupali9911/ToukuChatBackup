@@ -21,6 +21,14 @@ export const apiRootLive = 'https://api-touku.angelium.net/api';
 const socketURLStaging = 'wss://touku.angelium.net/ws/v1';
 const socketURLLive = 'wss://api-touku.angelium.net/ws/v1';
 
+// Staging url
+const urlStaging = "https://touku.angelium.net";
+
+// Live url
+const urlLive = "https://touku.net";
+
+export const inviteUrlRoot = staging ? urlStaging : urlLive;
+
 export const apiRoot = staging ? apiRootStaging : apiRootLive;
 export const socketUrl = staging ? socketURLStaging : socketURLLive;
 export const userAgent =

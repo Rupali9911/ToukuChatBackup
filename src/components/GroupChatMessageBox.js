@@ -204,7 +204,7 @@ export default class GroupChatMessageBox extends Component {
                   ? width * 0.77
                   : message.message_body &&
                     message.message_body.type === 'image'
-                  ? width - 40
+                  ? isMultiSelect?width-80:width-40
                   : width * 0.65,
               justifyContent: 'flex-start',
             },
@@ -289,6 +289,7 @@ export default class GroupChatMessageBox extends Component {
                     onReplyPress={onReplyPress}
                     groupMembers={groupMembers}
                     showOpenLoader={showOpenLoader}
+                    isMultiSelect={isMultiSelect}
                   />
                 </View>
                 <View
@@ -326,10 +327,10 @@ export default class GroupChatMessageBox extends Component {
             {
               maxWidth:
                 message.message_body && message.message_body.type === 'text'
-                  ? width * 0.9
+                  ? (isMultiSelect?width * 0.80:width * 0.90)
                   : message.message_body &&
                     message.message_body.type === 'image'
-                  ? width
+                  ? isMultiSelect?width-40:width
                   : width * 0.75,
             },
             message.message_body && message.message_body.type === 'image'
@@ -412,6 +413,7 @@ export default class GroupChatMessageBox extends Component {
                 onReplyPress={onReplyPress}
                 groupMembers={groupMembers}
                 showOpenLoader={showOpenLoader}
+                isMultiSelect={isMultiSelect}
               />
               {message.message_body && message.message_body.type === 'image' ? (
                 <View

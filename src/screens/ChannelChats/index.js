@@ -130,6 +130,14 @@ class ChannelChats extends Component {
               },
               {
                 id: 2,
+                title: translate('common.invitation'),
+                icon: 'id-card',
+                onPress: () => {
+                  this.props.navigation.navigate('ChannelInvitation');
+                },
+              },
+              {
+                id: 3,
                 title: translate('pages.xchat.reportChannel'),
                 icon: 'user-slash',
                 onPress: () => {
@@ -141,7 +149,7 @@ class ChannelChats extends Component {
                 },
               },
               {
-                id: 3,
+                id: 4,
                 pinUnpinItem: true,
                 onPress: () => {
                   this.onPinUnpinChannel();
@@ -159,6 +167,14 @@ class ChannelChats extends Component {
               },
               {
                 id: 2,
+                title: translate('common.invitation'),
+                icon: 'id-card',
+                onPress: () => {
+                  this.props.navigation.navigate('ChannelInvitation');
+                },
+              },
+              {
+                id: 3,
                 pinUnpinItem: true,
                 onPress: () => {
                   this.onPinUnpinChannel();

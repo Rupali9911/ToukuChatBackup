@@ -300,6 +300,7 @@ export default class ChatMessageBox extends Component {
                   onAudioPlayPress={onAudioPlayPress}
                   onReplyPress={onReplyPress}
                   showOpenLoader={showOpenLoader}
+                  isMultiSelect={isMultiSelect}
                 />
                 <View
                   style={{
@@ -409,6 +410,7 @@ export default class ChatMessageBox extends Component {
                   onAudioPlayPress={onAudioPlayPress}
                   onReplyPress={onReplyPress}
                   showOpenLoader={showOpenLoader}
+                  isMultiSelect={isMultiSelect}
                 />
                 {message.msg_type === 'image' ? (
                   <View

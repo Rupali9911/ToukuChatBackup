@@ -22,7 +22,7 @@ export default class CommonNotes extends Component {
   componentDidMount() {}
 
   getDate = (date) => {
-    return moment(date).format('MM/DD/YYYY hh:mm');
+    return moment(date).format('MM/DD/YYYY HH:mm');
   };
 
   render() {

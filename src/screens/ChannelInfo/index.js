@@ -505,7 +505,7 @@ class ChannelInfo extends Component {
                   }}
                   linkStyle={{color: 'blue', textDecorationLine: 'underline'}}>
                   <Text style={channelInfoStyles.aboutText}>
-                    {currentChannel.description}
+                    {channelData.description}
                   </Text>
                 </HyperLink>
 

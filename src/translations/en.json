@@ -1049,7 +1049,10 @@
       "usersCanClickOrTabThisButtonText": "User can click or tab this button to friend your account copy the HTML tag to add it to website, blogs, ans more",
       "invitationPage": "Invitation",
       "linkViaLp": "Invitation Via LP",
-      "invitationToChannel": "Invitation To Channel"
+      "invitationToChannel": "Invitation To Channel",
+      "findOutAllTheNewWayForFollower": "Find out about all the ways you can invite user to channel. It can be as simple as scanning a QR code or tapping a button.",
+      "copyTextForFollower": "Copy this link to share it via social media, email and more",
+      "scanImageForFollower": "Users can scan this image with a QR code reader to find this account. Download the image or copy HTML tag to share it via social media, email and more."
     },
     "changeDisplayName": "Change Display Name"
   },

@@ -14,6 +14,7 @@ import FriendChats from '../screens/FriendChats';
 import FriendNotes from '../screens/FriendNotes';
 import CreateFriendGroup from '../screens/CreateFriendGroup';
 import ChannelInfo from '../screens/ChannelInfo';
+import ChannelInvitation from '../screens/ChannelInvitation';
 import GroupDetails from '../screens/GroupDetails';
 import ChannelTimeline from '../screens/ChannelTimeline';
 import Drawer from './DrawerNavigation';
@@ -41,6 +42,7 @@ const AppStack = createStackNavigator(
     CreateFriendGroup: CreateFriendGroup,
     ChannelChats: ChannelChats,
     ChannelInfo: ChannelInfo,
+    ChannelInvitation: ChannelInvitation,
     ChannelTimeline: ChannelTimeline,
     GroupDetails: GroupDetails,
     FriendNotes: FriendNotes,

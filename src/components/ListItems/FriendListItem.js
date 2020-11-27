@@ -142,7 +142,11 @@ export default class FriendListItem extends Component {
                 </TouchableOpacity>
               )
             )}
-            <TouchableOpacity onPress={onAvtarPress} disabled={isVisible}>
+            <TouchableOpacity onPress={!isVisible?onAvtarPress:()=>{
+              this.manageRecord(item, !newItem.isCheck?'check':'unCheck');
+            }} 
+            // disabled={isVisible}
+            >
               <RoundedImage
                 source={image}
                 size={50}
@@ -152,8 +156,11 @@ export default class FriendListItem extends Component {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.secondView}
-              onPress={onPress}
-              disabled={isVisible}>
+              onPress={!isVisible?onPress:()=>{
+                this.manageRecord(item, !newItem.isCheck?'check':'unCheck');
+              }}
+              // disabled={isVisible}
+              >
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Text
                   numberOfLines={1}

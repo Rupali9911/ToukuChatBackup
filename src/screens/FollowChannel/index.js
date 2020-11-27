@@ -153,7 +153,6 @@ class FollowChannel extends Component {
                 titleStyle={{
                   fontFamily: Fonts.light
                 }}
-                keyboardType={'number-pad'}
                 value={referral_code}
                 onChangeText={(referral_code) => this.setState({referral_code})}
               />

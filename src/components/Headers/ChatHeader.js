@@ -202,7 +202,7 @@ export default class ChatHeader extends Component {
                                 size={18}
                                 color={Colors.black}
                               />
-                            ) : item.icon === 'sticky-note' ? (
+                            ) : item.icon === 'sticky-note' || item.icon === 'id-card' ? (
                               <FontAwesome
                                 name={item.icon}
                                 size={16}

@@ -174,6 +174,7 @@ class GroupChatMessageBubble extends Component {
       return (
         <>
           <TouchableOpacity
+            disabled={this.props.isMultiSelect}
             onPress={() => {
               this.props.onReplyPress &&
                 this.props.onReplyPress(replyMessage.id);
@@ -387,6 +388,7 @@ class GroupChatMessageBubble extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
+      isMultiSelect
     } = this.props;
     const {showImage, images} = this.state;
     if (!message.message_body && !message.is_unsent) {
@@ -453,6 +455,7 @@ class GroupChatMessageBubble extends Component {
                     </View>
                   ) : (
                     <TouchableOpacity
+                      disabled={isMultiSelect}
                       activeOpacity={0.8}
                       style={[
                         {
@@ -659,6 +662,7 @@ class GroupChatMessageBubble extends Component {
                       },
                     ]}>
                     <TouchableOpacity
+                      disabled={isMultiSelect}
                       style={{
                         flex: 1,
                         justifyContent: 'center',

@@ -118,6 +118,7 @@ class Button extends Component {
       fontType,
       type,
       borderColor,
+      leftIcon
     } = this.props;
     return (
       <TouchableOpacity
@@ -138,7 +139,9 @@ class Button extends Component {
               opacity: disabled ? 0.5 : 1,
               paddingHorizontal: 5,
             },
+            leftIcon?{flexDirection:'row'}:{}
           ]}>
+          {leftIcon}
           {loading ? (
             <View style={{paddingHorizontal: 5}}>
               <ActivityIndicator

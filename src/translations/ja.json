@@ -1051,7 +1051,10 @@
       "usersCanClickOrTabThisButtonText": "ユーザーはこのボタンをクリックまたはタブでクリックして、アカウントを友だちにすることができます。HTMLタグをコピーして、Webサイト、ブログ、その他に追加します。",
       "invitationPage": " チャンネル招待URL",
       "linkViaLp": "ランディングページ経由の招待URL",
-      "invitationToChannel": "チャンネルへの直接招待URL"
+      "invitationToChannel": "チャンネルへの直接招待URL",
+      "findOutAllTheNewWayForFollower": "ユーザーをチャンネルに招待するすべての方法をご覧ください。 QRコードのスキャンやボタンのタップと同じくらい簡単です。",
+      "copyTextForFollower": "このリンクをコピーして、ソーシャルメディアやメールなどで共有します",
+      "scanImageForFollower": "ユーザーはこの画像をQRコードリーダーでスキャンして、このアカウントを見つけることができます。 画像をダウンロードするか、HTMLタグをコピーして、ソーシャルメディアやメールなどで共有します。"
     },
     "changeDisplayName": "表示名を変更"
   },

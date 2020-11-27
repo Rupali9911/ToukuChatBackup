@@ -86,9 +86,12 @@ export default class ChannelListItem extends Component {
       <Fragment>
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={onPress}
+          onPress={!isVisible?onPress:()=>{
+            this.manageRecord(item, !newItem.isCheck?'check':'unCheck');
+          }}
           style={styles.container}
-          disabled={isVisible}>
+          // disabled={isVisible}
+          >
           <View style={styles.firstView}>
             {isVisible && newItem.isCheck === false ? (
               <TouchableOpacity

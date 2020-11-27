@@ -143,6 +143,7 @@ class ChatMessageBubble extends Component {
       return (
         <>
           <TouchableOpacity
+            disabled={this.props.isMultiSelect}
             onPress={() => {
               this.props.onReplyPress &&
                 this.props.onReplyPress(replyMessage.id);
@@ -330,6 +331,7 @@ class ChatMessageBubble extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
+      isMultiSelect
     } = this.props;
     const {showImage, images} = this.state;
     const msgTime = new Date(message.created);
@@ -389,6 +391,7 @@ class ChatMessageBubble extends Component {
                     </View>
                   ) : (
                     <TouchableOpacity
+                      disabled={isMultiSelect}
                       activeOpacity={0.8}
                       style={[
                         message.hyperlink
@@ -577,6 +580,7 @@ class ChatMessageBubble extends Component {
                       message.msg_type === 'audio' && {minWidth: '100%'},
                     ]}>
                     <TouchableOpacity
+                      disabled={isMultiSelect}
                       style={{
                         flex: 1,
                         justifyContent: 'center',

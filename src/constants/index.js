@@ -83,6 +83,7 @@ export const Images = {
   header_bg: require('../../assets/images/header_bg.png'),
   header_bg_small: require('../../assets/images/header_bg_small.png'),
   channel_background: require('../../assets/images/channelBackground.jpeg'),
+  image_app_logo: require('../../assets/images/app_icon.png')
 };
 
 export const Colors = {

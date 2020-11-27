@@ -258,13 +258,15 @@ class GroupChatContainer extends Component {
                 return (
                   <Fragment key={index}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      {isMultiSelect ? (
+                      {(isMultiSelect && !item.is_unsent) ? (
                         <CheckBox
                           isChecked={isSelected}
                           onCheck={() => onSelect(item.msg_id)}
                         />
                       ) : null}
-                      <View style={{flex: 1}}>
+                      <TouchableOpacity style={{flex: 1}} disabled={!isMultiSelect} onPress={()=>{
+                        isMultiSelect && !item.is_unsent && onSelect(item.msg_id)
+                      }}>
                         <GroupChatMessageBox
                           ref={(view) => {
                             this[`message_box_${item.msg_id}`] = view;
@@ -320,8 +322,9 @@ class GroupChatContainer extends Component {
                           }}
                           groupMembers={groupMembers}
                           showOpenLoader={this.props.showOpenLoader}
+                          isMultiSelect={isMultiSelect}
                         />
-                      </View>
+                      </TouchableOpacity>
                     </View>
                     {(messages[index + 1] &&
                       new Date(item.timestamp).getDate() !==

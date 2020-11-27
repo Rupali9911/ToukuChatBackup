@@ -261,13 +261,15 @@ class ChatContainer extends Component {
                 return (
                   <Fragment>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      {isMultiSelect ? (
+                      {(isMultiSelect && !item.is_unsent) ? (
                         <CheckBox
                           isChecked={isSelected}
                           onCheck={() => onSelect(item.id)}
                         />
                       ) : null}
-                      <View style={{flex: 1}}>
+                      <TouchableOpacity style={{flex: 1}} disabled={!isMultiSelect} onPress={()=>{
+                        isMultiSelect && !item.is_unsent && onSelect(item.id)
+                      }}>
                         <ChatMessageBox
                           ref={(view) => {
                             this[`message_box_${item.id}`] = view;
@@ -325,8 +327,9 @@ class ChatContainer extends Component {
                               this[`message_box_${id}`].callBlinking(id);
                           }}
                           showOpenLoader={this.props.showOpenLoader}
+                          isMultiSelect={isMultiSelect}
                         />
-                      </View>
+                      </TouchableOpacity>
                     </View>
                     {(messages[index + 1] &&
                       new Date(item.created).getDate() !==
