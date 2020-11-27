@@ -2686,7 +2686,7 @@ class Chat extends Component {
 
   actionDelete = async () => {
     this.props.deleteChat(deleteObj).then((res) => {
-s      if (res && res.status) {
+      if (res && res.status) {
         let commonData = [...this.props.commonChat];
 
         // channel
