@@ -1,5 +1,13 @@
 import React, {Component, useEffect} from 'react';
-import {View, Text, StatusBar, AppState, Linking, Alert, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  StatusBar,
+  AppState,
+  Linking,
+  Alert,
+  TextInput,
+} from 'react-native';
 import Routes from './src/navigation';
 import {Provider} from 'react-redux';
 import {Provider as PaperProvider} from 'react-native-paper';
@@ -51,6 +59,7 @@ export default class App extends Component {
     super(props);
     this.state = {
       appState: AppState.currentState,
+      notifData: '',
     };
     this.notif = new NotifService();
     //this.onNotif.bind(this),
@@ -65,7 +74,7 @@ export default class App extends Component {
     this.onTokenRefreshListener = messaging().onTokenRefresh((fcmToken) => {
       // Process your token as required
       this.getToken();
-      console.log('Updated Token=' + fcmToken);
+      // console.log('Updated Token=' + fcmToken);
     });
   }
 
@@ -74,7 +83,7 @@ export default class App extends Component {
   }
 
   getInitialLinking() {
-    console.log('getInitialLinking calld');
+    // console.log('getInitialLinking calld');
     Linking.getInitialURL().then((url) => {
       if (url) {
         setTimeout(() => {
@@ -89,6 +98,8 @@ export default class App extends Component {
     Linking.addEventListener('url', this.handleOpenURL);
   }
 
+
+  
   removeListeners() {
     AppState.removeEventListener('change', this._handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenURL);
@@ -99,7 +110,7 @@ export default class App extends Component {
   }
 
   _handleAppStateChange = (nextAppState) => {
-    console.log('nextAppState', nextAppState);
+    // console.log('nextAppState', nextAppState);
     const {appState} = this.state;
     this.setState({appState: nextAppState});
     if (nextAppState === 'inactive') {
@@ -108,7 +119,7 @@ export default class App extends Component {
       let cCount = store.getState().channelReducer.unreadChannelMsgsCounts;
       let frCount = store.getState().addFriendReducer.friendRequest.length;
       let totalCount = fCount + gCount + cCount + frCount;
-      console.log('_handleAppStateChange', totalCount);
+      // console.log('_handleAppStateChange', totalCount);
       PushNotificationIOS.setApplicationIconBadgeNumber(totalCount);
     }
 
@@ -116,17 +127,17 @@ export default class App extends Component {
       (appState.match(/background/) && nextAppState === 'active') ||
       (appState.match(/unknown/) && nextAppState === 'active')
     ) {
-      console.log('From background to active or unknown to active');
+      // console.log('From background to active or unknown to active');
       //this.clearBatchCount()
 
       if (appState.match(/background/) && nextAppState === 'active') {
         this.getToken();
-        console.log('From background to active');
+        // console.log('From background to active');
         this.SingleSocket = SingleSocket.getInstance();
         this.SingleSocket.checkSocketConnected();
         if (isEventIdExists()) {
           let idObj = getLastEventId();
-          console.log('getLastEventId', idObj);
+          // console.log('getLastEventId', idObj);
           if (idObj.length > 0) {
             getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id).then(
               (res) => {
@@ -145,7 +156,7 @@ export default class App extends Component {
   };
 
   handleOpenURL = async (event) => {
-    console.log('Deep linking Url', event.url);
+    // console.log('Deep linking Url', event.url);
     let url = event.url;
 
     if (url.indexOf(DEEPLINK.toLowerCase()) > -1) {
@@ -155,7 +166,7 @@ export default class App extends Component {
           : url.split('touku://touku')[1].trim();
       if (suffixUrlDeep != '') {
         url = Environment + suffixUrlDeep;
-        console.log('suffixUrlDeep', url);
+        // console.log('suffixUrlDeep', url);
       }
     }
 
@@ -180,12 +191,12 @@ export default class App extends Component {
       // }, 1000 );
     } else if (url.indexOf(channelUrl) > -1) {
       let suffixUrl = url.split(channelUrl)[1].trim();
-      console.log('suffixUrl', suffixUrl);
+      // console.log('suffixUrl', suffixUrl);
       let channelId =
         suffixUrl.split('/').length > 0
           ? suffixUrl.split('/')[0].trim()
           : suffixUrl;
-      console.log('channelId', channelId);
+      // console.log('channelId', channelId);
       //await AsyncStorage.setItem('invitationCode', invitationCode);
       const userToken = await AsyncStorage.getItem('userToken');
       let data = {
@@ -239,7 +250,7 @@ export default class App extends Component {
         },
       );
       result = await result.json();
-      console.log('result of clear batch count', result, userAndFcmToken[1][1]);
+      // console.log('result of clear batch count', result, userAndFcmToken[1][1]);
     }
   };
 
@@ -272,7 +283,7 @@ export default class App extends Component {
         },
       );
       result = await result.json();
-      console.log('result of Update token', result, token);
+      // console.log('result of Update token', result, token);
     }
   };
 
@@ -289,12 +300,12 @@ export default class App extends Component {
   //3
   async getToken() {
     let registeredFcmToken = await AsyncStorage.getItem('fcmToken');
-    console.log('saved dev_id token: ', registeredFcmToken);
+    // console.log('saved dev_id token: ', registeredFcmToken);
     //this.updateToken(registeredFcmToken)
     let fcmToken = await messaging().getToken();
-    console.log('fcmToken dev_id token: ', fcmToken);
+    // console.log('fcmToken dev_id token: ', fcmToken);
     if (fcmToken !== registeredFcmToken) {
-      console.log('fcm NEWWWWWWWW dev_id: ', fcmToken);
+      // console.log('fcm NEWWWWWWWW dev_id: ', fcmToken);
       await AsyncStorage.setItem('fcmToken', fcmToken);
       this.updateToken(registeredFcmToken);
     }
@@ -311,16 +322,74 @@ export default class App extends Component {
 
   //2
   async requestPermission() {
-    console.log('requestPermission called');
+    // console.log('requestPermission called');
     const authStatus = await messaging().requestPermission();
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
-      console.log('Authorization status:', authStatus);
+      // console.log('Authorization status:', authStatus);
       await this.getToken();
     }
   }
+
+  notificationRedirection = (remoteMessage) => {
+    let notificationData = remoteMessage.data;
+    if (notificationData.notification_type) {
+      console.log(
+        'notificationData and type',
+        notificationData,
+        notificationData.notification_type,
+      );
+      if (
+        notificationData.notification_type ===
+          NotificationType.FRIEND_REQUEST_ACCEPTED ||
+        notificationData.notification_type ===
+          NotificationType.SEND_FRIEND_REQUEST ||
+        notificationData.notification_type ===
+          NotificationType.NEW_FRIEND_REQUEST
+      ) {
+        // if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED){
+        //     NavigationService.navigate('Home', { expandCollapse: 'friends' });
+        // }else if (notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST){
+        //     NavigationService.navigate('Home', { expandCollapse: 'friendReq' });
+        // }
+        NavigationService.navigate('Home');
+      } else if (
+        notificationData.notification_type ===
+        NotificationType.MESSAGE_IN_FRIEND
+      ) {
+        //  NavigationService.navigate('Chat');
+        let friendObj = getUserFriendByFriendId(notificationData.id);
+        if (friendObj.length > 0) {
+          store.dispatch(setCurrentFriend(friendObj[0]));
+          NavigationService.navigate('FriendChats');
+        }
+      } else if (
+        notificationData.notification_type ===
+        NotificationType.MESSAGE_IN_CHANNEL
+      ) {
+        let channelObj = getChannelsById(notificationData.id);
+        if (channelObj.length > 0) {
+          store.dispatch(setCurrentChannel(channelObj[0]));
+          NavigationService.navigate('ChannelChats');
+        }
+      } else if (
+        notificationData.notification_type === NotificationType.MESSAGE_IN_GROUP
+      ) {
+        let groupObj = getGroupsById(notificationData.id);
+        if (groupObj.length > 0) {
+          store.dispatch(setCurrentGroup(groupObj[0]));
+          NavigationService.navigate('GroupChats');
+        }
+      } else if (
+        notificationData.notification_type ===
+        NotificationType.MESSAGE_IN_THREAD
+      ) {
+        NavigationService.navigate('Chat');
+      }
+    }
+  };
 
   async createNotificationListeners() {
     // When a user tap on a push notification and the app is in background
@@ -328,62 +397,7 @@ export default class App extends Component {
       async (remoteMessage) => {
         console.log('remoteMessage background', remoteMessage);
         if (remoteMessage.data) {
-          let notificationData = remoteMessage.data;
-          if (notificationData.notification_type) {
-            console.log(
-              'notificationData and type',
-              notificationData,
-              notificationData.notification_type,
-            );
-            if (
-              notificationData.notification_type ===
-                NotificationType.FRIEND_REQUEST_ACCEPTED ||
-              notificationData.notification_type ===
-                NotificationType.SEND_FRIEND_REQUEST ||
-              notificationData.notification_type ===
-                NotificationType.NEW_FRIEND_REQUEST
-            ) {
-              // if (notificationData.notification_type === NotificationType.FRIEND_REQUEST_ACCEPTED){
-              //     NavigationService.navigate('Home', { expandCollapse: 'friends' });
-              // }else if (notificationData.notification_type === NotificationType.SEND_FRIEND_REQUEST){
-              //     NavigationService.navigate('Home', { expandCollapse: 'friendReq' });
-              // }
-              NavigationService.navigate('Home');
-            } else if (
-              notificationData.notification_type ===
-              NotificationType.MESSAGE_IN_FRIEND
-            ) {
-              //  NavigationService.navigate('Chat');
-              let friendObj = getUserFriendByFriendId(notificationData.id);
-              if (friendObj.length > 0) {
-                store.dispatch(setCurrentFriend(friendObj[0]));
-                NavigationService.navigate('FriendChats');
-              }
-            } else if (
-              notificationData.notification_type ===
-              NotificationType.MESSAGE_IN_CHANNEL
-            ) {
-              let channelObj = getChannelsById(notificationData.id);
-              if (channelObj.length > 0) {
-                store.dispatch(setCurrentChannel(channelObj[0]));
-                NavigationService.navigate('ChannelChats');
-              }
-            } else if (
-              notificationData.notification_type ===
-              NotificationType.MESSAGE_IN_GROUP
-            ) {
-              let groupObj = getGroupsById(notificationData.id);
-              if (groupObj.length > 0) {
-                store.dispatch(setCurrentGroup(groupObj[0]));
-                NavigationService.navigate('GroupChats');
-              }
-            } else if (
-              notificationData.notification_type ===
-              NotificationType.MESSAGE_IN_THREAD
-            ) {
-              NavigationService.navigate('Chat');
-            }
-          }
+          this.notificationRedirection(remoteMessage);
         }
       },
     );
@@ -392,20 +406,29 @@ export default class App extends Component {
     this.closedAppNotificationListener = messaging()
       .getInitialNotification()
       .then((remoteMessage) => {
-        if (remoteMessage) {
-          console.log('Closed app Push Notification opened', remoteMessage);
+        if (remoteMessage.data) {
+          console.log('remoteMessage background', remoteMessage);
+          this.notificationRedirection(remoteMessage);
         }
       });
 
     // When a user receives a push notification and the app is in foreground
-    this.onMessageListener = messaging().onMessage(async (remoteMessage) => {
+    this.onMessageListener = messaging().onMessage((remoteMessage) => {
+      console.log('remoteMessage background', remoteMessage);
       this.onMessageReceived(remoteMessage);
-      console.log('foreground app Push Notification', remoteMessage);
+      this.setState({notifData: remoteMessage});
     });
+
+    this.notif = new NotifService(
+      () => {},
+      () => {
+        this.notificationRedirection(this.state.notifData);
+      },
+    );
   }
 
   onMessageReceived(notification) {
-    console.log('onMessageReceived', notification);
+    // console.log('onMessageReceived', notification);
     if (Platform.OS === 'ios') {
       PushNotificationIOS.presentLocalNotification({
         alertBody: notification?.notification?.body,
@@ -457,7 +480,7 @@ export default class App extends Component {
                     const previousRouteName = this.getActiveRouteName(
                       prevState,
                     );
-                    console.log('currentRouteName', currentRouteName);
+                    // console.log('currentRouteName', currentRouteName);
                     store.dispatch(setCurrentRouteData(currentRouteName));
                   }}
                 />
