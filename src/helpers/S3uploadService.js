@@ -111,7 +111,8 @@ export default class S3uploadService extends Component {
   }
 
   async resizeImage(file, width, height) {
-    const resizedImage = await ImageResizer.createResizedImage(
+    // const resizedImage = 
+    return await ImageResizer.createResizedImage(
       file,
       width,
       height,
@@ -119,12 +120,14 @@ export default class S3uploadService extends Component {
       30,
     )
       .then(async ({uri}) => {
-        return await uri;
+        console.log('Image resizer')
+        return uri;
       })
       .catch((err) => {
+        console.log(err);
         // return err;
       });
-    return await resizedImage;
+    // return await resizedImage;
   }
 
   // uploadFile(file, fileName) {

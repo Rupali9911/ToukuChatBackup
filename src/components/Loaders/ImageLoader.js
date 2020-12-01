@@ -50,7 +50,7 @@ class ImageLoader extends React.Component {
         onLoadEnd={this.onLoadEnd.bind(this)}
         onError={this.onError.bind(this)}
         style={[styles.backgroundImage, style]}
-        source={source}
+        source={source?source:''}
         resizeMode={resizeMode}
         borderRadius={borderRadius}>
         {this.state.isLoaded && !this.state.isError ? (

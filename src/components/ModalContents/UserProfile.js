@@ -27,7 +27,7 @@ import {
   ChangeNameModal,
   UpdatePhoneModal,
 } from '../Modals';
-import {getAvatar, getImage, normalize} from '../../utils';
+import {getAvatar, getImage, normalize, resizeImage} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
@@ -88,6 +88,8 @@ class UserProfile extends Component {
           profileImagePath: source,
         });
 
+        const imageFile = await resizeImage(response.uri,360,360);
+
         const userAndSocialToken = await AsyncStorage.multiGet([
           'userToken',
           'socialToken',
@@ -100,7 +102,7 @@ class UserProfile extends Component {
         }
 
         this.props
-          .uploadAvatar(response.uri, jwtToken)
+          .uploadAvatar(imageFile, jwtToken)
           .then((res) => {
             console.log('uploadAvatar response final');
             this.props.getUserProfile();
@@ -136,23 +138,22 @@ class UserProfile extends Component {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
+        // console.log('response data',response);
         let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           uploadLoading: true,
-          backgroundImagePath: source,
+          backgroundImagePath: response,
         });
 
-        let file = source.uri;
+        let file = response;
         let files = [file];
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
         );
-
         let bgData = {
           // background_image: uploadedImages.image[0].image,
           background_image: uploadedImages.image[0].thumbnail,
         };
-
         this.props.updateConfiguration(bgData).then((res) => {
           Toast.show({
             title: 'Touku',
@@ -195,7 +196,8 @@ class UserProfile extends Component {
                 {backgroundImagePath.uri != '' ? (
                   <ImageLoader
                     style={styles.firstView}
-                    source={getImage(backgroundImagePath.uri)}>
+                    source={getImage(backgroundImagePath.uri)}
+                    >
                     <TouchableOpacity
                       style={{padding: 10}}
                       onPress={onRequestClose}>

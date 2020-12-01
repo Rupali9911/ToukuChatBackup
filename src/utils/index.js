@@ -2,6 +2,7 @@ import {Dimensions, Platform, PixelRatio} from 'react-native';
 import {Images, Icons} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
+import ImageResizer from 'react-native-image-resizer';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -57,8 +58,10 @@ export function getImage(source) {
     source === undefined
   ) {
     return Images.channel_background;
-  } else {
+  } else if(isContainUrl(source)) {
     return {uri: source};
+  }else{
+    return Images.channel_background;
   }
 }
 
@@ -96,4 +99,32 @@ export function normalize(size) {
   } else {
     return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
   }
+}
+
+export const isContainUrl = (text) => {
+  var urlRE = new RegExp(
+    '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+',
+  );
+  const url = text.match(urlRE);
+  return url;
+};
+
+export const resizeImage = async (file, width, height) => {
+  // const resizedImage = 
+  return await ImageResizer.createResizedImage(
+    file,
+    width,
+    height,
+    'JPEG',
+    30,
+  )
+    .then(async ({uri}) => {
+      console.log('Image resizer')
+      return uri;
+    })
+    .catch((err) => {
+      console.log(err);
+      // return err;
+    });
+  // return await resizedImage;
 }

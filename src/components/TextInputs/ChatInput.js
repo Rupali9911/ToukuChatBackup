@@ -223,7 +223,7 @@ export default class ChatInput extends Component {
                   textInputMinHeight={35}
                   // textInputMaxHeight={500}
                   trigger={'@'}
-                  triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
+                  triggerLocation={'anywhere'} // 'new-word-only', 'anywhere'
                   value={value}
                   onChangeText={(message) => onChangeText(message)}
                   placeholder={placeholder}
