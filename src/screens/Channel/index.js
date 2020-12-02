@@ -162,6 +162,43 @@ class Channel extends Component {
     this.setState({orientation: initial});
   }
 
+  onRefreshChannel = () => {
+    const {activeTab} = this.state;
+    this.setState({onRefreshLoad: true});
+    console.log('log');
+    this.pageCount = 0;
+    if (activeTab === 'trend') {
+      this.props
+        .getTrendChannel(this.props.userData.user_type, 0, activeTab)
+        .then((res) => {
+          if (res.status) {
+            this.setState({showPostsVisible: false, onRefreshLoad: false});
+            clearInterval(visibleNewPost);
+          }
+        });
+    } else if (activeTab === 'following') {
+      this.props.getFollowingChannel(this.pageCount, activeTab).then((res) => {
+        if (res.status) {
+          this.setState({showPostsVisible: false, onRefreshLoad: false});
+          clearInterval(visibleNewPost);
+        }
+      });
+    } else if (activeTab === 'ranking') {
+      this.props
+        .getRankingChannel(
+          this.props.userData.user_type,
+          this.pageCount,
+          activeTab,
+        )
+        .then((res) => {
+          if (res.status) {
+            this.setState({showPostsVisible: false, onRefreshLoad: false});
+            clearInterval(visibleNewPost);
+          }
+        });
+    }
+  };
+
   async componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.props.getTrendChannel();
@@ -189,6 +226,12 @@ class Channel extends Component {
             });
         });
       });
+    this.willFocusListener = this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.onRefreshChannel();
+      },
+    );
   }
 
   componentWillReceiveProps(nextProps) {
@@ -288,43 +331,6 @@ class Channel extends Component {
         });
     }
   }
-
-  onRefreshChannel = () => {
-    const {activeTab} = this.state;
-    this.setState({onRefreshLoad: true});
-    console.log('log');
-    this.pageCount = 0;
-    if (activeTab === 'trend') {
-      this.props
-        .getTrendChannel(this.props.userData.user_type, 0, activeTab)
-        .then((res) => {
-          if (res.status) {
-            this.setState({showPostsVisible: false, onRefreshLoad: false});
-            clearInterval(visibleNewPost);
-          }
-        });
-    } else if (activeTab === 'following') {
-      this.props.getFollowingChannel(this.pageCount, activeTab).then((res) => {
-        if (res.status) {
-          this.setState({showPostsVisible: false, onRefreshLoad: false});
-          clearInterval(visibleNewPost);
-        }
-      });
-    } else if (activeTab === 'ranking') {
-      this.props
-        .getRankingChannel(
-          this.props.userData.user_type,
-          this.pageCount,
-          activeTab,
-        )
-        .then((res) => {
-          if (res.status) {
-            this.setState({showPostsVisible: false, onRefreshLoad: false});
-            clearInterval(visibleNewPost);
-          }
-        });
-    }
-  };
 
   render() {
     const {

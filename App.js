@@ -98,8 +98,6 @@ export default class App extends Component {
     Linking.addEventListener('url', this.handleOpenURL);
   }
 
-
-  
   removeListeners() {
     AppState.removeEventListener('change', this._handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenURL);
@@ -250,6 +248,7 @@ export default class App extends Component {
         },
       );
       result = await result.json();
+      alert('data', result);
       // console.log('result of clear batch count', result, userAndFcmToken[1][1]);
     }
   };
@@ -335,6 +334,7 @@ export default class App extends Component {
 
   notificationRedirection = (remoteMessage) => {
     let notificationData = remoteMessage.data;
+    console.log('data notificationData', notificationData);
     if (notificationData.notification_type) {
       console.log(
         'notificationData and type',
@@ -422,7 +422,9 @@ export default class App extends Component {
     this.notif = new NotifService(
       () => {},
       () => {
-        this.notificationRedirection(this.state.notifData);
+        if (this.state.notifData) {
+          this.notificationRedirection(this.state.notifData);
+        }
       },
     );
   }

@@ -1190,6 +1190,7 @@ class Home extends Component {
     const unpinedChannels = filteredChannels.filter(
       (channel) => !channel.is_pined,
     );
+
     const channels = [...pinedChannels, ...unpinedChannels];
     //
     if (channels.length === 0 && channelLoading) {
@@ -1206,19 +1207,20 @@ class Home extends Component {
               title={item.name}
               last_msg={item.last_msg}
               description={
-                item.subject_message ? item.subject_message :
-                item.last_msg
+                item.subject_message
+                  ? item.subject_message
+                  : item.last_msg
                   ? item.last_msg.is_unsent
                     ? translate('pages.xchat.messageUnsent')
                     : item.last_msg.msg_type === 'text'
-                      ? item.last_msg.message_body
-                      : item.last_msg.msg_type === 'image'
-                        ? translate('pages.xchat.photo')
-                        : item.last_msg.msg_type === 'video'
-                          ? translate('pages.xchat.video')
-                          : item.last_msg.msg_type === 'doc'
-                            ? translate('pages.xchat.document')
-                            : translate('pages.xchat.audio')
+                    ? item.last_msg.message_body
+                    : item.last_msg.msg_type === 'image'
+                    ? translate('pages.xchat.photo')
+                    : item.last_msg.msg_type === 'video'
+                    ? translate('pages.xchat.video')
+                    : item.last_msg.msg_type === 'doc'
+                    ? translate('pages.xchat.document')
+                    : translate('pages.xchat.audio')
                   : ''
               }
               date={item.last_msg ? item.last_msg.created : item.joining_date}
@@ -1272,13 +1274,25 @@ class Home extends Component {
         ? 1
         : -1,
     );
+
     const filteredGroups = sortChannels.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
 
-    const pinedGroups = filteredGroups.filter((group) => group.is_pined);
-    const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
-    const groups = [...pinedGroups, ...unpinedGroups];
+    let is_pined = [];
+    let is_un_pined = [];
+    filteredGroups.filter((group) => {
+      if (group.is_pined) {
+        is_pined.push(group);
+      } else {
+        is_un_pined.push(group);
+      }
+    });
+
+    // const pinedGroups = filteredGroups.filter((group) => group.is_pined);
+    // const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
+
+    const groups = [...is_pined, ...is_un_pined];
     if (groups.length === 0 && groups) {
       return <ListLoader />;
     } else if (groups.length > 0) {
@@ -1304,7 +1318,9 @@ class Home extends Component {
                     : item.last_msg.type === 'audio'
                     ? translate('pages.xchat.audio')
                     : ''
-                  : item.no_msgs ? '' : translate('pages.xchat.messageUnsent')
+                  : item.no_msgs
+                  ? ''
+                  : translate('pages.xchat.messageUnsent')
               }
               mentions={item.mentions}
               date={
@@ -1364,7 +1380,9 @@ class Home extends Component {
                     : item.last_msg.type === 'audio'
                     ? translate('pages.xchat.audio')
                     : ''
-                  : item.last_msg_id ? translate('pages.xchat.messageUnsent') : ''
+                  : item.last_msg_id
+                  ? translate('pages.xchat.messageUnsent')
+                  : ''
               }
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}
@@ -1394,7 +1412,12 @@ class Home extends Component {
   }
 
   renderFriendRequestList() {
-    const {friendRequestLoading, friendRequest,isAcceptLoading, isRejectLoading } = this.props;
+    const {
+      friendRequestLoading,
+      friendRequest,
+      isAcceptLoading,
+      isRejectLoading,
+    } = this.props;
     const filteredFriendRequest = friendRequest.filter(
       createFilter(this.state.searchText, ['from_user_display_name']),
     );
@@ -1776,8 +1799,8 @@ const mapStateToProps = (state) => {
     friendLoading: state.friendReducer.loading,
     friendRequest: state.addFriendReducer.friendRequest,
     friendRequestLoading: state.addFriendReducer.loading,
-      isAcceptLoading: state.addFriendReducer.isAcceptLoading,
-      isRejectLoading: state.addFriendReducer.isRejectLoading,
+    isAcceptLoading: state.addFriendReducer.isAcceptLoading,
+    isRejectLoading: state.addFriendReducer.isRejectLoading,
   };
 };
 

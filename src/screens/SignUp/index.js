@@ -556,7 +556,11 @@ class SignUp extends Component {
           .then((res) => {
             if (res.status === false) {
               let newUsername = email.substring(0, email.indexOf('@'));
-              this.setState({emailStatus: 'right', username: newUsername});
+              this.setState({
+                emailStatus: 'right',
+                username: newUsername,
+                userNameErr: null,
+              });
 
               this.props.userNameCheck(newUsername).then((res) => {
                 console.log('userNameCheck res', res, newUsername);
