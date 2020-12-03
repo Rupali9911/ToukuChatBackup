@@ -376,7 +376,7 @@ class FriendChats extends Component {
       message_body: msgText,
       reply_to: isReply
         ? {
-            display_name: repliedMessage.from_user.display_name,
+            display_name: repliedMessage.from_user.id===userData.id?repliedMessage.from_user.display_name:currentFriend.display_name?currentFriend.display_name:repliedMessage.from_user.display_name,
             id: repliedMessage.id,
             message: repliedMessage.message_body,
             msg_type: repliedMessage.msg_type,
@@ -433,7 +433,13 @@ class FriendChats extends Component {
     }
     if (uploadFile.uri) {
       this.setState({
-        sendingMedia: false,
+        showGalleryModal: false,
+        showAttachmentModal: false
+      },()=>{
+        this.setState({
+          uploadedFiles: [],
+          sendingMedia: false,
+        });
       });
     }
 
@@ -1165,7 +1171,7 @@ class FriendChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleGalleryModal(false);
+    // this.toggleGalleryModal(false);
 
     for (const file of this.state.uploadedFiles) {
       let fileType = file.mime;
@@ -1206,7 +1212,7 @@ class FriendChats extends Component {
         );
       }
     }
-    this.setState({uploadedFiles: []});
+    // this.setState({uploadedFiles: []});
     this.isUploading = false;
   };
 
@@ -1221,7 +1227,7 @@ class FriendChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleAttachmentModal(false);
+    // this.toggleAttachmentModal(false);
     for (const res of this.state.uploadedFiles) {
       let fileType = res.type.substr(0, res.type.indexOf('/'));
       let source = {uri: res.uri, type: res.type, name: res.name};
@@ -1249,7 +1255,7 @@ class FriendChats extends Component {
         );
       }
     }
-    this.setState({uploadedFiles: []});
+    // this.setState({uploadedFiles: []});
     this.isUploading = false;
   };
 
@@ -1391,7 +1397,7 @@ class FriendChats extends Component {
             this.toggleGalleryModal(false);
           }}
           onUpload={() => this.uploadAndSend()}
-          isLoading={this.isUploading}
+          isLoading={sendingMedia}
           removeUploadData={(index) => this.removeUploadData(index)}
           onGalleryPress={() => this.onGalleryPress()}
         />
@@ -1405,11 +1411,11 @@ class FriendChats extends Component {
             this.toggleAttachmentModal(false);
           }}
           onUpload={() => this.uploadAndSendAttachment()}
-          isLoading={this.isUploading}
+          isLoading={sendingMedia}
           removeUploadData={(index) => this.removeUploadData(index)}
           onAttachmentPress={() => this.onAttachmentPress()}
         />
-        {sendingMedia && <UploadLoader />}
+        {/* {sendingMedia && <UploadLoader />} */}
         {openDoc && <OpenLoader />}
       </ImageBackground>
     );

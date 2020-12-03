@@ -523,7 +523,13 @@ class GroupChats extends Component {
     }
     if (uploadFile.uri) {
       this.setState({
-        sendingMedia: false,
+        showGalleryModal: false,
+        showAttachmentModal: false
+      },()=>{
+        this.setState({
+          uploadedFiles: [],
+          sendingMedia: false,
+        })
       });
     }
 
@@ -1390,7 +1396,7 @@ class GroupChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleGalleryModal(false);
+    // this.toggleGalleryModal(false);
 
     for (const file of this.state.uploadedFiles) {
       let fileType = file.mime;
@@ -1431,7 +1437,7 @@ class GroupChats extends Component {
         );
       }
     }
-    this.setState({uploadedFiles: []});
+    // this.setState({uploadedFiles: []});
     this.isUploading = false;
   };
 
@@ -1446,7 +1452,7 @@ class GroupChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleAttachmentModal(false);
+    // this.toggleAttachmentModal(false);
     for (const res of this.state.uploadedFiles) {
       let fileType = res.type.substr(0, res.type.indexOf('/'));
       let source = {uri: res.uri, type: res.type, name: res.name};
@@ -1474,7 +1480,7 @@ class GroupChats extends Component {
         );
       }
     }
-    this.setState({uploadedFiles: []});
+    // this.setState({uploadedFiles: []});
     this.isUploading = false;
   };
 
@@ -1556,6 +1562,7 @@ class GroupChats extends Component {
               ? translate('pages.xchat.unPinThisGroup')
               : translate('pages.xchat.pinThisGroup')
           }
+          type={'group'}
         />
         {isChatLoading && chatGroupConversation.length <= 0 ? (
           <ListLoader />
@@ -1657,7 +1664,7 @@ class GroupChats extends Component {
             this.toggleGalleryModal(false);
           }}
           onUpload={() => this.uploadAndSend()}
-          isLoading={this.isUploading}
+          isLoading={sendingMedia}
           removeUploadData={(index) => this.removeUploadData(index)}
           onGalleryPress={() => this.onGalleryPress()}
         />
@@ -1671,11 +1678,11 @@ class GroupChats extends Component {
             this.toggleAttachmentModal(false);
           }}
           onUpload={() => this.uploadAndSendAttachment()}
-          isLoading={this.isUploading}
+          isLoading={sendingMedia}
           removeUploadData={(index) => this.removeUploadData(index)}
           onAttachmentPress={() => this.onAttachmentPress()}
         />
-        {sendingMedia && <UploadLoader />}
+        {/* {sendingMedia && <UploadLoader />} */}
         {openDoc && <OpenLoader />}
       </ImageBackground>
     );

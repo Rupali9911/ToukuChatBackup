@@ -163,6 +163,7 @@ class ShowGalleryModal extends Component {
                                   flexDirection: 'row',
                                   alignItems: 'center',
                                 }}
+                                disabled={isLoading}
                                 onPress={() => removeUploadData(index)}>
                                 <FontAwesome
                                   name="trash"
@@ -180,6 +181,7 @@ class ShowGalleryModal extends Component {
                                   alignItems: 'flex-end',
                                 }}>
                                 <TouchableOpacity
+                                  disabled={isLoading}
                                   onPress={() => onGalleryPress()}>
                                   <Image
                                     source={Icons.icon_upload}
@@ -249,7 +251,7 @@ class ShowGalleryModal extends Component {
                   loading={isLoading}
                 />
               </View>
-              <View
+              {isLoading?null:<View
                 style={{
                   // flex: 0.5,
                   marginHorizontal: 5,
@@ -261,7 +263,7 @@ class ShowGalleryModal extends Component {
                   onPress={onCancel}
                   isRounded={false}
                 />
-              </View>
+              </View>}
             </View>
           </View>
         </SafeAreaView>

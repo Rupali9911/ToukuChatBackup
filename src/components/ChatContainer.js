@@ -178,6 +178,7 @@ class ChatContainer extends Component {
       selectedIds,
       onSelectedCancel,
       onSelectedDelete,
+      currentFriend
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -411,11 +412,15 @@ class ChatContainer extends Component {
                 }}>
                 <View style={{flex: 8}}>
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-                    {repliedMessage.from_user.id === this.props.userData.id
+                    { (this.props.isChannel || repliedMessage.from_user.id === this.props.userData.id)?repliedMessage.from_user.id === this.props.userData.id
                       ? 'You'
                       : repliedMessage.from_user.display_name
                       ? repliedMessage.from_user.display_name
-                      : repliedMessage.from_user.username}
+                      : repliedMessage.from_user.username
+                      : currentFriend.display_name
+                      ? currentFriend.display_name
+                      : currentFriend.username
+                    }
                   </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>
@@ -625,6 +630,7 @@ const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
     currentChannel: state.channelReducer.currentChannel,
+    currentFriend: state.friendReducer.currentFriend,
   };
 };
 

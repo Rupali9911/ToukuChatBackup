@@ -35,6 +35,11 @@ export default class ChannelListItem extends Component {
   }
 
   getDate = (date) => {
+
+    if(date===null || date==='' || date===undefined){
+      return '';
+    }
+
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);

@@ -1324,9 +1324,10 @@ class Home extends Component {
               }
               mentions={item.mentions}
               date={
-                item.timestamp >= item.joining_date
+                item.joining_date ? item.timestamp >= item.joining_date
                   ? item.timestamp
-                  : item.joining_date
+                  : item.joining_date 
+                  : item.timestamp
               }
               image={item.group_picture}
               onPress={() => this.onOpenGroupChats(item)}

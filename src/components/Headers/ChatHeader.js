@@ -124,34 +124,41 @@ export default class ChatHeader extends Component {
                 </View>
               ) : (
                 <View style={styles.subContainer}>
-                  {image == null && image == '' && typeof image == undefined ? (
-                    <View style={{marginHorizontal: 10}}>
-                      <RoundedImage
-                        source={getAvatar(image)}
-                        isRounded={false}
-                        size={Platform.isPad ? 50 : 40}
-                      />
-                    </View>
-                  ) : (
-                    <LinearGradient
-                      start={{x: 0.1, y: 0.7}}
-                      end={{x: 0.5, y: 0.2}}
-                      locations={[0.1, 0.6, 1]}
-                      colors={[
-                        Colors.gradient_1,
-                        Colors.gradient_2,
-                        Colors.gradient_3,
-                      ]}
-                      style={styles.squareImage}>
-                      <Text style={globalStyles.normalRegularText15}>
-                        {title.indexOf(' ') === -1
-                          ? title.charAt(0).toUpperCase()
-                          : title.charAt(0).toUpperCase() +
-                            title.charAt(title.indexOf(' ') + 1).toUpperCase()}
-                        {/* {secondUpperCase} */}
-                      </Text>
-                    </LinearGradient>
-                  )}
+                    <TouchableOpacity onPress={() => {
+                      console.log('type', type);
+                      if (type === 'channel') {
+                        navigation.navigate('ChannelInfo')
+                      }
+                    }}>
+                      {image == null && image == '' && typeof image == undefined ? (
+                        <View style={{ marginHorizontal: 10 }}>
+                          <RoundedImage
+                            source={getAvatar(image)}
+                            isRounded={false}
+                            size={Platform.isPad ? 50 : 40}
+                          />
+                        </View>
+                      ) : (
+                          <LinearGradient
+                            start={{ x: 0.1, y: 0.7 }}
+                            end={{ x: 0.5, y: 0.2 }}
+                            locations={[0.1, 0.6, 1]}
+                            colors={[
+                              Colors.gradient_1,
+                              Colors.gradient_2,
+                              Colors.gradient_3,
+                            ]}
+                            style={styles.squareImage}>
+                            <Text style={globalStyles.normalRegularText15}>
+                              {title.indexOf(' ') === -1
+                                ? title.charAt(0).toUpperCase()
+                                : title.charAt(0).toUpperCase() +
+                                title.charAt(title.indexOf(' ') + 1).toUpperCase()}
+                              {/* {secondUpperCase} */}
+                            </Text>
+                          </LinearGradient>
+                        )}
+                    </TouchableOpacity>
                   <View
                     style={{
                       flex: 1,
@@ -167,7 +174,13 @@ export default class ChatHeader extends Component {
                             ? normalize(8.5)
                             : normalize(12),
                         },
-                      ]}>
+                      ]}
+                      onPress={()=>{
+                        if (type === 'channel') {
+                          navigation.navigate('ChannelInfo')
+                        }
+                      }}
+                      >
                       {title}
                     </Text>
                     <Text

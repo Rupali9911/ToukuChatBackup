@@ -38,7 +38,7 @@ export default class ChatInput extends Component {
 
   groupMembersMentions = (value) => {
     const {groupMembers, currentUserData} = this.props;
-    let splitNewMessageText = value.split(' ');
+    let splitNewMessageText = value.split('@');
     let text = splitNewMessageText[splitNewMessageText.length - 1];
     // let splitNewMessageText = value.split(' ');
     // let newMessageMentions = [];
@@ -224,7 +224,7 @@ export default class ChatInput extends Component {
                   textInputMinHeight={35}
                   // textInputMaxHeight={500}
                   trigger={'@'}
-                  triggerLocation={'anywhere'} // 'new-word-only', 'anywhere'
+                  triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
                   value={value}
                   onChangeText={(message) => onChangeText(message)}
                   placeholder={placeholder}

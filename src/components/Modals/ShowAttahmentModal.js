@@ -162,6 +162,7 @@ class ShowAttahmentModal extends Component {
                                   flexDirection: 'row',
                                   alignItems: 'center',
                                 }}
+                                disabled={isLoading}
                                 onPress={() => removeUploadData(index)}>
                                 <FontAwesome
                                   name="trash"
@@ -184,6 +185,7 @@ class ShowAttahmentModal extends Component {
                                   alignItems: 'flex-end',
                                 }}>
                                 <TouchableOpacity
+                                  disabled={isLoading}
                                   onPress={() => onAttachmentPress()}>
                                   <Image
                                     source={Icons.icon_upload}
@@ -252,7 +254,7 @@ class ShowAttahmentModal extends Component {
                   loading={isLoading}
                 />
               </View>
-              <View
+              {isLoading?null:<View
                 style={{
                   // flex: 0.5,
                   marginHorizontal: 5,
@@ -264,7 +266,7 @@ class ShowAttahmentModal extends Component {
                   onPress={onCancel}
                   isRounded={false}
                 />
-              </View>
+              </View>}
             </View>
           </View>
         </SafeAreaView>

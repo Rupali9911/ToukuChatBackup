@@ -1885,6 +1885,7 @@ class Chat extends Component {
 
   onAddGroupMember(message) {
     const {userGroups, userData, currentGroup} = this.props;
+    console.log('message_Details',JSON.stringify(message));
     if (message.text.data.type === SocketEvents.ADD_GROUP_MEMBER) {
       for (let i of message.text.data.message_details.members_data) {
         if (i.id == userData.id) {

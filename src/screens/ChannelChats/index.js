@@ -650,7 +650,13 @@ class ChannelChats extends Component {
     this.props.sendChannelMessage(messageData);
     if (uploadFile.uri) {
       this.setState({
-        sendingMedia: false,
+        showGalleryModal:false,
+        showAttachmentModal: false
+      },()=>{
+        this.setState({
+          uploadedFiles: [],
+          sendingMedia: false,
+        });
       });
     }
     // this.setState({
@@ -1006,7 +1012,7 @@ class ChannelChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleGalleryModal(false);
+    // this.toggleGalleryModal(false);
 
     for (const file of this.state.uploadedFiles) {
       let fileType = file.mime;
@@ -1047,7 +1053,7 @@ class ChannelChats extends Component {
         );
       }
     }
-    this.setState({uploadedFiles: []});
+    // this.setState({uploadedFiles: []});
     this.isUploading = false;
   };
 
@@ -1062,7 +1068,7 @@ class ChannelChats extends Component {
       return;
     }
     this.isUploading = true;
-    this.toggleAttachmentModal(false);
+    // this.toggleAttachmentModal(false);
     for (const res of this.state.uploadedFiles) {
       let fileType = res.type.substr(0, res.type.indexOf('/'));
       let source = {uri: res.uri, type: res.type, name: res.name};
@@ -1090,7 +1096,7 @@ class ChannelChats extends Component {
         );
       }
     }
-    this.setState({uploadedFiles: []});
+    // this.setState({uploadedFiles: []});
     this.isUploading = false;
   };
 
@@ -1210,7 +1216,7 @@ class ChannelChats extends Component {
               this.toggleGalleryModal(false);
             }}
             onUpload={() => this.uploadAndSend()}
-            isLoading={this.isUploading}
+            isLoading={sendingMedia}
             removeUploadData={(index) => this.removeUploadData(index)}
             onGalleryPress={() => this.onGalleryPress()}
           />
@@ -1224,11 +1230,11 @@ class ChannelChats extends Component {
               this.toggleAttachmentModal(false);
             }}
             onUpload={() => this.uploadAndSendAttachment()}
-            isLoading={this.isUploading}
+            isLoading={sendingMedia}
             removeUploadData={(index) => this.removeUploadData(index)}
             onAttachmentPress={() => this.onAttachmentPress()}
           />
-          {sendingMedia && <UploadLoader />}
+          {/* {sendingMedia && <UploadLoader />} */}
           {openDoc && <OpenLoader />}
         </View>
       );
@@ -1424,6 +1430,7 @@ class ChannelChats extends Component {
               ? translate('pages.xchat.unPinThisChannel')
               : translate('pages.xchat.pinThisChannel')
           }
+          type={'channel'}
         />
         {this.props.chatConversation && this.renderConversations()}
 
