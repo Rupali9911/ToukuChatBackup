@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -142,10 +142,18 @@ export default class FriendListItem extends Component {
                 </TouchableOpacity>
               )
             )}
-            <TouchableOpacity onPress={!isVisible?onAvtarPress:()=>{
-              this.manageRecord(item, !newItem.isCheck?'check':'unCheck');
-            }} 
-            // disabled={isVisible}
+            <TouchableOpacity
+              onPress={
+                !isVisible
+                  ? onAvtarPress
+                  : () => {
+                      this.manageRecord(
+                        item,
+                        !newItem.isCheck ? 'check' : 'unCheck',
+                      );
+                    }
+              }
+              // disabled={isVisible}
             >
               <RoundedImage
                 source={image}
@@ -156,11 +164,18 @@ export default class FriendListItem extends Component {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.secondView}
-              onPress={!isVisible?onPress:()=>{
-                this.manageRecord(item, !newItem.isCheck?'check':'unCheck');
-              }}
+              onPress={
+                !isVisible
+                  ? onPress
+                  : () => {
+                      this.manageRecord(
+                        item,
+                        !newItem.isCheck ? 'check' : 'unCheck',
+                      );
+                    }
+              }
               // disabled={isVisible}
-              >
+            >
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Text
                   numberOfLines={1}
@@ -181,7 +196,7 @@ export default class FriendListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: normalize(11.5),
+                      fontSize: Platform.isPad ? normalize(7) : normalize(11.5),
                       fontWeight: '400',
                     },
                   ]}>

@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 
 import {Icons, Colors, Images, Fonts} from '../constants';
 import HamburgerIcon from './HamburgerIcon';
-import {isIphoneX} from '../utils';
+import {isIphoneX, normalize} from '../utils';
 import {globalStyles} from '../styles';
 import {Menu, Divider} from 'react-native-paper';
 import {SearchInput} from './TextInputs';
@@ -96,7 +96,11 @@ export default class HomeHeader extends Component {
               <Text
                 style={[
                   globalStyles.normalRegularText,
-                  {fontWeight: '300', fontSize: 18, color: Colors.white},
+                  {
+                    fontWeight: '300',
+                    fontSize: Platform.isPad ? normalize(9.5) : 18,
+                    color: Colors.white,
+                  },
                 ]}>
                 {title}
               </Text>

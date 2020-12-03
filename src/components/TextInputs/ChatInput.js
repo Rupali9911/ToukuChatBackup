@@ -8,6 +8,7 @@ import {
   Dimensions,
   Text,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Colors, Icons, Fonts} from '../../constants';
@@ -337,11 +338,11 @@ export default class ChatInput extends Component {
                       this.newHeight = this.newHeight - 15;
                     }
                     if (
-                      isIphoneX()
+                      isIphoneX() || Platform.isPad
                         ? this.lineHeight <= 70
                         : this.lineHeight <= 50
                     ) {
-                      this.newHeight = isIphoneX() ? 70 : 50;
+                      this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
                     }
                     this.oldLineHeight = this.lineHeight;
                   }
@@ -387,7 +388,7 @@ const chatInput = StyleSheet.create({
     width: '100%',
     // height: '100%',
     // flex: 1,
-    minHeight: isIphoneX() ? 70 : 50,
+    minHeight: isIphoneX() || Platform.isPad ? 70 : 50,
     maxHeight: 200,
     // backgroundColor: '#FC94B8',
     flexDirection: 'row',
@@ -395,7 +396,7 @@ const chatInput = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 15,
     paddingTop: 5,
-    paddingBottom: isIphoneX() ? 20 : 5,
+    paddingBottom: isIphoneX() || Platform.isPad ? 20 : 5,
   },
   chatAttachmentContainer: {
     // height: isIphoneX() ? 40 : 30,
@@ -425,15 +426,15 @@ const chatInput = StyleSheet.create({
     // height: '100%',
     borderWidth: 0.2,
     backgroundColor: Colors.white,
-    minHeight: 35,
+    minHeight: Platform.isPad ? 45 : 35,
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
     paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 10) : 0,
     paddingBottom: 0,
-    fontSize: normalize(12),
+    fontSize: Platform.isPad ? normalize(8) : normalize(12),
     textAlignVertical: 'center',
-    lineHeight: 15,
+    lineHeight: Platform.isPad ? -20 : 15,
   },
   sendButoonContainer: {
     // height: '100%',

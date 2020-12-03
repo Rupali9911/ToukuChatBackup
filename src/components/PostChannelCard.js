@@ -8,6 +8,7 @@ import {
   StyleSheet,
   RefreshControl,
   Dimensions,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {translate} from '../redux/reducers/languageReducer';
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   gridView: {flex: 1, margin: 5, marginBottom: 5},
-  gridImageView: {height: 175},
+  gridImageView: {height: Platform.isPad ? 350 : 175},
   gridImageText: {
     width: '100%',
     color: 'white',
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.light,
   },
   squareImage: {
-    height: 175,
+    height: Platform.isPad ? 350 : 175,
     alignItems: 'center',
     justifyContent: 'center',
   },

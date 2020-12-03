@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, Platform} from 'react-native';
 import {connect} from 'react-redux';
 import {Badge} from 'react-native-paper';
 
@@ -67,7 +67,7 @@ class BottomTabItem extends Component {
               {
                 color: titleColor || Colors.white,
                 paddingTop: 5,
-                fontSize: normalize(10),
+                fontSize: Platform.isPad ? normalize(6) : normalize(10),
               },
             ]}>
             {title}

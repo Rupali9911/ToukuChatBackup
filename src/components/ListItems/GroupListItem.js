@@ -1,5 +1,12 @@
 import React, {Component, Fragment} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -118,12 +125,19 @@ export default class GroupListItem extends Component {
       <Fragment>
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={!isVisible?onPress:()=>{
-            this.manageRecord(item, !newItem.isCheck?'check':'unCheck');
-          }}
+          onPress={
+            !isVisible
+              ? onPress
+              : () => {
+                  this.manageRecord(
+                    item,
+                    !newItem.isCheck ? 'check' : 'unCheck',
+                  );
+                }
+          }
           style={styles.container}
           // disabled={isVisible}
-          >
+        >
           <View style={styles.firstView}>
             {isVisible && newItem.isCheck === false ? (
               <TouchableOpacity
@@ -202,7 +216,7 @@ export default class GroupListItem extends Component {
                     {
                       color: Colors.message_gray,
                       textAlign: 'left',
-                      fontSize: normalize(11.5),
+                      fontSize: Platform.isPad ? normalize(7) : normalize(11.5),
                       fontWeight: '400',
                     },
                   ]}>

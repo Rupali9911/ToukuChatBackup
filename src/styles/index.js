@@ -1,5 +1,6 @@
 import {StyleSheet, Platform} from 'react-native';
 import {Fonts, Colors} from '../constants';
+import {normalize} from '../utils';
 
 export const globalStyles = StyleSheet.create({
   container: {
@@ -75,7 +76,7 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
   },
   smallNunitoRegularFW300Text: {
-    fontSize: 15,
+    fontSize: Platform.isPad ? normalize(8) : 15,
     fontFamily: Fonts.nunitoSansRegular,
     color: Colors.white,
     textAlign: 'center',
@@ -94,7 +95,7 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
   },
   normalRegularText15: {
-    fontSize: 15,
+    fontSize: Platform.isPad ? 20 : 15,
     fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
@@ -154,8 +155,8 @@ export const globalStyles = StyleSheet.create({
   },
 
   smallIcon: {
-    width: 18,
-    height: 18,
+    width: Platform.isPad ? 23 : 18,
+    height: Platform.isPad ? 23 : 18,
     resizeMode: 'contain',
   },
 

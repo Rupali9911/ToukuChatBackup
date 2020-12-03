@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
 import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    ScrollView,
-    ImageBackground,
-    SafeAreaView,
-    NativeModules,
-    Platform, TextInput, ActivityIndicator,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  ImageBackground,
+  SafeAreaView,
+  NativeModules,
+  Platform,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
@@ -61,13 +63,13 @@ class LoginSignUp extends Component {
       orientation: 'PORTRAIT',
       pushData: [],
       loggedIn: false,
-      showSNS: false
+      showSNS: false,
     };
   }
 
   onSignUpPress() {
     this.props.navigation.navigate('SignUp', {
-        showEmail: true,
+      showEmail: true,
       pageNumber: 0,
       isSocial: false,
     });
@@ -124,7 +126,7 @@ class LoginSignUp extends Component {
     });
   }
   firebaseGoogleLogin = async () => {
-      this.setState({isLoading: true})
+    this.setState({isLoading: true});
     let fcmToken = await AsyncStorage.getItem('fcmToken');
     try {
       await GoogleSignin.hasPlayServices();
@@ -142,84 +144,88 @@ class LoginSignUp extends Component {
         site_from: 'touku',
         dev_id: fcmToken ? fcmToken : '',
       };
-      this.props.googleRegister(googleLoginData).then(async (res) => {
-          this.setState({isLoading: false})
-        console.log('JWT TOKEN=> ', JSON.stringify(res));
-        if (res.token) {
-          let status = res.status;
-          let isEmail = res.email_required;
-          if (!status) {
-            if (isEmail) {
-              this.props.navigation.navigate('SignUp', {
+      this.props
+        .googleRegister(googleLoginData)
+        .then(async (res) => {
+          this.setState({isLoading: false});
+          console.log('JWT TOKEN=> ', JSON.stringify(res));
+          if (res.token) {
+            let status = res.status;
+            let isEmail = res.email_required;
+            if (!status) {
+              if (isEmail) {
+                this.props.navigation.navigate('SignUp', {
                   showEmail: true,
+                  isSocial: true,
+                });
+                return;
+              }
+              this.props.navigation.navigate('SignUp', {
+                showEmail: false,
                 isSocial: true,
               });
               return;
             }
-            this.props.navigation.navigate('SignUp', {
-                showEmail: false,
-              isSocial: true,
-            });
+            await AsyncStorage.setItem('userToken', res.token);
+            await AsyncStorage.removeItem('socialToken');
+            this.props.navigation.navigate('App');
             return;
           }
-          await AsyncStorage.setItem('userToken', res.token);
-          await AsyncStorage.removeItem('socialToken');
-          this.props.navigation.navigate('App');
-          return;
-        }
-        if (res.error) {
-          Toast.show({
-            title: 'Login Failed',
-            text: translate(res.error.toString()),
-            type: 'primary',
-          });
-        }
-      }) .catch((err) => {
-          this.setState({isLoading: false})
-          if (err.response) {
-             // console.log(err.response)
-              if (err.response.data) {
-                  Toast.show({
-                      title: 'Login Failed',
-                      text: translate(err.response.data.toString()),
-                      type: 'primary',});
-              }
+          if (res.error) {
+            Toast.show({
+              title: 'Login Failed',
+              text: translate(res.error.toString()),
+              type: 'primary',
+            });
           }
-      });
+        })
+        .catch((err) => {
+          this.setState({isLoading: false});
+          if (err.response) {
+            // console.log(err.response)
+            if (err.response.data) {
+              Toast.show({
+                title: 'Login Failed',
+                text: translate(err.response.data.toString()),
+                type: 'primary',
+              });
+            }
+          }
+        });
     } catch (error) {
-        this.setState({isLoading: false})
-        //alert(error);
-        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-            // alert('user cancelled the login flow');
-        } else if (error.code === statusCodes.IN_PROGRESS) {
-            // alert('operation (f.e. sign in) is in progress already');
-            Toast.show({
-                title: translate('common.loginFailed'),
-                text: 'operation (f.e. sign in) is in progress already',
-                type: 'primary',
-            });
-        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-            // alert('play services not available or outdated');
-            Toast.show({
-                title: translate('common.loginFailed'),
-                text: 'play services not available or outdated',
-                type: 'primary',
-            });
-        } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-            // alert('play services not available or outdated');
-            Toast.show({
-                title: translate('common.loginFailed'),
-                text: 'play services not available or outdated',
-                type: 'primary',
-            });
-        } else {
-            // alert('some other error happened');
-            Toast.show({
-                title: translate('common.loginFailed'),
-                text: 'Error occured while signin',
-                type: 'primary',
-            });
-        }
+      this.setState({isLoading: false});
+      //alert(error);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // alert('user cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // alert('operation (f.e. sign in) is in progress already');
+        Toast.show({
+          title: translate('common.loginFailed'),
+          text: 'operation (f.e. sign in) is in progress already',
+          type: 'primary',
+        });
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // alert('play services not available or outdated');
+        Toast.show({
+          title: translate('common.loginFailed'),
+          text: 'play services not available or outdated',
+          type: 'primary',
+        });
+      } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        // alert('play services not available or outdated');
+        Toast.show({
+          title: translate('common.loginFailed'),
+          text: 'play services not available or outdated',
+          type: 'primary',
+        });
+      } else {
+        // alert('some other error happened');
+        Toast.show({
+          title: translate('common.loginFailed'),
+          text: 'Error occured while signin',
+          type: 'primary',
+        });
+      }
     }
   };
 
@@ -250,7 +256,7 @@ class LoginSignUp extends Component {
     auth()
       .signInWithCredential(facebookCredential)
       .then((res) => {
-          this.setState({isLoading: true})
+        this.setState({isLoading: true});
         console.log('Facebook response', JSON.stringify(res));
         const facebookLoginData = {
           access_token: data.accessToken,
@@ -264,59 +270,63 @@ class LoginSignUp extends Component {
           'LoginSignUp -> firebaseFacebookLogin -> facebookLoginData',
           facebookLoginData,
         );
-        this.props.facebookRegister(facebookLoginData).then(async (res) => {
-            this.setState({isLoading: false})
-          console.log('JWT TOKEN=> ', JSON.stringify(res));
-          if (res.token) {
-            let status = res.status;
-            let isEmail = res.email_required;
-            if (!status) {
+        this.props
+          .facebookRegister(facebookLoginData)
+          .then(async (res) => {
+            this.setState({isLoading: false});
+            console.log('JWT TOKEN=> ', JSON.stringify(res));
+            if (res.token) {
+              let status = res.status;
+              let isEmail = res.email_required;
+              if (!status) {
                 if (isEmail) {
-                    this.props.navigation.navigate('SignUp', {
-                        showEmail: true,
-                        isSocial: true,
-                    });
-                    return;
+                  this.props.navigation.navigate('SignUp', {
+                    showEmail: true,
+                    isSocial: true,
+                  });
+                  return;
                 }
                 this.props.navigation.navigate('SignUp', {
-                    showEmail: false,
-                    isSocial: true,
+                  showEmail: false,
+                  isSocial: true,
                 });
                 return;
+              }
+              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.removeItem('socialToken');
+              this.props.navigation.navigate('App');
+              return;
             }
-            await AsyncStorage.setItem('userToken', res.token);
-            await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('App');
-            return;
-          }
-          if (res.error) {
-            Toast.show({
-              title: 'Login Failed',
-              text: translate(res.error.toString()),
-              type: 'primary',
-            });
-          }
-        }).catch((err) => {
-            this.setState({isLoading: false})
-            if (err.response) {
-                console.log(err.response)
-                if (err.response.data) {
-                    Toast.show({
-                        title: 'Login Failed',
-                        text: translate(err.response.data.toString()),
-                        type: 'primary',});
-                }
-            }
-        });
-      })
-        .catch((err) => {
-            this.setState({isLoading: false})
-            Toast.show({
-                title: translate('common.loginFailed'),
-                text: err,
+            if (res.error) {
+              Toast.show({
+                title: 'Login Failed',
+                text: translate(res.error.toString()),
                 type: 'primary',
-            });
+              });
+            }
+          })
+          .catch((err) => {
+            this.setState({isLoading: false});
+            if (err.response) {
+              console.log(err.response);
+              if (err.response.data) {
+                Toast.show({
+                  title: 'Login Failed',
+                  text: translate(err.response.data.toString()),
+                  type: 'primary',
+                });
+              }
+            }
+          });
+      })
+      .catch((err) => {
+        this.setState({isLoading: false});
+        Toast.show({
+          title: translate('common.loginFailed'),
+          text: err,
+          type: 'primary',
         });
+      });
   }
 
   async firebaseTwitterLogin() {
@@ -345,7 +355,7 @@ class LoginSignUp extends Component {
     auth()
       .signInWithCredential(twitterCredential)
       .then((res) => {
-          this.setState({isLoading: true})
+        this.setState({isLoading: true});
         console.log('twitter response data==> ', JSON.stringify(res));
         const twitterLoginData = {
           access_token: authToken,
@@ -356,59 +366,63 @@ class LoginSignUp extends Component {
           username: userName,
         };
         console.log('twitterLoginData==> ', twitterLoginData);
-        this.props.twitterRegister(twitterLoginData).then(async (res) => {
-            this.setState({isLoading: false})
-          console.log('JWT TOKEN=> ', JSON.stringify(res));
-          if (res.token) {
-            let status = res.status;
-            let isEmail = res.email_required;
-            if (!status) {
+        this.props
+          .twitterRegister(twitterLoginData)
+          .then(async (res) => {
+            this.setState({isLoading: false});
+            console.log('JWT TOKEN=> ', JSON.stringify(res));
+            if (res.token) {
+              let status = res.status;
+              let isEmail = res.email_required;
+              if (!status) {
                 if (isEmail) {
-                    this.props.navigation.navigate('SignUp', {
-                        showEmail: true,
-                        isSocial: true,
-                    });
-                    return;
+                  this.props.navigation.navigate('SignUp', {
+                    showEmail: true,
+                    isSocial: true,
+                  });
+                  return;
                 }
                 this.props.navigation.navigate('SignUp', {
-                    showEmail: false,
-                    isSocial: true,
+                  showEmail: false,
+                  isSocial: true,
                 });
                 return;
+              }
+              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.removeItem('socialToken');
+              this.props.navigation.navigate('App');
+              return;
             }
-            await AsyncStorage.setItem('userToken', res.token);
-            await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('App');
-            return;
-          }
-          if (res.error) {
-            Toast.show({
-              title: 'Login Failed',
-              text: translate(res.error.toString()),
-              type: 'primary',
-            });
-          }
-        }) .catch((err) => {
-            this.setState({isLoading: false})
-            if (err.response) {
-                console.log(err.response)
-                if (err.response.data) {
-                    Toast.show({
-                        title: 'Login Failed',
-                        text: translate(err.response.data.toString()),
-                        type: 'primary',});
-                }
-            }
-        });
-      })
-        .catch((err) => {
-            this.setState({isLoading: false})
-            Toast.show({
-                title: translate('common.loginFailed'),
-                text: err,
+            if (res.error) {
+              Toast.show({
+                title: 'Login Failed',
+                text: translate(res.error.toString()),
                 type: 'primary',
-            });
-        })
+              });
+            }
+          })
+          .catch((err) => {
+            this.setState({isLoading: false});
+            if (err.response) {
+              console.log(err.response);
+              if (err.response.data) {
+                Toast.show({
+                  title: 'Login Failed',
+                  text: translate(err.response.data.toString()),
+                  type: 'primary',
+                });
+              }
+            }
+          });
+      })
+      .catch((err) => {
+        this.setState({isLoading: false});
+        Toast.show({
+          title: translate('common.loginFailed'),
+          text: err,
+          type: 'primary',
+        });
+      });
   }
 
   async firebaseLineLogin() {
@@ -420,7 +434,7 @@ class LoginSignUp extends Component {
 
       LineLogin.loginWithPermissions(arrPermissions)
         .then((user) => {
-            this.setState({isLoading: true})
+          this.setState({isLoading: true});
           console.log(user);
           const lineLoginData = {
             email: user.idToken.email,
@@ -433,64 +447,68 @@ class LoginSignUp extends Component {
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
             lineLoginData,
           );
-          this.props.lineRegister(lineLoginData).then(async (res) => {
-              this.setState({isLoading: false})
-            console.log('JWT TOKEN=> ', JSON.stringify(res));
-            if (res.token) {
-              let status = res.status;
-              let isEmail = res.email_required;
-              if (!status) {
+          this.props
+            .lineRegister(lineLoginData)
+            .then(async (res) => {
+              this.setState({isLoading: false});
+              console.log('JWT TOKEN=> ', JSON.stringify(res));
+              if (res.token) {
+                let status = res.status;
+                let isEmail = res.email_required;
+                if (!status) {
                   if (isEmail) {
-                      this.props.navigation.navigate('SignUp', {
-                          showEmail: true,
-                          isSocial: true,
-                      });
-                      return;
+                    this.props.navigation.navigate('SignUp', {
+                      showEmail: true,
+                      isSocial: true,
+                    });
+                    return;
                   }
                   this.props.navigation.navigate('SignUp', {
-                      showEmail: false,
-                      isSocial: true,
+                    showEmail: false,
+                    isSocial: true,
                   });
                   return;
+                }
+                await AsyncStorage.setItem('userToken', res.token);
+                await AsyncStorage.removeItem('socialToken');
+                this.props.navigation.navigate('App');
+                return;
               }
-              await AsyncStorage.setItem('userToken', res.token);
-              await AsyncStorage.removeItem('socialToken');
-              this.props.navigation.navigate('App');
-              return;
-            }
-            if (res.error) {
-              Toast.show({
-                title: 'Login Failed',
-                text: translate(res.error.toString()),
-                type: 'primary',
-              });
-            }
-          }) .catch((err) => {
-              this.setState({isLoading: false})
+              if (res.error) {
+                Toast.show({
+                  title: 'Login Failed',
+                  text: translate(res.error.toString()),
+                  type: 'primary',
+                });
+              }
+            })
+            .catch((err) => {
+              this.setState({isLoading: false});
               if (err.response) {
-                  console.log(err.response)
-                  if (err.response.data) {
-                      Toast.show({
-                          title: 'Login Failed',
-                          text: translate(err.response.data.toString()),
-                          type: 'primary',});
-                  }
+                console.log(err.response);
+                if (err.response.data) {
+                  Toast.show({
+                    title: 'Login Failed',
+                    text: translate(err.response.data.toString()),
+                    type: 'primary',
+                  });
+                }
               }
-          });
+            });
         })
-          .catch((err) => {
-              this.setState({isLoading: false})
-              // Toast.show({
-              //     title: translate('common.loginFailed'),
-              //     text: err,
-              //     type: 'primary',
-              // });
-              console.log(err);
-          });
+        .catch((err) => {
+          this.setState({isLoading: false});
+          // Toast.show({
+          //     title: translate('common.loginFailed'),
+          //     text: err,
+          //     type: 'primary',
+          // });
+          console.log(err);
+        });
     } else {
       LineLogin.login()
         .then((user) => {
-            this.setState({isLoading: true})
+          this.setState({isLoading: true});
           console.log(user);
           const lineLoginData = {
             code: '',
@@ -502,25 +520,102 @@ class LoginSignUp extends Component {
             'LoginSignUp -> firebaseLineLogin -> lineLoginData',
             lineLoginData,
           );
-          this.props.lineRegister(lineLoginData).then(async (res) => {
-              this.setState({isLoading: false})
+          this.props
+            .lineRegister(lineLoginData)
+            .then(async (res) => {
+              this.setState({isLoading: false});
+              console.log('JWT TOKEN=> ', JSON.stringify(res));
+              if (res.token) {
+                let status = res.status;
+                let isEmail = res.email_required;
+                if (!status) {
+                  if (isEmail) {
+                    this.props.navigation.navigate('SignUp', {
+                      showEmail: true,
+                      isSocial: true,
+                    });
+                    return;
+                  }
+                  this.props.navigation.navigate('SignUp', {
+                    showEmail: false,
+                    isSocial: true,
+                  });
+                  return;
+                }
+                await AsyncStorage.setItem('userToken', res.token);
+                await AsyncStorage.removeItem('socialToken');
+                this.props.navigation.navigate('App');
+                return;
+              }
+              if (res.error) {
+                Toast.show({
+                  title: 'Login Failed',
+                  text: translate(res.error.toString()),
+                  type: 'primary',
+                });
+              }
+            })
+            .catch((err) => {
+              this.setState({isLoading: false});
+              if (err.response) {
+                console.log(err.response);
+                if (err.response.data) {
+                  Toast.show({
+                    title: 'Login Failed',
+                    text: translate(err.response.data.toString()),
+                    type: 'primary',
+                  });
+                }
+              }
+            });
+        })
+        .catch((err) => {
+          this.setState({isLoading: false});
+          console.log(err);
+          //   Toast.show({
+          //       title: translate('common.loginFailed'),
+          //       text: err,
+          //       type: 'primary',
+          //   });
+        });
+    }
+  }
+
+  async kakaoLogin() {
+    console.log('kakaoLogin');
+    let fcmToken = await AsyncStorage.getItem('fcmToken');
+    KakaoLogins.login()
+      .then((result) => {
+        this.setState({isLoading: true});
+        console.log('result kakaoLogin', result);
+        const kakaoLoginData = {
+          code: '',
+          access_token: result.accessToken,
+          dev_id: fcmToken ? fcmToken : '',
+          site_from: 'touku',
+        };
+        console.log('kakao request', kakaoLoginData);
+        this.props
+          .kakaoRegister(kakaoLoginData)
+          .then(async (res) => {
+            this.setState({isLoading: false});
             console.log('JWT TOKEN=> ', JSON.stringify(res));
             if (res.token) {
               let status = res.status;
               let isEmail = res.email_required;
               if (!status) {
-                  if (isEmail) {
-                      this.props.navigation.navigate('SignUp', {
-                          showEmail: true,
-                          isSocial: true,
-                      });
-                      return;
-                  }
+                if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
-                      showEmail: false,
-                      isSocial: true,
+                    showEmail: true,
+                    isSocial: true,
                   });
                   return;
+                }
+                this.props.navigation.navigate('SignUp', {
+                  showEmail: false,
+                  isSocial: true,
+                });
+                return;
               }
               await AsyncStorage.setItem('userToken', res.token);
               await AsyncStorage.removeItem('socialToken');
@@ -534,108 +629,38 @@ class LoginSignUp extends Component {
                 type: 'primary',
               });
             }
-          }).catch((err) => {
-              this.setState({isLoading: false})
-              if (err.response) {
-                  console.log(err.response)
-                  if (err.response.data) {
-                      Toast.show({
-                          title: 'Login Failed',
-                          text: translate(err.response.data.toString()),
-                          type: 'primary',});
-                  }
-              }
-          });
-        })
+          })
           .catch((err) => {
-              this.setState({isLoading: false})
-              console.log(err);
-              //   Toast.show({
-              //       title: translate('common.loginFailed'),
-              //       text: err,
-              //       type: 'primary',
-              //   });
-          });
-    }
-  }
-
-  async kakaoLogin() {
-    console.log('kakaoLogin');
-    let fcmToken = await AsyncStorage.getItem('fcmToken');
-    KakaoLogins.login()
-      .then((result) => {
-          this.setState({isLoading: true})
-        console.log('result kakaoLogin', result);
-        const kakaoLoginData = {
-          code: '',
-          access_token: result.accessToken,
-          dev_id: fcmToken ? fcmToken : '',
-          site_from: 'touku',
-        };
-        console.log('kakao request', kakaoLoginData);
-        this.props.kakaoRegister(kakaoLoginData).then(async (res) => {
-            this.setState({isLoading: false})
-          console.log('JWT TOKEN=> ', JSON.stringify(res));
-          if (res.token) {
-            let status = res.status;
-            let isEmail = res.email_required;
-            if (!status) {
-                if (isEmail) {
-                    this.props.navigation.navigate('SignUp', {
-                        showEmail: true,
-                        isSocial: true,
-                    });
-                    return;
-                }
-                this.props.navigation.navigate('SignUp', {
-                    showEmail: false,
-                    isSocial: true,
-                });
-                return;
-            }
-            await AsyncStorage.setItem('userToken', res.token);
-            await AsyncStorage.removeItem('socialToken');
-            this.props.navigation.navigate('App');
-            return;
-          }
-          if (res.error) {
-            Toast.show({
-              title: 'Login Failed',
-              text: translate(res.error.toString()),
-              type: 'primary',
-            });
-          }
-        }).catch((err) => {
-            this.setState({isLoading: false})
+            this.setState({isLoading: false});
             if (err.response) {
-                console.log(err.response)
-                if (err.response.data) {
-                    Toast.show({
-                        title: 'Login Failed',
-                        text: translate(err.response.data.toString()),
-                        type: 'primary',});
-                }
-            }
-        });
-      })
-        .catch((err) => {
-            this.setState({isLoading: false})
-            console.log('Error kakaoLogin', err);
-            if (err.code === 'E_CANCELLED_OPERATION') {
-                //logCallback(`Login Cancelled:${err.message}`, setLoginLoading(false));
-            } else {
-                // logCallback(
-                //     `Login Failed:${err.code} ${err.message}`,
-                //     setLoginLoading(false),
-                // );
+              console.log(err.response);
+              if (err.response.data) {
                 Toast.show({
-                    title: translate('common.loginFailed'),
-                    text: err.message,
-                    type: 'primary',
+                  title: 'Login Failed',
+                  text: translate(err.response.data.toString()),
+                  type: 'primary',
                 });
-
+              }
             }
-        });
+          });
+      })
+      .catch((err) => {
+        this.setState({isLoading: false});
+        console.log('Error kakaoLogin', err);
+        if (err.code === 'E_CANCELLED_OPERATION') {
+          //logCallback(`Login Cancelled:${err.message}`, setLoginLoading(false));
+        } else {
+          // logCallback(
+          //     `Login Failed:${err.code} ${err.message}`,
+          //     setLoginLoading(false),
+          // );
+          Toast.show({
+            title: translate('common.loginFailed'),
+            text: err.message,
+            type: 'primary',
+          });
+        }
+      });
   }
 
   appleLogin() {
@@ -686,18 +711,18 @@ class LoginSignUp extends Component {
           let status = res.status;
           let isEmail = res.email_required;
           if (!status) {
-              if (isEmail) {
-                  this.props.navigation.navigate('SignUp', {
-                      showEmail: true,
-                      isSocial: true,
-                  });
-                  return;
-              }
+            if (isEmail) {
               this.props.navigation.navigate('SignUp', {
-                  showEmail: false,
-                  isSocial: true,
+                showEmail: true,
+                isSocial: true,
               });
               return;
+            }
+            this.props.navigation.navigate('SignUp', {
+              showEmail: false,
+              isSocial: true,
+            });
+            return;
           }
           await AsyncStorage.setItem('userToken', res.token);
           await AsyncStorage.removeItem('socialToken');
@@ -771,7 +796,7 @@ class LoginSignUp extends Component {
                         ? globalStyles.normalLightText
                         : globalStyles.smallLightText,
                       {
-                        marginEnd: 10
+                        marginEnd: 10,
                       },
                     ]}>
                     {translate('pages.welcome.theWorldIsConnected')}
@@ -781,9 +806,9 @@ class LoginSignUp extends Component {
                       selectedLanguageItem.language_name === 'ja'
                         ? globalStyles.normalLightText
                         : globalStyles.smallLightText,
-                        {
-                          marginTop:-1
-                        }
+                      {
+                        marginTop: -1,
+                      },
                     ]}>
                     {translate('pages.welcome.connectedByTouku')}
                   </Text>
@@ -855,59 +880,69 @@ class LoginSignUp extends Component {
                     IconSrc={Icons.icon_kakao}
                     onPress={() => this.kakaoLogin()}
                   />
-                    {Platform.OS === 'ios' &&
+                  {Platform.OS === 'ios' && (
                     <SocialLogin
-                        IconSrc={Icons.icon_apple_logo}
-                        onPress={() => this.appleLogin()}
+                      IconSrc={Icons.icon_apple_logo}
+                      onPress={() => this.appleLogin()}
                     />
-                    }
+                  )}
                 </View>
                 {/*{Platform.OS === 'ios' && (*/}
-                  {/*<View style={{alignSelf: 'center', width: '80%'}}>*/}
-                    {/*<Text*/}
-                      {/*style={*/}
-                        {/*selectedLanguageItem.language_name === 'ja'*/}
-                          {/*? [globalStyles.normalLightText, {marginTop: 10}]*/}
-                          {/*: [*/}
-                              {/*globalStyles.smallLightText,*/}
-                              {/*{marginTop: 10, fontSize: 14},*/}
-                            {/*]*/}
-                      {/*}>*/}
-                      {/*{translate('common.or')}*/}
-                    {/*</Text>*/}
-                    {/*<TouchableOpacity*/}
-                      {/*onPress={() => this.appleLogin()}*/}
-                      {/*style={{*/}
-                        {/*marginTop: 10,*/}
-                        {/*marginBottom: 10,*/}
-                        {/*backgroundColor: 'white',*/}
-                        {/*height: 48,*/}
-                        {/*borderRadius: 10,*/}
-                        {/*alignItems: 'center',*/}
-                        {/*justifyContent: 'center',*/}
-                      {/*}}>*/}
-                      {/*<View style={{flexDirection: 'row'}}>*/}
-                        {/*<FontAwesome*/}
-                          {/*name={'apple'}*/}
-                          {/*size={20}*/}
-                          {/*color={Colors.black}*/}
-                          {/*style={{alignSelf: 'center'}}*/}
-                        {/*/>*/}
-                          {/*<View pointerEvents="none">*/}
-                              {/*<TextInput*/}
-                          {/*style={globalStyles.normalRegularText17}>*/}
-                          {/*{translate('common.continueWithApple')}*/}
-                              {/*</TextInput>*/}
-                          {/*</View>*/}
-                      {/*</View>*/}
-                    {/*</TouchableOpacity>*/}
-                  {/*</View>*/}
+                {/*<View style={{alignSelf: 'center', width: '80%'}}>*/}
+                {/*<Text*/}
+                {/*style={*/}
+                {/*selectedLanguageItem.language_name === 'ja'*/}
+                {/*? [globalStyles.normalLightText, {marginTop: 10}]*/}
+                {/*: [*/}
+                {/*globalStyles.smallLightText,*/}
+                {/*{marginTop: 10, fontSize: 14},*/}
+                {/*]*/}
+                {/*}>*/}
+                {/*{translate('common.or')}*/}
+                {/*</Text>*/}
+                {/*<TouchableOpacity*/}
+                {/*onPress={() => this.appleLogin()}*/}
+                {/*style={{*/}
+                {/*marginTop: 10,*/}
+                {/*marginBottom: 10,*/}
+                {/*backgroundColor: 'white',*/}
+                {/*height: 48,*/}
+                {/*borderRadius: 10,*/}
+                {/*alignItems: 'center',*/}
+                {/*justifyContent: 'center',*/}
+                {/*}}>*/}
+                {/*<View style={{flexDirection: 'row'}}>*/}
+                {/*<FontAwesome*/}
+                {/*name={'apple'}*/}
+                {/*size={20}*/}
+                {/*color={Colors.black}*/}
+                {/*style={{alignSelf: 'center'}}*/}
+                {/*/>*/}
+                {/*<View pointerEvents="none">*/}
+                {/*<TextInput*/}
+                {/*style={globalStyles.normalRegularText17}>*/}
+                {/*{translate('common.continueWithApple')}*/}
+                {/*</TextInput>*/}
+                {/*</View>*/}
+                {/*</View>*/}
+                {/*</TouchableOpacity>*/}
+                {/*</View>*/}
                 {/*)}*/}
               </View>
             </View>
-              {isLoading && (
-                  <ActivityIndicator size="large" color="white" style={{position: 'absolute',top: 0, left: 0, right: 0, bottom: 0}} />
-              )}
+            {isLoading && (
+              <ActivityIndicator
+                size="large"
+                color="white"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                }}
+              />
+            )}
             <LanguageSelector />
           </ScrollView>
         </SafeAreaView>

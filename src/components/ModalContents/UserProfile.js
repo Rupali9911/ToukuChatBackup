@@ -88,7 +88,7 @@ class UserProfile extends Component {
           profileImagePath: source,
         });
 
-        const imageFile = await resizeImage(response.uri,360,360);
+        const imageFile = await resizeImage(response.uri, 360, 360);
 
         const userAndSocialToken = await AsyncStorage.multiGet([
           'userToken',
@@ -196,8 +196,7 @@ class UserProfile extends Component {
                 {backgroundImagePath.uri != '' ? (
                   <ImageLoader
                     style={styles.firstView}
-                    source={getImage(backgroundImagePath.uri)}
-                    >
+                    source={getImage(backgroundImagePath.uri)}>
                     <TouchableOpacity
                       style={{padding: 10}}
                       onPress={onRequestClose}>
@@ -430,7 +429,7 @@ const ProfileItem = (props) => {
             globalStyles.smallRegularText,
             styles.textNormal,
             {
-              fontSize: normalize(13),
+              fontSize: Platform.isPad ? normalize(8) : normalize(13),
               fontFamily: Fonts.nunitoSansJPLight,
               color: 'rgba(87,132,178,1)',
             },

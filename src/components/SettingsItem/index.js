@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Clipboard,
   StatusBar,
+  Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {globalStyles} from '../../styles';
@@ -163,14 +164,19 @@ class SettingsItem extends Component {
         return (
           <Image
             source={isImage}
-            style={{width: 20, height: 20}}
+            style={{
+              width: Platform.isPad ? 25 : 20,
+              height: Platform.isPad ? 25 : 20,
+            }}
             resizeMode={'cover'}
           />
         );
       } else if (isFontAwesome) {
-        return <FontAwesome name={icon_name} size={17} />;
+        return <FontAwesome name={icon_name} size={Platform.isPad ? 25 : 17} />;
       } else {
-        return <FontAwesome5 name={icon_name} size={17} />;
+        return (
+          <FontAwesome5 name={icon_name} size={Platform.isPad ? 25 : 17} />
+        );
       }
     };
 
@@ -199,7 +205,11 @@ class SettingsItem extends Component {
             <Text
               style={[
                 globalStyles.smallNunitoRegularFW300Text,
-                {color: Colors.black, fontWeight: '300'},
+                {
+                  color: Colors.black,
+                  fontWeight: '300',
+                  marginLeft: Platform.isPad && 25,
+                },
               ]}>
               {title}
             </Text>
@@ -248,7 +258,11 @@ class SettingsItem extends Component {
                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 onPress={() => this.copyCode()}>
                 <Image
-                  style={{marginEnd: 10, height: 13, width: 13}}
+                  style={{
+                    marginEnd: 10,
+                    height: Platform.isPad ? 20 : 13,
+                    width: Platform.isPad ? 20 : 13,
+                  }}
                   source={Icons.icon_copy}
                 />
               </TouchableOpacity>
@@ -256,7 +270,10 @@ class SettingsItem extends Component {
                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 onPress={() => this.showQR()}>
                 <Image
-                  style={{height: 13, width: 13}}
+                  style={{
+                    height: Platform.isPad ? 20 : 13,
+                    width: Platform.isPad ? 20 : 13,
+                  }}
                   source={Icons.icon_download}
                 />
               </TouchableOpacity>
@@ -318,7 +335,7 @@ const styles = StyleSheet.create({
   txtInvitation: {
     fontFamily: Fonts.regular,
     color: Colors.black,
-    fontSize: 13,
+    fontSize: Platform.isPad ? normalize(6.5) : 13,
     fontWeight: '300',
     marginEnd: 10,
   },

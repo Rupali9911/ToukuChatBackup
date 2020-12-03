@@ -112,7 +112,11 @@ export default class ChatHeader extends Component {
                       numberOfLines={1}
                       style={[
                         globalStyles.normalRegularText15,
-                        {fontSize: normalize(12)},
+                        {
+                          fontSize: Platform.isPad
+                            ? normalize(7.5)
+                            : normalize(12),
+                        },
                       ]}>
                       {title}
                     </Text>
@@ -120,12 +124,12 @@ export default class ChatHeader extends Component {
                 </View>
               ) : (
                 <View style={styles.subContainer}>
-                  {image != null && image != '' && typeof image != undefined ? (
+                  {image == null && image == '' && typeof image == undefined ? (
                     <View style={{marginHorizontal: 10}}>
                       <RoundedImage
                         source={getAvatar(image)}
                         isRounded={false}
-                        size={40}
+                        size={Platform.isPad ? 50 : 40}
                       />
                     </View>
                   ) : (
@@ -158,7 +162,11 @@ export default class ChatHeader extends Component {
                       numberOfLines={1}
                       style={[
                         globalStyles.normalRegularText15,
-                        {fontSize: normalize(12)},
+                        {
+                          fontSize: Platform.isPad
+                            ? normalize(8.5)
+                            : normalize(12),
+                        },
                       ]}>
                       {title}
                     </Text>
@@ -166,7 +174,11 @@ export default class ChatHeader extends Component {
                       numberOfLines={1}
                       style={[
                         globalStyles.smallRegularText,
-                        {fontSize: normalize(10)},
+                        {
+                          fontSize: Platform.isPad
+                            ? normalize(5.5)
+                            : normalize(10),
+                        },
                       ]}>
                       {description}
                     </Text>
@@ -202,7 +214,8 @@ export default class ChatHeader extends Component {
                                 size={18}
                                 color={Colors.black}
                               />
-                            ) : item.icon === 'sticky-note' || item.icon === 'id-card' ? (
+                            ) : item.icon === 'sticky-note' ||
+                              item.icon === 'id-card' ? (
                               <FontAwesome
                                 name={item.icon}
                                 size={16}
@@ -274,8 +287,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   squareImage: {
-    width: 40,
-    height: 40,
+    width: Platform.isPad ? 50 : 40,
+    height: Platform.isPad ? 50 : 40,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 10,

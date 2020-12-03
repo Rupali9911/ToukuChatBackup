@@ -1,8 +1,8 @@
-import { client, userAgent } from '../../helpers/api';
+import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
-import Toast from "../../components/Toast";
-import {translate} from "./languageReducer";
+import Toast from '../../components/Toast';
+import {translate} from './languageReducer';
 
 export const GET_LOGIN_REQUEST = 'GET_LOGIN_REQUEST';
 export const GET_LOGIN_SUCCESS = 'GET_LOGIN_SUCCESS';
@@ -53,10 +53,10 @@ const getLoginFailure = () => ({
 //Login User
 export const userLogin = (user) => (dispatch) =>
   new Promise(function (resolve, reject) {
-      console.log('User Login request', user)
+    console.log('User Login request', user);
     dispatch(getLoginRequest());
     client
-      .post(`/jwt/api-token-auth-xana/`, user)
+      .post(`/xchat/api-token-auth-touku/`, user)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);
@@ -68,24 +68,30 @@ export const userLogin = (user) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getLoginFailure());
-          if (err.response) {
-              if (err.response.data) {
-                  if (err.response.data.indexOf('Server Error') > -1){
-                      Toast.show({
-                          title: 'Login Failed',
-                          text: translate('common.somethingWentWrong'),
-                          type: 'primary',
-                      });
-                  } else{
-                      Toast.show({
-                          title: 'Login Failed',
-                          text: translate(err.response.data.toString()),
-                          type: 'primary',
-                      });
-                  }
-
-              }
+        if (err.response) {
+          if (err.response.data) {
+            console.log('err.response.data', err.response.data);
+            if (err.response.data.email) {
+              Toast.show({
+                title: translate('common.loginFailed'),
+                text: translate(err.response.data.email),
+                type: 'primary',
+              });
+            } else if (err.response.data.indexOf('Server Error') > -1) {
+              Toast.show({
+                title: translate('common.loginFailed'),
+                text: translate('common.somethingWentWrong'),
+                type: 'primary',
+              });
+            } else {
+              Toast.show({
+                title: translate('common.loginFailed'),
+                text: translate(err.response.data.toString()),
+                type: 'primary',
+              });
+            }
           }
+        }
       });
   });
 
@@ -93,7 +99,7 @@ export const getSNSCheck = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     axios
       .get('https://api.angelium.net/api/native-urls/?module=native_app', {
-        headers: { 'User-Agent': userAgent },
+        headers: {'User-Agent': userAgent},
       })
       .then((response) => {
         if (response.data.url) {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Colors, Fonts } from '../constants';
-import { translate } from '../redux/reducers/languageReducer';
+import {Colors, Fonts} from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
+import {normalize} from '../utils';
 
-const { width, height } = Dimensions.get('window');
-
+const {width, height} = Dimensions.get('window');
 
 export default class TabBar extends Component {
   constructor(props) {
@@ -22,7 +22,7 @@ export default class TabBar extends Component {
   }
 
   render() {
-    const { tabBarItem, activeTab } = this.props;
+    const {tabBarItem, activeTab} = this.props;
     return (
       <View style={styles.Container}>
         {tabBarItem.map((item, index) => {
@@ -36,8 +36,7 @@ export default class TabBar extends Component {
                   borderBottomColor: Colors.gradient_1,
                 },
               ]}
-              onPress={item.action}
-            >
+              onPress={item.action}>
               <Text numberOfLines={1} style={[styles.tabTitle]}>
                 {translate(`pages.xchat.${item.title}`)}
               </Text>
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabTitle: {
-    fontSize: 18,
+    fontSize: Platform.isPad ? normalize(10) : 18,
     color: Colors.gradient_1,
     fontFamily: Fonts.regular,
   },

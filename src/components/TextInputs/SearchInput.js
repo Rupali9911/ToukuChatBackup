@@ -13,6 +13,7 @@ import {globalStyles} from '../../styles';
 import {Menu} from 'react-native-paper';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import Icon from 'react-native-vector-icons/EvilIcons';
+import {normalize} from '../../utils';
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     // backgroundColor: Colors.home_header,
   },
   searchContainer: {
-    height: Platform.OS === 'ios' ? 'auto' : 45,
+    height: Platform.OS === 'ios' ? (Platform.isPad ? 50 : 'auto') : 45,
     // height: 30,
     flex: 1,
     flexDirection: 'row',
@@ -241,7 +242,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // width: '100%',
     color: Colors.black,
-    fontSize: 16,
+    fontSize: Platform.isPad ? normalize(8) : 16,
     fontFamily: Fonts.nunitoSansRegular,
     marginStart: 10,
     //alignSelf: 'center',
@@ -255,8 +256,8 @@ const styles = StyleSheet.create({
     resizeMode: 'center',
   },
   iconSearch: {
-    width: 15,
-    height: 15,
+    width: Platform.isPad ? 20 : 15,
+    height: Platform.isPad ? 20 : 15,
     resizeMode: 'contain',
     marginTop: 2,
     marginLeft: 5,

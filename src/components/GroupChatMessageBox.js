@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import GroupChatMessageBubble from './GroupChatMessageBubble';
 
@@ -204,7 +205,9 @@ export default class GroupChatMessageBox extends Component {
                   ? width * 0.77
                   : message.message_body &&
                     message.message_body.type === 'image'
-                  ? isMultiSelect?width-80:width-40
+                  ? isMultiSelect
+                    ? width - 80
+                    : width - 40
                   : width * 0.65,
               justifyContent: 'flex-start',
             },
@@ -255,7 +258,7 @@ export default class GroupChatMessageBox extends Component {
                 <View>
                   <Text
                     style={{
-                      fontSize: normalize(9),
+                      fontSize: Platform.isPad ? normalize(5.5) : normalize(9),
                       fontFamily: Fonts.regular,
                       color: Colors.primary,
                       textAlign: 'left',
@@ -327,10 +330,14 @@ export default class GroupChatMessageBox extends Component {
             {
               maxWidth:
                 message.message_body && message.message_body.type === 'text'
-                  ? (isMultiSelect?width * 0.80:width * 0.90)
+                  ? isMultiSelect
+                    ? width * 0.8
+                    : width * 0.9
                   : message.message_body &&
                     message.message_body.type === 'image'
-                  ? isMultiSelect?width-40:width
+                  ? isMultiSelect
+                    ? width - 40
+                    : width
                   : width * 0.75,
             },
             message.message_body && message.message_body.type === 'image'
@@ -462,6 +469,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.dark_pink,
     fontFamily: Fonts.light,
-    fontSize: normalize(8),
+    fontSize: Platform.isPad ? normalize(5) : normalize(8),
+    marginLeft: Platform.isPad ? 15 : 10,
   },
 });

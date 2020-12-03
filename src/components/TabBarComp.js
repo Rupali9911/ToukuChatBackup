@@ -21,12 +21,12 @@ import {isIphoneX} from '../utils';
 const S = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: isIphoneX() ? 85 : 60,
+    height: isIphoneX() || Platform.isPad ? 85 : 60,
     elevation: 2,
   },
   tabButton: {
     flex: 1,
-    justifyContent: !isIphoneX ? 'center' : null,
+    justifyContent: !isIphoneX || Platform.isPad ? 'center' : null,
     alignItems: 'center',
     marginTop: 8,
   },

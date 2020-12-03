@@ -1767,7 +1767,7 @@ const DropdownHeader = (props) => {
             style={{
               backgroundColor: Colors.green,
               color: Colors.white,
-              fontSize: normalize(9),
+              fontSize: Platform.isPad ? normalize(6) : normalize(9),
             }}>
             {badgeCount}
           </Badge>

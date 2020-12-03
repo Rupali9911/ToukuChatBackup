@@ -11,6 +11,7 @@ import {
   Linking,
   NativeModules,
   NativeEventEmitter,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Menu, Divider} from 'react-native-paper';
@@ -388,7 +389,7 @@ class GroupChatMessageBubble extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
-      isMultiSelect
+      isMultiSelect,
     } = this.props;
     const {showImage, images} = this.state;
     if (!message.message_body && !message.is_unsent) {
@@ -556,7 +557,9 @@ class GroupChatMessageBubble extends Component {
                             }}>
                             <Text
                               style={{
-                                fontSize: normalize(12),
+                                fontSize: Platform.isPad
+                                  ? normalize(8)
+                                  : normalize(12),
                                 fontFamily: Fonts.regular,
                                 fontWeight: '400',
                               }}>
@@ -575,7 +578,9 @@ class GroupChatMessageBubble extends Component {
                         // </Text>
                         <ParsedText
                           style={{
-                            fontSize: normalize(12),
+                            fontSize: Platform.isPad
+                              ? normalize(8)
+                              : normalize(12),
                             fontFamily: Fonts.regular,
                             fontWeight: '400',
                           }}
@@ -759,7 +764,9 @@ class GroupChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.black,
-                                fontSize: normalize(12),
+                                fontSize: Platform.isPad
+                                  ? normalize(8)
+                                  : normalize(12),
                                 fontFamily: Fonts.regular,
                                 fontWeight: '300',
                               }}>
@@ -771,7 +778,9 @@ class GroupChatMessageBubble extends Component {
                         <ParsedText
                           style={{
                             color: Colors.black,
-                            fontSize: normalize(12),
+                            fontSize: Platform.isPad
+                              ? normalize(8)
+                              : normalize(12),
                             fontFamily: Fonts.regular,
                             fontWeight: '300',
                           }}

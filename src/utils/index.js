@@ -58,9 +58,9 @@ export function getImage(source) {
     source === undefined
   ) {
     return Images.channel_background;
-  } else if(isContainUrl(source)) {
+  } else if (isContainUrl(source)) {
     return {uri: source};
-  }else{
+  } else {
     return Images.channel_background;
   }
 }
@@ -110,16 +110,10 @@ export const isContainUrl = (text) => {
 };
 
 export const resizeImage = async (file, width, height) => {
-  // const resizedImage = 
-  return await ImageResizer.createResizedImage(
-    file,
-    width,
-    height,
-    'JPEG',
-    30,
-  )
+  // const resizedImage =
+  return await ImageResizer.createResizedImage(file, width, height, 'JPEG', 30)
     .then(async ({uri}) => {
-      console.log('Image resizer')
+      console.log('Image resizer');
       return uri;
     })
     .catch((err) => {
@@ -127,4 +121,4 @@ export const resizeImage = async (file, width, height) => {
       // return err;
     });
   // return await resizedImage;
-}
+};

@@ -9,7 +9,7 @@ import {translate} from '../redux/reducers/languageReducer';
 import NetInfo from '@react-native-community/netinfo';
 
 /* switch this for testing on staging or production */
-export const staging = true;
+export const staging = false;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -22,10 +22,10 @@ const socketURLStaging = 'wss://touku.angelium.net/ws/v1';
 const socketURLLive = 'wss://api-touku.angelium.net/ws/v1';
 
 // Staging url
-const urlStaging = "https://touku.angelium.net";
+const urlStaging = 'https://touku.angelium.net';
 
 // Live url
-const urlLive = "https://touku.net";
+const urlLive = 'https://touku.net';
 
 export const inviteUrlRoot = staging ? urlStaging : urlLive;
 

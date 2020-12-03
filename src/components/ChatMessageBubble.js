@@ -10,6 +10,7 @@ import {
   Modal,
   NativeModules,
   NativeEventEmitter,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Menu, Divider} from 'react-native-paper';
@@ -331,7 +332,7 @@ class ChatMessageBubble extends Component {
       audioPlayingId,
       perviousPlayingAudioId,
       onAudioPlayPress,
-      isMultiSelect
+      isMultiSelect,
     } = this.props;
     const {showImage, images} = this.state;
     const msgTime = new Date(message.created);
@@ -500,7 +501,9 @@ class ChatMessageBubble extends Component {
                               style={{
                                 fontFamily: Fonts.regular,
                                 fontWeight: '400',
-                                fontSize: normalize(12),
+                                fontSize: Platform.isPad
+                                  ? normalize(7.5)
+                                  : normalize(12),
                               }}>
                               {message.message_body}
                             </Text>
@@ -511,7 +514,9 @@ class ChatMessageBubble extends Component {
                           style={{
                             fontFamily: Fonts.regular,
                             fontWeight: '400',
-                            fontSize: normalize(12),
+                            fontSize: Platform.isPad
+                              ? normalize(7.5)
+                              : normalize(12),
                           }}>
                           {message.message_body}
                         </Text>
@@ -680,7 +685,9 @@ class ChatMessageBubble extends Component {
                             <Text
                               style={{
                                 color: Colors.black,
-                                fontSize: normalize(12),
+                                fontSize: Platform.isPad
+                                  ? normalize(7.5)
+                                  : normalize(12),
                                 fontWeight: '300',
                                 fontFamily: Fonts.regular,
                               }}>
@@ -692,7 +699,9 @@ class ChatMessageBubble extends Component {
                         <Text
                           style={{
                             color: Colors.black,
-                            fontSize: normalize(12),
+                            fontSize: Platform.isPad
+                              ? normalize(7.5)
+                              : normalize(12),
                             fontWeight: '300',
                             fontFamily: Fonts.regular,
                           }}>

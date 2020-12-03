@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import ChatMessageBubble from './ChatMessageBubble';
 import {Colors, Fonts} from '../constants';
@@ -311,7 +312,7 @@ export default class ChatMessageBox extends Component {
                     paddingBottom: 5,
                   }}>
                   {/*<Text style={styles.statusText}>{status}</Text>*/}
-                  <Text style={styles.statusText}>{`${time.getHours()}:${
+                  <Text style={[styles.statusText]}>{`${time.getHours()}:${
                     time.getMinutes() < 10
                       ? '0' + time.getMinutes()
                       : time.getMinutes()
@@ -460,7 +461,8 @@ const styles = StyleSheet.create({
   statusText: {
     color: Colors.dark_pink,
     fontFamily: Fonts.light,
-    fontSize: normalize(8),
+    fontSize: Platform.isPad ? normalize(5.5) : normalize(8),
+    marginLeft: Platform.isPad ? 15 : 10,
   },
   squareImage: {
     width: 40,
