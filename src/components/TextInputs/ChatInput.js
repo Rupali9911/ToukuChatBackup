@@ -138,7 +138,7 @@ export default class ChatInput extends Component {
     //       : 140;
     // }
     if (value.length === 0) {
-      this.newHeight = isIphoneX() ? 70 : 50;
+      this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
     }
     return (
       <View
@@ -146,7 +146,7 @@ export default class ChatInput extends Component {
           // position: 'absolute',
           // bottom: 0,
           width: '100%',
-          minHeight: isIphoneX() ? 70 : 50,
+          minHeight: isIphoneX() || Platform.isPad ? 70 : 50,
           // height: this.newHeight,
           maxHeight: 200,
           backgroundColor: Colors.white,
@@ -426,15 +426,16 @@ const chatInput = StyleSheet.create({
     // height: '100%',
     borderWidth: 0.2,
     backgroundColor: Colors.white,
-    minHeight: Platform.isPad ? 45 : 35,
+    minHeight: 35,
     borderRadius: 10,
     borderColor: Colors.gray,
     paddingHorizontal: 10,
-    paddingTop: Platform.OS === 'ios' ? (isIphoneX() ? 10 : 10) : 0,
+    paddingTop:
+      Platform.OS === 'ios' ? (isIphoneX() || Platform.isPad ? 10 : 10) : 0,
     paddingBottom: 0,
-    fontSize: Platform.isPad ? normalize(8) : normalize(12),
+    fontSize: Platform.isPad ? normalize(5.5) : normalize(12),
     textAlignVertical: 'center',
-    lineHeight: Platform.isPad ? -20 : 15,
+    lineHeight: 15,
   },
   sendButoonContainer: {
     // height: '100%',

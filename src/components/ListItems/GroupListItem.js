@@ -40,7 +40,7 @@ export default class GroupListItem extends Component {
   }
 
   getDate = (date) => {
-    if(date===null || date==='' || date===undefined){
+    if (date === null || date === '' || date === undefined) {
       return '';
     }
 

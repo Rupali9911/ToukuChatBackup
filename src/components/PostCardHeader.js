@@ -15,7 +15,10 @@ import {translate} from '../redux/reducers/languageReducer';
 import Button from './Button';
 import RoundedImage from './RoundedImage';
 import moment from 'moment';
-import {Menu, Divider} from 'react-native-paper';
+import {Divider} from 'react-native-paper';
+
+import Menu from '../components/Menu/Menu';
+import MenuItem from '../components/Menu/MenuItem';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../styles';
 import {getImage} from '../utils';
@@ -30,13 +33,27 @@ export default class PostCardHeader extends Component {
     };
   }
 
-  _openMenu = () => {
+  _menu = null;
+
+  setMenuRef = (ref) => {
+    this._menu = ref;
+  };
+  hideMenu = () => {
+    this._menu.hide();
+    this.setState({visible: false});
+  };
+  showMenu = () => {
+    this._menu.show();
     this.setState({visible: true});
   };
 
-  _closeMenu = () => {
-    this.setState({visible: false});
-  };
+  // _openMenu = () => {
+  //   this.setState({visible: true});
+  // };
+
+  // _closeMenu = () => {
+  //   this.setState({visible: false});
+  // };
 
   getDate = (date) => {
     const today = new Date();
@@ -156,6 +173,67 @@ export default class PostCardHeader extends Component {
             </View>
 
             <Menu
+              ref={(ref) => {
+                this._menu = ref;
+              }}
+              style={{marginTop: 25, marginLeft: -20}}
+              tabHeight={110}
+              button={
+                <TouchableOpacity
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: 5,
+                  }}
+                  onPress={this.showMenu}>
+                  <Image
+                    source={Icons.icon_dots}
+                    style={{
+                      tintColor: Colors.black_light,
+                      height: 15,
+                    }}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+                // <TouchableOpacity
+                //   onPress={() => this.showMenu(`_menu${index}`)}>
+                //   <Image
+                //     source={require('../../assets/images/ic_down.png')}
+                //     style={{height: 25, width: 25}}
+                //     resizeMode={'contain'}
+                //   />
+                // </TouchableOpacity>
+              }>
+              {menuItems &&
+                menuItems.map((item, index) => {
+                  return (
+                    <React.Fragment>
+                      <MenuItem
+                        onPress={this.hideMenu}>{`${item.title}`}</MenuItem>
+                      {/* <Menu.Item
+                        key={index}
+                        onPress={() => {
+                          this._closeMenu();
+                          item.onPress(post);
+                        }}
+                        title={`${item.title}`}
+                        titleStyle={{
+                          fontSize: 16,
+                          fontWeight: '200',
+                        }}
+                      /> */}
+                      <Divider />
+                    </React.Fragment>
+                  );
+                })}
+              {/* <MenuItem onPress={this.hideMenu}>Menu item 1</MenuItem>
+              <MenuItem onPress={this.hideMenu}>Menu item 2</MenuItem> */}
+            </Menu>
+
+            {/* <Menu
               style={{marginTop: 30}}
               visible={this.state.visible}
               onDismiss={this._closeMenu}
@@ -200,7 +278,7 @@ export default class PostCardHeader extends Component {
                     </React.Fragment>
                   );
                 })}
-            </Menu>
+            </Menu> */}
           </View>
         )}
       </View>
