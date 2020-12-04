@@ -38,7 +38,7 @@ export default class ChatInput extends Component {
 
   groupMembersMentions = (value) => {
     const {groupMembers, currentUserData} = this.props;
-    let splitNewMessageText = value.split('@');
+    let splitNewMessageText = value.split(' ');
     let text = splitNewMessageText[splitNewMessageText.length - 1];
     // let splitNewMessageText = value.split(' ');
     // let newMessageMentions = [];
