@@ -40,24 +40,23 @@ export default class ChatInput extends Component {
     const {groupMembers, currentUserData} = this.props;
     let splitNewMessageText = value.split(' ');
     let text = splitNewMessageText[splitNewMessageText.length - 1];
-    // let splitNewMessageText = value.split(' ');
-    // let newMessageMentions = [];
-    // const newMessageTextWithMention = splitNewMessageText
-    //   .map((text) => {
-    //     let mention = null;
-    //     groupMembers.forEach((groupMember) => {
-    //       if (text === `~${groupMember.id}~`) {
-    //         mention = `@${groupMember.display_name}`;
-    //         newMessageMentions = [...newMessageMentions, groupMember.id];
-    //       }
-    //     });
-    //     if (mention) {
-    //       return mention;
-    //     } else {
-    //       return text;
-    //     }
-    //   })
-    //   .join(' ');
+    let newMessageMentions = [];
+    splitNewMessageText
+      .map((text) => {
+        let mention = null;
+        groupMembers.forEach((groupMember) => {
+          if (text === `~${groupMember.id}~`) {
+            mention = `@${groupMember.display_name}`;
+            newMessageMentions = [...newMessageMentions, groupMember.id];
+          }
+        });
+        if (mention) {
+          return mention;
+        } else {
+          return text;
+        }
+      })
+      .join(' ');
 
     if (groupMembers && currentUserData) {
       return groupMembers.filter((member) => {
@@ -97,7 +96,7 @@ export default class ChatInput extends Component {
     console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
     let groupMembersLength;
     let suggestionRowHeight;
-    groupMembersLength = this.groupMembersMentions(value).length;
+    // groupMembersLength = this.groupMembersMentions(value).length;
     console.log('render -> groupMembersLength', groupMembersLength);
     suggestionRowHeight =
       groupMembersLength < 11

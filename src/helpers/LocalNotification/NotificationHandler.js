@@ -10,19 +10,19 @@ class NotificationHandler {
   }
 
   onRegister(token) {
-  //  console.log('NotificationHandler Token:', token);
-    //
-    // if (typeof this._onRegister === 'function') {
-    //   this._onRegister(token);
-    // }
+    console.log('NotificationHandler Token:', token);
+
+    if (typeof this._onRegister === 'function') {
+      this._onRegister(token);
+    }
   }
 
   onAction(notification) {
-    console.log ('Notification action received:');
+    console.log('Notification action received:');
     console.log(notification.action);
     console.log(notification);
 
-    if(notification.action === 'Yes') {
+    if (notification.action === 'Yes') {
       PushNotification.invokeApp(notification);
     }
   }
@@ -45,7 +45,7 @@ const handler = new NotificationHandler();
 
 PushNotification.configure({
   // (optional) Called when Token is generated (iOS and Android)
- // onRegister: handler.onRegister.bind(handler),
+  // onRegister: handler.onRegister.bind(handler),
 
   // (required) Called when a remote or local notification is opened or received
   onNotification: handler.onNotification.bind(handler),

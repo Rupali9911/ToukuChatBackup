@@ -220,67 +220,67 @@ export default class ChatMessageBox extends Component {
               size={50}
               resizeMode={'cover'}
             /> */}
-              <TouchableOpacity onPress={()=>{
-                if(isChannel){
-
-                }else{
-                  NavigationService.navigate('FriendNotes')
-                }
-              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (isChannel) {
+                  } else {
+                    NavigationService.navigate('FriendNotes');
+                  }
+                }}>
                 {isChannel &&
-                  (currentChannel.channel_picture == null ||
-                    currentChannel.channel_picture == '') ? (
-                    message.hyperlink ? null : (
-                      <LinearGradient
-                        start={{ x: 0.1, y: 0.7 }}
-                        end={{ x: 0.5, y: 0.2 }}
-                        locations={[0.1, 0.6, 1]}
-                        colors={[
-                          Colors.gradient_1,
-                          Colors.gradient_2,
-                          Colors.gradient_3,
-                        ]}
+                (currentChannel.channel_picture == null ||
+                  currentChannel.channel_picture == '') ? (
+                  message.hyperlink ? null : (
+                    <LinearGradient
+                      start={{x: 0.1, y: 0.7}}
+                      end={{x: 0.5, y: 0.2}}
+                      locations={[0.1, 0.6, 1]}
+                      colors={[
+                        Colors.gradient_1,
+                        Colors.gradient_2,
+                        Colors.gradient_3,
+                      ]}
+                      style={[
+                        styles.squareImage,
+                        {
+                          marginHorizontal: 0,
+                          marginTop: 10,
+                          marginRight: 5,
+                        },
+                      ]}>
+                      <Text
                         style={[
-                          styles.squareImage,
-                          {
-                            marginHorizontal: 0,
-                            marginTop: 10,
-                            marginRight: 5,
-                          },
+                          globalStyles.normalRegularText15,
+                          {marginTop: 2},
                         ]}>
-                        <Text
-                          style={[
-                            globalStyles.normalRegularText15,
-                            { marginTop: 2 },
-                          ]}>
-                          {currentChannel.name &&
-                            currentChannel.name.indexOf(' ') === -1
-                            ? currentChannel.name.charAt(0).toUpperCase()
-                            : currentChannel.name.charAt(0).toUpperCase() +
+                        {currentChannel.name &&
+                        currentChannel.name.indexOf(' ') === -1
+                          ? currentChannel.name.charAt(0).toUpperCase()
+                          : currentChannel.name.charAt(0).toUpperCase() +
                             currentChannel.name
                               .charAt(currentChannel.name.indexOf(' ') + 1)
                               .toUpperCase()}
-                          {/* {secondUpperCase} */}
-                        </Text>
-                      </LinearGradient>
-                    )
-                  ) : message.hyperlink ? null : (
-                    <Image
-                      source={
-                        isChannel
-                          ? getAvatar(currentChannel.channel_picture)
-                          : getAvatar(message.from_user.avatar)
-                      }
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 20,
-                        resizeMode: 'cover',
-                        marginTop: 10,
-                        marginRight: 5,
-                      }}
-                    />
-                  )}
+                        {/* {secondUpperCase} */}
+                      </Text>
+                    </LinearGradient>
+                  )
+                ) : message.hyperlink ? null : (
+                  <Image
+                    source={
+                      isChannel
+                        ? getAvatar(currentChannel.channel_picture)
+                        : getAvatar(message.from_user.avatar)
+                    }
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      resizeMode: 'cover',  
+                      marginTop: 10,
+                      marginRight: 5,
+                    }}
+                  />
+                )}
               </TouchableOpacity>
               <View
                 style={{

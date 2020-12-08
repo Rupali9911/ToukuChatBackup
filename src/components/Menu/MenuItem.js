@@ -22,6 +22,7 @@ function MenuItem({
   onPress,
   style,
   textStyle,
+  customComponent,
   ...props
 }) {
   const touchableProps =
@@ -35,18 +36,22 @@ function MenuItem({
       onPress={onPress}
       {...touchableProps}
       {...props}>
-      <View style={[styles.container, style]}>
-        <Text
-          ellipsizeMode={ellipsizeMode}
-          numberOfLines={1}
-          style={[
-            styles.title,
-            disabled && {color: disabledTextColor},
-            textStyle,
-          ]}>
-          {children}
-        </Text>
-      </View>
+      {customComponent ? (
+        customComponent
+      ) : (
+        <View style={[styles.container, style]}>
+          <Text
+            ellipsizeMode={ellipsizeMode}
+            numberOfLines={1}
+            style={[
+              styles.title,
+              disabled && {color: disabledTextColor},
+              textStyle,
+            ]}>
+            {children}
+          </Text>
+        </View>
+      )}
     </Touchable>
   );
 }

@@ -14,7 +14,7 @@ import {
   Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Menu, Divider} from 'react-native-paper';
+import {Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
@@ -32,6 +32,10 @@ import {getAvatar, normalize} from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
 import ParsedText from 'react-native-parsed-text';
+
+import Menu from '../components/Menu/Menu';
+import MenuItem from '../components/Menu/MenuItem';
+
 let borderRadius = 20;
 
 class GroupChatMessageBubble extends Component {
@@ -57,6 +61,20 @@ class GroupChatMessageBubble extends Component {
       // this.setState({donebuttonclicked: data.close});
     });
   }
+
+  _menu = null;
+
+  setMenuRef = (ref) => {
+    this._menu = ref;
+  };
+  hideMenu = () => {
+    this._menu.hide();
+    this.setState({visible: false});
+  };
+  showMenu = () => {
+    this._menu.show();
+    this.setState({visible: true});
+  };
 
   componentDidMount() {
     // download progress
@@ -416,13 +434,18 @@ class GroupChatMessageBubble extends Component {
     return (
       <View>
         <Menu
-          contentStyle={{
+          ref={(ref) => {
+            this._menu = ref;
+          }}
+          style={{
+            marginTop: 25,
+            marginLeft: -20,
             backgroundColor: Colors.gradient_3,
             opacity: 0.9,
           }}
-          visible={longPressMenu}
-          onDismiss={closeMenu}
-          anchor={
+          tabHeight={110}
+          headerHeight={80}
+          button={
             !isUser ? (
               <Animated.View style={[styles.talkBubble, animatedStyle]}>
                 <View style={{marginLeft: 5}}>
@@ -475,6 +498,7 @@ class GroupChatMessageBubble extends Component {
                       ]}
                       onLongPress={(msg_id) => {
                         onMessagePress(message.msg_id);
+                        this.showMenu();
                       }}
                       onPress={() =>
                         message.message_body.type === 'doc'
@@ -678,6 +702,7 @@ class GroupChatMessageBubble extends Component {
                       }}
                       onLongPress={(msg_id) => {
                         onMessagePress(message.msg_id);
+                        this.showMenu();
                       }}
                       onPress={() =>
                         message.message_body.type === 'doc'
@@ -813,105 +838,187 @@ class GroupChatMessageBubble extends Component {
             )
           }>
           {message.message_body && message.message_body.type === 'text' && (
-            <Menu.Item
-              icon={() => (
+            <MenuItem
+              // icon={() => (
+              //   <FontAwesome5
+              //     name={'language'}
+              //     size={20}
+              //     color={Colors.white}
+              //   />
+              // )}
+              onPress={() => {
+                onMessageTranslate(message);
+                // closeMenu();
+                this.hideMenu();
+              }}
+              // title={translate('common.translate')}
+              // titleStyle={{marginLeft: -25, color: Colors.white}}
+              customComponent={
+                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                  <FontAwesome5
+                    name={'language'}
+                    size={20}
+                    color={Colors.white}
+                  />
+                  <Text style={{marginLeft: 10, color: '#fff'}}>
+                    {translate('common.translate')}
+                  </Text>
+                </View>
+              }
+            />
+          )}
+          <MenuItem
+            // icon={() => (
+            //   <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+            // )}
+            onPress={() => {
+              onMessageReply(selectedMessageId);
+              // closeMenu();
+              this.hideMenu();
+            }}
+            // title={translate('common.reply')}
+            // titleStyle={{marginLeft: -25, color: Colors.white}}
+            customComponent={
+              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
                 <FontAwesome5
                   name={'language'}
                   size={20}
                   color={Colors.white}
                 />
-              )}
-              onPress={() => {
-                onMessageTranslate(message);
-                closeMenu();
-              }}
-              title={translate('common.translate')}
-              titleStyle={{marginLeft: -25, color: Colors.white}}
-            />
-          )}
-          <Menu.Item
-            icon={() => (
-              <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-            )}
-            onPress={() => {
-              onMessageReply(selectedMessageId);
-              closeMenu();
-            }}
-            title={translate('common.reply')}
-            titleStyle={{marginLeft: -25, color: Colors.white}}
+                <Text style={{marginLeft: 10, color: '#fff'}}>
+                  {translate('common.reply')}
+                </Text>
+              </View>
+            }
           />
           {isUser &&
             isEditable > new Date() &&
             message.message_body &&
             message.message_body.type === 'text' && (
-              <Menu.Item
-                icon={() => (
+              <MenuItem
+                // icon={() => (
+                //   <FontAwesome5
+                //     name={'pencil-alt'}
+                //     size={20}
+                //     color={Colors.white}
+                //   />
+                // )}
+                onPress={() => {
+                  onEditMessage(message);
+                  // closeMenu();
+                  this.hideMenu();
+                }}
+                // title={translate('common.edit')}
+                // titleStyle={{marginLeft: -25, color: Colors.white}}
+                customComponent={
+                  <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                    <FontAwesome5
+                      name={'pencil-alt'}
+                      size={20}
+                      color={Colors.white}
+                    />
+                    <Text style={{marginLeft: 10, color: '#fff'}}>
+                      {translate('common.edit')}
+                    </Text>
+                  </View>
+                }
+              />
+            )}
+          <MenuItem
+            // icon={() => (
+            //   <FontAwesome name={'trash'} size={20} color={Colors.white} />
+            // )}
+            onPress={() => {
+              onDelete(selectedMessageId);
+              // closeMenu();
+              this.hideMenu();
+            }}
+            // title={translate('common.delete')}
+            // titleStyle={{marginLeft: -25, color: Colors.white}}
+            customComponent={
+              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                <FontAwesome5 name={'trash'} size={20} color={Colors.white} />
+                <Text style={{marginLeft: 10, color: '#fff'}}>
+                  {translate('common.delete')}
+                </Text>
+              </View>
+            }
+          />
+          {isUser && isEditable > new Date() && (
+            <MenuItem
+              // icon={() => (
+              //   <FontAwesome5
+              //     name={'minus-circle'}
+              //     size={20}
+              //     color={Colors.white}
+              //   />
+              // )}
+              onPress={() => {
+                this.onUnSend(selectedMessageId);
+                // closeMenu();
+                this.hideMenu();
+              }}
+              // title={translate('common.unsend')}
+              // titleStyle={{marginLeft: -25, color: Colors.white}}
+              customComponent={
+                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
                   <FontAwesome5
-                    name={'pencil-alt'}
+                    name={'minus-circle'}
                     size={20}
                     color={Colors.white}
                   />
-                )}
-                onPress={() => {
-                  onEditMessage(message);
-                  closeMenu();
-                }}
-                title={translate('common.edit')}
-                titleStyle={{marginLeft: -25, color: Colors.white}}
-              />
-            )}
-          <Menu.Item
-            icon={() => (
-              <FontAwesome name={'trash'} size={20} color={Colors.white} />
-            )}
-            onPress={() => {
-              onDelete(selectedMessageId);
-              closeMenu();
-            }}
-            title={translate('common.delete')}
-            titleStyle={{marginLeft: -25, color: Colors.white}}
-          />
-          {isUser && isEditable > new Date() && (
-            <Menu.Item
-              icon={() => (
-                <FontAwesome5
-                  name={'minus-circle'}
-                  size={20}
-                  color={Colors.white}
-                />
-              )}
-              onPress={() => {
-                this.onUnSend(selectedMessageId);
-                closeMenu();
-              }}
-              title={translate('common.unsend')}
-              titleStyle={{marginLeft: -25, color: Colors.white}}
+                  <Text style={{marginLeft: 10, color: '#fff'}}>
+                    {translate('common.unsend')}
+                  </Text>
+                </View>
+              }
             />
           )}
           {message.message_body && message.message_body.type === 'text' && (
-            <Menu.Item
-              icon={() => (
-                <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
-              )}
+            <MenuItem
+              // icon={() => (
+              //   <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+              // )}
               onPress={() => {
                 this.onCopy(message.message_body);
-                closeMenu();
+                this.hideMenu();
               }}
-              title={translate('common.copy')}
-              titleStyle={{marginLeft: -25, color: Colors.white}}
+              // title={translate('common.copy')}
+              // titleStyle={{marginLeft: -25, color: Colors.white}}
+              customComponent={
+                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                  <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
+                  <Text style={{marginLeft: 10, color: '#fff'}}>
+                    {translate('common.copy')}
+                  </Text>
+                </View>
+              }
             />
           )}
           {message.message_body && message.message_body.type !== 'text' && (
-            <Menu.Item
-              icon={() => (
-                <FontAwesome name={'download'} size={20} color={Colors.white} />
-              )}
+            <MenuItem
+              // icon={() => (
+              //   <FontAwesome name={'download'} size={20} color={Colors.white} />
+              // )}
               onPress={() => {
                 onDownloadMessage(message);
-                closeMenu();
+                // closeMenu();
+                this.hideMenu();
               }}
-              title={translate('pages.setting.download')}
-              titleStyle={{marginLeft: -25, color: Colors.white}}
+              // title={translate('pages.setting.download')}
+              // titleStyle={{marginLeft: -25, color: Colors.white}}
+              customComponent={
+                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                  <FontAwesome5
+                    name={'download'}
+                    size={20}
+                    color={Colors.white}
+                  />
+                  <Text style={{marginLeft: 10, color: '#fff'}}>
+                    {translate('pages.setting.download')}
+                  </Text>
+                </View>
+              }
             />
           )}
         </Menu>

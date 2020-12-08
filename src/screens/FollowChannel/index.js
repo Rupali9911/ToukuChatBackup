@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
-import {
-  View,
-} from 'react-native';
+import {View} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -46,7 +44,6 @@ class FollowChannel extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-
   }
 
   _orientationDidChange = (orientation) => {
@@ -55,121 +52,147 @@ class FollowChannel extends Component {
 
   checkChannelFollow = (id) => {
     var channels = getChannelsById(id);
-    if(channels && channels.length>0){
+    if (channels && channels.length > 0) {
       return true;
-    }else{
+    } else {
       return false;
     }
-  }
+  };
 
-  handleButtonPress = () => {
+  // getChannelData = () => {
+  //   let channelInfo = '1617-XXBNP31P';
+
+  //   let data = channelInfo.split('-');
+
+  //   let chanleObj = {
+  //     channel_id: data[0],
+  //     referral_code: data[1],
+  //   };
+
+  //   this.handleButtonPress(chanleObj);
+  // };
+
+  handleButtonPress = (chanleObj) => {
     const {channel_id} = this.state;
-    var reg = /^[0-9]*$/;
-    if(channel_id && channel_id.trim()!=='' && reg.test(channel_id)){
-      if(this.checkChannelFollow(channel_id)){
-        Toast.show({
-          title: translate('pages.xchat.followChannel'),
-          text: translate('pages.xchat.toastr.alreadyFollowed'),
-          type: 'primary',
-        });
-      }else{
-        this.followChannel();
-      }
-    }else{
+    if (channel_id === null || channel_id === '' || channel_id === undefined) {
       Toast.show({
         title: translate('pages.xchat.followChannel'),
-        text: translate('pages.xchat.toastr.enterChannelId'),
+        text: translate('pages.invitation.enterFollowCode'),
+        type: 'primary',
+      });
+    } else {
+      this.followChannel();
+    }
+  };
+
+  followChannel = () => {
+    const {channel_id, referral_code} = this.state;
+    let channelInfo = channel_id;
+
+    const code = channelInfo.slice(0, -1);
+    const index = Number(channelInfo.slice(-1));
+    const decryptedData = [
+      code.slice(0, index),
+      code.slice(index, code.length),
+    ];
+
+    if (!index || !Number(decryptedData[0])) {
+      Toast.show({
+        title: translate('pages.xchat.followChannel'),
+        text: translate('pages.invitation.wrongFollowCode'),
         type: 'primary',
       });
     }
 
-  }
-
-  followChannel = () => {
-    const {channel_id,referral_code} = this.state;
-
     let data = {
-      channel_id: channel_id,
+      channel_id: Number(decryptedData[0]),
+      referral_code: decryptedData[1],
       user_id: this.props.userData.id,
     };
 
-    if(referral_code && referral_code!==''){
-      data['referral_code'] = referral_code;
-    }
+    console.log('data 123123', data);
 
-    this.setState({loading:true});
+    this.setState({loading: true});
 
-    this.props.followChannel(data).then((res)=>{
-      this.setState({loading:false,channel_id:'', referral_code:''});
-      if(res && res.status){
+    this.props
+      .followChannel(data)
+      .then((res) => {
+        this.setState({loading: false, channel_id: '', referral_code: ''});
+        if (res && res.status) {
+          Toast.show({
+            title: '',
+            text: translate('pages.xchat.toastr.AddedToNewChannel'),
+            type: 'positive',
+          });
+          // this.props.navigation.goBack();
+          this.props.navigation.navigate('ChannelChats');
+        }
+      })
+      .catch((err) => {
+        console.log('follow error ', err);
+        this.setState({loading: false});
         Toast.show({
-          title: '',
-          text: translate('pages.xchat.toastr.AddedToNewChannel'),
-          type: 'positive',
+          title: translate('pages.xchat.followChannel'),
+          text: translate('pages.invitation.wrongFollowCode'),
+          type: 'primary',
         });
-        this.props.navigation.goBack();
-        this.props.navigation.navigate('Home');
-      }
-    }).catch((err)=>{
-      this.setState({loading:false});
-      Toast.show({
-        title: translate('pages.xchat.followChannel'),
-        text: 'Not Found.',
-        type: 'primary',
       });
-    })
-
-  }
+  };
 
   render() {
     const {channel_id, referral_code, loading} = this.state;
     return (
-        <View style={[globalStyles.container,{backgroundColor: Colors.light_pink}]}>
-          <HeaderWithBack
-            onBackPress={() => this.props.navigation.goBack()}
-            title={translate('pages.xchat.followChannel')}
-          />
-          <KeyboardAwareScrollView
-            scrollEnabled
-            // enableOnAndroid={true}
-            keyboardShouldPersistTaps={'handled'}
-            // extraScrollHeight={100}
-            extraHeight={100}
-            behavior={'position'}
-            contentContainerStyle={followChannelStyles.mainContainer}
-            showsVerticalScrollIndicator={false}>
-            <View style={followChannelStyles.inputesContainer}>
-              <InputWithTitle
-                title={translate('pages.xchat.channelId') + ' :'}
-                titleStyle={{
-                  fontFamily: Fonts.light
-                }}
-                keyboardType={'number-pad'}
-                value={channel_id}
-                onChangeText={(channel_id) => this.setState({channel_id})}
-              />
-              <InputWithTitle
-                title={translate('pages.xchat.referralCode') + ' (' + translate('pages.xchat.optional') +') :'}
-                titleStyle={{
-                  fontFamily: Fonts.light
-                }}
-                value={referral_code}
-                onChangeText={(referral_code) => this.setState({referral_code})}
-              />
+      <View
+        style={[globalStyles.container, {backgroundColor: Colors.light_pink}]}>
+        <HeaderWithBack
+          onBackPress={() => this.props.navigation.goBack()}
+          title={translate('pages.xchat.followChannel')}
+        />
+        <KeyboardAwareScrollView
+          scrollEnabled
+          // enableOnAndroid={true}
+          keyboardShouldPersistTaps={'handled'}
+          // extraScrollHeight={100}
+          extraHeight={100}
+          behavior={'position'}
+          contentContainerStyle={followChannelStyles.mainContainer}
+          showsVerticalScrollIndicator={false}>
+          <View style={followChannelStyles.inputesContainer}>
+            <InputWithTitle
+              title={translate('pages.invitation.followCode') + ' :'}
+              titleStyle={{
+                fontFamily: Fonts.light,
+              }}
+              keyboardType={'number-pad'}
+              value={channel_id}
+              onChangeText={(channel_id) => this.setState({channel_id})}
+            />
+            {/* <InputWithTitle
+              title={
+                translate('pages.xchat.referralCode') +
+                ' (' +
+                translate('pages.xchat.optional') +
+                ') :'
+              }
+              titleStyle={{
+                fontFamily: Fonts.light,
+              }}
+              value={referral_code}
+              onChangeText={(referral_code) => this.setState({referral_code})}
+            /> */}
+          </View>
 
-            </View>
-
-            <View style={{marginTop:10,justifyContent:'center'}}>
-              <Button
-                type={'primary'}
-                title={translate('pages.xchat.followChannel')}
-                isRounded={false}
-                onPress={() => this.handleButtonPress()}
-                loading={loading}
-              />
-            </View>
-          </KeyboardAwareScrollView>
-        </View>
+          <View style={{marginTop: 10, justifyContent: 'center'}}>
+            <Button
+              type={'primary'}
+              title={translate('pages.xchat.followChannel')}
+              isRounded={false}
+              onPress={() => this.handleButtonPress()}
+              loading={loading}
+            />
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
     );
   }
 }
@@ -185,7 +208,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  followChannel
+  followChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FollowChannel);

@@ -45,12 +45,12 @@ class Menu extends React.Component {
     };
   }
 
-  _setContainerRef = ref => {
+  _setContainerRef = (ref) => {
     this._container = ref;
   };
 
   // Start menu animation
-  _onMenuLayout = e => {
+  _onMenuLayout = (e) => {
     if (this.state.menuState === STATES.ANIMATING) {
       return;
     }
@@ -93,14 +93,14 @@ class Menu extends React.Component {
       this.setState({
         buttonHeight,
         buttonWidth,
-        left,
+        left: left === 0 ? 51 : left,
         menuState: STATES.SHOWN,
         top,
       });
     });
   };
 
-  hide = onHidden => {
+  hide = (onHidden) => {
     Animated.timing(this.state.opacityAnimation, {
       toValue: 0,
       duration: this.props.animationDuration,
@@ -181,6 +181,10 @@ class Menu extends React.Component {
       top = Math.min(windowHeight - SCREEN_INDENT, top + buttonHeight);
     } else if (top < SCREEN_INDENT) {
       top = SCREEN_INDENT;
+    }
+
+    if (this.props.headerHeight && top < this.props.headerHeight) {
+      top = top + (this.props.headerHeight - top);
     }
 
     const shadowMenuContainerStyle = {
