@@ -178,7 +178,7 @@ class ChatContainer extends Component {
       selectedIds,
       onSelectedCancel,
       onSelectedDelete,
-      currentFriend
+      currentFriend,
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -262,15 +262,18 @@ class ChatContainer extends Component {
                 return (
                   <Fragment>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      {(isMultiSelect && !item.is_unsent) ? (
+                      {isMultiSelect && !item.is_unsent ? (
                         <CheckBox
                           isChecked={isSelected}
                           onCheck={() => onSelect(item.id)}
                         />
                       ) : null}
-                      <TouchableOpacity style={{flex: 1}} disabled={!isMultiSelect} onPress={()=>{
-                        isMultiSelect && !item.is_unsent && onSelect(item.id)
-                      }}>
+                      <TouchableOpacity
+                        style={{flex: 1}}
+                        disabled={!isMultiSelect}
+                        onPress={() => {
+                          isMultiSelect && !item.is_unsent && onSelect(item.id);
+                        }}>
                         <ChatMessageBox
                           ref={(view) => {
                             this[`message_box_${item.id}`] = view;
@@ -412,15 +415,16 @@ class ChatContainer extends Component {
                 }}>
                 <View style={{flex: 8}}>
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-                    { (this.props.isChannel || repliedMessage.from_user.id === this.props.userData.id)?repliedMessage.from_user.id === this.props.userData.id
-                      ? 'You'
-                      : repliedMessage.from_user.display_name
-                      ? repliedMessage.from_user.display_name
-                      : repliedMessage.from_user.username
+                    {this.props.isChannel ||
+                    repliedMessage.from_user.id === this.props.userData.id
+                      ? repliedMessage.from_user.id === this.props.userData.id
+                        ? 'You'
+                        : repliedMessage.from_user.display_name
+                        ? repliedMessage.from_user.display_name
+                        : repliedMessage.from_user.username
                       : currentFriend.display_name
                       ? currentFriend.display_name
-                      : currentFriend.username
-                    }
+                      : currentFriend.username}
                   </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>

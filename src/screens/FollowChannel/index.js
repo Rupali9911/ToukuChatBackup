@@ -14,7 +14,10 @@ import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {followChannel} from '../../redux/reducers/channelReducer';
+import {
+  followChannel,
+  setCurrentChannel,
+} from '../../redux/reducers/channelReducer';
 import {getChannelsById} from '../../storage/Service';
 
 class FollowChannel extends Component {
@@ -44,6 +47,7 @@ class FollowChannel extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+    // console.log('this.props.getChannels', this.props.followingChannels);
   }
 
   _orientationDidChange = (orientation) => {
@@ -96,47 +100,70 @@ class FollowChannel extends Component {
       code.slice(index, code.length),
     ];
 
-    if (!index || !Number(decryptedData[0])) {
-      Toast.show({
-        title: translate('pages.xchat.followChannel'),
-        text: translate('pages.invitation.wrongFollowCode'),
-        type: 'primary',
-      });
-    }
-
     let data = {
       channel_id: Number(decryptedData[0]),
       referral_code: decryptedData[1],
       user_id: this.props.userData.id,
     };
 
-    console.log('data 123123', data);
-
     this.setState({loading: true});
+    if (!index || !Number(decryptedData[0]) || Number(decryptedData[0]) === 0) {
+      this.setState({loading: false});
+      Toast.show({
+        title: translate('pages.xchat.followChannel'),
+        text: translate('pages.invitation.wrongFollowCode'),
+        type: 'primary',
+      });
+    } else {
+      let channelIndex = this.props.followingChannels.findIndex(
+        (item) => item.id === Number(decryptedData[0]),
+      );
 
-    this.props
-      .followChannel(data)
-      .then((res) => {
-        this.setState({loading: false, channel_id: '', referral_code: ''});
-        if (res && res.status) {
-          Toast.show({
-            title: '',
-            text: translate('pages.xchat.toastr.AddedToNewChannel'),
-            type: 'positive',
-          });
-          // this.props.navigation.goBack();
-          this.props.navigation.navigate('ChannelChats');
-        }
-      })
-      .catch((err) => {
-        console.log('follow error ', err);
+      if (channelIndex > 1) {
         this.setState({loading: false});
         Toast.show({
           title: translate('pages.xchat.followChannel'),
-          text: translate('pages.invitation.wrongFollowCode'),
+          text: translate('pages.xchat.toastr.alreadyFollowed'),
           type: 'primary',
         });
-      });
+      } else {
+        this.props
+          .followChannel(data)
+          .then((res) => {
+            console.log('res', res);
+            this.setState({loading: false, channel_id: '', referral_code: ''});
+            if (res && res.status) {
+              Toast.show({
+                title: translate('pages.xchat.followChannel'),
+                text: translate('pages.xchat.toastr.AddedToNewChannel'),
+                type: 'positive',
+              });
+
+              let channelIndex = this.props.followingChannels.findIndex(
+                (item) => item.id === Number(decryptedData[0]),
+              );
+
+              if (channelIndex) {
+                let setCurrentChannel = this.props.followingChannels[
+                  channelIndex
+                ];
+                this.props.setCurrentChannel(setCurrentChannel);
+              }
+              this.props.navigation.navigate('ChannelChats');
+              // this.props.navigation.goBack();
+            }
+          })
+          .catch((err) => {
+            console.log('follow error ', err);
+            this.setState({loading: false});
+            Toast.show({
+              title: translate('pages.xchat.followChannel'),
+              text: translate('pages.invitation.wrongFollowCode'),
+              type: 'primary',
+            });
+          });
+      }
+    }
   };
 
   render() {
@@ -204,11 +231,13 @@ const mapStateToProps = (state) => {
     userFriends: state.friendReducer.userFriends,
     friendLoading: state.friendReducer.loading,
     groupLoading: state.groupReducer.loading,
+    followingChannels: state.channelReducer.followingChannels,
   };
 };
 
 const mapDispatchToProps = {
   followChannel,
+  setCurrentChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FollowChannel);

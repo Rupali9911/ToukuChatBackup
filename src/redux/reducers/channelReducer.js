@@ -582,8 +582,9 @@ export const getChannelConversations = (id, limit = 30) => (dispatch) =>
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + limit)
       .then(async (res) => {
-        // console.log('res_channel_conversation', JSON.stringify(res));
+        console.log('res_channel_conversation', JSON.stringify(res));
         setChannelChatConversation(res.conversation);
+        dispatch(getFollowingChannels(0));
         dispatch(getChannelConversationsSuccess());
         resolve(res);
       })
@@ -625,6 +626,13 @@ export const followChannel = (data) => (dispatch) =>
     client
       .post(`/xchat/check-user-in-channel/`, data)
       .then((res) => {
+        dispatch(getChannelConversations(data.channel_id, 30))
+          .then((res) => {
+            dispatch(getChannelConversationsFailure());
+          })
+          .catch(() => {
+            dispatch(getChannelConversationsFailure());
+          });
         resolve(res);
       })
       .catch((err) => {

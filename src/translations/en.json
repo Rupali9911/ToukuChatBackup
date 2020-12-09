@@ -1052,7 +1052,9 @@
       "invitationToChannel": "Invitation To Channel",
       "findOutAllTheNewWayForFollower": "Find out about all the ways you can invite user to channel. It can be as simple as scanning a QR code or tapping a button.",
       "copyTextForFollower": "Copy this link to share it via social media, email and more",
-      "scanImageForFollower": "Users can scan this image with a QR code reader to find this account. Download the image or copy HTML tag to share it via social media, email and more."
+      "scanImageForFollower": "Users can scan this image with a QR code reader to find this account. Download the image or copy HTML tag to share it via social media, email and more.",
+      "followCode":"Channel follow code",
+      "wrongFollowCode":"Wrong channel follow code"
     },
     "changeDisplayName": "Change Display Name"
   },

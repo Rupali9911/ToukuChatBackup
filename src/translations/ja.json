@@ -1054,7 +1054,9 @@
       "invitationToChannel": "チャンネルへの直接招待URL",
       "findOutAllTheNewWayForFollower": "ユーザーをチャンネルに招待するすべての方法をご覧ください。 QRコードのスキャンやボタンのタップと同じくらい簡単です。",
       "copyTextForFollower": "このリンクをコピーして、ソーシャルメディアやメールなどで共有します",
-      "scanImageForFollower": "ユーザーはこの画像をQRコードリーダーでスキャンして、このアカウントを見つけることができます。 画像をダウンロードするか、HTMLタグをコピーして、ソーシャルメディアやメールなどで共有します。"
+      "scanImageForFollower": "ユーザーはこの画像をQRコードリーダーでスキャンして、このアカウントを見つけることができます。 画像をダウンロードするか、HTMLタグをコピーして、ソーシャルメディアやメールなどで共有します。",
+      "followCode":"チャネルフォローコード",
+      "wrongFollowCode":"間違ったチャンネルフォローコード"
     },
     "changeDisplayName": "表示名を変更"
   },

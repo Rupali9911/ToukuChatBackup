@@ -275,7 +275,7 @@ export default class ChatMessageBox extends Component {
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      resizeMode: 'cover',  
+                      resizeMode: 'cover',
                       marginTop: 10,
                       marginRight: 5,
                     }}

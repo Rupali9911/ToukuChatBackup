@@ -1053,7 +1053,9 @@
       "invitationToChannel": "邀請加入頻道",
       "findOutAllTheNewWayForFollower": "了解有關邀請用戶參加頻道的所有方式的信息。 它可以像掃描QR碼或點擊按鈕一樣簡單。",
       "copyTextForFollower": "複製此鏈接以通過社交媒體，電子郵件等分享",
-      "scanImageForFollower": "用戶可以使用QR碼閱讀器掃描該圖像以找到該帳戶。 下載圖像或複制HTML標籤以通過社交媒體，電子郵件等共享。"
+      "scanImageForFollower": "用戶可以使用QR碼閱讀器掃描該圖像以找到該帳戶。 下載圖像或複制HTML標籤以通過社交媒體，電子郵件等共享。",
+      "followCode":"頻道追踪代碼",
+      "wrongFollowCode":"錯誤的頻道追踪碼"
     },
     "changeDisplayName": "更改顯示名稱"
   },

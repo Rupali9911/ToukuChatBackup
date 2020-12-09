@@ -649,15 +649,18 @@ class ChannelChats extends Component {
     // this.state.conversations.unshift(sendmsgdata);
     this.props.sendChannelMessage(messageData);
     if (uploadFile.uri) {
-      this.setState({
-        showGalleryModal:false,
-        showAttachmentModal: false
-      },()=>{
-        this.setState({
-          uploadedFiles: [],
-          sendingMedia: false,
-        });
-      });
+      this.setState(
+        {
+          showGalleryModal: false,
+          showAttachmentModal: false,
+        },
+        () => {
+          this.setState({
+            uploadedFiles: [],
+            sendingMedia: false,
+          });
+        },
+      );
     }
     // this.setState({
     //   newMessageText: '',
@@ -1133,7 +1136,8 @@ class ChannelChats extends Component {
     if (!this.props.chatConversation) {
       return null;
     }
-    if (isChatLoading && chatConversation.length <= 0) {
+
+    if (channelLoading && this.props.chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
       return (

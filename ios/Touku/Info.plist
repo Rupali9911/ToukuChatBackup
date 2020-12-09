@@ -173,6 +173,10 @@
 		<string>NunitoSans-Light.ttf</string>
 		<string>NunitoSans-Regular.ttf</string>
 		<string>NotoSansJP-Light.otf</string>
+		<string>arial-mt-light.ttf</string>
+		<string>arial-mt-medium.ttf</string>
+		<string>arial.ttf</string>
+		<string>ArialMTStd-LightItalic.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
