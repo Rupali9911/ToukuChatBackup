@@ -172,7 +172,7 @@ export default class PostCard extends Component {
           }}>
           <Text
             style={{
-              fontFamily: Fonts.thin,
+              fontFamily: Fonts.regular,
               fontSize: 12,
             }}>
             {translate('pages.xchat.noTimelineFound')}
@@ -276,7 +276,7 @@ export default class PostCard extends Component {
     // ) : (
     //   <Text
     //     style={{
-    //       fontFamily: Fonts.thin,
+    //       fontFamily: Fonts.regular,
     //       fontSize: 12,
     //       marginTop: 20,
     //       textAlign: 'center',

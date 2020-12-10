@@ -840,7 +840,12 @@ class LoginSignUp extends Component {
                 </View>
               </View>
               <View>
-                <View style={{marginTop: 30, marginBottom: 10}}>
+                <View
+                  style={{
+                    marginTop: 30,
+                    marginBottom: 10,
+                    alignItems: 'center',
+                  }}>
                   <Text
                     style={
                       selectedLanguageItem.language_name === 'ja'

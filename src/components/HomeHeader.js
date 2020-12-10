@@ -160,7 +160,7 @@ export default class HomeHeader extends Component {
                               }}
                               title={`${item.title}`}
                               titleStyle={{
-                                fontFamily: Fonts.nunitoSansRegular,
+                                fontFamily: Fonts.regular,
                                 fontSize: 14,
                                 fontWeight: '300',
                                 color: item.isSorted ? 'white' : 'black',
@@ -180,7 +180,7 @@ export default class HomeHeader extends Component {
                             }}
                             title={`${item.title}`}
                             titleStyle={{
-                              fontFamily: Fonts.nunitoSansRegular,
+                              fontFamily: Fonts.regular,
                               fontSize: 14,
                               fontWeight: '300',
                               color: item.isSorted ? 'white' : 'black',

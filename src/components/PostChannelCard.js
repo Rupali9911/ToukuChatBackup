@@ -83,7 +83,7 @@ export default class PostChannelCard extends React.Component {
         }}>
         <Text
           style={{
-            fontFamily: Fonts.thin,
+            fontFamily: Fonts.regular,
             fontSize: 12,
           }}>
           {translate('pages.xchat.noChannelFound')}

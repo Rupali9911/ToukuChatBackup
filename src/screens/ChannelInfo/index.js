@@ -453,7 +453,7 @@ class ChannelInfo extends Component {
                               fontFamily:
                                 item.title === 'about'
                                   ? Fonts.regular
-                                  : Fonts.extralight,
+                                  : Fonts.regular,
                             },
                           ]}>
                           {translate(`pages.xchat.${item.title}`)}
@@ -485,7 +485,7 @@ class ChannelInfo extends Component {
                               fontFamily:
                                 item.title === 'about'
                                   ? Fonts.regular
-                                  : Fonts.extralight,
+                                  : Fonts.regular,
                             },
                           ]}>
                           {translate(`pages.xchat.${item.title}`)}
@@ -555,7 +555,7 @@ class ChannelInfo extends Component {
                   </View>
                   {/*<View style={channelInfoStyles.followerDetails}>*/}
                   {/*<Text*/}
-                  {/*style={{fontFamily: Fonts.extralight, marginRight: 5}}>*/}
+                  {/*style={{fontFamily: Fonts.regular, marginRight: 5}}>*/}
                   {/*{translate('pages.xchat.affiliateRewardText')}*/}
                   {/*</Text>*/}
                   {/*<Text style={channelInfoStyles.detailText}>1 %</Text>*/}
@@ -583,8 +583,7 @@ class ChannelInfo extends Component {
               {channelData.is_vip &&
                 channelData.subscription_type === 'member' && (
                   <View style={channelInfoStyles.followerDetails}>
-                    <Text
-                      style={{fontFamily: Fonts.extralight, marginRight: 5}}>
+                    <Text style={{fontFamily: Fonts.regular, marginRight: 5}}>
                       {translate('pages.xchat.vipMonth')}
                     </Text>
                     <Text style={channelInfoStyles.detailText}>

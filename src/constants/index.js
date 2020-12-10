@@ -83,7 +83,7 @@ export const Images = {
   header_bg: require('../../assets/images/header_bg.png'),
   header_bg_small: require('../../assets/images/header_bg_small.png'),
   channel_background: require('../../assets/images/channelBackground.jpeg'),
-  image_app_logo: require('../../assets/images/app_icon.png')
+  image_app_logo: require('../../assets/images/app_icon.png'),
 };
 
 export const Colors = {
@@ -128,21 +128,47 @@ export const Colors = {
 };
 
 export const Fonts = {
+  /** ALREADY SETUP **/
+  // beba_regular: 'BebasNeue-Regular',
+  // regular: 'Poppins-Regular',
+  // medium: 'Poppins-Medium',
+  // thin: 'Poppins-Thin',
+  // light: 'Poppins-Light',
+  // semibold: 'Poppins-SemiBold',
+  // bold: 'Poppins-Bold',
+  // black: 'Poppins-Black',
+  // extralight: 'Poppins-ExtraLight',
+  // extrabold: 'Poppins-ExtraBold',
+  // absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
+  // arialRegular: 'Arial',
+  // nunitoSansLight: 'NunitoSans-Light',
+  // nunitoSansRegular: 'NunitoSans-Regular',
+  // nunitoSansJPLight: 'NotoSansJP-Light',
+
+  /** OLD SETUP **/
+  // beba_regular: 'BebasNeue-Regular',
+  // regular: 'Arial',
+  // medium: 'ArialMT-Medium',
+  // thin: 'Arial',
+  // light: 'ArialMT-Light',
+  // semibold: 'Arial',
+  // bold: 'Arial',
+  // black: 'Arial',
+  // extralight: 'Arial',
+  // extrabold: 'Arial',
+  // arialRegular: 'Arial',
+  // nunitoSansLight: 'ArialMT-Light',
+  // nunitoSansRegular: 'Arial',
+  // nunitoSansJPLight: 'ArialMT-Light',
+
+  /** NEW SETUP **/
   beba_regular: 'BebasNeue-Regular',
-  regular: 'Poppins-Regular',
-  medium: 'Poppins-Medium',
-  thin: 'Poppins-Thin',
-  light: 'Poppins-Light',
-  semibold: 'Poppins-SemiBold',
-  bold: 'Poppins-Bold',
-  black: 'Poppins-Black',
-  extralight: 'Poppins-ExtraLight',
-  extrabold: 'Poppins-ExtraBold',
+  regular: 'Arial',
+  medium: 'ArialMT-Medium',
+  light: 'ArialMT-Light',
   absolute: Platform.OS === 'ios' ? 'The Absolute' : 'The-Absolute',
-  arialRegular: 'Arial',
-  nunitoSansLight: 'NunitoSans-Light',
-  nunitoSansRegular: 'NunitoSans-Regular',
-  nunitoSansJPLight: 'NotoSansJP-Light',
+
+  //  light-italic: 'Arial-Light-Italic',
 };
 
 export const environment = {
@@ -296,7 +322,7 @@ export const SocketEvents = {
   FRIEND_NOTE_COMMENT_DATA: 'friend note comment data',
   DELETE_FRIEND_NOTE_COMMENT: 'delete friend note data',
   LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 'like or unlike friend note',
-  LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment'
+  LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment',
 };
 
 export const NotificationType = {

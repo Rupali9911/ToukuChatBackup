@@ -129,7 +129,7 @@ export default class GroupChatMessageBox extends Component {
           }}>
           <Text
             style={{
-              fontFamily: Fonts.extralight,
+              fontFamily: Fonts.regular,
               fontSize: 12,
               color: Colors.gray_dark,
             }}>

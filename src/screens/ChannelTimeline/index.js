@@ -82,6 +82,8 @@ class ChannelTimeline extends Component {
   render() {
     const {posts} = this.state;
 
+    console.log('pots', posts);
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -96,7 +98,7 @@ class ChannelTimeline extends Component {
             contentContainerStyle={createChannelStyles.mainContainer}
             showsVerticalScrollIndicator={false}
             bounces={false}>
-            <Text style={{fontFamily: Fonts.thin, fontSize: 12, marginTop: 20}}>
+            <Text style={{fontFamily: Fonts.regular, fontSize: 12, marginTop: 20}}>
               {translate('pages.xchat.noTimelineFound')}
             </Text>
           </KeyboardAwareScrollView> */}

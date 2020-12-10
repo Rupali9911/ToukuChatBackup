@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     // width: '100%',
     color: Colors.black,
     fontSize: Platform.isPad ? normalize(8) : 16,
-    fontFamily: Fonts.nunitoSansRegular,
+    fontFamily: Fonts.regular,
     marginStart: 10,
     //alignSelf: 'center',
     paddingTop: 0,

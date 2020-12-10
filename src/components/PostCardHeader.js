@@ -136,14 +136,14 @@ export default class PostCardHeader extends Component {
               //fontFamily: Fonts.smallNunitoRegularText,
               color: Colors.black,
               fontSize: 15,
-              fontFamily: Fonts.nunitoSansRegular,
+              fontFamily: Fonts.regular,
               flex: 1,
             }}>
             {post.channel_name}
           </Text>
           <Text
             style={{
-              fontFamily: Fonts.extralight,
+              fontFamily: Fonts.regular,
               color: Colors.gray_dark,
               fontSize: 13,
               flex: 1,

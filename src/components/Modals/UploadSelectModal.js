@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Image,
@@ -8,15 +8,15 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { Colors, Fonts } from '../../constants';
+import {Colors, Fonts} from '../../constants';
 import LinearGradient from 'react-native-linear-gradient';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { connect } from 'react-redux';
+import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import {connect} from 'react-redux';
 
 class UploadSelectModal extends Component {
   constructor(props) {
     super(props);
-      setI18nConfig(this.props.selectedLanguageItem.language_name);
+    setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {};
   }
 
@@ -25,32 +25,29 @@ class UploadSelectModal extends Component {
   };
 
   render() {
-    const { visible, toggleSelectModal, onSelect } = this.props;
+    const {visible, toggleSelectModal, onSelect} = this.props;
     return (
       <Modal
         isVisible={visible}
         onBackButtonPress={() => toggleSelectModal(false)}
-        onBackdropPress={() => toggleSelectModal(false)}
-      >
+        onBackdropPress={() => toggleSelectModal(false)}>
         <SafeAreaView
           style={{
             // flex: '10%',
             height: '20%',
             alignSelf: 'center',
             width: '60%',
-          }}
-        >
+          }}>
           <View
             style={{
               flex: this.state.orientation === 'LANDSCAPE' ? 0.9 : 0.95,
               backgroundColor: Colors.white,
               justifyContent: 'center',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.5, y: 0.8 }}
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.5, y: 0.8}}
               locations={[0.1, 0.6, 1]}
               colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
               style={{
@@ -59,18 +56,17 @@ class UploadSelectModal extends Component {
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: '100%',
-              }}
-            >
+              }}>
               <Text
                 style={{
                   color: Colors.white,
                   fontSize: 18,
-                  fontFamily: Fonts.extrabold,
-                }}
-              >{translate('pages.xchat.uploadType')}
+                  fontFamily: Fonts.regular,
+                }}>
+                {translate('pages.xchat.uploadType')}
               </Text>
             </LinearGradient>
-            <View style={{ flex: 0.7 }}>
+            <View style={{flex: 0.7}}>
               <TouchableOpacity
                 style={{
                   flex: 0.5,
@@ -78,16 +74,14 @@ class UploadSelectModal extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                onPress={() => this.send('images')}
-              >
+                onPress={() => this.send('images')}>
                 <Text
                   style={{
                     color: Colors.black,
                     fontSize: 14,
                     fontFamily: Fonts.medium,
-                  }}
-                >
-                    {translate('pages.xchat.image')}
+                  }}>
+                  {translate('pages.xchat.image')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -97,16 +91,14 @@ class UploadSelectModal extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                onPress={() => this.send('video')}
-              >
+                onPress={() => this.send('video')}>
                 <Text
                   style={{
                     color: Colors.black,
                     fontSize: 14,
                     fontFamily: Fonts.medium,
-                  }}
-                >
-                    {translate('pages.xchat.videoForUploadType')}
+                  }}>
+                  {translate('pages.xchat.videoForUploadType')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -118,12 +110,11 @@ class UploadSelectModal extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        selectedLanguageItem: state.languageReducer.selectedLanguageItem,
-    };
+  return {
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+  };
 };
 
-const mapDispatchToProps = {
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadSelectModal);

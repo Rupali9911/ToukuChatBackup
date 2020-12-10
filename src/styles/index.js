@@ -33,12 +33,12 @@ export const globalStyles = StyleSheet.create({
     fontSize: 13,
     fontFamily: Fonts.light,
     color: Colors.white,
-    textAlign: 'center',
+    // textAlign: 'center',
   },
 
   smallNunitoLightText: {
     fontSize: 13,
-    fontFamily: Fonts.nunitoSansRegular,
+    fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
   },
@@ -65,19 +65,19 @@ export const globalStyles = StyleSheet.create({
   },
   smallNunitoRegular17Text: {
     fontSize: 17,
-    fontFamily: Fonts.nunitoSansRegular,
+    fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
   },
   smallNunitoRegularText: {
     fontSize: 15,
-    fontFamily: Fonts.nunitoSansRegular,
+    fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
   },
   smallNunitoRegularFW300Text: {
     fontSize: Platform.isPad ? normalize(8) : 15,
-    fontFamily: Fonts.nunitoSansRegular,
+    fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
     fontWeight: '300',
@@ -118,7 +118,7 @@ export const globalStyles = StyleSheet.create({
   },
   normalSemiBoldText: {
     fontSize: 17,
-    fontFamily: Fonts.semibold,
+    fontFamily: Fonts.regular,
     color: Colors.white,
     textAlign: 'center',
   },

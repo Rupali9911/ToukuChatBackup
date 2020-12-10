@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: Colors.white,
     fontSize: Platform.isPad ? 17 : 13,
-    fontFamily: Fonts.nunitoSansLight,
+    fontFamily: Fonts.light,
     marginHorizontal: 5,
   },
   iconTriangle: {

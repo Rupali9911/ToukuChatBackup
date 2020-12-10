@@ -20,7 +20,7 @@ export default class VerificationInputField extends Component {
     super(props);
     this.state = {
       isFocus: false,
-        showEyeIcon: true
+      showEyeIcon: true,
     };
   }
 
@@ -55,9 +55,9 @@ export default class VerificationInputField extends Component {
     }
   };
 
-    onHidePassword= (text) => {
-        this.setState({showEyeIcon: !this.state.showEyeIcon})
-    }
+  onHidePassword = (text) => {
+    this.setState({showEyeIcon: !this.state.showEyeIcon});
+  };
 
   renderInputStatus() {
     switch (this.props.status) {
@@ -100,7 +100,7 @@ export default class VerificationInputField extends Component {
       isSuggestions,
       rightBtnText,
       loading,
-        isEyeIcon,
+      isEyeIcon,
       ...rest
     } = this.props;
 
@@ -155,7 +155,9 @@ export default class VerificationInputField extends Component {
           returnKeyType={returnKeyType}
           keyboardType={keyboardType}
           maxLength={maxLength}
-          secureTextEntry={isEyeIcon ?  showEyeIcon ? true : false : secureTextEntry}
+          secureTextEntry={
+            isEyeIcon ? (showEyeIcon ? true : false) : secureTextEntry
+          }
           onFocus={() => this.onFocus()}
           onBlur={() => this.onBlur()}
           numberOfLines={numberOfLines}
@@ -184,11 +186,18 @@ export default class VerificationInputField extends Component {
         ) : (
           <View>{this.renderInputStatus()}</View>
         )}
-              {isEyeIcon ? (
-                <TouchableOpacity style={{marginRight: 10}} activeOpacity={0.8} onPress={this.onHidePassword.bind(this)}>
-                    <FontAwesome5 name={showEyeIcon ? 'eye': 'eye-slash'} size={15} color={Colors.white} />
-                </TouchableOpacity>
-              ) : null}
+        {isEyeIcon ? (
+          <TouchableOpacity
+            style={{marginRight: 10}}
+            activeOpacity={0.8}
+            onPress={this.onHidePassword.bind(this)}>
+            <FontAwesome5
+              name={showEyeIcon ? 'eye' : 'eye-slash'}
+              size={15}
+              color={Colors.white}
+            />
+          </TouchableOpacity>
+        ) : null}
       </View>
     );
   }
@@ -211,7 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // color: Colors.white,
     fontSize: Platform.isPad ? 17 : 15,
-    fontFamily: Fonts.nunitoSansLight,
+    fontFamily: Fonts.light,
     marginHorizontal: 5,
   },
   iconTriangle: {
@@ -281,5 +290,5 @@ VerificationInputField.defaultProps = {
   isIconRight: false,
   loading: false,
   status: 'normal',
-    isEyeIcon: false,
+  isEyeIcon: false,
 };

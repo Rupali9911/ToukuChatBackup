@@ -657,7 +657,11 @@ class SignUp extends Component {
       });
       return (
         <View
-          style={{marginBottom: 15, flexDirection: 'column', marginStart: 10}}>
+          style={{
+            marginBottom: 15,
+            flexDirection: 'column',
+            marginStart: 10,
+          }}>
           <Text
             style={[
               globalStyles.smallLightText,
@@ -668,25 +672,43 @@ class SignUp extends Component {
             ]}>
             {translate('pages.register.toastr.usrenameExist')}
           </Text>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={globalStyles.smallLightText}>
-              {translate('pages.register.suggestions')}:
-            </Text>
-            {suggestions.map((item, index) => {
-              return (
-                <TouchableOpacity
-                  style={{height: 20}}
-                  onPress={() => this.selectSuggestedUserName(item)}>
-                  <Text
-                    style={[
-                      globalStyles.smallLightText,
-                      {textDecorationLine: 'underline'},
-                    ]}>
-                    {item + '  '}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <Text style={globalStyles.smallLightText}>
+                {translate('pages.register.suggestions')}:
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                borderColor: 'red',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                paddingLeft: 5,
+              }}>
+              {suggestions.map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    style={{marginBottom: 10}}
+                    onPress={() => this.selectSuggestedUserName(item)}>
+                    <Text
+                      style={[
+                        globalStyles.smallLightText,
+                        {textDecorationLine: 'underline', marginHorizontal: 8},
+                      ]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         </View>
       );
@@ -1133,7 +1155,8 @@ class SignUp extends Component {
                       globalStyles.smallLightText,
                       {
                         textAlign: 'left',
-                        marginTop: -10,
+                        marginTop:
+                          this.state.userNameSuggestions.length > 0 ? 10 : -10,
                         marginStart: 10,
                         marginBottom: 5,
                       },
@@ -1143,7 +1166,6 @@ class SignUp extends Component {
                       : translate('pages.register.enterValueInEnglish')}
                   </Text>
                 ) : null}
-
                 {this.showSuggestions()}
               </View>
               <View style={signUpStyles.termsContainer}>

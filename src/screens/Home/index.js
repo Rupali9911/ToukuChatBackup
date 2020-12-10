@@ -1324,9 +1324,10 @@ class Home extends Component {
               }
               mentions={item.mentions}
               date={
-                item.joining_date ? item.timestamp >= item.joining_date
-                  ? item.timestamp
-                  : item.joining_date 
+                item.joining_date
+                  ? item.timestamp >= item.joining_date
+                    ? item.timestamp
+                    : item.joining_date
                   : item.timestamp
               }
               image={item.group_picture}
@@ -1585,7 +1586,6 @@ class Home extends Component {
                   color: Colors.black,
                   marginStart: 10,
                   fontSize: 14,
-                  fontWeight: '600',
                 },
               ]}>
               {userConfig.display_name}

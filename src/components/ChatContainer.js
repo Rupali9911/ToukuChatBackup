@@ -532,13 +532,11 @@ class ChatContainer extends Component {
                     </View>
                   </Fragment>
                 ) : (
-                  <Text
-                    numberOfLines={2}
-                    style={{fontFamily: Fonts.extralight}}>
+                  <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
                     {repliedMessage.message_body}
                   </Text>
                 )}
-                {/* <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+                {/* <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
                   {repliedMessage.message_body}
                 </Text> */}
               </View>

@@ -521,9 +521,7 @@ class GroupChatContainer extends Component {
                     </View>
                   </Fragment>
                 ) : (
-                  <Text
-                    numberOfLines={2}
-                    style={{fontFamily: Fonts.extralight}}>
+                  <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
                     {repliedMessage.message_body.text}
                   </Text>
                 )}

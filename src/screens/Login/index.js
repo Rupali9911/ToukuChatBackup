@@ -1213,7 +1213,7 @@ class Login extends Component {
                 </View>
               </View>
               <View>
-                <View style={{marginTop: 25}}>
+                <View style={{marginTop: 25, alignItems: 'center'}}>
                   <Text style={globalStyles.smallLightText}>
                     {translate('pages.welcome.OrLoginWith')}
                   </Text>

@@ -1,6 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons, Fonts } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {Images, Colors, Icons, Fonts} from '../../constants';
+const {width, height} = Dimensions.get('window');
 
 export const createChannelStyles = StyleSheet.create({
   mainContainer: {
@@ -166,7 +166,7 @@ export const createChannelStyles = StyleSheet.create({
     marginVertical: 20,
   },
   detailHeadingText: {
-    fontFamily: Fonts.extralight,
+    fontFamily: Fonts.regular,
   },
   detailText: {
     fontFamily: Fonts.light,

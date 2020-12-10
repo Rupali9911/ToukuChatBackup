@@ -703,7 +703,7 @@ class CreateChannel extends Component {
                 <Text
                   style={[
                     createChannelStyles.tabBarTitle,
-                    isManage && {fontFamily: Fonts.thin},
+                    isManage && {fontFamily: Fonts.regular},
                   ]}>
                   {translate('pages.xchat.about')}
                 </Text>
@@ -717,7 +717,7 @@ class CreateChannel extends Component {
                 <Text
                   style={[
                     createChannelStyles.tabBarTitle,
-                    !isManage && {fontFamily: Fonts.thin},
+                    !isManage && {fontFamily: Fonts.regular},
                   ]}>
                   {translate('pages.xchat.manage')}
                 </Text>
@@ -827,7 +827,7 @@ class CreateChannel extends Component {
                 )}
 
                 <View style={createChannelStyles.followerDetails}>
-                  <Text style={{fontFamily: Fonts.extralight}}>
+                  <Text style={{fontFamily: Fonts.regular}}>
                     {translate('pages.xchat.affiliateFollower')}
                   </Text>
                   <View

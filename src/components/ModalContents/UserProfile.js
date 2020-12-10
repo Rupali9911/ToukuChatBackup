@@ -147,7 +147,7 @@ class UserProfile extends Component {
 
         let file = response;
         let files = [file];
-        console.log('files',files);
+        console.log('files', files);
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
         );
@@ -318,7 +318,7 @@ class UserProfile extends Component {
                   color: Colors.black,
                   marginBottom: 10,
                   fontSize: normalize(12),
-                  fontFamily: Fonts.nunitoSansJPLight,
+                  fontFamily: Fonts.light,
                 },
               ]}>
               {userData.username}
@@ -359,7 +359,7 @@ class UserProfile extends Component {
                   style={[
                     globalStyles.smallRegularText,
                     styles.textNormal,
-                    {fontFamily: Fonts.nunitoSansJPLight},
+                    {fontFamily: Fonts.light},
                   ]}>
                   {translate('common.phone')}
                 </Text>
@@ -421,7 +421,7 @@ const ProfileItem = (props) => {
           style={[
             globalStyles.smallRegularText,
             styles.textNormal,
-            {fontFamily: Fonts.nunitoSansJPLight},
+            {fontFamily: Fonts.light},
           ]}>
           {title}
         </Text>
@@ -431,7 +431,7 @@ const ProfileItem = (props) => {
             styles.textNormal,
             {
               fontSize: Platform.isPad ? normalize(8) : normalize(13),
-              fontFamily: Fonts.nunitoSansJPLight,
+              fontFamily: Fonts.light,
               color: 'rgba(87,132,178,1)',
             },
           ]}>

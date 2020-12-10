@@ -321,13 +321,11 @@ class GroupChatMessageBubble extends Component {
                     </View>
                   </Fragment>
                 ) : (
-                  <Text
-                    numberOfLines={2}
-                    style={{fontFamily: Fonts.extralight}}>
+                  <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
                     {replyMessage.message}
                   </Text>
                 )}
-                {/* <Text numberOfLines={2} style={{fontFamily: Fonts.extralight}}>
+                {/* <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
                   {replyMessage.message}
                 </Text> */}
               </View>
@@ -472,7 +470,7 @@ class GroupChatMessageBubble extends Component {
                         style={{
                           color: Colors.black,
                           fontSize: 12,
-                          fontFamily: Fonts.extralight,
+                          fontFamily: Fonts.regular,
                         }}>
                         {translate('pages.xchat.messageUnsent')}
                       </Text>
@@ -663,7 +661,7 @@ class GroupChatMessageBubble extends Component {
                         style={{
                           color: Colors.black,
                           fontSize: 12,
-                          fontFamily: Fonts.extralight,
+                          fontFamily: Fonts.regular,
                         }}>
                         {translate('pages.xchat.messageUnsent')}
                       </Text>
