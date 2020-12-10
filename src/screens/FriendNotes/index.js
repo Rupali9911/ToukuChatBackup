@@ -29,6 +29,7 @@ import {
   postFriendNotes,
   editFriendNotes,
   deleteFriendNotes,
+  likeUnlikeNote
 } from '../../redux/reducers/friendReducer';
 import Toast from '../../components/Toast';
 import {ChangeNameModal, ConfirmationModal} from '../../components/Modals';
@@ -102,6 +103,15 @@ class FriendNotes extends Component {
         this.hendleDeleteNote(message.text.data.message_details);
         break;
       }
+      case SocketEvents.LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 
+        this.handleLikeUnlikeNote(message);
+        break;
+      case SocketEvents.FRIEND_NOTE_COMMENT_DATA:
+        this.handleCommentAdd(message);
+        break;
+      case SocketEvents.DELETE_FRIEND_NOTE_COMMENT:
+        this.handleDeleteComment(message);
+        break;
     }
   }
 
@@ -197,6 +207,44 @@ class FriendNotes extends Component {
       },
     });
   };
+
+  handleLikeUnlikeNote = (message) => {
+    let data = message.text.data.message_details.data;
+    if(data){
+      console.log('data',data);
+      let array = this.state.data.results;
+      let item = array.find((e)=>e.id===data.note_id);
+      let index = array.indexOf(item);
+      item['is_liked'] = data.like.like;
+      item['liked_by_count'] = data.like.like ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+      array.splice(index, 1, item);
+      this.setState({data: {...this.state.data, results: array}});
+    }
+  }
+
+  handleCommentAdd = (message) => {
+    let data = message.text.data.message_details.data;
+    if(data){
+      let array = this.state.data.results;
+      let item = array.find((e)=>e.id===data.friend_note);
+      let index = array.indexOf(item);
+      item['comment_count'] = item.comment_count + 1
+      array.splice(index, 1, item);
+      this.setState({data: {...this.state.data, results: array}});
+    }
+  }
+
+  handleDeleteComment = (message) => {
+    let data = message.text.data.message_details.data;
+    if(data){
+      let array = this.state.data.results;
+      let item = array.find((e)=>e.id===data.note_id);
+      let index = array.indexOf(item);
+      item['comment_count'] = item.comment_count - 1
+      array.splice(index, 1, item);
+      this.setState({data: {...this.state.data, results: array}});
+    }
+  }
 
   onCancelDeleteNotePress = () => {
     this.setState({
@@ -312,6 +360,23 @@ class FriendNotes extends Component {
       });
   };
 
+  likeUnlike = (note_id, index) => {
+    let data = { note_id: note_id }
+    this.props.likeUnlikeNote(data)
+      .then((res)=>{
+        if(res){
+          // let array = this.state.data.results;
+          // let item = array[index];
+          // item['is_liked'] = res.like;
+          // item['liked_by_count'] = res.like?(item.liked_by_count+1):(item.liked_by_count-1);
+          // array.splice(index,1,item);
+          // this.setState({data: {...this.state.data, results: array}});
+        }
+      }).catch((err)=>{
+        console.log('err',err);
+      });
+  }
+
   render() {
     const {
       orientation,
@@ -421,6 +486,7 @@ class FriendNotes extends Component {
                 borderTopWidth: 0.3,
               }}>
               <CommonNotes
+                isFriend={true}
                 data={this.state.data}
                 onPost={this.onPostNote}
                 onEdit={this.onEditNote}
@@ -436,6 +502,7 @@ class FriendNotes extends Component {
                     editNoteIndex: null,
                   })
                 }
+                onLikeUnlike={this.likeUnlike}
                 editNoteIndex={this.state.editNoteIndex}
                 showTextBox={this.state.showTextBox}
                 userData={this.props.userData}
@@ -536,6 +603,7 @@ const mapDispatchToProps = {
   postFriendNotes,
   editFriendNotes,
   deleteFriendNotes,
+  likeUnlikeNote
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendNotes);

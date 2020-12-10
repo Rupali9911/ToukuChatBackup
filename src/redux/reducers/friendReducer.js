@@ -595,3 +595,62 @@ export const unpinFriend = (friendKey, friendId, data) => (dispatch) =>
         reject(err);
       });
   });
+
+//#region Firend Note
+export const likeUnlikeNote = (data) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    client.post(`xchat/like-friend-note/`,data)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      reject(err);
+    })
+  });
+//#endregion
+
+//#region Comment on group note
+export const commentOnNote = (data) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    client.post(`xchat/friend-note-comment/`,data)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      reject(err);
+    })
+  });
+
+export const getFriendCommentList = (note_id,offset) => (dispatch) => 
+  new Promise(function(resolve,reject){
+    client
+    .get(`xchat/friend-note-comment-list/?note_id=${note_id}&limit=20&offset=${offset}`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      reject(err);
+    })
+  });
+
+export const likeUnlikeComment = (data) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    client.post(`xchat/like-friend-note-comment/`,data)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      reject(err);
+    })
+  });
+
+export const deleteFriendComment = (comment_id) => (dispatch) => 
+  new Promise(function(resolve,reject){
+    client.delete(`xchat/friend-note-comment/${comment_id}/`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      reject(err);
+    });
+  })

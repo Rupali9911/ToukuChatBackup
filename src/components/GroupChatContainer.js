@@ -407,7 +407,7 @@ class GroupChatContainer extends Component {
                 <View style={{flex: 8}}>
                   <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                     {repliedMessage.sender_id === this.props.userData.id
-                      ? 'You'
+                      ? translate('pages.xchat.you')
                       : repliedMessage.sender_display_name
                       ? repliedMessage.sender_display_name
                       : repliedMessage.sender_username}

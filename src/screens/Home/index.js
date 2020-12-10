@@ -1378,7 +1378,7 @@ class Home extends Component {
                     ? translate('pages.xchat.video')
                     : item.last_msg_type === 'doc'
                     ? translate('pages.xchat.document')
-                    : item.last_msg.type === 'audio'
+                    : item.last_msg_type === 'audio'
                     ? translate('pages.xchat.audio')
                     : ''
                   : item.last_msg_id

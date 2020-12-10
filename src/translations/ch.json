@@ -674,7 +674,8 @@
         "selectChatText": "选择聊天以删除聊天记录",
         "chatHistoryDelete": "所选聊天的聊天记录将被删除。",
         "enterChannelId": "请输入频道ID。",
-        "alreadyFollowed": "您已经关注了该频道。"
+        "alreadyFollowed": "您已经关注了该频道。",
+        "deleteComment": "删除评论"
       },
       "totalMessages": "消息总数",
       "toukuPoints": "TOUKU积分",
@@ -1025,7 +1026,12 @@
       "optional": "可选的",
       "PleaseEnterOtp": "请输入OTP。",
       "addNewNote": "在这里写新笔记",
-      "donloading": "正在下载"
+      "donloading": "正在下载",
+      "like": "喜欢",
+      "comment": "评论",
+      "unlike": "不像",
+      "deleteCommentText": "你确定要删除此评论吗？",
+      "enterComment": "输入您的评论。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",

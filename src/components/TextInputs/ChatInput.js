@@ -9,6 +9,7 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  Animated,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Colors, Icons, Fonts} from '../../constants';
@@ -25,6 +26,8 @@ export default class ChatInput extends Component {
     this.state = {};
     this.state = {
       highlightItemId: false,
+      suggestionData: [],
+      suggestionDataHeight: 0,
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -39,64 +42,64 @@ export default class ChatInput extends Component {
   groupMembersMentions = (value) => {
     const {groupMembers, currentUserData} = this.props;
     let splitNewMessageText = value.split(' ');
-    let text = splitNewMessageText[splitNewMessageText.length - 1];
-    let newMessageMentions = [];
-    splitNewMessageText
-      .map((text) => {
-        let mention = null;
-        groupMembers.forEach((groupMember) => {
-          if (text === `~${groupMember.id}~`) {
-            mention = `@${groupMember.display_name}`;
-            newMessageMentions = [...newMessageMentions, groupMember.id];
+    // let text = splitNewMessageText[splitNewMessageText.length - 1];
+    let text = value;
+    // let splitNewMessageText = value.split(' ');
+    // let newMessageMentions = [];
+    // const newMessageTextWithMention = splitNewMessageText
+    //   .map((text) => {
+    //     let mention = null;
+    //     groupMembers.forEach((groupMember) => {
+    //       if (text === `~${groupMember.id}~`) {
+    //         mention = `@${groupMember.display_name}`;
+    //         newMessageMentions = [...newMessageMentions, groupMember.id];
+    //       }
+    //     });
+    //     if (mention) {
+    //       return mention;
+    //     } else {
+    //       return text;
+    //     }
+    //   })
+    //   .join(' ');
+    if (groupMembers && currentUserData) {
+      let suggestionRowHeight;
+      if(text.substring(1).length){
+        let array = groupMembers.filter((member) => {
+          if (member.id !== currentUserData.id) {
+            // return splitNewMessageText.map((text) => {
+              return member.display_name
+                .toLowerCase()
+                .startsWith(text.substring(1).toLowerCase())
+          }else{
+            return false;
           }
         });
-        if (mention) {
-          return mention;
-        } else {
-          return text;
-        }
-      })
-      .join(' ');
-
-    if (groupMembers && currentUserData) {
-      return groupMembers.filter((member) => {
-        if (member.id !== currentUserData.id) {
-          // return splitNewMessageText.map((text) => {
-          if (
-            text.substring(1) &&
-            member.display_name
-              .toLowerCase()
-              .startsWith(text.substring(1).toLowerCase())
-          ) {
-            return member;
-          } else if (text.substring(1).length) {
-            return null;
-          }
-          return member;
-        }
-        // });
-        // if (
-        //   value.substring(1) &&
-        //   member.display_name
-        //     .toLowerCase()
-        //     .startsWith(value.substring(1).toLowerCase())
-        // ) {
-        //   return member;
-        // } else if (value.substring(1).length) {
-        //   return null;
-        // }
-        // return member;
-        return null;
-      });
+        suggestionRowHeight =
+        array < 11
+            ? array * normalize(22) + 5
+            : normalize(220) + 5;
+        this.setState({suggestionData: array, suggestionDataHeight: suggestionRowHeight});
+      }else{
+        let array = groupMembers.filter(member => member.id !== currentUserData.id);
+        suggestionRowHeight =
+        array < 11
+            ? array * normalize(22) + 5
+            : normalize(220) + 5;
+        this.setState({suggestionData: array, suggestionDataHeight: suggestionRowHeight});
+      }
+      this.forceUpdate();
+    }else{
+      this.setState({suggestionData: [], suggestionDataHeight: 0});
     }
-    return null;
   };
 
   suggestionsDataHeight = (value) => {
-    console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
+    // console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
     let groupMembersLength;
     let suggestionRowHeight;
     // groupMembersLength = this.groupMembersMentions(value).length;
+    groupMembersLength = this.state.suggestionData.length;
     console.log('render -> groupMembersLength', groupMembersLength);
     suggestionRowHeight =
       groupMembersLength < 11
@@ -122,6 +125,7 @@ export default class ChatInput extends Component {
       sendEnable,
       groupMembers,
     } = this.props;
+    const {suggestionData, suggestionDataHeight} = this.state;
     // let groupMembersLength;
     // let suggestionRowHeight;
     // if (groupMembers) {
@@ -139,6 +143,7 @@ export default class ChatInput extends Component {
     if (value.length === 0) {
       this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
     }
+    console.log('suggestionData',suggestionData);
     return (
       <View
         style={{
@@ -213,7 +218,7 @@ export default class ChatInput extends Component {
                   multiline={true}
                   textInputStyle={chatInput.textInput}
                   suggestionsPanelStyle={{
-                    width: '100%',
+                    width: '100%', 
                     overflow: 'hidden',
                     position: 'absolute',
                     top: -this.suggestionsDataHeight(value),
@@ -225,17 +230,24 @@ export default class ChatInput extends Component {
                   trigger={'@'}
                   triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
                   value={value}
-                  onChangeText={(message) => onChangeText(message)}
+                  onChangeText={(message) => {
+                    if(!message.includes('@')){
+                      this.setState({suggestionData: []});
+                    }
+                    onChangeText(message)
+                  }}
                   placeholder={placeholder}
                   autoCorrect={false}
-                  triggerCallback={() => {
-                    console.log('ChatInput -> render -> triggerCallback');
+                  triggerCallback={(lastKeyword) => {
+                    console.log('ChatInput -> render -> triggerCallback',lastKeyword);
+                    this.groupMembersMentions(lastKeyword);
                   }}
-                  suggestionsData={this.groupMembersMentions(value)} // array of objects
+                  suggestionsData={suggestionData} // array of objects
                   keyExtractor={(item, index) => item.id}
                   renderSuggestionsRow={({item, index}, hidePanel) => {
                     return (
                       <GHTouchableHighlight
+                        key={index+''}
                         underlayColor="#FFB582"
                         onShowUnderlay={() => {
                           this.setState({highlightItemId: item.id});
@@ -285,7 +297,7 @@ export default class ChatInput extends Component {
                       </GHTouchableHighlight>
                     );
                   }}
-                  suggestionRowHeight={this.suggestionsDataHeight(value)}
+                  suggestionRowHeight={suggestionDataHeight}
                   horizontal={false}
                   customOnContentSizeChange={({nativeEvent}) => {
                     this.forceUpdate();

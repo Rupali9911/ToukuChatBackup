@@ -105,6 +105,7 @@ export const Colors = {
   dark_gray: '#2c3e50',
   dark_orange: '#e15b63',
   light_gray: '#909093',
+  light_gray_2: '#b6b9bb9e',
   gradient_4: '#ff8960',
   gradient_5: '#ff62a5',
   black_light: '#0a1f44',
@@ -288,6 +289,14 @@ export const SocketEvents = {
   FRIEND_NOTE_DATA_DELETED: 'friend note data deleted',
   FRIEND_DISPLAY_NAME_DATA: 'friend display name data',
   DELETE_MULTIPLE_CHATS: 'delete multiple chats',
+  LIKE_OR_UNLIKE_GROUP_NOTE_DATA: 'like or unlike group note',
+  LIKE_OR_UNLIKE_GROUP_NOTE_COMMENT_DATA: 'like or unlike group note comment',
+  DELETE_GROUP_NOTE_COMMENT: 'delete group note comment',
+  GROUP_NOTE_COMMENT_DATA: 'group note comment',
+  FRIEND_NOTE_COMMENT_DATA: 'friend note comment data',
+  DELETE_FRIEND_NOTE_COMMENT: 'delete friend note data',
+  LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 'like or unlike friend note',
+  LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment'
 };
 
 export const NotificationType = {

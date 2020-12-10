@@ -674,7 +674,8 @@
         "selectChatText": "選擇聊天以刪除聊天記錄",
         "chatHistoryDelete": "所選聊天的聊天記錄將被刪除。",
         "enterChannelId": "請輸入頻道ID。",
-        "alreadyFollowed": "您已經關注了該頻道。"
+        "alreadyFollowed": "您已經關注了該頻道。",
+        "deleteComment": "刪除評論"
       },
       "totalMessages": "消息總數",
       "toukuPoints": "TOUKU积分",
@@ -1025,7 +1026,12 @@
       "optional": "可選的",
       "PleaseEnterOtp": "請輸入OTP。",
       "addNewNote": "在這裡寫新筆記",
-      "donloading": "正在下载"
+      "donloading": "正在下载",
+      "like": "喜歡",
+      "comment": "評論",
+      "unlike": "不像",
+      "deleteCommentText": "你確定要刪除此評論嗎？",
+      "enterComment": "輸入您的評論。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

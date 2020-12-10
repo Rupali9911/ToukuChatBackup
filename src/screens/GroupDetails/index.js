@@ -50,6 +50,7 @@ import {
   setCurrentGroup,
   setGroupConversation,
   getLocalUserGroups,
+  likeUnlikeGroupNote
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ConfirmationModal} from '../../components/Modals';
@@ -213,6 +214,15 @@ class GroupDetails extends Component {
         this.hendleEditNote(message.text.data.message_details);
         break;
       }
+      case SocketEvents.LIKE_OR_UNLIKE_GROUP_NOTE_DATA: 
+        this.handleLikeUnlikeNote(message);
+        break;
+      case SocketEvents.GROUP_NOTE_COMMENT_DATA:
+        this.handleCommentAdd(message);
+        break;
+      case SocketEvents.DELETE_GROUP_NOTE_COMMENT:
+        this.handleDeleteComment(message);
+        break;
     }
   }
   setAdmin = (id, type) => {
@@ -658,6 +668,43 @@ class GroupDetails extends Component {
     });
   };
 
+  handleLikeUnlikeNote = (message) => {
+    let data = message.text.data.message_details;
+    if(data){
+      let array = this.state.data.results;
+      let item = array.find((e)=>e.id===data.note_id);
+      let index = array.indexOf(item);
+      item['is_liked'] = data.like.like;
+      item['liked_by_count'] = data.like.like ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+      array.splice(index, 1, item);
+      this.setState({data: {...this.state.data, results: array}});
+    }
+  }
+
+  handleCommentAdd = (message) => {
+    let data = message.text.data.message_details;
+    if(data){
+      let array = this.state.data.results;
+      let item = array.find((e)=>e.id===data.group_note);
+      let index = array.indexOf(item);
+      item['comment_count'] = item.comment_count + 1
+      array.splice(index, 1, item);
+      this.setState({data: {...this.state.data, results: array}});
+    }
+  }
+
+  handleDeleteComment = (message) => {
+    let data = message.text.data.message_details;
+    if(data){
+      let array = this.state.data.results;
+      let item = array.find((e)=>e.id===data.note_id);
+      let index = array.indexOf(item);
+      item['comment_count'] = item.comment_count - 1
+      array.splice(index, 1, item);
+      this.setState({data: {...this.state.data, results: array}});
+    }
+  }
+
   onCancelDeleteNotePress = () => {
     this.setState({
       showDeleteNoteConfirmationModal: false,
@@ -780,6 +827,23 @@ class GroupDetails extends Component {
         });
       });
   };
+
+  likeUnlike = (note_id, index) => {
+    let data = { note_id: note_id }
+    this.props.likeUnlikeGroupNote(data)
+      .then((res)=>{
+        if(res){
+          // let array = this.state.data.results;
+          // let item = array[index];
+          // item['is_liked'] = res.like;
+          // item['liked_by_count'] = res.like?(item.liked_by_count+1):(item.liked_by_count-1);
+          // array.splice(index,1,item);
+          // this.setState({data: {...this.state.data, results: array}});
+        }
+      }).catch((err)=>{
+        console.log('err',err);
+      });
+  }
 
   render() {
     const {
@@ -1100,6 +1164,7 @@ class GroupDetails extends Component {
                     editNoteIndex: null,
                   })
                 }
+                onLikeUnlike={this.likeUnlike}
                 editNoteIndex={this.state.editNoteIndex}
                 showTextBox={this.state.showTextBox}
                 userData={this.props.userData}
@@ -1169,6 +1234,7 @@ const mapDispatchToProps = {
   setGroupConversation,
   getLocalUserGroups,
   setCommonChatConversation,
+  likeUnlikeGroupNote
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);

@@ -93,7 +93,8 @@ class CreateGroupChat extends Component {
       } else {
         // let source = response;
         // You can also display the image using data:
-        let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        // let source = {uri: 'data:image/jpeg;base64,' + response.data};
+        let source = response;
         this.setState({
           groupImagePath: source,
         });
@@ -154,7 +155,7 @@ class CreateGroupChat extends Component {
     } else {
       if (groupImagePath.uri != null) {
         this.setState({loading: true});
-        let file = groupImagePath.uri;
+        let file = groupImagePath;
         let files = [file];
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,

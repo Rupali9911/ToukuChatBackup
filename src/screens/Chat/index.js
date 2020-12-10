@@ -414,7 +414,7 @@ class Chat extends Component {
       'checkEventTypes -> message.text.data.type',
       // message.text.data.type,
       // this.props.currentRouteName,
-      message,
+      JSON.stringify(message),
     );
     if (message.text.data.socket_event_id) {
       updateLastEventId(message.text.data.socket_event_id);
@@ -2848,7 +2848,7 @@ class Chat extends Component {
                       ? translate('pages.xchat.video')
                       : item.last_msg_type === 'doc'
                       ? translate('pages.xchat.document')
-                      : item.last_msg.type === 'audio'
+                      : item.last_msg_type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
                     : item.last_msg_id

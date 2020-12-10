@@ -674,7 +674,8 @@
         "selectChatText": "チャットを選択してチャット履歴を削除します",
         "chatHistoryDelete": "選択したチャットのチャット履歴が削除されます。",
         "enterChannelId": "チャネルIDを入力してください。",
-        "alreadyFollowed": "あなたはすでにこのチャンネルをフォローしています。"
+        "alreadyFollowed": "あなたはすでにこのチャンネルをフォローしています。",
+        "deleteComment": "コメントを削除"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",
@@ -1026,7 +1027,12 @@
       "optional": "オプション",
       "PleaseEnterOtp": "OTPを入力してください。",
       "addNewNote": "ここに新しいメモを書く",
-      "donloading": "ダウンロード"
+      "donloading": "ダウンロード",
+      "like": "いいね",
+      "comment": "コメント",
+      "unlike": "いいね",
+      "deleteCommentText": "このコメントを削除してもよろしいですか？",
+      "enterComment": "コメントを入力してください。"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

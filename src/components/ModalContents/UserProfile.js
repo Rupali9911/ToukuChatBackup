@@ -147,6 +147,7 @@ class UserProfile extends Component {
 
         let file = response;
         let files = [file];
+        console.log('files',files);
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
         );
