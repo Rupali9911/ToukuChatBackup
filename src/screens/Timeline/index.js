@@ -47,6 +47,9 @@ class Timeline extends Component {
               .getTrendTimeline(this.props.userData.user_type)
               .then((res) => {
                 this.setState({isLoading: false});
+              })
+              .catch((err) => {
+                this.setState({isLoading: false});
               });
           },
         },
@@ -56,9 +59,14 @@ class Timeline extends Component {
           icon: Icons.icon_setting,
           action: () => {
             this.setState({activeTab: 'following'});
-            this.props.getFollowingTimeline().then((res) => {
-              this.setState({isLoading: false});
-            });
+            this.props
+              .getFollowingTimeline()
+              .then((res) => {
+                this.setState({isLoading: false});
+              })
+              .catch((err) => {
+                this.setState({isLoading: false});
+              });
           },
         },
         {
@@ -70,6 +78,9 @@ class Timeline extends Component {
             this.props
               .getRankingTimeline(this.props.userData.user_type)
               .then((res) => {
+                this.setState({isLoading: false});
+              })
+              .catch((err) => {
                 this.setState({isLoading: false});
               });
           },
@@ -139,6 +150,9 @@ class Timeline extends Component {
               this.showData();
             });
         });
+      })
+      .catch((err) => {
+        this.setState({isLoading: false});
       });
   }
 

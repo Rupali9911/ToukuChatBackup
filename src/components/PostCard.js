@@ -22,6 +22,7 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
 import ReadMore from 'react-native-read-more-text';
+import PostChannelItem from '../components/PostChannelItem';
 
 const {width, height} = Dimensions.get('window');
 
@@ -32,6 +33,7 @@ export default class PostCard extends Component {
       visible: false,
       audioPlayingId: null,
       perviousPlayingAudioId: null,
+      readMore: false,
     };
   }
 
@@ -63,7 +65,23 @@ export default class PostCard extends Component {
     // ...
   };
 
+  toggleNumberOfLines = (check) => {
+    if (check === 'less') {
+      this.setState({readMore: false});
+    } else {
+      this.setState({readMore: true});
+    }
+  };
+
   renderPostItem = ({item: post, index}) => {
+    console.log('post', post);
+    let newArray = [];
+    post.text &&
+      post.text.length > 0 &&
+      post.text.map((data, index) => {
+        return newArray.push(data.text);
+      });
+
     const {menuItems, isChannelTimeline} = this.props;
     return (
       <View
@@ -78,82 +96,7 @@ export default class PostCard extends Component {
           post={post}
           isChannelTimeline={isChannelTimeline}
         />
-        {post.media.audio && post.media.audio.length ? (
-          <View style={{marginTop: 10}}>
-            <AudioPlayerCustom
-              onAudioPlayPress={(id) =>
-                this.setState({
-                  audioPlayingId: id,
-                  perviousPlayingAudioId: this.state.audioPlayingId,
-                })
-              }
-              audioPlayingId={this.state.audioPlayingId}
-              perviousPlayingAudioId={this.state.perviousPlayingAudioId}
-              postId={post.id}
-              url={post.media.audio[0]}
-            />
-          </View>
-        ) : post.media.image && post.media.image.length ? (
-          <View style={{margin: 5}}>
-            <ScalableImage src={post.media.image[0]} />
-          </View>
-        ) : post.media.video && post.media.video.length ? (
-          <View style={{margin: 5}}>
-            <VideoPlayerCustom url={post.media.video[0]} />
-          </View>
-        ) : null}
-        <View style={{marginHorizontal: '4%', marginVertical: 5}}>
-          <HyperLink
-            onPress={(url, text) => {
-              Linking.openURL(url);
-            }}
-            linkStyle={{
-              color: 'rgba(0,248,159,1)',
-              textDecorationLine: 'underline',
-            }}>
-            <ReadMore
-              numberOfLines={2}
-              renderTruncatedFooter={this._renderTruncatedFooter}
-              renderRevealedFooter={this._renderRevealedFooter}
-              onReady={this._handleTextReady}>
-              {post.text && post.text.length > 0 ? (
-                post.text.map((data, index) => {
-                  return index == 0 ? (
-                    <Text
-                      style={{
-                        fontFamily: Fonts.regular,
-                        fontSize: 16,
-                      }}>
-                      {data.text}
-                    </Text>
-                  ) : (
-                    <Text
-                      style={{
-                        fontFamily: Fonts.regular,
-                        fontSize: 16,
-                      }}>
-                      {data.text}
-                      {'\n'}
-                    </Text>
-                  );
-                })
-              ) : (
-                <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
-                  {post.mutlilanguage_message_body
-                    ? post.mutlilanguage_message_body.en
-                    : ''}
-                </Text>
-              )}
-              {/* <Text style={{fontFamily: Fonts.regular, fontSize: 16}}>
-                {post.text && post.text.length > 0
-                  ? post.text[0].text
-                  : post.mutlilanguage_message_body
-                  ? post.mutlilanguage_message_body.en
-                  : ''}
-              </Text> */}
-            </ReadMore>
-          </HyperLink>
-        </View>
+        <PostChannelItem post={post} />
       </View>
     );
   };

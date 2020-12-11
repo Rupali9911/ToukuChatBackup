@@ -198,6 +198,24 @@ export const userSendOTPAndNumber = (signUpData) => (dispatch) =>
         reject(err);
       });
   });
+export const userSendOTPUpdateNumber = (signUpData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getSendOtpRequest());
+    client
+      .post('/xchat/send-otp-update-number/', signUpData)
+      .then((res) => {
+        if (res.status === true) {
+          dispatch(getSendOtpSuccess());
+        } else {
+          dispatch(getSendOtpFailure());
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getSendOtpFailure());
+        reject(err);
+      });
+  });
 
 export const userVerifyOTP = (verifyData) => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -234,6 +252,36 @@ export const userVerifyOTPAndAddNumber = (verifyData) => (dispatch) =>
     dispatch(getVerifyOtpRequest());
     client
       .post('/xchat/verify-otp-add-number/', verifyData)
+      .then((res) => {
+        if (res.status === true) {
+          dispatch(getVerifyOtpSuccess());
+        } else {
+          dispatch(getVerifyOtpFailure());
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getVerifyOtpFailure());
+        // reject(err);
+        if (err.response) {
+          if (err.response.data) {
+            if (err.response.data.detail) {
+              Toast.show({
+                title: '',
+                text: err.response.data.detail.toString(),
+                type: 'primary',
+              });
+            }
+          }
+        }
+      });
+  });
+
+export const userVerifyOTPAndUpdateNumber = (verifyData) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getVerifyOtpRequest());
+    client
+      .post('/xchat/verify-otp-update-number/', verifyData)
       .then((res) => {
         if (res.status === true) {
           dispatch(getVerifyOtpSuccess());

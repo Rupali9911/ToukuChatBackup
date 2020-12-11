@@ -63,6 +63,9 @@ class UserProfile extends Component {
   onShowChangeNameModal() {
     this.setState({isChangeNameModalVisible: true});
   }
+  onShowChangeMobileModal() {
+    this.setState({isUpdatePhoneModalVisible: true});
+  }
 
   onUserImageCameraPress() {
     var options = {
@@ -350,7 +353,8 @@ class UserProfile extends Component {
             <ProfileItem
               title={translate('common.phone')}
               value={userData.phone}
-              editable={false}
+              editable={true}
+              onEditIconPress={() => this.onShowChangeMobileModal()}
             />
           ) : (
             <View style={styles.inputTextContainer}>
@@ -406,6 +410,7 @@ class UserProfile extends Component {
           onRequestClose={() =>
             this.setState({isUpdatePhoneModalVisible: false})
           }
+          editable={userData.phone ? true : false}
         />
       </View>
     );
