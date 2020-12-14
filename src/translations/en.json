@@ -1062,7 +1062,8 @@
       "copyTextForFollower": "Copy this link to share it via social media, email and more",
       "scanImageForFollower": "Users can scan this image with a QR code reader to find this account. Download the image or copy HTML tag to share it via social media, email and more.",
       "followCode":"Channel follow code",
-      "wrongFollowCode":"Wrong channel follow code"
+      "wrongFollowCode":"Wrong channel follow code",
+      "referralOneField3":"* Channel ID:"
     },
     "changeDisplayName": "Change Display Name"
   },
