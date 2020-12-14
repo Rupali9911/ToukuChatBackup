@@ -1986,9 +1986,8 @@ class Chat extends Component {
         }
       }
       if (
-        this.props.currentRouteName == 'GroupChats' &&
         currentGroup &&
-        message.text.data.message_details.group_id == currentGroup.group_id
+        message.text.data.message_details.id == currentGroup.group_id
       ) {
         this.getGroupDetail();
       }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+  ActivityIndicator,
   View,
   ImageBackground,
   Image,
@@ -55,7 +56,7 @@ import {
 import Toast from '../../components/Toast';
 import {ConfirmationModal} from '../../components/Modals';
 import S3uploadService from '../../helpers/S3uploadService';
-import {ActivityIndicator} from 'react-native-paper';
+import HyperLink from 'react-native-hyperlink';
 import {
   deleteGroupById,
   deleteAllGroupMessageByGroupId,
@@ -90,6 +91,7 @@ class GroupDetails extends Component {
       showTextBox: false,
       isLoading: false,
       data: null,
+      uploadLoading: false,
       memberOption: [
         {
           title: translate('pages.xchat.admin'),
@@ -444,10 +446,10 @@ class GroupDetails extends Component {
         let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           uploadLoading: true,
-          backgroundImagePath: source,
+          // filePath: source,
         });
 
-        let file = source.uri;
+        let file = source;
         let files = [file];
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
@@ -462,7 +464,7 @@ class GroupDetails extends Component {
         thumbnail = uploadedImages.image[0].thumbnail;
 
         this.onUpdateGroup(image, thumbnail);
-        this.setState({filePath: source});
+        this.setState({filePath: source, uploadLoading: false});
       }
     });
   };
@@ -854,12 +856,15 @@ class GroupDetails extends Component {
       isEdit,
       groupName,
       note,
-      filePath,
       orientation,
       showDeleteGroupConfirmationModal,
       showLeaveGroupConfirmationModal,
       showDeleteNoteConfirmationModal,
+      uploadLoading
     } = this.state;
+
+    let filePath = {uri: this.props.currentGroupDetail.group_picture};
+
     return (
       <View
         style={[globalStyles.container, {backgroundColor: Colors.light_pink}]}>
@@ -875,40 +880,49 @@ class GroupDetails extends Component {
             extraScrollHeight={100}>
             <View style={groupDetailStyles.imageContainer}>
               <View style={groupDetailStyles.imageView}>
-                {filePath.uri === null ||
-                filePath.uri === '' ||
-                typeof filePath.uri === undefined ? (
-                  <LinearGradient
-                    start={{x: 0.1, y: 0.7}}
-                    end={{x: 0.5, y: 0.2}}
-                    locations={[0.1, 0.2, 1]}
-                    useAngle={true}
-                    angle={222.28}
-                    colors={[
-                      Colors.header_gradient_1,
-                      Colors.header_gradient_2,
-                      Colors.header_gradient_3,
-                    ]}
-                    style={[
-                      groupDetailStyles.profileImage,
-                      {
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      },
-                    ]}>
-                    <Text style={globalStyles.bigSemiBoldText}>
-                      {groupName.charAt(0).toUpperCase()}
-                      {/* {secondUpperCase} */}
-                    </Text>
-                  </LinearGradient>
-                ) : (
-                  <ImageLoader
-                    source={getImage(this.state.filePath.uri)}
-                    resizeMode={'cover'}
-                    style={groupDetailStyles.profileImage}
-                    placeholderStyle={groupDetailStyles.profileImage}
-                  />
-                )}
+                {uploadLoading ?
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: 1
+                    }}>
+                    <ActivityIndicator color={Colors.primary} size={'small'} />
+                  </View>
+                  : filePath.uri === null ||
+                    filePath.uri === '' ||
+                    typeof filePath.uri === undefined ? (
+                      <LinearGradient
+                        start={{ x: 0.1, y: 0.7 }}
+                        end={{ x: 0.5, y: 0.2 }}
+                        locations={[0.1, 0.2, 1]}
+                        useAngle={true}
+                        angle={222.28}
+                        colors={[
+                          Colors.header_gradient_1,
+                          Colors.header_gradient_2,
+                          Colors.header_gradient_3,
+                        ]}
+                        style={[
+                          groupDetailStyles.profileImage,
+                          {
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          },
+                        ]}>
+                        <Text style={globalStyles.bigSemiBoldText}>
+                          {groupName.charAt(0).toUpperCase()}
+                          {/* {secondUpperCase} */}
+                        </Text>
+                      </LinearGradient>
+                    ) : (
+                      <ImageLoader
+                        source={getImage(filePath.uri)}
+                        resizeMode={'cover'}
+                        style={groupDetailStyles.profileImage}
+                        placeholderStyle={groupDetailStyles.profileImage}
+                      />
+                    )}
               </View>
               {isMyGroup && (
                 <TouchableOpacity onPress={this.chooseFile.bind(this)}>
@@ -1089,14 +1103,20 @@ class GroupDetails extends Component {
                           alignItems: 'center',
                           marginBottom: 10,
                         }}>
-                        <Text
-                          style={{
-                            color: Colors.gradient_2,
-                            fontSize: 16,
-                            fontFamily: Fonts.regular,
-                          }}>
-                          {translate(`pages.xchat.description`)}
-                        </Text>
+                            <HyperLink
+                              onPress={(url, text) => {
+                                Linking.openURL(url);
+                              }}
+                              linkStyle={{ color: 'blue', textDecorationLine: 'underline' }}>
+                              <Text
+                                style={{
+                                  color: Colors.gradient_2,
+                                  fontSize: 16,
+                                  fontFamily: Fonts.regular,
+                                }}>
+                                {translate(`pages.xchat.description`)}
+                              </Text>
+                            </HyperLink>
                         {isMyGroup && (
                           <TouchableOpacity
                             style={{}}
