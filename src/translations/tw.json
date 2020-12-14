@@ -675,7 +675,9 @@
         "chatHistoryDelete": "所選聊天的聊天記錄將被刪除。",
         "enterChannelId": "請輸入頻道ID。",
         "alreadyFollowed": "您已經關注了該頻道。",
-        "deleteComment": "刪除評論"
+        "deleteComment": "刪除評論",
+        "uploadByUrl": " 通过URL上传",
+        "pleaseSelectValidUrl": " 請輸入有效網址"
       },
       "totalMessages": "消息總數",
       "toukuPoints": "TOUKU积分",

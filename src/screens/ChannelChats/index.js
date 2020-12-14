@@ -955,6 +955,11 @@ class ChannelChats extends Component {
       this.toggleGalleryModal(true);
     });
   };
+
+  onUrlUpload = (url) => {
+    this.setState({uploadedFiles: [...this.state.uploadedFiles, url]});
+  }
+
   onAttachmentPress = async () => {
     try {
       const results = await DocumentPicker.pickMultiple({
@@ -1166,7 +1171,7 @@ class ChannelChats extends Component {
             onEditMessage={(msg) => this.onEdit(msg)}
             onDownloadMessage={(msg) => this.onDownload(msg)}
             onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.onGalleryPress()}
+            onGalleryPress={() => this.toggleGalleryModal(true)}
             onAttachmentPress={() => this.onAttachmentPress()}
             sendingImage={uploadFile}
             isMultiSelect={isMultiSelect}
@@ -1223,6 +1228,7 @@ class ChannelChats extends Component {
             isLoading={sendingMedia}
             removeUploadData={(index) => this.removeUploadData(index)}
             onGalleryPress={() => this.onGalleryPress()}
+            onUrlDone={this.onUrlUpload}
           />
 
           <ShowAttahmentModal

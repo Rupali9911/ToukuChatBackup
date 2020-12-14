@@ -46,6 +46,8 @@ import {
 } from '../redux/reducers/friendReducer';
 import CommentItem from './CommentItem';
 import {ConfirmationModal} from './Modals';
+import {TouchableHighlight as GHTouchableHighlight} from 'react-native-gesture-handler';
+import MentionsTextInput from 'react-native-mentions';
 
 const { height } = Dimensions.get('window');
 
@@ -64,7 +66,9 @@ class NoteItem extends Component {
             showDeleteConfirmationModal: false,
             deleteIndex: null,
             deleteItem: null,
-            loadComment: false
+            loadComment: false,
+            suggestionData: [],
+            suggestionDataHeight: 0,
         };
     }
 
@@ -160,8 +164,9 @@ class NoteItem extends Component {
     }
 
     postGroupComment = (text,mentions) => {
-        const {item} =this.props;
+        const {item, groupMembers} =this.props;
         const {showComment,commentResult,offset} = this.state;
+
         if(this.props.isFriend){
             let data = {friend_note:item.id,text:text}
             this.props.commentOnNote(data)
@@ -176,7 +181,33 @@ class NoteItem extends Component {
                 console.log('err',err);
             })
         }else{
+            let splitNewMessageText = text.split(' ');
+            let newMessageMentions = [];
+            const newMessageTextWithMention = splitNewMessageText
+                .map((text) => {
+                    let mention = null;
+                    groupMembers.forEach((groupMember) => {
+                        if (text === `@${groupMember.display_name}`) {
+                            mention = `~${groupMember.id}~`;
+                            newMessageMentions = [...newMessageMentions, groupMember.id];
+                        }
+                    });
+                    if (mention) {
+                        return mention;
+                    } else {
+                        return text;
+                    }
+                })
+                .join(' ');
+
+            console.log('text', ...newMessageTextWithMention);
+
             let data = {group_note:item.id,text:text}
+
+            if(newMessageMentions.length>0){
+                data['mention'] = [...newMessageMentions];
+            }
+
             this.props.commentOnGroupNote(data)
                 .then((res) => {
                     if (res) {
@@ -296,6 +327,73 @@ class NoteItem extends Component {
         }
     }
 
+    groupMembersMentions = (value) => {
+        const { groupMembers, userData } = this.props;
+        let splitNewMessageText = value.split(' ');
+        let text = value;
+        if (groupMembers && userData) {
+            let suggestionRowHeight;
+            if (text.substring(1).length) {
+                let array = groupMembers.filter((member) => {
+                    if (member.id !== userData.id) {
+                        // return splitNewMessageText.map((text) => {
+                        return member.display_name
+                            .toLowerCase()
+                            .startsWith(text.substring(1).toLowerCase())
+                    } else {
+                        return false;
+                    }
+                });
+                suggestionRowHeight =
+                    array < 4
+                        ? array * normalize(22) + 5
+                        : normalize(90) + 5;
+                this.setState({ suggestionData: array, suggestionDataHeight: suggestionRowHeight });
+            } else {
+                let array = groupMembers.filter(member => member.id !== userData.id);
+                suggestionRowHeight =
+                    array < 4
+                        ? array * normalize(22) + 5
+                        : normalize(90) + 5;
+                this.setState({ suggestionData: array, suggestionDataHeight: suggestionRowHeight });
+            }
+            this.forceUpdate();
+        } else {
+            this.setState({ suggestionData: [], suggestionDataHeight: 0 });
+        }
+    };
+
+    suggestionsDataHeight = (value) => {
+        // console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
+        let groupMembersLength;
+        let suggestionRowHeight;
+        // groupMembersLength = this.groupMembersMentions(value).length;
+        groupMembersLength = this.state.suggestionData.length;
+        console.log('render -> groupMembersLength', groupMembersLength);
+        suggestionRowHeight =
+            groupMembersLength < 4
+                ? groupMembersLength * normalize(22) + 5
+                : normalize(90) + 5;
+        console.log(
+            'suggestionsDataHeight -> suggestionRowHeight',
+            suggestionRowHeight,
+        );
+        return suggestionRowHeight;
+    };
+
+    onSelectMention = (selectedMention, length) => {
+        console.log('length',length);
+        this.setState((prevState) => {
+          return {
+            commentText: `${
+              length === 1
+                ? prevState.commentText
+                : prevState.commentText.slice(0, -length + 1)
+            }${selectedMention.display_name}`,
+          };
+        });
+      };
+
     render() {
         const {
             index,
@@ -319,15 +417,16 @@ class NoteItem extends Component {
             offset,
             commentResult,
             showDeleteConfirmationModal,
-            loadComment
+            loadComment,
+            suggestionData,
+            suggestionDataHeight
         } = this.state;
-        console.log('commentData',commentData);
         return (
             <View style={{
                 borderWidth: 0.5,
                 borderColor: Colors.light_gray,
                 borderRadius: 3,
-                padding: 10
+                padding: 10,
             }}>
                 {!editNote ? (
                     <View>
@@ -409,7 +508,7 @@ class NoteItem extends Component {
                                     {item.text}
                                 </Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: (showCommentBox&&!isFriend)?20:0 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{
                                         color: Colors.textTitle_orange,
@@ -473,13 +572,105 @@ class NoteItem extends Component {
                             </View>
                             {showCommentBox && (
                                 <>
-                                    <TextAreaWithTitle
-                                        onChangeText={(text) => this.setState({ commentText: text })}
-                                        value={commentText}
-                                        rightTitle={`${commentText.length}/150`}
-                                        maxLength={150}
-                                        placeholder={translate('pages.xchat.enterComment')}
-                                    />
+                                    {!isFriend ?
+                                        <MentionsTextInput
+                                            multiline={true}
+                                            numberOfLines={10}
+                                            textInputStyle={styles.textInput}
+                                            suggestionsPanelStyle={{
+                                                width: '100%',
+                                                overflow: 'hidden',
+                                                position: 'absolute',
+                                                top: -this.suggestionsDataHeight(commentText),
+                                                zIndex: 1,
+                                            }}
+                                            loadingComponent={() => null}
+                                            textInputMinHeight={100}
+                                            // textInputMaxHeight={500}
+                                            trigger={'@'}
+                                            triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
+                                            value={commentText}
+                                            onChangeText={(message) => {
+                                                if (!message.includes('@')) {
+                                                    this.setState({ suggestionData: [] });
+                                                }
+                                                this.setState({commentText:message});
+                                            }}
+                                            placeholder={translate('pages.xchat.enterComment')}
+                                            autoCorrect={false}
+                                            triggerCallback={(lastKeyword) => {
+                                                console.log('ChatInput -> render -> triggerCallback', lastKeyword);
+                                                this.groupMembersMentions(lastKeyword);
+                                            }}
+                                            suggestionsData={suggestionData} // array of objects
+                                            keyExtractor={(item, index) => item.id}
+                                            renderSuggestionsRow={({ item, index }, hidePanel) => {
+                                                return (
+                                                    <GHTouchableHighlight
+                                                        key={index + ''}
+                                                        underlayColor="#FFB582"
+                                                        onShowUnderlay={() => {
+                                                            this.setState({ highlightItemId: item.id });
+                                                        }}
+                                                        onHideUnderlay={() => {
+                                                            this.setState({ highlightItemId: null });
+                                                        }}
+                                                        style={{
+                                                            backgroundColor: index === 0 ? '#FFB582' : 'white',
+                                                            paddingTop: index === 0 ? 5 : 0,
+                                                        }}
+                                                        onPress={() => {
+                                                            hidePanel();
+                                                            this.setState({ isMentionsOpen: false });
+                                                            this.onSelectMention(
+                                                                item,
+                                                                commentText.split(' ')[commentText.split(' ').length - 1]
+                                                                    .length,
+                                                            );
+                                                        }}>
+                                                        <View
+                                                            style={{
+                                                                height: normalize(22),
+                                                                justifyContent: 'center',
+                                                                alignItems: 'flex-start',
+                                                                width: '100%',
+                                                                paddingLeft: 5,
+                                                            }}>
+                                                            <Text
+                                                                style={{
+                                                                    fontSize: normalize(11),
+                                                                    paddingHorizontal: 10,
+                                                                    // backgroundColor: '#FFB582',
+                                                                    fontFamily: Fonts.regular,
+                                                                    fontWeight: '400',
+                                                                    color:
+                                                                        this.state.highlightItemId === item.id
+                                                                            ? 'white'
+                                                                            : index === 0
+                                                                                ? 'white'
+                                                                                : 'black',
+                                                                    textAlign: 'center',
+                                                                }}>
+                                                                {item.display_name}
+                                                            </Text>
+                                                        </View>
+                                                    </GHTouchableHighlight>
+                                                );
+                                            }}
+                                            suggestionRowHeight={suggestionDataHeight?suggestionDataHeight:0}
+                                            horizontal={false}
+                                            customOnContentSizeChange={({ nativeEvent }) => {
+                                                this.forceUpdate();
+                                            }}
+                                        />
+                                        : <TextAreaWithTitle
+                                            onChangeText={(text) => this.setState({ commentText: text })}
+                                            value={commentText}
+                                            rightTitle={`${commentText.length}/150`}
+                                            maxLength={150}
+                                            placeholder={translate('pages.xchat.enterComment')}
+                                        />}
+                                    
                                     <View
                                         style={{
                                             flexDirection: 'row',
@@ -633,6 +824,20 @@ class NoteItem extends Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    textInput: {
+        borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
+        backgroundColor: Colors.white,
+        borderRadius: 7,
+        borderColor: Colors.gray_dark,
+        // marginTop: 10,
+        height: 100,
+        textAlignVertical: 'top',
+        paddingHorizontal: 10,
+        fontFamily: Fonts.light,
+      },
+});
 
 const mapStateToProps = (state) => {
     return {

@@ -109,6 +109,14 @@ export const isContainUrl = (text) => {
   return url;
 };
 
+export const isValidUrl = (url = '') => {
+  var urlRE = new RegExp(
+    '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+',
+  );
+
+  return urlRE.test(url);
+}
+
 export const resizeImage = async (file, width, height) => {
   // const resizedImage =
   return await ImageResizer.createResizedImage(file, width, height, 'JPEG', 30)

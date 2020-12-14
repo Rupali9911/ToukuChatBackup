@@ -44,7 +44,8 @@ export default class CommonNotes extends Component {
       editNoteIndex,
       userData,
       onLikeUnlike,
-      isFriend
+      isFriend,
+      groupMembers
     } = this.props;
     return (
       <React.Fragment>
@@ -157,6 +158,7 @@ export default class CommonNotes extends Component {
                   onCancel={onCancel}
                   onPost={onPost}
                   onLikeUnlike={onLikeUnlike}
+                  groupMembers={groupMembers}
                 />
               }
               ItemSeparatorComponent={()=><View style={{height:10}}/>}

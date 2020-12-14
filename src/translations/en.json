@@ -675,7 +675,9 @@
         "chatHistoryDelete": "The chat history of selected chats will be deleted.",
         "enterChannelId": "Please enter channel ID.",
         "alreadyFollowed": "You have already followed this channel.",
-        "deleteComment": "Delete Comment"
+        "deleteComment": "Delete Comment",
+        "uploadByUrl": "Upload by URL",
+        "pleaseSelectValidUrl": "Please enter a valid url"
       },
       "totalMessages": "Total messages",
       "toukuPoints": "TOUKU Points",

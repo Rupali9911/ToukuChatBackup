@@ -675,7 +675,9 @@
         "chatHistoryDelete": "選択したチャットのチャット履歴が削除されます。",
         "enterChannelId": "チャネルIDを入力してください。",
         "alreadyFollowed": "あなたはすでにこのチャンネルをフォローしています。",
-        "deleteComment": "コメントを削除"
+        "deleteComment": "コメントを削除",
+        "uploadByUrl": " URLでアップロード",
+        "pleaseSelectValidUrl": " 有効なURLを入力してください"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",

@@ -675,7 +675,9 @@
         "chatHistoryDelete": "所选聊天的聊天记录将被删除。",
         "enterChannelId": "请输入频道ID。",
         "alreadyFollowed": "您已经关注了该频道。",
-        "deleteComment": "删除评论"
+        "deleteComment": "删除评论",
+        "uploadByUrl": " 通过URL上传",
+        "pleaseSelectValidUrl": " 请输入有效网址"
       },
       "totalMessages": "消息总数",
       "toukuPoints": "TOUKU积分",

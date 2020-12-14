@@ -675,7 +675,9 @@
         "chatHistoryDelete": "선택한 채팅의 채팅 내역이 삭제됩니다.",
         "enterChannelId": "채널 ID를 입력하세요.",
         "alreadyFollowed": "이미이 채널을 팔로우했습니다.",
-        "deleteComment": "댓글 삭제"
+        "deleteComment": "댓글 삭제",
+        "uploadByUrl": " URL로 업로드",
+        "pleaseSelectValidUrl": "유효한 URL을 입력 해주세요"
       },
       "totalMessages": "\ucd1d \uba54\uc2dc\uc9c0",
       "toukuPoints": "TOUKU \ud3ec\uc778\ud2b8",

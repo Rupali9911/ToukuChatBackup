@@ -737,3 +737,14 @@ export const deleteComment = (comment_id) => (dispatch) =>
       reject(err);
     });
   })
+
+export const getUrlcontent = (url) => (dispatch) => 
+  new Promise(function(resolve,reject){
+    client.get(`xchat/get-url-content/?url=${url}`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      reject(err);
+    })
+  });

@@ -17,11 +17,14 @@ import Button from '../Button';
 import {Divider} from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
+import UploadByUrlModal from './UploadByUrlModal';
 class ShowGalleryModal extends Component {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
-    this.state = {};
+    this.state = {
+      uploadByUrlModalVisible:false
+    };
   }
 
   send = async (type) => {
@@ -38,7 +41,9 @@ class ShowGalleryModal extends Component {
       isLoading,
       removeUploadData,
       onGalleryPress,
+      onUrlDone
     } = this.props;
+    const {uploadByUrlModalVisible} = this.state;
     return (
       <Modal
         isVisible={visible}
@@ -114,7 +119,7 @@ class ShowGalleryModal extends Component {
             </View>
             <View
               style={{
-                flex: 0.85,
+                flex: 1,
                 padding: 10,
               }}>
               <View style={{flex: 1}}>
@@ -155,7 +160,7 @@ class ShowGalleryModal extends Component {
                               </View>
                             )}
                             <View style={{flex: 0.8}}>
-                              <Text style={{marginBottom: 5}}>
+                              <Text numberOfLines={1} style={{marginBottom: 5}}>
                                 {item.filename}
                               </Text>
                               <TouchableOpacity
@@ -230,17 +235,30 @@ class ShowGalleryModal extends Component {
             </View>
             <View
               style={{
-                flexDirection: 'row',
-                paddingHorizontal: '20%',
+                // paddingHorizontal: '20%',
                 alignItems: 'center',
                 justifyContent: 'center',
-                flex: 0.1,
                 // marginTop: 20,
               }}>
+              {isLoading?null:<View
+                style={{
+                  // flex: 0.5,
+                  width: '90%',
+                  marginHorizontal: 5,
+                }}>
+                <Button
+                  title={translate('pages.xchat.toastr.uploadByUrl')}
+                  type={'primary'}
+                  onPress={()=>{
+                    this.setState({uploadByUrlModalVisible: true});
+                  }}
+                  isRounded={false}
+                />
+              </View>}
               <View
                 style={{
                   // flex: 0.5,
-                  width: '70%',
+                  width: '90%',
                   marginHorizontal: 5,
                 }}>
                 <Button
@@ -255,7 +273,7 @@ class ShowGalleryModal extends Component {
                 style={{
                   // flex: 0.5,
                   marginHorizontal: 5,
-                  width: '70%',
+                  width: '90%',
                 }}>
                 <Button
                   title={translate('common.cancel')}
@@ -266,6 +284,13 @@ class ShowGalleryModal extends Component {
               </View>}
             </View>
           </View>
+          <UploadByUrlModal 
+            visible={uploadByUrlModalVisible}
+            onRequestClose={() =>
+              this.setState({uploadByUrlModalVisible: false})
+            }
+            onUrlDone={onUrlDone}
+            />
         </SafeAreaView>
       </Modal>
     );

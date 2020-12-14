@@ -1168,6 +1168,7 @@ class GroupDetails extends Component {
                 editNoteIndex={this.state.editNoteIndex}
                 showTextBox={this.state.showTextBox}
                 userData={this.props.userData}
+                groupMembers={this.props.currentGroupMembers}
               />
             )}
           </KeyboardAwareScrollView>
