@@ -21,7 +21,7 @@ import Button from '../../components/Button';
 import {ListLoader} from '../../components/Loaders';
 import Toast from '../../components/Toast';
 import RoundedImage from '../../components/RoundedImage';
-import {getImage, eventService} from '../../utils';
+import {getImage, eventService, showToast} from '../../utils';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   getChannelDetails,
@@ -259,6 +259,15 @@ class ChannelInfo extends Component {
     this.toggleAffiliateModal();
   };
 
+  copyCode(data) {
+    Clipboard.setString(data);
+    showToast(
+      translate('pages.setting.referralLink'),
+      translate('pages.setting.toastr.linkCopiedSuccessfully'),
+      'positive',
+    );
+  }
+
   render() {
     const {
       channelData,
@@ -287,6 +296,20 @@ class ChannelInfo extends Component {
       },
     ];
 
+    const cahnnel_id = this.props.navigation.state.params
+      ? this.props.navigation.state.params.channelItem.channel_id
+      : this.props.currentChannel.id;
+    let tmpReferralCode = userData.referral_link;
+    const arrLink = tmpReferralCode.split('/');
+    let referralCode = '';
+    if (arrLink.length > 0) {
+      referralCode = arrLink[arrLink.length - 1];
+    }
+
+    const followCode =
+      cahnnel_id + referralCode + String(currentChannel.id).length;
+
+    console.log('current channel', followCode);
     // console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
 
     return (
@@ -382,6 +405,28 @@ class ChannelInfo extends Component {
                               ? '-'
                               : channelData.channel_status
                             : '-'}
+                        </Text>
+                      </View>
+                      <View
+                        style={channelInfoStyles.changeChannelContainer}
+                        // onPress={() => this.toggleChannelBusinessMenu()}
+                      >
+                        <Text
+                          style={[
+                            channelInfoStyles.channelNameText,
+                            {fontSize: 14},
+                          ]}
+                          numberOfLines={1}>
+                          {translate('pages.invitation.referralOneField3')}
+                        </Text>
+                        <Text
+                          style={[
+                            channelInfoStyles.channelNameText,
+                            {fontSize: 14, textDecorationLine: 'underline'},
+                          ]}
+                          numberOfLines={1}
+                          onPress={() => this.copyCode(followCode)}>
+                          {followCode}
                         </Text>
                       </View>
                     </View>

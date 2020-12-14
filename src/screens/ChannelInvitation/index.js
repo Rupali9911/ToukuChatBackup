@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Clipboard,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -19,7 +20,7 @@ import Button from '../../components/Button';
 import Toast from '../../components/Toast';
 import UrlField from '../../components/UrlField';
 import QRCode from 'react-native-qrcode-svg';
-import {getImage, normalize} from '../../utils';
+import {getImage, normalize, showToast} from '../../utils';
 import RoundedImage from '../../components/RoundedImage';
 import S3uploadService from '../../helpers/S3uploadService';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -29,6 +30,7 @@ import {followChannel} from '../../redux/reducers/channelReducer';
 import {getChannelsById} from '../../storage/Service';
 import {inviteUrlRoot} from '../../helpers/api';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 
 class ChannelInvitation extends Component {
   constructor(props) {
@@ -73,6 +75,15 @@ class ChannelInvitation extends Component {
     console.log(dataURL);
     this.setState({qr_code_data: dataURL});
   };
+
+  copyCode(data) {
+    Clipboard.setString(data);
+    showToast(
+      translate('pages.setting.referralLink'),
+      translate('pages.setting.toastr.linkCopiedSuccessfully'),
+      'positive',
+    );
+  }
 
   downloadQRCodeImage = (data) => {
     const dirs = RNFetchBlob.fs.dirs;
@@ -137,6 +148,23 @@ class ChannelInvitation extends Component {
               }}>
               {translate('pages.invitation.findOutAllTheNewWayForFollower')}
             </Text>
+
+            <Text
+              style={{
+                marginTop: normalize(15),
+                fontFamily: Fonts.regular,
+                fontSize: normalize(11.5),
+                fontWeight: '300',
+              }}>
+              {translate('pages.invitation.referralOneField')}{' '}
+              <Text
+                style={{textDecorationLine: 'underline'}}
+                onPress={() => this.copyCode(followCode)}>
+                {followCode}
+              </Text>
+              {'.'}
+            </Text>
+
             <Text
               style={{
                 marginTop: normalize(25),
@@ -167,7 +195,7 @@ class ChannelInvitation extends Component {
               {translate('pages.invitation.linkViaLp')}
             </Text>
             <UrlField url={invitation_url} />
-            <Text
+            {/* <Text
               style={{
                 marginTop: normalize(15),
                 alignSelf: 'center',
@@ -177,7 +205,7 @@ class ChannelInvitation extends Component {
               }}>
               {translate('pages.invitation.followCode')}
             </Text>
-            <UrlField url={followCode} />
+            <UrlField url={followCode} /> */}
             <Text
               style={{
                 fontFamily: Fonts.regular,
