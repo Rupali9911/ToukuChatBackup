@@ -67,7 +67,7 @@ export const userLogin = (user) => (dispatch) =>
         resolve(res);
       })
       .catch((err) => {
-        dispatch(getLoginFailure());
+       // dispatch(getLoginFailure());
         if (err.response) {
           if (err.response.data) {
             console.log('err.response.data', err.response.data);

@@ -108,7 +108,7 @@
 		2D02E4901E0B4A5D006451C7 /* Touku-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Touku-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD641C447664293887D2885 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		34CD90C16D59473DB5A04812 /* NunitoSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NunitoSans-Light.ttf"; path = "../assets/fonts/NunitoSans-Light.ttf"; sourceTree = "<group>"; };
-		355BD620DA584458ABFB9A70 /* arial-mt-light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "arial-mt-light.ttf"; path = "../assets/fonts/arial-mt-light.ttf"; sourceTree = "<group>"; };
+		355BD620DA584458ABFB9A70 /* arial-mt-light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "arial-mt-light.ttf"; path = "../assets/fonts/arial-mt-light.ttf"; sourceTree = "<group>"; };
 		35EDE566C1524C40B1D0081E /* OpenSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Italic.ttf"; path = "../assets/fonts/OpenSans-Italic.ttf"; sourceTree = "<group>"; };
 		378A4B79DDF44F988E5A5C67 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		37E0B0F40937D9C1979E85CF /* Pods-Touku.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku.debug.xcconfig"; path = "Target Support Files/Pods-Touku/Pods-Touku.debug.xcconfig"; sourceTree = "<group>"; };
@@ -125,7 +125,7 @@
 		643D33A506E042DEB577B89E /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Regular.ttf"; path = "../assets/fonts/OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		6E9F1FAB241A4B95BF9676F2 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		76ABD650FED6E0364E1EA8D9 /* libPods-Touku-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Touku-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B1ED10157674B3E86E29FAB /* arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = arial.ttf; path = ../assets/fonts/arial.ttf; sourceTree = "<group>"; };
+		7B1ED10157674B3E86E29FAB /* arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = arial.ttf; path = ../assets/fonts/arial.ttf; sourceTree = "<group>"; };
 		7E26A525AF7D45C7A3F347B7 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Bold.ttf"; path = "../assets/fonts/OpenSans-Bold.ttf"; sourceTree = "<group>"; };
 		88774A6224766CBC0074E14A /* LineLoginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LineLoginManager.m; path = Touku/LineLoginManager.m; sourceTree = "<group>"; };
 		88774A6324766CBC0074E14A /* LineLoginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LineLoginManager.h; path = Touku/LineLoginManager.h; sourceTree = "<group>"; };
@@ -137,7 +137,7 @@
 		9BD2028C405B430FBC4333E4 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		9F5EC8BFA2594169A4DC3048 /* LineLoginManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = LineLoginManager.xcodeproj; path = "../node_modules/react-native-line-sdk/ios/LineLoginManager.xcodeproj"; sourceTree = "<group>"; };
 		A0EF75CD14E946A3B912775D /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
-		A34D18BFA6554FEB861F9F81 /* ArialMTStd-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ArialMTStd-LightItalic.otf"; path = "../assets/fonts/ArialMTStd-LightItalic.otf"; sourceTree = "<group>"; };
+		A34D18BFA6554FEB861F9F81 /* ArialMTStd-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ArialMTStd-LightItalic.otf"; path = "../assets/fonts/ArialMTStd-LightItalic.otf"; sourceTree = "<group>"; };
 		B08C9D30BB044230B45E1D21 /* NunitoSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NunitoSans-Regular.ttf"; path = "../assets/fonts/NunitoSans-Regular.ttf"; sourceTree = "<group>"; };
 		B09BE3F887E7480C95EF72B1 /* OpenSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-SemiBoldItalic.ttf"; path = "../assets/fonts/OpenSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		B9E48F24C07640FCAEF71FC1 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
@@ -157,7 +157,7 @@
 		F35CC6508F52B75A8242BFFD /* Pods-Touku-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Touku-tvOSTests/Pods-Touku-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F7B3B65A6CE16B9BD0486CA1 /* Pods-Touku-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Touku-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Touku-tvOS/Pods-Touku-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		F98B71AB69A9487280F001F4 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
-		FE34F083B8B945D793544BFA /* arial-mt-medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "arial-mt-medium.ttf"; path = "../assets/fonts/arial-mt-medium.ttf"; sourceTree = "<group>"; };
+		FE34F083B8B945D793544BFA /* arial-mt-medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "arial-mt-medium.ttf"; path = "../assets/fonts/arial-mt-medium.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1091,7 +1091,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev_6Oct;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1126,7 +1126,7 @@
 				PRODUCT_NAME = TOUKU;
 				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev_6Oct;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
