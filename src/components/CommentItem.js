@@ -63,7 +63,6 @@ class CommentItem extends Component {
             text,
             commentText
         } = this.state;
-        console.log('item',item);
         return (
             <View style={{
                 padding: 10,

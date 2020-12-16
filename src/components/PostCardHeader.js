@@ -22,6 +22,7 @@ import MenuItem from '../components/Menu/MenuItem';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../styles';
 import {getImage} from '../utils';
+import NavigationService from '../navigation/NavigationService';
 
 const {width, height} = Dimensions.get('window');
 
@@ -88,7 +89,7 @@ export default class PostCardHeader extends Component {
   };
 
   render() {
-    const {post, menuItems, isChannelTimeline} = this.props;
+    const {post, menuItems, isTimeline, isChannelTimeline} = this.props;
     return (
       <View
         style={{
@@ -97,7 +98,11 @@ export default class PostCardHeader extends Component {
           alignItems: 'center',
           marginHorizontal: '4%',
         }}>
-        <View style={{justifyContent: 'center'}}>
+        <TouchableOpacity onPress={()=>{
+          if(isTimeline){
+            NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: isTimeline})
+          }
+        }} style={{justifyContent: 'center'}}>
           {post.channel_picture_thumb === null ||
           post.channel_picture_thumb === '' ||
           typeof post.channel_picture_thumb === undefined ? (
@@ -124,7 +129,7 @@ export default class PostCardHeader extends Component {
           {/*isRounded={false}*/}
           {/*size={35}*/}
           {/*/>*/}
-        </View>
+        </TouchableOpacity>
         <View
           style={{
             height: 35,
@@ -138,7 +143,13 @@ export default class PostCardHeader extends Component {
               fontSize: 15,
               fontFamily: Fonts.regular,
               flex: 1,
-            }}>
+            }}
+            onPress={()=>{
+              if(isTimeline){
+                NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: isTimeline})
+              }
+            }}
+            >
             {post.channel_name}
           </Text>
           <Text
@@ -147,6 +158,11 @@ export default class PostCardHeader extends Component {
               color: Colors.gray_dark,
               fontSize: 13,
               flex: 1,
+            }}
+            onPress={()=>{
+              if(isTimeline){
+                NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: isTimeline})
+              }
             }}>
             {this.getDate(post.created)}
           </Text>

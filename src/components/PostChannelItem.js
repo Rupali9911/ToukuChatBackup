@@ -21,6 +21,7 @@ import PostCardHeader from './PostCardHeader';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
+import { normalize } from '../utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -84,7 +85,7 @@ export default class PostChannelItem extends Component {
             <VideoPlayerCustom url={post.media.video[0]} />
           </View>
         ) : null}
-        <View style={{marginHorizontal: '4%', marginVertical: 5}}>
+        <View style={{ marginHorizontal: '4%', marginVertical: 5}}>
           <HyperLink
             onPress={(url, text) => {
               Linking.openURL(url);
@@ -97,7 +98,7 @@ export default class PostChannelItem extends Component {
               <Text>
                 {this.state.readMore
                   ? newArray.join('\n')
-                  : newArray.join('\n').substring(0, this.state.character)}
+                  : newArray.join('').length>35?newArray.join('\n').substring(0, this.state.character):newArray.join('')}
                 {newArray.join('\n').length > this.state.character &&
                 !this.state.readMore
                   ? ' '
@@ -108,7 +109,7 @@ export default class PostChannelItem extends Component {
                       onPress={() => this.toggleNumberOfLines('less')}
                       style={{
                         fontFamily: Fonts.regular,
-                        fontSize: 16,
+                        fontSize: normalize(12),
                         margin: 15,
                         color: 'blue',
                       }}>
@@ -119,7 +120,7 @@ export default class PostChannelItem extends Component {
                       onPress={() => this.toggleNumberOfLines('more')}
                       style={{
                         fontFamily: Fonts.regular,
-                        fontSize: 16,
+                        fontSize: normalize(12),
                         color: 'blue',
                       }}>
                       {'  ' + '...' + translate('pages.xchat.showMore')}

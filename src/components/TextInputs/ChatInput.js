@@ -76,15 +76,15 @@ export default class ChatInput extends Component {
           }
         });
         suggestionRowHeight =
-        array < 11
-            ? array * normalize(22) + 5
+        array.length < 11
+            ? array.length * normalize(22) + 5
             : normalize(220) + 5;
         this.setState({suggestionData: array, suggestionDataHeight: suggestionRowHeight});
       }else{
         let array = groupMembers.filter(member => member.id !== currentUserData.id);
         suggestionRowHeight =
-        array < 11
-            ? array * normalize(22) + 5
+        array.length < 11
+            ? array.length * normalize(22) + 5
             : normalize(220) + 5;
         this.setState({suggestionData: array, suggestionDataHeight: suggestionRowHeight});
       }
@@ -143,7 +143,7 @@ export default class ChatInput extends Component {
     if (value.length === 0) {
       this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
     }
-    console.log('suggestionData',suggestionData);
+    console.log('update');
     return (
       <View
         style={{

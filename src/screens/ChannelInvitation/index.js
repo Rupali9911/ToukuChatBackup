@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Clipboard,
+  Platform,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -20,7 +21,7 @@ import Button from '../../components/Button';
 import Toast from '../../components/Toast';
 import UrlField from '../../components/UrlField';
 import QRCode from 'react-native-qrcode-svg';
-import {getImage, normalize, showToast} from '../../utils';
+import {getImage, normalize, showToast, hasStoragePermission} from '../../utils';
 import RoundedImage from '../../components/RoundedImage';
 import S3uploadService from '../../helpers/S3uploadService';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -72,7 +73,7 @@ class ChannelInvitation extends Component {
   }
 
   callback = (dataURL) => {
-    console.log(dataURL);
+    // console.log(dataURL);
     this.setState({qr_code_data: dataURL});
   };
 
@@ -87,13 +88,34 @@ class ChannelInvitation extends Component {
 
   downloadQRCodeImage = (data) => {
     const dirs = RNFetchBlob.fs.dirs;
-    var path = dirs.DocumentDir + `/qr_code_${new Date().getTime()}.png`;
+
+    if(Platform.OS==='ios'){
+      var path = dirs.DocumentDir + `/qr_code_${new Date().getTime()}.png`;
+    }else{
+      var path = dirs.DownloadDir + `/qr_code_${new Date().getTime()}.png`;
+    }
+
+    // RNFetchBlob.fs.createFile(path,data,'base64').then((result)=>{
+    //   console.log('result',result);
+    //   showToast(
+    //     translate('pages.setting.referralLink'),
+    //     translate('pages.setting.toastr.linkCopiedSuccessfully'),
+    //     'positive',
+    //   );
+    // }).catch((err)=>{
+    //   console.log(err);
+    // })
 
     RNFetchBlob.fs
       .writeFile(path, data, 'base64')
       .then((result) => {
-        console.log(result);
-      })
+        console.log('result',result);
+        showToast(
+          translate('pages.xchat.downloadFile'),
+          'QR code Downloaded successfully',
+          'positive',
+        );
+      })           
       .catch((err) => {
         console.log(err);
       });
@@ -236,6 +258,7 @@ class ChannelInvitation extends Component {
               <QRCode
                 size={120}
                 value={invitation_url}
+                quietZone={10}
                 getRef={(c) => (this.qr_code = c)}
               />
             </View>
@@ -250,7 +273,11 @@ class ChannelInvitation extends Component {
                 title={translate('pages.setting.download')}
                 isRounded={false}
                 onPress={() => {
-                  this.downloadQRCodeImage(qr_code_data);
+                  if(Platform.OS==='android'){
+                    hasStoragePermission() && this.downloadQRCodeImage(qr_code_data);
+                  }else{
+                    this.downloadQRCodeImage(qr_code_data);
+                  }
                 }}
                 loading={loading}
                 leftIcon={

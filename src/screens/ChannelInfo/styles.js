@@ -5,6 +5,8 @@ const {width, height} = Dimensions.get('window');
 export const channelInfoStyles = StyleSheet.create({
   mainContainer: {
     paddingBottom: 50,
+    backgroundColor: Colors.white,
+    flexGrow: 1
   },
   channelImageContainer: {
     height: height * 0.35,
@@ -118,6 +120,7 @@ export const channelInfoStyles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
     fontFamily: Fonts.regular,
+    marginBottom: 10
   },
   aboutText: {
     fontSize: 13,

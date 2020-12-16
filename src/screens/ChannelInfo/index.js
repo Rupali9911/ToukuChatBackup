@@ -21,7 +21,7 @@ import Button from '../../components/Button';
 import {ListLoader} from '../../components/Loaders';
 import Toast from '../../components/Toast';
 import RoundedImage from '../../components/RoundedImage';
-import {getImage, eventService, showToast} from '../../utils';
+import {getImage, eventService, showToast, normalize} from '../../utils';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   getChannelDetails,
@@ -31,7 +31,8 @@ import {
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
 import AsyncStorage from '@react-native-community/async-storage';
 import HyperLink from 'react-native-hyperlink';
-import ChannelTimeline from '../ChannelTimeline';
+import PostCard from '../../components/PostCard';
+import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -55,20 +56,23 @@ class ChannelInfo extends Component {
           id: 2,
           title: 'about',
           icon: Icons.icon_setting,
-          action: () => {},
+          action: () => {this.setState({isTimeline: false, activeIndex: 1})},
         },
         {
           id: 3,
           title: 'timeline',
           icon: Icons.icon_timeline,
-          action: () =>
-            this.props.navigation.navigate('ChannelTimeline', {
-              ChannelTimelineId: this.props.navigation.state.params
-                ? this.props.navigation.state.params.channelItem.channel_id
-                : this.props.currentChannel.id,
-            }),
+          action: () => this.setState({isTimeline: true, activeIndex: 2}),
+            // this.props.navigation.navigate('ChannelTimeline', {
+            //   ChannelTimelineId: this.props.navigation.state.params
+            //     ? this.props.navigation.state.params.channelItem.channel_id
+            //     : this.props.currentChannel.id,
+            // }),
         },
       ],
+      isTimeline: (this.props.navigation.state.params && this.props.navigation.state.params.isTimeline) ? true : false,
+      activeIndex: (this.props.navigation.state.params && this.props.navigation.state.params.isTimeline)?2:1,
+      posts: []
     };
     this.isUnfollowing = false;
     this.isFollowing = false;
@@ -107,6 +111,7 @@ class ChannelInfo extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getChannelDetails();
+    this.getCurrentChannelTimeline();
   }
 
   componentWillUnmount() {
@@ -267,6 +272,49 @@ class ChannelInfo extends Component {
       'positive',
     );
   }
+  
+  //#region Timeline function
+  getCurrentChannelTimeline = (lastId) => {
+    // console.log('data', this.props.navigation.state.params.ChannelTimelineId);
+    
+    let channel_id = this.props.navigation.state.params
+                ? this.props.navigation.state.params.channelItem.channel_id
+                : this.props.currentChannel.id
+
+    getChannelTimeline(
+      channel_id,
+      lastId,
+    )
+      .then((res) => {
+        if (res.load_more) {
+          const posts = [...this.state.posts, ...res.posts];
+          this.setState({posts, isLoading: false});
+        }
+        if (res.load_more === false && this.noMorePosts !== true) {
+          this.noMorePosts = true;
+          const posts = [...this.state.posts, ...res.posts];
+          this.setState({posts, isLoading: false});
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  onMomentumScrollBegin = () => {
+    this.doUpdate = false;
+  };
+
+  onEndReached = (info) => {
+    const {posts} = this.state;
+    const lastPost = posts[posts.length - 1];
+    if (!this.doUpdate && this.lastPostId !== lastPost.id) {
+      this.doUpdate = true;
+      this.lastPostId = lastPost.id;
+      this.getCurrentChannelTimeline(lastPost.id);
+    }
+  };
+  //#endregion
 
   render() {
     const {
@@ -275,6 +323,9 @@ class ChannelInfo extends Component {
       orientation,
       showConfirmationModal,
       showAffiliateModal,
+      isTimeline,
+      posts,
+      activeIndex
     } = this.state;
     const {channelLoading, currentChannel, userData} = this.props;
 
@@ -480,13 +531,14 @@ class ChannelInfo extends Component {
                         key={index}
                         style={channelInfoStyles.tabItem}
                         onPress={item.action}
-                        activeOpacity={item.title === 'about' ? 1 : 0}>
+                        activeOpacity={activeIndex == index ? 1 : 0}
+                        >
                         <Image
                           source={item.icon}
                           style={[
                             channelInfoStyles.tabIamge,
                             {
-                              opacity: item.title === 'about' ? 1 : 0.5,
+                              opacity: activeIndex == index ? 1 : 0.5,
                             },
                           ]}
                           resizeMode={'center'}
@@ -512,13 +564,13 @@ class ChannelInfo extends Component {
                         key={index}
                         style={channelInfoStyles.tabItem}
                         onPress={item.action}
-                        activeOpacity={item.title === 'about' ? 1 : 0}>
+                        activeOpacity={activeIndex == index ? 1 : 0}>
                         <Image
                           source={item.icon}
                           style={[
                             channelInfoStyles.tabIamge,
                             {
-                              opacity: item.title === 'about' ? 1 : 0.5,
+                              opacity: activeIndex == index ? 1 : 0.5,
                             },
                           ]}
                           resizeMode={'center'}
@@ -540,21 +592,38 @@ class ChannelInfo extends Component {
                   }
                 })}
               </View>
-              <View style={channelInfoStyles.about}>
-                <Text style={channelInfoStyles.aboutHeading}>
-                  {translate('pages.xchat.about')}
-                </Text>
-                <HyperLink
-                  onPress={(url, text) => {
-                    Linking.openURL(url);
-                  }}
-                  linkStyle={{color: 'blue', textDecorationLine: 'underline'}}>
-                  <Text style={channelInfoStyles.aboutText}>
-                    {channelData.description}
+              {isTimeline?
+                <View style={{padding: normalize(15)}}>
+                  {this.state.isLoading ? (
+                    <ListLoader justifyContent={'flex-start'} />
+                  ) : (
+                      <PostCard
+                        posts={posts}
+                        isTimeline={true}
+                        useFlatlist={true}
+                        isChannelTimeline={true}
+                        onMomentumScrollBegin={this.onMomentumScrollBegin}
+                        onEndReached={this.onEndReached}
+                      />
+                    )}
+                </View>
+              :
+              <View>
+                <View style={channelInfoStyles.about}>
+                  <Text style={channelInfoStyles.aboutHeading}>
+                    {translate('pages.xchat.about')}
                   </Text>
-                </HyperLink>
+                  <HyperLink
+                    onPress={(url, text) => {
+                      Linking.openURL(url);
+                    }}
+                    linkStyle={{ color: 'blue', textDecorationLine: 'underline' }}>
+                    <Text style={channelInfoStyles.aboutText}>
+                      {channelData.description}
+                    </Text>
+                  </HyperLink>
 
-                {/* <TouchableOpacity
+                  {/* <TouchableOpacity
                   style={{justifyContent: 'center', alignItems: 'center'}}
                   onPress={() => this.onFollowUnfollow()}>
                   <LinearGradient
@@ -587,55 +656,56 @@ class ChannelInfo extends Component {
                     </Text>
                   </LinearGradient>
                 </TouchableOpacity> */}
-              </View>
-              {channelData.is_vip && (
-                <React.Fragment>
-                  <View style={channelInfoStyles.about}>
-                    <Text style={channelInfoStyles.aboutHeading}>
-                      {translate('pages.xchat.vipFeature')}
-                    </Text>
-                    <Text style={channelInfoStyles.aboutText}>
-                      {channelData.vip_description}
-                    </Text>
-                  </View>
-                  {/*<View style={channelInfoStyles.followerDetails}>*/}
-                  {/*<Text*/}
-                  {/*style={{fontFamily: Fonts.regular, marginRight: 5}}>*/}
-                  {/*{translate('pages.xchat.affiliateRewardText')}*/}
-                  {/*</Text>*/}
-                  {/*<Text style={channelInfoStyles.detailText}>1 %</Text>*/}
-                  {/*</View>*/}
-                </React.Fragment>
-              )}
+                </View>
+                {channelData.is_vip && (
+                  <React.Fragment>
+                    <View style={channelInfoStyles.about}>
+                      <Text style={channelInfoStyles.aboutHeading}>
+                        {translate('pages.xchat.vipFeature')}
+                      </Text>
+                      <Text style={channelInfoStyles.aboutText}>
+                        {channelData.vip_description}
+                      </Text>
+                    </View>
+                    {/*<View style={channelInfoStyles.followerDetails}>*/}
+                    {/*<Text*/}
+                    {/*style={{fontFamily: Fonts.regular, marginRight: 5}}>*/}
+                    {/*{translate('pages.xchat.affiliateRewardText')}*/}
+                    {/*</Text>*/}
+                    {/*<Text style={channelInfoStyles.detailText}>1 %</Text>*/}
+                    {/*</View>*/}
+                  </React.Fragment>
+                )}
 
-              <View style={channelInfoStyles.buttonContainer}>
-                {/*<Button*/}
-                {/*isRounded={false}*/}
-                {/*type={'primary'}*/}
-                {/*title={translate('pages.xchat.affiliate')}*/}
-                {/*onPress={this.toggleAffiliateModal}*/}
-                {/*/>*/}
+                <View style={channelInfoStyles.buttonContainer}>
+                  {/*<Button*/}
+                  {/*isRounded={false}*/}
+                  {/*type={'primary'}*/}
+                  {/*title={translate('pages.xchat.affiliate')}*/}
+                  {/*onPress={this.toggleAffiliateModal}*/}
+                  {/*/>*/}
+                  {channelData.is_vip &&
+                    channelData.subscription_type === 'member' && (
+                      <Button
+                        isRounded={false}
+                        type={'primary'}
+                        title={translate('pages.xchat.vip')}
+                        onPress={() => { }}
+                      />
+                    )}
+                </View>
                 {channelData.is_vip &&
                   channelData.subscription_type === 'member' && (
-                    <Button
-                      isRounded={false}
-                      type={'primary'}
-                      title={translate('pages.xchat.vip')}
-                      onPress={() => {}}
-                    />
+                    <View style={channelInfoStyles.followerDetails}>
+                      <Text style={{ fontFamily: Fonts.regular, marginRight: 5 }}>
+                        {translate('pages.xchat.vipMonth')}
+                      </Text>
+                      <Text style={channelInfoStyles.detailText}>
+                        {channelData.monthly_vip_fee} TP
+                    </Text>
+                    </View>
                   )}
-              </View>
-              {channelData.is_vip &&
-                channelData.subscription_type === 'member' && (
-                  <View style={channelInfoStyles.followerDetails}>
-                    <Text style={{fontFamily: Fonts.regular, marginRight: 5}}>
-                      {translate('pages.xchat.vipMonth')}
-                    </Text>
-                    <Text style={channelInfoStyles.detailText}>
-                      {channelData.monthly_vip_fee} TP
-                    </Text>
-                  </View>
-                )}
+              </View>}
             </KeyboardAwareScrollView>
           ) : (
             <ListLoader large />

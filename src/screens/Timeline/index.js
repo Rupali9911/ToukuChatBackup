@@ -275,18 +275,21 @@ class Timeline extends Component {
                   menuItems={menuItems}
                   posts={trendTimline}
                   isTimeline={true}
+                  navigation={this.props.navigation}
                 />
               ) : activeTab === 'following' ? (
                 <PostCard
                   menuItems={menuItems}
                   posts={followingTimeline}
                   isTimeline={true}
+                  navigation={this.props.navigation}
                 />
               ) : (
                 <PostCard
                   menuItems={menuItems}
                   posts={rankingTimeLine}
                   isTimeline={true}
+                  navigation={this.props.navigation}
                 />
               )}
             </ScrollView>

@@ -71,6 +71,7 @@ export default class GroupFriend extends Component {
       isSelected,
       memberType,
       isSmall,
+      disableEdit
     } = this.props;
     const {isAdded, onChecked} = this.state;
 
@@ -163,6 +164,7 @@ export default class GroupFriend extends Component {
               type={isMember ? 'primary' : 'translucent'}
               memberType={memberType}
               height={30}
+              disabled={disableEdit}
               onPress={this.onAddPress.bind(this)}
               dropDownData={dropDownData}
             />

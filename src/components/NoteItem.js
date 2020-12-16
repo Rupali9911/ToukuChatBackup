@@ -76,16 +76,19 @@ class NoteItem extends Component {
         const initial = Orientation.getInitialOrientation();
         this.setState({orientation: initial});
 
-        this.events = eventService.getMessage().subscribe((message) => {
-            this.checkEventTypes(message);
-        });
+        // this.events = eventService.getMessage().subscribe((message) => {
+        //     this.checkEventTypes(message);
+        // });
     }
 
     componentWillUnmount() {
-        this.events.unsubscribe();
+        // this.events.unsubscribe();
     }
 
     componentDidMount(){
+        if (this.props.onRef != null) {
+            this.props.onRef(this)
+        }
         Orientation.addOrientationListener(this._orientationDidChange);
     }
 
@@ -121,6 +124,10 @@ class NoteItem extends Component {
         return moment(date).format('MM/DD/YYYY HH:mm');
     };
 
+    getItemId = () => {
+        return this.props.item.id;
+    }
+
     onCancelDeletePress = () => {
         this.setState({
             showDeleteConfirmationModal: false,
@@ -141,7 +148,6 @@ class NoteItem extends Component {
 
     getCommentList = (note_id,offset) => {
         this.setState({loadComment:true});
-        console.log(this.props.isFriend);
         if(this.props.isFriend){
             this.props.getFriendCommentList(note_id,offset)
             .then((res)=>{
@@ -282,6 +288,7 @@ class NoteItem extends Component {
         const {commentResult} = this.state;
         if(isFriend){
             let data = message.text.data.message_details.data;
+            console.log('friend comment data',data);
             if (commentResult && data && data.friend_note === item.id) {
                 let array = this.state.commentData;
                 array = [data,...array];
@@ -306,11 +313,13 @@ class NoteItem extends Component {
         if (data && data.note_id === item.id) {
             let array = this.state.commentData;
             let i = array.find((e) => e.id === data.comment_id);
-            let index = array.indexOf(i);
-            i['is_liked'] = data.like.like;
-            i['liked_by_count'] = data.like.like ? (i.liked_by_count + 1) : (i.liked_by_count - 1);
-            array.splice(index, 1, i);
-            this.setState({ commentData: array });
+            if(i){
+                let index = array.indexOf(i);
+                i['is_liked'] = data.like && data.like.like;
+                i['liked_by_count'] = (data.like && data.like.like) ? (i.liked_by_count + 1) : (i.liked_by_count - 1);
+                array.splice(index, 1, i);
+                this.setState({ commentData: array });
+            }
             // this.refs['comment_'+data.comment_id] && this.refs['comment_'+data.comment_id].forceUpdate();
         }
     }
@@ -321,9 +330,11 @@ class NoteItem extends Component {
         if (data && data.note_id === item.id) {
             let array = this.state.commentData;
             let i = array.find((e) => e.id === data.comment_id);
-            let index = array.indexOf(i);
-            array.splice(index, 1);
-            this.setState({ commentData: array });
+            if(i){
+                let index = array.indexOf(i);
+                array.splice(index, 1);
+                this.setState({ commentData: array });
+            }
         }
     }
 
@@ -432,7 +443,7 @@ class NoteItem extends Component {
                     <View>
                         <View style={{
                             borderBottomColor: Colors.light_gray,
-                            borderBottomWidth: showComment ? 0.5 : 0,
+                            borderBottomWidth: (showComment && commentData.length>0) ? 0.5 : 0,
                             // paddingBottom: 2,
                         }}>
                             <View
@@ -732,7 +743,7 @@ class NoteItem extends Component {
                                             userData = {userData}
                                         />
                                     );
-                                }):<View style={{flexDirection:'row',justifyContent:'center'}}><ActivityIndicator /></View>}
+                                }): loadComment ? <View style={{flexDirection:'row',justifyContent:'center'}}><ActivityIndicator /></View> : null}
                                 {commentResult && commentResult.next && <View style={{flexDirection:'row',justifyContent:'center'}}>
                                 {loadComment?
                                     <View style={{flexDirection:'row',justifyContent:'center'}}>

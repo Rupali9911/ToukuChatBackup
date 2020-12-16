@@ -128,6 +128,14 @@ class GroupDetails extends Component {
           },
         },
       ],
+      NonAdminAddOption: [
+        {
+          title: translate('pages.xchat.member'),
+          onPress: (id, type) => {
+            this.setMember(id, type);
+          },
+        },
+      ],
       dropDownData: null,
     };
 
@@ -522,7 +530,7 @@ class GroupDetails extends Component {
 
   renderUserFriends() {
     const {userFriends, friendLoading, currentGroupMembers} = this.props;
-    const {memberOption, adminOption, addOption, loading} = this.state;
+    const {memberOption, adminOption, addOption, NonAdminAddOption, loading} = this.state;
     let filteredFriends = [];
     if (currentGroupMembers && currentGroupMembers.length > 0) {
       filteredFriends = currentGroupMembers.filter(
@@ -550,14 +558,15 @@ class GroupDetails extends Component {
                         .member_type
                     : translate('pages.xchat.add')
                 }
-                isRightDropDown={this.state.isMyGroup}
+                isRightDropDown={true}
+                disableEdit = {this.isMemberCheck(item.id ? item.id : item.user_Id) && !this.state.isMyGroup}
                 dropDownData={
                   this.isMemberCheck(item.id ? item.id : item.user_Id)
                     ? this.isMemberCheck(item.id ? item.id : item.user_Id)
                         .member_type == 'member'
-                      ? memberOption
-                      : adminOption
-                    : addOption
+                      ? this.state.isMyGroup?memberOption:[]
+                      : this.state.isMyGroup?adminOption:[]
+                    : this.state.isMyGroup?addOption:NonAdminAddOption
                 }
                 memberType={
                   this.isMemberCheck(item.id ? item.id : item.user_Id)

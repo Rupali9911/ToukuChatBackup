@@ -23,6 +23,7 @@ import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
 import ReadMore from 'react-native-read-more-text';
 import PostChannelItem from '../components/PostChannelItem';
+import { normalize } from '../utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -81,19 +82,22 @@ export default class PostCard extends Component {
         return newArray.push(data.text);
       });
 
-    const {menuItems, isChannelTimeline} = this.props;
+    const {menuItems, isTimeline, isChannelTimeline} = this.props;
     return (
       <View
         style={{
-          backgroundColor: Colors.white,
+          backgroundColor: isChannelTimeline?'transparent':Colors.white,
           marginVertical: 10,
           paddingVertical: 10,
           flex: 1,
+          borderColor: '#dbdbdb',
+          borderWidth: isChannelTimeline?1:0
         }}>
         <PostCardHeader
           menuItems={menuItems}
           post={post}
           isChannelTimeline={isChannelTimeline}
+          isTimeline={isTimeline}
         />
         <PostChannelItem post={post} />
       </View>
@@ -124,6 +128,26 @@ export default class PostCard extends Component {
     );
   };
 
+  channelEmptyList = () => {
+    return (
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        height: height * 0.5,
+      }}>
+        <Text
+          style={{
+            fontFamily: Fonts.regular,
+            fontSize: normalize(12),
+            marginTop: 50,
+            color: Colors.dark_gray
+          }}>
+          {translate('pages.xchat.noTimelineFound')}
+        </Text>
+      </View>
+    );
+  }
+
   render() {
     const {
       menuItems,
@@ -144,7 +168,7 @@ export default class PostCard extends Component {
         onEndReachedThreshold={0.1}
         bounces={false}
         keyExtractor={(item, index) => `${item.id}`}
-        ListEmptyComponent={this.EmptyList(isTimeline)}
+        ListEmptyComponent={isChannelTimeline?this.channelEmptyList:this.EmptyList(isTimeline)}
       />
     );
 

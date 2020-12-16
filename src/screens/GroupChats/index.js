@@ -1282,7 +1282,9 @@ class GroupChats extends Component {
       text: message.message_body.text,
       language: this.props.selectedLanguageItem.language_name,
     };
+    console.log('payload',payload);
     this.props.translateMessage(payload).then((res) => {
+      console.log('res',res);
       if (res.status == true) {
         this.setState({
           translatedMessageId: message.msg_id,

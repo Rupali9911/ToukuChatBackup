@@ -223,6 +223,7 @@ export default class ChatMessageBox extends Component {
               <TouchableOpacity
                 onPress={() => {
                   if (isChannel) {
+                    NavigationService.navigate('ChannelInfo');
                   } else {
                     NavigationService.navigate('FriendNotes');
                   }

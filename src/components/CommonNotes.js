@@ -25,7 +25,43 @@ export default class CommonNotes extends Component {
     };
   }
 
-  componentDidMount() {}
+  UNSAFE_componentWillMount(){
+    this.events = eventService.getMessage().subscribe((message) => {
+      switch (message.text.data.type) {
+        case SocketEvents.LIKE_OR_UNLIKE_GROUP_NOTE_COMMENT_DATA:
+        case SocketEvents.DELETE_GROUP_NOTE_COMMENT:
+        case SocketEvents.GROUP_NOTE_COMMENT_DATA:
+        case SocketEvents.LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA:
+        case SocketEvents.FRIEND_NOTE_COMMENT_DATA:
+        case SocketEvents.DELETE_FRIEND_NOTE_COMMENT:
+          if(message){
+            let data = this.props.isFriend?message.text.data.message_details.data:message.text.data.message_details;  
+            
+            if(this.props.isFriend){
+              let id = data.note_id || data.friend_note;
+              if(data && id){
+                this[`note_item_`+id] && this[`note_item_`+id].checkEventTypes(message);
+              }
+            }else{
+              let id = data.note_id || data.group_note;
+              if(data && id){
+                this[`note_item_`+id] && this[`note_item_`+id].checkEventTypes(message);
+              }
+            }
+          }
+          break;
+        default:
+    }
+      });
+  }
+
+  componentDidMount() {
+    
+  }
+
+  componentWillMount(){
+    this.events && this.events.unsubscribe();
+  }
 
   getDate = (date) => {
     return moment(date).format('MM/DD/YYYY HH:mm');
@@ -45,7 +81,7 @@ export default class CommonNotes extends Component {
       userData,
       onLikeUnlike,
       isFriend,
-      groupMembers
+      groupMembers,
     } = this.props;
     return (
       <React.Fragment>
@@ -149,6 +185,10 @@ export default class CommonNotes extends Component {
               data={data.results}
               renderItem={({item, index}) =>
                 <NoteItem
+                  onRef={(note)=>{
+                    this['note_item_'+item.id]=note;
+                  }}
+                  key={item.id+''}
                   isFriend={isFriend}
                   index={index}
                   editNote={editNoteIndex === index}

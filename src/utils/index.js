@@ -1,4 +1,4 @@
-import {Dimensions, Platform, PixelRatio} from 'react-native';
+import {Dimensions, Platform, PixelRatio, PermissionsAndroid} from 'react-native';
 import {Images, Icons} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
@@ -130,3 +130,30 @@ export const resizeImage = async (file, width, height) => {
     });
   // return await resizedImage;
 };
+
+export const hasStoragePermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: "External Storage Permission",
+        message:
+          "Storage permission require to download image" +
+          "so you can save media.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use the camera");
+      return true;
+    } else {
+      console.log("Camera permission denied");
+      return false;
+    }
+  } catch (err) {
+    console.warn(err);
+    return false;
+  }
+}
