@@ -522,15 +522,18 @@ class GroupChats extends Component {
       this.props.sendGroupMessage(groupMessage);
     }
     if (uploadFile.uri) {
-      this.setState({
-        showGalleryModal: false,
-        showAttachmentModal: false
-      },()=>{
-        this.setState({
-          uploadedFiles: [],
-          sendingMedia: false,
-        })
-      });
+      this.setState(
+        {
+          showGalleryModal: false,
+          showAttachmentModal: false,
+        },
+        () => {
+          this.setState({
+            uploadedFiles: [],
+            sendingMedia: false,
+          });
+        },
+      );
     }
 
     // this.setState({
@@ -1327,7 +1330,7 @@ class GroupChats extends Component {
 
   onUrlUpload = (url) => {
     this.setState({uploadedFiles: [...this.state.uploadedFiles, url]});
-  }
+  };
 
   onAttachmentPress = async () => {
     try {

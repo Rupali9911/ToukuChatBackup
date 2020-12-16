@@ -767,36 +767,36 @@ class ChatMessageBubble extends Component {
             />
           )}
 
-          {!isChannel && (
-            <MenuItem
-              // icon={() => (
-              //   <FontAwesome5
-              //     name={'language'}
-              //     size={20}
-              //     color={Colors.white}
-              //   />
-              // )}
-              onPress={() => {
-                onMessageReply(selectedMessageId);
-                // closeMenu();
-                this.hideMenu();
-              }}
-              customComponent={
-                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                  <FontAwesome5
-                    name={'language'}
-                    size={20}
-                    color={Colors.white}
-                  />
-                  <Text style={{marginLeft: 10, color: '#fff'}}>
-                    {translate('common.reply')}
-                  </Text>
-                </View>
-              }
-              // title={translate('common.reply')}
-              // titleStyle={{marginLeft: -25, color: Colors.white}}
-            />
-          )}
+          {/* {!isChannel && ( */}
+          <MenuItem
+            // icon={() => (
+            //   <FontAwesome5
+            //     name={'language'}
+            //     size={20}
+            //     color={Colors.white}
+            //   />
+            // )}
+            onPress={() => {
+              onMessageReply(selectedMessageId);
+              // closeMenu();
+              this.hideMenu();
+            }}
+            customComponent={
+              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                <FontAwesome5
+                  name={'language'}
+                  size={20}
+                  color={Colors.white}
+                />
+                <Text style={{marginLeft: 10, color: '#fff'}}>
+                  {translate('common.reply')}
+                </Text>
+              </View>
+            }
+            // title={translate('common.reply')}
+            // titleStyle={{marginLeft: -25, color: Colors.white}}
+          />
+          {/* )} */}
           {isUser && isEditable > new Date() && message.msg_type === 'text' && (
             <MenuItem
               icon={() => (

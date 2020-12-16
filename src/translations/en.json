@@ -563,6 +563,7 @@
       "addLink": "Add Link",
       "hyperLink": "Hyper Link",
       "sendingAt": "Sending at",
+      "addChannel":"Add a channel",
       "toastr": {
         "added": "Added",
         "rejected": "rejected",

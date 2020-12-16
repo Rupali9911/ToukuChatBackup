@@ -425,6 +425,7 @@ export const setChannels = (channels) => {
   // console.log('realm insert data', channels);
   for (let item of channels) {
     var obj = realm.objects('channels').filtered('id=' + item.id);
+
     if (obj.length > 0) {
       realm.write(() => {
         realm.create(
@@ -632,7 +633,6 @@ export const updateChannelUnReadCountById = (id, unread_msg) => {
 
 export const deleteChannelById = (id) => {
   var message = realm.objects('channels').filtered(`id == ${id}`);
-
   realm.write(() => {
     realm.delete(message);
   });

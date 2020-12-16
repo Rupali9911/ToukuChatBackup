@@ -74,7 +74,6 @@ export default class PostCard extends Component {
   };
 
   renderPostItem = ({item: post, index}) => {
-    console.log('post', post);
     let newArray = [];
     post.text &&
       post.text.length > 0 &&
@@ -135,7 +134,6 @@ export default class PostCard extends Component {
       onMomentumScrollBegin,
       onEndReached,
     } = this.props;
-    console.log('POST', posts);
     return (
       <FlatList
         data={posts}

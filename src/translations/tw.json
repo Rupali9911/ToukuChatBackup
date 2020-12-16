@@ -563,6 +563,7 @@
       "addLink": "添加鏈接",
       "hyperLink": "超鏈接",
       "sendingAt": "發送地址：",
+      "addChannel":"添加頻道",
       "toastr": {
         "added": "添加",
         "rejected": "拒絕了",

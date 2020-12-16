@@ -283,7 +283,7 @@ export const getLocalFollowingChannels = () => (dispatch) =>
       });
 
       array = channels.toJSON();
-      // console.log('array', array);
+      console.log('array', array);
 
       dispatch(setUnreadChannelMsgsCounts(counts));
       dispatch(getFollowingChannelsSuccess(array));
@@ -610,12 +610,16 @@ export const readAllChannelMessages = (id) => (dispatch) =>
 //Unfollow Channel
 export const unfollowChannel = (id, user) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    console.log('id', id, 'user', user);
+
     client
       .patch(`/xchat/unfollow-channel/` + id + '/', user)
       .then((res) => {
+        console.log('res', res);
         resolve(res);
       })
       .catch((err) => {
+        console.log('res err', err);
         reject(err);
       });
   });
@@ -626,14 +630,12 @@ export const followChannel = (data) => (dispatch) =>
     client
       .post(`/xchat/check-user-in-channel/`, data)
       .then((res) => {
+        resolve(res);
         dispatch(getChannelConversations(data.channel_id, 30))
           .then((res) => {
-            dispatch(getChannelConversationsFailure());
+            dispatch(readAllChannelMessages(data.channel_id));
           })
-          .catch(() => {
-            dispatch(getChannelConversationsFailure());
-          });
-        resolve(res);
+          .catch(() => {});
       })
       .catch((err) => {
         reject(err);

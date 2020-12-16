@@ -1885,7 +1885,7 @@ class Chat extends Component {
 
   onAddGroupMember(message) {
     const {userGroups, userData, currentGroup} = this.props;
-    console.log('message_Details',JSON.stringify(message));
+    console.log('message_Details', JSON.stringify(message));
     if (message.text.data.type === SocketEvents.ADD_GROUP_MEMBER) {
       for (let i of message.text.data.message_details.members_data) {
         if (i.id == userData.id) {
@@ -2004,6 +2004,10 @@ class Chat extends Component {
 
   onAcceptFriendReuqest = (message) => {
     if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
+      console.log(
+        'message.text.data.message_details',
+        message.text.data.message_details.conversation.requested_from,
+      );
       if (
         message.text.data.message_details.conversation.requested_from ===
         this.props.userData.username
@@ -2053,21 +2057,21 @@ class Chat extends Component {
 
   onAcceptFriendReuqest = (message) => {
     if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
-      if (
-        message.text.data.message_details.conversation.requested_from ===
-        this.props.userData.username
-      ) {
-        Toast.show({
-          title: translate('pages.xchat.friendRequest'),
-          text: translate(
-            'pages.xchat.toastr.acceptedYourFriendRequest',
-          ).replace(
-            '[missing {{friend}} value]',
-            message.text.data.message_details.conversation.display_name,
-          ),
-          type: 'positive',
-        });
-      }
+      // if (
+      //   message.text.data.message_details.conversation.requested_from ===
+      //   this.props.userData.username
+      // ) {
+      //   Toast.show({
+      //     title: translate('pages.xchat.friendRequest'),
+      //     text: translate(
+      //       'pages.xchat.toastr.acceptedYourFriendRequest',
+      //     ).replace(
+      //       '[missing {{friend}} value]',
+      //       message.text.data.message_details.conversation.display_name,
+      //     ),
+      //     type: 'positive',
+      //   });
+      // }
       deleteFriendRequest(
         message.text.data.message_details.conversation.user_id,
       );

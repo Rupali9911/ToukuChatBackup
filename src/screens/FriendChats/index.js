@@ -376,7 +376,12 @@ class FriendChats extends Component {
       message_body: msgText,
       reply_to: isReply
         ? {
-            display_name: repliedMessage.from_user.id===userData.id?repliedMessage.from_user.display_name:currentFriend.display_name?currentFriend.display_name:repliedMessage.from_user.display_name,
+            display_name:
+              repliedMessage.from_user.id === userData.id
+                ? repliedMessage.from_user.display_name
+                : currentFriend.display_name
+                ? currentFriend.display_name
+                : repliedMessage.from_user.display_name,
             id: repliedMessage.id,
             message: repliedMessage.message_body,
             msg_type: repliedMessage.msg_type,
@@ -432,15 +437,18 @@ class FriendChats extends Component {
       this.props.sendPersonalMessage(data);
     }
     if (uploadFile.uri) {
-      this.setState({
-        showGalleryModal: false,
-        showAttachmentModal: false
-      },()=>{
-        this.setState({
-          uploadedFiles: [],
-          sendingMedia: false,
-        });
-      });
+      this.setState(
+        {
+          showGalleryModal: false,
+          showAttachmentModal: false,
+        },
+        () => {
+          this.setState({
+            uploadedFiles: [],
+            sendingMedia: false,
+          });
+        },
+      );
     }
 
     // this.setState({
@@ -487,6 +495,7 @@ class FriendChats extends Component {
     const repliedMessage = chatFriendConversation.find(
       (item) => item.id === messageId,
     );
+
     this.setState({
       isReply: true,
       repliedMessage: repliedMessage,
@@ -1102,7 +1111,7 @@ class FriendChats extends Component {
 
   onUrlUpload = (url) => {
     this.setState({uploadedFiles: [...this.state.uploadedFiles, url]});
-  }
+  };
 
   onAttachmentPress = async () => {
     try {

@@ -110,14 +110,19 @@ export default class PostChannelItem extends Component {
                         fontFamily: Fonts.regular,
                         fontSize: 16,
                         margin: 15,
+                        color: 'blue',
                       }}>
-                      {'\n  ' + '...Show less'}
+                      {'\n  ' + '...' + translate('pages.xchat.showLess')}
                     </Text>
                   ) : (
                     <Text
                       onPress={() => this.toggleNumberOfLines('more')}
-                      style={{fontFamily: Fonts.regular, fontSize: 16}}>
-                      {'  ' + '...Show more'}
+                      style={{
+                        fontFamily: Fonts.regular,
+                        fontSize: 16,
+                        color: 'blue',
+                      }}>
+                      {'  ' + '...' + translate('pages.xchat.showMore')}
                     </Text>
                   ))}
               </Text>

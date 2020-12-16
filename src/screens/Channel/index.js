@@ -283,7 +283,6 @@ class Channel extends Component {
 
   hidePost(post) {
     const {activeTab} = this.state;
-    console.log('post', post);
     this.props.hidePost(post.id).then((res) => {
       console.log('Hide post server response', res);
       this.refreshContent();
@@ -292,7 +291,6 @@ class Channel extends Component {
 
   hideAllPost(post) {
     const {activeTab} = this.state;
-    console.log('post', post);
     this.props.hideAllPost(post.channel_id).then((res) => {
       console.log('hideAllPost post server response', res);
       this.refreshContent();
@@ -301,7 +299,6 @@ class Channel extends Component {
 
   reportContent(post) {
     const {activeTab} = this.state;
-    console.log('post', post);
     this.props.reportPost(post.id).then((res) => {
       console.log('reportContent server response', res);
       this.refreshContent();

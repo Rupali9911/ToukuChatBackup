@@ -563,6 +563,7 @@
       "addLink": "添加链接",
       "hyperLink": "超链接",
       "sendingAt": "发送地址：",
+      "addChannel":"添加频道",
       "toastr": {
         "added": "添加",
         "rejected": "拒絕了",

@@ -59,11 +59,12 @@ export default class ChatHeader extends Component {
       navigation,
       isPined,
       chatType,
+      currentChannel,
     } = this.props;
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
-    console.log('group_picture',image);
+    console.log('group_picture', image);
     return (
       <View style={styles.headerContainer}>
         <ImageBackground
@@ -126,16 +127,19 @@ export default class ChatHeader extends Component {
                 </View>
               ) : (
                 <View style={styles.subContainer}>
-                    <TouchableOpacity onPress={() => {
+                  <TouchableOpacity
+                    onPress={() => {
                       console.log('type', type);
                       if (type === 'channel') {
-                        navigation.navigate('ChannelInfo')
+                        navigation.navigate('ChannelInfo');
                       }
                     }}>
-                      {(image == null && image == '' && typeof image == undefined) ? (
-                        <LinearGradient
-                        start={{ x: 0.1, y: 0.7 }}
-                        end={{ x: 0.5, y: 0.2 }}
+                    {image === null &&
+                    image === '' &&
+                    typeof image === undefined ? (
+                      <LinearGradient
+                        start={{x: 0.1, y: 0.7}}
+                        end={{x: 0.5, y: 0.2}}
                         locations={[0.1, 0.6, 1]}
                         colors={[
                           Colors.gradient_1,
@@ -147,20 +151,22 @@ export default class ChatHeader extends Component {
                           {title.indexOf(' ') === -1
                             ? title.charAt(0).toUpperCase()
                             : title.charAt(0).toUpperCase() +
-                            title.charAt(title.indexOf(' ') + 1).toUpperCase()}
+                              title
+                                .charAt(title.indexOf(' ') + 1)
+                                .toUpperCase()}
                           {/* {secondUpperCase} */}
                         </Text>
                       </LinearGradient>
-                      ) : (
-                          <View style={{ marginHorizontal: 10 }}>
-                            <RoundedImage
-                              source={getAvatar(image)}
-                              isRounded={false}
-                              size={Platform.isPad ? 50 : 40}
-                            />
-                          </View>
-                        )}
-                    </TouchableOpacity>
+                    ) : (
+                      <View style={{marginHorizontal: 10}}>
+                        <RoundedImage
+                          source={getAvatar(image)}
+                          isRounded={false}
+                          size={Platform.isPad ? 50 : 40}
+                        />
+                      </View>
+                    )}
+                  </TouchableOpacity>
                   <View
                     style={{
                       flex: 1,
@@ -177,12 +183,11 @@ export default class ChatHeader extends Component {
                             : normalize(12),
                         },
                       ]}
-                      onPress={()=>{
+                      onPress={() => {
                         if (type === 'channel') {
-                          navigation.navigate('ChannelInfo')
+                          navigation.navigate('ChannelInfo');
                         }
-                      }}
-                      >
+                      }}>
                       {title}
                     </Text>
                     <Text

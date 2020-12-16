@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   TextInput,
@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Colors, Icons, Fonts } from '../../constants';
-import { globalStyles } from '../../styles';
+import {Colors, Icons, Fonts} from '../../constants';
+import {globalStyles} from '../../styles';
 
 export default class InputWithTitle extends Component {
   constructor(props) {
@@ -24,15 +24,24 @@ export default class InputWithTitle extends Component {
   }
 
   render() {
-    const { onChangeText, title, titleStyle, value, placeholder, keyboardType } = this.props;
+    const {
+      onChangeText,
+      title,
+      titleStyle,
+      value,
+      placeholder,
+      keyboardType,
+    } = this.props;
     return (
       <View style={styles.container}>
-        {title && <Text style={titleStyle?titleStyle:styles.title}>{title}</Text>}
+        {title && (
+          <Text style={titleStyle ? titleStyle : styles.title}>{title}</Text>
+        )}
         <TextInput
           style={styles.inputBox}
           onChangeText={onChangeText}
           value={value}
-          keyboardType={keyboardType?keyboardType:'default'}
+          keyboardType={keyboardType ? keyboardType : 'default'}
           placeholder={placeholder ? placeholder : ''}
         />
       </View>
@@ -46,7 +55,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.light,
-      color: Colors.textTitle_orange
+    color: Colors.textTitle_orange,
   },
   inputBox: {
     height: 35,
@@ -59,5 +68,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     fontFamily: Fonts.light,
     fontSize: 13,
+    color: Colors.black,
   },
 });

@@ -18,7 +18,7 @@ import {
   followChannel,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
-import {getChannelsById} from '../../storage/Service';
+import {getChannelsById, getChannels} from '../../storage/Service';
 
 class FollowChannel extends Component {
   constructor(props) {
@@ -94,11 +94,16 @@ class FollowChannel extends Component {
     let channelInfo = channel_id;
 
     const code = channelInfo.slice(0, -1);
+
+    console.log('code', code);
     const index = Number(channelInfo.slice(-1));
+    console.log('code 1', index);
     const decryptedData = [
       code.slice(0, index),
       code.slice(index, code.length),
     ];
+
+    console.log('decrypted', decryptedData);
 
     let data = {
       channel_id: Number(decryptedData[0]),
@@ -115,11 +120,11 @@ class FollowChannel extends Component {
         type: 'primary',
       });
     } else {
+      // check already follow or not
       let channelIndex = this.props.followingChannels.findIndex(
         (item) => item.id === Number(decryptedData[0]),
       );
-
-      if (channelIndex > 1) {
+      if (channelIndex !== -1) {
         this.setState({loading: false});
         Toast.show({
           title: translate('pages.xchat.followChannel'),
@@ -130,27 +135,35 @@ class FollowChannel extends Component {
         this.props
           .followChannel(data)
           .then((res) => {
-            console.log('res', res);
-            this.setState({loading: false, channel_id: '', referral_code: ''});
             if (res && res.status) {
+              this.setState({
+                loading: false,
+                channel_id: '',
+                referral_code: '',
+              });
               Toast.show({
                 title: translate('pages.xchat.followChannel'),
                 text: translate('pages.xchat.toastr.AddedToNewChannel'),
                 type: 'positive',
               });
 
-              let channelIndex = this.props.followingChannels.findIndex(
+              //get all channel
+              let channels = [];
+              let result = getChannels();
+
+              channels = result.toJSON();
+
+              //find channel into list
+              let channelIndex = channels.findIndex(
                 (item) => item.id === Number(decryptedData[0]),
               );
 
-              if (channelIndex) {
-                let setCurrentChannel = this.props.followingChannels[
-                  channelIndex
-                ];
+              //set current channel with navigation
+              if (channelIndex !== -1) {
+                let setCurrentChannel = channels[channelIndex];
                 this.props.setCurrentChannel(setCurrentChannel);
+                this.props.navigation.navigate('ChannelChats');
               }
-              this.props.navigation.navigate('ChannelChats');
-              // this.props.navigation.goBack();
             }
           })
           .catch((err) => {
@@ -186,13 +199,16 @@ class FollowChannel extends Component {
           showsVerticalScrollIndicator={false}>
           <View style={followChannelStyles.inputesContainer}>
             <InputWithTitle
-              title={translate('pages.invitation.followCode') + ' :'}
+              title={translate('pages.xchat.channelId') + ' :'}
               titleStyle={{
-                fontFamily: Fonts.light,
+                Colors: '#000',
+                fontFamily: Fonts.regular,
               }}
               keyboardType={'number-pad'}
               value={channel_id}
-              onChangeText={(channel_id) => this.setState({channel_id})}
+              onChangeText={(channel_id) =>
+                this.setState({channel_id: channel_id})
+              }
             />
             {/* <InputWithTitle
               title={
@@ -212,7 +228,7 @@ class FollowChannel extends Component {
           <View style={{marginTop: 10, justifyContent: 'center'}}>
             <Button
               type={'primary'}
-              title={translate('pages.xchat.followChannel')}
+              title={translate('pages.xchat.addChannel')}
               isRounded={false}
               onPress={() => this.handleButtonPress()}
               loading={loading}

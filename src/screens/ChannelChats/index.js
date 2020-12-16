@@ -117,6 +117,8 @@ class ChannelChats extends Component {
       isMultiSelect: false,
       selectedIds: [],
       openDoc: false,
+      isReply: false,
+      repliedMessage: null,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -523,7 +525,7 @@ class ChannelChats extends Component {
   }
 
   onMessageSend = async () => {
-    const {newMessageText, editMessageId} = this.state;
+    const {newMessageText, editMessageId, isReply} = this.state;
     const {userData, currentChannel} = this.props;
 
     let msgText = newMessageText;
@@ -534,9 +536,11 @@ class ChannelChats extends Component {
     if (!newMessageText && !uploadFile.uri) {
       return;
     }
+
     this.setState({
       newMessageText: '',
-      repliedMessage: null,
+      isReply: false,
+      repliedMessage: {},
       isEdited: false,
       sentMessageType: 'text',
       // sendingMedia: false,
@@ -609,6 +613,16 @@ class ChannelChats extends Component {
       },
       to_user: null,
       replies_is_read: null,
+      reply_to: isReply
+        ? {
+            display_name: repliedMessage.from_user.display_name,
+            id: repliedMessage.id,
+            message: repliedMessage.message_body,
+            msg_type: repliedMessage.msg_type,
+            name: repliedMessage.to_user.username,
+            sender_id: repliedMessage.sender_id,
+          }
+        : null,
       created: moment().format(),
       updated: moment().format(),
       msg_type: sentMessageType,
@@ -620,7 +634,6 @@ class ChannelChats extends Component {
       is_unsent: false,
       bonus_message: false,
       channel: currentChannel.id,
-      reply_to: null,
       schedule_post: null,
       subchat: null,
       greeting: null,
@@ -647,7 +660,22 @@ class ChannelChats extends Component {
     //   ...this.props.chatConversation,
     // ]);
     // this.state.conversations.unshift(sendmsgdata);
-    this.props.sendChannelMessage(messageData);
+    if (!isReply) {
+      this.props.sendChannelMessage(messageData);
+    }
+
+    let messageData123 = {
+      channel: this.props.currentChannel.id,
+      local_id: uuid.v4(),
+      message_body: msgText,
+      msg_type: sentMessageType,
+      reply_to: repliedMessage.id,
+    };
+
+    if (isReply) {
+      this.props.sendChannelMessage(messageData123);
+    }
+
     if (uploadFile.uri) {
       this.setState(
         {
@@ -684,6 +712,13 @@ class ChannelChats extends Component {
     this.setState({
       editMessageId: null,
       isEdited: false,
+    });
+  };
+
+  cancelReply = () => {
+    this.setState({
+      isReply: false,
+      repliedMessage: null,
     });
   };
 
@@ -958,7 +993,7 @@ class ChannelChats extends Component {
 
   onUrlUpload = (url) => {
     this.setState({uploadedFiles: [...this.state.uploadedFiles, url]});
-  }
+  };
 
   onAttachmentPress = async () => {
     try {
@@ -1119,6 +1154,21 @@ class ChannelChats extends Component {
     });
   };
 
+  onReply = (messageId) => {
+    // const { conversations } = this.state;
+    const {chatConversation} = this.props;
+
+    const repliedMessage = chatConversation.find(
+      (item) => item.id === messageId,
+    );
+
+    console.log('repliedMessage', repliedMessage);
+    this.setState({
+      isReply: true,
+      repliedMessage: repliedMessage,
+    });
+  };
+
   renderConversations() {
     const {channelLoading, chatConversation} = this.props;
     const {
@@ -1149,12 +1199,15 @@ class ChannelChats extends Component {
         <View style={{flex: 1}}>
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
+            onMessageReply={(id) => this.onReply(id)}
             onMessageSend={this.onMessageSend}
+            cancelReply={this.cancelReply.bind(this)}
             newMessageText={newMessageText}
             sendEnable={newMessageText.lenght ? true : false}
             messages={chatConversation}
             orientation={orientation}
-            repliedMessage={repliedMessage}
+            repliedMessage={this.state.repliedMessage}
+            isReply={this.state.isReply}
             onDelete={(id) => {
               this.setState({
                 isMultiSelect: true,
@@ -1441,6 +1494,7 @@ class ChannelChats extends Component {
               : translate('pages.xchat.pinThisChannel')
           }
           type={'channel'}
+          currentChannel={currentChannel}
         />
         {this.props.chatConversation && this.renderConversations()}
 

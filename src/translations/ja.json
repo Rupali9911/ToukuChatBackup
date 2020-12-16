@@ -563,6 +563,7 @@
       "addLink": "リッチ画像用URL追加",
       "hyperLink": "リッチ画像用URL追加",
       "sendingAt": "送信",
+      "addChannel":"チャンネルを追加する",
       "toastr": {
         "added": "追加しました",
         "rejected": "拒否されました",

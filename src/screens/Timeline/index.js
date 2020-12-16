@@ -256,7 +256,6 @@ class Timeline extends Component {
       rankingTimeLine,
       loading,
     } = this.props;
-    console.log('POST', trendTimline);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}

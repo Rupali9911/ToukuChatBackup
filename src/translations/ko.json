@@ -563,6 +563,7 @@
       "addLink": "\ub9c1\ud06c \ucd94\uac00",
       "hyperLink": "\ud558\uc774\ud37c \ub9c1\ud06c",
       "sendingAt": "\ubcf4\ub0b4\ub294 \uc911",
+      "addChannel":"채널 추가",
       "toastr": {
         "added": "\ucd94\uac00",
         "rejected": "\uac70\ubd80",
