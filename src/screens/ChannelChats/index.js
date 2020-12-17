@@ -1192,7 +1192,7 @@ class ChannelChats extends Component {
       return null;
     }
 
-    if (channelLoading && this.props.chatConversation.length <= 0) {
+    if (isChatLoading && this.props.chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
       return (

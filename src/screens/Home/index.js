@@ -1293,7 +1293,7 @@ class Home extends Component {
     // const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
 
     const groups = [...is_pined, ...is_un_pined];
-    if (groups.length === 0 && groups) {
+    if (groups.length === 0 && groupLoading) {
       return <ListLoader />;
     } else if (groups.length > 0) {
       return (

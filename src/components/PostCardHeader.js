@@ -228,7 +228,12 @@ export default class PostCardHeader extends Component {
                   return (
                     <React.Fragment>
                       <MenuItem
-                        onPress={this.hideMenu}>{`${item.title}`}</MenuItem>
+                        onPress={() => {
+                          this.hideMenu();
+                          setTimeout(() => {
+                            item.onPress(post);
+                          }, 500);
+                        }}>{`${item.title}`}</MenuItem>
                       {/* <Menu.Item
                         key={index}
                         onPress={() => {
