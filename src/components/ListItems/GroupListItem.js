@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, PureComponent} from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
 
 let groupId = [];
-export default class GroupListItem extends Component {
+export default class GroupListItem extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {

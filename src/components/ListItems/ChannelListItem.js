@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, PureComponent} from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
 
-export default class ChannelListItem extends Component {
+export default class ChannelListItem extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,8 +35,7 @@ export default class ChannelListItem extends Component {
   }
 
   getDate = (date) => {
-
-    if(date===null || date==='' || date===undefined){
+    if (date === null || date === '' || date === undefined) {
       return '';
     }
 

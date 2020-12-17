@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, PureComponent} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
@@ -13,7 +13,7 @@ import {normalize} from '../../utils';
 import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
 
-export default class FriendListItem extends Component {
+export default class FriendListItem extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,8 +48,7 @@ export default class FriendListItem extends Component {
     }
   }
   getDate = (date) => {
-
-    if(date===null || date==='' || date===undefined){
+    if (date === null || date === '' || date === undefined) {
       return '';
     }
 

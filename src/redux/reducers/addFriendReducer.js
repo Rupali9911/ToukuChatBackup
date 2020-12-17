@@ -5,10 +5,7 @@ import {
   CANCEL_FRIEND_REQUEST,
 } from '../../helpers/api';
 
-import {
-  setFriendRequests,
-  getLocalFriendRequests
-} from '../../storage/Service';
+import {setFriendRequests, getLocalFriendRequests} from '../../storage/Service';
 
 export const SET_SEARCHED_FRIEND = 'SET_SEARCHED_FRIEND';
 
@@ -16,7 +13,6 @@ export const GET_SEARCHED_FRIENDS_REQUEST = 'GET_SEARCHED_FRIENDS_REQUEST';
 export const GET_SEARCHED_FRIENDS_SUCCESS = 'GET_SEARCHED_FRIENDS_SUCCESS';
 export const GET_SEARCHED_FRIENDS_FAIL = 'GET_SEARCHED_FRIENDS_FAIL';
 export const SET_FRIEND_REQUEST = 'SET_FRIEND_REQUEST';
-
 
 export const ACCEPT_FRIENDS_REQUEST = 'ACCEPT_FRIENDS_REQUEST';
 export const ACCEPT_FRIENDS_SUCCESS = 'ACCEPT_FRIENDS_SUCCESS';
@@ -30,8 +26,8 @@ const initialState = {
   loading: false,
   searchedFriend: {},
   friendRequest: [],
-    isRejectLoading: false,
-    isAcceptLoading: false
+  isRejectLoading: false,
+  isAcceptLoading: false,
 };
 
 export default function (state = initialState, action) {
@@ -70,43 +66,43 @@ export default function (state = initialState, action) {
       };
     }
 
-      //Accept Friend Request
-      case ACCEPT_FRIENDS_REQUEST:
-          return {
-              ...state,
-              isAcceptLoading: true,
-          };
+    //Accept Friend Request
+    case ACCEPT_FRIENDS_REQUEST:
+      return {
+        ...state,
+        isAcceptLoading: true,
+      };
 
-      case ACCEPT_FRIENDS_SUCCESS:
-          return {
-              ...state,
-              isAcceptLoading: false,
-          };
+    case ACCEPT_FRIENDS_SUCCESS:
+      return {
+        ...state,
+        isAcceptLoading: false,
+      };
 
-      case ACCEPT_FRIENDS_FAIL:
-          return {
-              ...state,
-              isAcceptLoading: false,
-          };
+    case ACCEPT_FRIENDS_FAIL:
+      return {
+        ...state,
+        isAcceptLoading: false,
+      };
 
-      //Reject Friend Request
-      case REJECT_FRIENDS_REQUEST:
-          return {
-              ...state,
-              isRejectLoading: true,
-          };
+    //Reject Friend Request
+    case REJECT_FRIENDS_REQUEST:
+      return {
+        ...state,
+        isRejectLoading: true,
+      };
 
-      case REJECT_FRIENDS_SUCCESS:
-          return {
-              ...state,
-              isRejectLoading: false,
-          };
+    case REJECT_FRIENDS_SUCCESS:
+      return {
+        ...state,
+        isRejectLoading: false,
+      };
 
-      case REJECT_FRIENDS_FAIL:
-          return {
-              ...state,
-              isRejectLoading: false,
-          };
+    case REJECT_FRIENDS_FAIL:
+      return {
+        ...state,
+        isRejectLoading: false,
+      };
     default:
       return state;
   }
@@ -135,39 +131,40 @@ const getSearchedFriendsFailure = () => ({
   type: GET_SEARCHED_FRIENDS_FAIL,
 });
 
-
 //Accept friend
 const acceptFriendsRequest = () => ({
-    type: ACCEPT_FRIENDS_REQUEST,
+  type: ACCEPT_FRIENDS_REQUEST,
 });
 
 const acceptFriendsSuccess = (data) => ({
-    type: ACCEPT_FRIENDS_SUCCESS,
-    payload: data,
+  type: ACCEPT_FRIENDS_SUCCESS,
+  payload: data,
 });
 
 const acceptFriendsFailure = () => ({
-    type: ACCEPT_FRIENDS_FAIL,
+  type: ACCEPT_FRIENDS_FAIL,
 });
-
 
 //Reject friend
 const rejectFriendsRequest = () => ({
-    type: REJECT_FRIENDS_REQUEST,
+  type: REJECT_FRIENDS_REQUEST,
 });
 
 const rejectFriendsSuccess = (data) => ({
-    type: REJECT_FRIENDS_SUCCESS,
-    payload: data,
+  type: REJECT_FRIENDS_SUCCESS,
+  payload: data,
 });
 
 const rejectFriendsFailure = () => ({
-    type: REJECT_FRIENDS_FAIL,
+  type: REJECT_FRIENDS_FAIL,
 });
 
 export const getSearchedFriends = (param) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getSearchedFriendsRequest());
+
+    console.log('param', param);
+
     client
       .get(GET_SEARCHED_FRIEND + '?query=' + param + '&type=add-friend')
       .then((res) => {
@@ -219,7 +216,7 @@ export const cancelFriendRequest = (id) => (dispatch) =>
 
 // set is_requested param
 export const setIsRequestedParam = (searchedFriend, is_requested, index) => (
-  dispatch
+  dispatch,
 ) =>
   new Promise(function (resolve, reject) {
     console.log('friend', searchedFriend, is_requested, index);
@@ -237,19 +234,19 @@ const setFiendRequest = (data) => ({
 
 export const setFriendRequest = () => (dispatch) => {
   var result = getLocalFriendRequests();
-    var requests = [];
+  var requests = [];
   for (let i of result) {
     let item = {
       from_user_id: i.from_user_id,
       from_user_display_name: i.from_user_display_name,
       from_user_username: i.from_user_username,
       from_user_avatar: i.from_user_avatar,
-      created: i.created
-    }
+      created: i.created,
+    };
     requests = [...requests, item];
   }
-  dispatch(setFiendRequest(requests))
-}
+  dispatch(setFiendRequest(requests));
+};
 
 export const getFriendRequest = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -269,17 +266,17 @@ export const getFriendRequest = () => (dispatch) =>
 
 export const acceptFriendRequst = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
-      dispatch(acceptFriendsRequest());
+    dispatch(acceptFriendsRequest());
     console.log('acceptFriendRequst');
     client
       .post(`/xchat/accept-friend-request/`, payload)
       .then((res) => {
-          dispatch(acceptFriendsSuccess());
+        dispatch(acceptFriendsSuccess());
         console.log('res', res);
         resolve(res);
       })
       .catch((err) => {
-          dispatch(acceptFriendsFailure());
+        dispatch(acceptFriendsFailure());
         console.log('err', err);
         reject(err);
       });
@@ -287,17 +284,17 @@ export const acceptFriendRequst = (payload) => (dispatch) =>
 
 export const rejectFriendRequst = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
-      dispatch(rejectFriendsRequest());
+    dispatch(rejectFriendsRequest());
     console.log('rejectFriendRequst');
     client
       .post(`/xchat/reject-friend-request/`, payload)
       .then((res) => {
-          dispatch(rejectFriendsSuccess());
+        dispatch(rejectFriendsSuccess());
         console.log('res', res);
         resolve(res);
       })
       .catch((err) => {
-          dispatch(rejectFriendsFailure());
+        dispatch(rejectFriendsFailure());
         console.log('err', err);
         reject(err);
       });

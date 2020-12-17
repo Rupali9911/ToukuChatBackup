@@ -108,7 +108,7 @@ export default class SearchInput extends Component {
               <TextInput
                 style={styles.inputStyle}
                 placeholder={placeholder || translate('pages.xchat.search')}
-                // placeholderTextColor={Colors.gray}
+                placeholderTextColor={Colors.gray}
                 onChangeText={onChangeText}
                 ref={(input) => (this.textInput = input)}
                 onSubmitEditing={onSubmitEditing}
@@ -207,7 +207,7 @@ export default class SearchInput extends Component {
                   this.setState({isVisibleLeft: false}, () => onCanclePress());
                 }}>
                 <Text style={styles.buttonTextStyle}>
-                  {translate('common.cancel')}
+                  {translate('pages.xchat.cancel')}
                 </Text>
               </TouchableOpacity>
             </View>

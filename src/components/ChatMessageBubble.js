@@ -799,13 +799,13 @@ class ChatMessageBubble extends Component {
           {/* )} */}
           {isUser && isEditable > new Date() && message.msg_type === 'text' && (
             <MenuItem
-              icon={() => (
-                <FontAwesome5
-                  name={'pencil-alt'}
-                  size={20}
-                  color={Colors.white}
-                />
-              )}
+              // icon={() => (
+              //   <FontAwesome5
+              //     name={'pencil-alt'}
+              //     size={20}
+              //     color={Colors.white}
+              //   />
+              // )}
               onPress={() => {
                 onEditMessage(message);
                 // closeMenu();
@@ -822,7 +822,7 @@ class ChatMessageBubble extends Component {
                     style={{flex: 1}}
                   />
                   <Text style={{flex: 2, marginLeft: 10, color: '#fff'}}>
-                    {translate('common.reply')}
+                    {translate('common.edit')}
                   </Text>
                 </View>
               }

@@ -42,6 +42,7 @@ class FriendWithStatus extends Component {
 
   render() {
     const {user} = this.props;
+
     return (
       <View style={styles.container}>
         <View style={styles.subContainer}>
@@ -49,7 +50,7 @@ class FriendWithStatus extends Component {
           <Text
             style={[
               globalStyles.regularWeightedText,
-              {textAlign: 'left', marginStart: 15, flex: 1},
+              {textAlign: 'left', marginStart: 15, flex: 1, fontWeight: '100'},
             ]}>
             {user.display_name ? user.display_name : user.username}
           </Text>

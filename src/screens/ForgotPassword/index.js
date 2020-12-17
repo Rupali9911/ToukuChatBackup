@@ -45,6 +45,7 @@ class ForgotPassword extends Component {
       authCodeErr: null,
       passwordErr: null,
       newPasswordErr: null,
+      requestOTP: false,
     };
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -92,36 +93,48 @@ class ForgotPassword extends Component {
   handlePassword = (password) => {
     this.setState({password});
     if (password.length <= 7 || password.length > 64) {
-        if (password !== ''){
-            this.setState({passwordStatus: 'wrong'});
-        }else{
-            this.setState({passwordStatus: 'normal', passwordErr: null});
-        }
+      if (password !== '') {
+        this.setState({passwordStatus: 'wrong'});
+      } else {
+        this.setState({passwordStatus: 'normal', passwordErr: null});
+      }
     } else {
-        this.setState({passwordStatus: 'right', passwordErr: null});
+      this.setState({passwordStatus: 'right', passwordErr: null});
     }
   };
 
   handleConfirmPassword = (newPassword) => {
     this.setState({newPassword});
     if (this.state.password != newPassword) {
-        if (newPassword !== ''){
-            this.setState({newPasswordConfirmStatus: 'wrong', newPasswordErr: 'pages.resetPassword.passwordsMustMatch'});
-        }else{
-            this.setState({newPasswordConfirmStatus: 'normal', newPasswordErr: null});
-        }
-
+      if (newPassword !== '') {
+        this.setState({
+          newPasswordConfirmStatus: 'wrong',
+          newPasswordErr: 'pages.resetPassword.passwordsMustMatch',
+        });
+      } else {
+        this.setState({
+          newPasswordConfirmStatus: 'normal',
+          newPasswordErr: null,
+        });
+      }
     } else {
-        if (newPassword !== ''){
-            this.setState({newPasswordConfirmStatus: 'right', newPasswordErr: null});
-        }else{
-            this.setState({newPasswordConfirmStatus: 'normal', newPasswordErr: null});
-        }
+      if (newPassword !== '') {
+        this.setState({
+          newPasswordConfirmStatus: 'right',
+          newPasswordErr: null,
+        });
+      } else {
+        this.setState({
+          newPasswordConfirmStatus: 'normal',
+          newPasswordErr: null,
+        });
+      }
     }
   };
 
   sendOTP() {
     const {userName} = this.state;
+    this.setState({requestOTP: true});
     if (userName !== '') {
       let userNameData = {
         username: userName,
@@ -130,32 +143,34 @@ class ForgotPassword extends Component {
         .forgotUserName(userNameData)
         .then((res) => {
           Toast.show({
-            title: translate('pages.resetPassword.resetPassword'),
+            title: translate('common.sendSMS'),
             text: translate(res.message),
             type: 'positive',
           });
         })
         .catch((err) => {
-            if (err.response.request._response) {
-                let errMessage = JSON.parse(err.response.request._response);
-                if (errMessage.detail) {
-                    Toast.show({
-                        title: translate('pages.resetPassword.resetPassword'),
-                        text: errMessage.detail.toString(),
-                        type: 'primary',
-                    });
-                } else {
-                    Toast.show({
-                        title: translate('pages.resetPassword.resetPassword'),
-                        text: translate(errMessage.message.toString()),
-                        type: 'primary',
-                    });
-                }
+          if (err.response.request._response) {
+            this.setState({requestOTP: false});
+
+            let errMessage = JSON.parse(err.response.request._response);
+            if (errMessage.detail) {
+              Toast.show({
+                title: translate('common.sendSMS'),
+                text: errMessage.detail.toString(),
+                type: 'primary',
+              });
+            } else {
+              Toast.show({
+                title: translate('common.sendSMS'),
+                text: translate(errMessage.message.toString()),
+                type: 'primary',
+              });
             }
-        })
+          }
+        });
     } else {
       Toast.show({
-        title: translate('pages.resetPassword.resetPassword'),
+        title: translate('common.sendSMS'),
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
@@ -164,7 +179,7 @@ class ForgotPassword extends Component {
 
   onSubmitPress() {
     Keyboard.dismiss();
-    const {userName, authCode, password, newPassword} = this.state;
+    const {userName, authCode, password, newPassword, requestOTP} = this.state;
 
     this.setState({
       userNameErr: null,
@@ -214,7 +229,10 @@ class ForgotPassword extends Component {
     }
     if (password != newPassword) {
       isValid = false;
-      this.setState({newPasswordConfirmStatus: 'wrong', newPasswordErr: 'pages.resetPassword.passwordsMustMatch'});
+      this.setState({
+        newPasswordConfirmStatus: 'wrong',
+        newPasswordErr: 'pages.resetPassword.passwordsMustMatch',
+      });
     }
 
     if (isValid) {
@@ -224,60 +242,72 @@ class ForgotPassword extends Component {
         password: password,
         username: userName,
       };
-      this.props
-        .forgotPassword(forgotData)
-        .then((res) => {
-          console.log('Response for Forgot password',res)
-          if (res.status === true) {
-            Toast.show({
-              title: translate('pages.resetPassword.resetPassword'),
-              text: translate('pages.resetPassword.toastr.passwordUpdated'),
-              type: 'positive',
-            });
-            this.props.navigation.goBack();
-          } else {
-            Toast.show({
-              title: translate('pages.resetPassword.resetPassword'),
-              text: translate('pages.resetPassword.toastr.pleaseCheckOTPCodeandTryAgain'),
-              type: 'primary',
-            });
-          }
-        })
-        .catch((err) => {
-            if (err.response) {
-                console.log(err.response)
-                if (err.response.request._response) {
-                    console.log(err.response.request._response)
-                    let errMessage = JSON.parse(err.response.request._response)
-                    if (errMessage.message) {
-                        Toast.show({
-                            title: translate('pages.resetPassword.resetPassword'),
-                            text: translate(errMessage.message.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.non_field_errors) {
-                        let strRes = errMessage.non_field_errors
-                        Toast.show({
-                            title: translate('pages.resetPassword.resetPassword'),
-                            text: translate(strRes.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.phone) {
-                        Toast.show({
-                            title: translate('pages.resetPassword.resetPassword'),
-                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.detail) {
-                        Toast.show({
-                            title: translate('pages.resetPassword.resetPassword'),
-                            text: errMessage.detail.toString(),
-                            type: 'primary',
-                        });
-                    }
-                }
-            }
+      if (!requestOTP) {
+        Toast.show({
+          title: translate('common.register'),
+          text: translate('pages.register.toastr.pleaseSubmitOTPfirst'),
+          type: 'primary',
         });
+      } else {
+        this.props
+          .forgotPassword(forgotData)
+          .then((res) => {
+            console.log('Response for Forgot password', res);
+            if (res.status === true) {
+              Toast.show({
+                title: translate('pages.resetPassword.resetPassword'),
+                text: translate('pages.resetPassword.toastr.passwordUpdated'),
+                type: 'positive',
+              });
+              this.props.navigation.goBack();
+            } else {
+              Toast.show({
+                title: translate('pages.resetPassword.resetPassword'),
+                text: translate(
+                  'pages.resetPassword.toastr.pleaseCheckOTPCodeandTryAgain',
+                ),
+                type: 'primary',
+              });
+            }
+          })
+          .catch((err) => {
+            if (err.response) {
+              console.log(err.response);
+              if (err.response.request._response) {
+                console.log(err.response.request._response);
+                let errMessage = JSON.parse(err.response.request._response);
+                if (errMessage.message) {
+                  Toast.show({
+                    title: translate('pages.resetPassword.resetPassword'),
+                    text: translate(errMessage.message.toString()),
+                    type: 'primary',
+                  });
+                } else if (errMessage.non_field_errors) {
+                  let strRes = errMessage.non_field_errors;
+                  Toast.show({
+                    title: translate('pages.resetPassword.resetPassword'),
+                    text: translate(strRes.toString()),
+                    type: 'primary',
+                  });
+                } else if (errMessage.phone) {
+                  Toast.show({
+                    title: translate('pages.resetPassword.resetPassword'),
+                    text: translate(
+                      'pages.register.toastr.phoneNumberIsInvalid',
+                    ),
+                    type: 'primary',
+                  });
+                } else if (errMessage.detail) {
+                  Toast.show({
+                    title: translate('pages.resetPassword.resetPassword'),
+                    text: errMessage.detail.toString(),
+                    type: 'primary',
+                  });
+                }
+              }
+            }
+          });
+      }
     }
   }
 
@@ -289,9 +319,7 @@ class ForgotPassword extends Component {
       passwordErr,
       newPasswordErr,
     } = this.state;
-      const {
-          selectedLanguageItem
-      } = this.props
+    const {selectedLanguageItem} = this.props;
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -448,19 +476,19 @@ class ForgotPassword extends Component {
                       },
                     ]}>
                     {/*{translate(newPasswordErr).replace(*/}
-                      {/*'[missing {{field}} value]',*/}
-                      {/*translate('pages.resetPassword.repeatPassword'),*/}
+                    {/*'[missing {{field}} value]',*/}
+                    {/*translate('pages.resetPassword.repeatPassword'),*/}
                     {/*)}*/}
 
-                      {newPasswordErr === 'messages.required'
-                          ? translate(newPasswordErr).replace(
-                              '[missing {{field}} value]',
-                              translate('pages.resetPassword.repeatPassword'),
-                          )
-                          : translate('messages.required').replace(
-                              '[missing {{field}} value]',
-                              translate('pages.resetPassword.passwordsMustMatch'),
-                          )}
+                    {newPasswordErr === 'messages.required'
+                      ? translate(newPasswordErr).replace(
+                          '[missing {{field}} value]',
+                          translate('pages.resetPassword.repeatPassword'),
+                        )
+                      : translate('messages.required').replace(
+                          '[missing {{field}} value]',
+                          translate('pages.resetPassword.passwordsMustMatch'),
+                        )}
                   </Text>
                 ) : null}
                 <Button
@@ -469,9 +497,10 @@ class ForgotPassword extends Component {
                   onPress={() => this.onSubmitPress()}
                   loading={this.props.loading}
                   fontType={
-                      selectedLanguageItem.language_name === 'ja'
-                          ? 'normalRegular22Text'
-                          : ''}
+                    selectedLanguageItem.language_name === 'ja'
+                      ? 'normalRegular22Text'
+                      : ''
+                  }
                 />
               </View>
             </View>

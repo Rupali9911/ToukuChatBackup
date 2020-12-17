@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   View,
   ImageBackground,
@@ -118,7 +118,7 @@ import {
   updateFriendTypingStatus,
 } from '../../storage/Service';
 
-class Home extends Component {
+class Home extends PureComponent {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
@@ -135,6 +135,9 @@ class Home extends Component {
       channelHeaderCounts: 0,
       groupHeaderCounts: 0,
       friendHeaderCounts: 0,
+      getGroupData: [],
+      getChannelData: [],
+      getFriendData: [],
     };
     this.SingleSocket = SingleSocket.getInstance();
     this.start = 0;
@@ -159,6 +162,93 @@ class Home extends Component {
     //  this.events.unsubscribe();
   }
 
+  groupFilter = () => {
+    const {userGroups} = this.props;
+
+    const sortChannels = userGroups;
+    // sortChannels.sort((a, b) =>
+    //   new Date(a.timestamp) <= new Date(a.joining_date)
+    //     ? new Date(a.timestamp)
+    //     : new Date(a.joining_date) <
+    //       new Date(b.timestamp) <=
+    //       new Date(b.joining_date)
+    //     ? new Date(b.timestamp)
+    //     : new Date(b.joining_date)
+    //     ? 1
+    //     : -1,
+    // );
+
+    sortChannels.sort((a, b) =>
+      a.timestamp &&
+      b.timestamp &&
+      (new Date(a.timestamp) > new Date(a.joining_date)
+        ? new Date(a.timestamp)
+        : new Date(a.joining_date)) <
+        (new Date(b.timestamp) > new Date(b.joining_date)
+          ? new Date(b.timestamp)
+          : new Date(b.joining_date))
+        ? 1
+        : -1,
+    );
+
+    const filteredGroups = sortChannels.filter(
+      createFilter(this.state.searchText, ['group_name']),
+    );
+
+    let is_pined = [];
+    let is_un_pined = [];
+    filteredGroups.filter((group) => {
+      if (group.is_pined) {
+        is_pined.push(group);
+      } else {
+        is_un_pined.push(group);
+      }
+    });
+
+    const groups = [...is_pined, ...is_un_pined];
+    this.setState({getGroupData: groups});
+  };
+
+  channelFilter = () => {
+    const {followingChannels, channelLoading} = this.props;
+    const {getChannelData} = this.state;
+
+    const sortChannels = followingChannels;
+    sortChannels.sort((a, b) =>
+      new Date(a.last_msg ? a.last_msg.updated : a.joining_date) <
+      new Date(b.last_msg ? b.last_msg.updated : b.joining_date)
+        ? 1
+        : -1,
+    );
+
+    const filteredChannels = sortChannels.filter(
+      createFilter(this.state.searchText, ['name']),
+    );
+
+    const pinedChannels = filteredChannels.filter(
+      (channel) => channel.is_pined,
+    );
+    const unpinedChannels = filteredChannels.filter(
+      (channel) => !channel.is_pined,
+    );
+
+    const channels = [...pinedChannels, ...unpinedChannels];
+
+    this.setState({getChannelData: channels});
+  };
+
+  friendFilter = () => {
+    const {friendLoading, userFriends} = this.props;
+
+    const filteredFriends = userFriends.filter(
+      createFilter(this.state.searchText, ['username']),
+    );
+    const pinedFriends = filteredFriends.filter((friend) => friend.is_pined);
+    const unpinedFriends = filteredFriends.filter((friend) => !friend.is_pined);
+    const friends = [...pinedFriends, ...unpinedFriends];
+    this.setState({getFriendData: friends});
+  };
+
   async componentDidMount() {
     Realm.open({})
       .then((realm) => {
@@ -176,6 +266,9 @@ class Home extends Component {
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
+    this.groupFilter();
+    this.channelFilter();
+    this.friendFilter();
     // this.props.getFriendRequests();
     // this.props.getUserConfiguration();
     // this.focusListener = this.props.navigation.addListener(
@@ -1170,36 +1263,16 @@ class Home extends Component {
 
   renderUserChannels() {
     const {followingChannels, channelLoading} = this.props;
-    const {loadMoreVisible} = this.state;
+    const {getChannelData} = this.state;
 
-    const sortChannels = followingChannels;
-    sortChannels.sort((a, b) =>
-      new Date(a.last_msg ? a.last_msg.updated : a.joining_date) <
-      new Date(b.last_msg ? b.last_msg.updated : b.joining_date)
-        ? 1
-        : -1,
-    );
-
-    const filteredChannels = sortChannels.filter(
-      createFilter(this.state.searchText, ['name']),
-    );
-
-    const pinedChannels = filteredChannels.filter(
-      (channel) => channel.is_pined,
-    );
-    const unpinedChannels = filteredChannels.filter(
-      (channel) => !channel.is_pined,
-    );
-
-    const channels = [...pinedChannels, ...unpinedChannels];
     //
-    if (channels.length === 0 && channelLoading) {
+    if (getChannelData.length === 0 && channelLoading) {
       return <ListLoader />;
-    } else if (channels.length > 0) {
+    } else if (getChannelData.length > 0) {
       return (
         <FlatList
           contentContainerStyle={{display: 'flex'}}
-          data={channels}
+          data={getChannelData}
           extraData={this.state}
           renderItem={({item, index}) => (
             <ChannelListItem
@@ -1248,57 +1321,16 @@ class Home extends Component {
 
   renderUserGroups() {
     const {groupLoading, userGroups} = this.props;
-
-    const sortChannels = userGroups;
-    // sortChannels.sort((a, b) =>
-    //   new Date(a.timestamp) <= new Date(a.joining_date)
-    //     ? new Date(a.timestamp)
-    //     : new Date(a.joining_date) <
-    //       new Date(b.timestamp) <=
-    //       new Date(b.joining_date)
-    //     ? new Date(b.timestamp)
-    //     : new Date(b.joining_date)
-    //     ? 1
-    //     : -1,
-    // );
-
-    sortChannels.sort((a, b) =>
-      a.timestamp &&
-      b.timestamp &&
-      (new Date(a.timestamp) > new Date(a.joining_date)
-        ? new Date(a.timestamp)
-        : new Date(a.joining_date)) <
-        (new Date(b.timestamp) > new Date(b.joining_date)
-          ? new Date(b.timestamp)
-          : new Date(b.joining_date))
-        ? 1
-        : -1,
-    );
-
-    const filteredGroups = sortChannels.filter(
-      createFilter(this.state.searchText, ['group_name']),
-    );
-
-    let is_pined = [];
-    let is_un_pined = [];
-    filteredGroups.filter((group) => {
-      if (group.is_pined) {
-        is_pined.push(group);
-      } else {
-        is_un_pined.push(group);
-      }
-    });
+    const {getGroupData} = this.state;
 
     // const pinedGroups = filteredGroups.filter((group) => group.is_pined);
     // const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
-
-    const groups = [...is_pined, ...is_un_pined];
-    if (groups.length === 0 && groupLoading) {
+    if (getGroupData.length === 0 && groupLoading) {
       return <ListLoader />;
-    } else if (groups.length > 0) {
+    } else if (getGroupData.length > 0) {
       return (
         <FlatList
-          data={groups}
+          data={getGroupData}
           extraData={this.state}
           renderItem={({item, index}) => (
             <GroupListItem
@@ -1350,18 +1382,14 @@ class Home extends Component {
 
   renderUserFriends() {
     const {friendLoading, userFriends} = this.props;
-    const filteredFriends = userFriends.filter(
-      createFilter(this.state.searchText, ['username']),
-    );
-    const pinedFriends = filteredFriends.filter((friend) => friend.is_pined);
-    const unpinedFriends = filteredFriends.filter((friend) => !friend.is_pined);
-    const friends = [...pinedFriends, ...unpinedFriends];
-    if (friends.length === 0 && friendLoading) {
+    const {getFriendData} = this.state;
+
+    if (getFriendData.length === 0 && friendLoading) {
       return <ListLoader />;
-    } else if (friends.length > 0) {
+    } else if (getFriendData.length > 0) {
       return (
         <FlatList
-          data={friends}
+          data={getFriendData}
           extraData={this.state}
           renderItem={({item, index}) => (
             <FriendListItem
