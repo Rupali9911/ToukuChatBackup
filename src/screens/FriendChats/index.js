@@ -42,7 +42,10 @@ import {
   deleteMultiplePersonalMessage,
   pinFriend,
   unpinFriend,
+  deleteFriendObject,
+  setCurrentFriend
 } from '../../redux/reducers/friendReducer';
+import {sendFriendRequest} from '../../redux/reducers/addFriendReducer';
 import Toast from '../../components/Toast';
 import {eventService} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
@@ -58,6 +61,7 @@ import {
   updateFriendLastMsgWithoutCount,
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
+  removeUserFriends
 } from '../../storage/Service';
 
 // let uuid = require('react-native-uuid')
@@ -75,6 +79,8 @@ class FriendChats extends Component {
       showConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
+      showdeleteObjectConfirmationModal: false,
+      deleteObjectLoading: false,
       sentMessageType: 'text',
       sendingMedia: false,
       showSelectModal: false,
@@ -184,6 +190,31 @@ class FriendChats extends Component {
                 },
               },
             ],
+      unfriendMenus: [
+        {
+          id: 1,
+          title: translate('pages.xchat.addFriend'),
+          icon: 'user-plus',
+          onPress: () => {
+            this.onAddFriend();
+          },
+        },
+        {
+          id: 2,
+          title: translate('pages.xchat.deleteChats'),
+          icon: 'times-circle',
+          onPress: () => {
+            this.toggleDeleteObjectConfirmationModal();
+          },
+        },
+        {
+          id: 3,
+          pinUnpinItem: true,
+          onPress: () => {
+            this.onPinUnpinFriend();
+          },
+        },
+      ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
@@ -798,8 +829,32 @@ class FriendChats extends Component {
     };
   }
 
+  onAddFriend = () => {
+    const {currentFriend} = this.props;
+    this.props.sendFriendRequest(currentFriend.user_id).then((res) => {
+      if(res.status){
+        Toast.show({
+          title: translate('pages.xchat.toastr.added'),
+          text: translate('pages.xchat.toastr.friendRequestSentSuccessfully'),
+          type: 'positive',
+        });
+      }else{
+        Toast.show({
+          title: translate('pages.xchat.touku'),
+          text: translate('pages.xchat.toastr.friendRequestAlreadySent'),
+          type: 'primary',
+        });
+      }
+      
+    });
+  }
+
   toggleConfirmationModal = () => {
     this.setState({showConfirmationModal: !this.state.showConfirmationModal});
+  };
+
+  toggleDeleteObjectConfirmationModal = () => {
+    this.setState({showdeleteObjectConfirmationModal: !this.state.showdeleteObjectConfirmationModal});
   };
 
   onSelectChatConversation = (id) => {
@@ -849,6 +904,34 @@ class FriendChats extends Component {
         this.setState({callingApi: false});
       });
   };
+
+  onDeleteObjectCancel = () => {
+    this.toggleDeleteObjectConfirmationModal();
+  };
+
+  onDeletefriendObject = () => {
+    const {currentFriend} = this.props;
+    this.setState({deleteObjectLoading: true});
+    this.props.deleteFriendObject(currentFriend.user_id).then((res)=>{
+      this.setState({deleteObjectLoading: false});
+      this.toggleDeleteObjectConfirmationModal();
+      if(res && res.status){
+        removeUserFriends(currentFriend.user_id);
+        this.props.setUserFriends().then((res) => {
+          this.props.setCommonChatConversation();
+        });
+        Toast.show({
+          title: currentFriend.display_name,
+          text: translate('pages.xchat.toastr.chatHistoryDelete'),
+          type: 'positive',
+        });
+        this.props.navigation.goBack();
+      }
+    }).catch((err)=>{
+      this.setState({deleteObjectLoading: false});
+      console.log('err',err);
+    });
+  }
 
   // To delete message
   toggleMessageDeleteConfirmationModal = () => {
@@ -1290,6 +1373,7 @@ class FriendChats extends Component {
       showConfirmationModal,
       showMessageDeleteConfirmationModal,
       showMessageUnSendConfirmationModal,
+      showdeleteObjectConfirmationModal,
       orientation,
       translatedMessage,
       translatedMessageId,
@@ -1300,6 +1384,8 @@ class FriendChats extends Component {
       openDoc,
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
+    console.log('currentFriend',currentFriend);
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1316,7 +1402,7 @@ class FriendChats extends Component {
           type={'friend'}
           image={currentFriend.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
-          menuItems={this.state.headerRightIconMenu}
+          menuItems={currentFriend.friend_status === 'UNFRIEND'?this.state.unfriendMenus:this.state.headerRightIconMenu}
           navigation={this.props.navigation}
           isPined={currentFriend.is_pined}
           chatType={
@@ -1324,6 +1410,7 @@ class FriendChats extends Component {
               ? translate('pages.xchat.unPinThisChat')
               : translate('pages.xchat.pinThisChat')
           }
+          disableFriendNotes={currentFriend.friend_status === 'UNFRIEND'}
         />
         {isChatLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />
@@ -1365,6 +1452,7 @@ class FriendChats extends Component {
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
+            isChatDisable={currentFriend.friend_status === 'UNFRIEND'}
           />
         )}
         <ConfirmationModal
@@ -1375,6 +1463,16 @@ class FriendChats extends Component {
           isLoading={this.props.unFriendLoading}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.selectedUserWillBeRemoved')}
+        />
+
+        <ConfirmationModal
+          visible={showdeleteObjectConfirmationModal}
+          onCancel={this.onDeleteObjectCancel}
+          onConfirm={this.onDeletefriendObject}
+          orientation={orientation}
+          isLoading={this.state.deleteObjectLoading}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toastr.chatsWillBeDeleted')}
         />
 
         <ConfirmationModal
@@ -1466,6 +1564,9 @@ const mapDispatchToProps = {
   setUserFriends,
   pinFriend,
   unpinFriend,
+  deleteFriendObject,
+  setCurrentFriend,
+  sendFriendRequest
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

@@ -112,7 +112,7 @@ class ChannelInvitation extends Component {
         console.log('result',result);
         showToast(
           translate('pages.xchat.downloadFile'),
-          'QR code Downloaded successfully',
+          translate('pages.setting.downloadedSuccessfully'),
           'positive',
         );
       })           

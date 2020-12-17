@@ -100,7 +100,11 @@ export default class ChatHeader extends Component {
                 <View style={styles.subContainer}>
                   <View style={{marginHorizontal: 10}}>
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('FriendNotes')}>
+                      onPress={() => {
+                        if(!this.props.disableFriendNotes){
+                          navigation.navigate('FriendNotes')
+                        }
+                        }}>
                       <RoundedImage size={40} source={getAvatar(image)} />
                     </TouchableOpacity>
                   </View>
@@ -112,7 +116,11 @@ export default class ChatHeader extends Component {
                     }}>
                     <Text
                       numberOfLines={1}
-                      onPress={() => navigation.navigate('FriendNotes')}
+                      onPress={() => {
+                        if(!this.props.disableFriendNotes){
+                          navigation.navigate('FriendNotes')
+                        }
+                      }}
                       style={[
                         globalStyles.normalRegularText15,
                         {
@@ -235,7 +243,7 @@ export default class ChatHeader extends Component {
                                 color={Colors.black}
                               />
                             ) : item.icon === 'sticky-note' ||
-                              item.icon === 'id-card' ? (
+                              item.icon === 'id-card' || item.icon === 'times-circle' ? (
                               <FontAwesome
                                 name={item.icon}
                                 size={16}

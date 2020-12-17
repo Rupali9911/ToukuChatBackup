@@ -851,6 +851,7 @@ export const setUserFriendsFromApi = (friends) => {
               is_typing: false,
               timestamp: item.timestamp,
               is_pined: item.is_pined ? item.is_pined : false,
+              friend_status: item.friend_status
             },
             'modified',
           );
@@ -874,6 +875,7 @@ export const setUserFriendsFromApi = (friends) => {
             is_typing: false,
             timestamp: item.timestamp,
             is_pined: item.is_pined ? item.is_pined : false,
+            friend_status: item.friend_status
           });
         });
       }
@@ -908,7 +910,7 @@ export const handleRequestAccept = (item) => {
     realm.write(() => {
       realm.create(
         'user_friends',
-        {user_id: item.user_id, unread_msg: 1},
+        {user_id: item.user_id, unread_msg: 1, friend_status: 'ACCEPTED'},
         'modified',
       );
     });
@@ -931,6 +933,7 @@ export const handleRequestAccept = (item) => {
         is_typing: false,
         timestamp: item.timestamp,
         is_pined: item.is_pined ? item.is_pined : false,
+        friend_status: item.friend_status
       });
     });
   }
@@ -998,6 +1001,19 @@ export const removeUserFriends = async (id) => {
     realm.delete(user);
   });
 };
+
+export const updateFriendStatus = (id, status) => {
+  realm.write(() => {
+    realm.create(
+      'user_friends',
+      {
+        user_id: id,
+        friend_status: status,
+      },
+      'modified',
+    );
+  });
+}
 
 export const updateFriendsUnReadCount = (id, unreadCount) => {
   var user = realm.objects('user_friends').filtered(`friend == ${id}`);

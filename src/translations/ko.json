@@ -678,7 +678,8 @@
         "alreadyFollowed": "이미이 채널을 팔로우했습니다.",
         "deleteComment": "댓글 삭제",
         "uploadByUrl": " URL로 업로드",
-        "pleaseSelectValidUrl": "유효한 URL을 입력 해주세요"
+        "pleaseSelectValidUrl": "유효한 URL을 입력 해주세요",
+        "chatsWillBeDeleted": " 이 채팅은 삭제됩니다"
       },
       "totalMessages": "\ucd1d \uba54\uc2dc\uc9c0",
       "toukuPoints": "TOUKU \ud3ec\uc778\ud2b8",
@@ -1035,7 +1036,8 @@
       "comment": "논평",
       "unlike": "같지 않은",
       "deleteCommentText": "이 댓글을 삭제 하시겠습니까?",
-      "enterComment": "의견을 입력하십시오."
+      "enterComment": "의견을 입력하십시오.",
+      "deleteChats": " 채팅 삭제"
     },
     "welcome": {
       "theWorldIsConnected": "\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

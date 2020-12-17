@@ -678,7 +678,8 @@
         "alreadyFollowed": "您已经关注了该频道。",
         "deleteComment": "删除评论",
         "uploadByUrl": " 通过URL上传",
-        "pleaseSelectValidUrl": " 请输入有效网址"
+        "pleaseSelectValidUrl": " 请输入有效网址",
+        "chatsWillBeDeleted": " 此聊天记录将被删除"
       },
       "totalMessages": "消息总数",
       "toukuPoints": "TOUKU积分",
@@ -1034,7 +1035,8 @@
       "comment": "评论",
       "unlike": "不像",
       "deleteCommentText": "你确定要删除此评论吗？",
-      "enterComment": "输入您的评论。"
+      "enterComment": "输入您的评论。",
+      "deleteChats": "删除聊天"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",

@@ -166,6 +166,7 @@ export const UserFriends = {
     is_typing: 'bool?',
     is_pined: 'bool?',
     timestamp: 'string?',
+    friend_status: 'string?',
   },
 };
 

@@ -28,7 +28,7 @@ import S3uploadService from '../../helpers/S3uploadService';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
-import {createNewGroup, getUserGroups} from '../../redux/reducers/groupReducer';
+import {createNewGroup, getUserGroups, setCurrentGroup} from '../../redux/reducers/groupReducer';
 import {ListLoader} from '../../components/Loaders';
 import {getImage} from '../../utils';
 
@@ -184,7 +184,10 @@ class CreateGroupChat extends Component {
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
             type: 'positive',
           });
+          this.props.setCurrentGroup(res);
           this.props.navigation.goBack();
+          this.props.navigation.navigate('GroupChats');
+          // this.props.navigation.goBack();
           // this.props.getUserGroups().then((res) => {
           //   if (res.conversations) {
           //   }
@@ -214,7 +217,10 @@ class CreateGroupChat extends Component {
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
             type: 'positive',
           });
+          this.props.setCurrentGroup(res);
           this.props.navigation.goBack();
+          this.props.navigation.navigate('GroupChats');
+          // this.props.navigation.goBack();
           // this.props.getUserGroups().then((res) => {
           //   if (res.conversations) {
           //   }
@@ -393,6 +399,7 @@ const mapDispatchToProps = {
   getUserFriends,
   getUserGroups,
   createNewGroup,
+  setCurrentGroup
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGroupChat);

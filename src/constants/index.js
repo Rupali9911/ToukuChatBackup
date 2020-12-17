@@ -241,6 +241,8 @@ export const SocketEvents = {
   READ_ALL_MESSAGE_FRIEND_CHAT: 'Read all message friend chat',
   PINED_FRIEND: 'pined friend',
   UNPINED_FRIEND: 'unpined friend',
+  REMOVE_FRIEND: 'you have been removed from friend',
+  DELETE_FRIEND_OBJECT: 'delete friend object',
   // Thread actions
   MESSAGE_IN_THREAD: 'Message in thread',
   MULTIPLE_MESSAGE_IN_THREAD: 'Multiple message in thread',

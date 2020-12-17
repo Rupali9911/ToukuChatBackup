@@ -678,7 +678,8 @@
         "alreadyFollowed": "あなたはすでにこのチャンネルをフォローしています。",
         "deleteComment": "コメントを削除",
         "uploadByUrl": " URLでアップロード",
-        "pleaseSelectValidUrl": " 有効なURLを入力してください"
+        "pleaseSelectValidUrl": " 有効なURLを入力してください",
+        "chatsWillBeDeleted": " このチャットは削除されます"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",
@@ -1035,7 +1036,8 @@
       "comment": "コメント",
       "unlike": "いいね",
       "deleteCommentText": "このコメントを削除してもよろしいですか？",
-      "enterComment": "コメントを入力してください。"
+      "enterComment": "コメントを入力してください。",
+      "deleteChats": "チャットを削除する"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

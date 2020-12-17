@@ -228,27 +228,29 @@ export const setUserFriends = () => (dispatch) =>
 
     var friends = [];
 
-    result.map((item) => {
-      var item2 = {
-        avatar: item.avatar,
-        background_image: item.background_image,
-        display_name: item.display_name,
-        friend: item.friend,
-        isChecked: item.isChecked,
-        is_online: item.is_online,
-        is_typing: item.is_typing,
-        last_msg: item.last_msg,
-        last_msg_id: item.last_msg_id,
-        last_msg_type: item.last_msg_type,
-        profile_picture: item.profile_picture,
-        timestamp: item.timestamp,
-        unread_msg: item.unread_msg,
-        user_id: item.user_id,
-        username: item.username,
-        is_pined: item.is_pined,
-      };
-      friends.push(item2);
-    });
+    // result.map((item) => {
+    //   var item2 = {
+    //     avatar: item.avatar,
+    //     background_image: item.background_image,
+    //     display_name: item.display_name,
+    //     friend: item.friend,
+    //     isChecked: item.isChecked,
+    //     is_online: item.is_online,
+    //     is_typing: item.is_typing,
+    //     last_msg: item.last_msg,
+    //     last_msg_id: item.last_msg_id,
+    //     last_msg_type: item.last_msg_type,
+    //     profile_picture: item.profile_picture,
+    //     timestamp: item.timestamp,
+    //     unread_msg: item.unread_msg,
+    //     user_id: item.user_id,
+    //     username: item.username,
+    //     is_pined: item.is_pined,
+    //   };
+    //   friends.push(item2);
+    // });
+
+    friends = result.toJSON();
 
     let unread_counts = 0;
     if (friends && friends.length > 0) {
@@ -653,4 +655,14 @@ export const deleteFriendComment = (comment_id) => (dispatch) =>
     .catch((err)=>{
       reject(err);
     });
+  })
+
+export const deleteFriendObject = (user_id) => (dispatch) => 
+  new Promise(function(resolve,reject){
+    client.delete(`xchat/remove-friend-object/${user_id}/`)
+    .then((res)=>{
+      resolve(res);
+    }).catch((err)=>{
+      reject(err);
+    })
   })

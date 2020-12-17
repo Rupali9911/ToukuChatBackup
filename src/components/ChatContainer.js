@@ -179,6 +179,7 @@ class ChatContainer extends Component {
       onSelectedCancel,
       onSelectedDelete,
       currentFriend,
+      isChatDisable
     } = this.props;
     return (
       <KeyboardAwareScrollView
@@ -576,7 +577,7 @@ class ChatContainer extends Component {
             </View>
           </View>
         ) : (
-          <ChatInput
+          isChatDisable?null:<ChatInput
             onAttachmentPress={() => onAttachmentPress()}
             onCameraPress={() => onCameraPress()}
             onGalleryPress={() => onGalleryPress()}
