@@ -205,7 +205,7 @@ class ChatMessageBubble extends Component {
                 {replyMessage.msg_type === 'image' &&
                 replyMessage.message !== null ? (
                   <RoundedImage
-                    source={{url: replyMessage.message}}
+                    source={{uri: replyMessage.message}}
                     isRounded={false}
                     size={50}
                   />
@@ -640,7 +640,8 @@ class ChatMessageBubble extends Component {
                               ? message.message_body
                               : message.thumbnail
                           }
-                          // borderRadius={borderRadius}
+                          isHyperlink={message.hyperlink}
+                          borderRadius={message.hyperlink ? 0 : borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
@@ -863,9 +864,13 @@ class ChatMessageBubble extends Component {
               //   />
               // )}
               onPress={() => {
-                onUnSend(selectedMessageId);
-                // closeMenu();
                 this.hideMenu();
+
+                setTimeout(() => {
+                  onUnSend(selectedMessageId);
+                }, 500);
+
+                // closeMenu();
               }}
               // title={translate('common.unsend')}
               // titleStyle={{marginLeft: -25, color: Colors.white}}

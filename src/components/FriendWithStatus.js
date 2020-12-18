@@ -55,6 +55,7 @@ class FriendWithStatus extends Component {
             {user.display_name ? user.display_name : user.username}
           </Text>
         </View>
+        sla
         <View style={{flex: 1}}>
           <Button
             title={

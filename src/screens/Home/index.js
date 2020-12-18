@@ -122,6 +122,7 @@ class Home extends PureComponent {
   constructor(props) {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
+    this.listener;
     this.state = {
       orientation: 'PORTRAIT',
       isChannelCollapsed: true,
@@ -269,6 +270,12 @@ class Home extends PureComponent {
     this.groupFilter();
     this.channelFilter();
     this.friendFilter();
+
+    this.listener = this.props.navigation.addListener('didFocus', () => {
+      this.groupFilter();
+      this.channelFilter();
+      this.friendFilter();
+    });
     // this.props.getFriendRequests();
     // this.props.getUserConfiguration();
     // this.focusListener = this.props.navigation.addListener(
@@ -289,6 +296,10 @@ class Home extends PureComponent {
     // } else if (this.props.navigation.state.params.expandCollapse && this.props.navigation.state.params.expandCollapse === 'friends'){
     //     this.setState({isFriendsCollapsed: true})
     // }
+  }
+
+  componentWillUnmount() {
+    this.listener.remove();
   }
 
   _orientationDidChange = (orientation) => {

@@ -454,7 +454,7 @@ class ChatContainer extends Component {
                 {repliedMessage.msg_type === 'image' &&
                 repliedMessage.message_body !== null ? (
                   <RoundedImage
-                    source={{url: repliedMessage.message_body}}
+                    source={{uri: repliedMessage.message_body}}
                     isRounded={false}
                     size={50}
                   />

@@ -45,12 +45,13 @@ class ImageLoader extends React.Component {
       customImagePlaceholderDefaultStyle,
       showPlayButton,
     } = this.props;
+
     return (
       <ImageBackground
         onLoadEnd={this.onLoadEnd.bind(this)}
         onError={this.onError.bind(this)}
         style={[styles.backgroundImage, style]}
-        source={source?source:''}
+        source={source ? source : ''}
         resizeMode={resizeMode}
         borderRadius={borderRadius}>
         {this.state.isLoaded && !this.state.isError ? (

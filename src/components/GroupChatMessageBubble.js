@@ -952,9 +952,11 @@ class GroupChatMessageBubble extends Component {
               //   />
               // )}
               onPress={() => {
-                this.onUnSend(selectedMessageId);
+                this.hideMenu();  
+                setTimeout(() => {
+                  onUnSend(selectedMessageId);
+                }, 500);
                 // closeMenu();
-                this.hideMenu();
               }}
               // title={translate('common.unsend')}
               // titleStyle={{marginLeft: -25, color: Colors.white}}
