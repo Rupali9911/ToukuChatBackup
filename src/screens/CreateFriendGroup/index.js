@@ -14,7 +14,7 @@ import Button from '../../components/Button';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
-import {createNewGroup, getUserGroups} from '../../redux/reducers/groupReducer';
+import {createNewGroup, getUserGroups, setCurrentGroup} from '../../redux/reducers/groupReducer';
 import {ListLoader} from '../../components/Loaders';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
@@ -214,9 +214,11 @@ class CreateFriendGroup extends Component {
         });
         this.props.getUserGroups().then((res) => {
           if (res.conversations) {
-            this.props.navigation.goBack();
           }
         });
+        this.props.setCurrentGroup(res);
+        this.props.navigation.goBack();
+        this.props.navigation.navigate('GroupChats');
       });
     }
   }
@@ -311,6 +313,7 @@ const mapDispatchToProps = {
   getUserFriends,
   getUserGroups,
   createNewGroup,
+  setCurrentGroup
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateFriendGroup);

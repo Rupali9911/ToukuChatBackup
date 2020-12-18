@@ -50,10 +50,22 @@ class UploadByUrlModal extends Component {
       this.props.getUrlcontent(url).then((res)=>{
         this.setState(this.initialState);
         if(res.content_type.includes('video')){
+
+          let video_url = url;
+
+          if(url.includes('youtube.com')){
+            if(url.includes('watch?v=')){
+              video_url = url.replace('watch?v=','embed/');
+            }
+          }else if(url.includes('youtu.be')){
+            video_url = `https://www.youtube.com/embed/${url.substring(url.lastIndexOf('/'))}`
+          }
+
           let data = {
             mime: res.content_type,
-            path: url,
-            filename: url
+            path: video_url,
+            filename: video_url,
+            isUrl: true
           }
           this.props.onUrlDone(data);
           this.onRequestClose();

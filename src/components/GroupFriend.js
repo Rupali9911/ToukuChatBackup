@@ -137,7 +137,7 @@ export default class GroupFriend extends Component {
                 flex: 1,
               },
             ]}>
-            {user.display_name}
+            {user.display_name || user.username}
           </Text>
         </View>
         {isRightButton && (
