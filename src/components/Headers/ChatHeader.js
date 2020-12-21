@@ -101,10 +101,10 @@ export default class ChatHeader extends Component {
                   <View style={{marginHorizontal: 10}}>
                     <TouchableOpacity
                       onPress={() => {
-                        if(!this.props.disableFriendNotes){
-                          navigation.navigate('FriendNotes')
+                        if (!this.props.disableFriendNotes) {
+                          navigation.navigate('FriendNotes');
                         }
-                        }}>
+                      }}>
                       <RoundedImage size={40} source={getAvatar(image)} />
                     </TouchableOpacity>
                   </View>
@@ -117,8 +117,8 @@ export default class ChatHeader extends Component {
                     <Text
                       numberOfLines={1}
                       onPress={() => {
-                        if(!this.props.disableFriendNotes){
-                          navigation.navigate('FriendNotes')
+                        if (!this.props.disableFriendNotes) {
+                          navigation.navigate('FriendNotes');
                         }
                       }}
                       style={[
@@ -235,7 +235,13 @@ export default class ChatHeader extends Component {
                       <Menu.Item
                         key={index}
                         icon={() =>
-                          !item.isLocalIcon ? (
+                          item.title ===
+                          translate('pages.changeDisplayName') ? (
+                            <Image
+                              source={item.icon}
+                              style={globalStyles.smallIcon}
+                            />
+                          ) : !item.isLocalIcon ? (
                             item.pinUnpinItem ? (
                               <MaterialCommunityIcon
                                 name={isPined ? 'pin-off' : 'pin'}
@@ -243,7 +249,8 @@ export default class ChatHeader extends Component {
                                 color={Colors.black}
                               />
                             ) : item.icon === 'sticky-note' ||
-                              item.icon === 'id-card' || item.icon === 'times-circle' ? (
+                              item.icon === 'id-card' ||
+                              item.icon === 'times-circle' ? (
                               <FontAwesome
                                 name={item.icon}
                                 size={16}

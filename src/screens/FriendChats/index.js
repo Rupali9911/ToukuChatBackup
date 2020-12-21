@@ -10,7 +10,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
 import {globalStyles} from '../../styles';
-import {Images, SocketEvents, appleStoreUserId} from '../../constants';
+import {Images, SocketEvents, appleStoreUserId, Icons} from '../../constants';
 import {
   ConfirmationModal,
   UploadSelectModal,
@@ -43,7 +43,7 @@ import {
   pinFriend,
   unpinFriend,
   deleteFriendObject,
-  setCurrentFriend
+  setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
 import {sendFriendRequest} from '../../redux/reducers/addFriendReducer';
 import Toast from '../../components/Toast';
@@ -61,7 +61,7 @@ import {
   updateFriendLastMsgWithoutCount,
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
-  removeUserFriends
+  removeUserFriends,
 } from '../../storage/Service';
 
 // let uuid = require('react-native-uuid')
@@ -154,6 +154,14 @@ class FriendChats extends Component {
                   this.onPinUnpinFriend();
                 },
               },
+              {
+                id: 7,
+                title: translate('pages.changeDisplayName'),
+                icon: Icons.print,
+                onPress: () => {
+                  this.props.navigation.navigate('FriendNotes');
+                },
+              },
             ]
           : [
               {
@@ -187,6 +195,14 @@ class FriendChats extends Component {
                 pinUnpinItem: true,
                 onPress: () => {
                   this.onPinUnpinFriend();
+                },
+              },
+              {
+                id: 5,
+                title: translate('pages.changeDisplayName'),
+                icon: Icons.icon_print,
+                onPress: () => {
+                  this.props.navigation.navigate('FriendNotes');
                 },
               },
             ],
@@ -832,29 +848,31 @@ class FriendChats extends Component {
   onAddFriend = () => {
     const {currentFriend} = this.props;
     this.props.sendFriendRequest(currentFriend.user_id).then((res) => {
-      if(res.status){
+      if (res.status) {
         Toast.show({
           title: translate('pages.xchat.toastr.added'),
           text: translate('pages.xchat.toastr.friendRequestSentSuccessfully'),
           type: 'positive',
         });
-      }else{
+      } else {
         Toast.show({
           title: translate('pages.xchat.touku'),
           text: translate('pages.xchat.toastr.friendRequestAlreadySent'),
           type: 'primary',
         });
       }
-      
     });
-  }
+  };
 
   toggleConfirmationModal = () => {
     this.setState({showConfirmationModal: !this.state.showConfirmationModal});
   };
 
   toggleDeleteObjectConfirmationModal = () => {
-    this.setState({showdeleteObjectConfirmationModal: !this.state.showdeleteObjectConfirmationModal});
+    this.setState({
+      showdeleteObjectConfirmationModal: !this.state
+        .showdeleteObjectConfirmationModal,
+    });
   };
 
   onSelectChatConversation = (id) => {
@@ -912,26 +930,29 @@ class FriendChats extends Component {
   onDeletefriendObject = () => {
     const {currentFriend} = this.props;
     this.setState({deleteObjectLoading: true});
-    this.props.deleteFriendObject(currentFriend.user_id).then((res)=>{
-      this.setState({deleteObjectLoading: false});
-      this.toggleDeleteObjectConfirmationModal();
-      if(res && res.status){
-        removeUserFriends(currentFriend.user_id);
-        this.props.setUserFriends().then((res) => {
-          this.props.setCommonChatConversation();
-        });
-        Toast.show({
-          title: currentFriend.display_name,
-          text: translate('pages.xchat.toastr.chatHistoryDelete'),
-          type: 'positive',
-        });
-        this.props.navigation.goBack();
-      }
-    }).catch((err)=>{
-      this.setState({deleteObjectLoading: false});
-      console.log('err',err);
-    });
-  }
+    this.props
+      .deleteFriendObject(currentFriend.user_id)
+      .then((res) => {
+        this.setState({deleteObjectLoading: false});
+        this.toggleDeleteObjectConfirmationModal();
+        if (res && res.status) {
+          removeUserFriends(currentFriend.user_id);
+          this.props.setUserFriends().then((res) => {
+            this.props.setCommonChatConversation();
+          });
+          Toast.show({
+            title: currentFriend.display_name,
+            text: translate('pages.xchat.toastr.chatHistoryDelete'),
+            type: 'positive',
+          });
+          this.props.navigation.goBack();
+        }
+      })
+      .catch((err) => {
+        this.setState({deleteObjectLoading: false});
+        console.log('err', err);
+      });
+  };
 
   // To delete message
   toggleMessageDeleteConfirmationModal = () => {
@@ -1384,7 +1405,7 @@ class FriendChats extends Component {
       openDoc,
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
-    console.log('currentFriend',currentFriend);
+    console.log('currentFriend', currentFriend);
 
     return (
       <ImageBackground
@@ -1402,7 +1423,11 @@ class FriendChats extends Component {
           type={'friend'}
           image={currentFriend.profile_picture}
           onBackPress={() => this.props.navigation.goBack()}
-          menuItems={currentFriend.friend_status === 'UNFRIEND'?this.state.unfriendMenus:this.state.headerRightIconMenu}
+          menuItems={
+            currentFriend.friend_status === 'UNFRIEND'
+              ? this.state.unfriendMenus
+              : this.state.headerRightIconMenu
+          }
           navigation={this.props.navigation}
           isPined={currentFriend.is_pined}
           chatType={
@@ -1566,7 +1591,7 @@ const mapDispatchToProps = {
   unpinFriend,
   deleteFriendObject,
   setCurrentFriend,
-  sendFriendRequest
+  sendFriendRequest,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);
