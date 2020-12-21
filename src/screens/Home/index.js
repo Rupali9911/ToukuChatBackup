@@ -267,15 +267,19 @@ class Home extends PureComponent {
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
-    this.groupFilter();
     this.channelFilter();
+    this.groupFilter();
     this.friendFilter();
 
-    this.listener = this.props.navigation.addListener('didFocus', () => {
-      this.groupFilter();
-      this.channelFilter();
-      this.friendFilter();
-    });
+    this.focusListener = this.props.navigation.addListener(
+      'didFocus',
+      async () =>
+        setTimeout(() => {
+          this.groupFilter();
+          this.friendFilter();
+          this.channelFilter();
+        }, 100),
+    );
     // this.props.getFriendRequests();
     // this.props.getUserConfiguration();
     // this.focusListener = this.props.navigation.addListener(
@@ -298,8 +302,14 @@ class Home extends PureComponent {
     // }
   }
 
-  componentWillUnmount() {
-    this.listener.remove();
+  componentDidUpdate(nextPorps) {
+    if (nextPorps.followingChannels !== this.props.followingChannels) {
+      this.channelFilter();
+    } else if (nextPorps.userGroups !== this.props.userGroups) {
+      this.groupFilter();
+    } else if (nextPorps.userFriends !== this.props.userFriends) {
+      this.friendFilter();
+    }
   }
 
   _orientationDidChange = (orientation) => {
@@ -1275,15 +1285,18 @@ class Home extends PureComponent {
   renderUserChannels() {
     const {followingChannels, channelLoading} = this.props;
     const {getChannelData} = this.state;
+    const filteredChannels = getChannelData.filter(
+      createFilter(this.state.searchText, ['name']),
+    );
 
     //
-    if (getChannelData.length === 0 && channelLoading) {
+    if (filteredChannels.length === 0 && channelLoading) {
       return <ListLoader />;
-    } else if (getChannelData.length > 0) {
+    } else if (filteredChannels.length > 0) {
       return (
         <FlatList
           contentContainerStyle={{display: 'flex'}}
-          data={getChannelData}
+          data={filteredChannels}
           extraData={this.state}
           renderItem={({item, index}) => (
             <ChannelListItem
@@ -1333,15 +1346,16 @@ class Home extends PureComponent {
   renderUserGroups() {
     const {groupLoading, userGroups} = this.props;
     const {getGroupData} = this.state;
+    const filteredGroups = getGroupData.filter(
+      createFilter(this.state.searchText, ['group_name']),
+    );
 
-    // const pinedGroups = filteredGroups.filter((group) => group.is_pined);
-    // const unpinedGroups = filteredGroups.filter((group) => !group.is_pined);
-    if (getGroupData.length === 0 && groupLoading) {
+    if (filteredGroups.length === 0 && groupLoading) {
       return <ListLoader />;
-    } else if (getGroupData.length > 0) {
+    } else if (filteredGroups.length > 0) {
       return (
         <FlatList
-          data={getGroupData}
+          data={filteredGroups}
           extraData={this.state}
           renderItem={({item, index}) => (
             <GroupListItem
@@ -1395,12 +1409,16 @@ class Home extends PureComponent {
     const {friendLoading, userFriends} = this.props;
     const {getFriendData} = this.state;
 
-    if (getFriendData.length === 0 && friendLoading) {
+    const filteredFriends = getFriendData.filter(
+      createFilter(this.state.searchText, ['username']),
+    );
+
+    if (filteredFriends.length === 0 && friendLoading) {
       return <ListLoader />;
-    } else if (getFriendData.length > 0) {
+    } else if (filteredFriends.length > 0) {
       return (
         <FlatList
-          data={getFriendData}
+          data={filteredFriends}
           extraData={this.state}
           renderItem={({item, index}) => (
             <FriendListItem

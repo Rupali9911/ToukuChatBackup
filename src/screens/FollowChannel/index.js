@@ -204,7 +204,7 @@ class FollowChannel extends Component {
                 Colors: '#000',
                 fontFamily: Fonts.regular,
               }}
-              keyboardType={'number-pad'}
+              // keyboardType={'number-pad'}
               value={channel_id}
               onChangeText={(channel_id) =>
                 this.setState({channel_id: channel_id})
