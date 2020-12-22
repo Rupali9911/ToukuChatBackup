@@ -38,7 +38,7 @@ export default class VideoThumbnailPlayer extends Component {
     const {url, size, thumbnailImage, showPlayButton} = this.props;
     return (
       <RoundedImage
-        source={this.state.thumbnailUrl ? {url: this.state.thumbnailUrl} : ''}
+        source={this.state.thumbnailUrl ? this.state.thumbnailUrl : ''}
         isRounded={false}
         size={size ? size : 50}
         showPlayButton={showPlayButton ? true : false}

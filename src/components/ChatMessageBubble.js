@@ -143,6 +143,7 @@ class ChatMessageBubble extends Component {
 
   renderReplyMessage = (message) => {
     let replyMessage = message.reply_to;
+
     if (replyMessage.message) {
       return (
         <>
@@ -187,13 +188,12 @@ class ChatMessageBubble extends Component {
                   alignItems: 'center',
                 }}>
                 <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-                  {/* {replyMessage.sender_id === this.props.userData.id
-                ? 'You' */}
-                  {/* :  */}
-                  {replyMessage.display_name && replyMessage.display_name !== ''
+                  {replyMessage.sender_id === this.props.userData.id
+                    ? 'You'
+                    : replyMessage.display_name &&
+                      replyMessage.display_name !== ''
                     ? replyMessage.display_name
                     : replyMessage.name}
-                  {/* } */}
                 </Text>
               </View>
               <View
@@ -358,6 +358,7 @@ class ChatMessageBubble extends Component {
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
+
     return (
       <View>
         <Menu
@@ -458,7 +459,7 @@ class ChatMessageBubble extends Component {
                           borderRadius={message.hyperlink ? 0 : borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
-                        <VideoPlayerCustom url={message.message_body} />
+                        <VideoPlayerCustom url={message.message_body.text} />
                       ) : message.msg_type === 'audio' ? (
                         <AudioPlayerCustom
                           audioPlayingId={audioPlayingId}
@@ -778,17 +779,15 @@ class ChatMessageBubble extends Component {
             //   />
             // )}
             onPress={() => {
+              console.log('selectedMessageId', selectedMessageId);
+
               onMessageReply(selectedMessageId);
               // closeMenu();
               this.hideMenu();
             }}
             customComponent={
               <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                <FontAwesome5
-                  name={'language'}
-                  size={20}
-                  color={Colors.white}
-                />
+                <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
                 <Text style={{marginLeft: 10, color: '#fff'}}>
                   {translate('common.reply')}
                 </Text>

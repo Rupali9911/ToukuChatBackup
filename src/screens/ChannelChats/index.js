@@ -591,9 +591,9 @@ class ChannelChats extends Component {
     if (sentMessageType === 'video') {
       let file = uploadFile.uri;
       let files = [file];
-      if(uploadFile.isUrl){
+      if (uploadFile.isUrl) {
         msgText = uploadFile.uri;
-      }else{
+      } else {
         const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
           files,
           uploadFile.type,
@@ -620,11 +620,11 @@ class ChannelChats extends Component {
       reply_to: isReply
         ? {
             display_name: repliedMessage.from_user.display_name,
-            id: repliedMessage.id,
+            id: userData.id,
             message: repliedMessage.message_body,
             msg_type: repliedMessage.msg_type,
-            name: repliedMessage.to_user.username,
-            sender_id: repliedMessage.sender_id,
+            name: repliedMessage.from_user.username,
+            sender_id: repliedMessage.id,
           }
         : null,
       created: moment().format(),
@@ -673,7 +673,7 @@ class ChannelChats extends Component {
       local_id: uuid.v4(),
       message_body: msgText,
       msg_type: sentMessageType,
-      reply_to: isReply?repliedMessage.id:null,
+      reply_to: isReply ? repliedMessage.id : null,
     };
 
     if (isReply) {
@@ -1087,7 +1087,7 @@ class ChannelChats extends Component {
           uri: file.path,
           type: file.mime,
           name: null,
-          isUrl: file.isUrl
+          isUrl: file.isUrl,
         };
         await this.setState(
           {
