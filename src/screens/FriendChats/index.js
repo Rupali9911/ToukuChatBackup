@@ -62,6 +62,7 @@ import {
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
   removeUserFriends,
+  updateFriendTranslatedMessage
 } from '../../storage/Service';
 
 // let uuid = require('react-native-uuid')
@@ -391,15 +392,19 @@ class FriendChats extends Component {
     if (sentMessageType === 'video') {
       let file = uploadFile.uri;
       let files = [file];
-      const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
-        files,
-        uploadFile.type,
-        (e) => {
-          console.log('progress_bar_percentage', e);
-          this.setState({uploadProgress: e.percent});
-        },
-      );
-      msgText = uploadedVideo;
+      if (uploadFile.isUrl) {
+        msgText = uploadFile.uri;
+      } else {
+        const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
+          files,
+          uploadFile.type,
+          (e) => {
+            console.log('progress_bar_percentage', e);
+            this.setState({ uploadProgress: e.percent });
+          },
+        );
+        msgText = uploadedVideo;
+      }
     }
 
     let sendmsgdata = {
@@ -1102,15 +1107,19 @@ class FriendChats extends Component {
           translatedMessageId: message.id,
           translatedMessage: res.data,
         });
+        updateFriendTranslatedMessage(message.id,res.data);
+        this.getLocalFriendConversation();
       }
     });
   };
 
-  onMessageTranslateClose = () => {
+  onMessageTranslateClose = (id) => {
     this.setState({
       translatedMessageId: null,
       translatedMessage: null,
     });
+    updateFriendTranslatedMessage(id, null);
+    this.getLocalFriendConversation();
   };
 
   onDownload = async (message) => {
@@ -1316,6 +1325,7 @@ class FriendChats extends Component {
           uri: file.path,
           type: file.mime,
           name: null,
+          isUrl: file.isUrl
         };
         await this.setState(
           {

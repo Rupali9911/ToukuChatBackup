@@ -1735,7 +1735,8 @@ class Chat extends Component {
   }
 
   unFriendUser = (message) => {
-    if (message) {
+    const {currentFriend} = this.props;
+    if(message){
       removeUserFriends(message.text.data.message_details.user_id);
       this.props.setUserFriends().then((res) => {
         this.props.setCommonChatConversation();
@@ -2072,7 +2073,7 @@ class Chat extends Component {
       );
       if (
         message.text.data.message_details.conversation.requested_from ===
-        this.props.userData.username
+        this.props.userData.username && !message.text.data.message_details.invitation
       ) {
         Toast.show({
           title: translate('pages.xchat.friendRequest'),
@@ -2089,7 +2090,7 @@ class Chat extends Component {
         message.text.data.message_details.conversation.user_id,
       );
       this.props.setFriendRequest();
-      handleRequestAccept(message.text.data.message_details.conversation);
+      handleRequestAccept(message.text.data.message_details.conversation,message.text.data.message_details.invitation);
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
@@ -2844,7 +2845,7 @@ class Chat extends Component {
           renderItem={({item, index}) =>
             item.chat === 'group' ? (
               <GroupListItem
-                key={index}
+                key={index+''}
                 last_msg_id={item.last_msg_id}
                 title={item.group_name}
                 onCheckChange={this.onCheckChange}

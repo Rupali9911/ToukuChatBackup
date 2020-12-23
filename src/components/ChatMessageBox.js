@@ -106,7 +106,7 @@ export default class ChatMessageBox extends Component {
     });
   };
 
-  renderTransltedMessage = () => {
+  renderTransltedMessage = (msg) => {
     return (
       <View
         style={{
@@ -123,7 +123,8 @@ export default class ChatMessageBox extends Component {
             fontFamily: Fonts.light,
             fontSize: 14,
           }}>
-          {this.props.translatedMessage}
+          {/* {this.props.translatedMessage} */}
+          {msg}
         </Text>
         <View
           style={{
@@ -142,7 +143,7 @@ export default class ChatMessageBox extends Component {
           <TouchableOpacity
             style={{marginLeft: 10}}
             onPress={() => {
-              this.props.onMessageTranslateClose();
+              this.props.onMessageTranslateClose(this.props.message.id);
             }}>
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
@@ -331,9 +332,8 @@ export default class ChatMessageBox extends Component {
               </View>
             </View>
             {/* )} */}
-            {translatedMessageId &&
-              message.id === translatedMessageId &&
-              this.renderTransltedMessage()}
+            {message.translated &&
+              this.renderTransltedMessage(message.translated)}
           </View>
         </View>
       </Animated.View>
@@ -448,9 +448,8 @@ export default class ChatMessageBox extends Component {
                   </View>
                 ) : null}
               </View>
-              {translatedMessageId &&
-                message.id === translatedMessageId &&
-                this.renderTransltedMessage()}
+              {message.translated &&
+                this.renderTransltedMessage(message.translated)}
             </View>
           </View>
         </View>

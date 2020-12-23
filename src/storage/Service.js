@@ -167,6 +167,17 @@ export const setMessageUnsend = async (id) => {
     );
   });
 };
+
+export const updateChannelTranslatedMessage = (id, translated_text) => {
+  realm.write(() => {
+    realm.create(
+      'chat_conversation',
+      {id: id, translated: translated_text},
+      'modified',
+    );
+  });
+};
+
 //#endregion
 
 //#region Friend Services
@@ -305,6 +316,17 @@ export const updateAllFriendMessageRead = (friend) => {
     });
   }
 };
+
+export const updateFriendTranslatedMessage = (id, translated_text) => {
+  realm.write(() => {
+    realm.create(
+      'chat_conversation_friend',
+      {id: id, translated: translated_text},
+      'modified',
+    );
+  });
+};
+
 //#endregion
 
 //#region Group Services
@@ -418,11 +440,22 @@ export const setGroupMessageUnsend = (id) => {
     );
   });
 };
+
+export const updateGroupTranslatedMessage = (id, translated_text) => {
+  realm.write(() => {
+    realm.create(
+      'chat_conversation_group',
+      {msg_id: id, translated: translated_text},
+      'modified',
+    );
+  });
+};
+
 //#endregion
 
 //#region Channels List
 export const setChannels = (channels) => {
-  // console.log('realm insert data', channels);
+  console.log('realm insert data', channels);
   for (let item of channels) {
     var obj = realm.objects('channels').filtered('id=' + item.id);
 
@@ -904,13 +937,13 @@ export const getUserFriend = (id) => {
     .filtered(`friend == ${id}`);
 };
 
-export const handleRequestAccept = (item) => {
+export const handleRequestAccept = (item,isInvitation) => {
   var obj = realm.objects('user_friends').filtered('user_id=' + item.user_id);
   if (obj.length > 0) {
     realm.write(() => {
       realm.create(
         'user_friends',
-        {user_id: item.user_id, unread_msg: 1, friend_status: 'ACCEPTED'},
+        isInvitation?{user_id: item.user_id, friend_status: 'ACCEPTED'}:{user_id: item.user_id, unread_msg: 1, friend_status: 'ACCEPTED'},
         'modified',
       );
     });

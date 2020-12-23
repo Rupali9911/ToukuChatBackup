@@ -76,6 +76,7 @@ import {
   updateChannelLastMsgWithOutCount,
   updateChannelsWhenPined,
   updateChannelsWhenUnpined,
+  updateChannelTranslatedMessage
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 import bonusImage from '../../../assets/images/bonus_bg.png';
@@ -1461,15 +1462,19 @@ class ChannelChats extends Component {
           translatedMessageId: message.id,
           translatedMessage: res.data,
         });
+        updateChannelTranslatedMessage(message.id, res.data);
+        this.getLocalChannelConversations();
       }
     });
   };
 
-  onMessageTranslateClose = () => {
+  onMessageTranslateClose = (id) => {
     this.setState({
       translatedMessageId: null,
       translatedMessage: null,
     });
+    updateChannelTranslatedMessage(id, null);
+    this.getLocalChannelConversations();
   };
 
   render() {

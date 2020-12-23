@@ -13,7 +13,7 @@ import GroupChatMessageBubble from './GroupChatMessageBubble';
 
 import {Colors, Fonts} from '../constants';
 import RoundedImage from './RoundedImage';
-import {getAvatar, normalize} from '../utils';
+import {getAvatar, normalize, getUserName} from '../utils';
 import {translate} from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -102,7 +102,7 @@ export default class GroupChatMessageBox extends Component {
     });
   };
 
-  renderTransltedMessage = () => {
+  renderTransltedMessage = (msg) => {
     return (
       <View
         style={{
@@ -119,7 +119,8 @@ export default class GroupChatMessageBox extends Component {
             fontFamily: Fonts.light,
             fontSize: 14,
           }}>
-          {this.props.translatedMessage}
+          {/* {this.props.translatedMessage} */}
+          {msg}
         </Text>
         <View
           style={{
@@ -138,7 +139,7 @@ export default class GroupChatMessageBox extends Component {
           <TouchableOpacity
             style={{marginLeft: 10}}
             onPress={() => {
-              this.props.onMessageTranslateClose();
+              this.props.onMessageTranslateClose(this.props.message.msg_id);
             }}>
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
@@ -265,7 +266,7 @@ export default class GroupChatMessageBox extends Component {
                       marginStart: 10,
                       fontWeight: '300',
                     }}>
-                    {message.sender_display_name}
+                    {getUserName(message.sender_id) || message.sender_display_name}
                   </Text>
                   <GroupChatMessageBubble
                     ref={(view) => {
@@ -316,9 +317,8 @@ export default class GroupChatMessageBox extends Component {
                 </View>
               </View>
             </View>
-            {translatedMessageId &&
-              message.msg_id === translatedMessageId &&
-              this.renderTransltedMessage()}
+            {message.translated &&
+              this.renderTransltedMessage(message.translated)}
           </View>
         </View>
       </Animated.View>
@@ -451,9 +451,8 @@ export default class GroupChatMessageBox extends Component {
                 </View>
               ) : null}
             </View>
-            {translatedMessageId &&
-              message.msg_id === translatedMessageId &&
-              this.renderTransltedMessage()}
+            {message.translated &&
+              this.renderTransltedMessage(message.translated)}
           </View>
         </View>
       </Animated.View>

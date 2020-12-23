@@ -12,7 +12,7 @@ import {
 import {Colors, Icons, Fonts} from '../constants';
 import {globalStyles} from '../styles';
 const {width, height} = Dimensions.get('window');
-import {getAvatar} from '../utils';
+import {getAvatar, getUserName} from '../utils';
 import RoundedImage from './RoundedImage';
 import Button from './Button';
 import ButtonWithArrow from './ButtonWithArrow';
@@ -137,7 +137,7 @@ export default class GroupFriend extends Component {
                 flex: 1,
               },
             ]}>
-            {user.display_name || user.username}
+            {getUserName(user.id || user.user_id) || user.display_name || user.username}
           </Text>
         </View>
         {isRightButton && (

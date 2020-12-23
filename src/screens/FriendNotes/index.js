@@ -215,7 +215,9 @@ class FriendNotes extends Component {
       let array = this.state.data.results;
       let item = array.find((e) => e.id === data.note_id);
       let index = array.indexOf(item);
-      item['is_liked'] = data.like.like;
+      if(data.user_id === this.props.userData.id)
+        item['is_liked'] = data.like.like;
+
       item['liked_by_count'] = data.like.like
         ? item.liked_by_count + 1
         : item.liked_by_count - 1;
@@ -494,6 +496,7 @@ class FriendNotes extends Component {
                 borderTopWidth: 0.3,
               }}>
               <CommonNotes
+                ref={(common_note)=>{this.commonNote = common_note}}
                 isFriend={true}
                 data={this.state.data}
                 onPost={this.onPostNote}

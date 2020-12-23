@@ -68,9 +68,15 @@ export default class ChatInput extends Component {
         let array = groupMembers.filter((member) => {
           if (member.id !== currentUserData.id) {
             // return splitNewMessageText.map((text) => {
-              return member.display_name
+              if(member.display_name){
+                return member.display_name
                 .toLowerCase()
                 .startsWith(text.substring(1).toLowerCase())
+              }else{
+                return member.username
+                .toLowerCase()
+                .startsWith(text.substring(1).toLowerCase())
+              }
           }else{
             return false;
           }
@@ -291,7 +297,7 @@ export default class ChatInput extends Component {
                                   : 'black',
                               textAlign: 'center',
                             }}>
-                            {item.display_name}
+                            {item.display_name || item.username}
                           </Text>
                         </View>
                       </GHTouchableHighlight>

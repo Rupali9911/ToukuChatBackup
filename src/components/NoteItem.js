@@ -20,7 +20,7 @@ import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import { translate } from '../redux/reducers/languageReducer';
 import { Colors, Fonts, Images, Icons, SocketEvents } from '../constants';
-import { getAvatar, isIphoneX, normalize, eventService } from '../../src/utils';
+import { getAvatar, isIphoneX, normalize, eventService, getUserName } from '../../src/utils';
 import NoData from './NoData';
 
 import TextAreaWithTitle from '../components/TextInputs/TextAreaWithTitle';
@@ -307,7 +307,7 @@ class NoteItem extends Component {
     }
 
     handleCommentLikeUnlike = (message) => {
-        const {item,isFriend} = this.props;
+        const {item,isFriend, userData} = this.props;
 
         let data = isFriend?message.text.data.message_details.data:message.text.data.message_details;
         if (data && data.note_id === item.id) {
@@ -315,7 +315,9 @@ class NoteItem extends Component {
             let i = array.find((e) => e.id === data.comment_id);
             if(i){
                 let index = array.indexOf(i);
-                i['is_liked'] = data.like && data.like.like;
+                if(data.user_id === userData.id)
+                    i['is_liked'] = data.like && data.like.like;
+
                 i['liked_by_count'] = (data.like && data.like.like) ? (i.liked_by_count + 1) : (i.liked_by_count - 1);
                 array.splice(index, 1, i);
                 this.setState({ commentData: array });
@@ -348,9 +350,15 @@ class NoteItem extends Component {
                 let array = groupMembers.filter((member) => {
                     if (member.id !== userData.id) {
                         // return splitNewMessageText.map((text) => {
-                        return member.display_name
-                            .toLowerCase()
-                            .startsWith(text.substring(1).toLowerCase())
+                        if (member.display_name) {
+                            return member.display_name
+                                .toLowerCase()
+                                .startsWith(text.substring(1).toLowerCase())
+                        } else {
+                            return member.username
+                                .toLowerCase()
+                                .startsWith(text.substring(1).toLowerCase())
+                        }
                     } else {
                         return false;
                     }
@@ -471,7 +479,7 @@ class NoteItem extends Component {
                                                 fontWeight: '400',
                                                 fontSize: normalize(10),
                                             }}>
-                                            {userData.id === item.created_by ? translate('pages.xchat.you') : item.created_by_username}
+                                            {userData.id === item.created_by ? translate('pages.xchat.you') : getUserName(item.created_by) || item.created_by_username}
                                         </Text>
                                         <Text
                                             style={{
@@ -662,7 +670,7 @@ class NoteItem extends Component {
                                                                                 : 'black',
                                                                     textAlign: 'center',
                                                                 }}>
-                                                                {item.display_name}
+                                                                {item.display_name || item.username}
                                                             </Text>
                                                         </View>
                                                     </GHTouchableHighlight>

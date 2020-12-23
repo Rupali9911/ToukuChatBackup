@@ -1,8 +1,11 @@
-import {Dimensions, Platform, PixelRatio, PermissionsAndroid} from 'react-native';
+import {Dimensions, Linking, Platform, PixelRatio, PermissionsAndroid} from 'react-native';
 import {Images, Icons} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
 import ImageResizer from 'react-native-image-resizer';
+import { inviteUrlRoot, staging } from '../helpers/api';
+import NavigationService from '../navigation/NavigationService';
+import { getLocalUserFriend } from '../storage/Service';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -156,4 +159,38 @@ export const hasStoragePermission = async () => {
     console.warn(err);
     return false;
   }
+}
+
+export const getChannelIdAndReferral = (url) => {
+  let channel_id = '';
+  let referral = '';
+
+  let split_url = url.split('/');
+  console.log('split_url',JSON.stringify(split_url));
+
+  channel_id = split_url[4];
+  referral = split_url[5];
+
+  return {channel_id,referral};
+}
+
+export const onPressHyperlink = (url) => {
+  let match_url = staging ? 'touku.angelium.net/invite/' : 'touku.net/invite/'
+  if (url.includes(match_url)) {
+    let params = getChannelIdAndReferral(url);
+    console.log('params', params);
+    NavigationService.navigate('ChannelInfo', { channelItem: params });
+  } else {
+    Linking.openURL(url);
+  }
+}
+
+export const getUserName = (id) => {
+  let users = getLocalUserFriend(id);
+  let user_name = '';
+  if(users && users.length>0){
+    let user = users.toJSON()[0];
+    user_name = user.display_name || user.username;
+  }
+  return user_name;
 }

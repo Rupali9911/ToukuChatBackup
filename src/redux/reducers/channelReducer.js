@@ -409,6 +409,7 @@ const getChannel = (start) =>
       .then((res) => {
         if (res.conversations) {
           setChannels(res.conversations);
+          let channels = getChannels();
         }
         resolve(res);
       })

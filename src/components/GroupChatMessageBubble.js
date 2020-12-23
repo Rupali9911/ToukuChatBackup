@@ -28,7 +28,7 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 import HyperLink from 'react-native-hyperlink';
-import {getAvatar, normalize} from '../utils';
+import {getAvatar, normalize, onPressHyperlink, getUserName} from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
 import ParsedText from 'react-native-parsed-text';
@@ -234,7 +234,7 @@ class GroupChatMessageBubble extends Component {
                   {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You' */}
                   {/* :  */}
-                  {replyMessage.display_name}
+                  {getUserName(replyMessage.sender_id) || replyMessage.display_name}
                   {/* } */}
                   {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You'
@@ -572,7 +572,7 @@ class GroupChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              Linking.openURL(url);
+                              onPressHyperlink(url);
                             }}
                             linkStyle={{
                               color: Colors.link_color,
@@ -779,7 +779,7 @@ class GroupChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              Linking.openURL(url);
+                              onPressHyperlink(url);
                             }}
                             linkStyle={{
                               color: Colors.link_color,

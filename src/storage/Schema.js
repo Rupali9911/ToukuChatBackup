@@ -80,6 +80,7 @@ export const ChatConversation = {
       default: null,
     },
     updated: 'string?',
+    translated: 'string?'
   },
 };
 
@@ -114,6 +115,7 @@ export const ChatConversationFriend = {
       default: null,
     },
     updated: 'string?',
+    translated: 'string?'
   },
 };
 
@@ -143,6 +145,7 @@ export const ChatConversationGroup = {
     mentions: 'string?[]',
     read_count: {type: 'int', default: 0},
     created: 'string?',
+    translated: 'string?'
   },
 };
 

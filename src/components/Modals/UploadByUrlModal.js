@@ -58,7 +58,7 @@ class UploadByUrlModal extends Component {
               video_url = url.replace('watch?v=','embed/');
             }
           }else if(url.includes('youtu.be')){
-            video_url = `https://www.youtube.com/embed/${url.substring(url.lastIndexOf('/'))}`
+            video_url = `https://www.youtube.com/embed${url.substring(url.lastIndexOf('/'))}`
           }
 
           let data = {

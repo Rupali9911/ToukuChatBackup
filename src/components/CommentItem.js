@@ -18,7 +18,7 @@ import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import { translate } from '../redux/reducers/languageReducer';
 import { Colors, Fonts, Images, Icons } from '../constants';
-import { getAvatar, isIphoneX, normalize } from '../../src/utils';
+import { getAvatar, isIphoneX, normalize, getUserName } from '../../src/utils';
 import NoData from './NoData';
 
 import TextAreaWithTitle from '../components/TextInputs/TextAreaWithTitle';
@@ -99,7 +99,7 @@ class CommentItem extends Component {
                                             fontWeight: '400',
                                             fontSize: normalize(10),
                                         }}>
-                                        {userData.id === item.created_by ? translate('pages.xchat.you') : item.created_by_username}
+                                        {userData.id === item.created_by ? translate('pages.xchat.you') : getUserName(item.created_by) || item.created_by_username}
                                     </Text>
                                     <Text
                                         style={{

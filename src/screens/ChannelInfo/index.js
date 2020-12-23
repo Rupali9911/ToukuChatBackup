@@ -21,7 +21,7 @@ import Button from '../../components/Button';
 import {ListLoader} from '../../components/Loaders';
 import Toast from '../../components/Toast';
 import RoundedImage from '../../components/RoundedImage';
-import {getImage, eventService, showToast, normalize} from '../../utils';
+import {getImage, eventService, showToast, normalize, onPressHyperlink} from '../../utils';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   getChannelDetails,
@@ -158,7 +158,8 @@ class ChannelInfo extends Component {
         channel_id: this.props.navigation.state.params
           ? this.props.navigation.state.params.channelItem.channel_id
           : this.props.currentChannel.id,
-        referral_code: 'ISGLGA2V',
+        referral_code: this.props.navigation.state.params
+        ? this.props.navigation.state.params.channelItem.referral:'ISGLGA2V',
         user_id: this.props.userData.id,
       };
       this.props
@@ -615,7 +616,7 @@ class ChannelInfo extends Component {
                   </Text>
                   <HyperLink
                     onPress={(url, text) => {
-                      Linking.openURL(url);
+                      onPressHyperlink(url);
                     }}
                     linkStyle={{ color: 'blue', textDecorationLine: 'underline' }}>
                     <Text style={channelInfoStyles.aboutText}>

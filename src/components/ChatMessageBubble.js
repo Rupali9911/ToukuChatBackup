@@ -28,12 +28,14 @@ import Toast from '../components/Toast';
 import HyperLink from 'react-native-hyperlink';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-viewing';
-import {getAvatar, normalize} from '../utils';
+import {getAvatar, normalize, getChannelIdAndReferral, onPressHyperlink, getUserName} from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
 
 import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
+import { inviteUrlRoot, staging } from '../helpers/api';
+import NavigationService from '../navigation/NavigationService';
 
 let borderRadius = 20;
 
@@ -190,10 +192,11 @@ class ChatMessageBubble extends Component {
                 <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                   {replyMessage.sender_id === this.props.userData.id
                     ? 'You'
-                    : replyMessage.display_name &&
-                      replyMessage.display_name !== ''
-                    ? replyMessage.display_name
-                    : replyMessage.name}
+                    : getUserName(replyMessage.sender_id) || 
+                    (replyMessage.display_name && replyMessage.display_name !== ''
+                        ? replyMessage.display_name
+                        : replyMessage.name)
+                  }
                 </Text>
               </View>
               <View
@@ -513,7 +516,7 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              Linking.openURL(url);
+                              onPressHyperlink(url);
                             }}
                             linkStyle={{
                               color: Colors.link_color,
@@ -700,7 +703,7 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              Linking.openURL(url);
+                              onPressHyperlink(url);
                             }}
                             linkStyle={{
                               color: Colors.link_color,

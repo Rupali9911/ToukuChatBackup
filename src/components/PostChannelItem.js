@@ -21,7 +21,7 @@ import PostCardHeader from './PostCardHeader';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
-import { normalize } from '../utils';
+import { normalize, onPressHyperlink } from '../utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -88,7 +88,7 @@ export default class PostChannelItem extends Component {
         <View style={{ marginHorizontal: '4%', marginVertical: 5}}>
           <HyperLink
             onPress={(url, text) => {
-              Linking.openURL(url);
+              onPressHyperlink(url);
             }}
             linkStyle={{
               color: 'rgba(0,248,159,1)',

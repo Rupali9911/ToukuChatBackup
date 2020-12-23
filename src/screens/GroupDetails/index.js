@@ -21,7 +21,7 @@ import {red} from 'color-name';
 
 import {groupDetailStyles} from './styles';
 import {globalStyles} from '../../styles';
-import {getImage, eventService} from '../../utils';
+import {getImage, eventService, onPressHyperlink} from '../../utils';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import {Images, Icons, Colors, Fonts, SocketEvents} from '../../constants';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
@@ -685,7 +685,9 @@ class GroupDetails extends Component {
       let array = this.state.data.results;
       let item = array.find((e)=>e.id===data.note_id);
       let index = array.indexOf(item);
-      item['is_liked'] = data.like.like;
+      if(data.user_id === this.props.userData.id)
+        item['is_liked'] = data.like.like;
+
       item['liked_by_count'] = data.like.like ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
       array.splice(index, 1, item);
       this.setState({data: {...this.state.data, results: array}});
@@ -1114,7 +1116,7 @@ class GroupDetails extends Component {
                         }}>
                             <HyperLink
                               onPress={(url, text) => {
-                                Linking.openURL(url);
+                                onPressHyperlink(url);
                               }}
                               linkStyle={{ color: 'blue', textDecorationLine: 'underline' }}>
                               <Text
