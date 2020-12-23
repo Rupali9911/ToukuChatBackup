@@ -207,7 +207,7 @@ export default class SearchInput extends Component {
                   this.setState({isVisibleLeft: false}, () => onCanclePress());
                 }}>
                 <Text style={styles.buttonTextStyle}>
-                  {translate('pages.xchat.cancel')}
+                  {translate('pages.xchat.cancelChooseOption')}
                 </Text>
               </TouchableOpacity>
             </View>

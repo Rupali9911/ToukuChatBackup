@@ -189,6 +189,7 @@ class GroupChatMessageBubble extends Component {
 
   renderReplyMessage = (message) => {
     let replyMessage = message.reply_to;
+
     if (replyMessage.message) {
       return (
         <>
@@ -878,11 +879,7 @@ class GroupChatMessageBubble extends Component {
             // titleStyle={{marginLeft: -25, color: Colors.white}}
             customComponent={
               <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                <FontAwesome5
-                  name={'language'}
-                  size={20}
-                  color={Colors.white}
-                />
+                <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
                 <Text style={{marginLeft: 10, color: '#fff'}}>
                   {translate('common.reply')}
                 </Text>
@@ -952,7 +949,7 @@ class GroupChatMessageBubble extends Component {
               //   />
               // )}
               onPress={() => {
-                this.hideMenu();  
+                this.hideMenu();
                 setTimeout(() => {
                   onUnSend(selectedMessageId);
                 }, 500);

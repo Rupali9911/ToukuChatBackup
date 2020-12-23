@@ -487,7 +487,7 @@ class Chat extends Component {
         this.unFriendUser(message);
         break;
       case SocketEvents.REMOVE_FRIEND:
-        this.updateFriendStatus(message); 
+        this.updateFriendStatus(message);
         break;
       case SocketEvents.DELETE_FRIEND_OBJECT:
         this.deleteFriendObject(message);
@@ -1735,53 +1735,61 @@ class Chat extends Component {
   }
 
   unFriendUser = (message) => {
-    if(message){
+    if (message) {
       removeUserFriends(message.text.data.message_details.user_id);
       this.props.setUserFriends().then((res) => {
         this.props.setCommonChatConversation();
       });
-      if (this.props.currentRouteName == 'FriendChats' &&
+      if (
+        this.props.currentRouteName == 'FriendChats' &&
         currentFriend &&
-        message.text.data.message_details.user_id ==
-        currentFriend.user_id) {
+        message.text.data.message_details.user_id == currentFriend.user_id
+      ) {
       }
     }
-  }
+  };
 
   updateFriendStatus = (message) => {
     const {currentFriend} = this.props;
-    if(message){
-      updateFriendStatus(message.text.data.message_details.user_id,message.text.data.message_details.status);
+    if (message) {
+      updateFriendStatus(
+        message.text.data.message_details.user_id,
+        message.text.data.message_details.status,
+      );
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
-      if (this.props.currentRouteName == 'FriendChats' &&
+      if (
+        this.props.currentRouteName == 'FriendChats' &&
         currentFriend &&
-        message.text.data.message_details.user_id ==
-        currentFriend.user_id) {
-          let user = getLocalUserFriend(message.text.data.message_details.user_id);
-          if(user.toJSON().length>0){
-            let item = user.toJSON()[0];
-            this.props.setCurrentFriend(item);
-          }
+        message.text.data.message_details.user_id == currentFriend.user_id
+      ) {
+        let user = getLocalUserFriend(
+          message.text.data.message_details.user_id,
+        );
+        if (user.toJSON().length > 0) {
+          let item = user.toJSON()[0];
+          this.props.setCurrentFriend(item);
+        }
       }
     }
-  }
+  };
 
   deleteFriendObject = (message) => {
     const {currentFriend} = this.props;
-    if(message){
+    if (message) {
       removeUserFriends(message.text.data.message_details.user_id);
       this.props.setUserFriends().then((res) => {
         this.props.setCommonChatConversation();
       });
-      if (this.props.currentRouteName == 'FriendChats' &&
+      if (
+        this.props.currentRouteName == 'FriendChats' &&
         currentFriend &&
-        message.text.data.message_details.user_id ==
-        currentFriend.user_id) {
+        message.text.data.message_details.user_id == currentFriend.user_id
+      ) {
       }
     }
-  }
+  };
 
   onDeleteMessageInGroup(message) {
     const {userGroups, userData, currentGroup} = this.props;
@@ -2085,16 +2093,18 @@ class Chat extends Component {
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
-      if (this.props.currentRouteName == 'FriendChats' &&
-      this.props.currentFriend &&
-      message.text.data.message_details.conversation.user_id ==
-        this.props.currentFriend.user_id) {
-          console.log('request accepted');
-          let user = getLocalUserFriend(this.props.currentFriend.user_id);
-          if(user.toJSON().length>0){
-            let item = user.toJSON()[0];
-            this.props.setCurrentFriend(item);
-          }
+      if (
+        this.props.currentRouteName == 'FriendChats' &&
+        this.props.currentFriend &&
+        message.text.data.message_details.conversation.user_id ==
+          this.props.currentFriend.user_id
+      ) {
+        console.log('request accepted');
+        let user = getLocalUserFriend(this.props.currentFriend.user_id);
+        if (user.toJSON().length > 0) {
+          let item = user.toJSON()[0];
+          this.props.setCurrentFriend(item);
+        }
       }
     }
   };
