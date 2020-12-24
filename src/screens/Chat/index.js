@@ -674,7 +674,7 @@ class Chat extends Component {
     }
   }
 
-  deleteMultipleChat = (message) => {
+  deleteMultipleChat = async (message) => {
     console.log('message', message);
     let commonData = [...this.props.commonChat];
 
@@ -724,6 +724,13 @@ class Chat extends Component {
         }
       });
     }
+
+    await this.props.getLocalFollowingChannels();
+    await this.props.setUserFriends();
+    this.props.getLocalUserGroups().then((res) => {
+      this.props.setCommonChatConversation();
+    });
+
   };
 
   //Set Friend's typing status with socket event
@@ -2938,7 +2945,11 @@ class Chat extends Component {
                 date={item.timestamp}
                 isOnline={item.is_online}
                 onPress={() => this.onOpenFriendChats(item)}
-                onAvtarPress={() => this.onOpenFriendDetails(item)}
+                onAvtarPress={() => {
+                  if(item.friend_status !== 'UNFRIEND'){
+                    this.onOpenFriendDetails(item)
+                  }
+                }}
                 unreadCount={item.unread_msg}
                 isTyping={item.is_typing}
                 callTypingStop={(id) => {

@@ -25,7 +25,6 @@ export default class VideoThumbnailPlayer extends Component {
   }
 
   generateThumbnail = (url) => {
-
     if(url.includes('youtube.com')){
       getYoutubeMeta(this.getVideoId(url)).then((youtubedata)=>{
         console.log(youtubedata);        

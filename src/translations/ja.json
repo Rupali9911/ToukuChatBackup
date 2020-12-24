@@ -1067,6 +1067,7 @@
       "copyTextForFollower": "このリンクをコピーして、ソーシャルメディアやメールなどで共有します",
       "scanImageForFollower": "ユーザーはこの画像をQRコードリーダーでスキャンして、このアカウントを見つけることができます。 画像をダウンロードするか、HTMLタグをコピーして、ソーシャルメディアやメールなどで共有します。",
       "followCode":"チャネルフォローコード",
+      "enterFollowCode": "チャンネルIDを入力ください",
       "wrongFollowCode":"間違ったチャンネルフォローコード",
       "referralOneField3": "※チャンネルID:"
     },

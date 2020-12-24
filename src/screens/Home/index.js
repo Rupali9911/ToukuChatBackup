@@ -275,6 +275,7 @@ class Home extends PureComponent {
       'didFocus',
       async () =>
         setTimeout(() => {
+          console.log('focus gain');
           this.groupFilter();
           this.friendFilter();
           this.channelFilter();
@@ -1454,7 +1455,11 @@ class Home extends PureComponent {
                 updateFriendTypingStatus(id, false);
                 this.props.setUserFriends();
               }}
-              onAvtarPress={() => this.onOpenFriendDetails(item)}
+              onAvtarPress={() => {
+                if (item.friend_status !== 'UNFRIEND') {
+                  this.onOpenFriendDetails(item)
+                }
+              }}
               isPined={item.is_pined}
             />
           )}

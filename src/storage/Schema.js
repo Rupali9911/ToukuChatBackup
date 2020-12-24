@@ -217,11 +217,12 @@ export const ChannelLastConversation = {
     read_by: 'int?[]',
     read_by_in_replies: 'int?[]',
     // replies_is_read: null,
-    reply_to: {
-      type: 'object?',
-      objectType: 'reply_to',
-      default: null,
-    },
+    // reply_to: {
+    //   type: 'object?',
+    //   objectType: 'reply_to',
+    //   default: null,
+    // },
+    reply_to: 'int?',
     schedule_post: 'int?',
     subchat: 'int?',
     thumbnail: 'string?',

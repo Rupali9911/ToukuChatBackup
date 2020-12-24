@@ -1066,6 +1066,7 @@
       "copyTextForFollower": "复制此链接以通过社交媒体，电子邮件等分享",
       "scanImageForFollower": "用户可以使用QR码阅读器扫描该图像以找到该帐户。 下载图像或复制HTML标签以通过社交媒体，电子邮件等共享。",
       "followCode":"频道追踪代码",
+      "enterFollowCode": "輸入頻道追踪碼",
       "wrongFollowCode":"错误的频道追踪码",
       "referralOneField3":"*频道ID："
     },

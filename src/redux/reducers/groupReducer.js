@@ -215,30 +215,7 @@ export const getLocalUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     var groups = getGroups();
     var array = [];
-    groups.map((item, index) => {
-      let i = {
-        group_id: item.group_id,
-        group_name: item.group_name,
-        unread_msg: item.unread_msg,
-        total_members: item.total_members,
-        description: item.description,
-        chat: item.chat,
-        group_picture: item.group_picture,
-        last_msg: item.last_msg,
-        last_msg_id: item.last_msg_id,
-        timestamp: item.timestamp,
-        event: item.event,
-        no_msgs: item.no_msgs,
-        is_pined: item.is_pined,
-        sender_id: item.sender_id,
-        sender_username: item.sender_username,
-        sender_display_name: item.sender_display_name,
-        mentions: item.mentions,
-        reply_to: item.reply_to,
-        joining_date: item.joining_date,
-      };
-      array = [...array, i];
-    });
+    array = groups.toJSON();
     array.sort((a, b) =>
       a.timestamp &&
       b.timestamp &&
