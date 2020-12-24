@@ -213,7 +213,7 @@ class ChatMessageBubble extends Component {
                     size={50}
                   />
                 ) : replyMessage.msg_type === 'video' ? (
-                  <VideoThumbnailPlayer url={replyMessage.message} />
+                  <VideoThumbnailPlayer url={replyMessage.message} showPlayButton/>
                 ) : replyMessage.msg_type === 'audio' ? (
                   <Fragment>
                     <Text
@@ -462,7 +462,7 @@ class ChatMessageBubble extends Component {
                           borderRadius={message.hyperlink ? 0 : borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
-                        <VideoPlayerCustom url={message.message_body.text} />
+                        <VideoPlayerCustom url={message.message_body} />
                       ) : message.msg_type === 'audio' ? (
                         <AudioPlayerCustom
                           audioPlayingId={audioPlayingId}

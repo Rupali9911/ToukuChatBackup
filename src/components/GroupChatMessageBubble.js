@@ -256,7 +256,7 @@ class GroupChatMessageBubble extends Component {
                     size={50}
                   />
                 ) : replyMessage.msg_type === 'video' ? (
-                  <VideoThumbnailPlayer url={replyMessage.message} />
+                  <VideoThumbnailPlayer url={replyMessage.message} showPlayButton/>
                 ) : replyMessage.msg_type === 'audio' ? (
                   <Fragment>
                     <Text

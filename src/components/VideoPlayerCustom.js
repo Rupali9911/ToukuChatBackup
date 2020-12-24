@@ -65,7 +65,7 @@ export default class VideoPlayerCustom extends Component {
 
   render() {
     const {url, width, height, thumbnailImage} = this.props;
-    const {playing, isLoading, isFullscreen, thumbnailUrl, onStateChange} = this.state;
+    const {playing, isLoading, isFullscreen, thumbnailUrl,} = this.state;
     return (
       url.includes('youtube.com') ?
         <View style={{ height: 150, width: 260}}>
@@ -73,7 +73,7 @@ export default class VideoPlayerCustom extends Component {
               height={150}
               play={playing}
               videoId={this.getVideoId(url)}
-              onChangeState={onStateChange}
+              onChangeState={this.onStateChange}
               onError={(err) => {
                 console.log('err', err);
               }}

@@ -459,7 +459,7 @@ class ChatContainer extends Component {
                     size={50}
                   />
                 ) : repliedMessage.msg_type === 'video' ? (
-                  <VideoThumbnailPlayer url={repliedMessage.message_body} />
+                  <VideoThumbnailPlayer url={repliedMessage.message_body} showPlayButton/>
                 ) : repliedMessage.msg_type === 'audio' ? (
                   <Fragment>
                     <Text

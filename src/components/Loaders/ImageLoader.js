@@ -84,7 +84,7 @@ class ImageLoader extends React.Component {
         {this.props.children && (
           <View style={styles.viewChildrenStyles}>{this.props.children}</View>
         )}
-        {showPlayButton && (
+        {source ? showPlayButton && (
           <View
             style={{
               flex: 1,
@@ -93,7 +93,7 @@ class ImageLoader extends React.Component {
             }}>
             <FontAwesome name="play" size={15} color={Colors.white} />
           </View>
-        )}
+        ): null}
       </ImageBackground>
     );
   }

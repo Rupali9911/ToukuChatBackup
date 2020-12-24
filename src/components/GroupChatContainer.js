@@ -447,6 +447,7 @@ class GroupChatContainer extends Component {
                 ) : repliedMessage.message_body.type === 'video' ? (
                   <VideoThumbnailPlayer
                     url={repliedMessage.message_body.text}
+                    showPlayButton
                   />
                 ) : repliedMessage.message_body.type === 'audio' ? (
                   <Fragment>
