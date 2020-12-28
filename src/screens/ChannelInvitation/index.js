@@ -25,6 +25,7 @@ import {getImage, normalize, showToast, hasStoragePermission} from '../../utils'
 import RoundedImage from '../../components/RoundedImage';
 import S3uploadService from '../../helpers/S3uploadService';
 import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
 
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {followChannel} from '../../redux/reducers/channelReducer';
@@ -32,6 +33,7 @@ import {getChannelsById} from '../../storage/Service';
 import {inviteUrlRoot} from '../../helpers/api';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import {TouchableHighlight} from 'react-native-gesture-handler';
+import FileViewer from 'react-native-file-viewer';
 
 class ChannelInvitation extends Component {
   constructor(props) {
@@ -87,12 +89,44 @@ class ChannelInvitation extends Component {
   }
 
   downloadQRCodeImage = (data) => {
-    const dirs = RNFetchBlob.fs.dirs;
-
+      var RNFS = require('react-native-fs');
+      const dirs = RNFetchBlob.fs.dirs;
+      let path = null
     if(Platform.OS==='ios'){
-      var path = dirs.DocumentDir + `/qr_code_${new Date().getTime()}.png`;
+      path = RNFS.DocumentDirectoryPath + `/qr_code_${new Date().getTime()}.png`;
+        RNFS.writeFile(path, data, 'base64')
+            .then((success) => {
+                showToast(
+                    translate('pages.xchat.downloadFile'),
+                    translate('pages.setting.downloadedSuccessfully'),
+                    'positive',
+                );
+                FileViewer.open(path)
+                    .then(() => {
+                        // success
+                    })
+                    .catch(error => {
+                        // error
+                        console.log(error);
+                    });
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
     }else{
-      var path = dirs.DownloadDir + `/qr_code_${new Date().getTime()}.png`;
+      path = dirs.DownloadDir + `/qr_code_${new Date().getTime()}.png`;
+        RNFetchBlob.fs
+            .writeFile(path, data, 'base64')
+            .then((result) => {
+                showToast(
+                    translate('pages.xchat.downloadFile'),
+                    translate('pages.setting.downloadedSuccessfully'),
+                    'positive',
+                );
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     // RNFetchBlob.fs.createFile(path,data,'base64').then((result)=>{
@@ -106,19 +140,6 @@ class ChannelInvitation extends Component {
     //   console.log(err);
     // })
 
-    RNFetchBlob.fs
-      .writeFile(path, data, 'base64')
-      .then((result) => {
-        console.log('result',result);
-        showToast(
-          translate('pages.xchat.downloadFile'),
-          translate('pages.setting.downloadedSuccessfully'),
-          'positive',
-        );
-      })           
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   render() {

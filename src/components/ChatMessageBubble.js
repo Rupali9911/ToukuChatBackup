@@ -192,7 +192,7 @@ class ChatMessageBubble extends Component {
                 <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                   {replyMessage.sender_id === this.props.userData.id
                     ? 'You'
-                    : getUserName(replyMessage.sender_id) || 
+                    : getUserName(replyMessage.sender_id) ||
                     (replyMessage.display_name && replyMessage.display_name !== ''
                         ? replyMessage.display_name
                         : replyMessage.name)
