@@ -62,7 +62,7 @@ import {
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
   removeUserFriends,
-  updateFriendTranslatedMessage
+  updateFriendTranslatedMessage,
 } from '../../storage/Service';
 
 // let uuid = require('react-native-uuid')
@@ -400,7 +400,7 @@ class FriendChats extends Component {
           uploadFile.type,
           (e) => {
             console.log('progress_bar_percentage', e);
-            this.setState({ uploadProgress: e.percent });
+            this.setState({uploadProgress: e.percent});
           },
         );
         msgText = uploadedVideo;
@@ -1107,7 +1107,7 @@ class FriendChats extends Component {
           translatedMessageId: message.id,
           translatedMessage: res.data,
         });
-        updateFriendTranslatedMessage(message.id,res.data);
+        updateFriendTranslatedMessage(message.id, res.data);
         this.getLocalFriendConversation();
       }
     });
@@ -1325,7 +1325,7 @@ class FriendChats extends Component {
           uri: file.path,
           type: file.mime,
           name: null,
-          isUrl: file.isUrl
+          isUrl: file.isUrl,
         };
         await this.setState(
           {
@@ -1487,9 +1487,13 @@ class FriendChats extends Component {
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
-            isChatDisable={currentFriend.friend_status === 'UNFRIEND'}
+            isChatDisable={
+              currentFriend.friend_status === 'UNFRIEND' ||
+              currentFriend.friend_status === 'REQUESTED'
+            }
           />
         )}
+
         <ConfirmationModal
           visible={showConfirmationModal}
           onCancel={this.onCancel}

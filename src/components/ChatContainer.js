@@ -179,8 +179,11 @@ class ChatContainer extends Component {
       onSelectedCancel,
       onSelectedDelete,
       currentFriend,
-      isChatDisable
+      isChatDisable,
     } = this.props;
+
+    console.log('messages', currentFriend);
+
     return (
       <KeyboardAwareScrollView
         contentContainerStyle={{flex: 1}}
@@ -333,6 +336,7 @@ class ChatContainer extends Component {
                           }}
                           showOpenLoader={this.props.showOpenLoader}
                           isMultiSelect={isMultiSelect}
+                          isChatDisable={isChatDisable}
                         />
                       </TouchableOpacity>
                     </View>
@@ -459,7 +463,10 @@ class ChatContainer extends Component {
                     size={50}
                   />
                 ) : repliedMessage.msg_type === 'video' ? (
-                  <VideoThumbnailPlayer url={repliedMessage.message_body} showPlayButton/>
+                  <VideoThumbnailPlayer
+                    url={repliedMessage.message_body}
+                    showPlayButton
+                  />
                 ) : repliedMessage.msg_type === 'audio' ? (
                   <Fragment>
                     <Text
@@ -576,8 +583,8 @@ class ChatContainer extends Component {
               />
             </View>
           </View>
-        ) : (
-          isChatDisable?null:<ChatInput
+        ) : isChatDisable ? null : (
+          <ChatInput
             onAttachmentPress={() => onAttachmentPress()}
             onCameraPress={() => onCameraPress()}
             onGalleryPress={() => onGalleryPress()}

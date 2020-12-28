@@ -177,7 +177,11 @@ class GroupChatContainer extends Component {
       selectedIds,
       onSelectedCancel,
       onSelectedDelete,
+      isChatDisable,
     } = this.props;
+
+    console.log('isChatDisable', isChatDisable);
+
     return (
       <KeyboardAwareScrollView
         contentContainerStyle={{flex: 1}}
@@ -562,7 +566,7 @@ class GroupChatContainer extends Component {
               />
             </View>
           </View>
-        ) : (
+        ) : isChatDisable === false ? null : (
           <ChatInput
             onAttachmentPress={() => onAttachmentPress()}
             onCameraPress={() => onCameraPress()}
