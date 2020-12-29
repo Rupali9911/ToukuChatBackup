@@ -12,7 +12,7 @@ import {
 import {Colors, Icons, Fonts} from '../constants';
 import {globalStyles} from '../styles';
 const {width, height} = Dimensions.get('window');
-import {getAvatar, getUserName} from '../utils';
+import {getAvatar, getUserName, normalize} from '../utils';
 import RoundedImage from './RoundedImage';
 import Button from './Button';
 import ButtonWithArrow from './ButtonWithArrow';
@@ -163,7 +163,7 @@ export default class GroupFriend extends Component {
               }
               type={isMember ? 'primary' : 'translucent'}
               memberType={memberType}
-              height={30}
+              height={normalize(24)}
               disabled={disableEdit}
               onPress={this.onAddPress.bind(this)}
               dropDownData={dropDownData}

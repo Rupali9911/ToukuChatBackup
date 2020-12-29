@@ -655,7 +655,7 @@ class ChatMessageBubble extends Component {
                               : message.thumbnail
                           }
                           isHyperlink={message.hyperlink}
-                          borderRadius={message.hyperlink ? 0 : borderRadius}
+                          // borderRadius={message.hyperlink ? 0 : borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
@@ -976,7 +976,8 @@ class ChatMessageBubble extends Component {
 const styles = StyleSheet.create({
   talkBubble: {
     justifyContent: 'flex-end',
-    marginVertical: 15,
+    marginBottom: 5,
+    // marginTop: 10
   },
   talkBubbleAbsoluteRight: {
     width: 30,
