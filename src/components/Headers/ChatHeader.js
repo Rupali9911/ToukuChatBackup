@@ -142,8 +142,8 @@ export default class ChatHeader extends Component {
                         navigation.navigate('ChannelInfo');
                       }
                     }}>
-                    {image === null &&
-                    image === '' &&
+                    {image === null ||
+                    image === '' ||
                     typeof image === undefined ? (
                       <LinearGradient
                         start={{x: 0.1, y: 0.7}}

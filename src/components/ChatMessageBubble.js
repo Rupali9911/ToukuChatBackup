@@ -527,6 +527,7 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               onPressHyperlink(url);
                             }}
+                            onLongPress={() => this.showMenu()}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -714,6 +715,7 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               onPressHyperlink(url);
                             }}
+                            onLongPress={() => this.showMenu()}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',

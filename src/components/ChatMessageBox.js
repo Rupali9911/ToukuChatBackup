@@ -271,7 +271,10 @@ export default class ChatMessageBox extends Component {
                     source={
                       isChannel
                         ? getAvatar(currentChannel.channel_picture)
-                        : getAvatar(message.from_user.avatar)
+                        : message &&
+                          message.from_user &&
+                          message.from_user.avatar &&
+                          getAvatar(message.from_user.avatar)
                     }
                     style={{
                       width: 40,
