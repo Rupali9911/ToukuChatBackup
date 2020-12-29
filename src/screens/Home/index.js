@@ -1291,6 +1291,7 @@ class Home extends PureComponent {
     );
 
     //
+    console.log('getChannelData',JSON.stringify(getChannelData),JSON.stringify(followingChannels));
     if (filteredChannels.length === 0 && channelLoading) {
       return <ListLoader />;
     } else if (filteredChannels.length > 0) {

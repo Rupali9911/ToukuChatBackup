@@ -203,13 +203,15 @@ export default class GroupChatMessageBox extends Component {
             {
               maxWidth:
                 message.message_body && message.message_body.type === 'text'
-                  ? width * 0.77
+                  ? isMultiSelect
+                    ? width * 0.60
+                    : width * 0.67
                   : message.message_body &&
                     message.message_body.type === 'image'
-                  ? isMultiSelect
-                    ? width - 80
-                    : width - 40
-                  : width * 0.65,
+                    ? isMultiSelect
+                      ? width - 80
+                      : width - 40
+                    : width * 0.65,
               justifyContent: 'flex-start',
             },
           ]}>
@@ -300,11 +302,11 @@ export default class GroupChatMessageBox extends Component {
                   style={{
                     marginHorizontal: '1.5%',
                     alignItems: 'center',
-                    marginVertical:
-                      message.message_body &&
-                      message.message_body.type === 'image'
-                        ? 0
-                        : 15,
+                    // marginVertical:
+                    //   message.message_body &&
+                    //   message.message_body.type === 'image'
+                    //     ? 0
+                    //     : 15,
                     alignSelf: 'flex-end',
                     paddingBottom: 5,
                   }}>
@@ -371,7 +373,7 @@ export default class GroupChatMessageBox extends Component {
                   style={{
                     marginHorizontal: '1.5%',
                     alignItems: 'center',
-                    marginVertical: 15,
+                    // marginTop: 15,
                     alignSelf: 'flex-end',
                     paddingBottom: 5,
                   }}>

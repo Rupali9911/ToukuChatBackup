@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import {Menu} from 'react-native-paper';
 import {Colors, Fonts, Icons} from '../constants';
 import {globalStyles} from '../styles';
+import { normalize } from '../utils';
 const {width, height} = Dimensions.get('window');
 
 export default class ButtonWithArrow extends Component {
@@ -21,6 +22,7 @@ export default class ButtonWithArrow extends Component {
     super(props);
     this.state = {
       visible: false,
+      viewWidth: 0
     };
   }
 
@@ -121,15 +123,15 @@ export default class ButtonWithArrow extends Component {
                 justifyContent: 'center',
                 alignItems: 'center',
                 minWidth: '100%',
-                height: isSmall ? 40 : 30,
+                height: isSmall ? 40 : height,
               },
               index === 0 && {
-                borderTopWidth: 1,
+                borderTopWidth: 0,
                 borderColor: this.getBorderColor(),
               },
               index === dropDownData.length - 1 && {
-                borderBottomStartRadius: 15,
-                borderBottomEndRadius: 15,
+                borderBottomStartRadius: height/2,
+                borderBottomEndRadius: height/2,
               },
             ]}
             titleStyle={[
@@ -137,6 +139,7 @@ export default class ButtonWithArrow extends Component {
               {
                 color: Colors.gradient_3,
                 width: '100%',
+                fontSize: normalize(12)
               },
             ]}
             title={item.title}
@@ -150,9 +153,13 @@ export default class ButtonWithArrow extends Component {
     };
 
     return (
+      <View onLayout={(event) => {
+        var {x, y, width, height} = event.nativeEvent.layout;
+        this.setState({viewWidth: width})
+      }} >
       <Menu
         style={{
-          marginTop: Platform.OS === 'android' ? 34 : 5,
+          marginTop: Platform.OS === 'android' ? normalize(35) : 5,
           backgroundColor: 'transprent',
         }}
         contentStyle={{
@@ -161,8 +168,9 @@ export default class ButtonWithArrow extends Component {
           backgroundColor: 'transprent',
           borderWidth: 1.5,
           paddingVertical: 0,
+          paddingHorizontal: 0,
           alignSelf: 'flex-end',
-          width: '48.5%',
+          width: this.state.viewWidth,
           elevation: 0,
         }}
         theme={{animation: {scale: 0}}}
@@ -184,7 +192,7 @@ export default class ButtonWithArrow extends Component {
                 styles.linearGradient,
                 {
                   height: height,
-                  borderRadius: isRounded ? 30 / 2 : 4,
+                  borderRadius: isRounded ? height/2 : 4,
                   borderColor: this.getBorderColor(),
                   opacity: disabled ? 0.5 : 1,
                   // width: '100%',
@@ -209,7 +217,7 @@ export default class ButtonWithArrow extends Component {
                   <Text
                     style={[
                       globalStyles.normalRegularText,
-                      {color: this.getTitleColor(), flex: 0.9, fontSize: 14},
+                      {color: this.getTitleColor(), flex: 1, fontSize: normalize(12)},
                     ]}
                     adjustsFontSizeToFit>
                     {title[0].toUpperCase() + title.slice(1)}
@@ -229,17 +237,19 @@ export default class ButtonWithArrow extends Component {
         <Menu.Item
           style={[
             {
-              height: 30,
+              height: normalize(24),
               backgroundColor: 'transprent',
               borderTopStartRadius: 10,
               borderTopEndRadius: 10,
               minWidth: '100%',
+              borderWidth: 0
             },
           ]}
           onPress={() => this.setState({visible: false})}
         />
         {renderMenu(dropDownData)}
       </Menu>
+      </View>
     );
   }
 }

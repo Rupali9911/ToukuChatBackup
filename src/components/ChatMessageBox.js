@@ -198,19 +198,21 @@ export default class ChatMessageBox extends Component {
             {
               maxWidth:
                 message.msg_type === 'text'
-                  ? width * 0.77
-                  : message.msg_type === 'image'
                   ? isMultiSelect
-                    ? width - 80
-                    : width - 40
-                  : width * 0.65,
+                    ? width * 0.60
+                    : width * 0.67
+                  : message.msg_type === 'image'
+                    ? isMultiSelect
+                      ? width - 80
+                      : width - 40
+                    : width * 0.65,
               justifyContent: 'flex-start',
             },
           ]}>
           <View
             style={{
               alignItems: 'flex-start',
-              marginVertical: message.msg_type === 'image' ? 0 : 5,
+              // marginVertical: message.msg_type === 'image' ? 0 : 5,
             }}>
             <View
               style={{
@@ -246,7 +248,7 @@ export default class ChatMessageBox extends Component {
                         styles.squareImage,
                         {
                           marginHorizontal: 0,
-                          marginTop: 10,
+                          // marginTop: 10,
                           marginRight: 5,
                         },
                       ]}>
@@ -278,7 +280,7 @@ export default class ChatMessageBox extends Component {
                       height: 40,
                       borderRadius: 20,
                       resizeMode: 'cover',
-                      marginTop: 10,
+                      // marginTop: 10,
                       marginRight: 5,
                     }}
                   />
@@ -289,6 +291,7 @@ export default class ChatMessageBox extends Component {
                   alignItems: 'flex-end',
                   flexDirection:
                     message.msg_type === 'image' ? 'column' : 'row',
+                    marginTop: 2
                 }}>
                 <ChatMessageBubble
                   message={message}
@@ -318,7 +321,7 @@ export default class ChatMessageBox extends Component {
                   style={{
                     marginHorizontal: '1.5%',
                     alignItems: 'center',
-                    marginVertical: message.msg_type === 'image' ? 0 : 15,
+                    // marginVertical: message.msg_type === 'image' ? 0 : 15,
                     alignSelf: 'flex-end',
                     paddingBottom: 5,
                   }}>
@@ -380,7 +383,7 @@ export default class ChatMessageBox extends Component {
                     style={{
                       marginHorizontal: '1.5%',
                       alignItems: 'center',
-                      marginVertical: 15,
+                      // marginVertical: 15,
                       alignSelf: 'flex-end',
                       paddingBottom: 5,
                     }}>

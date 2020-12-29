@@ -64,7 +64,7 @@ export default class ChatHeader extends Component {
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
-    console.log('group_picture', image);
+    // console.log('group_picture', image);
     return (
       <View style={styles.headerContainer}>
         <ImageBackground
