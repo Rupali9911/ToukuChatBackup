@@ -58,16 +58,43 @@ export const userLogin = (user) => (dispatch) =>
     client
       .post(`/xchat/api-token-auth-touku/`, user)
       .then((res) => {
+          console.log('Login response', res);
         if (res.token) {
           AsyncStorage.setItem('userToken', res.token);
           dispatch(getLoginSuccess());
-        } else {
-          dispatch(getLoginFailure());
+        } else if (res.message) {
+            if (res.params){
+                console.log('res.params.value', res.params.value)
+                Toast.show({
+                    title: translate('common.loginFailed'),
+                    text: translate(res.message.toString()).replace(
+                        '[missing {{value}} value]',res.params.value),
+                    type: 'primary',
+                });
+                // if (res.params.failed_attempt >= 10 ){
+                //
+                // }
+            } else{
+                Toast.show({
+                    title: translate('common.loginFailed'),
+                    text: translate(res.message.toString()),
+                    type: 'primary',
+                });
+            }
+        }else if (res.user) {
+            Toast.show({
+                title: translate('common.loginFailed'),
+                text: translate(res.user.toString()).replace(
+                    '[missing {{field}} value]',
+                    translate('pages.setting.oldPassword')),
+                type: 'primary',
+            });
         }
+          dispatch(getLoginFailure());
         resolve(res);
       })
       .catch((err) => {
-        dispatch(getLoginFailure());
+        //dispatch(getLoginFailure());
         if (err.response) {
           if (err.response.data) {
             console.log('err.response.data', err.response.data);

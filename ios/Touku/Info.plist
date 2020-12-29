@@ -138,6 +138,8 @@
 	<string>App requires to access your file to documents files</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App requires to access your location for better user experience</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>$(PRODUCT_NAME)</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App requires to access your photo library to show image on profile and send via chat</string>
 	<key>UIAppFonts</key>
@@ -192,9 +194,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

@@ -30,6 +30,7 @@ class Toast extends Component {
   static toastInstance;
 
   static show({...config}) {
+    console.log('config', config)
     this.toastInstance.start(config);
   }
 
