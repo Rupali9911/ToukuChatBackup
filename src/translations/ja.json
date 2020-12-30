@@ -1069,7 +1069,8 @@
       "followCode":"チャネルフォローコード",
       "enterFollowCode": "チャンネルIDを入力ください",
       "wrongFollowCode":"間違ったチャンネルフォローコード",
-      "referralOneField3": "※チャンネルID:"
+      "referralOneField3": "※チャンネルID:",
+      "referralOneField": "こちらのチャンネルIDは"
     },
     "changeDisplayName": "表示名を変更"
   },

@@ -1068,7 +1068,8 @@
       "followCode":"頻道追踪代碼",
       "enterFollowCode": "輸入頻道追踪碼",
       "wrongFollowCode":"錯誤的頻道追踪碼",
-      "referralOneField3":"*頻道ID："
+      "referralOneField3":"*頻道ID：",
+      "referralOneField": "該通道ID為"
     },
     "changeDisplayName": "更改顯示名稱"
   },

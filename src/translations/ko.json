@@ -1069,7 +1069,8 @@
       "followCode":"채널 팔로우 코드",
       "enterFollowCode": "채널 팔로우 코드 입력",
       "wrongFollowCode": "잘못된 채널 팔로우 코드",
-      "referralOneField3":"※ 채널 ID :"
+      "referralOneField3":"※ 채널 ID :",
+      "referralOneField": "여기의 채널 ID는"
     },
     "changeDisplayName": "\ud45c\uc2dc \uc774\ub984 \ubcc0\uacbd"
   },
