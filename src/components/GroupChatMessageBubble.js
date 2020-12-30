@@ -234,7 +234,8 @@ class GroupChatMessageBubble extends Component {
                   {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You' */}
                   {/* :  */}
-                  {getUserName(replyMessage.sender_id) || replyMessage.display_name}
+                  {getUserName(replyMessage.sender_id) ||
+                    replyMessage.display_name}
                   {/* } */}
                   {/* {replyMessage.sender_id === this.props.userData.id
                 ? 'You'
@@ -256,7 +257,10 @@ class GroupChatMessageBubble extends Component {
                     size={50}
                   />
                 ) : replyMessage.msg_type === 'video' ? (
-                  <VideoThumbnailPlayer url={replyMessage.message} showPlayButton/>
+                  <VideoThumbnailPlayer
+                    url={replyMessage.message}
+                    showPlayButton
+                  />
                 ) : replyMessage.msg_type === 'audio' ? (
                   <Fragment>
                     <Text

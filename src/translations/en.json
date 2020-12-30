@@ -1067,7 +1067,8 @@
       "followCode":"Channel follow code",
       "enterFollowCode": "Enter channel follow code",
       "wrongFollowCode":"Wrong channel follow code",
-      "referralOneField3":"* Channel ID:"
+      "referralOneField3":"* Channel ID:",
+      "referralOneField": "This channel ID is"
     },
     "changeDisplayName": "Change Display Name"
   },

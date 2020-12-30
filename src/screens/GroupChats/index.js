@@ -1,19 +1,19 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   ImageBackground,
   Dimensions,
   Platform,
   PermissionsAndroid,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
 import RNFetchBlob from 'rn-fetch-blob';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 
-import { ChatHeader } from '../../components/Headers';
-import { globalStyles } from '../../styles';
+import {ChatHeader} from '../../components/Headers';
+import {globalStyles} from '../../styles';
 import {
   Colors,
   Fonts,
@@ -33,7 +33,7 @@ import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
-import { setCommonChatConversation } from '../../redux/reducers/commonReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   getGroupConversation,
   getUserGroups,
@@ -58,8 +58,8 @@ import {
   unpinGroup,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
-import { ListLoader, UploadLoader, OpenLoader } from '../../components/Loaders';
-import { eventService } from '../../utils';
+import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
+import {eventService} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -76,7 +76,7 @@ import {
   setGroupLastMessageUnsend,
   updateGroupsWhenPined,
   updateGroupsWhenUnpined,
-  updateGroupTranslatedMessage
+  updateGroupTranslatedMessage,
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -101,7 +101,7 @@ class GroupChats extends Component {
       showGalleryModal: false,
       sendingMedia: false,
       isLeaveLoading: false,
-      uploadFile: { uri: null, type: null, name: null },
+      uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
       isChatLoading: false,
       isMultiSelect: false,
@@ -110,191 +110,191 @@ class GroupChats extends Component {
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
-            {
-              id: 1,
-              title: translate('pages.xchat.inviteFriends'),
-              icon: Icons.man_plus_icon_black,
-              isLocalIcon: true,
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails', {
-                  isInvite: true,
-                });
+              {
+                id: 1,
+                title: translate('pages.xchat.inviteFriends'),
+                icon: Icons.man_plus_icon_black,
+                isLocalIcon: true,
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {
+                    isInvite: true,
+                  });
+                },
               },
-            },
-            {
-              id: 2,
-              title: translate('pages.xchat.groupDetails'),
-              icon: 'bars',
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails');
+              {
+                id: 2,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+                },
               },
-            },
-            {
-              id: 3,
-              title: translate('pages.xchat.leave'),
-              icon: 'user-slash',
-              onPress: () => {
-                this.toggleLeaveGroupConfirmationModal();
+              {
+                id: 3,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+                },
               },
-            },
-            {
-              id: 4,
-              title: translate('pages.xchat.reportGroup'),
-              icon: 'user-slash',
-              onPress: () => {
-                Toast.show({
-                  title: 'Touku',
-                  text: 'Group reported',
-                  type: 'positive',
-                });
+              {
+                id: 4,
+                title: translate('pages.xchat.reportGroup'),
+                icon: 'user-slash',
+                onPress: () => {
+                  Toast.show({
+                    title: 'Touku',
+                    text: 'Group reported',
+                    type: 'positive',
+                  });
+                },
               },
-            },
-            {
-              id: 5,
-              pinUnpinItem: true,
-              onPress: () => {
-                this.onPinUnpinGroup();
+              {
+                id: 5,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
               },
-            },
-          ]
+            ]
           : [
-            {
-              id: 1,
-              title: translate('pages.xchat.inviteFriends'),
-              icon: Icons.man_plus_icon_black,
-              isLocalIcon: true,
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails', {
-                  isInvite: true,
-                });
+              {
+                id: 1,
+                title: translate('pages.xchat.inviteFriends'),
+                icon: Icons.man_plus_icon_black,
+                isLocalIcon: true,
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {
+                    isInvite: true,
+                  });
+                },
               },
-            },
-            {
-              id: 2,
-              title: translate('pages.xchat.groupDetails'),
-              icon: 'bars',
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails');
+              {
+                id: 2,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+                },
               },
-            },
-            {
-              id: 3,
-              title: translate('pages.xchat.leave'),
-              icon: 'user-slash',
-              onPress: () => {
-                this.toggleLeaveGroupConfirmationModal();
+              {
+                id: 3,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+                },
               },
-            },
-            {
-              id: 4,
-              pinUnpinItem: true,
-              onPress: () => {
-                this.onPinUnpinGroup();
+              {
+                id: 4,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
               },
-            },
-          ],
+            ],
       headerRightIconMenuIsGroup:
         this.props.userData.id === appleStoreUserId
           ? [
-            {
-              id: 1,
-              title: translate('pages.xchat.inviteFriends'),
-              icon: Icons.man_plus_icon_black,
-              isLocalIcon: true,
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails', {
-                  isInvite: true,
-                });
+              {
+                id: 1,
+                title: translate('pages.xchat.inviteFriends'),
+                icon: Icons.man_plus_icon_black,
+                isLocalIcon: true,
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {
+                    isInvite: true,
+                  });
+                },
               },
-            },
-            {
-              id: 2,
-              title: translate('pages.xchat.groupDetails'),
-              icon: 'bars',
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails');
+              {
+                id: 2,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+                },
               },
-            },
-            {
-              id: 3,
-              title: translate('pages.xchat.deleteGroup'),
-              icon: 'trash',
-              onPress: () => {
-                this.toggleDeleteGroupConfirmationModal();
+              {
+                id: 3,
+                title: translate('pages.xchat.deleteGroup'),
+                icon: 'trash',
+                onPress: () => {
+                  this.toggleDeleteGroupConfirmationModal();
+                },
               },
-            },
-            {
-              id: 4,
-              title: translate('pages.xchat.leave'),
-              icon: 'user-slash',
-              onPress: () => {
-                this.toggleLeaveGroupConfirmationModal();
+              {
+                id: 4,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+                },
               },
-            },
-            {
-              id: 5,
-              title: translate('pages.xchat.reportGroup'),
-              icon: 'user-slash',
-              onPress: () => {
-                Toast.show({
-                  title: 'Touku',
-                  text: 'Group reported',
-                  type: 'positive',
-                });
+              {
+                id: 5,
+                title: translate('pages.xchat.reportGroup'),
+                icon: 'user-slash',
+                onPress: () => {
+                  Toast.show({
+                    title: 'Touku',
+                    text: 'Group reported',
+                    type: 'positive',
+                  });
+                },
               },
-            },
-            {
-              id: 6,
-              pinUnpinItem: true,
-              onPress: () => {
-                this.onPinUnpinGroup();
+              {
+                id: 6,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
               },
-            },
-          ]
+            ]
           : [
-            {
-              id: 1,
-              title: translate('pages.xchat.inviteFriends'),
-              icon: Icons.man_plus_icon_black,
-              isLocalIcon: true,
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails', {
-                  isInvite: true,
-                });
+              {
+                id: 1,
+                title: translate('pages.xchat.inviteFriends'),
+                icon: Icons.man_plus_icon_black,
+                isLocalIcon: true,
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails', {
+                    isInvite: true,
+                  });
+                },
               },
-            },
-            {
-              id: 2,
-              title: translate('pages.xchat.groupDetails'),
-              icon: 'bars',
-              onPress: () => {
-                this.props.navigation.navigate('GroupDetails');
+              {
+                id: 2,
+                title: translate('pages.xchat.groupDetails'),
+                icon: 'bars',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupDetails');
+                },
               },
-            },
-            {
-              id: 3,
-              title: translate('pages.xchat.deleteGroup'),
-              icon: 'trash',
-              onPress: () => {
-                this.toggleDeleteGroupConfirmationModal();
+              {
+                id: 3,
+                title: translate('pages.xchat.deleteGroup'),
+                icon: 'trash',
+                onPress: () => {
+                  this.toggleDeleteGroupConfirmationModal();
+                },
               },
-            },
-            {
-              id: 4,
-              title: translate('pages.xchat.leave'),
-              icon: 'user-slash',
-              onPress: () => {
-                this.toggleLeaveGroupConfirmationModal();
+              {
+                id: 4,
+                title: translate('pages.xchat.leave'),
+                icon: 'user-slash',
+                onPress: () => {
+                  this.toggleLeaveGroupConfirmationModal();
+                },
               },
-            },
-            {
-              id: 5,
-              pinUnpinItem: true,
-              onPress: () => {
-                this.onPinUnpinGroup();
+              {
+                id: 5,
+                pinUnpinItem: true,
+                onPress: () => {
+                  this.onPinUnpinGroup();
+                },
               },
-            },
-          ],
+            ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
@@ -307,7 +307,7 @@ class GroupChats extends Component {
   }
 
   onPinUnpinGroup = () => {
-    const { userData, currentGroup } = this.props;
+    const {userData, currentGroup} = this.props;
     const data = {};
     if (currentGroup.is_pined) {
       this.props
@@ -351,8 +351,8 @@ class GroupChats extends Component {
   };
 
   onMessageSend = async () => {
-    const { newMessageText, editMessageId, conversation } = this.state;
-    const { userData, currentGroup, currentGroupMembers } = this.props;
+    const {newMessageText, editMessageId, conversation} = this.state;
+    const {userData, currentGroup, currentGroupMembers} = this.props;
     let splitNewMessageText = newMessageText.split(' ');
     let newMessageMentions = [];
     const newMessageTextWithMention = splitNewMessageText
@@ -389,7 +389,7 @@ class GroupChats extends Component {
       isEdited: false,
       sentMessageType: 'text',
       // sendingMedia: false,
-      uploadFile: { uri: null, type: null, name: null },
+      uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
     });
     if (sentMessageType === 'image') {
@@ -399,7 +399,7 @@ class GroupChats extends Component {
         files,
         (e) => {
           console.log('progress_bar_percentage', e);
-          this.setState({ uploadProgress: e.percent });
+          this.setState({uploadProgress: e.percent});
         },
       );
       msgText = uploadedImages.image[0].image;
@@ -412,7 +412,7 @@ class GroupChats extends Component {
         uploadFile.type,
         (e) => {
           console.log('progress_bar_percentage', e);
-          this.setState({ uploadProgress: e.percent });
+          this.setState({uploadProgress: e.percent});
         },
       );
       msgText = uploadedAudio;
@@ -426,7 +426,7 @@ class GroupChats extends Component {
         uploadFile.type,
         (e) => {
           console.log('progress_bar_percentage', e);
-          this.setState({ uploadProgress: e.percent });
+          this.setState({uploadProgress: e.percent});
         },
       );
       msgText = uploadedApplication;
@@ -443,7 +443,7 @@ class GroupChats extends Component {
           uploadFile.type,
           (e) => {
             console.log('progress_bar_percentage', e);
-            this.setState({ uploadProgress: e.percent });
+            this.setState({uploadProgress: e.percent});
           },
         );
         msgText = uploadedVideo;
@@ -464,14 +464,14 @@ class GroupChats extends Component {
       timestamp: moment().format(),
       reply_to: isReply
         ? {
-          display_name: repliedMessage.sender_display_name,
-          id: repliedMessage.msg_id,
-          mentions: repliedMessage.mentions,
-          message: repliedMessage.message_body.text,
-          msg_type: repliedMessage.message_body.type,
-          name: repliedMessage.sender_username,
-          sender_id: repliedMessage.sender_id,
-        }
+            display_name: repliedMessage.sender_display_name,
+            id: repliedMessage.msg_id,
+            mentions: repliedMessage.mentions,
+            message: repliedMessage.message_body.text,
+            msg_type: repliedMessage.message_body.type,
+            name: repliedMessage.sender_username,
+            sender_id: repliedMessage.sender_id,
+          }
         : null,
       mentions: [...newMessageMentions],
       read_count: null,
@@ -658,7 +658,7 @@ class GroupChats extends Component {
         } else if (
           result['android.permission.READ_EXTERNAL_STORAGE'] ||
           result['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-          'never_ask_again'
+            'never_ask_again'
         ) {
           return false;
         }
@@ -686,7 +686,7 @@ class GroupChats extends Component {
 
   onReply = (messageId) => {
     // const { conversation } = this.state;
-    const { chatGroupConversation } = this.props;
+    const {chatGroupConversation} = this.props;
 
     const repliedMessage = chatGroupConversation.find(
       (item) => item.msg_id === messageId,
@@ -706,7 +706,7 @@ class GroupChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
 
     // this.events = eventService.getMessage().subscribe((message) => {
     //   this.checkEventTypes(message);
@@ -750,12 +750,12 @@ class GroupChats extends Component {
   };
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   checkEventTypes(message) {
-    const { currentGroup, userData } = this.props;
-    const { conversation } = this.state;
+    const {currentGroup, userData} = this.props;
+    const {conversation} = this.state;
 
     // console.log('event_msg', JSON.stringify(message));
 
@@ -853,7 +853,7 @@ class GroupChats extends Component {
   }
 
   markGroupConversationRead() {
-    let data = { group_id: this.props.currentGroup.group_id };
+    let data = {group_id: this.props.currentGroup.group_id};
     this.props.markGroupConversationRead(data);
   }
 
@@ -896,8 +896,8 @@ class GroupChats extends Component {
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&
-              b.timestamp &&
-              new Date(a.timestamp) < new Date(b.timestamp)
+            b.timestamp &&
+            new Date(a.timestamp) < new Date(b.timestamp)
               ? 1
               : -1,
           );
@@ -939,7 +939,7 @@ class GroupChats extends Component {
   };
 
   getGroupConversationInitial = async () => {
-    this.setState({ isChatLoading: true });
+    this.setState({isChatLoading: true});
     let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
     if (chat) {
       let conversations = [];
@@ -977,8 +977,8 @@ class GroupChats extends Component {
           let data = res.data;
           data.sort((a, b) =>
             a.timestamp &&
-              b.timestamp &&
-              new Date(a.timestamp) < new Date(b.timestamp)
+            b.timestamp &&
+            new Date(a.timestamp) < new Date(b.timestamp)
               ? 1
               : -1,
           );
@@ -1011,7 +1011,7 @@ class GroupChats extends Component {
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
-          this.setState({ isChatLoading: false });
+          this.setState({isChatLoading: false});
           this.markGroupConversationRead();
         }
       })
@@ -1027,7 +1027,7 @@ class GroupChats extends Component {
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
-            this.setState({ isMyGroup: true });
+            this.setState({isMyGroup: true});
           }
         }
       })
@@ -1063,7 +1063,7 @@ class GroupChats extends Component {
   };
 
   handleMessage(message) {
-    this.setState({ newMessageText: message });
+    this.setState({newMessageText: message});
   }
 
   //Leave Group
@@ -1081,7 +1081,7 @@ class GroupChats extends Component {
     } else {
       array.push(id + '');
     }
-    this.setState({ selectedIds: array });
+    this.setState({selectedIds: array});
   };
 
   onConfirmLeaveGroup = async () => {
@@ -1089,7 +1089,7 @@ class GroupChats extends Component {
       return;
     }
     this.isLeaveLoading = true;
-    await this.setState({ isLeaveLoading: true });
+    await this.setState({isLeaveLoading: true});
     const payload = {
       group_id: this.props.currentGroup.group_id,
     };
@@ -1107,7 +1107,7 @@ class GroupChats extends Component {
           this.props.navigation.goBack();
         }
         this.isLeaveLoading = false;
-        this.setState({ isLeaveLoading: false });
+        this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       })
       .catch((err) => {
@@ -1117,7 +1117,7 @@ class GroupChats extends Component {
           type: 'primary',
         });
         this.isLeaveLoading = false;
-        this.setState({ isLeaveLoading: false });
+        this.setState({isLeaveLoading: false});
         this.toggleLeaveGroupConfirmationModal();
       });
   };
@@ -1134,7 +1134,7 @@ class GroupChats extends Component {
       return;
     }
     this.isLeaveLoading = true;
-    await this.setState({ isLeaveLoading: true });
+    await this.setState({isLeaveLoading: true});
     this.props
       .deleteGroup(this.props.currentGroup.group_id)
       .then((res) => {
@@ -1149,7 +1149,7 @@ class GroupChats extends Component {
           this.props.navigation.goBack();
         }
         this.isLeaveLoading = false;
-        this.setState({ isLeaveLoading: false });
+        this.setState({isLeaveLoading: false});
         this.toggleDeleteGroupConfirmationModal();
       })
       .catch((err) => {
@@ -1159,7 +1159,7 @@ class GroupChats extends Component {
           type: 'primary',
         });
         this.isLeaveLoading = false;
-        this.setState({ isLeaveLoading: false });
+        this.setState({isLeaveLoading: false});
         this.toggleDeleteGroupConfirmationModal();
       });
   };
@@ -1191,9 +1191,9 @@ class GroupChats extends Component {
   };
 
   onConfirmMessageDelete = () => {
-    this.setState({ showMessageDeleteConfirmationModal: false });
+    this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedMessageId != null) {
-      let payload = { delete_type: 1 };
+      let payload = {delete_type: 1};
       this.props
         .unSendGroupMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -1228,9 +1228,9 @@ class GroupChats extends Component {
   };
 
   onConfirmMultipleMessageDelete = () => {
-    this.setState({ showMessageDeleteConfirmationModal: false });
+    this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
-      let payload = { message_ids: this.state.selectedIds };
+      let payload = {message_ids: this.state.selectedIds};
 
       this.state.selectedIds.map((item) => {
         deleteGroupMessageById(item);
@@ -1257,7 +1257,7 @@ class GroupChats extends Component {
         }
       });
       this.getLocalGroupConversation();
-      this.setState({ isMultiSelect: false, selectedIds: [] });
+      this.setState({isMultiSelect: false, selectedIds: []});
 
       this.props.deleteMultipleGroupMessage(payload).then((res) => {
         if (res && res.status) {
@@ -1270,9 +1270,9 @@ class GroupChats extends Component {
   };
 
   onConfirmMessageUnSend = () => {
-    this.setState({ showMessageUnsendConfirmationModal: false });
+    this.setState({showMessageUnsendConfirmationModal: false});
     if (this.state.selectedMessageId != null) {
-      let payload = { delete_type: 2 };
+      let payload = {delete_type: 2};
       this.props
         .unSendGroupMessage(this.state.selectedMessageId, payload)
         .then((res) => {
@@ -1337,7 +1337,7 @@ class GroupChats extends Component {
       includeBase64: true,
       mediaType: 'photo',
     }).then((image) => {
-      let source = { uri: 'data:image/jpeg;base64,' + image.data };
+      let source = {uri: 'data:image/jpeg;base64,' + image.data};
       this.setState({
         uploadFile: source,
         sentMessageType: 'image',
@@ -1362,7 +1362,7 @@ class GroupChats extends Component {
   };
 
   onUrlUpload = (url) => {
-    this.setState({ uploadedFiles: [...this.state.uploadedFiles, url] });
+    this.setState({uploadedFiles: [...this.state.uploadedFiles, url]});
   };
 
   onAttachmentPress = async () => {
@@ -1464,7 +1464,7 @@ class GroupChats extends Component {
           uri: file.path,
           type: file.mime,
           name: null,
-          isUrl: file.isUrl
+          isUrl: file.isUrl,
         };
         await this.setState(
           {
@@ -1496,7 +1496,7 @@ class GroupChats extends Component {
     // this.toggleAttachmentModal(false);
     for (const res of this.state.uploadedFiles) {
       let fileType = res.type.substr(0, res.type.indexOf('/'));
-      let source = { uri: res.uri, type: res.type, name: res.name };
+      let source = {uri: res.uri, type: res.type, name: res.name};
       if (fileType === 'audio') {
         await this.setState(
           {
@@ -1543,7 +1543,7 @@ class GroupChats extends Component {
           length === 1
             ? prevState.newMessageText
             : prevState.newMessageText.slice(0, -length + 1)
-          }${selectedMention.display_name}`,
+        }${selectedMention.display_name}`,
       };
     });
   };
@@ -1575,6 +1575,9 @@ class GroupChats extends Component {
       groupLoading,
       currentGroupMembers,
     } = this.props;
+
+    console.log('currentGroupDetail', currentGroupDetail);
+
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1608,49 +1611,50 @@ class GroupChats extends Component {
         {isChatLoading && chatGroupConversation.length <= 0 ? (
           <ListLoader />
         ) : (
-            <GroupChatContainer
-              memberCount={currentGroupDetail.total_members}
-              handleMessage={(message) => this.handleMessage(message)}
-              onMessageSend={this.onMessageSend}
-              onMessageReply={(id) => this.onReply(id)}
-              newMessageText={newMessageText}
-              messages={chatGroupConversation}
-              orientation={orientation}
-              repliedMessage={repliedMessage}
-              isReply={isReply}
-              cancelReply={this.cancelReply.bind(this)}
-              onDelete={(id) => {
-                this.setState({
-                  isMultiSelect: true,
-                  selectedIds: [...this.state.selectedIds, id + ''],
-                });
-                // this.onDeleteMessagePressed(id)
-              }}
-              onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
-              onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
-              onEditMessage={(msg) => this.onEdit(msg)}
-              onDownloadMessage={(msg) => this.onDownload(msg)}
-              onMessageTranslateClose={this.onMessageTranslateClose}
-              translatedMessage={translatedMessage}
-              translatedMessageId={translatedMessageId}
-              onCameraPress={() => this.onCameraPress()}
-              onGalleryPress={() => this.toggleGalleryModal(true)}
-              onAttachmentPress={() => this.onAttachmentPress()}
-              sendingImage={uploadFile}
-              currentGroupDetail={currentGroupDetail}
-              groupMembers={currentGroupMembers}
-              useMentionsFunctionality={true}
-              onSelectMention={this.onSelectMention}
-              isMultiSelect={isMultiSelect}
-              onSelect={this.onSelectChatConversation}
-              selectedIds={this.state.selectedIds}
-              onSelectedCancel={() => {
-                this.setState({ isMultiSelect: false, selectedIds: [] });
-              }}
-              onSelectedDelete={this.onDeleteMultipleMessagePressed}
-              showOpenLoader={(isLoading) => this.setState({ openDoc: isLoading })}
-            />
-          )}
+          <GroupChatContainer
+            memberCount={currentGroupDetail.total_members}
+            handleMessage={(message) => this.handleMessage(message)}
+            onMessageSend={this.onMessageSend}
+            onMessageReply={(id) => this.onReply(id)}
+            newMessageText={newMessageText}
+            messages={chatGroupConversation}
+            orientation={orientation}
+            repliedMessage={repliedMessage}
+            isReply={isReply}
+            cancelReply={this.cancelReply.bind(this)}
+            onDelete={(id) => {
+              this.setState({
+                isMultiSelect: true,
+                selectedIds: [...this.state.selectedIds, id + ''],
+              });
+              // this.onDeleteMessagePressed(id)
+            }}
+            onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
+            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onEditMessage={(msg) => this.onEdit(msg)}
+            onDownloadMessage={(msg) => this.onDownload(msg)}
+            onMessageTranslateClose={this.onMessageTranslateClose}
+            translatedMessage={translatedMessage}
+            translatedMessageId={translatedMessageId}
+            onCameraPress={() => this.onCameraPress()}
+            onGalleryPress={() => this.toggleGalleryModal(true)}
+            onAttachmentPress={() => this.onAttachmentPress()}
+            sendingImage={uploadFile}
+            currentGroupDetail={currentGroupDetail}
+            groupMembers={currentGroupMembers}
+            useMentionsFunctionality={true}
+            onSelectMention={this.onSelectMention}
+            isMultiSelect={isMultiSelect}
+            onSelect={this.onSelectChatConversation}
+            selectedIds={this.state.selectedIds}
+            onSelectedCancel={() => {
+              this.setState({isMultiSelect: false, selectedIds: []});
+            }}
+            onSelectedDelete={this.onDeleteMultipleMessagePressed}
+            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
+            isChatDisable={currentGroupDetail.is_group_member}
+          />
+        )}
 
         <ConfirmationModal
           orientation={orientation}
@@ -1701,7 +1705,7 @@ class GroupChats extends Component {
           toggleGalleryModal={this.toggleGalleryModal}
           data={this.state.uploadedFiles}
           onCancel={() => {
-            this.setState({ uploadedFiles: [] });
+            this.setState({uploadedFiles: []});
             this.toggleGalleryModal(false);
           }}
           onUpload={() => this.uploadAndSend()}
@@ -1716,7 +1720,7 @@ class GroupChats extends Component {
           toggleAttachmentModal={this.toggleAttachmentModal}
           data={this.state.uploadedFiles}
           onCancel={() => {
-            this.setState({ uploadedFiles: [] });
+            this.setState({uploadedFiles: []});
             this.toggleAttachmentModal(false);
           }}
           onUpload={() => this.uploadAndSendAttachment()}
