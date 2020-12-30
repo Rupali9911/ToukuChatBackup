@@ -1235,11 +1235,13 @@ class FriendChats extends Component {
           DocumentPicker.types.csv,
           DocumentPicker.types.zip,
           DocumentPicker.types.audio,
+            DocumentPicker.types.allFiles,
         ],
       });
       this.setState({
         uploadedFiles: [...this.state.uploadedFiles, ...results],
       });
+      console.log('results', results)
       this.toggleAttachmentModal(true);
       // for (const res of results) {
       //   let fileType = res.type.substr(0, res.type.indexOf('/'));

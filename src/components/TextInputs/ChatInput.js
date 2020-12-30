@@ -106,15 +106,15 @@ export default class ChatInput extends Component {
     let suggestionRowHeight;
     // groupMembersLength = this.groupMembersMentions(value).length;
     groupMembersLength = this.state.suggestionData.length;
-    console.log('render -> groupMembersLength', groupMembersLength);
+    // console.log('render -> groupMembersLength', groupMembersLength);
     suggestionRowHeight =
       groupMembersLength < 11
         ? groupMembersLength * normalize(22) + 5
         : normalize(220) + 5;
-    console.log(
-      'suggestionsDataHeight -> suggestionRowHeight',
-      suggestionRowHeight,
-    );
+    // console.log(
+    //   'suggestionsDataHeight -> suggestionRowHeight',
+    //   suggestionRowHeight,
+    // );
     return suggestionRowHeight;
   };
 
@@ -149,7 +149,6 @@ export default class ChatInput extends Component {
     if (value.length === 0) {
       this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
     }
-    console.log('update');
     return (
       <View
         style={{

@@ -261,6 +261,7 @@ class Chat extends Component {
 
       this.props.getFollowingChannels().then((res) => {
         // this.setCommonConversation();
+        console.log('channel_api_response');
         channelLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
           if (this.props.commonChat.length) {
@@ -552,7 +553,7 @@ class Chat extends Component {
         this.updateChannelDetail(message);
         break;
       case SocketEvents.CREATE_NEW_CHANNEL:
-        this.createNewChannel(message);
+        // this.createNewChannel(message);
         break;
       case SocketEvents.FRIEND_DISPLAY_NAME_DATA:
         this.onFriendDisplayNameUpdate(message);
@@ -837,7 +838,6 @@ class Chat extends Component {
       );
       if (channel && channel.length > 0) {
         updateReadByChannelId(message.text.data.message_details.channel_id, 0);
-
         this.props.getLocalFollowingChannels().then((res) => {
           this.props.setCommonChatConversation();
         });
@@ -1978,7 +1978,7 @@ class Chat extends Component {
   }
 
   onMuteGroup(message) {
-    const {userGroups, userData} = this.props;
+    const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.MUTE_GROUP) {
       var result = getGroupsById(message.text.data.message_details.group_id);
       let group = result.toJSON();
@@ -2432,7 +2432,8 @@ class Chat extends Component {
     this.props
       .getGroupMembers(this.props.currentGroup.group_id)
       .then((res) => {
-        this.props.setCurrentGroupMembers(res.results);
+        console.log('res_getGroupMembers',JSON.stringify(res));
+        this.props.setCurrentGroupMembers(res);
       })
       .catch((err) => {});
   }

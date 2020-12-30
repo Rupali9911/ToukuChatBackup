@@ -1024,6 +1024,7 @@ class GroupChats extends Component {
     this.props
       .getGroupDetail(this.props.currentGroup.group_id)
       .then((res) => {
+        console.log('res_getGroupDetail',res);
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
@@ -1032,6 +1033,7 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
+        console.log('err_getGroupDetail',err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),

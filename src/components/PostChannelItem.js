@@ -21,7 +21,7 @@ import PostCardHeader from './PostCardHeader';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
-import { normalize, onPressHyperlink } from '../utils';
+import {normalize, onPressHyperlink} from '../utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -85,20 +85,22 @@ export default class PostChannelItem extends Component {
             <VideoPlayerCustom url={post.media.video[0]} />
           </View>
         ) : null}
-        <View style={{ marginHorizontal: '4%', marginVertical: 5}}>
+        <View style={{marginHorizontal: '4%', marginVertical: 5}}>
           <HyperLink
             onPress={(url, text) => {
               onPressHyperlink(url);
             }}
             linkStyle={{
-              color: 'rgba(0,248,159,1)',
+              color: '#7e8fce',
               textDecorationLine: 'underline',
             }}>
             {newArray.length > 0 ? (
-              <Text>
+              <Text style={{}}>
                 {this.state.readMore
                   ? newArray.join('\n')
-                  : newArray.join('').length>35?newArray.join('\n').substring(0, this.state.character):newArray.join('')}
+                  : newArray.join('').length > 35
+                  ? newArray.join('\n').substring(0, this.state.character)
+                  : newArray.join('')}
                 {newArray.join('\n').length > this.state.character &&
                 !this.state.readMore
                   ? ' '
@@ -111,7 +113,7 @@ export default class PostChannelItem extends Component {
                         fontFamily: Fonts.regular,
                         fontSize: normalize(12),
                         margin: 15,
-                        color: 'blue',
+                        color: '#7e8fce',
                       }}>
                       {'\n  ' + '...' + translate('pages.xchat.showLess')}
                     </Text>
@@ -121,7 +123,8 @@ export default class PostChannelItem extends Component {
                       style={{
                         fontFamily: Fonts.regular,
                         fontSize: normalize(12),
-                        color: 'blue',
+                        color: '#7e8fce',
+                        flex: 1,
                       }}>
                       {'  ' + '...' + translate('pages.xchat.showMore')}
                     </Text>

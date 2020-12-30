@@ -575,9 +575,8 @@ class GroupChatMessageBubble extends Component {
                             onMessagePress(message.msg_id);
                           }}>
                           <HyperLink
-                            onPress={(url, text) => {
-                              onPressHyperlink(url);
-                            }}
+                            onPress={(url, text) => onPressHyperlink(url)}
+                            onLongPress={() => this.showMenu()}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -785,6 +784,7 @@ class GroupChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               onPressHyperlink(url);
                             }}
+                            onLongPress={() => this.showMenu()}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -870,26 +870,28 @@ class GroupChatMessageBubble extends Component {
               }
             />
           )}
-          <MenuItem
-            // icon={() => (
-            //   <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-            // )}
-            onPress={() => {
-              onMessageReply(selectedMessageId);
-              // closeMenu();
-              this.hideMenu();
-            }}
-            // title={translate('common.reply')}
-            // titleStyle={{marginLeft: -25, color: Colors.white}}
-            customComponent={
-              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
-                <Text style={{marginLeft: 10, color: '#fff'}}>
-                  {translate('common.reply')}
-                </Text>
-              </View>
-            }
-          />
+          {isUser && isEditable > new Date() && (
+            <MenuItem
+              // icon={() => (
+              //   <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+              // )}
+              onPress={() => {
+                onMessageReply(selectedMessageId);
+                // closeMenu();
+                this.hideMenu();
+              }}
+              // title={translate('common.reply')}
+              // titleStyle={{marginLeft: -25, color: Colors.white}}
+              customComponent={
+                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                  <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
+                  <Text style={{marginLeft: 10, color: '#fff'}}>
+                    {translate('common.reply')}
+                  </Text>
+                </View>
+              }
+            />
+          )}
           {isUser &&
             isEditable > new Date() &&
             message.message_body &&
@@ -1037,8 +1039,8 @@ class GroupChatMessageBubble extends Component {
 const styles = StyleSheet.create({
   talkBubble: {
     justifyContent: 'flex-end',
-    marginBottom: 15,
-    marginTop: 5,
+    marginBottom: 5,
+    // marginTop: 5,
   },
   talkBubbleAbsoluteRight: {
     width: 30,

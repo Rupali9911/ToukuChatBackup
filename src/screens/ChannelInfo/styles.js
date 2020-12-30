@@ -6,7 +6,7 @@ export const channelInfoStyles = StyleSheet.create({
   mainContainer: {
     paddingBottom: 50,
     backgroundColor: Colors.white,
-    flexGrow: 1
+    flexGrow: 1,
   },
   channelImageContainer: {
     height: height * 0.35,
@@ -29,15 +29,15 @@ export const channelInfoStyles = StyleSheet.create({
     alignItems: 'center',
   },
   imageView: {
-    height: height * 0.09,
-    width: height * 0.09,
+    height: Platform.OS === 'ios' ? height * 0.09 : height * 0.12,
+    width: Platform.OS === 'ios' ? height * 0.09 : height * 0.12,
   },
   profileImage: {
     height: '100%',
     width: '100%',
     backgroundColor: Colors.gray,
-    borderWidth: 3,
-    borderColor: Colors.white,
+    // borderWidth: 3,
+    // borderColor: Colors.white,
   },
   coverImage: {
     height: 70,
@@ -46,7 +46,8 @@ export const channelInfoStyles = StyleSheet.create({
   detailView: {
     flex: 1,
     paddingLeft: 5,
-    paddingVertical: 5,
+    // paddingVertical: 5,
+    justifyContent: 'space-between',
   },
   changeChannelContainer: {
     // paddingVertical: 5,
@@ -59,6 +60,7 @@ export const channelInfoStyles = StyleSheet.create({
     marginRight: 5,
     fontFamily: Fonts.regular,
     color: Colors.white,
+    // lineHeight: 29,
   },
   channelInfoDetail: {
     // flex: 0.15,
@@ -120,7 +122,7 @@ export const channelInfoStyles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
     fontFamily: Fonts.regular,
-    marginBottom: 10
+    marginBottom: 10,
   },
   aboutText: {
     fontSize: 13,
