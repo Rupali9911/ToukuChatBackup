@@ -23,7 +23,7 @@ class ShowGalleryModal extends Component {
     super(props);
     setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = {
-      uploadByUrlModalVisible:false
+      uploadByUrlModalVisible: false,
     };
   }
 
@@ -41,7 +41,7 @@ class ShowGalleryModal extends Component {
       isLoading,
       removeUploadData,
       onGalleryPress,
-      onUrlDone
+      onUrlDone,
     } = this.props;
     const {uploadByUrlModalVisible} = this.state;
     return (
@@ -225,7 +225,7 @@ class ShowGalleryModal extends Component {
                         }}
                       />
                       <Text style={{color: '#80a9d2'}}>
-                        {translate('common.upload')}
+                        {translate('pages.xchat.SelecImage')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -240,21 +240,23 @@ class ShowGalleryModal extends Component {
                 justifyContent: 'center',
                 // marginTop: 20,
               }}>
-              {isLoading?null:<View
-                style={{
-                  // flex: 0.5,
-                  width: '90%',
-                  marginHorizontal: 5,
-                }}>
-                <Button
-                  title={translate('pages.xchat.toastr.uploadByUrl')}
-                  type={'primary'}
-                  onPress={()=>{
-                    this.setState({uploadByUrlModalVisible: true});
-                  }}
-                  isRounded={false}
-                />
-              </View>}
+              {isLoading ? null : (
+                <View
+                  style={{
+                    // flex: 0.5,
+                    width: '90%',
+                    marginHorizontal: 5,
+                  }}>
+                  <Button
+                    title={translate('pages.xchat.toastr.uploadByUrl')}
+                    type={'primary'}
+                    onPress={() => {
+                      this.setState({uploadByUrlModalVisible: true});
+                    }}
+                    isRounded={false}
+                  />
+                </View>
+              )}
               <View
                 style={{
                   // flex: 0.5,
@@ -262,35 +264,37 @@ class ShowGalleryModal extends Component {
                   marginHorizontal: 5,
                 }}>
                 <Button
-                  title={translate('common.upload')}
+                  title={translate('common.recoverUsernameButton')}
                   type={'primary'}
                   onPress={onUpload}
                   isRounded={false}
                   loading={isLoading}
                 />
               </View>
-              {isLoading?null:<View
-                style={{
-                  // flex: 0.5,
-                  marginHorizontal: 5,
-                  width: '90%',
-                }}>
-                <Button
-                  title={translate('common.cancel')}
-                  type={'secondary'}
-                  onPress={onCancel}
-                  isRounded={false}
-                />
-              </View>}
+              {isLoading ? null : (
+                <View
+                  style={{
+                    // flex: 0.5,
+                    marginHorizontal: 5,
+                    width: '90%',
+                  }}>
+                  <Button
+                    title={translate('common.cancel')}
+                    type={'secondary'}
+                    onPress={onCancel}
+                    isRounded={false}
+                  />
+                </View>
+              )}
             </View>
           </View>
-          <UploadByUrlModal 
+          <UploadByUrlModal
             visible={uploadByUrlModalVisible}
             onRequestClose={() =>
               this.setState({uploadByUrlModalVisible: false})
             }
             onUrlDone={onUrlDone}
-            />
+          />
         </SafeAreaView>
       </Modal>
     );

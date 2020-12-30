@@ -564,6 +564,13 @@
       "hyperLink": "Hyper Link",
       "sendingAt": "Sending at",
       "addChannel":"Add a channel",
+      "changeEmailAddress" : "Change your email address",
+      "sendConfirmationCode" : "Send confirmation code ",
+      "enterConfirmationCode":"Enter the confirmation code you received in the old email",
+      "EnterEmailAfterChange" : "Enter the new email address after the change",
+      "reEnterEmailAfterChange" : "Re-enter the new email address after the change",
+      "SelecImage" : "Select an image", 
+      "confirm" : "Confirm",
       "toastr": {
         "added": "Added",
         "rejected": "rejected",

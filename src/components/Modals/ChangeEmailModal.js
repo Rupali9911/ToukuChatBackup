@@ -37,17 +37,16 @@ class ChangeEmailModal extends Component {
   get initialState() {
     return {
       newEmail: '',
-        repeatEmail: '',
+      repeatEmail: '',
       oldEmailVerificationCode: '',
-     // newEmailVerificationCode: '',
+      // newEmailVerificationCode: '',
       newEmailErr: null,
       oldEmailVerificationCodeErr: null,
-     // newEmailVerificationCodeErr: null,
+      // newEmailVerificationCodeErr: null,
 
-
-        emailStatus: true,
-        repeatEmailStatus: true,
-        sendCodeStatus: false
+      emailStatus: true,
+      repeatEmailStatus: true,
+      sendCodeStatus: false,
     };
   }
 
@@ -63,39 +62,39 @@ class ChangeEmailModal extends Component {
       this.setState({emailStatus: true});
     } else if (reg.test(newEmail) === false) {
       this.setState({emailStatus: false});
-    }else{
-        this.setState({emailStatus: true});
+    } else {
+      this.setState({emailStatus: true});
     }
 
-      if (this.state.repeatEmail.trim() === '') {
-          this.setState({repeatEmailStatus: false});
-      } else if (this.state.repeatEmail !== this.state.newEmail) {
-          this.setState({repeatEmailStatus: false});
-      }else{
-          this.setState({repeatEmailStatus: true});
-      }
+    if (this.state.repeatEmail.trim() === '') {
+      this.setState({repeatEmailStatus: false});
+    } else if (this.state.repeatEmail !== this.state.newEmail) {
+      this.setState({repeatEmailStatus: false});
+    } else {
+      this.setState({repeatEmailStatus: true});
+    }
   }
 
-    handleRepeatEmail(repeatEmail) {
-        this.setState({repeatEmail});
-        if (repeatEmail.trim() === '') {
-            this.setState({repeatEmailStatus: true});
-        } else if (repeatEmail !== this.state.newEmail) {
-            this.setState({repeatEmailStatus: false});
-        }else{
-            this.setState({repeatEmailStatus: true});
-        }
-
-        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-        if (this.state.newEmail.trim() === '') {
-            this.setState({emailStatus: false});
-        } else if (reg.test(this.state.newEmail) === false) {
-            this.setState({emailStatus: false});
-        }else{
-            this.setState({emailStatus: true});
-        }
+  handleRepeatEmail(repeatEmail) {
+    this.setState({repeatEmail});
+    if (repeatEmail.trim() === '') {
+      this.setState({repeatEmailStatus: true});
+    } else if (repeatEmail !== this.state.newEmail) {
+      this.setState({repeatEmailStatus: false});
+    } else {
+      this.setState({repeatEmailStatus: true});
     }
+
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    if (this.state.newEmail.trim() === '') {
+      this.setState({emailStatus: false});
+    } else if (reg.test(this.state.newEmail) === false) {
+      this.setState({emailStatus: false});
+    } else {
+      this.setState({emailStatus: true});
+    }
+  }
 
   handleOldCode(oldEmailVerificationCode) {
     this.setState({oldEmailVerificationCode});
@@ -125,42 +124,42 @@ class ChangeEmailModal extends Component {
     //   this.setState({newEmailErr: 'messages.required'});
     // } else {
     //  this.setState({newEmailErr: null});
-      let userEmail = this.props.userData.email
-      let newEmailData = {
-        //email: this.state.newEmail,
-        email: userEmail,
-      };
-      console.log('newEmailData', newEmailData)
-      this.props
-        .changeEmailSendOtp(newEmailData)
-        .then((res) => {
-          if (res.status === true) {
-            this.setState({sendCodeStatus: true})
+    let userEmail = this.props.userData.email;
+    let newEmailData = {
+      //email: this.state.newEmail,
+      email: userEmail,
+    };
+    console.log('newEmailData', newEmailData);
+    this.props
+      .changeEmailSendOtp(newEmailData)
+      .then((res) => {
+        if (res.status === true) {
+          this.setState({sendCodeStatus: true});
+          Toast.show({
+            title: translate('common.sendEmailOTP'),
+            text: translate('pages.xchat.toastr.sentOTPToEmailText'),
+            type: 'positive',
+          });
+        }
+      })
+      .catch((err) => {
+        if (err.response) {
+          if (err.response.data) {
+            console.log('err.response.data', err.response.data);
             Toast.show({
               title: translate('common.sendEmailOTP'),
-              text: translate('pages.xchat.toastr.sentOTPToEmailText'),
-              type: 'positive',
+              text: translate(err.response.data.toString()),
+              type: 'primary',
             });
           }
-        })
-        .catch((err) => {
-            if (err.response) {
-                if (err.response.data) {
-                    console.log('err.response.data', err.response.data)
-                    Toast.show({
-                        title: translate('common.sendEmailOTP'),
-                        text: translate(err.response.data.toString()),
-                        type: 'primary',
-                    });
-                }
-            }
-          // Toast.show({
-          //   title: translate('common.sendEmailOTP'),
-          //   text: 'Please try again.',
-          //   type: 'primary',
-          // });
-        });
-   // }
+        }
+        // Toast.show({
+        //   title: translate('common.sendEmailOTP'),
+        //   text: 'Please try again.',
+        //   type: 'primary',
+        // });
+      });
+    // }
   }
 
   onSubmitData = () => {
@@ -168,50 +167,50 @@ class ChangeEmailModal extends Component {
       newEmail,
       oldEmailVerificationCode,
       //newEmailVerificationCode,
-        sendCodeStatus,
-        repeatEmail
+      sendCodeStatus,
+      repeatEmail,
     } = this.state;
     let isValid = true;
 
-      if (oldEmailVerificationCode.trim() === '') {
-          isValid = false;
-          if (sendCodeStatus) {
-              Toast.show({
-                  title: translate('pages.xchat.changeEmail'),
-                  text: translate('pages.xchat.toastr.enterOldEmailCode'),
-                  type: 'primary',
-              });
-          }else{
-              Toast.show({
-                  title: translate('pages.xchat.changeEmail'),
-                  text: translate('pages.xchat.toastr.sendNotSubmitted'),
-                  type: 'primary',
-              });
-          }
-          return
-          // this.setState({oldEmailVerificationCodeErr: 'messages.required'});
-      }
-
-    console.log('newEmail', newEmail.trim() === '')
-    if (newEmail.trim() === '') {
+    if (oldEmailVerificationCode.trim() === '') {
       isValid = false;
+      if (sendCodeStatus) {
         Toast.show({
-            title: translate('pages.xchat.changeEmail'),
-            text: translate('pages.xchat.toastr.enterEmailText'),
-            type: 'primary',
+          title: translate('pages.xchat.changeEmail'),
+          text: translate('pages.xchat.toastr.enterOldEmailCode'),
+          type: 'primary',
         });
-        return
+      } else {
+        Toast.show({
+          title: translate('pages.xchat.changeEmail'),
+          text: translate('pages.xchat.toastr.sendNotSubmitted'),
+          type: 'primary',
+        });
+      }
+      return;
+      // this.setState({oldEmailVerificationCodeErr: 'messages.required'});
     }
 
-      if (repeatEmail.trim() === '') {
-          isValid = false;
-          Toast.show({
-              title: translate('pages.xchat.changeEmail'),
-              text: translate('pages.xchat.reEnterNewEmailAddress'),
-              type: 'primary',
-          });
-          return
-      }
+    console.log('newEmail', newEmail.trim() === '');
+    if (newEmail.trim() === '') {
+      isValid = false;
+      Toast.show({
+        title: translate('pages.xchat.changeEmail'),
+        text: translate('pages.xchat.toastr.enterEmailText'),
+        type: 'primary',
+      });
+      return;
+    }
+
+    if (repeatEmail.trim() === '') {
+      isValid = false;
+      Toast.show({
+        title: translate('pages.xchat.changeEmail'),
+        text: translate('pages.xchat.reEnterNewEmailAddress'),
+        type: 'primary',
+      });
+      return;
+    }
     // if (newEmailVerificationCode.trim() === '') {
     //   isValid = false;
     //   this.setState({newEmailVerificationCodeErr: 'messages.required'});
@@ -225,28 +224,28 @@ class ChangeEmailModal extends Component {
       this.props
         .changeEmail(changeEmailData)
         .then((res) => {
-            Toast.show({
-                title: translate('pages.xchat.changeEmail'),
-                text: translate('pages.xchat.toastr.emailUpdatedSuccessfully'),
-                type: 'positive',
-            });
-            setTimeout(() => {
-                this.props.onRequestClose();
-            }, 2000);
+          Toast.show({
+            title: translate('pages.xchat.changeEmail'),
+            text: translate('pages.xchat.toastr.emailUpdatedSuccessfully'),
+            type: 'positive',
+          });
+          setTimeout(() => {
+            this.props.onRequestClose();
+          }, 2000);
 
-            this.props.getUserProfile();
+          this.props.getUserProfile();
         })
         .catch((err) => {
-            if (err.response) {
-                if (err.response.data) {
-                    console.log('err.response.data', err.response.data)
-                    Toast.show({
-                        title: translate('pages.xchat.changeEmail'),
-                        text: translate(err.response.data.message.toString()),
-                        type: 'primary',
-                    });
-                }
+          if (err.response) {
+            if (err.response.data) {
+              console.log('err.response.data', err.response.data);
+              Toast.show({
+                title: translate('pages.xchat.changeEmail'),
+                text: translate(err.response.data.message.toString()),
+                type: 'primary',
+              });
             }
+          }
         });
     }
   };
@@ -256,14 +255,14 @@ class ChangeEmailModal extends Component {
     const {
       newEmail,
       oldEmailVerificationCode,
-     // newEmailVerificationCode,
+      // newEmailVerificationCode,
       newEmailErr,
       oldEmailVerificationCodeErr,
       newEmailVerificationCodeErr,
-        repeatEmail,
-        emailStatus,
-        repeatEmailStatus,
-        sendCodeStatus
+      repeatEmail,
+      emailStatus,
+      repeatEmailStatus,
+      sendCodeStatus,
     } = this.state;
     return (
       <Modal
@@ -287,7 +286,7 @@ class ChangeEmailModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {translate('pages.xchat.changeEmail')}
+                {translate('pages.xchat.changeEmailAddress')}
               </Text>
             </View>
             <ClickableImage
@@ -300,42 +299,48 @@ class ChangeEmailModal extends Component {
             <View style={{padding: 15}}>
               <View style={styles.inputContainer}>
                 {/*<TextInput*/}
-                  {/*placeholder={translate('pages.xchat.enterNewemail')}*/}
-                  {/*value={newEmail}*/}
-                  {/*onChangeText={(newEmail) => this.handleNewEmail(newEmail)}*/}
-                  {/*onSubmitEditing={() => {}}*/}
-                  {/*autoCapitalize={'none'}*/}
-                  {/*returnKeyType={'done'}*/}
+                {/*placeholder={translate('pages.xchat.enterNewemail')}*/}
+                {/*value={newEmail}*/}
+                {/*onChangeText={(newEmail) => this.handleNewEmail(newEmail)}*/}
+                {/*onSubmitEditing={() => {}}*/}
+                {/*autoCapitalize={'none'}*/}
+                {/*returnKeyType={'done'}*/}
                 {/*/>*/}
-                  <Text>{userData.email}</Text>
+                <Text>{userData.email}</Text>
               </View>
               {/*{newEmailErr !== null ? (*/}
-                {/*<Text*/}
-                  {/*style={[*/}
-                    {/*globalStyles.smallLightText,*/}
-                    {/*{*/}
-                      {/*color: Colors.danger,*/}
-                      {/*textAlign: 'left',*/}
-                      {/*marginStart: 10,*/}
-                      {/*marginBottom: 5,*/}
-                    {/*},*/}
-                  {/*]}>*/}
-                  {/*{translate(newEmailErr).replace(*/}
-                    {/*'[missing {{field}} value]',*/}
-                    {/*translate('common.email'),*/}
-                  {/*)}*/}
-                {/*</Text>*/}
+              {/*<Text*/}
+              {/*style={[*/}
+              {/*globalStyles.smallLightText,*/}
+              {/*{*/}
+              {/*color: Colors.danger,*/}
+              {/*textAlign: 'left',*/}
+              {/*marginStart: 10,*/}
+              {/*marginBottom: 5,*/}
+              {/*},*/}
+              {/*]}>*/}
+              {/*{translate(newEmailErr).replace(*/}
+              {/*'[missing {{field}} value]',*/}
+              {/*translate('common.email'),*/}
+              {/*)}*/}
+              {/*</Text>*/}
               {/*) : null}*/}
 
               <Button
                 isRounded={false}
-                title={sendCodeStatus ? translate('common.resend') : translate('common.sendCode')}
+                title={
+                  sendCodeStatus
+                    ? translate('common.resend')
+                    : translate('pages.xchat.sendConfirmationCode')
+                }
                 onPress={() => this.onSendCodePress()}
               />
 
               <View style={styles.inputContainer}>
                 <TextInput
-                  placeholder={translate('common.oldEmailVerificationCode')}
+                  placeholder={translate('pages.xchat.enterConfirmationCode')}
+                  placeholderTextColor={'gray'}
+                  style={{color: '#000'}}
                   value={oldEmailVerificationCode}
                   onChangeText={(code) => this.handleOldCode(code)}
                   onSubmitEditing={() => {
@@ -347,74 +352,79 @@ class ChangeEmailModal extends Component {
                 />
               </View>
               {/*{oldEmailVerificationCodeErr !== null ? (*/}
-                {/*<Text*/}
-                  {/*style={[*/}
-                    {/*globalStyles.smallLightText,*/}
-                    {/*{*/}
-                      {/*color: Colors.danger,*/}
-                      {/*textAlign: 'left',*/}
-                      {/*marginStart: 10,*/}
-                      {/*marginBottom: 5,*/}
-                    {/*},*/}
-                  {/*]}>*/}
-                  {/*{translate(oldEmailVerificationCodeErr).replace(*/}
-                    {/*'[missing {{field}} value]',*/}
-                    {/*translate('common.oldEmailVerificationCode'),*/}
-                  {/*)}*/}
-                {/*</Text>*/}
+              {/*<Text*/}
+              {/*style={[*/}
+              {/*globalStyles.smallLightText,*/}
+              {/*{*/}
+              {/*color: Colors.danger,*/}
+              {/*textAlign: 'left',*/}
+              {/*marginStart: 10,*/}
+              {/*marginBottom: 5,*/}
+              {/*},*/}
+              {/*]}>*/}
+              {/*{translate(oldEmailVerificationCodeErr).replace(*/}
+              {/*'[missing {{field}} value]',*/}
+              {/*translate('common.oldEmailVerificationCode'),*/}
+              {/*)}*/}
+              {/*</Text>*/}
               {/*) : null}*/}
 
               <View style={styles.inputContainer}>
                 {/*<TextInput*/}
-                  {/*ref={(ref) => {*/}
-                    {/*this.inputs['newcode'] = ref;*/}
-                  {/*}}*/}
-                  {/*placeholder={translate('common.newEmailVerificationCode')}*/}
-                  {/*value={newEmailVerificationCode}*/}
-                  {/*onChangeText={(code) => this.handleNewCode(code)}*/}
-                  {/*autoCapitalize={'none'}*/}
-                  {/*returnKeyType={'done'}*/}
-                  {/*keyboardType={'number-pad'}*/}
+                {/*ref={(ref) => {*/}
+                {/*this.inputs['newcode'] = ref;*/}
+                {/*}}*/}
+                {/*placeholder={translate('common.newEmailVerificationCode')}*/}
+                {/*value={newEmailVerificationCode}*/}
+                {/*onChangeText={(code) => this.handleNewCode(code)}*/}
+                {/*autoCapitalize={'none'}*/}
+                {/*returnKeyType={'done'}*/}
+                {/*keyboardType={'number-pad'}*/}
                 {/*/>*/}
-              {/*</View>*/}
-              {/*{newEmailVerificationCodeErr !== null ? (*/}
+                {/*</View>*/}
+                {/*{newEmailVerificationCodeErr !== null ? (*/}
                 {/*<Text*/}
-                  {/*style={[*/}
-                    {/*globalStyles.smallLightText,*/}
-                    {/*{*/}
-                      {/*color: Colors.danger,*/}
-                      {/*textAlign: 'left',*/}
-                      {/*marginStart: 10,*/}
-                      {/*marginBottom: 5,*/}
-                    {/*},*/}
-                  {/*]}>*/}
-                  {/*{translate(newEmailVerificationCodeErr).replace(*/}
-                    {/*'[missing {{field}} value]',*/}
-                    {/*translate('common.newEmailVerificationCode'),*/}
-                  {/*)}*/}
+                {/*style={[*/}
+                {/*globalStyles.smallLightText,*/}
+                {/*{*/}
+                {/*color: Colors.danger,*/}
+                {/*textAlign: 'left',*/}
+                {/*marginStart: 10,*/}
+                {/*marginBottom: 5,*/}
+                {/*},*/}
+                {/*]}>*/}
+                {/*{translate(newEmailVerificationCodeErr).replace(*/}
+                {/*'[missing {{field}} value]',*/}
+                {/*translate('common.newEmailVerificationCode'),*/}
+                {/*)}*/}
                 {/*</Text>*/}
-              {/*) : null}*/}
+                {/*) : null}*/}
 
-                  <TextInput
-                  placeholder={translate('pages.xchat.enterNewemail')}
+                <TextInput
+                  placeholder={translate('pages.xchat.EnterEmailAfterChange')}
+                  placeholderTextColor={'gray'}
+                  style={{color: '#000'}}
                   value={newEmail}
                   onChangeText={(newEmail) => this.handleNewEmail(newEmail)}
                   onSubmitEditing={() => {}}
                   autoCapitalize={'none'}
                   returnKeyType={'done'}
-                  />
-
-              </View>
-                <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder={translate('pages.xchat.reEnterNewEmailAddress')}
-                    value={repeatEmail}
-                    onChangeText={(repeatEmail) => this.handleRepeatEmail(repeatEmail)}
-                    onSubmitEditing={() => {}}
-                    autoCapitalize={'none'}
-                    returnKeyType={'done'}
                 />
-                </View>
+              </View>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  placeholder={translate('pages.xchat.reEnterEmailAfterChange')}
+                  placeholderTextColor={'gray'}
+                  style={{color: '#000'}}
+                  value={repeatEmail}
+                  onChangeText={(repeatEmail) =>
+                    this.handleRepeatEmail(repeatEmail)
+                  }
+                  onSubmitEditing={() => {}}
+                  autoCapitalize={'none'}
+                  returnKeyType={'done'}
+                />
+              </View>
               <Button
                 isRounded={false}
                 title={translate('common.submit')}
@@ -424,20 +434,19 @@ class ChangeEmailModal extends Component {
               <Button
                 isRounded={false}
                 type={'secondary'}
-                title={translate('common.cancel')}
+                title={translate('swal.goBack')}
                 onPress={this.onRequestClose.bind(this)}
-
               />
             </View>
           </KeyboardAwareScrollView>
         </View>
-          <View style={{position:'absolute', width: '100%', top: 0}}>
-              <Toast
-                  ref={c => {
-                      if (c) Toast.toastInstance = c;
-                  }}
-              />
-          </View>
+        <View style={{position: 'absolute', width: '100%', top: 0}}>
+          <Toast
+            ref={(c) => {
+              if (c) Toast.toastInstance = c;
+            }}
+          />
+        </View>
       </Modal>
     );
   }

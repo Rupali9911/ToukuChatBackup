@@ -180,7 +180,13 @@ export default class FriendListItem extends PureComponent {
               }
               // disabled={isVisible}
             >
-              <View style={{flex: 1, alignItems: 'flex-start'}}>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  padding: 5,
+                }}>
                 <Text
                   numberOfLines={1}
                   style={[

@@ -1,9 +1,16 @@
 import React, {Component} from 'react';
-import {Dimensions, View, Image, Platform, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {
+  Dimensions,
+  View,
+  Image,
+  Platform,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import {WebView} from 'react-native-webview';
 import VideoPlayer from 'react-native-video-player';
 import {createThumbnail} from 'react-native-create-thumbnail';
-import YoutubePlayer from "react-native-youtube-iframe";
+import YoutubePlayer from 'react-native-youtube-iframe';
 import YouTube from 'react-native-youtube';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
@@ -16,7 +23,7 @@ export default class VideoPlayerCustom extends Component {
       thumbnailUrl: '',
       playing: false,
       isFullscreen: false,
-      isLoading: true
+      isLoading: true,
     };
   }
 
@@ -32,14 +39,14 @@ export default class VideoPlayerCustom extends Component {
   }
 
   generateThumbnail = (url) => {
-    if(url.includes('youtube.com')){}
-    else{
+    if (url.includes('youtube.com')) {
+    } else {
       createThumbnail({
         url: url,
         timeStamp: 2000,
       })
         .then((response) => {
-          console.log('res',response);
+          console.log('res', response);
           this.setState({thumbnailUrl: response.path});
         })
         .catch((err) => console.log({err}));
@@ -48,24 +55,28 @@ export default class VideoPlayerCustom extends Component {
   getAspectRatio = () => {};
 
   onStateChange = () => {
-    if (state === "ended") {
-      this.setState({playing: false})
+    if (state === 'ended') {
+      this.setState({playing: false});
     }
-  }
+  };
 
   getVideoId = (url) => {
     let video_id = '';
-    if(url.includes('youtube.com')){
-      video_id = url.substring(url.lastIndexOf('/')+1)
+    if (url.includes('youtube.com')) {
+      video_id = url.substring(url.lastIndexOf('/') + 1);
     }
-    console.log('video_id',video_id);
+    console.log('video_id', video_id);
     return video_id;
-  }
+  };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    if(this.props.url === nextProps.url && nextState.thumbnailUrl === this.state.thumbnailUrl) return false;
+    if (
+      this.props.url === nextProps.url &&
+      nextState.thumbnailUrl === this.state.thumbnailUrl
+    )
+      return false;
     else return true;
-  }
+  };
 
   Main_Script = (video_id) => {
     return `<html>
@@ -156,68 +167,35 @@ export default class VideoPlayerCustom extends Component {
         window.hideYTActivated=true;
       });
     </script>
-    </html>`
-  }
+    </html>`;
+  };
 
   render() {
     const {url, width, height, thumbnailImage} = this.props;
-    const {playing, isLoading, isFullscreen, thumbnailUrl,} = this.state;
-    return (
-      url.includes('youtube.com') ?
-        <View style={{ height: 150, width: 260}}>
-          {Platform.OS === 'ios' ?
-            <YouTube
-              videoId={this.getVideoId(url)} // The YouTube video ID
-              play={false} // control playback of video with true/false
-              fullscreen // control whether the video should play in fullscreen or inline
-              loop // control whether the video should loop when ended
-              onReady={e => this.setState({ isReady: true })}
-              onChangeState={e => this.setState({ status: e.state })}
-              onChangeQuality={e => this.setState({ quality: e.quality })}
-              onError={e => this.setState({ error: e.error })}
-              style={{ alignSelf: 'stretch', height: 150 }}
-              origin={"https://youtube.com/"}
-            />
-            :
-            <YoutubePlayer
-              height={150}
-              play={playing}
-              videoId={this.getVideoId(url)}
-              onChangeState={this.onStateChange}
-              onError={(err) => {
-                console.log('youtube err', err);
-              }}
-            />}
-            
-          {/* <WebView
-            ref={this.webViewRef}
-            allowsFullscreenVideo
-            useWebKit
-            // onLoad={this.webViewLoaded}
-            allowsInlineMediaPlayback
-            mediaPlaybackRequiresUserAction
-            javaScriptEnabled
-            scrollEnabled={false}
-            source={{
-              html: this.Main_Script(this.getVideoId(url)),
-              baseUrl: "https://youtube.com/"
-            }}
-            onShouldStartLoadWithRequest={request => {
-              return request.mainDocumentURL === 'about:blank';
-            }}
-            /> */}
-        </View>
-        :
-        <VideoPlayer
-          video={{
-            uri: url,
+    const {playing, isLoading, isFullscreen, thumbnailUrl} = this.state;
+    return url.includes('youtube.com') ? (
+      <View style={{height: 150, width: 260}}>
+        <YoutubePlayer
+          height={150}
+          play={playing}
+          videoId={this.getVideoId(url)}
+          onChangeState={this.onStateChange}
+          onError={(err) => {
+            console.log('err', err);
           }}
-          // autoplay
-          fullScreenOnLongPress
-          videoWidth={width ? width : 1600}
-          videoHeight={height ? height : 900}
-          thumbnail={thumbnailUrl ? {uri: thumbnailUrl} : ''}
         />
+      </View>
+    ) : (
+      <VideoPlayer
+        video={{
+          uri: url,
+        }}
+        // autoplay
+        fullScreenOnLongPress
+        videoWidth={width ? width : 1600}
+        videoHeight={height ? height : 900}
+        thumbnail={thumbnailUrl ? {uri: thumbnailUrl} : ''}
+      />
     );
   }
 }

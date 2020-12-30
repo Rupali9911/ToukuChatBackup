@@ -564,6 +564,14 @@
       "hyperLink": "超链接",
       "sendingAt": "发送地址：",
       "addChannel":"添加频道",
+      "changeEmailAddress" : "更改您的电子邮件地址",
+      "sendConfirmationCode":"发送确认码",
+      "enterConfirmationCode":"输入您在旧电子邮件中收到的确认代码",
+      "EnterEmailAfterChange":"输入更改后的新电子邮件地址",
+      "reEnterEmailAfterChange":"更改后重新输入新的电子邮件地址",
+      "SelecImage":"选择图像",
+      "confirm":"确认",
+
       "toastr": {
         "added": "添加",
         "rejected": "拒絕了",

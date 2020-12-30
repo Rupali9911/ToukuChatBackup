@@ -3,14 +3,14 @@ import {Image, View} from 'react-native';
 import VideoPlayer from 'react-native-video-player';
 import {createThumbnail} from 'react-native-create-thumbnail';
 import RoundedImage from './RoundedImage';
-import YoutubePlayer,{getYoutubeMeta} from "react-native-youtube-iframe";
+import YoutubePlayer, {getYoutubeMeta} from 'react-native-youtube-iframe';
 
 export default class VideoThumbnailPlayer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       thumbnailUrl: '',
-      playing: false
+      playing: false,
     };
   }
 
@@ -25,14 +25,16 @@ export default class VideoThumbnailPlayer extends Component {
   }
 
   generateThumbnail = (url) => {
-    if(url.includes('youtube.com')){
-      getYoutubeMeta(this.getVideoId(url)).then((youtubedata)=>{
-        console.log(youtubedata);        
-        if(youtubedata && youtubedata.thumbnail_url){
-          this.setState({thumbnailUrl: youtubedata.thumbnail_url});
-        }
-      }).catch((err) => console.log({err}));
-    }else{
+    if (url.includes('youtube.com')) {
+      getYoutubeMeta(this.getVideoId(url))
+        .then((youtubedata) => {
+          console.log(youtubedata);
+          if (youtubedata && youtubedata.thumbnail_url) {
+            this.setState({thumbnailUrl: youtubedata.thumbnail_url});
+          }
+        })
+        .catch((err) => console.log({err}));
+    } else {
       createThumbnail({
         url: url,
         timeStamp: 2000,
@@ -46,30 +48,30 @@ export default class VideoThumbnailPlayer extends Component {
   };
 
   onStateChange = () => {
-    if (state === "ended") {
-      this.setState({playing: false})
+    if (state === 'ended') {
+      this.setState({playing: false});
     }
-  }
+  };
 
   getVideoId = (url) => {
     let video_id = '';
-    if(url.includes('youtube.com')){
-      video_id = url.substring(url.lastIndexOf('/')+1)
+    if (url.includes('youtube.com')) {
+      video_id = url.substring(url.lastIndexOf('/') + 1);
     }
-    console.log('video_id',video_id);
+    console.log('video_id', video_id);
     return video_id;
-  }
+  };
 
   render() {
     const {url, size, thumbnailImage, showPlayButton} = this.props;
     const {playing} = this.state;
     return (
-        <RoundedImage
-          source={this.state.thumbnailUrl ? { uri: this.state.thumbnailUrl } : ''}
-          isRounded={false}
-          size={size ? size : 50}
-          showPlayButton={showPlayButton ? true : false}
-        />
+      <RoundedImage
+        source={this.state.thumbnailUrl ? {uri: this.state.thumbnailUrl} : ''}
+        isRounded={false}
+        size={size ? size : 50}
+        showPlayButton={showPlayButton ? true : false}
+      />
     );
   }
 }

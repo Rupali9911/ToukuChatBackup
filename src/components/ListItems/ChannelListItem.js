@@ -167,7 +167,13 @@ export default class ChannelListItem extends PureComponent {
               />
             )}
             <View style={styles.secondView}>
-              <View style={{flex: 1, alignItems: 'flex-start'}}>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  padding: 5,
+                }}>
                 <Text
                   numberOfLines={1}
                   style={[
