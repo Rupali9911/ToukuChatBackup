@@ -11,7 +11,6 @@ import {WebView} from 'react-native-webview';
 import VideoPlayer from 'react-native-video-player';
 import {createThumbnail} from 'react-native-create-thumbnail';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import YouTube from 'react-native-youtube';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
