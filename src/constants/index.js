@@ -126,6 +126,7 @@ export const Colors = {
   light_pink: '#FFEDEE',
   message_gray: '#9FA7B0',
   textTitle_orange: '#e26161',
+  update_bg: '#e4d5d580'
 };
 
 export const Fonts = {
@@ -326,6 +327,7 @@ export const SocketEvents = {
   DELETE_FRIEND_NOTE_COMMENT: 'delete friend note data',
   LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 'like or unlike friend note',
   LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment',
+  CLEAR_GROUP_CHAT: 'clear group chat from group list'
 };
 
 export const NotificationType = {

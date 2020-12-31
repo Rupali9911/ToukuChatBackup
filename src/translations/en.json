@@ -148,7 +148,10 @@
     "usernameText": "username",
     "resetPasswordToaster": "Reset Password",
     "verify": "Verify",
-    "networkError": "Slow or no internet connection. Please check your internet connection"
+    "networkError": "Slow or no internet connection. Please check your internet connection",
+    "leftGroup": "{{username}} left the group.",
+    "addedInGroup": "{{username}} added {{toUsername}} to the group.",
+    "removedToGroup": "{{username}} removed {{toUsername}} to the group."
   },
   "messages": {
     "required": "{{field}} is required"
@@ -1042,7 +1045,8 @@
       "unlike": "Unlike",
       "deleteCommentText": "Are you sure you want to delete this comment?",
       "enterComment": "Enter your comment.",
-      "deleteChats": "Delete Chats"
+      "deleteChats": "Delete Chats",
+      "wantToDeleteAllChats": "You want to delete chat history of this group."
     },
     "welcome": {
       "theWorldIsConnected": "The world is connected",

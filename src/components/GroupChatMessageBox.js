@@ -225,10 +225,10 @@ export default class GroupChatMessageBox extends Component {
           <View
             style={{
               alignItems: 'flex-start',
-              marginVertical:
-                message.message_body && message.message_body.type === 'image'
-                  ? 0
-                  : 5,
+              // marginVertical:
+              //   message.message_body && message.message_body.type === 'image'
+              //     ? 0
+              //     : 2,
             }}>
             <View
               style={{
@@ -300,7 +300,7 @@ export default class GroupChatMessageBox extends Component {
                 </View>
                 <View
                   style={{
-                    marginHorizontal: '1.5%',
+                    // marginHorizontal: '1.5%',
                     alignItems: 'center',
                     // marginVertical:
                     //   message.message_body &&
@@ -471,6 +471,6 @@ const styles = StyleSheet.create({
     color: Colors.dark_pink,
     fontFamily: Fonts.light,
     fontSize: Platform.isPad ? normalize(5) : normalize(8),
-    marginLeft: Platform.isPad ? 15 : 10,
+    marginLeft: Platform.isPad ? 15 : 7,
   },
 });

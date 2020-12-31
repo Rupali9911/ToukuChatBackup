@@ -148,7 +148,10 @@
     "usernameText": "\uc0ac\uc6a9\uc790 \uc774\ub984\uc744 \uc785\ub825",
     "resetPasswordToaster": "\ube44\ubc00\ubc88\ud638 \uc7ac\uc124\uc815",
     "verify": "검증",
-    "networkError": "인터넷 연결이 느리거나 없습니다. 인터넷 연결을 확인하십시오"
+    "networkError": "인터넷 연결이 느리거나 없습니다. 인터넷 연결을 확인하십시오",
+    "leftGroup": "{{username}}가 그룹을 탈퇴했습니다.",
+    "addedInGroup": "{{username}}이 {{toUsername}}을 그룹에 초대했습니다.",
+    "removedToGroup": "{{username}} 님이 그룹에서 {{toUsername}}을 (를) 제거했습니다."
   },
   "messages": {
     "required": "{{field}} \uc774(\uac00) \ud544\uc694\ud569\ub2c8\ub2e4"
@@ -1044,7 +1047,8 @@
       "unlike": "같지 않은",
       "deleteCommentText": "이 댓글을 삭제 하시겠습니까?",
       "enterComment": "의견을 입력하십시오.",
-      "deleteChats": " 채팅 삭제"
+      "deleteChats": " 채팅 삭제",
+      "wantToDeleteAllChats": "이 그룹의 채팅 기록을 삭제하려고합니다."
     },
     "welcome": {
       "theWorldIsConnected": "\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

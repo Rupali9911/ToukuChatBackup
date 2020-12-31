@@ -148,7 +148,10 @@
     "usernameText": "ユーザーネームを入力",
     "resetPasswordToaster": "認証コードを送信",
     "verify": "確認",
-    "networkError": "インターネット接続が遅い、またはまったくない。 インターネット接続を確認してください"
+    "networkError": "インターネット接続が遅い、またはまったくない。 インターネット接続を確認してください",
+    "leftGroup": "{{username}}がグループを退会しました。",
+    "addedInGroup": "{{username}}が{{toUsername}}をグループに招待しました。",
+    "removedToGroup": "{{username}}は{{toUsername}}をグループから削除しました。"
   },
   "messages": {
     "required": "{{field}} 必須"
@@ -1044,7 +1047,8 @@
       "unlike": "いいね",
       "deleteCommentText": "このコメントを削除してもよろしいですか？",
       "enterComment": "コメントを入力してください。",
-      "deleteChats": "チャットを削除する"
+      "deleteChats": "チャットを削除する",
+      "wantToDeleteAllChats": "このグループのチャット履歴を削除します。"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

@@ -107,11 +107,13 @@ import {
   deleteFriendRequest,
   setChannels,
   deleteGroupById,
+  removeGroupById,
   deleteGroupMessageById,
   deleteAllGroupMessageByGroupId,
   UpdateGroupDetail,
   getGroupsById,
   updateLastMsgGroups,
+  updateLastMsgTimestamp,
   updateLastMsgGroupsWithoutCount,
   updateUnReadCount,
   updateGroupMessageById,
@@ -526,6 +528,9 @@ class Chat extends Component {
       case SocketEvents.REMOVE_GROUP_MEMBER:
         this.onRemoveGroupMember(message);
         break;
+      case SocketEvents.CLEAR_GROUP_CHAT:
+        this.onRemoveGroupFromList(message);
+        break;
       case SocketEvents.EDIT_GROUP_DETAIL:
         this.onUpdateGroupDetail(message);
         break;
@@ -553,7 +558,7 @@ class Chat extends Component {
         this.updateChannelDetail(message);
         break;
       case SocketEvents.CREATE_NEW_CHANNEL:
-        // this.createNewChannel(message);
+        // this.createNewChannel(message);   // not required at app end
         break;
       case SocketEvents.FRIEND_DISPLAY_NAME_DATA:
         this.onFriendDisplayNameUpdate(message);
@@ -948,11 +953,20 @@ class Chat extends Component {
           );
         }
 
-        updateLastMsgGroups(
-          message.text.data.message_details.group_id,
-          message.text.data.message_details,
-          unreadCount,
-        );
+        if(message.text.data.message_details.message_body.type!=='update'){
+          updateLastMsgGroups(
+            message.text.data.message_details.group_id,
+            message.text.data.message_details,
+            unreadCount,
+          );
+        }else{
+          updateLastMsgTimestamp(
+            message.text.data.message_details.group_id,
+            message.text.data.message_details.timestamp,
+            unreadCount
+          );
+        }
+        
         // updateGroup(message.text.data.message_details).then(() => {
         //   console.log('onNewMessageInGroup -> updateGroup');
         this.props.getLocalUserGroups().then((res) => {
@@ -1030,9 +1044,9 @@ class Chat extends Component {
         this.props.currentRouteName == 'GroupChats' &&
         currentGroup.group_id === detail.group_id
       ) {
-        const message = detail.message_ids;
+        const messageids = detail.message_ids;
 
-        const message_ids = Object.entries(message);
+        const message_ids = Object.entries(messageids);
 
         for (const value of message_ids) {
           updateGroupnReadCount(parseInt(value[0]), parseInt(value[1]));
@@ -1983,13 +1997,14 @@ class Chat extends Component {
       let group = result.toJSON();
       if (group && group.length > 0) {
         if (userData.id === message.text.data.message_details.user_id) {
-          deleteGroupById(message.text.data.message_details.group_id);
-          deleteAllGroupMessageByGroupId(
-            message.text.data.message_details.group_id,
-          );
-          this.props.getLocalUserGroups().then((res) => {
-            this.props.setCommonChatConversation();
-          });
+          removeGroupById(message.text.data.message_details.group_id);
+          // deleteGroupById(message.text.data.message_details.group_id);
+          // deleteAllGroupMessageByGroupId(
+          //   message.text.data.message_details.group_id,
+          // );
+          // this.props.getLocalUserGroups().then((res) => {
+          //   this.props.setCommonChatConversation();
+          // });
         }
       }
     }
@@ -2009,9 +2024,35 @@ class Chat extends Component {
       let user_delete = message.text.data.message_details.members_data.filter(
         (item) => item.id === this.props.userData.id,
       );
+      
+      let result = getGroupsById(message.text.data.message_details.group_id);
+      let group = result.toJSON();
+      if (group && group.length > 0) {
+        if (user_delete.length > 0) {
+          removeGroupById(message.text.data.message_details.group_id);
+        }
 
-      if (user_delete.length > 0) {
+        if (
+          this.props.currentRouteName == 'GroupChats' &&
+          currentGroup &&
+          message.text.data.message_details.group_id == currentGroup.group_id
+        ) {
+          this.getGroupDetail();
+          this.getGroupMembers();
+        }
+      }
+    }
+  }
+
+  onRemoveGroupFromList = (message) => {
+    const {currentGroup} = this.props;
+    if (message.text.data.type === SocketEvents.CLEAR_GROUP_CHAT) {
+
+      if (message.text.data.message_details.user_id === this.props.userData.id) {
         deleteGroupById(message.text.data.message_details.group_id);
+        deleteAllGroupMessageByGroupId(
+          message.text.data.message_details.group_id,
+        );
         if (
           this.props.currentRouteName == 'GroupChats' &&
           currentGroup &&
@@ -2273,6 +2314,7 @@ class Chat extends Component {
   onOpenGroupChats = (item) => {
     NetInfo.fetch().then((state) => {
       console.log('Is connected?', state.isConnected);
+
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
         this.props.navigation.navigate('GroupChats');

@@ -689,6 +689,7 @@ export const updateChannelDetails = (id, data) => {
 };
 
 export const updateChannelUnReadCountById = (id, unread_msg) => {
+  console.log('unread_count update');
   realm.write(() => {
     realm.create('channels', { id: id, unread_msg: unread_msg }, 'modified');
   });
@@ -742,6 +743,7 @@ export const setGroups = async (group) => {
             mentions: item.mentions.length ? item.mentions : [],
             reply_to: item.reply_to,
             joining_date: item.joining_date,
+            is_group_member: item.is_group_member
           },
           'modified',
         );
@@ -768,6 +770,7 @@ export const setGroups = async (group) => {
           mentions: item.mentions.length ? item.mentions : [],
           reply_to: item.reply_to,
           joining_date: item.joining_date,
+          is_group_member: item.is_group_member
         });
       });
     }
@@ -792,6 +795,19 @@ export const deleteGroupById = (id) => {
     realm.delete(message);
   });
 };
+
+export const removeGroupById = (id,is_group_member) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        is_group_member: is_group_member,
+      },
+      'modified',
+    );
+  });
+}
 
 export const UpdateGroupDetail = (
   id,
@@ -858,6 +874,20 @@ export const updateLastMsgGroupsWithoutCount = (
     );
   });
 };
+
+export const updateLastMsgTimestamp = (id, timestamp, unreadCount) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        timestamp: timestamp,
+        unread_msg: unreadCount,
+      },
+      'modified',
+    );
+  });
+}
 
 export const updateUnReadCount = (id, unreadCount) => {
   realm.write(() => {

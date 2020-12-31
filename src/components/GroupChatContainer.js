@@ -21,13 +21,17 @@ import ChatInput from './TextInputs/ChatInput';
 import {translate} from '../redux/reducers/languageReducer';
 import {Colors, Fonts, Images, Icons} from '../constants';
 import NoData from './NoData';
-import {isIphoneX} from '../utils';
+import {isIphoneX, getUserName, getUser_ActionFromUpdateText, normalize} from '../utils';
 import RoundedImage from './RoundedImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import CheckBox from './CheckBox';
 import Button from './Button';
+
+import Menu from '../components/Menu/Menu';
+import MenuItem from '../components/Menu/MenuItem';
 
 const {width, height} = Dimensions.get('window');
 
@@ -130,6 +134,24 @@ class GroupChatContainer extends Component {
     return <Fragment>{msg.reverse()}</Fragment>;
   };
 
+  renderGroupUpdate = (message) => {
+    let update_text = '';
+    if(message && message.message_body.type === 'update'){
+      let update_obj = getUser_ActionFromUpdateText(message.message_body.text);
+      let update_by = message.sender_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(message.sender_id) || message.sender_display_name || message.sender_username;
+      let update_to = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || update_obj.user_name;
+      // console.log('update_to',update_obj);
+      if(update_obj.action==='left'){
+        update_text = translate('common.leftGroup',{username: update_by});
+      }else if(update_obj.action==='added'){
+        update_text = translate('common.addedInGroup',{username: update_by,toUsername: update_to});
+      }else if(update_obj.action==='removed'){
+        update_text = translate('common.removedToGroup',{username: update_by,toUsername: update_to});
+      }
+      return update_text;
+    }
+  }
+
   closeMenu = () => {
     if (!this.state.closeMenu) {
       this.setState({
@@ -154,6 +176,16 @@ class GroupChatContainer extends Component {
       }
     });
     return result;
+  };
+
+  hideMenu = (id) => {
+    this[`_menu_${id}`] && this[`_menu_${id}`].hide();
+    this.setState({ visible: false });
+  };
+
+  showMenu = (id) => {
+    this[`_menu_${id}`] && this[`_menu_${id}`].show();
+    this.setState({ visible: true });
   };
 
   render() {
@@ -261,13 +293,64 @@ class GroupChatContainer extends Component {
                 let isSelected = selectedIds.includes(item.msg_id + '');
                 return (
                   <Fragment key={index}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center',}}>
                       {isMultiSelect && !item.is_unsent ? (
                         <CheckBox
                           isChecked={isSelected}
                           onCheck={() => onSelect(item.msg_id)}
                         />
                       ) : null}
+                      {(item.message_body && item.message_body.type && item.message_body.type === 'update') ? 
+                        <TouchableOpacity 
+                          style={{ width:'100%', marginLeft: isMultiSelect?-35:0}}
+                          onPress={() => {
+                            isMultiSelect &&
+                              !item.is_unsent &&
+                              onSelect(item.msg_id);
+                          }}>
+                          <Menu
+                            ref={(ref) => {
+                              this[`_menu_${item.msg_id}`] = ref;
+                            }}
+                            style={{
+                              marginTop: 15,
+                              marginLeft: 20,
+                              backgroundColor: Colors.gradient_3,
+                              opacity: 0.9,
+                            }}
+                            tabHeight={110}
+                            headerHeight={80}
+                            button={
+                              <TouchableOpacity
+                                disabled={isMultiSelect}                            
+                                onLongPress={() => {
+                                  this.showMenu(item.msg_id);
+                                }}
+                                style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 5 }}>
+                                <View style={{maxWidth: '90%', backgroundColor: Colors.update_bg, padding: normalize(5), paddingHorizontal: normalize(8), borderRadius: 12 }}>
+                                  <Text style={[chatStyle.messageDateText]}>
+                                    {this.renderGroupUpdate(item)}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            }>
+                            <MenuItem
+                              onPress={() => {
+                                this.props.onDelete(item.msg_id);
+                                this.hideMenu(item.msg_id);
+                              }}
+                              customComponent={
+                                <View style={{ flex: 1, flexDirection: 'row', margin: 15 }}>
+                                  <FontAwesome5 name={'trash'} size={20} color={Colors.white} />
+                                  <Text style={{ marginLeft: 10, color: '#fff' }}>
+                                    {translate('common.delete')}
+                                  </Text>
+                                </View>
+                              }
+                            />
+                          </Menu>
+                        </TouchableOpacity>
+                    : 
                       <TouchableOpacity
                         style={{flex: 1}}
                         disabled={!isMultiSelect}
@@ -333,7 +416,7 @@ class GroupChatContainer extends Component {
                           showOpenLoader={this.props.showOpenLoader}
                           isMultiSelect={isMultiSelect}
                         />
-                      </TouchableOpacity>
+                      </TouchableOpacity>}
                     </View>
                     {(messages[index + 1] &&
                       new Date(item.timestamp).getDate() !==

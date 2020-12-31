@@ -265,6 +265,7 @@ export const Groups = {
       default: null,
     },
     joining_date: 'string?',
+    is_group_member: 'bool?',
   },
 };
 

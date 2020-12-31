@@ -148,7 +148,10 @@
     "usernameText": "輸入用戶名",
     "resetPasswordToaster": "重置密碼",
     "verify": "校驗",
-    "networkError": "互聯網連接速度慢或沒有。 請檢查您的互聯網連接"
+    "networkError": "互聯網連接速度慢或沒有。 請檢查您的互聯網連接",
+    "leftGroup": "{{username}}已從組中退出。",
+    "addedInGroup": "{{username}}邀请{{toUsername}}加入小组。",
+    "removedToGroup": "{{username}}已將{{toUsername}}移至該群組。"
   },
   "messages": {
     "required": "規定的（必填）"
@@ -1043,7 +1046,8 @@
       "unlike": "不像",
       "deleteCommentText": "你確定要刪除此評論嗎？",
       "enterComment": "輸入您的評論。",
-      "deleteChats": "刪除聊天"
+      "deleteChats": "刪除聊天",
+      "wantToDeleteAllChats": "您要刪除該群組的聊天記錄。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相連",

@@ -28,7 +28,7 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 import HyperLink from 'react-native-hyperlink';
-import {getAvatar, normalize, onPressHyperlink, getUserName} from '../utils';
+import {getAvatar, normalize, onPressHyperlink, getUserName, getUser_ActionFromUpdateText} from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
 import ParsedText from 'react-native-parsed-text';
@@ -433,7 +433,6 @@ class GroupChatMessageBubble extends Component {
     const animatedStyle = {
       opacity: this.state.animation,
     };
-
     return (
       <View>
         <Menu
@@ -480,8 +479,10 @@ class GroupChatMessageBubble extends Component {
                         {translate('pages.xchat.messageUnsent')}
                       </Text>
                     </View>
-                  ) : (
-                    <TouchableOpacity
+                  ) : (message.message_body && message.message_body.type && message.message_body.type === 'update') ? 
+                    this.renderGroupUpdate(message)
+                  :
+                    ( <TouchableOpacity
                       disabled={isMultiSelect}
                       activeOpacity={0.8}
                       style={[
@@ -613,7 +614,7 @@ class GroupChatMessageBubble extends Component {
                           parse={[
                             {
                               // pattern: /\B\@([\w\-]+)/gim,
-                              pattern: new RegExp(this.getMentionsPattern()),
+                              pattern: this.getMentionsPattern()===''?/\B\@([\w\-]+)/gim:new RegExp(this.getMentionsPattern()),
                               style: {color: '#E65497'},
                             },
                           ]}
@@ -815,7 +816,7 @@ class GroupChatMessageBubble extends Component {
                           parse={[
                             {
                               // pattern: /\B\@([\w\-]+)/gim,
-                              pattern: new RegExp(this.getMentionsPattern()),
+                              pattern: this.getMentionsPattern()===''?/\B\@([\w\-]+)/gim:new RegExp(this.getMentionsPattern()),
                               style: {color: '#E65497'},
                             },
                           ]}

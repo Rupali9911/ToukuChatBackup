@@ -371,6 +371,7 @@ export const getGroupConversation = (groupId) => (dispatch) =>
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
+        console.log('group-conversation', res);
         setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
         resolve(res);
@@ -584,6 +585,19 @@ export const deleteMultipleGroupMessage = (payload) => (dispatch) =>
         reject(err);
       });
   });
+
+export const deleteGroupChat = (data) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    client
+      .post(`/xchat/remove-group-from-list/`,data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
 export const getGroupNotes = (id, limit, offset) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client

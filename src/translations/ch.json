@@ -148,7 +148,10 @@
     "usernameText": "输入用户名",
     "resetPasswordToaster": "重置密码",
     "verify": "校验",
-    "networkError": "互联网连接速度慢或没有。 请检查您的互联网连接"
+    "networkError": "互联网连接速度慢或没有。 请检查您的互联网连接",
+    "leftGroup": "{{username}}已从组中退出。",
+    "addedInGroup": "{{username}}邀请{{toUsername}}加入小组。",
+    "removedToGroup": "{{username}}已将{{toUsername}}移至该群组。"
   },
   "messages": {
     "required": "规定的（必填）"
@@ -1044,7 +1047,8 @@
       "unlike": "不像",
       "deleteCommentText": "你确定要删除此评论吗？",
       "enterComment": "输入您的评论。",
-      "deleteChats": "删除聊天"
+      "deleteChats": "删除聊天",
+      "wantToDeleteAllChats": "您要删除该群组的聊天记录。"
     },
     "welcome": {
       "theWorldIsConnected": "世界相连",

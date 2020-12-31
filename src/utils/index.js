@@ -194,3 +194,23 @@ export const getUserName = (id) => {
   }
   return user_name;
 }
+
+export const getUser_ActionFromUpdateText = (text) => {
+  let user_id = '';
+  let user_name = '';
+  let action = '';
+
+  if(text === 'left'){
+    user_id = null;
+    user_name = null;
+    action = text;
+  }else{
+    let split_txt = text.split(',');
+    if(split_txt.length>0){
+      user_id = split_txt[0].trim();
+      user_name = split_txt[1].trim();
+      action = split_txt[2].trim();
+    }
+  }
+  return {user_id,user_name,action};
+}

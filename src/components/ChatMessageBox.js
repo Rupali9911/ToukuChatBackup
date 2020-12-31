@@ -322,7 +322,7 @@ export default class ChatMessageBox extends Component {
                 />
                 <View
                   style={{
-                    marginHorizontal: '1.5%',
+                    // marginHorizontal: '1.5%',
                     alignItems: 'center',
                     // marginVertical: message.msg_type === 'image' ? 0 : 15,
                     alignSelf: 'flex-end',
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     color: Colors.dark_pink,
     fontFamily: Fonts.light,
     fontSize: Platform.isPad ? normalize(5.5) : normalize(8),
-    marginLeft: Platform.isPad ? 15 : 10,
+    marginLeft: Platform.isPad ? 15 : 7,
   },
   squareImage: {
     width: 40,

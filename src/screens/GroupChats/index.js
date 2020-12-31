@@ -56,6 +56,7 @@ import {
   deleteMultipleGroupMessage,
   pinGroup,
   unpinGroup,
+  deleteGroupChat
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
@@ -71,6 +72,7 @@ import {
   setGroupMessageUnsend,
   updateUnReadCount,
   deleteGroupById,
+  removeGroupById,
   deleteAllGroupMessageByGroupId,
   updateLastMsgGroupsWithoutCount,
   setGroupLastMessageUnsend,
@@ -88,6 +90,7 @@ class GroupChats extends Component {
       newMessageText: '',
       showLeaveGroupConfirmationModal: false,
       showDeleteGroupConfirmationModal: false,
+      showdeleteObjectConfirmationModal: false,
       isMyGroup: false,
       conversation: [],
       selectedMessageId: null,
@@ -101,6 +104,7 @@ class GroupChats extends Component {
       showGalleryModal: false,
       sendingMedia: false,
       isLeaveLoading: false,
+      deleteObjectLoading: false,
       uploadFile: {uri: null, type: null, name: null},
       uploadProgress: 0,
       isChatLoading: false,
@@ -295,6 +299,23 @@ class GroupChats extends Component {
                 },
               },
             ],
+      headerRightIconMenuIsRemoveGroup: [
+        {
+          id: 1,
+          title: translate('pages.xchat.deleteChats'),
+          icon: 'times-circle',
+          onPress: () => {
+            this.toggleDeleteObjectConfirmationModal();
+          },
+        },
+        {
+          id: 2,
+          pinUnpinItem: true,
+          onPress: () => {
+            this.onPinUnpinGroup();
+          },
+        },
+      ],
       isReply: false,
       repliedMessage: null,
       isEdited: false,
@@ -973,6 +994,7 @@ class GroupChats extends Component {
     await this.props
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
+        console.log('res',res);
         if (res.status) {
           let data = res.data;
           data.sort((a, b) =>
@@ -1054,6 +1076,12 @@ class GroupChats extends Component {
       });
   }
 
+  removeLocalGroup = (id) => {
+    removeGroupById(id);
+    this.getGroupDetail();
+    this.getGroupMembers();
+  }
+
   deleteLocalGroup = (id) => {
     this.props.setCurrentGroup(null);
     this.props.setGroupConversation([]);
@@ -1066,6 +1094,42 @@ class GroupChats extends Component {
 
   handleMessage(message) {
     this.setState({newMessageText: message});
+  }
+
+  //Delete chat
+  toggleDeleteObjectConfirmationModal = () => {
+    this.setState({
+      showdeleteObjectConfirmationModal: !this.state
+        .showdeleteObjectConfirmationModal,
+    });
+  };
+
+  onDeleteObjectCancel = () => {
+    this.toggleDeleteObjectConfirmationModal();
+  };
+
+  onDeleteGroupObject = () => {
+    const {currentGroup} = this.props;
+    this.setState({deleteObjectLoading: true});
+
+    let data = {
+      group_id: currentGroup.group_id
+    }
+
+    this.props
+      .deleteGroupChat(data)
+      .then((res) => {
+        this.setState({deleteObjectLoading: false, showdeleteObjectConfirmationModal: false});
+        if (res && res.status) {
+          this.deleteLocalGroup(currentGroup.group_id);
+          this.props.getUserGroups();
+          this.props.navigation.goBack();
+        }
+      })
+      .catch((err) => {
+        this.setState({deleteObjectLoading: false, showdeleteObjectConfirmationModal: false});
+        console.log('err', err);
+      });
   }
 
   //Leave Group
@@ -1104,9 +1168,10 @@ class GroupChats extends Component {
             text: translate(res.message),
             type: 'positive',
           });
-          this.deleteLocalGroup(this.props.currentGroup.group_id);
-          this.props.getUserGroups();
-          this.props.navigation.goBack();
+          this.removeLocalGroup(this.props.currentGroup.group_id);
+          // this.deleteLocalGroup(this.props.currentGroup.group_id);
+          // this.props.getUserGroups();
+          // this.props.navigation.goBack();
         }
         this.isLeaveLoading = false;
         this.setState({isLeaveLoading: false});
@@ -1555,6 +1620,7 @@ class GroupChats extends Component {
       newMessageText,
       showLeaveGroupConfirmationModal,
       showDeleteGroupConfirmationModal,
+      showdeleteObjectConfirmationModal,
       showMessageUnsendConfirmationModal,
       orientation,
       isMyGroup,
@@ -1579,6 +1645,8 @@ class GroupChats extends Component {
     } = this.props;
 
     console.log('currentGroupDetail', currentGroupDetail);
+    console.log('chatGroupConversation', chatGroupConversation);
+    console.log('currentGroupMembers', currentGroupMembers);
 
     return (
       <ImageBackground
@@ -1593,7 +1661,9 @@ class GroupChats extends Component {
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={
-            isMyGroup
+            currentGroupDetail.is_group_member===false?
+            this.state.headerRightIconMenuIsRemoveGroup
+            :isMyGroup
               ? this.state.headerRightIconMenuIsGroup
               : this.state.headerRightIconMenu
           }
@@ -1676,6 +1746,16 @@ class GroupChats extends Component {
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.groupWillBeDeleted')}
           isLoading={this.state.isLeaveLoading}
+        />
+
+        <ConfirmationModal
+          visible={showdeleteObjectConfirmationModal}
+          onCancel={this.onDeleteObjectCancel}
+          onConfirm={this.onDeleteGroupObject}
+          orientation={orientation}
+          isLoading={this.state.deleteObjectLoading}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.wantToDeleteAllChats')}
         />
 
         <ConfirmationModal
@@ -1772,6 +1852,7 @@ const mapDispatchToProps = {
   updateUnreadGroupMsgsCounts,
   pinGroup,
   unpinGroup,
+  deleteGroupChat
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);
