@@ -1135,7 +1135,7 @@ class SignUp extends Component {
                     this.username = input;
                   }}
                   value={this.state.username}
-                  placeholder={translate('common.username')}
+                  placeholder={translate('common.usernameText')}
                   returnKeyType={'done'}
                   onChangeText={(username) =>
                     this.checkUserName(username.toLowerCase())
