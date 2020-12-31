@@ -153,6 +153,35 @@ export default class App extends Component {
     }
   };
 
+  naviagetoChannelInfo = async (data, url) => {
+    const userToken = await AsyncStorage.getItem('userToken');
+
+    if (userToken) {
+      console.log(
+        'NavigationService.getCurrentRoute()',
+        NavigationService.getCurrentRoute(),
+      );
+      let route = NavigationService.getCurrentRoute();
+      let routeName = route.routeName;
+      if (
+        routeName &&
+        (routeName === 'ChannelInfo' || routeName === 'ChannelChats')
+      ) {
+        NavigationService.popToTop();
+      }
+      // setTimeout(() => {
+      //     console.log('Chat item',data)
+      store.dispatch(setCurrentChannel(data));
+      NavigationService.navigate('ChannelInfo');
+      // }, 1000 );
+    } else {
+      await AsyncStorage.setItem('channelData', JSON.stringify(data));
+      // setTimeout(() => {
+      NavigationService.navigate('Login', {url: url});
+      // }, 1000 );
+    }
+  };
+
   handleOpenURL = async (event) => {
     // console.log('Deep linking Url', event.url);
     let url = event.url;
@@ -168,6 +197,9 @@ export default class App extends Component {
       }
     }
 
+    let channelLoginUrl = url.substring(0, url.indexOf('?')) + '/';
+
+    console.log('channelLoginUrl', channelLoginUrl);
     if (url.indexOf(loginUrl) > -1) {
       //setTimeout(() => {
       NavigationService.navigate('Login', {url: url});
@@ -187,6 +219,27 @@ export default class App extends Component {
         invitationCode: invitationCode,
       });
       // }, 1000 );
+    } else if (loginUrl === channelLoginUrl) {
+      let splitUrl = url.split('&');
+      let invitationCode, channelId;
+      if (splitUrl.length >= 2) {
+        let tmpInviteCode = splitUrl[1];
+        let tmpChannelId = splitUrl[2];
+        if (tmpInviteCode.split('=').length > 1) {
+          invitationCode = tmpInviteCode.split('=')[1];
+        }
+        if (tmpChannelId.split('=').length > 1) {
+          channelId = tmpChannelId.split('=')[1];
+        }
+        console.log('invitationCode', invitationCode);
+        console.log('channelID', channelId);
+      }
+      if (channelId !== null || channelId !== undefined || channelId !== '') {
+        let data = {
+          id: channelId,
+        };
+        this.naviagetoChannelInfo(data, url);
+      }
     } else if (url.indexOf(channelUrl) > -1) {
       let suffixUrl = url.split(channelUrl)[1].trim();
       // console.log('suffixUrl', suffixUrl);
@@ -196,33 +249,12 @@ export default class App extends Component {
           : suffixUrl;
       // console.log('channelId', channelId);
       //await AsyncStorage.setItem('invitationCode', invitationCode);
-      const userToken = await AsyncStorage.getItem('userToken');
-      let data = {
-        id: channelId,
-      };
-      if (userToken) {
-        console.log(
-          'NavigationService.getCurrentRoute()',
-          NavigationService.getCurrentRoute(),
-        );
-        let route = NavigationService.getCurrentRoute();
-        let routeName = route.routeName;
-        if (
-          routeName &&
-          (routeName === 'ChannelInfo' || routeName === 'ChannelChats')
-        ) {
-          NavigationService.popToTop();
-        }
-        // setTimeout(() => {
-        //     console.log('Chat item',data)
-        store.dispatch(setCurrentChannel(data));
-        NavigationService.navigate('ChannelInfo');
-        // }, 1000 );
-      } else {
-        await AsyncStorage.setItem('channelData', JSON.stringify(data));
-        // setTimeout(() => {
-        NavigationService.navigate('Login', {url: url});
-        // }, 1000 );
+
+      if (channelId !== null || channelId !== undefined || channelId !== '') {
+        let data = {
+          id: channelId,
+        };
+        this.naviagetoChannelInfo(data, url);
       }
     }
   };

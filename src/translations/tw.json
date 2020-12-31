@@ -564,6 +564,13 @@
       "hyperLink": "超鏈接",
       "sendingAt": "發送地址：",
       "addChannel":"添加頻道",
+      "changeEmailAddress":"更改您的電子郵件地址",
+      "sendConfirmationCode":"發送確認碼",
+      "enterConfirmationCode":"輸入您在舊電子郵件中收到的確認代碼",
+      "EnterEmailAfterChange":"輸入更改後的新電子郵件地址",
+      "reEnterEmailAfterChange":"更改後重新輸入新的電子郵件地址",
+      "SelecImage":"選擇圖像",
+      "confirm":"確認",
       "toastr": {
         "added": "添加",
         "rejected": "拒絕了",

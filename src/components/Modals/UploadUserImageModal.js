@@ -35,11 +35,11 @@ class UploadUserImageModal extends Component {
 
   chooseFile = () => {
     var options = {
-        title: translate('pages.xchat.chooseOption'),
-        takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
-        chooseFromLibraryButtonTitle:translate('pages.xchat.chooseFromLibrary'),
-        // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
-        cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
+      title: translate('pages.xchat.chooseOption'),
+      takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
+      chooseFromLibraryButtonTitle: translate('pages.xchat.chooseFromLibrary'),
+      // chooseWhichLibraryTitle: translate('pages.xchat.chooseOption'),
+      cancelButtonTitle: translate('pages.xchat.cancelChooseOption'),
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -48,11 +48,11 @@ class UploadUserImageModal extends Component {
     ImagePicker.showImagePicker(options, (response) => {
       if (response.didCancel) {
       } else if (response.error) {
-        console.log('response.error', response.error)
+        console.log('response.error', response.error);
       } else {
         // You can also display the image using data:
         let source = {uri: 'data:image/jpeg;base64,' + response.data};
-          console.log('source from library')
+        console.log('source from library');
         this.setState({
           filePath: source,
           btnDisabled: false,
@@ -122,7 +122,9 @@ class UploadUserImageModal extends Component {
           </LinearGradient>
           <View style={styles.container}>
             {filePath.uri === undefined ||
-            typeof filePath.uri === undefined || filePath.uri === '' || filePath.uri === null? (
+            typeof filePath.uri === undefined ||
+            filePath.uri === '' ||
+            filePath.uri === null ? (
               <TouchableOpacity
                 style={{flexDirection: 'row', alignItems: 'center'}}
                 onPress={this.chooseFile.bind(this)}>
@@ -139,8 +141,7 @@ class UploadUserImageModal extends Component {
               </TouchableOpacity>
             ) : (
               <RoundedImage
-                source={getImage(this.state.filePath.uri,
-                )}
+                source={getImage(this.state.filePath.uri)}
                 size={80}
               />
             )}

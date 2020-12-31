@@ -254,19 +254,21 @@ class ShowAttahmentModal extends Component {
                   loading={isLoading}
                 />
               </View>
-              {isLoading?null:<View
-                style={{
-                  // flex: 0.5,
-                  marginHorizontal: 5,
-                  width: '70%',
-                }}>
-                <Button
-                  title={translate('common.cancel')}
-                  type={'secondary'}
-                  onPress={onCancel}
-                  isRounded={false}
-                />
-              </View>}
+              {isLoading ? null : (
+                <View
+                  style={{
+                    // flex: 0.5,
+                    marginHorizontal: 5,
+                    width: '70%',
+                  }}>
+                  <Button
+                    title={translate('common.cancel')}
+                    type={'secondary'}
+                    onPress={onCancel}
+                    isRounded={false}
+                  />
+                </View>
+              )}
             </View>
           </View>
         </SafeAreaView>

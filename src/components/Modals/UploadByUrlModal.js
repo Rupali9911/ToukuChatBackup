@@ -25,11 +25,9 @@ import {
   getUserProfile,
 } from '../../redux/reducers/userReducer';
 import {ClickableImage} from '../ImageComponents';
-import { Divider } from 'react-native-paper';
-import { isValidUrl } from '../../utils';
-import {
-  getUrlcontent
-} from '../../redux/reducers/groupReducer';
+import {Divider} from 'react-native-paper';
+import {isValidUrl} from '../../utils';
+import {getUrlcontent} from '../../redux/reducers/groupReducer';
 
 class UploadByUrlModal extends Component {
   constructor(props) {
@@ -40,53 +38,57 @@ class UploadByUrlModal extends Component {
   get initialState() {
     return {
       url: '',
-      loading: false
+      loading: false,
     };
   }
 
   checkUrl = (url) => {
-    if(isValidUrl(url)){
-      this.setState({loading:true});
-      this.props.getUrlcontent(url).then((res)=>{
-        this.setState(this.initialState);
-        if(res.content_type.includes('video')){
+    if (isValidUrl(url)) {
+      this.setState({loading: true});
+      this.props
+        .getUrlcontent(url)
+        .then((res) => {
+          this.setState(this.initialState);
+          if (res.content_type.includes('video')) {
+            let video_url = url;
 
-          let video_url = url;
-
-          if(url.includes('youtube.com')){
-            if(url.includes('watch?v=')){
-              video_url = url.replace('watch?v=','embed/');
+            if (url.includes('youtube.com')) {
+              if (url.includes('watch?v=')) {
+                video_url = url.replace('watch?v=', 'embed/');
+              }
+            } else if (url.includes('youtu.be')) {
+              video_url = `https://www.youtube.com/embed${url.substring(
+                url.lastIndexOf('/'),
+              )}`;
             }
-          }else if(url.includes('youtu.be')){
-            video_url = `https://www.youtube.com/embed${url.substring(url.lastIndexOf('/'))}`
-          }
 
-          let data = {
-            mime: res.content_type,
-            path: video_url,
-            filename: video_url,
-            isUrl: true
+            let data = {
+              mime: res.content_type,
+              path: video_url,
+              filename: video_url,
+              isUrl: true,
+            };
+            this.props.onUrlDone(data);
+            this.onRequestClose();
+          } else {
+            Toast.show({
+              title: translate('pages.xchat.touku'),
+              text: translate('pages.xchat.toastr.pleaseSelectValidUrl'),
+              type: 'primary',
+            });
           }
-          this.props.onUrlDone(data);
-          this.onRequestClose();
-        }else{
-          Toast.show({
-            title: translate('pages.xchat.touku'),
-            text: translate('pages.xchat.toastr.pleaseSelectValidUrl'),
-            type: 'primary',
-          });
-        }
-      }).catch((err)=>{ 
-        console.log('err',err);
-      });
-    }else{
+        })
+        .catch((err) => {
+          console.log('err', err);
+        });
+    } else {
       Toast.show({
         title: translate('pages.xchat.touku'),
         text: translate('pages.xchat.toastr.pleaseSelectValidUrl'),
         type: 'primary',
       });
     }
-  }
+  };
 
   onRequestClose = () => {
     this.props.onRequestClose();
@@ -95,10 +97,7 @@ class UploadByUrlModal extends Component {
 
   render() {
     const {visible, userData, onUrlDone} = this.props;
-    const {
-      url,
-      loading
-    } = this.state;
+    const {url, loading} = this.state;
     return (
       <Modal
         isVisible={visible}
@@ -130,13 +129,17 @@ class UploadByUrlModal extends Component {
               onPress={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-          <KeyboardAwareScrollView scrollEnabled={false} showsVerticalScrollIndicator={false}>
+          <KeyboardAwareScrollView
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}>
             <View style={{padding: 15}}>
               <View style={styles.inputContainer}>
                 <TextInput
                   placeholder={translate('pages.xchat.enterUrl')}
                   value={url}
-                  onChangeText={(text) => {this.setState({url:text})}}
+                  onChangeText={(text) => {
+                    this.setState({url: text});
+                  }}
                   onSubmitEditing={() => {
                     this.checkUrl(url);
                   }}
@@ -144,11 +147,12 @@ class UploadByUrlModal extends Component {
                   returnKeyType={'next'}
                 />
               </View>
-              <View style={{ paddingVertical: 10 }}>
+              <View style={{paddingVertical: 10}}>
                 <Divider />
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-                <View style={{ flex: 1 }}>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+                <View style={{flex: 1}}>
                   <Button
                     isRounded={false}
                     type={'secondary'}
@@ -156,12 +160,14 @@ class UploadByUrlModal extends Component {
                     onPress={this.onRequestClose.bind(this)}
                   />
                 </View>
-                <View style={{padding:10}}/>
-                <View style={{ flex: 1 }}>
+                <View style={{padding: 10}} />
+                <View style={{flex: 1}}>
                   <Button
                     isRounded={false}
-                    title={translate('swal.ok')}
-                    onPress={()=>{this.checkUrl(url)}}
+                    title={translate('pages.xchat.confirm')}
+                    onPress={() => {
+                      this.checkUrl(url);
+                    }}
                     loading={loading}
                   />
                 </View>
@@ -169,13 +175,13 @@ class UploadByUrlModal extends Component {
             </View>
           </KeyboardAwareScrollView>
         </View>
-          <View style={{position:'absolute', width: '100%', top: 0}}>
-              <Toast
-                  ref={c => {
-                      if (c) Toast.toastInstance = c;
-                  }}
-              />
-          </View>
+        <View style={{position: 'absolute', width: '100%', top: 0}}>
+          <Toast
+            ref={(c) => {
+              if (c) Toast.toastInstance = c;
+            }}
+          />
+        </View>
       </Modal>
     );
   }
@@ -228,7 +234,7 @@ const mapDispatchToProps = {
   changeEmailSendOtp,
   changeEmail,
   getUserProfile,
-  getUrlcontent
+  getUrlcontent,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadByUrlModal);

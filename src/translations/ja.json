@@ -564,6 +564,13 @@
       "hyperLink": "リッチ画像用URL追加",
       "sendingAt": "送信",
       "addChannel":"チャンネルを追加する",
+      "changeEmailAddress" : "メールアドレスを変更する",
+      "sendConfirmationCode": "確認コードを送信",
+      "enterConfirmationCode": "古いメールで受け取った確認コードを入力してください",
+      "EnterEmailAfterChange": "変更後の新しいメールアドレスを入力してください",
+      "reEnterEmailAfterChange": "変更後に新しいメールアドレスを再入力してください",
+      "SelecImage": "画像を選択",
+      "confrim": "確認」",
       "toastr": {
         "added": "追加しました",
         "rejected": "拒否されました",
