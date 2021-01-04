@@ -28,7 +28,13 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 import HyperLink from 'react-native-hyperlink';
-import {getAvatar, normalize, onPressHyperlink, getUserName, getUser_ActionFromUpdateText} from '../utils';
+import {
+  getAvatar,
+  normalize,
+  onPressHyperlink,
+  getUserName,
+  getUser_ActionFromUpdateText,
+} from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
 import ParsedText from 'react-native-parsed-text';
@@ -479,10 +485,12 @@ class GroupChatMessageBubble extends Component {
                         {translate('pages.xchat.messageUnsent')}
                       </Text>
                     </View>
-                  ) : (message.message_body && message.message_body.type && message.message_body.type === 'update') ? 
+                  ) : message.message_body &&
+                    message.message_body.type &&
+                    message.message_body.type === 'update' ? (
                     this.renderGroupUpdate(message)
-                  :
-                    ( <TouchableOpacity
+                  ) : (
+                    <TouchableOpacity
                       disabled={isMultiSelect}
                       activeOpacity={0.8}
                       style={[
@@ -577,7 +585,10 @@ class GroupChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => onPressHyperlink(url)}
-                            onLongPress={() => this.showMenu()}
+                            onLongPress={() => {
+                              onMessagePress(message.msg_id);
+                              this.showMenu();
+                            }}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -614,7 +625,10 @@ class GroupChatMessageBubble extends Component {
                           parse={[
                             {
                               // pattern: /\B\@([\w\-]+)/gim,
-                              pattern: this.getMentionsPattern()===''?/\B\@([\w\-]+)/gim:new RegExp(this.getMentionsPattern()),
+                              pattern:
+                                this.getMentionsPattern() === ''
+                                  ? /\B\@([\w\-]+)/gim
+                                  : new RegExp(this.getMentionsPattern()),
                               style: {color: '#E65497'},
                             },
                           ]}
@@ -785,7 +799,10 @@ class GroupChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               onPressHyperlink(url);
                             }}
-                            onLongPress={() => this.showMenu()}
+                            onLongPress={() => {
+                              onMessagePress(message.msg_id);
+                              this.showMenu();
+                            }}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -816,7 +833,10 @@ class GroupChatMessageBubble extends Component {
                           parse={[
                             {
                               // pattern: /\B\@([\w\-]+)/gim,
-                              pattern: this.getMentionsPattern()===''?/\B\@([\w\-]+)/gim:new RegExp(this.getMentionsPattern()),
+                              pattern:
+                                this.getMentionsPattern() === ''
+                                  ? /\B\@([\w\-]+)/gim
+                                  : new RegExp(this.getMentionsPattern()),
                               style: {color: '#E65497'},
                             },
                           ]}
@@ -871,28 +891,28 @@ class GroupChatMessageBubble extends Component {
               }
             />
           )}
-          {isUser && isEditable > new Date() && (
-            <MenuItem
-              // icon={() => (
-              //   <FontAwesome5 name={'language'} size={20} color={Colors.white} />
-              // )}
-              onPress={() => {
-                onMessageReply(selectedMessageId);
-                // closeMenu();
-                this.hideMenu();
-              }}
-              // title={translate('common.reply')}
-              // titleStyle={{marginLeft: -25, color: Colors.white}}
-              customComponent={
-                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                  <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
-                  <Text style={{marginLeft: 10, color: '#fff'}}>
-                    {translate('common.reply')}
-                  </Text>
-                </View>
-              }
-            />
-          )}
+          {/* {isUser && ( */}
+          <MenuItem
+            // icon={() => (
+            //   <FontAwesome5 name={'language'} size={20} color={Colors.white} />
+            // )}
+            onPress={() => {
+              onMessageReply(selectedMessageId);
+              // closeMenu();
+              this.hideMenu();
+            }}
+            // title={translate('common.reply')}
+            // titleStyle={{marginLeft: -25, color: Colors.white}}
+            customComponent={
+              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
+                <Text style={{marginLeft: 10, color: '#fff'}}>
+                  {translate('common.reply')}
+                </Text>
+              </View>
+            }
+          />
+          {/* )} */}
           {isUser &&
             isEditable > new Date() &&
             message.message_body &&

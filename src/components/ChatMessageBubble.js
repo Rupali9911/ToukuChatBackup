@@ -199,7 +199,8 @@ class ChatMessageBubble extends Component {
                   {replyMessage.sender_id === this.props.userData.id
                     ? 'You'
                     : getUserName(replyMessage.sender_id) ||
-                    (replyMessage.display_name && replyMessage.display_name !== ''
+                      (replyMessage.display_name &&
+                      replyMessage.display_name !== ''
                         ? replyMessage.display_name
                         : replyMessage.name)}
                 </Text>
@@ -370,6 +371,8 @@ class ChatMessageBubble extends Component {
       return null;
     }
 
+    console.log('isUser', isUser);
+
     return (
       <View>
         <Menu
@@ -526,7 +529,10 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               onPressHyperlink(url);
                             }}
-                            onLongPress={() => this.showMenu()}
+                            onLongPress={() => {
+                              onMessagePress(message.id);
+                              this.showMenu();
+                            }}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -714,7 +720,10 @@ class ChatMessageBubble extends Component {
                             onPress={(url, text) => {
                               onPressHyperlink(url);
                             }}
-                            onLongPress={() => this.showMenu()}
+                            onLongPress={() => {
+                              onMessagePress(message.id);
+                              this.showMenu();
+                            }}
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
@@ -782,34 +791,34 @@ class ChatMessageBubble extends Component {
             />
           )}
 
-          {isUser && isEditable > new Date() && (
-            <MenuItem
-              // icon={() => (
-              //   <FontAwesome5
-              //     name={'language'}
-              //     size={20}
-              //     color={Colors.white}
-              //   />
-              // )}
-              onPress={() => {
-                console.log('selectedMessageId', selectedMessageId);
+          {/* {isUser && isEditable > new Date() && ( */}
+          <MenuItem
+            // icon={() => (
+            //   <FontAwesome5
+            //     name={'language'}
+            //     size={20}
+            //     color={Colors.white}
+            //   />
+            // )}
+            onPress={() => {
+              console.log('selectedMessageId', selectedMessageId);
 
-                onMessageReply(selectedMessageId);
-                // closeMenu();
-                this.hideMenu();
-              }}
-              customComponent={
-                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                  <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
-                  <Text style={{marginLeft: 10, color: '#fff'}}>
-                    {translate('common.reply')}
-                  </Text>
-                </View>
-              }
-              // title={translate('common.reply')}
-              // titleStyle={{marginLeft: -25, color: Colors.white}}
-            />
-          )}
+              onMessageReply(selectedMessageId);
+              // closeMenu();
+              this.hideMenu();
+            }}
+            customComponent={
+              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
+                <Text style={{marginLeft: 10, color: '#fff'}}>
+                  {translate('common.reply')}
+                </Text>
+              </View>
+            }
+            // title={translate('common.reply')}
+            // titleStyle={{marginLeft: -25, color: Colors.white}}
+          />
+          {/* )} */}
           {isUser && isEditable > new Date() && message.msg_type === 'text' && (
             <MenuItem
               // icon={() => (
