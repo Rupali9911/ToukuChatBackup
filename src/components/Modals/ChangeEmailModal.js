@@ -286,7 +286,7 @@ class ChangeEmailModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {translate('pages.xchat.changeEmailAddress')}
+                {translate('pages.xchat.changeEmail')}
               </Text>
             </View>
             <ClickableImage
@@ -331,14 +331,14 @@ class ChangeEmailModal extends Component {
                 title={
                   sendCodeStatus
                     ? translate('common.resend')
-                    : translate('pages.xchat.sendConfirmationCode')
+                    : translate('common.sendCode')
                 }
                 onPress={() => this.onSendCodePress()}
               />
 
               <View style={styles.inputContainer}>
                 <TextInput
-                  placeholder={translate('pages.xchat.enterConfirmationCode')}
+                  placeholder={translate('common.oldEmailVerificationCode')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
                   value={oldEmailVerificationCode}
@@ -401,7 +401,7 @@ class ChangeEmailModal extends Component {
                 {/*) : null}*/}
 
                 <TextInput
-                  placeholder={translate('pages.xchat.EnterEmailAfterChange')}
+                  placeholder={translate('common.enterNewEmail')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
                   value={newEmail}
@@ -413,7 +413,7 @@ class ChangeEmailModal extends Component {
               </View>
               <View style={styles.inputContainer}>
                 <TextInput
-                  placeholder={translate('pages.xchat.reEnterEmailAfterChange')}
+                  placeholder={translate('pages.xchat.reEnterNewEmailAddress')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
                   value={repeatEmail}
@@ -434,7 +434,7 @@ class ChangeEmailModal extends Component {
               <Button
                 isRounded={false}
                 type={'secondary'}
-                title={translate('swal.goBack')}
+                title={translate('common.cancel')}
                 onPress={this.onRequestClose.bind(this)}
               />
             </View>

@@ -240,6 +240,20 @@ class ShowGalleryModal extends Component {
                 justifyContent: 'center',
                 // marginTop: 20,
               }}>
+              <View
+                style={{
+                  // flex: 0.5,
+                  width: '90%',
+                  marginHorizontal: 5,
+                }}>
+                <Button
+                  title={translate('common.uploadImage')}
+                  type={'primary'}
+                  onPress={onUpload}
+                  isRounded={false}
+                  loading={isLoading}
+                />
+              </View>
               {isLoading ? null : (
                 <View
                   style={{
@@ -257,20 +271,6 @@ class ShowGalleryModal extends Component {
                   />
                 </View>
               )}
-              <View
-                style={{
-                  // flex: 0.5,
-                  width: '90%',
-                  marginHorizontal: 5,
-                }}>
-                <Button
-                  title={translate('common.recoverUsernameButton')}
-                  type={'primary'}
-                  onPress={onUpload}
-                  isRounded={false}
-                  loading={isLoading}
-                />
-              </View>
               {isLoading ? null : (
                 <View
                   style={{

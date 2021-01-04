@@ -164,7 +164,7 @@ class UploadByUrlModal extends Component {
                 <View style={{flex: 1}}>
                   <Button
                     isRounded={false}
-                    title={translate('pages.xchat.confirm')}
+                    title={translate('common.confirm')}
                     onPress={() => {
                       this.checkUrl(url);
                     }}
