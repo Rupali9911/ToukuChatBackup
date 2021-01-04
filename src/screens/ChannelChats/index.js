@@ -90,6 +90,7 @@ class ChannelChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      isLoadMore: true,
       selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
@@ -918,9 +919,9 @@ class ChannelChats extends Component {
     }
   };
 
-  getChannelConversations = async () => {
+  getChannelConversations = async (msg_id) => {
     await this.props
-      .getChannelConversations(this.props.currentChannel.id)
+      .getChannelConversations(this.props.currentChannel.id,msg_id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           this.setState({conversations: res.conversation});
@@ -933,6 +934,8 @@ class ChannelChats extends Component {
           conversations = chat.toJSON();
 
           this.props.setChannelConversation(conversations);
+        }else{
+          this.setState({isLoadMore: false});
         }
       });
   };
@@ -1193,6 +1196,7 @@ class ChannelChats extends Component {
       isChatLoading,
       isMultiSelect,
       openDoc,
+      isLoadMore
     } = this.state;
     if (!this.props.chatConversation) {
       return null;
@@ -1241,6 +1245,13 @@ class ChannelChats extends Component {
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
+            isLoadMore = {isLoadMore}
+            onLoadMore = {(message)=>{
+              console.log('msg_id',message.id);
+              if(message && message.id){
+                this.getChannelConversations(message.id);
+              }
+            }}
           />
 
           <ConfirmationModal

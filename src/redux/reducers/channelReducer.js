@@ -575,12 +575,13 @@ const deleteMessage = (data) => ({
   payload: data,
 });
 
-export const getChannelConversations = (id, limit = 30) => (dispatch) =>
+export const getChannelConversations = (id, msg_id, limit = 30) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getChannelConversationsRequest());
     console.log('id-', id, ',limit-', limit);
+    query_parameter = msg_id?`limit=${limit}&msg_id=${msg_id}`:`limit=${limit}`
     client
-      .get(`/xchat/channel-conversation/` + id + '/?' + limit)
+      .get(`/xchat/channel-conversation/` + id + '/?' + query_parameter)
       .then(async (res) => {
         console.log('res_channel_conversation', JSON.stringify(res));
         setChannelChatConversation(res.conversation);

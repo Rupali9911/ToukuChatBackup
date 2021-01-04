@@ -26,6 +26,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import CheckBox from './CheckBox';
 import Button from './Button';
+import { ListLoader } from './Loaders';
 
 const {height} = Dimensions.get('window');
 
@@ -172,6 +173,7 @@ class ChatContainer extends Component {
       onAttachmentPress,
       sendingImage,
       currentChannel,
+      channelLoading,
       sendEnable,
       isMultiSelect,
       onSelect,
@@ -180,9 +182,11 @@ class ChatContainer extends Component {
       onSelectedDelete,
       currentFriend,
       isChatDisable,
+      onLoadMore,
+      isLoadMore
     } = this.props;
 
-    console.log('messages', currentFriend);
+    // console.log('messages', currentFriend);
 
     return (
       <KeyboardAwareScrollView
@@ -243,6 +247,14 @@ class ChatContainer extends Component {
               }}
               data={messages}
               inverted={true}
+              onEndReached={()=>{
+                if(messages.length>0 && messages.length % 30 === 0 && isLoadMore && !channelLoading){
+                  console.log('load more');
+                  onLoadMore && onLoadMore(messages[messages.length - 1]);
+                }
+              }}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={()=>channelLoading?<ListLoader />:null}
               renderItem={({item, index}) => {
                 getDate = (date) => {
                   const today = new Date();
@@ -641,6 +653,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     currentChannel: state.channelReducer.currentChannel,
     currentFriend: state.friendReducer.currentFriend,
+    channelLoading: state.channelReducer.loading,
   };
 };
 

@@ -43,7 +43,7 @@ export default class VideoThumbnailPlayer extends Component {
           console.log(response);
           this.setState({thumbnailUrl: response.path});
         })
-        .catch((err) => console.log({err}));
+        .catch((err) => console.log({err,url}));
     }
   };
 
