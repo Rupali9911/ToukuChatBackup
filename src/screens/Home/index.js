@@ -264,6 +264,7 @@ class Home extends PureComponent {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getFriendRequest();
     this.getLocalRequest();
+    console.log('componentDidMount_Home')
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
@@ -303,15 +304,15 @@ class Home extends PureComponent {
     // }
   }
 
-  componentDidUpdate(nextPorps) {
-    if (nextPorps.followingChannels !== this.props.followingChannels) {
-      this.channelFilter();
-    } else if (nextPorps.userGroups !== this.props.userGroups) {
-      this.groupFilter();
-    } else if (nextPorps.userFriends !== this.props.userFriends) {
-      this.friendFilter();
-    }
-  }
+  // componentDidUpdate(nextPorps) {
+  //   if (nextPorps.followingChannels !== this.props.followingChannels) {
+  //     this.channelFilter();
+  //   } else if (nextPorps.userGroups !== this.props.userGroups) {
+  //     this.groupFilter();
+  //   } else if (nextPorps.userFriends !== this.props.userFriends) {
+  //     this.friendFilter();
+  //   }
+  // }
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -595,7 +596,7 @@ class Home extends PureComponent {
               message.text.data.message_details,
               channels[0].unread_msg,
             );
-            this.props.getLocalFollowingChannels();
+            // this.props.getLocalFollowingChannels();
             this.setChannelHeaderCount();
             break;
           } else if (
@@ -618,7 +619,7 @@ class Home extends PureComponent {
               message.text.data.message_details,
               channels[0].unread_msg + 1,
             );
-            this.props.getLocalFollowingChannels();
+            // this.props.getLocalFollowingChannels();
             this.setChannelHeaderCount();
             break;
           }
@@ -650,7 +651,7 @@ class Home extends PureComponent {
               item,
               channels[0].unread_msg + 1,
             );
-            this.props.getLocalFollowingChannels();
+            // this.props.getLocalFollowingChannels();
             this.setChannelHeaderCount();
             break;
           }
@@ -685,7 +686,7 @@ class Home extends PureComponent {
               message.text.data.message_details,
             );
           }
-          this.props.getLocalFollowingChannels();
+          // this.props.getLocalFollowingChannels();
           this.setChannelHeaderCount();
           break;
         }
@@ -719,7 +720,7 @@ class Home extends PureComponent {
           array[0],
         );
       }
-      this.props.getLocalFollowingChannels();
+      // this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
     }
   }
@@ -750,7 +751,7 @@ class Home extends PureComponent {
           array[0],
         );
       }
-      this.props.getLocalFollowingChannels();
+      // this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
     }
   }
@@ -881,7 +882,7 @@ class Home extends PureComponent {
             message.text.data.message_details,
           );
         }
-        this.props.getLocalFollowingChannels();
+        // this.props.getLocalFollowingChannels();
         this.setChannelHeaderCount();
       } else if (message.text.data.message_details.to_user.id == userData.id) {
         var users = getLocalUserFriend(
@@ -906,7 +907,7 @@ class Home extends PureComponent {
             message.text.data.message_details,
           );
         }
-        this.props.getLocalFollowingChannels();
+        // this.props.getLocalFollowingChannels();
         this.setChannelHeaderCount();
       }
     }
@@ -950,7 +951,7 @@ class Home extends PureComponent {
           );
         }
       }
-      this.props.getLocalFollowingChannels();
+      // this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
     }
   }
@@ -1110,7 +1111,7 @@ class Home extends PureComponent {
             message.text.data.socket_event_id,
           );
           // this.getFollowingChannels();
-          this.props.getLocalFollowingChannels();
+          // this.props.getLocalFollowingChannels();
           this.setChannelHeaderCount();
           break;
         }
@@ -1165,7 +1166,7 @@ class Home extends PureComponent {
       //   }
       // }
       deleteChannelById(message.text.data.message_details.channel_id);
-      this.props.getLocalFollowingChannels();
+      // this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
     }
   }
@@ -1177,7 +1178,7 @@ class Home extends PureComponent {
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       updateChannelTotalMember(message.text.data.message_details.channel_id);
-      this.props.getLocalFollowingChannels();
+      // this.props.getLocalFollowingChannels();
       this.setChannelHeaderCount();
     }
   }

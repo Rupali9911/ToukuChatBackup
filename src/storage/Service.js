@@ -689,7 +689,7 @@ export const updateChannelDetails = (id, data) => {
 };
 
 export const updateChannelUnReadCountById = (id, unread_msg) => {
-  console.log('unread_count update');
+  console.log('unread_count update',unread_msg, id);
   realm.write(() => {
     realm.create('channels', { id: id, unread_msg: unread_msg }, 'modified');
   });
@@ -701,7 +701,6 @@ export const deleteChannelById = (id) => {
     realm.delete(message);
   });
 };
-//#endregion
 
 export const deleteChannelConversationById = (id) => {
   var channel = realm.objects('chat_conversation').filtered(`channel == ${id}`);
@@ -711,6 +710,7 @@ export const deleteChannelConversationById = (id) => {
     });
   }
 };
+//#endregion
 
 //#region Groups List
 export const setGroups = async (group) => {

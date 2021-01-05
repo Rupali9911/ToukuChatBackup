@@ -1981,7 +1981,7 @@ class Chat extends Component {
       }
     }
     if (
-      this.props.currentRouteName == 'GroupChats' &&
+      (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -2009,7 +2009,7 @@ class Chat extends Component {
       }
     }
     if (
-      this.props.currentRouteName == 'GroupChats' &&
+      (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -2033,7 +2033,7 @@ class Chat extends Component {
         }
 
         if (
-          this.props.currentRouteName == 'GroupChats' &&
+          (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
           currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id
         ) {
@@ -2068,7 +2068,7 @@ class Chat extends Component {
         });
       } else {
         if (
-          this.props.currentRouteName == 'GroupChats' &&
+          (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
           currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id
         ) {

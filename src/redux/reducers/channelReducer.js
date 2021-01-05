@@ -181,6 +181,7 @@ export default function (state = initialState, action) {
       };
 
     case SET_UNREAD_CHANNEL_MSG_COUNTS:
+      console.log('SET_UNREAD_CHANNEL_MSG_COUNTS',action.payload);
       return {
         ...state,
         unreadChannelMsgsCounts: action.payload,
@@ -260,6 +261,7 @@ const getFollowingChannelsFailure = () => ({
 
 export const getLocalFollowingChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
+    console.log('getLocalFollowingChannels');
     let channels = getChannels();
     if (channels.length) {
       let array = [];
@@ -296,9 +298,11 @@ export const getLocalFollowingChannels = () => (dispatch) =>
 
 export const getFollowingChannels = (start = 0) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    console.log('getFollowingChannels');
     dispatch(getFollowingChannelsRequest());
     recursionFollowingChannels(start)
       .then((res) => {
+        console.log('recursionFollowingChannels');
         let channels = getChannels();
         if (channels.length) {
           let array = [];
@@ -585,7 +589,7 @@ export const getChannelConversations = (id, msg_id, limit = 30) => (dispatch) =>
       .then(async (res) => {
         console.log('res_channel_conversation', JSON.stringify(res));
         setChannelChatConversation(res.conversation);
-        dispatch(getFollowingChannels(0));
+        // dispatch(getFollowingChannels(0));
         dispatch(getChannelConversationsSuccess());
         resolve(res);
       })

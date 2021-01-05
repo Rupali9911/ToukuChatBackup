@@ -792,34 +792,32 @@ class ChatMessageBubble extends Component {
             />
           )}
 
-          {/* {isUser && isEditable > new Date() && ( */}
-          <MenuItem
-            // icon={() => (
-            //   <FontAwesome5
-            //     name={'language'}
-            //     size={20}
-            //     color={Colors.white}
-            //   />
-            // )}
-            onPress={() => {
-              console.log('selectedMessageId', selectedMessageId);
+            <MenuItem
+              // icon={() => (
+              //   <FontAwesome5
+              //     name={'language'}
+              //     size={20}
+              //     color={Colors.white}
+              //   />
+              // )}
+              onPress={() => {
+                console.log('selectedMessageId', selectedMessageId);
 
-              onMessageReply(selectedMessageId);
-              // closeMenu();
-              this.hideMenu();
-            }}
-            customComponent={
-              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                <FontAwesome5 name={'reply'} size={20} color={Colors.white} />
-                <Text style={{marginLeft: 10, color: '#fff'}}>
-                  {translate('common.reply')}
-                </Text>
-              </View>
-            }
-            // title={translate('common.reply')}
-            // titleStyle={{marginLeft: -25, color: Colors.white}}
-          />
-          {/* )} */}
+                onMessageReply(selectedMessageId);
+                // closeMenu();
+                this.hideMenu();
+              }}
+              customComponent={
+                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                  <FontAwesome5 style={{flex:1}} name={'reply'} size={20} color={Colors.white} />
+                  <Text style={{flex:2, marginLeft: 10, color: '#fff'}}>
+                    {translate('common.reply')}
+                  </Text>
+                </View>
+              }
+              // title={translate('common.reply')}
+              // titleStyle={{marginLeft: -25, color: Colors.white}}
+            />
           {isUser && isEditable > new Date() && message.msg_type === 'text' && (
             <MenuItem
               // icon={() => (

@@ -175,7 +175,8 @@ export default class ButtonWithArrow extends Component {
         }}
         theme={{animation: {scale: 0}}}
         visible={visible}
-        onDismiss={() => this.setState({visible: false})}
+        onDismiss={() => {this.setState({visible: false})}}
+        onPosition={(e)=>{console.log('isPosition_below_anchor',e)}}
         anchor={
           <TouchableOpacity
             disabled={disabled}

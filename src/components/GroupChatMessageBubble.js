@@ -1061,8 +1061,8 @@ class GroupChatMessageBubble extends Component {
 const styles = StyleSheet.create({
   talkBubble: {
     justifyContent: 'flex-end',
-    marginBottom: 5,
-    // marginTop: 5,
+    marginBottom: 7,
+    marginTop: 2,
   },
   talkBubbleAbsoluteRight: {
     width: 30,
