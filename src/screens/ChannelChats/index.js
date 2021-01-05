@@ -586,6 +586,7 @@ class ChannelChats extends Component {
           console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
         },
+          uploadFile.name
       );
       msgText = uploadedApplication;
     }

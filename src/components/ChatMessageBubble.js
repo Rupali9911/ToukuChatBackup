@@ -104,12 +104,13 @@ class ChatMessageBubble extends Component {
 
   onDocumentPress = (url) => {
     this.props.showOpenLoader(true);
+    let name = url.split('/').pop()
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
         [
           {
             url: url,
-            fileNameOptional: 'test filename',
+            fileNameOptional: name,
           },
         ],
         (error, url) => {
@@ -129,7 +130,7 @@ class ChatMessageBubble extends Component {
         [
           {
             url: url,
-            fileName: 'sample',
+            fileName: name,
             cache: false,
             fileType: url.split('.').pop(),
           },

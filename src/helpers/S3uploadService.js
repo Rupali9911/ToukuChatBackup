@@ -62,12 +62,12 @@ export default class S3uploadService extends Component {
     return audio.body.postResponse.location;
   }
 
-  async uploadApplicationOnS3Bucket(files, fileType, onProgress) {
+  async uploadApplicationOnS3Bucket(files, fileType, onProgress, name) {
     let application;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const fileName = `doc_${moment().valueOf()}_${i + 1}.${fileType
-        .split('/')
+      const fileName = `doc_${moment().valueOf()}_${i + 1}.${name
+        .split('.')
         .pop()}`;
       application = await this.uploadFile(file, fileName, fileType, onProgress);
     }
@@ -111,7 +111,7 @@ export default class S3uploadService extends Component {
   }
 
   async resizeImage(file, width, height) {
-    // const resizedImage = 
+    // const resizedImage =
     return await ImageResizer.createResizedImage(
       file,
       width,

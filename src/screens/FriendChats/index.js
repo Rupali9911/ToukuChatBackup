@@ -378,6 +378,7 @@ class FriendChats extends Component {
       let file = uploadFile.uri;
       let files = [file];
       let fileType = uploadFile.type;
+      console.log('file', uploadFile)
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
         uploadFile.type,
@@ -385,7 +386,9 @@ class FriendChats extends Component {
           console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
         },
+          uploadFile.name
       );
+      console.log('uploadedApplication', uploadedApplication)
       msgText = uploadedApplication;
     }
 

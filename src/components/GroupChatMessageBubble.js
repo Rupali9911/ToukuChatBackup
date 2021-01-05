@@ -148,12 +148,13 @@ class GroupChatMessageBubble extends Component {
 
   onDocumentPress = (url) => {
     this.props.showOpenLoader(true);
+      let name = url.split('/').pop()
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
         [
           {
             url: url,
-            fileNameOptional: 'test filename',
+            fileNameOptional: name,
           },
         ],
         (error, url) => {
@@ -173,7 +174,7 @@ class GroupChatMessageBubble extends Component {
         [
           {
             url: url,
-            fileName: 'sample',
+            fileName: name,
             cache: false,
             fileType: url.split('.').pop(),
           },
@@ -217,7 +218,7 @@ class GroupChatMessageBubble extends Component {
             {/* <View style={{}}>
             <Image
               source={getAvatar(
-                
+
                   message.sender_picture,
               )}              style={{
                 width: 25,
