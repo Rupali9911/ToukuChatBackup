@@ -1076,6 +1076,7 @@ class SignUp extends Component {
                   placeholder={
                     translate('common.email') + ' ' + '(example@gmail.com)'
                   }
+                  placeholderTextColor="#D3D3D3"
                   returnKeyType={'next'}
                   keyboardType={'email-address'}
                   onChangeText={(email) => this.handleEmail(email)}
@@ -1091,6 +1092,7 @@ class SignUp extends Component {
                 }}
                 value={this.state.password}
                 placeholder={translate('pages.register.loginPassword')}
+                placeholderTextColor="#D3D3D3"
                 returnKeyType={'next'}
                 onChangeText={(password) => this.handlePassword(password)}
                 onSubmitEditing={() => {
@@ -1136,6 +1138,7 @@ class SignUp extends Component {
                   }}
                   value={this.state.username}
                   placeholder={translate('common.usernameText')}
+                  placeholderTextColor="#D3D3D3"
                   returnKeyType={'done'}
                   onChangeText={(username) =>
                     this.checkUserName(username.toLowerCase())

@@ -100,7 +100,9 @@ export default class InputField extends Component {
       isSuggestions,
       rightBtnText,
       loading,
+      placeholderTextColor,
       isEyeIcon,
+
       ...rest
     } = this.props;
 
@@ -148,7 +150,7 @@ export default class InputField extends Component {
               ? [styles.inputStyle, styles.placeholderStyle]
               : styles.inputStyle
           }
-          placeholderTextColor="#eeeeee"
+          placeholderTextColor={placeholderTextColor || '#eeeeee'}
           placeholder={placeholder}
           onChangeText={this.onChangeText.bind(this)}
           value={value}

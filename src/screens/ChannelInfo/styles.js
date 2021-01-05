@@ -29,8 +29,8 @@ export const channelInfoStyles = StyleSheet.create({
     alignItems: 'center',
   },
   imageView: {
-    height: Platform.OS === 'ios' ? height * 0.09 : height * 0.12,
-    width: Platform.OS === 'ios' ? height * 0.09 : height * 0.12,
+    height: height * 0.12,
+    width: height * 0.12,
   },
   profileImage: {
     height: '100%',

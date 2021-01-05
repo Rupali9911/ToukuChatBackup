@@ -199,13 +199,13 @@ export default class ChatMessageBox extends Component {
               maxWidth:
                 message.msg_type === 'text'
                   ? isMultiSelect
-                    ? width * 0.60
+                    ? width * 0.6
                     : width * 0.67
                   : message.msg_type === 'image'
-                    ? isMultiSelect
-                      ? width - 80
-                      : width - 40
-                    : width * 0.65,
+                  ? isMultiSelect
+                    ? width - 80
+                    : width - 40
+                  : width * 0.65,
               justifyContent: 'flex-start',
             },
           ]}>
@@ -273,10 +273,7 @@ export default class ChatMessageBox extends Component {
                     source={
                       isChannel
                         ? getAvatar(currentChannel.channel_picture)
-                        : message &&
-                          message.from_user &&
-                          message.from_user.avatar &&
-                          getAvatar(message.from_user.avatar)
+                        : getAvatar(message.from_user.avatar)
                     }
                     style={{
                       width: 40,
@@ -294,7 +291,7 @@ export default class ChatMessageBox extends Component {
                   alignItems: 'flex-end',
                   flexDirection:
                     message.msg_type === 'image' ? 'column' : 'row',
-                    marginTop: 2
+                  marginTop: 2,
                 }}>
                 <ChatMessageBubble
                   message={message}
