@@ -18,7 +18,7 @@ import {Colors, Fonts, Images, Icons} from '../../constants';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
 import Toast from '../ToastModal';
-import {translate} from '../../redux/reducers/languageReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {
   changeEmailSendOtp,
   changeEmail,
@@ -29,6 +29,7 @@ import {ClickableImage} from '../ImageComponents';
 class ChangeEmailModal extends Component {
   constructor(props) {
     super(props);
+      setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = this.initialState;
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -490,7 +491,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    userData: state.userReducer.userData,
+      selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+      userData: state.userReducer.userData,
     loading: state.userReducer.loading,
   };
 };

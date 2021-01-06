@@ -183,7 +183,7 @@ export default class App extends Component {
   };
 
   handleOpenURL = async (event) => {
-    // console.log('Deep linking Url', event.url);
+     console.log('Deep linking Url', event.url);
     let url = event.url;
 
     if (url.indexOf(DEEPLINK.toLowerCase()) > -1) {
@@ -193,7 +193,7 @@ export default class App extends Component {
           : url.split('touku://touku')[1].trim();
       if (suffixUrlDeep != '') {
         url = Environment + suffixUrlDeep;
-        // console.log('suffixUrlDeep', url);
+         console.log('suffixUrlDeep', url);
       }
     }
 
