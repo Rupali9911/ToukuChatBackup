@@ -371,9 +371,6 @@ class ChatMessageBubble extends Component {
     if (!message.message_body && !message.is_unsent) {
       return null;
     }
-
-    console.log('isUser', isUser);
-
     return (
       <View>
         <Menu

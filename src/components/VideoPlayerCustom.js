@@ -29,7 +29,7 @@ export default class VideoPlayerCustom extends Component {
 
   componentDidMount() {
     this.generateThumbnail(this.props.url);
-    console.log('resr12312313313', this.props.url);
+    // console.log('resr12312313313', this.props.url);
   }
 
   componentWillReceiveProps(nextProps) {
