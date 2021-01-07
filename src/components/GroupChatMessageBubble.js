@@ -370,7 +370,7 @@ class GroupChatMessageBubble extends Component {
   getMentionsPattern = () => {
     const {groupMembers} = this.props;
     const groupMentions = groupMembers.map(
-      (groupMember) => `@${groupMember.display_name}`,
+      (groupMember) => `@${groupMember.display_name || groupMember.username}`,
     );
     return groupMentions.join('|');
   };
@@ -383,8 +383,9 @@ class GroupChatMessageBubble extends Component {
       .map((text) => {
         let mention = null;
         groupMembers.forEach((groupMember) => {
+          console.log('groupMember',groupMember);
           if (text === `~${groupMember.id}~`) {
-            mention = `@${groupMember.display_name}`;
+            mention = `@${groupMember.display_name || groupMember.username}`;
             newMessageMentions = [...newMessageMentions, groupMember.id];
           }
         });

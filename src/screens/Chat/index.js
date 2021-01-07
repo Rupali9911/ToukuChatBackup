@@ -2949,7 +2949,7 @@ class Chat extends Component {
                       ? translate('pages.xchat.video')
                       : item.last_msg.msg_type === 'doc'
                       ? translate('pages.xchat.document')
-                      : item.last_msg.type === 'audio'
+                      : item.last_msg.msg_type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
                     : ''

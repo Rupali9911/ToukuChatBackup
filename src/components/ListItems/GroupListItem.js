@@ -86,7 +86,7 @@ export default class GroupListItem extends PureComponent {
           mentions.length &&
           mentions.forEach((mentionUser) => {
             if (text === `~${mentionUser.id}~`) {
-              mention = `@${mentionUser.desplay_name}`;
+              mention = `@${mentionUser.desplay_name || mentionUser.username}`;
               newMessageMentions = [...newMessageMentions, mentionUser.id];
             }
           });
