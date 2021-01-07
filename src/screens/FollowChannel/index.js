@@ -139,7 +139,6 @@ class FollowChannel extends Component {
               this.setState({
                 loading: false,
                 channel_id: '',
-                referral_code: '',
               });
               Toast.show({
                 title: translate('pages.xchat.followChannel'),
@@ -171,7 +170,7 @@ class FollowChannel extends Component {
             this.setState({loading: false});
             Toast.show({
               title: translate('pages.xchat.followChannel'),
-              text: translate('pages.invitation.wrongFollowCode'),
+              text: translate('backend.common.RererralCodeIsInvalid'),
               type: 'primary',
             });
           });

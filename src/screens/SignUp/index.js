@@ -48,7 +48,7 @@ import {
 } from '../../redux/reducers/signupReducer';
 import Toast from '../../components/Toast';
 import WebViewClass from '../../components/WebView';
-
+import {setCurrentChannel} from '../../redux/reducers/channelReducer';
 class SignUp extends Component {
   constructor(props) {
     super(props);
@@ -1293,6 +1293,7 @@ const mapDispatchToProps = {
   socialRegistration,
   userNewRegister,
   socialRegistrationNew,
+  setCurrentChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

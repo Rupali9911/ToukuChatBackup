@@ -183,7 +183,7 @@ export default class App extends Component {
   };
 
   handleOpenURL = async (event) => {
-     console.log('Deep linking Url', event.url);
+    // console.log('Deep linking Url', event.url);
     let url = event.url;
 
     if (url.indexOf(DEEPLINK.toLowerCase()) > -1) {
@@ -193,13 +193,13 @@ export default class App extends Component {
           : url.split('touku://touku')[1].trim();
       if (suffixUrlDeep != '') {
         url = Environment + suffixUrlDeep;
-         console.log('suffixUrlDeep', url);
+        // console.log('suffixUrlDeep', url);
       }
     }
 
     let channelLoginUrl = url.substring(0, url.indexOf('?')) + '/';
 
-    console.log('channelLoginUrl', channelLoginUrl);
+    // console.log('channelLoginUrl', channelLoginUrl);
     if (url.indexOf(loginUrl) > -1) {
       //setTimeout(() => {
       NavigationService.navigate('Login', {url: url});
@@ -256,6 +256,29 @@ export default class App extends Component {
         };
         this.naviagetoChannelInfo(data, url);
       }
+    } else if (url.indexOf('invite') > -1) {
+      let urlData = url.split('/');
+      if (urlData.length > 4) {
+        if (urlData[4] !== null || urlData[4] !== undefined || urlData[4] !== '') {
+          let data = {
+            id: urlData[4],
+          };
+          this.naviagetoChannelInfo(data, url);
+        }
+      }
+    }else if( url.indexOf('channel-detail') > -1){
+      let urlData = url.split('/');
+
+      // console.log("urlData", urlData);
+
+      if (urlData.length > 4) {
+        if (urlData[5] !== null || urlData[5] !== undefined || urlData[5] !== '') {
+          let data = {
+            id: urlData[5],
+          };
+          this.naviagetoChannelInfo(data, url);
+        }
+      }
     }
   };
 
@@ -280,7 +303,7 @@ export default class App extends Component {
         },
       );
       result = await result.json();
-      alert('data', result);
+      // alert('data', result);
       // console.log('result of clear batch count', result, userAndFcmToken[1][1]);
     }
   };
