@@ -97,7 +97,7 @@ export const setCommonChatConversation = () => (dispatch) =>
     }
     var groups = getGroups();
     if (groups.length) {
-      let group_array = groups.toJSON().filter((item)=>item.last_msg_id!==null);
+      let group_array = groups.toJSON().filter((item)=>!item.no_msgs);
       array = [...array, ...group_array];
       // groups.map((item, index) => {
       //   if (item.last_msg_id !== null) {

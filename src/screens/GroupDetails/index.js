@@ -10,6 +10,7 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -1230,6 +1231,7 @@ class GroupDetails extends Component {
             message={translate('pages.xchat.deleteNoteText')}
           />
         </View>
+        <SafeAreaView />
       </View>
     );
   }

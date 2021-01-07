@@ -842,6 +842,7 @@ export const updateLastMsgGroups = (id, message, unreadCount) => {
         last_msg: last_msg,
         last_msg_id: message.msg_id,
         mentions: message.mentions.length ? message.mentions : [],
+        no_msgs: false,
         unread_msg: unreadCount,
         timestamp: message.timestamp,
       },
@@ -868,6 +869,7 @@ export const updateLastMsgGroupsWithoutCount = (
         group_id: id,
         last_msg: last_msg,
         last_msg_id: last_msg_id,
+        no_msgs: false,
         timestamp: timestamp,
       },
       'modified',
@@ -882,6 +884,7 @@ export const updateLastMsgTimestamp = (id, timestamp, unreadCount) => {
       {
         group_id: id,
         timestamp: timestamp,
+        no_msgs: false,
         unread_msg: unreadCount,
       },
       'modified',

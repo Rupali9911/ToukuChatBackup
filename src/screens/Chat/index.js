@@ -964,7 +964,7 @@ class Chat extends Component {
             message.text.data.message_details.group_id,
             message.text.data.message_details.timestamp,
             unreadCount
-          );
+            );
         }
         
         // updateGroup(message.text.data.message_details).then(() => {
@@ -2915,7 +2915,7 @@ class Chat extends Component {
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
-                    : item.no_msgs
+                    : (item.no_msgs || !item.last_msg_id)
                     ? ''
                     : translate('pages.xchat.messageUnsent')
                 }
