@@ -435,7 +435,7 @@ class ChatContainer extends Component {
                     {this.props.isChannel ||
                     repliedMessage.from_user.id === this.props.userData.id
                       ? repliedMessage.from_user.id === this.props.userData.id
-                        ? 'You'
+                        ? translate('pages.xchat.you')
                         : repliedMessage.from_user.display_name
                         ? repliedMessage.from_user.display_name
                         : repliedMessage.from_user.username
