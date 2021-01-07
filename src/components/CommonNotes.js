@@ -21,11 +21,11 @@ export default class CommonNotes extends Component {
     this.state = {
       text: '',
       commentText: '',
-      showCommentBoxIndex: -1
+      showCommentBoxIndex: -1,
     };
   }
 
-  UNSAFE_componentWillMount(){
+  UNSAFE_componentWillMount() {
     this.events = eventService.getMessage().subscribe((message) => {
       switch (message.text.data.type) {
         case SocketEvents.LIKE_OR_UNLIKE_GROUP_NOTE_COMMENT_DATA:
@@ -34,32 +34,34 @@ export default class CommonNotes extends Component {
         case SocketEvents.LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA:
         case SocketEvents.FRIEND_NOTE_COMMENT_DATA:
         case SocketEvents.DELETE_FRIEND_NOTE_COMMENT:
-          if(message){
-            let data = this.props.isFriend?message.text.data.message_details.data:message.text.data.message_details;  
-            
-            if(this.props.isFriend){
+          if (message) {
+            let data = this.props.isFriend
+              ? message.text.data.message_details.data
+              : message.text.data.message_details;
+
+            if (this.props.isFriend) {
               let id = data.note_id || data.friend_note;
-              if(data && id){
-                this[`note_item_`+id] && this[`note_item_`+id].checkEventTypes(message);
+              if (data && id) {
+                this[`note_item_` + id] &&
+                  this[`note_item_` + id].checkEventTypes(message);
               }
-            }else{
+            } else {
               let id = data.note_id || data.group_note;
-              if(data && id){
-                this[`note_item_`+id] && this[`note_item_`+id].checkEventTypes(message);
+              if (data && id) {
+                this[`note_item_` + id] &&
+                  this[`note_item_` + id].checkEventTypes(message);
               }
             }
           }
           break;
         default:
-    }
-      });
+      }
+    });
   }
 
-  componentDidMount() {
-    
-  }
+  componentDidMount() {}
 
-  componentWillMount(){
+  componentWillMount() {
     this.events && this.events.unsubscribe();
   }
 
@@ -68,7 +70,7 @@ export default class CommonNotes extends Component {
   };
 
   render() {
-    const {text,commentText,showCommentBoxIndex} = this.state;
+    const {text, commentText, showCommentBoxIndex} = this.state;
     const {
       data,
       onPost,
@@ -82,7 +84,9 @@ export default class CommonNotes extends Component {
       onLikeUnlike,
       isFriend,
       groupMembers,
+      onExpand,
     } = this.props;
+
     return (
       <React.Fragment>
         <View
@@ -179,16 +183,16 @@ export default class CommonNotes extends Component {
               </View>
             </>
           )}
-          {data && data.results.length > 0 ? (
+          {data && data.results && data.results.length > 0 ? (
             <FlatList
               keyExtractor={(item, index) => index.toString()}
               data={data.results}
-              renderItem={({item, index}) =>
+              renderItem={({item, index}) => (
                 <NoteItem
-                  onRef={(note)=>{
-                    this['note_item_'+item.id]=note;
+                  onRef={(note) => {
+                    this['note_item_' + item.id] = note;
                   }}
-                  key={item.id+''}
+                  key={item.id + ''}
                   isFriend={isFriend}
                   index={index}
                   editNote={editNoteIndex === index}
@@ -199,9 +203,10 @@ export default class CommonNotes extends Component {
                   onPost={onPost}
                   onLikeUnlike={onLikeUnlike}
                   groupMembers={groupMembers}
+                  onExpand={onExpand}
                 />
-              }
-              ItemSeparatorComponent={()=><View style={{height:10}}/>}
+              )}
+              ItemSeparatorComponent={() => <View style={{height: 10}} />}
               // ListFooterComponent={() => (
               //   <View>{loading ? <ListLoader /> : null}</View>
               // )}

@@ -52,7 +52,8 @@ import {
   setCurrentGroup,
   setGroupConversation,
   getLocalUserGroups,
-  likeUnlikeGroupNote
+  likeUnlikeGroupNote,
+  getGroupDetailData,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ConfirmationModal} from '../../components/Modals';
@@ -65,7 +66,6 @@ import {
 
 import moment from 'moment';
 const {width, height} = Dimensions.get('window');
-
 class GroupDetails extends Component {
   constructor(props) {
     super(props);
@@ -91,7 +91,7 @@ class GroupDetails extends Component {
       filePath: {uri: this.props.currentGroupDetail.group_picture}, //For Image Picker
       showTextBox: false,
       isLoading: false,
-      data: null,
+      data: [],
       uploadLoading: false,
       memberOption: [
         {
@@ -225,7 +225,7 @@ class GroupDetails extends Component {
         this.hendleEditNote(message.text.data.message_details);
         break;
       }
-      case SocketEvents.LIKE_OR_UNLIKE_GROUP_NOTE_DATA: 
+      case SocketEvents.LIKE_OR_UNLIKE_GROUP_NOTE_DATA:
         this.handleLikeUnlikeNote(message);
         break;
       case SocketEvents.GROUP_NOTE_COMMENT_DATA:
@@ -531,7 +531,13 @@ class GroupDetails extends Component {
 
   renderUserFriends() {
     const {userFriends, friendLoading, currentGroupMembers} = this.props;
-    const {memberOption, adminOption, addOption, NonAdminAddOption, loading} = this.state;
+    const {
+      memberOption,
+      adminOption,
+      addOption,
+      NonAdminAddOption,
+      loading,
+    } = this.state;
     let filteredFriends = [];
     if (currentGroupMembers && currentGroupMembers.length > 0) {
       filteredFriends = currentGroupMembers.filter(
@@ -560,14 +566,23 @@ class GroupDetails extends Component {
                     : translate('pages.xchat.add')
                 }
                 isRightDropDown={true}
-                disableEdit = {this.isMemberCheck(item.id ? item.id : item.user_Id) && !this.state.isMyGroup}
+                disableEdit={
+                  this.isMemberCheck(item.id ? item.id : item.user_Id) &&
+                  !this.state.isMyGroup
+                }
                 dropDownData={
                   this.isMemberCheck(item.id ? item.id : item.user_Id)
                     ? this.isMemberCheck(item.id ? item.id : item.user_Id)
                         .member_type == 'member'
-                      ? this.state.isMyGroup?memberOption:[]
-                      : this.state.isMyGroup?adminOption:[]
-                    : this.state.isMyGroup?addOption:NonAdminAddOption
+                      ? this.state.isMyGroup
+                        ? memberOption
+                        : []
+                      : this.state.isMyGroup
+                      ? adminOption
+                      : []
+                    : this.state.isMyGroup
+                    ? addOption
+                    : NonAdminAddOption
                 }
                 memberType={
                   this.isMemberCheck(item.id ? item.id : item.user_Id)
@@ -619,12 +634,17 @@ class GroupDetails extends Component {
     if (isNote.length) {
       return;
     }
+
+    let detailObj = {...detail, showComment: false};
+
     this.setState({
       data: {
         ...data,
         count: data ? data.count + 1 : 1,
         results:
-          data && data.results.length ? [detail, ...data.results] : [detail],
+          data && data.results && data.results.length
+            ? [detailObj, ...data.results]
+            : [detailObj],
       },
     });
   };
@@ -682,42 +702,44 @@ class GroupDetails extends Component {
 
   handleLikeUnlikeNote = (message) => {
     let data = message.text.data.message_details;
-    if(data){
+    if (data) {
       let array = this.state.data.results;
-      let item = array.find((e)=>e.id===data.note_id);
+      let item = array.find((e) => e.id === data.note_id);
       let index = array.indexOf(item);
-      if(data.user_id === this.props.userData.id)
+      if (data.user_id === this.props.userData.id)
         item['is_liked'] = data.like.like;
 
-      item['liked_by_count'] = data.like.like ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+      item['liked_by_count'] = data.like.like
+        ? item.liked_by_count + 1
+        : item.liked_by_count - 1;
       array.splice(index, 1, item);
       this.setState({data: {...this.state.data, results: array}});
     }
-  }
+  };
 
   handleCommentAdd = (message) => {
     let data = message.text.data.message_details;
-    if(data){
+    if (data) {
       let array = this.state.data.results;
-      let item = array.find((e)=>e.id===data.group_note);
+      let item = array.find((e) => e.id === data.group_note);
       let index = array.indexOf(item);
-      item['comment_count'] = item.comment_count + 1
+      item['comment_count'] = item.comment_count + 1;
       array.splice(index, 1, item);
       this.setState({data: {...this.state.data, results: array}});
     }
-  }
+  };
 
   handleDeleteComment = (message) => {
     let data = message.text.data.message_details;
-    if(data){
+    if (data) {
       let array = this.state.data.results;
-      let item = array.find((e)=>e.id===data.note_id);
+      let item = array.find((e) => e.id === data.note_id);
       let index = array.indexOf(item);
-      item['comment_count'] = item.comment_count - 1
+      item['comment_count'] = item.comment_count - 1;
       array.splice(index, 1, item);
       this.setState({data: {...this.state.data, results: array}});
     }
-  }
+  };
 
   onCancelDeleteNotePress = () => {
     this.setState({
@@ -786,7 +808,9 @@ class GroupDetails extends Component {
             ...data,
             count: data ? data.count + 1 : 1,
             results:
-              data && data.results.length ? [res, ...data.results] : [res],
+              data && data.results && data.results.length
+                ? [res, ...data.results]
+                : [res],
           },
           showTextBox: false,
         });
@@ -843,10 +867,11 @@ class GroupDetails extends Component {
   };
 
   likeUnlike = (note_id, index) => {
-    let data = { note_id: note_id }
-    this.props.likeUnlikeGroupNote(data)
-      .then((res)=>{
-        if(res){
+    let data = {note_id: note_id};
+    this.props
+      .likeUnlikeGroupNote(data)
+      .then((res) => {
+        if (res) {
           // let array = this.state.data.results;
           // let item = array[index];
           // item['is_liked'] = res.like;
@@ -854,10 +879,42 @@ class GroupDetails extends Component {
           // array.splice(index,1,item);
           // this.setState({data: {...this.state.data, results: array}});
         }
-      }).catch((err)=>{
-        console.log('err',err);
+      })
+      .catch((err) => {
+        console.log('err', err);
       });
-  }
+  };
+
+  onExpand = (id, item) => {
+    const {data} = this.state;
+    if (data && data.results && data.results.length > 0) {
+      let newdata = [];
+      data.results.map((item) => {
+        if (item.id === id) {
+          if (!item.showComment) {
+            newdata.push({...item, showComment: true});
+          } else if (item.showComment == true) {
+            newdata.push({...item, showComment: false});
+          }
+        } else {
+          if (item.showComment === true) {
+            newdata.push({...item, showComment: true});
+          } else {
+            newdata.push({...item, showComment: false});
+          }
+        }
+      });
+      if (newdata.length > 0) {
+        this.setState({
+          data: {
+            ...data,
+            count: data.count,
+            results: newdata,
+          },
+        });
+      }
+    }
+  };
 
   render() {
     const {
@@ -872,7 +929,7 @@ class GroupDetails extends Component {
       showDeleteGroupConfirmationModal,
       showLeaveGroupConfirmationModal,
       showDeleteNoteConfirmationModal,
-      uploadLoading
+      uploadLoading,
     } = this.state;
 
     let filePath = {uri: this.props.currentGroupDetail.group_picture};
@@ -892,49 +949,49 @@ class GroupDetails extends Component {
             extraScrollHeight={100}>
             <View style={groupDetailStyles.imageContainer}>
               <View style={groupDetailStyles.imageView}>
-                {uploadLoading ?
+                {uploadLoading ? (
                   <View
                     style={{
                       alignItems: 'center',
                       justifyContent: 'center',
-                      flex: 1
+                      flex: 1,
                     }}>
                     <ActivityIndicator color={Colors.primary} size={'small'} />
                   </View>
-                  : filePath.uri === null ||
-                    filePath.uri === '' ||
-                    typeof filePath.uri === undefined ? (
-                      <LinearGradient
-                        start={{ x: 0.1, y: 0.7 }}
-                        end={{ x: 0.5, y: 0.2 }}
-                        locations={[0.1, 0.2, 1]}
-                        useAngle={true}
-                        angle={222.28}
-                        colors={[
-                          Colors.header_gradient_1,
-                          Colors.header_gradient_2,
-                          Colors.header_gradient_3,
-                        ]}
-                        style={[
-                          groupDetailStyles.profileImage,
-                          {
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          },
-                        ]}>
-                        <Text style={globalStyles.bigSemiBoldText}>
-                          {groupName.charAt(0).toUpperCase()}
-                          {/* {secondUpperCase} */}
-                        </Text>
-                      </LinearGradient>
-                    ) : (
-                      <ImageLoader
-                        source={getImage(filePath.uri)}
-                        resizeMode={'cover'}
-                        style={groupDetailStyles.profileImage}
-                        placeholderStyle={groupDetailStyles.profileImage}
-                      />
-                    )}
+                ) : filePath.uri === null ||
+                  filePath.uri === '' ||
+                  typeof filePath.uri === undefined ? (
+                  <LinearGradient
+                    start={{x: 0.1, y: 0.7}}
+                    end={{x: 0.5, y: 0.2}}
+                    locations={[0.1, 0.2, 1]}
+                    useAngle={true}
+                    angle={222.28}
+                    colors={[
+                      Colors.header_gradient_1,
+                      Colors.header_gradient_2,
+                      Colors.header_gradient_3,
+                    ]}
+                    style={[
+                      groupDetailStyles.profileImage,
+                      {
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      },
+                    ]}>
+                    <Text style={globalStyles.bigSemiBoldText}>
+                      {groupName.charAt(0).toUpperCase()}
+                      {/* {secondUpperCase} */}
+                    </Text>
+                  </LinearGradient>
+                ) : (
+                  <ImageLoader
+                    source={getImage(filePath.uri)}
+                    resizeMode={'cover'}
+                    style={groupDetailStyles.profileImage}
+                    placeholderStyle={groupDetailStyles.profileImage}
+                  />
+                )}
               </View>
               {isMyGroup && (
                 <TouchableOpacity onPress={this.chooseFile.bind(this)}>
@@ -1115,20 +1172,23 @@ class GroupDetails extends Component {
                           alignItems: 'center',
                           marginBottom: 10,
                         }}>
-                            <HyperLink
-                              onPress={(url, text) => {
-                                onPressHyperlink(url);
-                              }}
-                              linkStyle={{ color: 'blue', textDecorationLine: 'underline' }}>
-                              <Text
-                                style={{
-                                  color: Colors.gradient_2,
-                                  fontSize: 16,
-                                  fontFamily: Fonts.regular,
-                                }}>
-                                {translate(`pages.xchat.description`)}
-                              </Text>
-                            </HyperLink>
+                        <HyperLink
+                          onPress={(url, text) => {
+                            onPressHyperlink(url);
+                          }}
+                          linkStyle={{
+                            color: 'blue',
+                            textDecorationLine: 'underline',
+                          }}>
+                          <Text
+                            style={{
+                              color: Colors.gradient_2,
+                              fontSize: 16,
+                              fontFamily: Fonts.regular,
+                            }}>
+                            {translate(`pages.xchat.description`)}
+                          </Text>
+                        </HyperLink>
                         {isMyGroup && (
                           <TouchableOpacity
                             style={{}}
@@ -1201,6 +1261,7 @@ class GroupDetails extends Component {
                 showTextBox={this.state.showTextBox}
                 userData={this.props.userData}
                 groupMembers={this.props.currentGroupMembers}
+                onExpand={this.onExpand}
               />
             )}
           </KeyboardAwareScrollView>
@@ -1268,7 +1329,7 @@ const mapDispatchToProps = {
   setGroupConversation,
   getLocalUserGroups,
   setCommonChatConversation,
-  likeUnlikeGroupNote
+  likeUnlikeGroupNote,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupDetails);
