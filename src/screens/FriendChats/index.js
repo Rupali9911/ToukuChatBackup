@@ -1426,7 +1426,7 @@ class FriendChats extends Component {
       openDoc,
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
-    console.log('currentFriend', currentFriend);
+   // console.log('currentFriend', currentFriend);
 
     return (
       <ImageBackground
@@ -1497,7 +1497,9 @@ class FriendChats extends Component {
               this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
-            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
+            showOpenLoader={(isLoading) =>
+            {console.log('showOpenLoader in Friend Chat', isLoading)
+                this.setState({openDoc: isLoading})}}
             isChatDisable={
               currentFriend.friend_status === 'UNFRIEND' ||
               currentFriend.friend_status === 'REQUESTED'

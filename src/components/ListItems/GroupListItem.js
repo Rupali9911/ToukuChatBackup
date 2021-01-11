@@ -125,7 +125,7 @@ export default class GroupListItem extends PureComponent {
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
-      console.log('Group last item', item.last_msg)
+     // console.log('Group last item', item.last_msg)
     return (
       <Fragment>
         <TouchableOpacity

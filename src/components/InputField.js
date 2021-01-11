@@ -232,7 +232,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   placeholderStyle: {
-    fontSize: Platform.isPad ? 17 : 13,
+    fontSize: Platform.isPad ? 17 : 15,
+      //height: 30,
+      //backgroundColor: 'red',
+      lineHeight: 18
   },
   rightBtnContainer: {
     borderTopRightRadius: Platform.isPad ? 55 / 2 : 45 / 2,

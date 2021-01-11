@@ -386,7 +386,7 @@ class ChannelInfo extends Component {
           <HeaderWithBack
             isCentered
             onBackPress={() => this.props.navigation.goBack()}
-            title="Channel Info"
+            title= {translate('pages.xchat.channelInfo')}
           />
           {!channelLoading ? (
             <KeyboardAwareScrollView

@@ -54,18 +54,18 @@ class GroupChatMessageBubble extends Component {
       images: null,
       animation: new Animated.Value(1),
     };
-    this.eventEmitter = new NativeEventEmitter(
-      NativeModules.RNReactNativeDocViewer,
-    );
-    this.eventEmitter.addListener('DoneButtonEvent', (data) => {
-      /*
-       *Done Button Clicked
-       * return true
-       */
-      console.log('ChatMessageBubble -> constructor -> data', data.close);
-      // this.props.showOpenLoader(false);
-      // this.setState({donebuttonclicked: data.close});
-    });
+    // this.eventEmitter = new NativeEventEmitter(
+    //   NativeModules.RNReactNativeDocViewer,
+    // );
+    // this.eventEmitter.addListener('DoneButtonEvent', (data) => {
+    //   /*
+    //    *Done Button Clicked
+    //    * return true
+    //    */
+    //   console.log('ChatMessageBubble -> constructor -> data', data.close);
+    //   // this.props.showOpenLoader(false);
+    //   // this.setState({donebuttonclicked: data.close});
+    // });
   }
 
   _menu = null;
@@ -84,21 +84,21 @@ class GroupChatMessageBubble extends Component {
 
   componentDidMount() {
     // download progress
-    this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
-      // this.props.showOpenLoader(true);
-      console.log(
-        'ChatMessageBubble -> componentDidMount -> Event.progress',
-        Event.progress,
-      );
-      if (Event.progress === 100) {
-        this.props.showOpenLoader(false);
-      }
-      // this.setState({progress: Event.progress + ' %'});
-    });
+    // this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
+    //   // this.props.showOpenLoader(true);
+    //   console.log(
+    //     'ChatMessageBubble -> componentDidMount -> Event.progress',
+    //     Event.progress,
+    //   );
+    //   if (Event.progress === 100) {
+    //     this.props.showOpenLoader(false);
+    //   }
+    //   // this.setState({progress: Event.progress + ' %'});
+    // });
   }
 
   componentWillUnmount() {
-    this.eventEmitter.removeListener();
+    //this.eventEmitter.removeListener();
   }
 
   hideImage() {
@@ -164,8 +164,10 @@ class GroupChatMessageBubble extends Component {
               text: translate('common.somethingWentWrong'),
               type: 'primary',
             });
+              this.props.showOpenLoader(false);
           } else {
             console.log(url);
+              this.props.showOpenLoader(false);
           }
         },
       );
@@ -186,8 +188,10 @@ class GroupChatMessageBubble extends Component {
               text: translate('common.somethingWentWrong'),
               type: 'primary',
             });
+              this.props.showOpenLoader(false);
           } else {
             console.log(url);
+              this.props.showOpenLoader(false);
           }
         },
       );

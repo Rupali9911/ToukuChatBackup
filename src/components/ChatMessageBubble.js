@@ -44,7 +44,7 @@ import {inviteUrlRoot, staging} from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
 
 let borderRadius = 20;
-
+let downloaded = false
 class ChatMessageBubble extends Component {
   constructor(props) {
     super(props);
@@ -52,37 +52,34 @@ class ChatMessageBubble extends Component {
       showImage: false,
       images: null,
     };
-    this.eventEmitter = new NativeEventEmitter(
-      NativeModules.RNReactNativeDocViewer,
-    );
-    this.eventEmitter.addListener('DoneButtonEvent', (data) => {
-      /*
-       *Done Button Clicked
-       * return true
-       */
-      console.log('ChatMessageBubble -> constructor -> data', data.close);
-      // this.props.showOpenLoader(false);
-      // this.setState({donebuttonclicked: data.close});
-    });
+    // this.eventEmitter = new NativeEventEmitter(
+    //   NativeModules.RNReactNativeDocViewer,
+    // );
+    // this.eventEmitter.addListener('DoneButtonEvent', (data) => {
+    //   console.log('ChatMessageBubble -> constructor -> data', data.close, downloaded);
+    //     if (!downloaded) {
+    //         downloaded = true
+    //         this.props.showOpenLoader(false);
+    //     }
+    // });
   }
 
   componentDidMount() {
     // download progress
-    this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
-      // this.props.showOpenLoader(true);
-      console.log(
-        'ChatMessageBubble -> componentDidMount -> Event.progress',
-        Event.progress,
-      );
-      if (Event.progress === 100) {
-        this.props.showOpenLoader(false);
-      }
-      // this.setState({progress: Event.progress + ' %'});
-    });
+    // this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
+    //   if (Event.progress === 100 && !downloaded) {
+    //       downloaded = true
+    //       console.log(
+    //           'ChatMessageBubble -> componentDidMount -> Event.progress',
+    //           Event.progress, downloaded
+    //       );
+    //     this.props.showOpenLoader(false);
+    //   }
+    // });
   }
 
   componentWillUnmount() {
-    this.eventEmitter.removeListener();
+    //this.eventEmitter.removeListener();
   }
 
   onCopy = (message) => {
@@ -120,8 +117,10 @@ class ChatMessageBubble extends Component {
               text: translate('common.somethingWentWrong'),
               type: 'primary',
             });
+              this.props.showOpenLoader(false);
           } else {
             console.log(url);
+              this.props.showOpenLoader(false);
           }
         },
       );
@@ -142,8 +141,10 @@ class ChatMessageBubble extends Component {
               text: translate('common.somethingWentWrong'),
               type: 'primary',
             });
+              this.props.showOpenLoader(false);
           } else {
             console.log(url);
+              this.props.showOpenLoader(false);
           }
         },
       );
@@ -339,10 +340,12 @@ class ChatMessageBubble extends Component {
   setMenuRef = (ref) => {
     this._menu = ref;
   };
+
   hideMenu = () => {
     this._menu.hide();
     this.setState({visible: false});
   };
+
   showMenu = () => {
     this._menu.show();
     this.setState({visible: true});
