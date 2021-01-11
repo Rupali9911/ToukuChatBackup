@@ -148,7 +148,7 @@ class GroupChatMessageBubble extends Component {
 
   onDocumentPress = (url) => {
     this.props.showOpenLoader(true);
-      let name = url.split('/').pop()
+    let name = url.split('/').pop();
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
         [
@@ -334,7 +334,14 @@ class GroupChatMessageBubble extends Component {
                   </Fragment>
                 ) : (
                   <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
-                    {replyMessage.message}
+                    {replyMessage.message && replyMessage.message.match('\n')
+                      ? replyMessage.message.split('\n').length >= 2
+                        ? replyMessage.message.split('\n')[0] +
+                          '\n' +
+                          replyMessage.message.split('\n')[1] +
+                          '...'
+                        : replyMessage.message
+                      : replyMessage.message}
                   </Text>
                 )}
                 {/* <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>

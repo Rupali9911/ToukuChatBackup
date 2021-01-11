@@ -212,6 +212,7 @@ class Home extends PureComponent {
 
   channelFilter = () => {
     const {followingChannels, channelLoading} = this.props;
+
     const {getChannelData} = this.state;
 
     const sortChannels = followingChannels;
@@ -264,7 +265,7 @@ class Home extends PureComponent {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getFriendRequest();
     this.getLocalRequest();
-    console.log('componentDidMount_Home')
+    console.log('componentDidMount_Home');
     this.getFollowingChannels();
     this.getUserGroups();
     this.getUserFriends();
@@ -304,15 +305,15 @@ class Home extends PureComponent {
     // }
   }
 
-  // componentDidUpdate(nextPorps) {
-  //   if (nextPorps.followingChannels !== this.props.followingChannels) {
-  //     this.channelFilter();
-  //   } else if (nextPorps.userGroups !== this.props.userGroups) {
-  //     this.groupFilter();
-  //   } else if (nextPorps.userFriends !== this.props.userFriends) {
-  //     this.friendFilter();
-  //   }
-  // }
+  componentDidUpdate(nextPorps) {
+    if (nextPorps.followingChannels !== this.props.followingChannels) {
+      this.channelFilter();
+    } else if (nextPorps.userGroups !== this.props.userGroups) {
+      this.groupFilter();
+    } else if (nextPorps.userFriends !== this.props.userFriends) {
+      this.friendFilter();
+    }
+  }
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -1291,6 +1292,8 @@ class Home extends PureComponent {
       createFilter(this.state.searchText, ['name']),
     );
 
+    console.log('filteredChannels', filteredChannels);
+
     //
     if (filteredChannels.length === 0 && channelLoading) {
       return <ListLoader />;
@@ -1458,7 +1461,7 @@ class Home extends PureComponent {
               }}
               onAvtarPress={() => {
                 if (item.friend_status !== 'UNFRIEND') {
-                  this.onOpenFriendDetails(item)
+                  this.onOpenFriendDetails(item);
                 }
               }}
               isPined={item.is_pined}

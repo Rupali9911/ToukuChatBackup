@@ -1293,7 +1293,7 @@ const mapDispatchToProps = {
   socialRegistration,
   userNewRegister,
   socialRegistrationNew,
-  setCurrentChannel
+  setCurrentChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

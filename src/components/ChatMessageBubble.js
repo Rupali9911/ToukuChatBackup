@@ -104,7 +104,7 @@ class ChatMessageBubble extends Component {
 
   onDocumentPress = (url) => {
     this.props.showOpenLoader(true);
-    let name = url.split('/').pop()
+    let name = url.split('/').pop();
     if (Platform.OS === 'ios') {
       OpenFile.openDoc(
         [
@@ -290,7 +290,14 @@ class ChatMessageBubble extends Component {
                   </Fragment>
                 ) : (
                   <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
-                    {replyMessage.message}
+                    {replyMessage.message && replyMessage.message.match('\n')
+                      ? replyMessage.message.split('\n').length >= 2
+                        ? replyMessage.message.split('\n')[0] +
+                          '\n' +
+                          replyMessage.message.split('\n')[1] +
+                          '...'
+                        : replyMessage.message
+                      : replyMessage.message}
                   </Text>
                 )}
                 {/* <Text
@@ -789,32 +796,37 @@ class ChatMessageBubble extends Component {
             />
           )}
 
-            <MenuItem
-              // icon={() => (
-              //   <FontAwesome5
-              //     name={'language'}
-              //     size={20}
-              //     color={Colors.white}
-              //   />
-              // )}
-              onPress={() => {
-                console.log('selectedMessageId', selectedMessageId);
+          <MenuItem
+            // icon={() => (
+            //   <FontAwesome5
+            //     name={'language'}
+            //     size={20}
+            //     color={Colors.white}
+            //   />
+            // )}
+            onPress={() => {
+              console.log('selectedMessageId', selectedMessageId);
 
-                onMessageReply(selectedMessageId);
-                // closeMenu();
-                this.hideMenu();
-              }}
-              customComponent={
-                <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
-                  <FontAwesome5 style={{flex:1}} name={'reply'} size={20} color={Colors.white} />
-                  <Text style={{flex:2, marginLeft: 10, color: '#fff'}}>
-                    {translate('common.reply')}
-                  </Text>
-                </View>
-              }
-              // title={translate('common.reply')}
-              // titleStyle={{marginLeft: -25, color: Colors.white}}
-            />
+              onMessageReply(selectedMessageId);
+              // closeMenu();
+              this.hideMenu();
+            }}
+            customComponent={
+              <View style={{flex: 1, flexDirection: 'row', margin: 15}}>
+                <FontAwesome5
+                  style={{flex: 1}}
+                  name={'reply'}
+                  size={20}
+                  color={Colors.white}
+                />
+                <Text style={{flex: 2, marginLeft: 10, color: '#fff'}}>
+                  {translate('common.reply')}
+                </Text>
+              </View>
+            }
+            // title={translate('common.reply')}
+            // titleStyle={{marginLeft: -25, color: Colors.white}}
+          />
           {isUser && isEditable > new Date() && message.msg_type === 'text' && (
             <MenuItem
               // icon={() => (
