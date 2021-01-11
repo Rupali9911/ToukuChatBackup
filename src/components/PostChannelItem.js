@@ -95,7 +95,7 @@ export default class PostChannelItem extends Component {
               textDecorationLine: 'underline',
             }}>
             {newArray.length > 0 ? (
-              <Text style={{}}>
+              <Text style={{lineHeight: 18}}>
                 {this.state.readMore
                   ? newArray.join('\n')
                   : newArray.join('').length > 35
@@ -115,7 +115,8 @@ export default class PostChannelItem extends Component {
                         margin: 15,
                         color: '#7e8fce',
                       }}>
-                      {'\n  ' + '...' + translate('pages.xchat.showLess')}
+                      {newArray[2] !== null ? '\n\n ' : '\n '}
+                      {'...' + translate('pages.xchat.showLess')}
                     </Text>
                   ) : (
                     <Text

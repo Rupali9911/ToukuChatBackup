@@ -468,7 +468,10 @@ class ChannelInfo extends Component {
                         // onPress={() => this.toggleChannelBusinessMenu()}
                       >
                         <Text
-                          style={channelInfoStyles.channelNameText}
+                          style={[
+                            channelInfoStyles.channelNameText,
+                            {fontSize: 13},
+                          ]}
                           numberOfLines={1}>
                           {channelData.channel_status
                             ? channelData.channel_status === ''
