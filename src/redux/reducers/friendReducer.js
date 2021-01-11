@@ -249,8 +249,9 @@ export const setUserFriends = () => (dispatch) =>
     //   };
     //   friends.push(item2);
     // });
-
-    friends = result.toJSON();
+    let a = Array.from(result);
+    friends = realmToPlainObject(a);
+    // friends = result.toJSON();
 
     let unread_counts = 0;
     if (friends && friends.length > 0) {

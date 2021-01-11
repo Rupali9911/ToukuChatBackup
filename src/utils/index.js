@@ -214,3 +214,8 @@ export const getUser_ActionFromUpdateText = (text) => {
   }
   return {user_id,user_name,action};
 }
+
+export const realmToPlainObject = (realmObj) => {
+  let ab = Array.from(realmObj);
+  return JSON.parse(JSON.stringify(ab));
+}

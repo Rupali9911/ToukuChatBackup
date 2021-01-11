@@ -42,6 +42,7 @@ import {
   getChannels,
 } from '../../storage/Service';
 import {recursionFollowingChannels} from './channelReducer';
+import { realmToPlainObject } from '../../utils';
 
 export default function (state = initialState, action) {
   switch (action.type) {
@@ -215,7 +216,9 @@ export const getLocalUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     var groups = getGroups();
     var array = [];
-    array = groups.toJSON();
+    let a = Array.from(groups);
+    array = realmToPlainObject(a);
+    // array = groups.toJSON();
     array.sort((a, b) =>
       a.timestamp &&
       b.timestamp &&
@@ -356,8 +359,9 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
     // chat.map((item, index) => {
     //   conversations = [...conversations, item];
     // });
-
-    conversations = chat.toJSON();
+    let a = Array.from(chat);
+    conversations = realmToPlainObject(a);
+    // conversations = chat.toJSON();
 
     // this.setState({ conversation: conversations });
     dispatch(setGroupConversation(conversations));

@@ -60,7 +60,7 @@ import {
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
-import {eventService} from '../../utils';
+import {eventService, realmToPlainObject} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -903,7 +903,8 @@ class GroupChats extends Component {
       //   conversations = [...conversations, i];
       // });
 
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
 
       this.props.setGroupConversation(conversations);
     }
@@ -948,7 +949,8 @@ class GroupChats extends Component {
           //   conversations = [...conversations, i];
           // });
 
-          conversations = chat.toJSON();
+          conversations = realmToPlainObject(chat);
+          // conversations = chat.toJSON();
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
@@ -985,7 +987,8 @@ class GroupChats extends Component {
       //   conversations = [...conversations, i];
       // });
 
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
 
       // this.setState({ conversation: conversations });
       this.props.setGroupConversation(conversations);
@@ -1030,7 +1033,8 @@ class GroupChats extends Component {
           //   conversations = [...conversations, i];
           // });
 
-          conversations = chat.toJSON();
+          conversations = realmToPlainObject(chat);
+          // conversations = chat.toJSON();
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
@@ -1275,7 +1279,8 @@ class GroupChats extends Component {
               this.props.currentGroup.group_id,
             );
 
-            let array = chat.toJSON();
+            let array = realmToPlainObject(chat);
+            // let array = chat.toJSON();
 
             if (array && array.length > 0) {
               updateLastMsgGroupsWithoutCount(
@@ -1307,7 +1312,8 @@ class GroupChats extends Component {
             this.props.currentGroup.group_id,
           );
 
-          let array = chat.toJSON();
+          let array = realmToPlainObject(chat);
+          // let array = chat.toJSON();
 
           if (array && array.length > 0) {
             updateLastMsgGroupsWithoutCount(

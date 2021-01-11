@@ -47,7 +47,7 @@ import {
 } from '../../redux/reducers/friendReducer';
 import {sendFriendRequest} from '../../redux/reducers/addFriendReducer';
 import Toast from '../../components/Toast';
-import {eventService} from '../../utils';
+import {eventService, realmToPlainObject} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
   setFriendChatConversation,
@@ -733,7 +733,8 @@ class FriendChats extends Component {
             this.props.currentFriend.friend,
           );
           let conversations = [];
-          conversations = chat.toJSON();
+          conversations = realmToPlainObject(chat);
+          // conversations = chat.toJSON();
           // chat.map((item, index) => {
           //   let i = {
           //     created: item.created,
@@ -763,7 +764,8 @@ class FriendChats extends Component {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat) {
       let conversations = [];
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
       this.props.setFriendConversation(conversations);
     }
   };
@@ -773,7 +775,8 @@ class FriendChats extends Component {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
       // chat.map((item, index) => {
       //   let i = {
       //     created: item.created,
@@ -808,7 +811,8 @@ class FriendChats extends Component {
             this.props.currentFriend.friend,
           );
           let conversations = [];
-          conversations = chat.toJSON();
+          conversations = realmToPlainObject(chat);
+          // conversations = chat.toJSON();
           // chat.map((item, index) => {
           //   let i = {
           //     created: item.created,
@@ -992,7 +996,8 @@ class FriendChats extends Component {
               this.props.currentFriend.friend,
             );
 
-            let array = chat.toJSON();
+            let array = realmToPlainObject(chat);
+            // let array = chat.toJSON();
 
             if (array && array.length > 0) {
               updateFriendLastMsgWithoutCount(
@@ -1026,7 +1031,8 @@ class FriendChats extends Component {
             this.props.currentFriend.friend,
           );
 
-          let array = chat.toJSON();
+          let array = realmToPlainObject(chat);
+          // let array = chat.toJSON();
 
           if (array && array.length > 0) {
             updateFriendLastMsgWithoutCount(this.props.currentFriend.user_id, {

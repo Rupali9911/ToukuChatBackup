@@ -3,6 +3,7 @@ import {
   getGroups,
   getLocalUserFriends,
 } from '../../storage/Service';
+import { realmToPlainObject } from '../../utils';
 
 export const SET_COMMON_CHAT = 'SET_COMMON_CHAT';
 
@@ -45,7 +46,10 @@ export const setCommonChatConversation = () => (dispatch) =>
 
     if (channels.length) {
       // array = [...array, ...channels.toJSON()];
-      let channel_array = channels.toJSON().filter((item)=>item.last_msg!==null);
+      let a = Array.from(channels);
+      let plain_json = realmToPlainObject(a);
+      // let channel_array = channels.toJSON().filter((item)=>item.last_msg!==null);
+      let channel_array = plain_json.filter((item)=>item.last_msg!==null);
       array = [...array, ...channel_array];
       // channels.map((item, index) => {
       //   if (item.last_msg !== null) {
@@ -69,7 +73,10 @@ export const setCommonChatConversation = () => (dispatch) =>
     }
     var friends = getLocalUserFriends();
     if (friends.length) {
-      let friend_array = friends.toJSON().filter((item)=>item.last_msg_id!==null);
+      let a = Array.from(friends);
+      let plain_json = realmToPlainObject(a);
+      // let friend_array = friends.toJSON().filter((item)=>item.last_msg_id!==null);
+      let friend_array = plain_json.filter((item)=>item.last_msg_id!==null);
       // friends.map((item) => {
       //   if (item.last_msg_id !== null) {
       //     let i = {
@@ -96,9 +103,15 @@ export const setCommonChatConversation = () => (dispatch) =>
       array = [...array, ...friend_array];
     }
     var groups = getGroups();
+    
     if (groups.length) {
-      let group_array = groups.toJSON().filter((item)=>!item.no_msgs);
+      let a = Array.from(groups);
+      let plain_json = realmToPlainObject(a);
+      // let group_array = groups.toJSON().filter((item)=>!item.no_msgs);
+      let group_array = plain_json.filter((item)=>!item.no_msgs);
+      
       array = [...array, ...group_array];
+      
       // groups.map((item, index) => {
       //   if (item.last_msg_id !== null) {
       //     let i = {

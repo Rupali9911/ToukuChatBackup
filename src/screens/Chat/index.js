@@ -8,7 +8,7 @@ import {withNavigationFocus} from 'react-navigation';
 
 import {Images, languageArray, SocketEvents} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
-import {getAvatar, eventService} from '../../utils';
+import {getAvatar, eventService, realmToPlainObject} from '../../utils';
 import {
   ChannelListItem,
   FriendListItem,
@@ -863,7 +863,9 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       let unread_counts = 0;
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let a = Array.from(result);
+      let group = realmToPlainObject(a);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         // userGroups[i].unread_msg =
         //   message.text.data.message_details.read_count;
@@ -921,7 +923,9 @@ class Chat extends Component {
         message.text.data.message_details,
       );
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let a = Array.from(result);
+      let group = realmToPlainObject(a);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         // this.getUserGroups();
 
@@ -981,7 +985,9 @@ class Chat extends Component {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.MESSAGE_EDIT_FROM_GROUP) {
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let a = Array.from(result);
+      let group = realmToPlainObject(a);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         updateGroupMessageById(message.text.data.message_details.msg_id);
         console.log('checking group', group);
@@ -1014,7 +1020,9 @@ class Chat extends Component {
     const {userGroups, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_FROM_GROUP) {
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let a = Array.from(result);
+      let group = realmToPlainObject(a);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         setGroupMessageUnsend(message.text.data.message_details.msg_id);
         if (group[0].last_msg_id == message.text.data.message_details.msg_id) {
@@ -1273,12 +1281,15 @@ class Chat extends Component {
         if (item.deleted_for.includes(this.props.userData.id)) {
           let result = getChannelsById(item.channel);
           let channels = [];
-          channels = result.toJSON();
+          let a = Array.from(result);
+          channels = realmToPlainObject(a);
+          // channels = result.toJSON();
           deleteMessageById(item.id);
           if (channels[0].last_msg && channels[0].last_msg.id == item.id) {
             var chats = getChannelChatConversationById(item.channel);
             var array = [];
-            array = chats.toJSON();
+            array = realmToPlainObject(chats);
+            // array = chats.toJSON();
 
             if (array.length > 0) {
               updateChannelLastMsgWithOutCount(item.channel, array[0]);
@@ -1292,7 +1303,9 @@ class Chat extends Component {
           }
           if (currentChannel && item.channel == currentChannel.id) {
             let chat = getChannelChatConversationById(currentChannel.id);
-            this.props.setChannelConversation(chat.toJSON());
+            let conversations = realmToPlainObject(chat);
+            // this.props.setChannelConversation(chat.toJSON());
+            this.props.setChannelConversation(conversations);
           }
         }
       });
@@ -1474,7 +1487,8 @@ class Chat extends Component {
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
       // chat.map((item, index) => {
       //   let i = {
       //     created: item.created,
@@ -1672,11 +1686,13 @@ class Chat extends Component {
 
           users = getLocalUserFriend(user_id);
           var array = [];
-          array = users.toJSON();
+          array = realmToPlainObject(users);
+          // array = users.toJSON();
           if (array[0].last_msg_id == item.id) {
             var chats = getFriendChatConversationById(item.friend);
             var chats_array = [];
-            chats_array = chats.toJSON();
+            chats_array = realmToPlainObject(chats);
+            // chats_array = chats.toJSON();
             if (chats_array.length > 0) {
               updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
             } else {
@@ -1788,8 +1804,9 @@ class Chat extends Component {
         let user = getLocalUserFriend(
           message.text.data.message_details.user_id,
         );
-        if (user.toJSON().length > 0) {
-          let item = user.toJSON()[0];
+        let users = realmToPlainObject(user);
+        if (users.length > 0) {
+          let item = users[0];
           this.props.setCurrentFriend(item);
         }
       }
@@ -1817,13 +1834,15 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_GROUP) {
       deleteGroupMessageById(message.text.data.message_details.msg_id);
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let group = realmToPlainObject(result);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         let chat = getGroupChatConversationById(
           message.text.data.message_details.group_id,
         );
 
-        let array = chat.toJSON();
+        let array = realmToPlainObject(chat);
+        // let array = chat.toJSON();
 
         if (array && array.length > 0) {
           updateLastMsgGroupsWithoutCount(
@@ -1858,11 +1877,13 @@ class Chat extends Component {
         deleteGroupMessageById(item.msg_id);
 
         var result = getGroupsById(item.group_id);
-        let group = result.toJSON();
+        let group = realmToPlainObject(result);
+        // let group = result.toJSON();
 
         if (group && group.length > 0) {
           let chat = getGroupChatConversationById(item.group_id);
-          let array = chat.toJSON();
+          let array = realmToPlainObject(chat);
+          // let array = chat.toJSON();
 
           if (group[0].last_msg_id == item.msg_id) {
             if (array && array.length > 0) {
@@ -1942,7 +1963,8 @@ class Chat extends Component {
     const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.DELETE_GROUP) {
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let group = realmToPlainObject(result);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         if (
           this.props.currentRouteName == 'GroupChats' &&
@@ -1994,7 +2016,8 @@ class Chat extends Component {
     const {userGroups, userData, currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.MUTE_GROUP) {
       var result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let group = realmToPlainObject(result);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         if (userData.id === message.text.data.message_details.user_id) {
           removeGroupById(message.text.data.message_details.group_id);
@@ -2026,7 +2049,8 @@ class Chat extends Component {
       );
       
       let result = getGroupsById(message.text.data.message_details.group_id);
-      let group = result.toJSON();
+      let group = realmToPlainObject(result);
+      // let group = result.toJSON();
       if (group && group.length > 0) {
         if (user_delete.length > 0) {
           removeGroupById(message.text.data.message_details.group_id);
@@ -2153,8 +2177,9 @@ class Chat extends Component {
       ) {
         console.log('request accepted');
         let user = getLocalUserFriend(this.props.currentFriend.user_id);
-        if (user.toJSON().length > 0) {
-          let item = user.toJSON()[0];
+        let users = realmToPlainObject(user);
+        if (users.length > 0) {
+          let item = users[0];
           this.props.setCurrentFriend(item);
         }
       }
@@ -2365,7 +2390,8 @@ class Chat extends Component {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat.length) {
       let conversations = [];
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
     }
   };
@@ -2507,7 +2533,8 @@ class Chat extends Component {
       //   conversations = [...conversations, i];
       // });
 
-      conversations = chat.toJSON();
+      conversations = realmToPlainObject(chat);
+      // conversations = chat.toJSON();
 
       this.props.setGroupConversation(conversations);
     }

@@ -383,7 +383,7 @@ class GroupChatMessageBubble extends Component {
       .map((text) => {
         let mention = null;
         groupMembers.forEach((groupMember) => {
-          console.log('groupMember',groupMember);
+          // console.log('groupMember',groupMember);
           if (text === `~${groupMember.id}~`) {
             mention = `@${groupMember.display_name || groupMember.username}`;
             newMessageMentions = [...newMessageMentions, groupMember.id];

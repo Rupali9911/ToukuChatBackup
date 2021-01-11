@@ -19,6 +19,7 @@ import {
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
 import {getChannelsById, getChannels} from '../../storage/Service';
+import { realmToPlainObject } from '../../utils';
 
 class FollowChannel extends Component {
   constructor(props) {
@@ -149,8 +150,8 @@ class FollowChannel extends Component {
               //get all channel
               let channels = [];
               let result = getChannels();
-
-              channels = result.toJSON();
+              channels = realmToPlainObject(result);
+              // channels = result.toJSON();
 
               //find channel into list
               let channelIndex = channels.findIndex(

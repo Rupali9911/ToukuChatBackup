@@ -63,7 +63,7 @@ import {
   ShowGalleryModal,
   UpdatePhoneModal,
 } from '../../components/Modals';
-import {eventService, normalize} from '../../utils';
+import {eventService, normalize, realmToPlainObject} from '../../utils';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
 import {
@@ -264,6 +264,9 @@ class ChannelChats extends Component {
     this.props.getLocalFollowingChannels().then((res) => {
       this.props.setCommonChatConversation();
     });
+
+    this.props.readAllChannelMessages(this.props.currentChannel.id);
+
   };
 
   _orientationDidChange = (orientation) => {
@@ -915,7 +918,9 @@ class ChannelChats extends Component {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat) {
       let conversations = [];
-      conversations = chat.toJSON();
+      let a = Array.from(chat);
+      conversations = realmToPlainObject(a);
+      // conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
     }
   };
@@ -931,8 +936,9 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
           let conversations = [];
-
-          conversations = chat.toJSON();
+          let a = Array.from(chat);
+          conversations = realmToPlainObject(a);
+          // conversations = chat.toJSON();
 
           this.props.setChannelConversation(conversations);
         }else{
@@ -946,7 +952,9 @@ class ChannelChats extends Component {
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
     if (chat) {
       let conversations = [];
-      conversations = chat.toJSON();
+      let a = Array.from(chat);
+      conversations = realmToPlainObject(a);
+      // conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
       // this.setState({isChatLoading: false});
     }
@@ -960,7 +968,9 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
           let conversations = [];
-          conversations = chat.toJSON();
+          let a = Array.from(chat);
+          conversations = realmToPlainObject(a);
+          // conversations = chat.toJSON();
           this.props.setChannelConversation(conversations);
         }
         this.setState({isChatLoading: false});
@@ -1418,7 +1428,9 @@ class ChannelChats extends Component {
             this.props.currentChannel.id,
           );
 
-          let array = chat.toJSON();
+          let a = Array.from(chat);
+          let array = realmToPlainObject(a);
+          // let array = chat.toJSON();
 
           if (array && array.length > 0) {
             updateChannelLastMsgWithOutCount(
