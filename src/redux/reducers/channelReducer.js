@@ -390,8 +390,6 @@ export const recursionFollowingChannels = (start = 0) =>
   getChannel(start)
     .then((res) => {
       if (res.load_more) {
-        console.log('response',res.load_more);
-        // setCommonChatConversation();
         return recursionFollowingChannels(start + 20).then((res) => res);
       } else {
         return res;

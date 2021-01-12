@@ -7,6 +7,7 @@ import {
   setUserFriendsFromApi,
 } from '../../storage/Service';
 import {dispatch} from 'rxjs/internal/observable/pairs';
+import { realmToPlainObject } from '../../utils';
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
 export const GET_USER_FRIENDS_FAIL = 'GET_USER_FRIENDS_FAIL';
