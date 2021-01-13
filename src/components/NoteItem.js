@@ -52,8 +52,10 @@ import {
 } from '../redux/reducers/friendReducer';
 import CommentItem from './CommentItem';
 import {ConfirmationModal} from './Modals';
-import {TouchableHighlight as GHTouchableHighlight} from 'react-native-gesture-handler';
-import MentionsTextInput from 'react-native-mentions';
+import {TouchableOpacity as GHTouchableHighlight} from 'react-native-gesture-handler';
+import MentionsInput, {
+  parseMarkdown,
+} from '@lowkey/react-native-mentions-input';
 
 const {height} = Dimensions.get('window');
 
@@ -381,38 +383,79 @@ class NoteItem extends Component {
   groupMembersMentions = (value) => {
     const {groupMembers, userData} = this.props;
     let splitNewMessageText = value.split(' ');
+    // let text = splitNewMessageText[splitNewMessageText.length - 1];
     let text = value;
+    // let splitNewMessageText = value.split(' ');
+    // let newMessageMentions = [];
+    // const newMessageTextWithMention = splitNewMessageText
+    //   .map((text) => {
+    //     let mention = null;
+    //     groupMembers.forEach((groupMember) => {
+    //       if (text === `~${groupMember.id}~`) {
+    //         mention = `@${groupMember.display_name}`;
+    //         newMessageMentions = [...newMessageMentions, groupMember.id];
+    //       }
+    //     });
+    //     if (mention) {
+    //       return mention;
+    //     } else {
+    //       return text;
+    //     }
+    //   })
+    //   .join(' ');
     if (groupMembers && userData) {
       let suggestionRowHeight;
       if (text.substring(1).length) {
-        let array = groupMembers.filter((member) => {
+        let newUser = [];
+        groupMembers.filter((member) => {
           if (member.id !== userData.id) {
             // return splitNewMessageText.map((text) => {
             if (member.display_name) {
-              return member.display_name
-                .toLowerCase()
-                .startsWith(text.substring(1).toLowerCase());
+              let obj = {
+                ...member,
+                name: member.display_name,
+              };
+
+              return newUser.push(obj);
             } else {
-              return member.username
-                .toLowerCase()
-                .startsWith(text.substring(1).toLowerCase());
+              let obj = {
+                ...member,
+                name: member.username,
+              };
+              return newUser.push(obj);
             }
           } else {
             return false;
           }
         });
         suggestionRowHeight =
-          array < 4 ? array * normalize(22) + 5 : normalize(90) + 5;
+          newUser.length < 11
+            ? newUser.length * normalize(22) + 5
+            : normalize(220) + 5;
         this.setState({
-          suggestionData: array,
+          suggestionData: newUser,
           suggestionDataHeight: suggestionRowHeight,
         });
+
+        console.log('user', newUser);
       } else {
-        let array = groupMembers.filter((member) => member.id !== userData.id);
+        let newUser = [];
+        groupMembers.filter((member) => {
+          if (member.id !== userData.id) {
+            let obj = {
+              ...member,
+              name: member.display_name ? member.display_name : member.username,
+            };
+            return newUser.push(obj);
+          }
+        });
+
         suggestionRowHeight =
-          array < 4 ? array * normalize(22) + 5 : normalize(90) + 5;
+          newUser.length < 11
+            ? newUser.length * normalize(22) + 5
+            : normalize(220) + 5;
         this.setState({
-          suggestionData: array,
+          suggestionData: newUser,
           suggestionDataHeight: suggestionRowHeight,
         });
       }
@@ -421,6 +464,50 @@ class NoteItem extends Component {
       this.setState({suggestionData: [], suggestionDataHeight: 0});
     }
   };
+
+  // groupMembersMentions = (value) => {
+  //   const {groupMembers, userData} = this.props;
+  //   let splitNewMessageText = value.split(' ');
+  //   let text = value;
+  //   if (groupMembers && userData) {
+  //     let suggestionRowHeight;
+  //     if (text.substring(1).length) {
+  //       let array = groupMembers.filter((member) => {
+  //         if (member.id !== userData.id) {
+  //           // return splitNewMessageText.map((text) => {
+  //           if (member.display_name) {
+  //             return member.display_name
+  //               .toLowerCase()
+  //               .startsWith(text.substring(1).toLowerCase());
+  //           } else {
+  //             return member.username
+  //               .toLowerCase()
+  //               .startsWith(text.substring(1).toLowerCase());
+  //           }
+  //         } else {
+  //           return false;
+  //         }
+  //       });
+  //       suggestionRowHeight =
+  //         array < 4 ? array * normalize(22) + 5 : normalize(90) + 5;
+  //       this.setState({
+  //         suggestionData: array,
+  //         suggestionDataHeight: suggestionRowHeight,
+  //       });
+  //     } else {
+  //       let array = groupMembers.filter((member) => member.id !== userData.id);
+  //       suggestionRowHeight =
+  //         array < 4 ? array * normalize(22) + 5 : normalize(90) + 5;
+  //       this.setState({
+  //         suggestionData: array,
+  //         suggestionDataHeight: suggestionRowHeight,
+  //       });
+  //     }
+  //     this.forceUpdate();
+  //   } else {
+  //     this.setState({suggestionData: [], suggestionDataHeight: 0});
+  //   }
+  // };
 
   suggestionsDataHeight = (value) => {
     // console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
@@ -675,104 +762,191 @@ class NoteItem extends Component {
               {showCommentBox && (
                 <>
                   {!isFriend ? (
-                    <MentionsTextInput
-                      multiline={true}
-                      numberOfLines={10}
-                      textInputStyle={styles.textInput}
-                      suggestionsPanelStyle={{
-                        width: '100%',
-                        overflow: 'hidden',
-                        position: 'absolute',
-                        top: -this.suggestionsDataHeight(commentText),
-                        zIndex: 1,
-                      }}
-                      loadingComponent={() => null}
-                      textInputMinHeight={100}
-                      // textInputMaxHeight={500}
-                      trigger={'@'}
-                      triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
+                    <MentionsInput
                       value={commentText}
-                      onChangeText={(message) => {
+                      maxHeight={500}
+                      multiline={true}
+                      onTextChange={(message) => {
                         if (!message.includes('@')) {
                           this.setState({suggestionData: []});
                         }
                         this.setState({commentText: message});
+                        this.groupMembersMentions(message);
                       }}
+                      onMarkdownChange={(markdown) => {}}
                       placeholder={translate('pages.xchat.enterComment')}
-                      autoCorrect={false}
-                      triggerCallback={(lastKeyword) => {
-                        console.log(
-                          'ChatInput -> render -> triggerCallback',
-                          lastKeyword,
-                        );
-                        this.groupMembersMentions(lastKeyword);
-                      }}
-                      suggestionsData={suggestionData} // array of objects
-                      keyExtractor={(item, index) => item.id}
-                      renderSuggestionsRow={({item, index}, hidePanel) => {
-                        return (
-                          <GHTouchableHighlight
-                            key={index + ''}
-                            underlayColor="#FFB582"
-                            onShowUnderlay={() => {
-                              this.setState({highlightItemId: item.id});
-                            }}
-                            onHideUnderlay={() => {
-                              this.setState({highlightItemId: null});
-                            }}
+                      placeholderTextColor={'gray'}
+                      mentionStyle={styles.mentionStyle}
+                      textInputStyle={styles.textInputStyle}
+                      users={this.state.suggestionData}
+                      suggestedUsersComponent={(users, addMentions, index) =>
+                        users.length > 0 && (
+                          <View
                             style={{
-                              backgroundColor:
-                                index === 0 ? '#FFB582' : 'white',
-                              paddingTop: index === 0 ? 5 : 0,
-                            }}
-                            onPress={() => {
-                              hidePanel();
-                              this.setState({isMentionsOpen: false});
-                              this.onSelectMention(
-                                item,
-                                commentText.split(' ')[
-                                  commentText.split(' ').length - 1
-                                ].length,
-                              );
+                              width: '100%',
+                              height: this.suggestionsDataHeight(users.length),
+                              overflow: 'hidden',
+                              position: 'absolute',
+                              top:
+                                users.length === 1
+                                  ? -35
+                                  : -this.suggestionsDataHeight(users.length),
                             }}>
-                            <View
+                            <ScrollView
                               style={{
-                                height: normalize(22),
-                                justifyContent: 'center',
-                                alignItems: 'flex-start',
-                                width: '100%',
-                                paddingLeft: 5,
+                                marginBottom: 8,
+                                left: -2,
                               }}>
-                              <Text
-                                style={{
-                                  fontSize: normalize(11),
-                                  paddingHorizontal: 10,
-                                  // backgroundColor: '#FFB582',
-                                  fontFamily: Fonts.regular,
-                                  fontWeight: '400',
-                                  color:
-                                    this.state.highlightItemId === item.id
-                                      ? 'white'
-                                      : index === 0
-                                      ? 'white'
-                                      : 'black',
-                                  textAlign: 'center',
-                                }}>
-                                {item.display_name || item.username}
-                              </Text>
-                            </View>
-                          </GHTouchableHighlight>
-                        );
-                      }}
-                      suggestionRowHeight={
-                        suggestionDataHeight ? suggestionDataHeight : 0
+                              {users.map((item, index) => {
+                                return (
+                                  <GHTouchableHighlight
+                                    onPress={() => addMentions(item)}
+                                    style={{
+                                      height: normalize(22),
+                                      justifyContent: 'center',
+                                      alignItems: 'flex-start',
+                                      width: '100%',
+                                      paddingLeft: 5,
+                                    }}>
+                                    <View
+                                      key={item.id}
+                                      style={[
+                                        styles.suggestedUserComponentStyle,
+                                        {
+                                          width: '100%',
+                                          backgroundColor:
+                                            index === 0 ? '#FFB582' : 'white',
+                                        },
+                                      ]}>
+                                      <Text
+                                        style={{
+                                          color: index === 0 ? '#fff' : '#000',
+                                        }}>
+                                        {item.name}
+                                      </Text>
+                                    </View>
+                                  </GHTouchableHighlight>
+                                );
+                              })}
+                            </ScrollView>
+                            {/* <FlatList
+                              scrollEnabled={true}
+                              showsVerticalScrollIndicator={false}
+                              // nestedScrollEnabled={true}
+                              keyboardShouldPersistTaps={'always'}
+                              horizontal={this.props.horizontal}
+                              ListEmptyComponent={this.props.loadingComponent}
+                              enableEmptySections={true}
+                              data={users}
+                              keyExtractor={this.props.keyExtractor}
+                              renderItem={({item, index}) => {
+                                return (
+                                 
+                                );
+                              }}
+                            /> */}
+                          </View>
+                        )
                       }
-                      horizontal={false}
-                      customOnContentSizeChange={({nativeEvent}) => {
-                        this.forceUpdate();
-                      }}
                     />
                   ) : (
+                    // <MentionsTextInput
+                    //   multiline={true}
+                    //   numberOfLines={10}
+                    //   textInputStyle={styles.textInput}
+                    //   suggestionsPanelStyle={{
+                    //     width: '100%',
+                    //     height: this.suggestionsDataHeight(commentText),
+                    //     overflow: 'hidden',
+                    //     position: 'absolute',
+                    //     top: -this.suggestionsDataHeight(commentText),
+                    //     zIndex: 1,
+                    //   }}
+                    //   loadingComponent={() => null}
+                    //   textInputMinHeight={100}
+                    //   // textInputMaxHeight={500}
+                    //   trigger={'@'}
+                    //   triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
+                    //   value={commentText}
+                    //   onChangeText={(message) => {
+                    //     if (!message.includes('@')) {
+                    //       this.setState({suggestionData: []});
+                    //     }
+                    //     this.setState({commentText: message});
+                    //   }}
+                    //   placeholder={translate('pages.xchat.enterComment')}
+                    //   autoCorrect={false}
+                    //   triggerCallback={(lastKeyword) => {
+                    //     console.log(
+                    //       'ChatInput -> render -> triggerCallback',
+                    //       lastKeyword,
+                    //     );
+                    //     this.groupMembersMentions(lastKeyword);
+                    //   }}
+                    //   suggestionsData={suggestionData} // array of objects
+                    //   keyExtractor={(item, index) => item.id}
+                    //   renderSuggestionsRow={({item, index}, hidePanel) => {
+                    //     return (
+                    //       <GHTouchableHighlight
+                    //         key={index + ''}
+                    //         underlayColor="#FFB582"
+                    //         onShowUnderlay={() => {
+                    //           this.setState({highlightItemId: item.id});
+                    //         }}
+                    //         onHideUnderlay={() => {
+                    //           this.setState({highlightItemId: null});
+                    //         }}
+                    //         style={{
+                    //           backgroundColor:
+                    //             index === 0 ? '#FFB582' : 'white',
+                    //           paddingTop: index === 0 ? 5 : 0,
+                    //         }}
+                    //         onPress={() => {
+                    //           hidePanel();
+                    //           this.setState({isMentionsOpen: false});
+                    //           this.onSelectMention(
+                    //             item,
+                    //             commentText.split(' ')[
+                    //               commentText.split(' ').length - 1
+                    //             ].length,
+                    //           );
+                    //         }}>
+                    //         <View
+                    //           style={{
+                    //             height: normalize(22),
+                    //             justifyContent: 'center',
+                    //             alignItems: 'flex-start',
+                    //             width: '100%',
+                    //             paddingLeft: 5,
+                    //           }}>
+                    //           <Text
+                    //             style={{
+                    //               fontSize: normalize(11),
+                    //               paddingHorizontal: 10,
+                    //               // backgroundColor: '#FFB582',
+                    //               fontFamily: Fonts.regular,
+                    //               fontWeight: '400',
+                    //               color:
+                    //                 // this.state.highlightItemId === item.id
+                    //                 //   ? 'white'
+                    //                 //   :
+                    //                 index === 0 ? 'white' : 'black',
+                    //               textAlign: 'center',
+                    //             }}>
+                    //             {item.display_name || item.username}
+                    //           </Text>
+                    //         </View>
+                    //       </GHTouchableHighlight>
+                    //     );
+                    //   }}
+                    //   suggestionRowHeight={
+                    //     suggestionDataHeight ? suggestionDataHeight : 0
+                    //   }
+                    //   horizontal={false}
+                    //   customOnContentSizeChange={({nativeEvent}) => {
+                    //     this.forceUpdate();
+                    //   }}
+                    // />
                     <TextAreaWithTitle
                       onChangeText={(text) =>
                         this.setState({commentText: text})
@@ -971,6 +1145,61 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     paddingHorizontal: 10,
     fontFamily: Fonts.light,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  textInputStyle: {
+    borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
+    backgroundColor: Colors.white,
+    borderRadius: 7,
+    borderColor: Colors.gray_dark,
+    // marginTop: 10,
+    height: 100,
+    textAlignVertical: 'top',
+    paddingHorizontal: 10,
+    fontFamily: Fonts.light,
+    width: '100%',
+  },
+  suggestedUserComponentImageStyle: {
+    width: 20,
+    height: 20,
+    backgroundColor: '#f1f1f1',
+    borderRadius: 10,
+    marginRight: 5,
+  },
+  suggestedUserComponentStyle: {
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: height / 16,
+    flexDirection: 'row',
+  },
+  mentionStyle: {
+    fontWeight: '500',
+    color: 'blue',
+  },
+
+  // Example styles
+  sendButtonStyle: {
+    marginTop: 20,
+    width: 100,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#efefef',
+    borderRadius: 15,
+  },
+  exampleContainer: {
+    alignSelf: 'stretch',
+    flexDirection: 'column',
+    paddingHorizontal: 30,
+    marginVertical: 30,
+  },
+  exampleHeader: {
+    fontWeight: '700',
   },
 });
 

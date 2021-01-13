@@ -187,6 +187,7 @@ export default class CommonNotes extends Component {
             <FlatList
               keyExtractor={(item, index) => index.toString()}
               data={data.results}
+              nestedScrollEnabled={true}
               renderItem={({item, index}) => (
                 <NoteItem
                   onRef={(note) => {

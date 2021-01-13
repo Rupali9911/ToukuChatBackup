@@ -946,6 +946,7 @@ class GroupDetails extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={groupDetailStyles.mainContainer}
             showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
             extraScrollHeight={100}>
             <View style={groupDetailStyles.imageContainer}>
               <View style={groupDetailStyles.imageView}>

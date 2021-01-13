@@ -56,7 +56,7 @@ import {
   deleteMultipleGroupMessage,
   pinGroup,
   unpinGroup,
-  deleteGroupChat
+  deleteGroupChat,
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
@@ -449,7 +449,7 @@ class GroupChats extends Component {
           console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
         },
-          uploadFile.name
+        uploadFile.name,
       );
       msgText = uploadedApplication;
     }
@@ -998,7 +998,7 @@ class GroupChats extends Component {
     await this.props
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
-        console.log('res',res);
+        console.log('res', res);
         if (res.status) {
           let data = res.data;
           data.sort((a, b) =>
@@ -1051,7 +1051,7 @@ class GroupChats extends Component {
     this.props
       .getGroupDetail(this.props.currentGroup.group_id)
       .then((res) => {
-        console.log('res_getGroupDetail',res);
+        console.log('res_getGroupDetail', res);
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {
@@ -1060,7 +1060,7 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
-        console.log('err_getGroupDetail',err);
+        console.log('err_getGroupDetail', err);
         Toast.show({
           title: 'Touku',
           text: translate('common.somethingWentWrong'),
@@ -1085,7 +1085,7 @@ class GroupChats extends Component {
     removeGroupById(id);
     this.getGroupDetail();
     this.getGroupMembers();
-  }
+  };
 
   deleteLocalGroup = (id) => {
     this.props.setCurrentGroup(null);
@@ -1118,13 +1118,16 @@ class GroupChats extends Component {
     this.setState({deleteObjectLoading: true});
 
     let data = {
-      group_id: currentGroup.group_id
-    }
+      group_id: currentGroup.group_id,
+    };
 
     this.props
       .deleteGroupChat(data)
       .then((res) => {
-        this.setState({deleteObjectLoading: false, showdeleteObjectConfirmationModal: false});
+        this.setState({
+          deleteObjectLoading: false,
+          showdeleteObjectConfirmationModal: false,
+        });
         if (res && res.status) {
           this.deleteLocalGroup(currentGroup.group_id);
           this.props.getUserGroups();
@@ -1132,10 +1135,13 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
-        this.setState({deleteObjectLoading: false, showdeleteObjectConfirmationModal: false});
+        this.setState({
+          deleteObjectLoading: false,
+          showdeleteObjectConfirmationModal: false,
+        });
         console.log('err', err);
       });
-  }
+  };
 
   //Leave Group
   toggleLeaveGroupConfirmationModal = () => {
@@ -1617,7 +1623,11 @@ class GroupChats extends Component {
           length === 1
             ? prevState.newMessageText
             : prevState.newMessageText.slice(0, -length + 1)
-        }${selectedMention.display_name}`,
+        }${
+          selectedMention.display_name
+            ? selectedMention.display_name
+            : selectedMention.username
+        }`,
       };
     });
   };
@@ -1668,9 +1678,9 @@ class GroupChats extends Component {
           }
           onBackPress={() => this.props.navigation.goBack()}
           menuItems={
-            currentGroupDetail.is_group_member===false?
-            this.state.headerRightIconMenuIsRemoveGroup
-            :isMyGroup
+            currentGroupDetail.is_group_member === false
+              ? this.state.headerRightIconMenuIsRemoveGroup
+              : isMyGroup
               ? this.state.headerRightIconMenuIsGroup
               : this.state.headerRightIconMenu
           }
@@ -1859,7 +1869,7 @@ const mapDispatchToProps = {
   updateUnreadGroupMsgsCounts,
   pinGroup,
   unpinGroup,
-  deleteGroupChat
+  deleteGroupChat,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

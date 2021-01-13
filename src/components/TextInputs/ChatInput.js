@@ -16,9 +16,14 @@ import {Colors, Icons, Fonts} from '../../constants';
 import {isIphoneX, normalize} from '../../utils';
 import LinearGradient from 'react-native-linear-gradient';
 import {t} from 'i18n-js';
-import MentionsTextInput from 'react-native-mentions';
-import {TouchableHighlight as GHTouchableHighlight} from 'react-native-gesture-handler';
-const {height} = Dimensions.get('window');
+import {
+  FlatList,
+  TouchableOpacity as GHTouchableHighlight,
+} from 'react-native-gesture-handler';
+const {width, height} = Dimensions.get('window');
+import MentionsInput, {
+  parseMarkdown,
+} from '@lowkey/react-native-mentions-input';
 
 export default class ChatInput extends Component {
   constructor(props) {
@@ -28,6 +33,7 @@ export default class ChatInput extends Component {
       highlightItemId: false,
       suggestionData: [],
       suggestionDataHeight: 0,
+      mentionUser: [],
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -64,38 +70,60 @@ export default class ChatInput extends Component {
     //   .join(' ');
     if (groupMembers && currentUserData) {
       let suggestionRowHeight;
-      if(text.substring(1).length){
-        let array = groupMembers.filter((member) => {
+      if (text.substring(1).length) {
+        let newUser = [];
+        groupMembers.filter((member) => {
           if (member.id !== currentUserData.id) {
             // return splitNewMessageText.map((text) => {
-              if(member.display_name){
-                return member.display_name
-                .toLowerCase()
-                .startsWith(text.substring(1).toLowerCase())
-              }else{
-                return member.username
-                .toLowerCase()
-                .startsWith(text.substring(1).toLowerCase())
-              }
-          }else{
+            if (member.display_name) {
+              let obj = {
+                ...member,
+                name: member.display_name,
+              };
+
+              return newUser.push(obj);
+            } else {
+              let obj = {
+                ...member,
+                name: member.username,
+              };
+              return newUser.push(obj);
+            }
+          } else {
             return false;
           }
         });
         suggestionRowHeight =
-        array.length < 11
-            ? array.length * normalize(22) + 5
+          newUser.length < 11
+            ? newUser.length * normalize(22) + 5
             : normalize(220) + 5;
-        this.setState({suggestionData: array, suggestionDataHeight: suggestionRowHeight});
-      }else{
-        let array = groupMembers.filter(member => member.id !== currentUserData.id);
+        this.setState({
+          suggestionData: newUser,
+          suggestionDataHeight: suggestionRowHeight,
+        });
+      } else {
+        let newUser = [];
+        groupMembers.filter((member) => {
+          if (member.id !== currentUserData.id) {
+            let obj = {
+              ...member,
+              name: member.display_name ? member.display_name : member.username,
+            };
+            return newUser.push(obj);
+          }
+        });
+
         suggestionRowHeight =
-        array.length < 11
-            ? array.length * normalize(22) + 5
+          newUser.length < 11
+            ? newUser.length * normalize(22) + 5
             : normalize(220) + 5;
-        this.setState({suggestionData: array, suggestionDataHeight: suggestionRowHeight});
+        this.setState({
+          suggestionData: newUser,
+          suggestionDataHeight: suggestionRowHeight,
+        });
       }
       this.forceUpdate();
-    }else{
+    } else {
       this.setState({suggestionData: [], suggestionDataHeight: 0});
     }
   };
@@ -146,6 +174,7 @@ export default class ChatInput extends Component {
     //       ? 105
     //       : 140;
     // }
+
     if (value.length === 0) {
       this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
     }
@@ -219,15 +248,103 @@ export default class ChatInput extends Component {
           <View style={chatInput.textInputContainer}>
             {this.props.useMentionsFunctionality ? (
               <View style={{}}>
-                <MentionsTextInput
+                <MentionsInput
+                  value={value}
+                  maxHeight={50}
+                  multiline={true}
+                  onTextChange={(message) => {
+                    if (!message.includes('@')) {
+                      this.setState({suggestionData: []});
+                    }
+                    onChangeText(message);
+                    this.groupMembersMentions(message);
+                  }}
+                  onMarkdownChange={(markdown) => {}}
+                  placeholder={placeholder}
+                  placeholderTextColor={'gray'}
+                  mentionStyle={chatInput.mentionStyle}
+                  textInputStyle={chatInput.textInputStyle}
+                  users={this.state.suggestionData}
+                  suggestedUsersComponent={(users, addMentions, index) =>
+                    users.length > 0 && (
+                      <View
+                        style={{
+                          alignSelf: 'stretch',
+                          backgroundColor: '#fff',
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                          position: 'absolute',
+                          top:
+                            users.length === 1
+                              ? -38 * users.length
+                              : Platform.OS === 'android'
+                              ? -195
+                              : -225,
+                          left: 0,
+                          right: 0,
+                          height: users.length === 1 ? 38 : height / 4,
+                          borderWidth: 0.25,
+                          borderColor: 'gray',
+                          padding: 5,
+                        }}>
+                        <FlatList
+                          scrollEnabled={true}
+                          showsVerticalScrollIndicator={false}
+                          nestedScrollEnabled={true}
+                          keyboardShouldPersistTaps={'always'}
+                          horizontal={this.props.horizontal}
+                          ListEmptyComponent={this.props.loadingComponent}
+                          enableEmptySections={true}
+                          data={users}
+                          keyExtractor={this.props.keyExtractor}
+                          renderItem={({item, index}) => {
+                            return (
+                              <GHTouchableHighlight
+                                onPress={() => addMentions(item)}
+                                style={{
+                                  height: normalize(22),
+                                  justifyContent: 'center',
+                                  alignItems: 'flex-start',
+                                  width: '100%',
+                                  paddingLeft: 5,
+                                }}>
+                                <View
+                                  key={item.id}
+                                  style={[
+                                    chatInput.suggestedUserComponentStyle,
+                                    {
+                                      width: '100%',
+                                      backgroundColor:
+                                        index === 0 ? '#FFB582' : 'white',
+                                    },
+                                  ]}>
+                                  <Text
+                                    style={{
+                                      color: index === 0 ? '#fff' : '#000',
+                                    }}>
+                                    {item.name}
+                                  </Text>
+                                </View>
+                              </GHTouchableHighlight>
+                            );
+                          }}
+                        />
+                      </View>
+                    )
+                  }
+                />
+
+                {/* <MentionsTextInput
                   multiline={true}
                   textInputStyle={chatInput.textInput}
                   suggestionsPanelStyle={{
-                    width: '100%', 
+                    width: '100%',
+                    height: this.suggestionsDataHeight(value),
                     overflow: 'hidden',
                     position: 'absolute',
                     top: -this.suggestionsDataHeight(value),
                     zIndex: 1,
+                    elevation: 4,
                   }}
                   loadingComponent={() => null}
                   textInputMinHeight={35}
@@ -236,70 +353,78 @@ export default class ChatInput extends Component {
                   triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
                   value={value}
                   onChangeText={(message) => {
-                    if(!message.includes('@')){
+                    if (!message.includes('@')) {
                       this.setState({suggestionData: []});
                     }
-                    onChangeText(message)
+                    onChangeText(message);
                   }}
                   placeholder={placeholder}
                   autoCorrect={false}
                   triggerCallback={(lastKeyword) => {
-                    console.log('ChatInput -> render -> triggerCallback',lastKeyword);
+                    console.log(
+                      'ChatInput -> render -> triggerCallback',
+                      lastKeyword,
+                    );
                     this.groupMembersMentions(lastKeyword);
                   }}
                   suggestionsData={suggestionData} // array of objects
                   keyExtractor={(item, index) => item.id}
                   renderSuggestionsRow={({item, index}, hidePanel) => {
                     return (
-                      <GHTouchableHighlight
-                        key={index+''}
-                        underlayColor="#FFB582"
-                        onShowUnderlay={() => {
-                          this.setState({highlightItemId: item.id});
-                        }}
-                        onHideUnderlay={() => {
-                          this.setState({highlightItemId: null});
-                        }}
-                        style={{
-                          backgroundColor: index === 0 ? '#FFB582' : 'white',
-                          paddingTop: index === 0 ? 5 : 0,
-                        }}
-                        onPress={() => {
-                          hidePanel();
-                          this.setState({isMentionsOpen: false});
-                          this.props.onSelectMention(
-                            item,
-                            value.split(' ')[value.split(' ').length - 1]
-                              .length,
-                          );
-                        }}>
-                        <View
+                      suggestionData &&
+                      suggestionData.length > 0 && (
+                        <GHTouchableHighlight
+                          key={index + ''}
+                          underlayColor="#FFB582"
+                          onShowUnderlay={() => {
+                            this.setState({highlightItemId: item.id});
+                          }}
+                          onHideUnderlay={() => {
+                            this.setState({highlightItemId: null});
+                          }}
                           style={{
-                            height: normalize(22),
-                            justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            width: '100%',
-                            paddingLeft: 5,
+                            backgroundColor: index === 0 ? '#FFB582' : 'white',
+                            paddingTop: index === 0 ? 5 : 0,
+                          }}
+                          onPress={() => {
+                            hidePanel();
+                            this.setState({
+                              isMentionsOpen: false,
+                              mentionUser: item,
+                            });
+                            this.props.onSelectMention(
+                              item,
+                              value.split(' ')[value.split(' ').length - 1]
+                                .length,
+                            );
                           }}>
-                          <Text
+                          <View
                             style={{
-                              fontSize: normalize(11),
-                              paddingHorizontal: 10,
-                              // backgroundColor: '#FFB582',
-                              fontFamily: Fonts.regular,
-                              fontWeight: '400',
-                              color:
-                                this.state.highlightItemId === item.id
-                                  ? 'white'
-                                  : index === 0
-                                  ? 'white'
-                                  : 'black',
-                              textAlign: 'center',
+                              height: normalize(22),
+                              justifyContent: 'center',
+                              alignItems: 'flex-start',
+                              width: '100%',
+                              paddingLeft: 5,
                             }}>
-                            {item.display_name || item.username}
-                          </Text>
-                        </View>
-                      </GHTouchableHighlight>
+                            <Text
+                              style={{
+                                fontSize: normalize(11),
+                                paddingHorizontal: 10,
+                                // backgroundColor: '#FFB582',
+                                fontFamily: Fonts.regular,
+                                fontWeight: '400',
+                                color:
+                                  // this.state.highlightItemId === item.id
+                                  //   ? 'white'
+                                  //   :
+                                  index === 0 ? 'white' : 'black',
+                                textAlign: 'center',
+                              }}>
+                              {item.display_name || item.username}
+                            </Text>
+                          </View>
+                        </GHTouchableHighlight>
+                      )
                     );
                   }}
                   suggestionRowHeight={suggestionDataHeight}
@@ -329,8 +454,7 @@ export default class ChatInput extends Component {
                     //   }
                     //   this.oldLineHeight = this.lineHeight;
                     // }
-                  }}
-                />
+                  }}></MentionsTextInput> */}
               </View>
             ) : (
               <TextInput
@@ -464,5 +588,65 @@ const chatInput = StyleSheet.create({
     // height: '50%',
     width: '65%',
     // tintColor: Colors.gray,
+  },
+
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  textInputStyle: {
+    borderWidth: 0.2,
+    backgroundColor: Colors.white,
+    minHeight: 35,
+    borderRadius: 10,
+    borderColor: Colors.gray,
+    paddingHorizontal: 10,
+    paddingTop:
+      Platform.OS === 'ios' ? (isIphoneX() || Platform.isPad ? 10 : 10) : 0,
+    paddingBottom: 0,
+    fontSize: Platform.isPad ? normalize(5.5) : normalize(11),
+    textAlignVertical: 'center',
+    lineHeight: 15,
+    width: '100%',
+    color: '#000',
+  },
+  suggestedUserComponentImageStyle: {
+    width: 20,
+    height: 20,
+    backgroundColor: '#f1f1f1',
+    borderRadius: 10,
+    marginRight: 5,
+  },
+  suggestedUserComponentStyle: {
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: height / 16,
+    flexDirection: 'row',
+  },
+  mentionStyle: {
+    fontWeight: '500',
+    color: 'blue',
+  },
+
+  // Example styles
+  sendButtonStyle: {
+    marginTop: 20,
+    width: 100,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#efefef',
+    borderRadius: 15,
+  },
+  exampleContainer: {
+    alignSelf: 'stretch',
+    flexDirection: 'column',
+    paddingHorizontal: 30,
+    marginVertical: 30,
+  },
+  exampleHeader: {
+    fontWeight: '700',
   },
 });
