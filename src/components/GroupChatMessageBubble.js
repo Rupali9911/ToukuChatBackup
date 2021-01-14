@@ -41,6 +41,8 @@ import ParsedText from 'react-native-parsed-text';
 
 import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
+import linkify from 'linkify-it';
+import LinkPreviewComponent from './LinkPreviewComponent';
 
 let borderRadius = 20;
 
@@ -411,6 +413,14 @@ class GroupChatMessageBubble extends Component {
     return newMessageTextWithMention;
   };
 
+  renderLinkMedia = (text) => {
+    return linkify().match(text).map((item)=>{
+      return(
+        <LinkPreviewComponent text={item.text} url={item.url}/>
+      );
+    });
+  }
+
   render() {
     const {
       message,
@@ -595,7 +605,8 @@ class GroupChatMessageBubble extends Component {
                           // }
                           onLongPress={(msg_id) => {
                             onMessagePress(message.msg_id);
-                          }}>
+                          }}
+                          >
                           <HyperLink
                             onPress={(url, text) => onPressHyperlink(url)}
                             onLongPress={() => {
@@ -605,7 +616,8 @@ class GroupChatMessageBubble extends Component {
                             linkStyle={{
                               color: Colors.link_color,
                               textDecorationLine: 'underline',
-                            }}>
+                            }}
+                            >
                             <Text
                               style={{
                                 fontSize: Platform.isPad
@@ -617,6 +629,9 @@ class GroupChatMessageBubble extends Component {
                               {message.message_body.text}
                             </Text>
                           </HyperLink>
+
+                          {this.renderLinkMedia(message.message_body.text)}
+
                         </TouchableOpacity>
                       ) : (
                         // <Text
@@ -832,6 +847,9 @@ class GroupChatMessageBubble extends Component {
                               {message.message_body.text}
                             </Text>
                           </HyperLink>
+
+                          {this.renderLinkMedia(message.message_body.text)}
+
                         </TouchableOpacity>
                       ) : (
                         <ParsedText

@@ -931,7 +931,7 @@ class ChannelChats extends Component {
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           this.setState({conversations: res.conversation});
-          this.props.readAllChannelMessages(this.props.currentChannel.id);
+          // this.props.readAllChannelMessages(this.props.currentChannel.id);
           let chat = getChannelChatConversationById(
             this.props.currentChannel.id,
           );
@@ -963,7 +963,7 @@ class ChannelChats extends Component {
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           this.setState({conversations: res.conversation});
-          this.props.readAllChannelMessages(this.props.currentChannel.id);
+          // this.props.readAllChannelMessages(this.props.currentChannel.id);
           let chat = getChannelChatConversationById(
             this.props.currentChannel.id,
           );

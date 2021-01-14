@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, View, Text} from 'react-native';
+import {Dimensions, Image, View, Text} from 'react-native';
 import {createAppContainer} from 'react-navigation';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack';
@@ -11,7 +11,7 @@ import CreateChannelScreen from '../screens/CreateChannel';
 import FollowChannel from '../screens/FollowChannel';
 import TimelineScreen from '../screens/Timeline';
 import ChannelScreen from '../screens/Channel';
-import {Icons, Colors, Fonts} from '../constants';
+import {Icons, Colors, Fonts, gestureResponseDistance} from '../constants';
 import {globalStyles} from '../styles';
 import {isIphoneX} from '../utils';
 import MoreScreen from '../screens/More';
@@ -20,11 +20,17 @@ import AddFriend from '../screens/AddFriend';
 import TabBarComp from '../components/TabBarComp';
 import {BottomTabItem} from '../components/ListItems';
 
+const SCREEN_WIDTH = Dimensions.get('screen').width;
+
 const HomeTab = createStackNavigator({
   HomeTab: HomeScreen,
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
   AddFriendScreen: AddFriend,
+},{
+  defaultNavigationOptions: {
+    gestureResponseDistance: {horizontal: gestureResponseDistance}
+  }
 });
 
 HomeTab.navigationOptions = ({navigation}) => {
@@ -42,6 +48,11 @@ const ChatTab = createStackNavigator({
   ChatTab: ChatScreen,
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
+  AddFriendScreen: AddFriend,
+},{
+  defaultNavigationOptions: {
+    gestureResponseDistance: {horizontal: gestureResponseDistance}
+  }
 });
 
 ChatTab.navigationOptions = ({navigation}) => {
@@ -61,6 +72,10 @@ const MoreTab = createStackNavigator({
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
   FollowChannel: FollowChannel,
+},{
+  defaultNavigationOptions: {
+    gestureResponseDistance: {horizontal: gestureResponseDistance}
+  }
 });
 
 MoreTab.navigationOptions = ({navigation}) => {

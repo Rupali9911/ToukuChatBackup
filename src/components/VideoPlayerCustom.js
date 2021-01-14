@@ -228,6 +228,7 @@ export default class VideoPlayerCustom extends Component {
         videoWidth={width ? width : 1600}
         videoHeight={height ? height : 900}
         thumbnail={thumbnailUrl ? {uri: thumbnailUrl} : ''}
+        onError={(err)=>console.log('video_player_error',err)}
       />
     );
   }

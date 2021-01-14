@@ -42,6 +42,8 @@ import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
 import {inviteUrlRoot, staging} from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
+import linkify from 'linkify-it';
+import LinkPreviewComponent from './LinkPreviewComponent';
 
 let borderRadius = 20;
 let downloaded = false
@@ -319,6 +321,14 @@ class ChatMessageBubble extends Component {
     }
   };
 
+  renderLinkMedia = (text) => {
+    return linkify().match(text).map((item)=>{
+      return(
+        <LinkPreviewComponent text={item.text} url={item.url}/>
+      );
+    });
+  }
+
   isContainUrl = (text) => {
     var urlRE = new RegExp(
       '([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?([^ ])+',
@@ -556,6 +566,9 @@ class ChatMessageBubble extends Component {
                               {message.message_body}
                             </Text>
                           </HyperLink>
+
+                          {this.renderLinkMedia(message.message_body)}
+
                         </TouchableOpacity>
                       ) : (
                         <Text
@@ -748,6 +761,9 @@ class ChatMessageBubble extends Component {
                               {message.message_body}
                             </Text>
                           </HyperLink>
+
+                          {this.renderLinkMedia(message.message_body)}
+
                         </TouchableOpacity>
                       ) : (
                         <Text

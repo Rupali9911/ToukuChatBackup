@@ -1,4 +1,6 @@
-import {Platform} from 'react-native';
+import {Dimensions, Platform} from 'react-native';
+
+const SCREEN_WIDTH = Dimensions.get('screen').width;
 
 export const Icons = {
   icon_language_select: require('../../assets/icons/language_icon.png'),
@@ -369,3 +371,5 @@ export const openBoxImage = {
 };
 
 export const appleStoreUserId = 4046;
+
+export const gestureResponseDistance = SCREEN_WIDTH*0.9;

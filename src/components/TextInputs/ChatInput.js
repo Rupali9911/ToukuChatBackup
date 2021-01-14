@@ -34,6 +34,7 @@ export default class ChatInput extends Component {
       suggestionData: [],
       suggestionDataHeight: 0,
       mentionUser: [],
+      input_focus: false
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -159,7 +160,7 @@ export default class ChatInput extends Component {
       sendEnable,
       groupMembers,
     } = this.props;
-    const {suggestionData, suggestionDataHeight} = this.state;
+    const {suggestionData, suggestionDataHeight, input_focus} = this.state;
     // let groupMembersLength;
     // let suggestionRowHeight;
     // if (groupMembers) {
@@ -186,7 +187,7 @@ export default class ChatInput extends Component {
           width: '100%',
           minHeight: isIphoneX() || Platform.isPad ? 70 : 50,
           // height: this.newHeight,
-          maxHeight: 200,
+          maxHeight: input_focus?200:(isIphoneX() || Platform.isPad ? 70 : 50),
           backgroundColor: Colors.white,
           overflow: 'visible',
         }}>
@@ -204,7 +205,18 @@ export default class ChatInput extends Component {
             },
           ]}>
           {/* <View style={chatInput.chatInputContainer}> */}
-          <View style={chatInput.chatAttachmentContainer}>
+          {input_focus?
+          <View style={[{width:'10%'}]}>
+            <TouchableOpacity
+              style={[chatInput.chatAttachmentContainer,chatInput.chatAttachmentButton,{width:'100%'}]}
+              onPress={() => {
+                this.input_ref && this.input_ref._textInput?this.input_ref._textInput.blur():this.input_ref.blur();
+                this.setState({input_focus:false});
+              }}>
+              <FontAwesome5 name={'angle-right'} size={30} color={Colors.gradient_3} />
+            </TouchableOpacity>
+          </View>
+          :<View style={chatInput.chatAttachmentContainer}>
             <TouchableOpacity
               style={chatInput.chatAttachmentButton}
               onPress={() => {
@@ -244,14 +256,17 @@ export default class ChatInput extends Component {
               color={'indigo'}
             /> */}
             </TouchableOpacity>
-          </View>
-          <View style={chatInput.textInputContainer}>
+          </View>}
+          <View style={[chatInput.textInputContainer,input_focus&&{width:'80%'}]}>
             {this.props.useMentionsFunctionality ? (
               <View style={{}}>
                 <MentionsInput
+                  ref={(input)=>{this.input_ref=input}}
                   value={value}
                   maxHeight={50}
                   multiline={true}
+                  onFocus={(e) => { this.setState({ input_focus: true }) }}
+                  onBlur={(e) => this.setState({ input_focus: false })}
                   onTextChange={(message) => {
                     if (!message.includes('@')) {
                       this.setState({suggestionData: []});
@@ -348,10 +363,12 @@ export default class ChatInput extends Component {
                   }}
                   loadingComponent={() => null}
                   textInputMinHeight={35}
-                  // textInputMaxHeight={500}
+                  textInputMaxHeight={input_focus?150:35}
                   trigger={'@'}
                   triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
                   value={value}
+                  onFocus={(e) => { this.setState({ input_focus: true }) }}
+                  onBlur={(e) => this.setState({ input_focus: false })}
                   onChangeText={(message) => {
                     if (!message.includes('@')) {
                       this.setState({suggestionData: []});
@@ -458,9 +475,12 @@ export default class ChatInput extends Component {
               </View>
             ) : (
               <TextInput
+                ref={(input)=>{this.input_ref=input}}
                 multiline={true}
                 style={chatInput.textInput}
                 onChangeText={(message) => onChangeText(message)}
+                onFocus={(e)=>{this.setState({input_focus:true})}}
+                onBlur={(e)=>this.setState({input_focus:false})}
                 onContentSizeChange={({nativeEvent}) => {
                   if (nativeEvent.contentSize.height != this.lineHeight) {
                     this.lineHeight = nativeEvent.contentSize.height;
@@ -540,7 +560,7 @@ const chatInput = StyleSheet.create({
   },
   chatAttachmentContainer: {
     // height: isIphoneX() ? 40 : 30,
-    width: '25%',
+    width: '30%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -558,7 +578,7 @@ const chatInput = StyleSheet.create({
     width: '90%',
   },
   textInputContainer: {
-    width: '65%',
+    width: '60%',
     // height: '80%',s
     justifyContent: 'center',
   },

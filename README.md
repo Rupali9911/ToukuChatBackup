@@ -72,6 +72,10 @@ Update only the lines with the + operator at the start of them
 
 - Please replace the file from\LineLibChanges\react-native-mentions to \node_modules\react-native-mentions\src
 
+### To use inputFocus functionality on react-native-mentions-input 
+
+- Please replace the file from \LineLibChanges\react-native-mentions-input\index.tsx to \node_modules\@lowkey/react-native-mentions-input\src\index.tsx
+
 ### To upload gif image
 
 - copy ImageCropPicker.m from ./LineLibChanges/react-native-image-crop-picker/ImageCropPicker.m and replace it with ./node_modules/react-native-image-crop-picker/ios/src/ImageCropPicker.m

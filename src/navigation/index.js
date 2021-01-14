@@ -1,3 +1,4 @@
+import {Dimensions} from 'react-native';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
@@ -19,6 +20,9 @@ import GroupDetails from '../screens/GroupDetails';
 import ChannelTimeline from '../screens/ChannelTimeline';
 import Drawer from './DrawerNavigation';
 import BottomTabs from "./BottomTabs";
+import { gestureResponseDistance } from '../constants';
+
+const SCREEN_WIDTH = Dimensions.get('screen').width;
 
 const ChannelStack = createStackNavigator(
   {
@@ -52,8 +56,9 @@ const AppStack = createStackNavigator(
     initialRouteName: 'Tabs',
     defaultNavigationOptions: {
       headerShown: false,
-        disableGestures: true
-    },
+        disableGestures: true,
+        gestureResponseDistance: {horizontal: gestureResponseDistance}
+    }
   },
 );
 

@@ -50,6 +50,7 @@ export default class AudioPlayerCustom extends Component {
     onAudioPlayPress(postId);
     try {
       var fileFormate = url.split('.').pop();
+      console.log('fileFormate',fileFormate);
       if (fileFormate === 'mp3') {
         plarUrl = url;
       }

@@ -96,8 +96,9 @@ export default class ChatHeader extends Component {
                   style={globalStyles.smallIcon}
                 />
               </TouchableOpacity>
+              <View style={{flex:1, flexDirection:'row',justifyContent:'center'}}>
               {type === 'friend' ? (
-                <View style={styles.subContainer}>
+                <View style={[styles.subContainer,{flex:0}]}>
                   <View style={{marginHorizontal: 10}}>
                     <TouchableOpacity
                       onPress={() => {
@@ -110,7 +111,7 @@ export default class ChatHeader extends Component {
                   </View>
                   <View
                     style={{
-                      flex: 1,
+                      // flex: 1,
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
                     }}>
@@ -134,14 +135,15 @@ export default class ChatHeader extends Component {
                   </View>
                 </View>
               ) : (
-                <View style={styles.subContainer}>
+                <View style={[styles.subContainer,{flex:0}]}>
                   <TouchableOpacity
                     onPress={() => {
                       console.log('type', type);
                       if (type === 'channel') {
                         navigation.navigate('ChannelInfo');
                       }
-                    }}>
+                    }}
+                    >
                     {image === null ||
                     image === '' ||
                     typeof image === undefined ? (
@@ -177,7 +179,7 @@ export default class ChatHeader extends Component {
                   </TouchableOpacity>
                   <View
                     style={{
-                      flex: 1,
+                      // flex: 1,
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
                     }}>
@@ -213,6 +215,7 @@ export default class ChatHeader extends Component {
                   </View>
                 </View>
               )}
+              </View>
             </View>
             <View>
               <Menu

@@ -17,6 +17,8 @@ export default class S3uploadService extends Component {
     for (let i = 0; i < files.length; i++) {
       const file = files[i].uri;
       const fileName = `image_${moment().valueOf()}_${i + 1}`;
+      // console.log('file_name',file.name);
+      // const fileName = files[i].name;
       const originResizedImage = await this.uploadImage(
         file,
         fileName,
