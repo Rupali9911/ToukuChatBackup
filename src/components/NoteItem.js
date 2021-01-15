@@ -55,7 +55,7 @@ import {ConfirmationModal} from './Modals';
 import {TouchableOpacity as GHTouchableHighlight} from 'react-native-gesture-handler';
 import MentionsInput, {
   parseMarkdown,
-} from '@lowkey/react-native-mentions-input';
+} from '../../LineLibChanges/react-native-mentions-input/index.tsx';
 
 const {height} = Dimensions.get('window');
 
@@ -808,8 +808,7 @@ class NoteItem extends Component {
                                       width: '100%',
                                       paddingLeft: 5,
                                     }}
-                                    activeOpacity={1}
-                                    >
+                                    activeOpacity={1}>
                                     <View
                                       key={item.id}
                                       style={[

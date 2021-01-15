@@ -23,7 +23,7 @@ import {
 const {width, height} = Dimensions.get('window');
 import MentionsInput, {
   parseMarkdown,
-} from '@lowkey/react-native-mentions-input';
+} from '../../../LineLibChanges/react-native-mentions-input/index.tsx';
 
 export default class ChatInput extends Component {
   constructor(props) {
@@ -34,7 +34,7 @@ export default class ChatInput extends Component {
       suggestionData: [],
       suggestionDataHeight: 0,
       mentionUser: [],
-      input_focus: false
+      input_focus: false,
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -104,7 +104,6 @@ export default class ChatInput extends Component {
         });
 
         console.log('users_array', newUser);
-
       } else {
         let newUser = [];
         groupMembers.filter((member) => {
@@ -149,7 +148,7 @@ export default class ChatInput extends Component {
     //   'suggestionsDataHeight -> suggestionRowHeight',
     //   suggestionRowHeight,
     // );
-    console.log('suggestionRowHeight',suggestionRowHeight);
+    console.log('suggestionRowHeight', suggestionRowHeight);
     return suggestionRowHeight;
   };
 
@@ -193,7 +192,11 @@ export default class ChatInput extends Component {
           width: '100%',
           minHeight: isIphoneX() || Platform.isPad ? 70 : 50,
           // height: this.newHeight,
-          maxHeight: input_focus?200:(isIphoneX() || Platform.isPad ? 70 : 50),
+          maxHeight: input_focus
+            ? 200
+            : isIphoneX() || Platform.isPad
+            ? 70
+            : 50,
           backgroundColor: Colors.white,
           overflow: 'visible',
         }}>
@@ -211,70 +214,90 @@ export default class ChatInput extends Component {
             },
           ]}>
           {/* <View style={chatInput.chatInputContainer}> */}
-          {input_focus?
-          <View style={[{width:'10%'}]}>
-            <TouchableOpacity
-              style={[chatInput.chatAttachmentContainer,chatInput.chatAttachmentButton,{width:'100%'}]}
-              onPress={() => {
-                this.input_ref && this.input_ref._textInput?this.input_ref._textInput.blur():this.input_ref.blur();
-                this.setState({input_focus:false});
-              }}>
-              <FontAwesome5 name={'angle-right'} size={30} color={Colors.gradient_3} />
-            </TouchableOpacity>
-          </View>
-          :<View style={chatInput.chatAttachmentContainer}>
-            <TouchableOpacity
-              style={chatInput.chatAttachmentButton}
-              onPress={() => {
-                onAttachmentPress();
-              }}>
-              {/* <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} /> */}
-              <Image
-                source={Icons.plus_icon_select}
-                style={chatInput.attachmentImage}
-                resizeMode={'contain'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={chatInput.chatAttachmentButton}
-              onPress={() => {
-                onCameraPress();
-              }}>
-              <Image
-                source={Icons.icon_camera_grad}
-                style={chatInput.attachmentImage}
-                resizeMode={'contain'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={chatInput.chatAttachmentButton}
-              onPress={() => {
-                onGalleryPress();
-              }}>
-              <Image
-                source={Icons.gallery_icon_select}
-                style={chatInput.attachmentImage}
-                resizeMode={'contain'}
-              />
-              {/* <FontAwesome5
+          {input_focus ? (
+            <View style={[{width: '10%'}]}>
+              <TouchableOpacity
+                style={[
+                  chatInput.chatAttachmentContainer,
+                  chatInput.chatAttachmentButton,
+                  {width: '100%'},
+                ]}
+                onPress={() => {
+                  this.input_ref && this.input_ref._textInput
+                    ? this.input_ref._textInput.blur()
+                    : this.input_ref.blur();
+                  this.setState({input_focus: false});
+                }}>
+                <FontAwesome5
+                  name={'angle-right'}
+                  size={30}
+                  color={Colors.gradient_3}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={chatInput.chatAttachmentContainer}>
+              <TouchableOpacity
+                style={chatInput.chatAttachmentButton}
+                onPress={() => {
+                  onAttachmentPress();
+                }}>
+                {/* <FontAwesome5 name={'plus'} size={height * 0.03} color={'indigo'} /> */}
+                <Image
+                  source={Icons.plus_icon_select}
+                  style={chatInput.attachmentImage}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={chatInput.chatAttachmentButton}
+                onPress={() => {
+                  onCameraPress();
+                }}>
+                <Image
+                  source={Icons.icon_camera_grad}
+                  style={chatInput.attachmentImage}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={chatInput.chatAttachmentButton}
+                onPress={() => {
+                  onGalleryPress();
+                }}>
+                <Image
+                  source={Icons.gallery_icon_select}
+                  style={chatInput.attachmentImage}
+                  resizeMode={'contain'}
+                />
+                {/* <FontAwesome5
               name={'image'}
               size={height * 0.03}
               color={'indigo'}
             /> */}
-            </TouchableOpacity>
-          </View>}
-          <View style={[chatInput.textInputContainer,input_focus&&{width:'80%'}]}>
+              </TouchableOpacity>
+            </View>
+          )}
+          <View
+            style={[
+              chatInput.textInputContainer,
+              input_focus && {width: '80%'},
+            ]}>
             {this.props.useMentionsFunctionality ? (
               <View style={{}}>
                 <MentionsInput
-                  ref={(input)=>{this.input_ref=input}}
+                  ref={(input) => {
+                    this.input_ref = input;
+                  }}
                   value={value}
                   maxHeight={50}
                   multiline={true}
-                  onFocus={(e) => { this.setState({ input_focus: true }) }}
+                  onFocus={(e) => {
+                    this.setState({input_focus: true});
+                  }}
                   onBlur={(e) => {
-                    this.setState({ input_focus: false })
-                    this.input_ref && this.input_ref.hideSuggestionPanel()
+                    this.setState({input_focus: false});
+                    this.input_ref && this.input_ref.hideSuggestionPanel();
                   }}
                   onTextChange={(message) => {
                     if (!message.includes('@')) {
@@ -320,8 +343,8 @@ export default class ChatInput extends Component {
                             return (
                               <GHTouchableHighlight
                                 onPress={() => {
-                                  console.log('added_mention_user',item);
-                                  addMentions(item)
+                                  console.log('added_mention_user', item);
+                                  addMentions(item);
                                 }}
                                 style={{
                                   height: normalize(22),
@@ -483,12 +506,16 @@ export default class ChatInput extends Component {
               </View>
             ) : (
               <TextInput
-                ref={(input)=>{this.input_ref=input}}
+                ref={(input) => {
+                  this.input_ref = input;
+                }}
                 multiline={true}
                 style={chatInput.textInput}
                 onChangeText={(message) => onChangeText(message)}
-                onFocus={(e)=>{this.setState({input_focus:true})}}
-                onBlur={(e)=>this.setState({input_focus:false})}
+                onFocus={(e) => {
+                  this.setState({input_focus: true});
+                }}
+                onBlur={(e) => this.setState({input_focus: false})}
                 onContentSizeChange={({nativeEvent}) => {
                   if (nativeEvent.contentSize.height != this.lineHeight) {
                     this.lineHeight = nativeEvent.contentSize.height;
