@@ -383,6 +383,37 @@ class FriendNotes extends Component {
       });
   };
 
+  onExpand = (id, item) => {
+    const {data} = this.state;
+    if (data && data.results && data.results.length > 0) {
+      let newdata = [];
+      data.results.map((item) => {
+        if (item.id === id) {
+          if (!item.showComment) {
+            newdata.push({...item, showComment: true});
+          } else if (item.showComment == true) {
+            newdata.push({...item, showComment: false});
+          }
+        } else {
+          if (item.showComment === true) {
+            newdata.push({...item, showComment: true});
+          } else {
+            newdata.push({...item, showComment: false});
+          }
+        }
+      });
+      if (newdata.length > 0) {
+        this.setState({
+          data: {
+            ...data,
+            count: data.count,
+            results: newdata,
+          },
+        });
+      }
+    }
+  };
+
   render() {
     const {
       orientation,
@@ -517,6 +548,7 @@ class FriendNotes extends Component {
                 editNoteIndex={this.state.editNoteIndex}
                 showTextBox={this.state.showTextBox}
                 userData={this.props.userData}
+                onExpand={this.onExpand}
               />
             </View>
           </KeyboardAwareScrollView>

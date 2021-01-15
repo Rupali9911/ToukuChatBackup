@@ -102,6 +102,9 @@ export default class ChatInput extends Component {
           suggestionData: newUser,
           suggestionDataHeight: suggestionRowHeight,
         });
+
+        console.log('users_array', newUser);
+
       } else {
         let newUser = [];
         groupMembers.filter((member) => {
@@ -122,6 +125,8 @@ export default class ChatInput extends Component {
           suggestionData: newUser,
           suggestionDataHeight: suggestionRowHeight,
         });
+
+        console.log('users_array', newUser);
       }
       this.forceUpdate();
     } else {
@@ -129,21 +134,22 @@ export default class ChatInput extends Component {
     }
   };
 
-  suggestionsDataHeight = (value) => {
+  suggestionsDataHeight = (users) => {
     // console.log('suggestionsDataHeight -> suggestionsDataHeight', value);
     let groupMembersLength;
     let suggestionRowHeight;
     // groupMembersLength = this.groupMembersMentions(value).length;
-    groupMembersLength = this.state.suggestionData.length;
+    groupMembersLength = users.length;
     // console.log('render -> groupMembersLength', groupMembersLength);
     suggestionRowHeight =
       groupMembersLength < 11
-        ? groupMembersLength * normalize(22) + 5
+        ? groupMembersLength * normalize(22) + 10
         : normalize(220) + 5;
     // console.log(
     //   'suggestionsDataHeight -> suggestionRowHeight',
     //   suggestionRowHeight,
     // );
+    console.log('suggestionRowHeight',suggestionRowHeight);
     return suggestionRowHeight;
   };
 
@@ -266,7 +272,10 @@ export default class ChatInput extends Component {
                   maxHeight={50}
                   multiline={true}
                   onFocus={(e) => { this.setState({ input_focus: true }) }}
-                  onBlur={(e) => this.setState({ input_focus: false })}
+                  onBlur={(e) => {
+                    this.setState({ input_focus: false })
+                    this.input_ref && this.input_ref.hideSuggestionPanel()
+                  }}
                   onTextChange={(message) => {
                     if (!message.includes('@')) {
                       this.setState({suggestionData: []});
@@ -289,15 +298,10 @@ export default class ChatInput extends Component {
                           borderTopLeftRadius: 10,
                           borderTopRightRadius: 10,
                           position: 'absolute',
-                          top:
-                            users.length === 1
-                              ? -38 * users.length
-                              : Platform.OS === 'android'
-                              ? -195
-                              : -225,
+                          top: -this.suggestionsDataHeight(users),
                           left: 0,
                           right: 0,
-                          height: users.length === 1 ? 38 : height / 4,
+                          height: this.suggestionsDataHeight(users),
                           borderWidth: 0.25,
                           borderColor: 'gray',
                           padding: 5,
@@ -305,7 +309,7 @@ export default class ChatInput extends Component {
                         <FlatList
                           scrollEnabled={true}
                           showsVerticalScrollIndicator={false}
-                          nestedScrollEnabled={true}
+                          nestedScrollEnabled={false}
                           keyboardShouldPersistTaps={'always'}
                           horizontal={this.props.horizontal}
                           ListEmptyComponent={this.props.loadingComponent}
@@ -315,7 +319,10 @@ export default class ChatInput extends Component {
                           renderItem={({item, index}) => {
                             return (
                               <GHTouchableHighlight
-                                onPress={() => addMentions(item)}
+                                onPress={() => {
+                                  console.log('added_mention_user',item);
+                                  addMentions(item)
+                                }}
                                 style={{
                                   height: normalize(22),
                                   justifyContent: 'center',
@@ -329,6 +336,7 @@ export default class ChatInput extends Component {
                                     chatInput.suggestedUserComponentStyle,
                                     {
                                       width: '100%',
+                                      height: '100%',
                                       backgroundColor:
                                         index === 0 ? '#FFB582' : 'white',
                                     },

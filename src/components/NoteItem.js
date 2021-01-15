@@ -437,7 +437,7 @@ class NoteItem extends Component {
           suggestionDataHeight: suggestionRowHeight,
         });
 
-        console.log('user', newUser);
+        console.log('users_array', newUser);
       } else {
         let newUser = [];
         groupMembers.filter((member) => {
@@ -807,13 +807,16 @@ class NoteItem extends Component {
                                       alignItems: 'flex-start',
                                       width: '100%',
                                       paddingLeft: 5,
-                                    }}>
+                                    }}
+                                    activeOpacity={1}
+                                    >
                                     <View
                                       key={item.id}
                                       style={[
                                         styles.suggestedUserComponentStyle,
                                         {
                                           width: '100%',
+                                          height: '100%',
                                           backgroundColor:
                                             index === 0 ? '#FFB582' : 'white',
                                         },

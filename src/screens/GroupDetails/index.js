@@ -138,6 +138,7 @@ class GroupDetails extends Component {
         },
       ],
       dropDownData: null,
+      manageUsers: [],
     };
 
     this.S3uploadService = new S3uploadService();
@@ -332,8 +333,8 @@ class GroupDetails extends Component {
 
         let arrTemp1 = [...members, ...arrTemp];
         //console.log('arrTemp1', arrTemp1)
-        this.props.setCurrentGroupMembers(arrTemp1);
-        this.setState({loading: false});
+        this.props.setCurrentGroupMembers(responseArray);
+        this.setState({loading: false,manageUsers: arrTemp1});
         // })
       })
       .catch((err) => {
@@ -537,10 +538,11 @@ class GroupDetails extends Component {
       addOption,
       NonAdminAddOption,
       loading,
+      manageUsers
     } = this.state;
     let filteredFriends = [];
-    if (currentGroupMembers && currentGroupMembers.length > 0) {
-      filteredFriends = currentGroupMembers.filter(
+    if (manageUsers && manageUsers.length > 0) {
+      filteredFriends = manageUsers.filter(
         createFilter(this.state.searchText, ['display_name']),
       );
     }

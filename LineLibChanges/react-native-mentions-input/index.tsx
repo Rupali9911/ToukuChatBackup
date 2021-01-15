@@ -234,7 +234,8 @@ export default class MentionsInput extends React.Component<Props, State> {
 
     const match = this.state.matches.find((m) => m.index === startPosition);
     let mentions = this.state.mentions;
-    const userName = this.transformTag(user.name);
+    // const userName = this.transformTag(user.name);
+    const userName = user.name;
     const text =
       this.props.value.substring(0, match.index) +
       `@${userName} ` +
@@ -342,6 +343,10 @@ export default class MentionsInput extends React.Component<Props, State> {
       return null;
     }
   };
+
+  hideSuggestionPanel = () => {
+    this.setState({isSuggestionsOpen:false});
+  }
 
   render() {
     return (
