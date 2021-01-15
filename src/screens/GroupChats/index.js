@@ -1324,8 +1324,12 @@ class GroupChats extends Component {
           if (array && array.length > 0) {
             updateLastMsgGroupsWithoutCount(
               this.props.currentGroup.group_id,
-              array[0].message_body.type,
-              array[0].message_body.text,
+              array[0].message_body && array[0].message_body.type
+                ? array[0].message_body.type
+                : array[0].message_body,
+              array[0].message_body && array[0].message_body.text
+                ? array[0].message_body.text
+                : array[0].message_body,
               array[0].msg_id,
               array[0].timestamp,
             );

@@ -334,7 +334,7 @@ class GroupDetails extends Component {
         let arrTemp1 = [...members, ...arrTemp];
         //console.log('arrTemp1', arrTemp1)
         this.props.setCurrentGroupMembers(responseArray);
-        this.setState({loading: false,manageUsers: arrTemp1});
+        this.setState({loading: false, manageUsers: arrTemp1});
         // })
       })
       .catch((err) => {
@@ -538,7 +538,7 @@ class GroupDetails extends Component {
       addOption,
       NonAdminAddOption,
       loading,
-      manageUsers
+      manageUsers,
     } = this.state;
     let filteredFriends = [];
     if (manageUsers && manageUsers.length > 0) {
@@ -837,7 +837,6 @@ class GroupDetails extends Component {
   };
   onDeleteNote = (index, item) => {
     const {data} = this.state;
-
     this.props
       .deleteGroupNotes(item.id)
       .then((res) => {
@@ -853,18 +852,23 @@ class GroupDetails extends Component {
           deleteItem: null,
         });
         this.toggleDeleteNoteConfirmationModal();
-        Toast.show({
-          title: translate('pages.xchat.groupDetails'),
-          text: translate('pages.xchat.toastr.noteDeleted'),
-          type: 'positive',
-        });
+        setTimeout(() => {
+          Toast.show({
+            title: translate('pages.xchat.groupDetails'),
+            text: translate('pages.xchat.toastr.noteDeleted'),
+            type: 'positive',
+          });
+        }, 100);
       })
       .catch((err) => {
-        Toast.show({
-          title: 'Touku',
-          text: translate('common.somethingWentWrong'),
-          type: 'primary',
-        });
+        this.toggleDeleteNoteConfirmationModal();
+        setTimeout(() => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        }, 100);
       });
   };
 

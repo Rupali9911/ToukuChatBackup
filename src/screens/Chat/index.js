@@ -957,20 +957,20 @@ class Chat extends Component {
           );
         }
 
-        if(message.text.data.message_details.message_body.type!=='update'){
+        if (message.text.data.message_details.message_body.type !== 'update') {
           updateLastMsgGroups(
             message.text.data.message_details.group_id,
             message.text.data.message_details,
             unreadCount,
           );
-        }else{
+        } else {
           updateLastMsgTimestamp(
             message.text.data.message_details.group_id,
             message.text.data.message_details.timestamp,
-            unreadCount
-            );
+            unreadCount,
+          );
         }
-        
+
         // updateGroup(message.text.data.message_details).then(() => {
         //   console.log('onNewMessageInGroup -> updateGroup');
         this.props.getLocalUserGroups().then((res) => {
@@ -1889,8 +1889,12 @@ class Chat extends Component {
             if (array && array.length > 0) {
               updateLastMsgGroupsWithoutCount(
                 item.group_id,
-                array[0].message_body.type,
-                array[0].message_body.text,
+                array[0].message_body && array[0].message_body.type
+                  ? array[0].message_body.type
+                  : array[0].message_body,
+                array[0].message_body && array[0].message_body.text
+                  ? array[0].message_body.text
+                  : array[0].message_body,
                 array[0].msg_id,
                 array[0].timestamp,
               );
@@ -1903,7 +1907,6 @@ class Chat extends Component {
                 group[0].timestamp,
               );
             }
-
             this.props.getLocalUserGroups().then((res) => {
               this.props.setCommonChatConversation();
             });
@@ -2003,7 +2006,8 @@ class Chat extends Component {
       }
     }
     if (
-      (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
+      (this.props.currentRouteName == 'GroupChats' ||
+        this.props.currentRouteName == 'GroupDetails') &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -2032,7 +2036,8 @@ class Chat extends Component {
       }
     }
     if (
-      (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
+      (this.props.currentRouteName == 'GroupChats' ||
+        this.props.currentRouteName == 'GroupDetails') &&
       currentGroup &&
       message.text.data.message_details.group_id == currentGroup.group_id
     ) {
@@ -2047,7 +2052,7 @@ class Chat extends Component {
       let user_delete = message.text.data.message_details.members_data.filter(
         (item) => item.id === this.props.userData.id,
       );
-      
+
       let result = getGroupsById(message.text.data.message_details.group_id);
       let group = realmToPlainObject(result);
       // let group = result.toJSON();
@@ -2057,7 +2062,8 @@ class Chat extends Component {
         }
 
         if (
-          (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
+          (this.props.currentRouteName == 'GroupChats' ||
+            this.props.currentRouteName == 'GroupDetails') &&
           currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id
         ) {
@@ -2071,8 +2077,9 @@ class Chat extends Component {
   onRemoveGroupFromList = (message) => {
     const {currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.CLEAR_GROUP_CHAT) {
-
-      if (message.text.data.message_details.user_id === this.props.userData.id) {
+      if (
+        message.text.data.message_details.user_id === this.props.userData.id
+      ) {
         deleteGroupById(message.text.data.message_details.group_id);
         deleteAllGroupMessageByGroupId(
           message.text.data.message_details.group_id,
@@ -2092,7 +2099,8 @@ class Chat extends Component {
         });
       } else {
         if (
-          (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
+          (this.props.currentRouteName == 'GroupChats' ||
+            this.props.currentRouteName == 'GroupDetails') &&
           currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id
         ) {
@@ -2101,7 +2109,7 @@ class Chat extends Component {
         }
       }
     }
-  }
+  };
 
   onUpdateGroupDetail(message) {
     const {userGroups, currentGroup} = this.props;
@@ -2503,7 +2511,7 @@ class Chat extends Component {
     this.props
       .getGroupMembers(this.props.currentGroup.group_id)
       .then((res) => {
-        console.log('res_getGroupMembers',JSON.stringify(res));
+        console.log('res_getGroupMembers', JSON.stringify(res));
         this.props.setCurrentGroupMembers(res);
       })
       .catch((err) => {});
@@ -2918,6 +2926,7 @@ class Chat extends Component {
       (cc) => !cc.is_pined,
     );
     const conversations = [...pinedConversations, ...unpinedConversations];
+
     if (conversations.length > 0) {
       return (
         <FlatList
@@ -2930,7 +2939,7 @@ class Chat extends Component {
                 title={item.group_name}
                 onCheckChange={this.onCheckChange}
                 description={
-                  item.last_msg
+                  item.last_msg !== null
                     ? item.last_msg.type === 'text'
                       ? item.last_msg.text
                       : item.last_msg.type === 'image'
@@ -2942,7 +2951,7 @@ class Chat extends Component {
                       : item.last_msg.type === 'audio'
                       ? translate('pages.xchat.audio')
                       : ''
-                    : (item.no_msgs || !item.last_msg_id)
+                    : item.no_msgs || !item.last_msg_id
                     ? ''
                     : translate('pages.xchat.messageUnsent')
                 }
