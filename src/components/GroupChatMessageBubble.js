@@ -43,9 +43,13 @@ import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
 import linkify from 'linkify-it';
 import LinkPreviewComponent from './LinkPreviewComponent';
-
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 let borderRadius = 20;
 
+const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false
+};
 class GroupChatMessageBubble extends Component {
   constructor(props) {
     super(props);
@@ -80,6 +84,7 @@ class GroupChatMessageBubble extends Component {
     this.setState({ visible: false });
   };
   showMenu = () => {
+      ReactNativeHapticFeedback.trigger("impactHeavy", options);
     this._menu.show();
     this.setState({ visible: true });
   };

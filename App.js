@@ -211,14 +211,18 @@ export default class App extends Component {
           ? suffixUrl.split('/')[0].trim()
           : suffixUrl;
       await AsyncStorage.setItem('invitationCode', invitationCode);
-      //setTimeout(() => {
-      NavigationService.navigate('SignUp', {
-        showEmail: true,
-        pageNumber: 0,
-        isSocial: false,
-        invitationCode: invitationCode,
-      });
-      // }, 1000 );
+        // const userToken = await AsyncStorage.getItem('userToken');
+        // if (userToken) {
+        //     NavigationService.navigate('SignUp');
+        // }else{
+            NavigationService.navigate('SignUp', {
+                showEmail: true,
+                pageNumber: 0,
+                isSocial: false,
+                invitationCode: invitationCode,
+            });
+      //  }
+
     } else if (loginUrl === channelLoginUrl) {
       let splitUrl = url.split('&');
       let invitationCode, channelId;

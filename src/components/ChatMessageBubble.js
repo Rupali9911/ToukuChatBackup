@@ -11,6 +11,7 @@ import {
   NativeModules,
   NativeEventEmitter,
   Platform,
+    Vibration
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Divider} from 'react-native-paper';
@@ -28,6 +29,7 @@ import Toast from '../components/Toast';
 import HyperLink from 'react-native-hyperlink';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-viewing';
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import {
   getAvatar,
   normalize,
@@ -47,6 +49,12 @@ import LinkPreviewComponent from './LinkPreviewComponent';
 
 let borderRadius = 20;
 let downloaded = false
+
+const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false
+};
+
 class ChatMessageBubble extends Component {
   constructor(props) {
     super(props);
@@ -357,6 +365,7 @@ class ChatMessageBubble extends Component {
   };
 
   showMenu = () => {
+    ReactNativeHapticFeedback.trigger("impactHeavy", options);
     this._menu.show();
     this.setState({visible: true});
   };
@@ -463,6 +472,7 @@ class ChatMessageBubble extends Component {
                         message.msg_type === 'audio' && {minWidth: '100%'},
                       ]}
                       onLongPress={(id) => {
+                        console.log('On LOng Press tapped')
                         onMessagePress(message.id);
                         this.showMenu();
                       }}

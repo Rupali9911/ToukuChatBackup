@@ -1,6 +1,6 @@
 {
   "name": "Touku",
-  "version": "3.0.28",
+  "version": "3.0.31",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -43,6 +43,7 @@
     "react-native-file-viewer": "^2.1.4",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
+    "react-native-haptic-feedback": "^1.11.0",
     "react-native-hyperlink": "0.0.19",
     "react-native-image-crop-picker": "^0.35.1",
     "react-native-image-picker": "^2.3.1",

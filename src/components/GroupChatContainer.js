@@ -300,8 +300,8 @@ class GroupChatContainer extends Component {
                           onCheck={() => onSelect(item.msg_id)}
                         />
                       ) : null}
-                      {(item.message_body && item.message_body.type && item.message_body.type === 'update') ? 
-                        <TouchableOpacity 
+                      {(item.message_body && item.message_body.type && item.message_body.type === 'update') ?
+                        <TouchableOpacity
                           style={{ width:'100%', marginLeft: isMultiSelect?-35:0}}
                           onPress={() => {
                             isMultiSelect &&
@@ -322,7 +322,7 @@ class GroupChatContainer extends Component {
                             headerHeight={80}
                             button={
                               <TouchableOpacity
-                                disabled={isMultiSelect}                            
+                                disabled={isMultiSelect}
                                 onLongPress={() => {
                                   this.showMenu(item.msg_id);
                                 }}
@@ -350,7 +350,7 @@ class GroupChatContainer extends Component {
                             />
                           </Menu>
                         </TouchableOpacity>
-                    : 
+                    :
                       <TouchableOpacity
                         style={{flex: 1}}
                         disabled={!isMultiSelect}
