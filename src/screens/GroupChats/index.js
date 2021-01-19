@@ -471,6 +471,12 @@ class GroupChats extends Component {
         msgText = uploadedVideo;
       }
     }
+
+    let mentions = [];
+    newMessageMentions.map(item=>{
+      mentions.push({id:item});
+    })
+
     let sendmsgdata = {
       sender_id: userData.id,
       group_id: currentGroup.group_id,
@@ -495,7 +501,7 @@ class GroupChats extends Component {
             sender_id: repliedMessage.sender_id,
           }
         : null,
-      mentions: [...newMessageMentions],
+      mentions: mentions,
       read_count: null,
     };
 
