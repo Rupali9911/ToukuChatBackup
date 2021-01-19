@@ -249,7 +249,19 @@ export default class GroupChatMessageBox extends Component {
                   marginRight: 5,
                 }}
               />
-              <View
+              <View>
+                <Text
+                  style={{
+                    fontSize: Platform.isPad ? normalize(5.5) : normalize(9),
+                    fontFamily: Fonts.regular,
+                    color: Colors.primary,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    fontWeight: '300',
+                  }}>
+                  {getUserName(message.sender_id) || message.sender_display_name}
+                </Text>
+                <View
                 style={{
                   alignItems: 'flex-end',
                   flexDirection:
@@ -258,18 +270,6 @@ export default class GroupChatMessageBox extends Component {
                       ? 'column'
                       : 'row',
                 }}>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: Platform.isPad ? normalize(5.5) : normalize(9),
-                      fontFamily: Fonts.regular,
-                      color: Colors.primary,
-                      textAlign: 'left',
-                      marginStart: 10,
-                      fontWeight: '300',
-                    }}>
-                    {getUserName(message.sender_id) || message.sender_display_name}
-                  </Text>
                   <GroupChatMessageBubble
                     ref={(view) => {
                       this[`bubble_box_${message.msg_id}`] = view;
@@ -297,7 +297,6 @@ export default class GroupChatMessageBox extends Component {
                     showOpenLoader={showOpenLoader}
                     isMultiSelect={isMultiSelect}
                   />
-                </View>
                 <View
                   style={{
                     // marginHorizontal: '1.5%',
@@ -317,6 +316,7 @@ export default class GroupChatMessageBox extends Component {
                       : time.getMinutes()
                   }`}</Text>
                 </View>
+              </View>
               </View>
             </View>
             {message.translated &&

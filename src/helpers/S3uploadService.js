@@ -16,9 +16,9 @@ export default class S3uploadService extends Component {
     const imagesFiles = {image: []};
     for (let i = 0; i < files.length; i++) {
       const file = files[i].uri;
-      const fileName = `image_${moment().valueOf()}_${i + 1}`;
-      // console.log('file_name',file.name);
-      // const fileName = files[i].name;
+      // const fileName = `image_${moment().valueOf()}_${i + 1}`;
+      console.log('file_name',files[i].name);
+      const fileName = files[i].name;
       const originResizedImage = await this.uploadImage(
         file,
         fileName,
@@ -55,10 +55,12 @@ export default class S3uploadService extends Component {
   async uploadAudioOnS3Bucket(files, fileType, onProgress) {
     let audio;
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileName = `audio_${moment().valueOf()}_${i + 1}.${fileType
-        .split('/')
-        .pop()}`;
+      const file = files[i].uri;
+      // const fileName = `audio_${moment().valueOf()}_${i + 1}.${fileType
+      //   .split('/')
+      //   .pop()}`;
+        console.log('fileName',files[i].name);
+      const fileName = files[i].name;
       audio = await this.uploadFile(file, fileName, fileType, onProgress);
     }
     return audio.body.postResponse.location;
@@ -68,9 +70,10 @@ export default class S3uploadService extends Component {
     let application;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const fileName = `doc_${moment().valueOf()}_${i + 1}.${name
-        .split('.')
-        .pop()}`;
+      // const fileName = `doc_${moment().valueOf()}_${i + 1}.${name
+      //   .split('.')
+      //   .pop()}`;
+      const fileName = name;
       application = await this.uploadFile(file, fileName, fileType, onProgress);
     }
     return application.body.postResponse.location;
@@ -79,8 +82,10 @@ export default class S3uploadService extends Component {
   async uploadVideoOnS3Bucket(files, type, onProgress) {
     let video;
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileName = `video_${moment().valueOf()}_${i + 1}`;
+      const file = files[i].uri;
+      // const fileName = `video_${moment().valueOf()}_${i + 1}`;
+      console.log('file_name',files[i].name);
+      const fileName = files[i].name;
       video = await this.uploadFile(file, fileName, type, onProgress);
     }
 
@@ -90,7 +95,7 @@ export default class S3uploadService extends Component {
   async uploadFile(file, fileName, fileType, onProgress) {
     const File = {
       uri: file,
-      name: fileName,
+      name: moment().valueOf()+"/"+fileName,
       type: fileType,
     };
 

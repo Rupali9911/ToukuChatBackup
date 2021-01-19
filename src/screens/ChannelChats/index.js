@@ -565,7 +565,7 @@ class ChannelChats extends Component {
     }
 
     if (sentMessageType === 'audio') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
         files,
@@ -595,7 +595,7 @@ class ChannelChats extends Component {
     }
 
     if (sentMessageType === 'video') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       if (uploadFile.isUrl) {
         msgText = uploadFile.uri;
@@ -1085,7 +1085,7 @@ class ChannelChats extends Component {
               ? 'data:image/gif;base64,' + file.data
               : 'data:image/jpeg;base64,' + file.data,
           type: file.mime,
-          name: null,
+          name: file.filename,
         };
         await this.setState(
           {
@@ -1101,7 +1101,7 @@ class ChannelChats extends Component {
         let source = {
           uri: file.path,
           type: file.mime,
-          name: null,
+          name: file.filename,
           isUrl: file.isUrl,
         };
         await this.setState(

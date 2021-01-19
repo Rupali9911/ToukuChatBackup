@@ -28,7 +28,7 @@ export default class VideoThumbnailPlayer extends Component {
     if (url.includes('youtube.com')) {
       getYoutubeMeta(this.getVideoId(url))
         .then((youtubedata) => {
-          console.log(youtubedata);
+          // console.log(youtubedata);
           if (youtubedata && youtubedata.thumbnail_url) {
             this.setState({thumbnailUrl: youtubedata.thumbnail_url});
           }
@@ -40,7 +40,7 @@ export default class VideoThumbnailPlayer extends Component {
         timeStamp: 2000,
       })
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           this.setState({thumbnailUrl: response.path});
         })
         .catch((err) => console.log({err,url}));

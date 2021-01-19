@@ -426,7 +426,7 @@ class GroupChats extends Component {
       msgText = uploadedImages.image[0].image;
     }
     if (sentMessageType === 'audio') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       const uploadedAudio = await this.S3uploadService.uploadAudioOnS3Bucket(
         files,
@@ -455,7 +455,7 @@ class GroupChats extends Component {
     }
 
     if (sentMessageType === 'video') {
-      let file = uploadFile.uri;
+      let file = uploadFile;
       let files = [file];
       if (uploadFile.isUrl) {
         msgText = uploadFile.uri;
@@ -998,7 +998,7 @@ class GroupChats extends Component {
     await this.props
       .getGroupConversation(this.props.currentGroup.group_id)
       .then((res) => {
-        console.log('res', res);
+        // console.log('res', res);
         if (res.status) {
           let data = res.data;
           data.sort((a, b) =>
@@ -1531,7 +1531,7 @@ class GroupChats extends Component {
               ? 'data:image/gif;base64,' + file.data
               : 'data:image/jpeg;base64,' + file.data,
           type: file.mime,
-          name: null,
+          name: file.filename,
         };
         await this.setState(
           {
@@ -1547,7 +1547,7 @@ class GroupChats extends Component {
         let source = {
           uri: file.path,
           type: file.mime,
-          name: null,
+          name: file.filename,
           isUrl: file.isUrl,
         };
         await this.setState(
@@ -1665,9 +1665,9 @@ class GroupChats extends Component {
       currentGroupMembers,
     } = this.props;
 
-    console.log('currentGroupDetail', currentGroupDetail);
-    console.log('chatGroupConversation', chatGroupConversation);
-    console.log('currentGroupMembers', currentGroupMembers);
+    // console.log('currentGroupDetail', currentGroupDetail);
+    // console.log('chatGroupConversation', chatGroupConversation);
+    // console.log('currentGroupMembers', currentGroupMembers);
 
     return (
       <ImageBackground

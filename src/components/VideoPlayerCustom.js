@@ -46,7 +46,7 @@ export default class VideoPlayerCustom extends Component {
         timeStamp: 2000,
       })
         .then((response) => {
-          console.log('res', response);
+          // console.log('res', response);
           this.setState({thumbnailUrl: response.path});
         })
         .catch((err) => console.log({err}));

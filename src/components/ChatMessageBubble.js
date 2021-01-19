@@ -542,6 +542,7 @@ class ChatMessageBubble extends Component {
                           // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {
                             onMessagePress(message.id);
+                            this.showMenu();
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
@@ -736,6 +737,7 @@ class ChatMessageBubble extends Component {
                           // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {
                             onMessagePress(message.id);
+                            this.showMenu();
                           }}>
                           <HyperLink
                             onPress={(url, text) => {

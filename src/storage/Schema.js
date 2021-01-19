@@ -142,7 +142,11 @@ export const ChatConversationGroup = {
       objectType: 'reply_to',
       default: null,
     },
-    mentions: 'string?[]',
+    mentions: {
+      type: 'list',
+      objectType: 'group_mentions',
+      default: []
+    },
     read_count: {type: 'int', default: 0},
     created: 'string?',
     translated: 'string?'

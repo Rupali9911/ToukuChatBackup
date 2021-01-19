@@ -375,9 +375,9 @@ export const setGroupChatConversation = (conversation) => {
             timestamp: item.timestamp,
             reply_to: item.reply_to,
             mentions: item.mentions
-              ? item.mentions instanceof Object
-                ? []
-                : item.mentions
+              ? item.mentions instanceof Array
+                ? item.mentions
+                : [item.mentions]
               : [],
             read_count: item.read_count ? item.read_count : 0,
             created: item.created,
@@ -400,9 +400,9 @@ export const setGroupChatConversation = (conversation) => {
           timestamp: item.timestamp,
           reply_to: item.reply_to,
           mentions: item.mentions
-            ? item.mentions instanceof Object
-              ? []
-              : item.mentions
+            ? item.mentions instanceof Array
+              ? item.mentions
+              : [item.mentions]
             : [],
           read_count: item.read_count ? item.read_count : 0,
           created: item.created,

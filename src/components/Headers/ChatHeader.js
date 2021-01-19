@@ -98,7 +98,7 @@ export default class ChatHeader extends Component {
               </TouchableOpacity>
               <View style={{flex:1, flexDirection:'row',justifyContent:'center'}}>
               {type === 'friend' ? (
-                <View style={[styles.subContainer,{flex:0}]}>
+                <View style={[styles.subContainer,{flex:0,maxWidth:'90%'}]}>
                   <View style={{marginHorizontal: 10}}>
                     <TouchableOpacity
                       onPress={() => {
@@ -112,6 +112,7 @@ export default class ChatHeader extends Component {
                   <View
                     style={{
                       // flex: 1,
+                      maxWidth: '80%',
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
                     }}>
@@ -135,7 +136,7 @@ export default class ChatHeader extends Component {
                   </View>
                 </View>
               ) : (
-                <View style={[styles.subContainer,{flex:0}]}>
+                <View style={[styles.subContainer,{flex:0,maxWidth:'90%'}]}>
                   <TouchableOpacity
                     onPress={() => {
                       console.log('type', type);
@@ -157,7 +158,7 @@ export default class ChatHeader extends Component {
                           Colors.gradient_3,
                         ]}
                         style={styles.squareImage}>
-                        <Text style={globalStyles.normalRegularText15}>
+                        <Text numberOfLines={1} style={[globalStyles.normalRegularText15]}>
                           {title.indexOf(' ') === -1
                             ? title.charAt(0).toUpperCase()
                             : title.charAt(0).toUpperCase() +
@@ -180,6 +181,7 @@ export default class ChatHeader extends Component {
                   <View
                     style={{
                       // flex: 1,
+                      maxWidth: '80%',
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
                     }}>
