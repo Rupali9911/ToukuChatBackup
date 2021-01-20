@@ -1626,7 +1626,22 @@
       "OptionalXigolo":"Optional XIGOLO",
       "comingSoon":"Coming soon",
       "other":"Other",
-      "hotEarn":"Hot Earnings"
+      "hotEarn":"Hot Earnings",
+      "replacementPoints": "Replacement points",
+      "gamePoint": "Game chips",
+      "exchangePoints": "Exchange points",
+      "amazonExchange": "Amazon Exchange",
+      "miniExchangePoint": "Minimum exchange point",
+      "exchangeFee": "Exchange fee",
+      "twoStepVerificaion": "Two step verification available",
+      "yes": "Yes",
+      "exchangeDaysNumber": "Number of exchange days closed on Sundays Payment on Wednesdays",
+      "sendItToYourEmail": "*We will send it to your email address",
+      "exchangeHistory": "Exchange history",
+      "exchange": "Exchange",
+      "currentPointHeld": "Current points held",
+      "amountOfExchangePoint": "Please enter the number of exchange point",
+      "confirm": "Confirm"
     }
   },
   "swal":{

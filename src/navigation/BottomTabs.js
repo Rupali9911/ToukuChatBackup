@@ -17,6 +17,8 @@ import {isIphoneX} from '../utils';
 import MoreScreen from '../screens/More';
 import {translate} from '../redux/reducers/languageReducer';
 import AddFriend from '../screens/AddFriend';
+import AmazonExchange from '../screens/AmazonExchange';
+import ExchangeHistory from '../screens/ExchangeHistory';
 import TabBarComp from '../components/TabBarComp';
 import {BottomTabItem} from '../components/ListItems';
 
@@ -27,6 +29,8 @@ const HomeTab = createStackNavigator({
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
   AddFriendScreen: AddFriend,
+  AmazonExchangeScreen: AmazonExchange,
+  ExchangeHistoryScreen: ExchangeHistory
 },{
   defaultNavigationOptions: {
     gestureResponseDistance: {horizontal: gestureResponseDistance}

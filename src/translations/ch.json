@@ -1619,7 +1619,22 @@
       "OptionalXigolo":"可选的XIGOLO",
       "comingSoon":"快来了",
       "other":"其他",
-      "hotEarn":"热门收入"
+      "hotEarn":"热门收入",
+      "replacementPoints": "更換點",
+      "gamePoint": "游戏筹码",
+      "exchangePoints": "交换点",
+      "amazonExchange": "亚马逊交易所",
+      "miniExchangePoint": "最低兑换点",
+      "exchangeFee": "交换费",
+      "twoStepVerificaion": "两步认证",
+      "yes": "是",
+      "exchangeDaysNumber": "交易日：周日关闭，周三支付",
+      "sendItToYourEmail": "*我们会将其发送到注册的电子邮件地址。",
+      "exchangeHistory": "交易记录",
+      "exchange": "交换",
+      "currentPointHeld": "当前持有点",
+      "amountOfExchangePoint": "请输入兑换点数",
+      "confirm": "确定"
     }
   },
   "swal":{

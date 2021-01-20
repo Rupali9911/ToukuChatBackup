@@ -1628,7 +1628,22 @@
       "OptionalXigolo": "オプションのXIGOLO",
       "comingSoon": "近日公開",
       "other": "その他",
-      "hotEarn": "ポイ活"
+      "hotEarn": "ポイ活",
+      "replacementPoints": "交換ポイント",
+      "gamePoint": "ゲームチップ",
+      "exchangePoints": "エクスチェンジポイント",
+      "amazonExchange": "Amazon Exchange",
+      "miniExchangePoint": "最低交換ポイント",
+      "exchangeFee": "交換手数料",
+      "twoStepVerificaion": "二段階認証",
+      "yes": "あり",
+      "exchangeDaysNumber": "交換日数：日曜締め水曜払い",
+      "sendItToYourEmail": "※登録メールアドレスに送付致します。",
+      "exchangeHistory": "交換履歴",
+      "exchange": "交換する",
+      "currentPointHeld": "現在の保有ポイント",
+      "amountOfExchangePoint": "交換ポイント数を入力ください",
+      "confirm": "確定"
     }
   },
   "swal": {

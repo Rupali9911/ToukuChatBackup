@@ -1628,7 +1628,22 @@
       "OptionalXigolo":"\uc635\uc158 XIGOLO",
       "comingSoon":"\uace7 \ucd9c\uc2dc",
       "other":"\ub2e4\ub978",
-      "hotEarn":"\ub728\uac70\uc6b4 \uc218\uc785"
+      "hotEarn":"\ub728\uac70\uc6b4 \uc218\uc785",
+      "replacementPoints": "교체 포인트",
+      "gamePoint": "게임 칩",
+      "exchangePoints": "교환 포인트",
+      "amazonExchange": "Amazon Exchange",
+      "miniExchangePoint": "최소 교환 포인트",
+      "exchangeFee": "교환 수수료",
+      "twoStepVerificaion": "두 단계 인증",
+      "yes": "수",
+      "exchangeDaysNumber": "교환 일자 : 일요일 조이 수요일 지불",
+      "sendItToYourEmail": "※ 등록 메일 주소로 보내드립니다.",
+      "exchangeHistory": "교환 내역",
+      "exchange": "교환",
+      "currentPointHeld": "현재 보유 포인트",
+      "amountOfExchangePoint": "교환 포인트 수를 입력하십시오",
+      "confirm": "결정"
     }
   },
   "swal":{

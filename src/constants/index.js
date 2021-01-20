@@ -87,6 +87,13 @@ export const Images = {
   header_bg_small: require('../../assets/images/header_bg_small.png'),
   channel_background: require('../../assets/images/channelBackground.jpeg'),
   image_app_logo: require('../../assets/images/app_icon.png'),
+  amazon_logo: require('../../assets/images/amazon_logo.svg.png'),
+  bitcoin_logo: require('../../assets/images/bitcoin_logo.svg.png'),
+  earn_channel: require('../../assets/images/earn_channel.png'),
+  coming_soon: require('../../assets/images/coming_soon.png'),
+  convert_img: require('../../assets/images/convert_img.png'),
+  amazon_img: require('../../assets/images/amazon_img.png'),
+  bitcoin_img: require('../../assets/images/bitcoin_img.png')
 };
 
 export const Colors = {
@@ -123,6 +130,8 @@ export const Colors = {
   header_gradient_1: 'rgba(233,150,15,0.79)',
   header_gradient_2: 'rgba(245,81,72,0.79)',
   header_gradient_3: 'rgba(95,18,164,0.79)',
+  button_gradient_1: '#FD7845',
+  button_gradient_2: '#FA1A7B',
   pink_chat: '#ffdaec',
   dark_pink: '#e13887',
   light_pink: '#FFEDEE',
