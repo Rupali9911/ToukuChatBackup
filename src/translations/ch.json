@@ -1634,7 +1634,12 @@
       "exchange": "交换",
       "currentPointHeld": "当前持有点",
       "amountOfExchangePoint": "请输入兑换点数",
-      "confirm": "确定"
+      "confirm": "确定",
+      "allExchangeHistory": "所有",
+      "amazonExchangeHistory": "Amazon",
+      "btcExchangeHistory": "BTC",
+      "channelRank": "秩",
+      "channelRankText": "频道排名"
     }
   },
   "swal":{

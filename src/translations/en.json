@@ -1641,7 +1641,12 @@
       "exchange": "Exchange",
       "currentPointHeld": "Current points held",
       "amountOfExchangePoint": "Please enter the number of exchange point",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "allExchangeHistory": "All",
+      "amazonExchangeHistory": "Amazon",
+      "btcExchangeHistory": "BTC",
+      "channelRank": "Rank",
+      "channelRankText": "Channel Rank"
     }
   },
   "swal":{

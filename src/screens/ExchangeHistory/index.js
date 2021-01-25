@@ -8,7 +8,7 @@ import { exchangeHistoryStyles } from './styles';
 import { globalStyles } from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
-import { Colors, Fonts, Images } from '../../constants';
+import { Colors, Fonts, Images, Icons } from '../../constants';
 import Button from '../../components/Button';
 import Toast from '../../components/Toast';
 import S3uploadService from '../../helpers/S3uploadService';
@@ -21,6 +21,8 @@ import {
 import { getChannelsById, getChannels } from '../../storage/Service';
 import { realmToPlainObject, normalize } from '../../utils';
 import { RadioButton } from 'react-native-paper';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 class ExchangeHistory extends Component {
     constructor(props) {
@@ -62,7 +64,7 @@ class ExchangeHistory extends Component {
                     onBackPress={() => this.props.navigation.goBack()}
                     title={translate('pages.adWall.exchangeHistory')}
                 />
-                <View style={{}}>
+                <View style={{flex:1}}>
                     <View style={{ flexDirection:'row', borderBottomColor: '#c5c1c1', borderBottomWidth: 1 }}>
                         <TouchableOpacity style={{flex: 1,paddingVertical: 15, alignItems:'center'}}
                             onPress={()=>this.setState({option:1})}>
@@ -77,22 +79,31 @@ class ExchangeHistory extends Component {
                             <Text style={{fontSize: normalize(13), color: option===3?'#ff00a3':'#0a1f44'}}>BTC</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={{paddingHorizontal: 15, paddingVertical: 10}}>
+                    <View style={{flex:1, paddingHorizontal: 15, paddingVertical: 10, paddingBottom:20}}>
                         <FlatList
-                            data={[1]}
+                            data={[1,1,1,1,1,2,1,2,1]}
                             renderItem={({ item, index }) => {
+                                if(option==2 && item==2){
+                                    return null;
+                                }else if(option==3 && item==1){
+                                    return null;
+                                }
                                 return (
-                                    <View style={{borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row',padding: 10, borderRadius: 10}}>
-                                        <Image source={Images.amazon_img}/>
+                                    <View style={{borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row',padding: 10, borderRadius: 10, marginBottom:10}}>
+                                        <Image source={item==2?Images.bitcoin_img:Images.amazon_img}/>
                                         <View style={{marginLeft: 10}}>
-                                            <Text style={{fontSize: normalize(13), fontWeight: 'bold'}}>Amazon</Text>
+                                            <Text style={{fontSize: normalize(13), fontWeight: 'bold'}}>{item==2?"Bitcoin":"Amazon"}</Text>
                                             <Text>2021.01.01 20:40</Text>
-                                            <Text>Status: Sent</Text>
+                                            <Text><Text style={{color:'#ff00a3'}}>Status: </Text>Sent</Text>
+                                        </View>
+                                        <View style={{flex:1, alignItems: 'flex-end'}}>
+                                            <Text>TP<Text style={{ fontSize: normalize(13) }}>10,000</Text></Text>
+                                            <Image source={Icons.icon_drop_down} style={{width:15,height:10}}/>
+                                            <Text style={{ color: '#ff00a3' }}>¥<Text style={{fontSize: normalize(20),fontFamily: Fonts.regular}}>10,000</Text></Text>
                                         </View>
                                     </View>
                                 );
                             }}
-                            ItemSeparatorComponent={()=><View style={{padding:5}}/>} 
                             />
                     </View>
                 </View>

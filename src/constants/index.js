@@ -71,6 +71,9 @@ export const Icons = {
   icon_bin: require('../../assets/icons/bin.png'),
   icon_apple_logo: require('../../assets/icons/apple_icon.png'),
   icon_print: require('../../assets/icons/print.png'),
+  icon_channel_list: require('../../assets/icons/channel_list.png'),
+  icon_group: require('../../assets/icons/group.png'),
+  icon_friend: require('../../assets/icons/friend.png')
 };
 
 export const Images = {
@@ -93,7 +96,9 @@ export const Images = {
   coming_soon: require('../../assets/images/coming_soon.png'),
   convert_img: require('../../assets/images/convert_img.png'),
   amazon_img: require('../../assets/images/amazon_img.png'),
-  bitcoin_img: require('../../assets/images/bitcoin_img.png')
+  bitcoin_img: require('../../assets/images/bitcoin_img.png'),
+  crown_img: require('../../assets/images/crown.png'),
+  banner_img: require('../../assets/images/banner_new.png')
 };
 
 export const Colors = {

@@ -1,4 +1,5 @@
 import {client} from '../../helpers/api';
+import { dispatch } from 'rxjs/internal/observable/pairs';
 
 export const GET_TREND_TIMELINE_REQUEST = 'GET_TREND_TIMELINE_REQUEST';
 export const GET_TREND_TIMELINE_SUCCESS = 'GET_TREND_TIMELINE_SUCCESS';
@@ -28,6 +29,8 @@ export const HIDE_POST_REQUEST = 'HIDE_POST_REQUEST';
 export const HIDE_POST_SUCCESS = 'HIDE_POST_SUCCESS';
 export const HIDE_POST_FAIL = 'HIDE_POST_FAIL';
 
+export const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
+
 const initialState = {
   loading: false,
   trendTimline: [],
@@ -39,6 +42,7 @@ const initialState = {
   trendLoadMore: false,
   followingLoadMore: false,
   rankingLoadMore: false,
+  activeTab: 'trend'
 };
 
 export default function (state = initialState, action) {
@@ -191,19 +195,21 @@ export default function (state = initialState, action) {
 
       let newRanking = [];
       if (action.payload.type !== undefined) {
-        newRanking = action.payload.posts;
+        newRanking = action.payload.channels;
       } else {
         if (rankingChannel.length > 0) {
           rankingChannel.map((followingItem) => {
-            let list = action.payload.posts.filter((item) => {
-              return item.id != followingItem.channel_id;
+            let list = action.payload.channels.filter((item) => {
+              return item.channel_id != followingItem.channel_id;
             });
             newRanking = [...rankingChannel, ...list];
           });
+          // newRanking = [...rankingChannel, ...action.payload.channels];
         } else {
-          newRanking = action.payload.posts;
+          newRanking = action.payload.channels;
         }
       }
+      console.log('load_more',action.payload.load_more)
       return {
         ...state,
         rankingChannel: newRanking,
@@ -233,6 +239,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
+      };
+    
+    case SET_ACTIVE_TAB:
+      return {
+        ...state,
+        activeTab: action.payload
       };
 
     default:
@@ -319,6 +331,15 @@ const getFollowingTimelineFailure = () => ({
   type: GET_FOLLOWING_TIMELINE_FAIL,
 });
 
+const setActiveTab = (data) => ({
+  type: SET_ACTIVE_TAB,
+  payload: data
+})
+
+export const setActiveTimelineTab = (data) => (dispatch) => {
+  dispatch(setActiveTab(data));
+};
+
 export const getFollowingTimeline = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingTimelineRequest());
@@ -368,6 +389,26 @@ export const getRankingTimeline = (userType) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getRankingTimelineFailure());
+        reject(err);
+      });
+  });
+
+  export const getRankingChannelList = (start, type) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getRankingChannelRequest());
+    console.log('api_Called',start);
+    client
+      .get(`/xchat/channel-listing-ranked/?start=${start}`)
+      .then((res) => {
+        if (res.status) {
+          const newRes = {...res, type: type};
+          dispatch(getRankingChannelSuccess(newRes));
+          // dispatch(getRankingTimelineSuccess(res.channels));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getRankingChannelFailure());
         reject(err);
       });
   });

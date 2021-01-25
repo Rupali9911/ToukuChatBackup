@@ -139,7 +139,7 @@ class AmazonExchange extends Component {
                                 textAlign: 'right',
                                 fontWeight: '600',
                                 color: '#ee6f70',
-                            }}>500TP</Text>
+                            }}>{translate('pages.xchat.free')}</Text>
                         </View>
                         <View style={{
                             flexDirection: 'row',
@@ -165,7 +165,7 @@ class AmazonExchange extends Component {
                                 textAlign: 'right',
                                 fontWeight: '600',
                                 color: '#ee6f70',
-                            }}>500TP</Text>
+                            }}>{translate('pages.adWall.yes')}</Text>
                         </View>
                         <View style={{
                             marginTop: 10,
@@ -196,6 +196,7 @@ class AmazonExchange extends Component {
                                     type={'translucent'}
                                     title={translate('pages.adWall.exchangeHistory')}
                                     onPress={() => {
+                                        this.setState({isExchange: !this.state.isExchange})
                                         this.props.navigation.navigate('ExchangeHistoryScreen');
                                     }} />
                             </View>
@@ -231,7 +232,7 @@ class AmazonExchange extends Component {
                                         textAlign: 'right',
                                         fontWeight: '600',
                                         color: '#ee6f70',
-                                    }}>500TP</Text>
+                                    }}>0TP</Text>
                                 </View>
                                 <View style={{
                                     marginTop: 10,

@@ -24,6 +24,7 @@ import HyperLink from 'react-native-hyperlink';
 import ReadMore from 'react-native-read-more-text';
 import PostChannelItem from '../components/PostChannelItem';
 import { normalize } from '../utils';
+import PostChannelRankItem from './PostChannelRankItem';
 
 const {width, height} = Dimensions.get('window');
 
@@ -92,7 +93,8 @@ export default class PostCard extends Component {
           flex: 1,
           borderColor: '#dbdbdb',
           borderWidth: isChannelTimeline?1:0
-        }}>
+        }}
+        key={`${post.id}`}>
         <PostCardHeader
           menuItems={menuItems}
           post={post}
@@ -101,6 +103,13 @@ export default class PostCard extends Component {
         />
         <PostChannelItem post={post} />
       </View>
+    );
+  };
+
+  renderRankedChannelItem = ({item: post, index}) => {
+    const {menuItems, isTimeline, isChannelTimeline} = this.props;
+    return (
+        <PostChannelRankItem post={post} index={index} isChannelTimeline={isChannelTimeline}/>
     );
   };
 
@@ -157,17 +166,20 @@ export default class PostCard extends Component {
       isChannelTimeline,
       onMomentumScrollBegin,
       onEndReached,
+      isRankedChannel
     } = this.props;
     return (
       <FlatList
         data={posts}
         scrollEnabled={posts.length > 0 ? true : false}
-        renderItem={this.renderPostItem}
+        renderItem={isRankedChannel?this.renderRankedChannelItem:this.renderPostItem}
         onEndReached={onEndReached}
         onMomentumScrollBegin={onMomentumScrollBegin}
         onEndReachedThreshold={0.1}
         bounces={false}
-        keyExtractor={(item, index) => `${item.id}`}
+        maxToRenderPerBatch={20}
+        style={{backgroundColor: isRankedChannel?Colors.white:'transparent', marginBottom: 50}}
+        // keyExtractor={(item, index) => isRankedChannel?`${item.channel_id}`:`${item.id}`}
         ListEmptyComponent={isChannelTimeline?this.channelEmptyList:this.EmptyList(isTimeline)}
       />
     );

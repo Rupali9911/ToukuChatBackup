@@ -486,3 +486,28 @@ export const getMissedSocketEventsByIdFromApp = (id) =>
         reject(err);
       });
   });
+
+export const getAdWallUniqueUrl = () => (dispatch) => 
+  new Promise(function(resolve, reject) {
+    client
+      .get(`xchat/get-adwall-unique-url/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const requestLoginForm = () => (dispatch) => 
+  new Promise(function (resolve,reject) {
+    client
+    .get(`/request-login-from/`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    });
+  });

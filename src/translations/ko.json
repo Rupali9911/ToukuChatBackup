@@ -1643,7 +1643,12 @@
       "exchange": "교환",
       "currentPointHeld": "현재 보유 포인트",
       "amountOfExchangePoint": "교환 포인트 수를 입력하십시오",
-      "confirm": "결정"
+      "confirm": "결정",
+      "allExchangeHistory": "모두",
+      "amazonExchangeHistory": "Amazon",
+      "btcExchangeHistory": "BTC",
+      "channelRank": "계급",
+      "channelRankText": "채널 순위"
     }
   },
   "swal":{

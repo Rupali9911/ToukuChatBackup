@@ -8,6 +8,8 @@ import {
   FlatList,
   Platform,
   TextInput,
+  ScrollView,
+  Linking,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
@@ -31,7 +33,7 @@ import HomeHeader from '../../components/HomeHeader';
 import { Images, Colors, Icons, Fonts, SocketEvents } from '../../constants';
 import { SearchInput } from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import { getAvatar, eventService, normalize } from '../../utils';
+import { getAvatar, eventService, normalize, onPressHyperlink } from '../../utils';
 import { ProfileModal } from '../../components/Modals';
 import {
   ChannelListItem,
@@ -48,6 +50,8 @@ import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import {
   getUserProfile,
   getMissedSocketEventsById,
+  getAdWallUniqueUrl,
+  requestLoginForm
 } from '../../redux/reducers/userReducer';
 
 import {
@@ -63,6 +67,7 @@ import {
   getFollowingChannels,
   setCurrentChannel,
   getLocalFollowingChannels,
+  assetXPValueOfChannel
 } from '../../redux/reducers/channelReducer';
 import {
   getUserGroups,
@@ -78,6 +83,7 @@ import {
   getUserFriendsSuccess,
   setUserFriends,
 } from '../../redux/reducers/friendReducer';
+import {setActiveTimelineTab} from '../../redux/reducers/timelineReducer';
 import Toast from '../../components/Toast';
 
 import {
@@ -139,6 +145,7 @@ class Home extends PureComponent {
       getGroupData: [],
       getChannelData: [],
       getFriendData: [],
+      assetXPValue: null
     };
     this.SingleSocket = SingleSocket.getInstance();
     this.start = 0;
@@ -272,6 +279,7 @@ class Home extends PureComponent {
     this.channelFilter();
     this.groupFilter();
     this.friendFilter();
+    this.getAssetXpValue();
 
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
@@ -281,6 +289,7 @@ class Home extends PureComponent {
           this.groupFilter();
           this.friendFilter();
           this.channelFilter();
+          this.getAssetXpValue();
         }, 100),
     );
     // this.props.getFriendRequests();
@@ -351,6 +360,41 @@ class Home extends PureComponent {
         counts = counts + channel.unread_msg;
       }
       this.setState({ channelHeaderCounts: counts });
+    });
+  }
+
+  getAssetXpValue = () => {
+    this.props
+      .assetXPValueOfChannel()
+      .then((res) => {
+        if (res) {
+          console.log('asset_xp', res);
+          if (res && res.data) this.setState({assetXPValue: res.data});
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
+
+  getUniqueUrl = () => {
+    this.props.getAdWallUniqueUrl().then((res)=>{
+      if(res && res.add_wall_url){
+        Linking.openURL(res.add_wall_url);
+      }
+    }).catch((err)=>{
+      console.log('error',err);
+    });
+  }
+
+  requestXanaLoginform = () => {
+    this.props.requestLoginForm().then((res)=>{
+      if(res && res.status){
+        console.log('res',res);
+        Linking.openURL(`https://www.xigolo.com/xigolo/#/popup-login?nkt=${res.data}`);
+      }
+    }).catch((err)=>{
+      console.log('error',err);
     });
   }
 
@@ -1592,6 +1636,7 @@ class Home extends PureComponent {
       groupHeaderCounts,
       friendHeaderCounts,
       friendRequestHeaderCounts,
+      assetXPValue
     } = this.state;
 
     const {
@@ -1634,7 +1679,7 @@ class Home extends PureComponent {
             navigation={this.props.navigation}
           /> */}
 
-        <View style={globalStyles.container}>
+        <View style={[globalStyles.container,{backgroundColor: Colors.white}]}>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => this.onUserProfilePress()}
@@ -1660,7 +1705,8 @@ class Home extends PureComponent {
           {/* Friend Request */}
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
-            enableOnAndroid={true}>
+            enableOnAndroid={true}
+            style={{backgroundColor: Colors.white}}>
             {filteredFriendRequest.length > 0 && (
               <Collapse
                 onToggle={(isColl) =>
@@ -1676,6 +1722,7 @@ class Home extends PureComponent {
                     listcounts={filteredFriendRequest.length}
                     badgeCount={friendRequest.length}
                     selectedLanguageItem={selectedLanguageItem}
+                    icon={Icons.icon_friend}
                   />
                 </CollapseHeader>
                 <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
@@ -1697,6 +1744,7 @@ class Home extends PureComponent {
                   listcounts={filteredChannels.length}
                   badgeCount={this.setChannelHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
+                  icon={Icons.icon_channel_list}
                 />
               </CollapseHeader>
               <CollapseBody>{this.renderUserChannels()}</CollapseBody>
@@ -1717,6 +1765,7 @@ class Home extends PureComponent {
                   listcounts={filteredGroups.length}
                   badgeCount={this.setGroupHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
+                  icon={Icons.icon_group}
                 />
               </CollapseHeader>
               <CollapseBody>{this.renderUserGroups()}</CollapseBody>
@@ -1737,12 +1786,13 @@ class Home extends PureComponent {
                   listcounts={filteredFriends.length}
                   badgeCount={this.setFriendHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
+                  icon={Icons.icon_friend}
                 />
               </CollapseHeader>
               <CollapseBody>{this.renderUserFriends()}</CollapseBody>
             </Collapse>
 
-            <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
               <Text style={[
                 {
                   fontSize: 14,
@@ -1759,22 +1809,16 @@ class Home extends PureComponent {
                   useAngle={true}
                   angle={0}
                   colors={[
-                    Colors.button_gradient_1,
-                    Colors.button_gradient_2,
+                    // Colors.button_gradient_1,
+                    // Colors.button_gradient_2,
+                    '#fff3f5',
+                    '#fff3f5'
                   ]}
-                  style={{
-                    justifyContent: 'space-between',
-                    paddingVertical: 10,
-                    paddingHorizontal: 15,
-                    borderRadius: 8,
-                    marginTop: 10,
-                    flex: 1,
-                    marginRight: 10
-                  }}>
+                  style={[homeStyles.fill_border_box_style,{marginRight: 10}]}>
                   <View style={{}}>
-                    <Text style={{ color: '#fff', fontFamily: Fonts.regular }}>{translate('pages.adWall.replacementPoints')}</Text>
-                    <Text style={{ color: '#fff', fontFamily: Fonts.regular }}>(TP)</Text>
-                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#fff', fontFamily: Fonts.regular, fontSize: normalize(20) }}>37,968</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.replacementPoints')}</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(TP)</Text>
+                <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{this.props.userData.total_tp}</Text>
                   </View>
                 </LinearGradient>
                 <LinearGradient
@@ -1784,28 +1828,22 @@ class Home extends PureComponent {
                   useAngle={true}
                   angle={0}
                   colors={[
-                    Colors.button_gradient_1,
-                    Colors.button_gradient_2,
+                    // Colors.button_gradient_1,
+                    // Colors.button_gradient_2,
+                    '#fff3f5',
+                    '#fff3f5'
                   ]}
-                  style={{
-                    justifyContent: 'space-between',
-                    paddingVertical: 10,
-                    paddingHorizontal: 15,
-                    borderRadius: 8,
-                    marginTop: 10,
-                    flex: 1,
-                    marginLeft: 10
-                  }}>
+                  style={[homeStyles.fill_border_box_style,{marginLeft: 10}]}>
                   <View style={{}}>
-                    <Text style={{ color: '#fff', fontFamily: Fonts.regular }}>{translate('pages.adWall.gamePoint')}</Text>
-                    <Text style={{ color: '#fff', fontFamily: Fonts.regular }}>(XP)</Text>
-                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#fff', fontFamily: Fonts.regular, fontSize: normalize(20) }}>37,968</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.gamePoint')}</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(XP)</Text>
+                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{assetXPValue?assetXPValue.XP:0}</Text>
                   </View>
                 </LinearGradient>
               </View>
             </View>
 
-            <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
               <Text style={[
                 {
                   fontSize: 14,
@@ -1823,19 +1861,16 @@ class Home extends PureComponent {
                     useAngle={true}
                     angle={0}
                     colors={[
-                      '#FFD60941',
-                      '#D7944141',
+                      // '#FFD60941',
+                      // '#D7944141',
+                      '#fff',
+                      '#fff'
                     ]}
-                    style={{
+                    style={[homeStyles.fill_border_box_style,{
                       justifyContent: 'center',
                       alignItems: 'center',
-                      paddingVertical: 10,
-                      paddingHorizontal: 15,
-                      borderRadius: 8,
-                      marginTop: 10,
-                      flex: 1,
-                      marginRight: 10,
-                    }}>
+                      marginRight: 10
+                    }]}>
                     <Image
                       source={Images.amazon_logo}
                       resizeMode={'contain'} />
@@ -1849,27 +1884,26 @@ class Home extends PureComponent {
                     useAngle={true}
                     angle={0}
                     colors={[
-                      '#FFD60941',
-                      '#D7944141',
+                      // '#FFD60941',
+                      // '#D7944141',
+                      '#fff',
+                      '#fff'
                     ]}
-                    style={{
+                    style={[homeStyles.fill_border_box_style,{
                       justifyContent: 'center',
                       alignItems: 'center',
-                      paddingVertical: 10,
-                      paddingHorizontal: 15,
-                      borderRadius: 8,
-                      marginTop: 10,
-                      flex: 1,
                       marginLeft: 10,
-                    }}>
+                    }]}>
                     <Image
                       source={Images.bitcoin_logo}
                       resizeMode={'contain'} />
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={{ flex: 1 }}>
-                <LinearGradient
+              <TouchableOpacity style={{ flex: 1 }} onPress={()=>{
+                this.getUniqueUrl();
+              }}>
+                {/* <LinearGradient
                   start={{ x: 0.03, y: 0.7 }}
                   end={{ x: 0.95, y: 0.8 }}
                   // locations={[0.065, 0.22, 0.92]}
@@ -1891,11 +1925,12 @@ class Home extends PureComponent {
                   }}>
                   <Text style={{ fontSize: normalize(25), fontWeight: 'bold' }}>{translate('pages.adWall.clickHere')}</Text>
                   <Text style={{ fontSize: normalize(12), fontWeight: 'bold', fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'serif' }}>{translate('pages.adWall.increaseyourPoint')}</Text>
-                </LinearGradient>
+                </LinearGradient> */}
+                <ImageBackground source={Images.banner_img} style={{width: '100%',height:100,marginTop: 10,}}/>
               </TouchableOpacity>
             </View>
 
-            <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
               <Text style={[
                 {
                   fontSize: 14,
@@ -1904,65 +1939,68 @@ class Home extends PureComponent {
                   color: '#0A1F44',
                 },
               ]}>{translate('pages.adWall.other')}</Text>
-              <View style={{ flexDirection: 'row', }}>
-                <TouchableOpacity style={{ flex: 1 }}>
-                  <ImageBackground
-                    source={Images.coming_soon}
-                    resizeMode={'contain'}
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      paddingVertical: 10,
-                      paddingHorizontal: 15,
-                      borderRadius: 8,
-                      marginTop: 10,
-                      marginRight: 5,
-                      minHeight: 70,
-                    }}>
-                    <Text style={{ color: Colors.white }}>{translate('pages.adWall.earnChannels')}</Text>
-                  </ImageBackground>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', }}>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
+                }}>
+                  <View style={{
+                    width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png'}}
+                      style={{ width: 100, height: 100, borderRadius: 5 }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.earnChannels')}</Text>
+                  </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flex: 1 }}>
-                  <ImageBackground
-                    source={Images.coming_soon}
-                    resizeMode={'contain'}
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      paddingVertical: 10,
-                      paddingHorizontal: 15,
-                      borderRadius: 8,
-                      marginTop: 10,
-                      marginLeft: 5,
-                      marginRight: 5,
-                      minHeight: 70
-                    }}>
-                    <Text style={{ color: Colors.white }}>{translate('pages.adWall.OptionalXigolo')}</Text>
-                  </ImageBackground>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.requestXanaLoginform();
+                }}>
+                <View style={{
+                  width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png'}}
+                      style={{ width: 100, height: 100, borderRadius: 5 }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.OptionalXigolo')}</Text>
+                  </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flex: 1 }}>
-                  <ImageBackground
-                    source={Images.coming_soon}
-                    resizeMode={'contain'}
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      paddingVertical: 10,
-                      paddingHorizontal: 15,
-                      borderRadius: 8,
-                      marginTop: 10,
-                      marginLeft: 5,
-                      minHeight: 70
-                    }}>
-                    <Text style={{ color: Colors.white }}>{translate('pages.adWall.comingSoon')}</Text>
-                  </ImageBackground>
+                <TouchableOpacity style={{  }}>
+                <View style={{
+                  width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/welcome-page/bg-1218x812.jpg'}}
+                      style={{ width: 100, height: 100, borderRadius: 5 }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.comingSoon')}</Text>
+                  </View>
                 </TouchableOpacity>
-              </View>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.props.setActiveTimelineTab('ranking');
+                  this.props.navigation.navigate('Timeline',{activeTab:'ranking'})
+                }}>
+                <View style={{
+                    width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={Images.crown_img}
+                      style={{ width: 100, height: 100, borderRadius: 5, tintColor: '#ffbf00', resizeMode: 'contain' }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.other')}</Text>
+                  </View>
+                </TouchableOpacity>
+              </ScrollView>
             </View>
-
           </KeyboardAwareScrollView>
         </View>
       </View>
@@ -1978,6 +2016,7 @@ const DropdownHeader = (props) => {
     badgeCount,
     isCollapsed,
     selectedLanguageItem,
+    icon
   } = props;
   return (
     <LinearGradient
@@ -1987,9 +2026,12 @@ const DropdownHeader = (props) => {
       useAngle={true}
       angle={222.28}
       colors={[
-        Colors.header_gradient_1,
-        Colors.header_gradient_2,
-        Colors.header_gradient_3,
+        // Colors.header_gradient_1,
+        // Colors.header_gradient_2,
+        // Colors.header_gradient_3,
+        '#fbfbfd',
+        '#fbfbfd',
+        '#fbfbfd'
       ]}
       style={{
         flexDirection: 'row',
@@ -1997,8 +2039,20 @@ const DropdownHeader = (props) => {
         alignItems: 'center',
         paddingVertical: 7,
         paddingHorizontal: 15,
+        borderColor: '#f2f3f5',
+        borderWidth: 1
       }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image
+          source={icon}
+          style={{
+            width: 20,
+            height: 20,
+            resizeMode: 'contain',
+            marginRight: 5,
+            tintColor: '#0a1f44'
+          }}
+        />
         {Platform.OS === 'ios' ? (
           <TextInput
             pointerEvents="none"
@@ -2008,7 +2062,7 @@ const DropdownHeader = (props) => {
               {
                 fontSize: 14,
                 fontWeight: '400',
-                color: '#fff',
+                color: '#3c3a3a',
                 textShadowColor: 'rgba(0,0,0,.004)',
                 textShadowOffset: { width: 1, height: 1 },
                 textShadowRadius: 10,
@@ -2023,7 +2077,7 @@ const DropdownHeader = (props) => {
                 {
                   fontSize: 14,
                   fontWeight: '400',
-                  color: '#fff',
+                  color: '#3c3a3a',
                   textShadowColor: 'rgba(0,0,0,.004)',
                   textShadowOffset: { width: 1, height: 1 },
                   textShadowRadius: 10,
@@ -2040,7 +2094,7 @@ const DropdownHeader = (props) => {
               fontSize: 14,
               fontWeight: '400',
               textShadowColor: 'rgba(0,0,0,.004)',
-              color: '#fff',
+              color: '#3c3a3a',
               textShadowOffset: { width: 1, height: 1 },
               textShadowRadius: 1,
             },
@@ -2058,16 +2112,17 @@ const DropdownHeader = (props) => {
               color: Colors.white,
               fontSize: Platform.isPad ? normalize(6) : normalize(9),
             }}>
-            {badgeCount}
+            {badgeCount>99?"99+":badgeCount}
           </Badge>
         ) : null}
         <Image
-          source={isCollapsed ? Icons.icon_arrow_down : Icons.icon_arrow_up}
+          source={isCollapsed ? Icons.icon_arrow_up : Icons.icon_arrow_down}
           style={{
-            width: 10,
-            height: 10,
+            width: 15,
+            height: 15,
             resizeMode: 'contain',
             marginStart: 10,
+            tintColor: '#b3b3b3'
           }}
         />
       </View>
@@ -2114,6 +2169,10 @@ const mapDispatchToProps = {
   getLocalFollowingChannels,
   setUserFriends,
   setFriendRequest,
+  assetXPValueOfChannel,
+  getAdWallUniqueUrl,
+  requestLoginForm,
+  setActiveTimelineTab
 };
 
 export default connect(

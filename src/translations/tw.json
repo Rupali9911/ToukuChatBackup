@@ -1634,7 +1634,12 @@
       "exchange": "交換",
       "currentPointHeld": "當前持有點",
       "amountOfExchangePoint": "請輸入兌換點數",
-      "confirm": "確定"
+      "confirm": "確定",
+      "allExchangeHistory": "所有",
+      "amazonExchangeHistory": "Amazon",
+      "btcExchangeHistory": "BTC",
+      "channelRank": "秩",
+      "channelRankText": "頻道排名"
     }
   },
   "swal":{
