@@ -552,6 +552,7 @@ export default class ChatInput extends Component {
             style={chatInput.sendButoonContainer}
             activeOpacity={value || sendingImage.uri ? 0 : 1}
             onPress={() => {
+              console.log('======');
               value || sendingImage.uri ? onSend() : null;
             }}>
             <Image

@@ -15,7 +15,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors} from '../../constants';
-import {getImage, normalize} from '../../utils';
+import {getImage, getUserName, normalize} from '../../utils';
 import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
 
@@ -86,7 +86,7 @@ export default class GroupListItem extends PureComponent {
           mentions.length &&
           mentions.forEach((mentionUser) => {
             if (text === `~${mentionUser.id}~`) {
-              mention = `@${mentionUser.desplay_name || mentionUser.username}`;
+              mention = `@${getUserName(mentionUser.id) || mentionUser.desplay_name || mentionUser.username}`;
               newMessageMentions = [...newMessageMentions, mentionUser.id];
             }
           });

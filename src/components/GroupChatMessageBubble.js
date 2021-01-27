@@ -393,7 +393,7 @@ class GroupChatMessageBubble extends Component {
         );
         groupMentions = [...groupMentions, ...groupAllMembers]
       }
-
+      // console.log('getMentionsPattern',groupMentions.join('|'));
       return groupMentions.join('|');
     }else{
       return '';
@@ -652,7 +652,16 @@ class GroupChatMessageBubble extends Component {
                                       fontFamily: Fonts.regular,
                                       fontWeight: '400',
                                     }}
-                                    parse={[
+                                    parse={this.getMentionsPattern()===''?[
+                                      {
+                                        type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
+                                        onPress: onPressHyperlink,
+                                        onLongPress: () => {
+                                          onMessagePress(message.msg_id);
+                                          this.showMenu();
+                                        }
+                                      },
+                                    ]:[
                                       {
                                         type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
                                         onPress: onPressHyperlink,
@@ -663,10 +672,7 @@ class GroupChatMessageBubble extends Component {
                                       },
                                       {
                                         // pattern: /\B\@([\w\-]+)/gim,
-                                        pattern:
-                                          this.getMentionsPattern() === ''
-                                            ? /\[(@[^:]+):([^\]]+)\]/i
-                                            : new RegExp(this.getMentionsPattern()),
+                                        pattern: new RegExp(this.getMentionsPattern()),
                                         style: { color: '#E65497' },
                                       },
                                     ]}
@@ -697,13 +703,10 @@ class GroupChatMessageBubble extends Component {
                                             fontFamily: Fonts.regular,
                                             fontWeight: '400',
                                           }}
-                                          parse={[
+                                          parse={this.getMentionsPattern()===''?[]:[
                                             {
                                               // pattern: /\B\@([\w\-]+)/gim,
-                                              pattern:
-                                                this.getMentionsPattern() === ''
-                                                  ? /\[(@[^:]+):([^\]]+)\]/i
-                                                  : new RegExp(this.getMentionsPattern()),
+                                              pattern: new RegExp(this.getMentionsPattern()),
                                               style: { color: '#E65497' },
                                             },
                                           ]}
@@ -902,7 +905,16 @@ class GroupChatMessageBubble extends Component {
                                       fontFamily: Fonts.regular,
                                       fontWeight: '300',
                                     }}
-                                    parse={[
+                                    parse={this.getMentionsPattern()===''?[
+                                      {
+                                        type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
+                                        onPress: onPressHyperlink,
+                                        onLongPress: () => {
+                                          onMessagePress(message.msg_id);
+                                          this.showMenu();
+                                        }
+                                      },
+                                    ]:[
                                       {
                                         type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
                                         onPress: onPressHyperlink,
@@ -913,10 +925,7 @@ class GroupChatMessageBubble extends Component {
                                       },
                                       {
                                         // pattern: /\B\@([\w\-]+)/gim,
-                                        pattern:
-                                          this.getMentionsPattern() === ''
-                                            ? /\B\@([\w\-]+)/gim
-                                            : new RegExp(this.getMentionsPattern()),
+                                        pattern: new RegExp(this.getMentionsPattern()),
                                         style: { color: '#E65497' },
                                       },
                                     ]}
@@ -939,13 +948,10 @@ class GroupChatMessageBubble extends Component {
                                           fontFamily: Fonts.regular,
                                           fontWeight: '300',
                                         }}
-                                        parse={[
+                                        parse={this.getMentionsPattern()===''?[]:[
                                           {
                                             // pattern: /\B\@([\w\-]+)/gim,
-                                            pattern:
-                                              this.getMentionsPattern() === ''
-                                                ? /\B\@([\w\-]+)/gim
-                                                : new RegExp(this.getMentionsPattern()),
+                                            pattern: new RegExp(this.getMentionsPattern()),
                                             style: { color: '#E65497' },
                                           },
                                         ]}

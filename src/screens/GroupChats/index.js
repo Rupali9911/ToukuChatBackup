@@ -60,7 +60,7 @@ import {
 } from '../../redux/reducers/groupReducer';
 import Toast from '../../components/Toast';
 import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
-import {eventService, realmToPlainObject} from '../../utils';
+import {eventService, realmToPlainObject, getUserName} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -376,23 +376,37 @@ class GroupChats extends Component {
     const {userData, currentGroup, currentGroupMembers} = this.props;
     let splitNewMessageText = newMessageText.split(' ');
     let newMessageMentions = [];
-    const newMessageTextWithMention = splitNewMessageText
-      .map((text) => {
-        let mention = null;
-        currentGroupMembers.forEach((groupMember) => {
-          if (text === `@${groupMember.display_name}`) {
-            mention = `~${groupMember.id}~`;
-            newMessageMentions = [...newMessageMentions, groupMember.id];
-          }
-        });
-        if (mention) {
-          return mention;
-        } else {
-          return text;
-        }
-      })
-      .join(' ');
+    let newMessageTextWithMention = newMessageText;
+    // const newMessageTextWithMention = splitNewMessageText
+    //   .map((text) => {
+    //     let mention = null;
+    //     currentGroupMembers.forEach((groupMember) => {
+    //       console.log('groupMember',groupMember);
+    //       let user_name = getUserName(groupMember.id) || groupMember.display_name || groupMember.username;
+    //       if (newMessageText.includes(`@${user_name}`)) {
+    //         console.log('user_name',user_name);
+    //         mention = `~${groupMember.id}~`;
+    //         newMessageMentions = [...newMessageMentions, groupMember.id];
+    //       }
+    //     });
+    //     if (mention) {
+    //       return mention;
+    //     } else {
+    //       return text;
+    //     }
+    //   })
+    //   .join(' ');
 
+      currentGroupMembers.forEach((groupMember) => {
+        let user_name = getUserName(groupMember.id) || groupMember.display_name || groupMember.username;
+        if (newMessageTextWithMention.includes(`@${user_name}`)) {
+          mention = `~${groupMember.id}~`;
+          newMessageTextWithMention = newMessageTextWithMention.replace(`@${user_name}`,`~${groupMember.id}~`);
+          newMessageMentions = [...newMessageMentions, groupMember.id];
+        }
+      });
+
+      console.log('mention',newMessageTextWithMention);
     let msgText = newMessageTextWithMention;
     let newMessageTextWithoutMention = newMessageText;
     let isReply = this.state.isReply;

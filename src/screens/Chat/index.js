@@ -178,6 +178,7 @@ class Chat extends Component {
       isDeleteVisible: false,
       isSetPasswordVisible: false,
       isChangePassModalVisible: false,
+      isDeleteLoading: false,
       commonChatsData: this.props.commonChat,
       countChat: 0,
       // sortOptions: [
@@ -2853,7 +2854,9 @@ class Chat extends Component {
   };
 
   actionDelete = async () => {
+    this.setState({isDeleteLoading: true});
     this.props.deleteChat(deleteObj).then((res) => {
+      this.setState({isDeleteLoading: false});
       if (res && res.status) {
         let commonData = [...this.props.commonChat];
 
@@ -2888,6 +2891,8 @@ class Chat extends Component {
         deleteObj = null;
         count = 0;
       }
+    }).catch((err)=>{
+      this.setState({isDeleteLoading: false});
     });
     this.updateModalVisibility();
     this.setState({isVisible: false, countChat: 0});
@@ -3073,6 +3078,7 @@ class Chat extends Component {
       isLoading,
       isVisible,
       countChat,
+      isDeleteLoading
     } = this.state;
     return (
       // <ImageBackground
@@ -3136,6 +3142,7 @@ class Chat extends Component {
           onConfirm={this.actionDelete.bind(this)}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.toastr.chatHistoryDelete')}
+          isLoading={isDeleteLoading}
         />
 
         <PasswordConfirmationModal

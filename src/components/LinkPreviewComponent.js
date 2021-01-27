@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Platform, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Linking, Platform, Image, Text, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import { Images, Fonts, Colors } from '../constants';
 import { ImageLoader } from './Loaders';
