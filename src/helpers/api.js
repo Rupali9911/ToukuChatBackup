@@ -9,7 +9,7 @@ import {translate} from '../redux/reducers/languageReducer';
 import NetInfo from '@react-native-community/netinfo';
 
 /* switch this for testing on staging or production */
-export const staging = false;
+export const staging = true;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku.angelium.net/api';
@@ -118,7 +118,7 @@ client.interceptors.response.use(
     // }
   },
   function (error) {
-    console.log('response_console_from_interceptor_error', error);
+    console.log('response_console_from_interceptor_error', error.response.data);
     if (error.toString() === 'Error: Network Error') {
       Toast.show({
         title: 'Touku',

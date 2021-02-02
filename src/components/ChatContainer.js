@@ -190,6 +190,7 @@ class ChatContainer extends Component {
 
     return (
       <KeyboardAwareScrollView
+        style={{flex:1}}
         contentContainerStyle={{flex: 1}}
         showsVerticalScrollIndicator={false}
         bounces={false}
@@ -202,7 +203,8 @@ class ChatContainer extends Component {
         }}
         keyboardOpeningTime={1500}
         scrollEnabled={false}
-        extraHeight={200}>
+        extraHeight={200}
+        >
         <View
           style={[
             chatStyle.messageAreaConatiner,
@@ -219,7 +221,7 @@ class ChatContainer extends Component {
           ]}>
           <Fragment>
             <FlatList
-              style={{}}
+              // style={{flexGrow:1}}
               contentContainerStyle={[
                 chatStyle.messareAreaScroll,
                 isReply && {paddingBottom: '20%'},

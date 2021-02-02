@@ -19,14 +19,17 @@ import {
   getTrendTimeline,
   getFollowingTimeline,
   getRankingTimeline,
+  getRankingChannelList,
   hidePost,
   hideAllPost,
   reportPost,
+  updateRankingChannel
 } from '../../redux/reducers/timelineReducer';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {resetData} from '../../storage/Service';
 import {ListLoader} from '../../components/Loaders';
+import {setActiveTimelineTab} from '../../redux/reducers/timelineReducer';
 
 class Timeline extends Component {
   constructor(props) {
@@ -43,6 +46,7 @@ class Timeline extends Component {
           icon: Icons.icon_chat,
           action: () => {
             this.setState({activeTab: 'trend'});
+            this.props.setActiveTimelineTab('trend');
             this.props
               .getTrendTimeline(this.props.userData.user_type)
               .then((res) => {
@@ -59,6 +63,7 @@ class Timeline extends Component {
           icon: Icons.icon_setting,
           action: () => {
             this.setState({activeTab: 'following'});
+            this.props.setActiveTimelineTab('following');
             this.props
               .getFollowingTimeline()
               .then((res) => {
@@ -74,15 +79,24 @@ class Timeline extends Component {
           title: 'ranking',
           icon: Icons.icon_timeline,
           action: () => {
-            this.setState({activeTab: 'ranking'});
-            this.props
-              .getRankingTimeline(this.props.userData.user_type)
-              .then((res) => {
-                this.setState({isLoading: false});
-              })
-              .catch((err) => {
-                this.setState({isLoading: false});
-              });
+            // this.setState({activeTab: 'ranking'});
+            this.props.setActiveTimelineTab('ranking');
+            // this.props
+            //   .getRankingTimeline(this.props.userData.user_type)
+            //   .then((res) => {
+            //     this.setState({isLoading: false});
+            //   })
+            //   .catch((err) => {
+            //     this.setState({isLoading: false});
+            //   });
+            // this.props.rankingTimeLine && this.props.rankingTimeLine.length===0 && this.props.getRankingChannelList(this.props.rankingTimeLine.length)
+            //   .then((res) => {
+            //     this.setState({ isLoading: false });
+            //     this.showData();
+            //   })
+            //   .catch((err) => {
+            //     this.setState({ isLoading: false });
+            //   });
           },
         },
       ],
@@ -137,15 +151,26 @@ class Timeline extends Component {
     // this.props.getRankingTimeline();
     // this.showData();
 
+    let activeTab = this.props.navigation.getParam('activeTab');
+
+    if(activeTab){
+      this.setState({activeTab});
+    }
+
     await this.props
       .getTrendTimeline(this.props.userData.user_type)
       .then((res) => {
         this.setState({isLoading: false});
         this.props.getFollowingTimeline().then((res) => {
           this.setState({isLoading: false});
-          this.props
-            .getRankingTimeline(this.props.userData.user_type)
-            .then((res) => {
+          // this.props
+          //   .getRankingTimeline(this.props.userData.user_type)
+          //   .then((res) => {
+          //     this.setState({isLoading: false});
+          //     this.showData();
+          //   });
+          this.props.getRankingChannelList(this.props.rankingChannel.length)
+            .then((res)=>{
               this.setState({isLoading: false});
               this.showData();
             });
@@ -154,6 +179,15 @@ class Timeline extends Component {
       .catch((err) => {
         this.setState({isLoading: false});
       });
+  }
+
+  componentWillReceiveProps(nextProps){
+    let activeTab = nextProps.navigation.getParam('activeTab');
+    console.log('called',activeTab);
+    if(activeTab){
+      this.setState({activeTab});
+      nextProps.navigation.setParams({activeTab:null});
+    }
   }
 
   showData() {
@@ -212,11 +246,11 @@ class Timeline extends Component {
         this.showData();
       });
     } else if (activeTab === 'ranking') {
-      this.props
-        .getRankingTimeline(this.props.userData.user_type)
-        .then((res) => {
-          this.showData();
-        });
+      // this.props
+      //   .getRankingTimeline(this.props.userData.user_type)
+      //   .then((res) => {
+      //     this.showData();
+      //   });
     }
   }
 
@@ -244,7 +278,6 @@ class Timeline extends Component {
   render() {
     const {
       tabBarItem,
-      activeTab,
       menuItems,
       posts,
       orientation,
@@ -254,7 +287,10 @@ class Timeline extends Component {
       trendTimline,
       followingTimeline,
       rankingTimeLine,
+      rankingChannel,
+      rankingLoadMore,
       loading,
+      activeTab
     } = this.props;
     return (
       // <ImageBackground
@@ -269,7 +305,7 @@ class Timeline extends Component {
           {this.state.isLoading ? (
             <ListLoader justifyContent={'flex-start'} />
           ) : (
-            <ScrollView>
+            <View>
               {activeTab === 'trend' ? (
                 <PostCard
                   menuItems={menuItems}
@@ -287,12 +323,36 @@ class Timeline extends Component {
               ) : (
                 <PostCard
                   menuItems={menuItems}
-                  posts={rankingTimeLine}
+                  posts={rankingChannel}
                   isTimeline={true}
                   navigation={this.props.navigation}
+                  isRankedChannel={true}
+                  rankingLoadMore={loading}
+                  onEndReached={()=>{
+                    if(rankingLoadMore && !loading){
+                      console.log('load_more',rankingLoadMore);
+                      this.props.getRankingChannelList(this.props.rankingChannel.length)
+                      .then((res) => {
+                        this.setState({ isLoading: false });
+                        this.showData();
+                      });
+                    }
+                  }}
+                  onChannelUpdate={(status,index)=>{
+                    let item = rankingChannel[index];
+                    item.is_following = status;
+                    let array = rankingChannel;
+                    array.splice(index,1,item);
+                    console.log('item',item);
+                    this.props.updateRankingChannel({
+                      channels: array,
+                      load_more: rankingLoadMore,
+                      type: 'update'
+                    });
+                  }}
                 />
               )}
-            </ScrollView>
+            </View>
           )}
         </View>
         <ConfirmationModal
@@ -317,6 +377,9 @@ const mapStateToProps = (state) => {
     trendTimline: state.timelineReducer.trendTimline,
     followingTimeline: state.timelineReducer.followingTimeline,
     rankingTimeLine: state.timelineReducer.rankingTimeLine,
+    rankingChannel: state.timelineReducer.rankingChannel,
+    rankingLoadMore: state.timelineReducer.rankingLoadMore,
+    activeTab: state.timelineReducer.activeTab,
     userData: state.userReducer.userData,
   };
 };
@@ -325,9 +388,12 @@ const mapDispatchToProps = {
   getTrendTimeline,
   getFollowingTimeline,
   getRankingTimeline,
+  getRankingChannelList,
   hidePost,
   hideAllPost,
   reportPost,
+  setActiveTimelineTab,
+  updateRankingChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

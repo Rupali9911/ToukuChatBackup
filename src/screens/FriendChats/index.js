@@ -1244,7 +1244,7 @@ class FriendChats extends Component {
           DocumentPicker.types.csv,
           DocumentPicker.types.zip,
           DocumentPicker.types.audio,
-            DocumentPicker.types.allFiles,
+          DocumentPicker.types.allFiles,
         ],
       });
       this.setState({
@@ -1385,6 +1385,28 @@ class FriendChats extends Component {
           {
             uploadFile: source,
             sentMessageType: 'doc',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if(fileType === 'image') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if(fileType === 'video') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
             sendingMedia: true,
           },
           () => {

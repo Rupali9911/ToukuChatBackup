@@ -14,7 +14,7 @@ import {
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView, KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 
 import GroupChatMessageBox from './GroupChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
@@ -211,9 +211,7 @@ class GroupChatContainer extends Component {
       onSelectedDelete,
       isChatDisable,
     } = this.props;
-
     console.log('isChatDisable', isChatDisable);
-
     return (
       <KeyboardAwareScrollView
         contentContainerStyle={{flex: 1}}

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Linking,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -24,6 +25,7 @@ import HyperLink from 'react-native-hyperlink';
 import ReadMore from 'react-native-read-more-text';
 import PostChannelItem from '../components/PostChannelItem';
 import { normalize } from '../utils';
+import PostChannelRankItem from './PostChannelRankItem';
 
 const {width, height} = Dimensions.get('window');
 
@@ -92,7 +94,8 @@ export default class PostCard extends Component {
           flex: 1,
           borderColor: '#dbdbdb',
           borderWidth: isChannelTimeline?1:0
-        }}>
+        }}
+        key={`${post.id}`}>
         <PostCardHeader
           menuItems={menuItems}
           post={post}
@@ -101,6 +104,13 @@ export default class PostCard extends Component {
         />
         <PostChannelItem post={post} />
       </View>
+    );
+  };
+
+  renderRankedChannelItem = ({item: post, index}) => {
+    const {menuItems, isTimeline, isChannelTimeline, onChannelUpdate} = this.props;
+    return (
+        <PostChannelRankItem post={post} key={`${post.channel_id}`} index={index} isChannelTimeline={isChannelTimeline} onChannelUpdate={onChannelUpdate}/>
     );
   };
 
@@ -157,18 +167,31 @@ export default class PostCard extends Component {
       isChannelTimeline,
       onMomentumScrollBegin,
       onEndReached,
+      isRankedChannel,
+      rankingLoadMore
     } = this.props;
     return (
       <FlatList
         data={posts}
         scrollEnabled={posts.length > 0 ? true : false}
-        renderItem={this.renderPostItem}
+        renderItem={isRankedChannel?this.renderRankedChannelItem:this.renderPostItem}
         onEndReached={onEndReached}
         onMomentumScrollBegin={onMomentumScrollBegin}
         onEndReachedThreshold={0.1}
         bounces={false}
-        keyExtractor={(item, index) => `${item.id}`}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={16}
+        style={{backgroundColor: isRankedChannel?Colors.white:'transparent', marginBottom: isRankedChannel?50:0}}
+        // keyExtractor={(item, index) => isRankedChannel?`${item.channel_id}`:`${item.id}`}
         ListEmptyComponent={isChannelTimeline?this.channelEmptyList:this.EmptyList(isTimeline)}
+        ListFooterComponent={()=>{
+          return (
+            (isRankedChannel && rankingLoadMore)?<View style={{height:50}}>
+              <ActivityIndicator />
+            </View>:null
+          );
+        }}
       />
     );
 

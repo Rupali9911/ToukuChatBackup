@@ -1623,6 +1623,28 @@ class GroupChats extends Component {
             this.onMessageSend();
           },
         );
+      } else if(fileType === 'image') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if(fileType === 'video') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
       }
     }
     // this.setState({uploadedFiles: []});

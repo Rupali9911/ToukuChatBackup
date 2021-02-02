@@ -1,4 +1,4 @@
-import React, {Component, PureComponent} from 'react';
+import React, { Component, PureComponent, Fragment } from 'react';
 import {
   View,
   ImageBackground,
@@ -8,9 +8,11 @@ import {
   FlatList,
   Platform,
   TextInput,
+  ScrollView,
+  Linking,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Realm from 'realm';
 import {
   AccordionList,
@@ -19,20 +21,20 @@ import {
   CollapseBody,
 } from 'accordion-collapse-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {createFilter} from 'react-native-search-filter';
-import {Badge} from 'react-native-paper';
-import {withNavigationFocus} from 'react-navigation';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { createFilter } from 'react-native-search-filter';
+import { Badge } from 'react-native-paper';
+import { withNavigationFocus } from 'react-navigation';
 import NetInfo from '@react-native-community/netinfo';
 
-import {homeStyles} from './styles';
-import {globalStyles} from '../../styles';
+import { homeStyles } from './styles';
+import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {Images, Colors, Icons, SocketEvents} from '../../constants';
-import {SearchInput} from '../../components/TextInputs';
+import { Images, Colors, Icons, Fonts, SocketEvents } from '../../constants';
+import { SearchInput } from '../../components/TextInputs';
 import RoundedImage from '../../components/RoundedImage';
-import {getAvatar, eventService, normalize} from '../../utils';
-import {ProfileModal} from '../../components/Modals';
+import { getAvatar, eventService, normalize, onPressHyperlink } from '../../utils';
+import { ProfileModal } from '../../components/Modals';
 import {
   ChannelListItem,
   FriendListItem,
@@ -41,13 +43,15 @@ import {
 } from '../../components/ListItems';
 import NoData from '../../components/NoData';
 import Button from '../../components/Button';
-import {ListLoader} from '../../components/Loaders';
+import { ListLoader } from '../../components/Loaders';
 import SingleSocket from '../../helpers/SingleSocket';
 
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import {
   getUserProfile,
   getMissedSocketEventsById,
+  getAdWallUniqueUrl,
+  requestLoginForm
 } from '../../redux/reducers/userReducer';
 
 import {
@@ -57,12 +61,13 @@ import {
   setFriendRequest,
 } from '../../redux/reducers/addFriendReducer';
 
-import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
+import { getUserConfiguration } from '../../redux/reducers/configurationReducer';
 import {
   getMoreFollowingChannels,
   getFollowingChannels,
   setCurrentChannel,
   getLocalFollowingChannels,
+  assetXPValueOfChannel
 } from '../../redux/reducers/channelReducer';
 import {
   getUserGroups,
@@ -78,6 +83,7 @@ import {
   getUserFriendsSuccess,
   setUserFriends,
 } from '../../redux/reducers/friendReducer';
+import {setActiveTimelineTab} from '../../redux/reducers/timelineReducer';
 import Toast from '../../components/Toast';
 
 import {
@@ -125,7 +131,7 @@ class Home extends PureComponent {
     this.listener;
     this.state = {
       orientation: 'PORTRAIT',
-      isChannelCollapsed: true,
+      isChannelCollapsed: false,
       isFriendReqCollapse: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
@@ -139,6 +145,7 @@ class Home extends PureComponent {
       getGroupData: [],
       getChannelData: [],
       getFriendData: [],
+      assetXPValue: null
     };
     this.SingleSocket = SingleSocket.getInstance();
     this.start = 0;
@@ -152,7 +159,7 @@ class Home extends PureComponent {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+    this.setState({ orientation: initial });
 
     // this.events = eventService.getMessage().subscribe((message) => {
     //   this.checkEventTypes(message);
@@ -164,7 +171,7 @@ class Home extends PureComponent {
   }
 
   groupFilter = () => {
-    const {userGroups} = this.props;
+    const { userGroups } = this.props;
 
     const sortChannels = userGroups;
     // sortChannels.sort((a, b) =>
@@ -181,10 +188,10 @@ class Home extends PureComponent {
 
     sortChannels.sort((a, b) =>
       a.timestamp &&
-      b.timestamp &&
-      (new Date(a.timestamp) > new Date(a.joining_date)
-        ? new Date(a.timestamp)
-        : new Date(a.joining_date)) <
+        b.timestamp &&
+        (new Date(a.timestamp) > new Date(a.joining_date)
+          ? new Date(a.timestamp)
+          : new Date(a.joining_date)) <
         (new Date(b.timestamp) > new Date(b.joining_date)
           ? new Date(b.timestamp)
           : new Date(b.joining_date))
@@ -207,18 +214,18 @@ class Home extends PureComponent {
     });
 
     const groups = [...is_pined, ...is_un_pined];
-    this.setState({getGroupData: groups});
+    this.setState({ getGroupData: groups });
   };
 
   channelFilter = () => {
-    const {followingChannels, channelLoading} = this.props;
+    const { followingChannels, channelLoading } = this.props;
 
-    const {getChannelData} = this.state;
+    const { getChannelData } = this.state;
 
     const sortChannels = followingChannels;
     sortChannels.sort((a, b) =>
       new Date(a.last_msg ? a.last_msg.updated : a.joining_date) <
-      new Date(b.last_msg ? b.last_msg.updated : b.joining_date)
+        new Date(b.last_msg ? b.last_msg.updated : b.joining_date)
         ? 1
         : -1,
     );
@@ -236,11 +243,11 @@ class Home extends PureComponent {
 
     const channels = [...pinedChannels, ...unpinedChannels];
 
-    this.setState({getChannelData: channels});
+    this.setState({ getChannelData: channels });
   };
 
   friendFilter = () => {
-    const {friendLoading, userFriends} = this.props;
+    const { friendLoading, userFriends } = this.props;
 
     const filteredFriends = userFriends.filter(
       createFilter(this.state.searchText, ['username']),
@@ -248,7 +255,7 @@ class Home extends PureComponent {
     const pinedFriends = filteredFriends.filter((friend) => friend.is_pined);
     const unpinedFriends = filteredFriends.filter((friend) => !friend.is_pined);
     const friends = [...pinedFriends, ...unpinedFriends];
-    this.setState({getFriendData: friends});
+    this.setState({ getFriendData: friends });
   };
 
   async componentDidMount() {
@@ -272,6 +279,7 @@ class Home extends PureComponent {
     this.channelFilter();
     this.groupFilter();
     this.friendFilter();
+    this.getAssetXpValue();
 
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
@@ -281,6 +289,7 @@ class Home extends PureComponent {
           this.groupFilter();
           this.friendFilter();
           this.channelFilter();
+          this.getAssetXpValue();
         }, 100),
     );
     // this.props.getFriendRequests();
@@ -316,7 +325,7 @@ class Home extends PureComponent {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({orientation});
+    this.setState({ orientation });
   };
 
   getFriendRequest() {
@@ -350,7 +359,42 @@ class Home extends PureComponent {
       for (var channel of this.props.followingChannels) {
         counts = counts + channel.unread_msg;
       }
-      this.setState({channelHeaderCounts: counts});
+      this.setState({ channelHeaderCounts: counts });
+    });
+  }
+
+  getAssetXpValue = () => {
+    this.props
+      .assetXPValueOfChannel()
+      .then((res) => {
+        if (res) {
+          console.log('asset_xp', res);
+          if (res && res.data) this.setState({assetXPValue: res.data});
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
+
+  getUniqueUrl = () => {
+    this.props.getAdWallUniqueUrl().then((res)=>{
+      if(res && res.add_wall_url){
+        Linking.openURL(res.add_wall_url);
+      }
+    }).catch((err)=>{
+      console.log('error',err);
+    });
+  }
+
+  requestXanaLoginform = () => {
+    this.props.requestLoginForm().then((res)=>{
+      if(res && res.status){
+        console.log('res',res);
+        Linking.openURL(`https://www.xigolo.com/xigolo/#/popup-login?nkt=${res.data}`);
+      }
+    }).catch((err)=>{
+      console.log('error',err);
     });
   }
 
@@ -363,7 +407,7 @@ class Home extends PureComponent {
     for (var channel of this.props.followingChannels) {
       counts = counts + channel.unread_msg;
     }
-    this.setState({channelHeaderCounts: counts});
+    this.setState({ channelHeaderCounts: counts });
     // });
   }
 
@@ -374,7 +418,7 @@ class Home extends PureComponent {
     for (let group of this.props.userGroups) {
       counts = counts + group.unread_msg;
     }
-    this.setState({groupHeaderCounts: counts});
+    this.setState({ groupHeaderCounts: counts });
     // }
     // });
   }
@@ -385,7 +429,7 @@ class Home extends PureComponent {
     for (let friend of this.props.userFriends) {
       counts = counts + friend.unread_msg;
     }
-    this.setState({friendHeaderCounts: counts});
+    this.setState({ friendHeaderCounts: counts });
     // });
   }
 
@@ -529,14 +573,14 @@ class Home extends PureComponent {
 
   //Friend is Typing
   friendIsTyping(message) {
-    const {userFriends} = this.props;
+    const { userFriends } = this.props;
     if (message.text.data.message_details.type === 'personal') {
       for (var i in userFriends) {
         if (
           userFriends[i].user_id ==
-            message.text.data.message_details.sender_user_id &&
+          message.text.data.message_details.sender_user_id &&
           this.props.userData.id ==
-            message.text.data.message_details.receiver_user_id
+          message.text.data.message_details.receiver_user_id
         ) {
           if (message.text.data.message_details.status === 'typing') {
             userFriends[i].is_typing = true;
@@ -555,7 +599,7 @@ class Home extends PureComponent {
 
   //Set Friend's online status with socket event
   setFriendsOnlineStatus(message) {
-    const {userFriends} = this.props;
+    const { userFriends } = this.props;
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
       for (var i in userFriends) {
         if (
@@ -575,7 +619,7 @@ class Home extends PureComponent {
 
   //Message in Following Channel
   messageInFollowingChannel(message) {
-    const {userData, followingChannels} = this.props;
+    const { userData, followingChannels } = this.props;
 
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       for (let i of followingChannels) {
@@ -632,7 +676,7 @@ class Home extends PureComponent {
 
   //Multiple Message in Following Channel
   multipleMessageInFollowingChannel(message) {
-    const {userData, followingChannels} = this.props;
+    const { userData, followingChannels } = this.props;
     if (
       message.text.data.type ===
       SocketEvents.MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
@@ -662,7 +706,7 @@ class Home extends PureComponent {
   }
 
   messageUpdateInFollowingChannel(message) {
-    const {userData, followingChannels} = this.props;
+    const { userData, followingChannels } = this.props;
     if (
       message.text.data.type ===
       SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
@@ -696,7 +740,7 @@ class Home extends PureComponent {
   }
 
   messageDeleteInFollowingChannel(message) {
-    const {userData, followingChannels} = this.props;
+    const { userData, followingChannels } = this.props;
     if (
       message.text.data.type ===
       SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL
@@ -727,7 +771,7 @@ class Home extends PureComponent {
   }
 
   messageUnsentInFollowingChannel(message) {
-    const {userData, followingChannels} = this.props;
+    const { userData, followingChannels } = this.props;
     if (
       message.text.data.type ===
       SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL
@@ -758,7 +802,7 @@ class Home extends PureComponent {
   }
 
   onNewFriendRequest = (message) => {
-    const {friendRequest} = this.props;
+    const { friendRequest } = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
       this.getFriendRequest();
@@ -767,8 +811,8 @@ class Home extends PureComponent {
 
   //New Message in Friend
   onNewMessageInFriend(message) {
-    const {userFriends} = this.props;
-    const {userData} = this.props;
+    const { userFriends } = this.props;
+    const { userData } = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -795,8 +839,8 @@ class Home extends PureComponent {
 
   //Edit Message in Friend
   onEditMessageInFriend(message) {
-    const {userFriends} = this.props;
-    const {userData} = this.props;
+    const { userFriends } = this.props;
+    const { userData } = this.props;
 
     if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -858,7 +902,7 @@ class Home extends PureComponent {
   }
 
   onDeleteMessageInFriend(message) {
-    const {userData} = this.props;
+    const { userData } = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
         var users = getLocalUserFriend(
@@ -916,8 +960,8 @@ class Home extends PureComponent {
 
   //Unsent message on friend
   onUnsentMessageInFriend(message) {
-    const {userFriends} = this.props;
-    const {userData} = this.props;
+    const { userFriends } = this.props;
+    const { userData } = this.props;
 
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
@@ -959,7 +1003,7 @@ class Home extends PureComponent {
 
   //New Message in Group
   onNewMessageInGroup(message) {
-    const {userGroups} = this.props;
+    const { userGroups } = this.props;
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -987,7 +1031,7 @@ class Home extends PureComponent {
   }
 
   editMessageFromGroup(message) {
-    const {userGroups} = this.props;
+    const { userGroups } = this.props;
     if (message.text.data.type === SocketEvents.MESSAGE_EDIT_FROM_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -1017,7 +1061,7 @@ class Home extends PureComponent {
   }
 
   UnsentMessageFromGroup(message) {
-    const {userGroups} = this.props;
+    const { userGroups } = this.props;
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_FROM_GROUP) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
@@ -1045,7 +1089,7 @@ class Home extends PureComponent {
 
   //Mark as Read Group Chat
   readAllMessageGroupChat(message) {
-    const {userGroups} = this.props;
+    const { userGroups } = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       let unread_counts = 0;
       for (var i in userGroups) {
@@ -1077,7 +1121,7 @@ class Home extends PureComponent {
   }
 
   onUpdateGroupDetail(message) {
-    const {userGroups} = this.props;
+    const { userGroups } = this.props;
     if (message.text.data.type === SocketEvents.EDIT_GROUP_DETAIL) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.id) {
@@ -1095,7 +1139,7 @@ class Home extends PureComponent {
 
   //Read Channel's all messages with socket event
   readAllMessageChannelChat(message) {
-    const {followingChannels} = this.props;
+    const { followingChannels } = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT) {
       for (var i in followingChannels) {
         if (
@@ -1122,7 +1166,7 @@ class Home extends PureComponent {
 
   //Read Friend's all messages with socket event
   readAllMessageFriendChat(message) {
-    const {userFriends} = this.props;
+    const { userFriends } = this.props;
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       let unread_counts = 0;
@@ -1175,7 +1219,7 @@ class Home extends PureComponent {
   onChannelMemberRemoveCount() {
     if (
       message.text.data.type ===
-        SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
+      SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       updateChannelTotalMember(message.text.data.message_details.channel_id);
@@ -1192,18 +1236,18 @@ class Home extends PureComponent {
       isFriendReqCollapse,
     } = this.state;
     if (!isChannelCollapsed) {
-      this.setState({isChannelCollapsed: true});
+      this.setState({ isChannelCollapsed: true });
     }
     if (!isGroupCollapsed) {
-      this.setState({isGroupCollapsed: true});
+      this.setState({ isGroupCollapsed: true });
     }
     if (!isFriendsCollapsed) {
-      this.setState({isFriendsCollapsed: true});
+      this.setState({ isFriendsCollapsed: true });
     }
     if (!isFriendReqCollapse) {
-      this.setState({isFriendReqCollapse: true});
+      this.setState({ isFriendReqCollapse: true });
     }
-    this.setState({searchText: text});
+    this.setState({ searchText: text });
   };
 
   onUserProfilePress() {
@@ -1280,14 +1324,14 @@ class Home extends PureComponent {
     this.start = this.start + 20;
     this.props.getMoreFollowingChannels(this.start).then((res) => {
       if (res.conversations.length < 20) {
-        this.setState({loadMoreVisible: false});
+        this.setState({ loadMoreVisible: false });
       }
     });
   };
 
   renderUserChannels() {
-    const {followingChannels, channelLoading} = this.props;
-    const {getChannelData} = this.state;
+    const { followingChannels, channelLoading } = this.props;
+    const { getChannelData } = this.state;
     const filteredChannels = getChannelData.filter(
       createFilter(this.state.searchText, ['name']),
     );
@@ -1300,10 +1344,10 @@ class Home extends PureComponent {
     } else if (filteredChannels.length > 0) {
       return (
         <FlatList
-          contentContainerStyle={{display: 'flex'}}
+          contentContainerStyle={{ display: 'flex' }}
           data={filteredChannels}
           extraData={this.state}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <ChannelListItem
               key={index}
               title={item.name}
@@ -1312,18 +1356,18 @@ class Home extends PureComponent {
                 item.subject_message
                   ? item.subject_message
                   : item.last_msg
-                  ? item.last_msg.is_unsent
-                    ? translate('pages.xchat.messageUnsent')
-                    : item.last_msg.msg_type === 'text'
-                    ? item.last_msg.message_body
-                    : item.last_msg.msg_type === 'image'
-                    ? translate('pages.xchat.photo')
-                    : item.last_msg.msg_type === 'video'
-                    ? translate('pages.xchat.video')
-                    : item.last_msg.msg_type === 'doc'
-                    ? translate('pages.xchat.document')
-                    : translate('pages.xchat.audio')
-                  : ''
+                    ? item.last_msg.is_unsent
+                      ? translate('pages.xchat.messageUnsent')
+                      : item.last_msg.msg_type === 'text'
+                        ? item.last_msg.message_body
+                        : item.last_msg.msg_type === 'image'
+                          ? translate('pages.xchat.photo')
+                          : item.last_msg.msg_type === 'video'
+                            ? translate('pages.xchat.video')
+                            : item.last_msg.msg_type === 'doc'
+                              ? translate('pages.xchat.document')
+                              : translate('pages.xchat.audio')
+                    : ''
               }
               date={item.last_msg ? item.last_msg.created : item.joining_date}
               image={item.channel_picture}
@@ -1349,8 +1393,8 @@ class Home extends PureComponent {
   }
 
   renderUserGroups() {
-    const {groupLoading, userGroups} = this.props;
-    const {getGroupData} = this.state;
+    const { groupLoading, userGroups } = this.props;
+    const { getGroupData } = this.state;
     const filteredGroups = getGroupData.filter(
       createFilter(this.state.searchText, ['group_name']),
     );
@@ -1362,7 +1406,7 @@ class Home extends PureComponent {
         <FlatList
           data={filteredGroups}
           extraData={this.state}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <GroupListItem
               key={index}
               title={item.group_name}
@@ -1372,17 +1416,17 @@ class Home extends PureComponent {
                   ? item.last_msg.type === 'text'
                     ? item.last_msg.text
                     : item.last_msg.type === 'image'
-                    ? translate('pages.xchat.photo')
-                    : item.last_msg.type === 'video'
-                    ? translate('pages.xchat.video')
-                    : item.last_msg.type === 'doc'
-                    ? translate('pages.xchat.document')
-                    : item.last_msg.type === 'audio'
-                    ? translate('pages.xchat.audio')
-                    : ''
+                      ? translate('pages.xchat.photo')
+                      : item.last_msg.type === 'video'
+                        ? translate('pages.xchat.video')
+                        : item.last_msg.type === 'doc'
+                          ? translate('pages.xchat.document')
+                          : item.last_msg.type === 'audio'
+                            ? translate('pages.xchat.audio')
+                            : ''
                   : item.no_msgs
-                  ? ''
-                  : translate('pages.xchat.messageUnsent')
+                    ? ''
+                    : translate('pages.xchat.messageUnsent')
               }
               mentions={item.mentions}
               date={
@@ -1411,8 +1455,8 @@ class Home extends PureComponent {
   }
 
   renderUserFriends() {
-    const {friendLoading, userFriends} = this.props;
-    const {getFriendData} = this.state;
+    const { friendLoading, userFriends } = this.props;
+    const { getFriendData } = this.state;
 
     const filteredFriends = getFriendData.filter(
       createFilter(this.state.searchText, ['username']),
@@ -1425,7 +1469,7 @@ class Home extends PureComponent {
         <FlatList
           data={filteredFriends}
           extraData={this.state}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <FriendListItem
               key={index}
               user_id={item.user_id}
@@ -1436,17 +1480,17 @@ class Home extends PureComponent {
                   ? item.last_msg_type === 'text'
                     ? item.last_msg
                     : item.last_msg_type === 'image'
-                    ? translate('pages.xchat.photo')
-                    : item.last_msg_type === 'video'
-                    ? translate('pages.xchat.video')
-                    : item.last_msg_type === 'doc'
-                    ? translate('pages.xchat.document')
-                    : item.last_msg_type === 'audio'
-                    ? translate('pages.xchat.audio')
-                    : ''
+                      ? translate('pages.xchat.photo')
+                      : item.last_msg_type === 'video'
+                        ? translate('pages.xchat.video')
+                        : item.last_msg_type === 'doc'
+                          ? translate('pages.xchat.document')
+                          : item.last_msg_type === 'audio'
+                            ? translate('pages.xchat.audio')
+                            : ''
                   : item.last_msg_id
-                  ? translate('pages.xchat.messageUnsent')
-                  : ''
+                    ? translate('pages.xchat.messageUnsent')
+                    : ''
               }
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}
@@ -1497,7 +1541,7 @@ class Home extends PureComponent {
           data={filteredFriendRequest}
           extraData={this.state}
           // last_msg_id={last_msg_id}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <FriendRequestListItem
               key={index}
               title={item.from_user_display_name}
@@ -1592,6 +1636,7 @@ class Home extends PureComponent {
       groupHeaderCounts,
       friendHeaderCounts,
       friendRequestHeaderCounts,
+      assetXPValue
     } = this.state;
 
     const {
@@ -1616,6 +1661,9 @@ class Home extends PureComponent {
     const filteredFriendRequest = friendRequest.filter(
       createFilter(searchText, ['from_user_display_name']),
     );
+
+    console.log('touku_tp',this.props.userData.total_tp);
+
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -1634,7 +1682,7 @@ class Home extends PureComponent {
             navigation={this.props.navigation}
           /> */}
 
-        <View style={globalStyles.container}>
+        <View style={[globalStyles.container,{backgroundColor: Colors.white}]}>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => this.onUserProfilePress()}
@@ -1660,7 +1708,8 @@ class Home extends PureComponent {
           {/* Friend Request */}
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
-            enableOnAndroid={true}>
+            enableOnAndroid={true}
+            style={{backgroundColor: Colors.white}}>
             {filteredFriendRequest.length > 0 && (
               <Collapse
                 onToggle={(isColl) =>
@@ -1676,6 +1725,7 @@ class Home extends PureComponent {
                     listcounts={filteredFriendRequest.length}
                     badgeCount={friendRequest.length}
                     selectedLanguageItem={selectedLanguageItem}
+                    icon={Icons.icon_friend}
                   />
                 </CollapseHeader>
                 <CollapseBody>{this.renderFriendRequestList()}</CollapseBody>
@@ -1697,6 +1747,7 @@ class Home extends PureComponent {
                   listcounts={filteredChannels.length}
                   badgeCount={this.setChannelHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
+                  icon={Icons.icon_channel_list}
                 />
               </CollapseHeader>
               <CollapseBody>{this.renderUserChannels()}</CollapseBody>
@@ -1717,6 +1768,7 @@ class Home extends PureComponent {
                   listcounts={filteredGroups.length}
                   badgeCount={this.setGroupHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
+                  icon={Icons.icon_group}
                 />
               </CollapseHeader>
               <CollapseBody>{this.renderUserGroups()}</CollapseBody>
@@ -1737,10 +1789,230 @@ class Home extends PureComponent {
                   listcounts={filteredFriends.length}
                   badgeCount={this.setFriendHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
+                  icon={Icons.icon_friend}
                 />
               </CollapseHeader>
               <CollapseBody>{this.renderUserFriends()}</CollapseBody>
             </Collapse>
+
+            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
+              <Text style={[
+                {
+                  fontSize: 14,
+                  fontWeight: '600',
+                  fontFamily: Fonts.regular,
+                  color: '#0A1F44',
+                },
+              ]}>{translate('pages.adWall.yourPoint')}</Text>
+              <View style={{ flexDirection: 'row', }}>
+                <LinearGradient
+                  start={{ x: 0.03, y: 0.7 }}
+                  end={{ x: 0.95, y: 0.8 }}
+                  // locations={[0.065, 0.22, 0.92]}
+                  useAngle={true}
+                  angle={0}
+                  colors={[
+                    // Colors.button_gradient_1,
+                    // Colors.button_gradient_2,
+                    '#fff3f5',
+                    '#fff3f5'
+                  ]}
+                  style={[homeStyles.fill_border_box_style,{marginRight: 10}]}>
+                  <View style={{}}>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.replacementPoints')}</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(TP)</Text>
+                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{this.props.userData.total_tp && parseInt(this.props.userData.total_tp).toLocaleString()}</Text>
+                  </View>
+                </LinearGradient>
+                <LinearGradient
+                  start={{ x: 0.03, y: 0.7 }}
+                  end={{ x: 0.95, y: 0.8 }}
+                  // locations={[0.065, 0.22, 0.92]}
+                  useAngle={true}
+                  angle={0}
+                  colors={[
+                    // Colors.button_gradient_1,
+                    // Colors.button_gradient_2,
+                    '#fff3f5',
+                    '#fff3f5'
+                  ]}
+                  style={[homeStyles.fill_border_box_style,{marginLeft: 10}]}>
+                  <View style={{}}>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.gamePoint')}</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(XP)</Text>
+                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{assetXPValue?assetXPValue.XP:0}</Text>
+                  </View>
+                </LinearGradient>
+              </View>
+            </View>
+
+            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
+              <Text style={[
+                {
+                  fontSize: 14,
+                  fontWeight: '600',
+                  fontFamily: Fonts.regular,
+                  color: '#0A1F44',
+                },
+              ]}>{translate('pages.adWall.exchangePoints')}</Text>
+              <View style={{ flexDirection: 'row', }}>
+                <TouchableOpacity style={{ flex: 1 }} onPress={()=>{this.props.navigation.navigate('AmazonExchangeScreen')}}>
+                  <LinearGradient
+                    start={{ x: 0.03, y: 0.7 }}
+                    end={{ x: 0.95, y: 0.8 }}
+                    // locations={[0.065, 0.22, 0.92]}
+                    useAngle={true}
+                    angle={0}
+                    colors={[
+                      // '#FFD60941',
+                      // '#D7944141',
+                      '#fff',
+                      '#fff'
+                    ]}
+                    style={[homeStyles.fill_border_box_style,{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: 10
+                    }]}>
+                    <Image
+                      source={Images.amazon_logo}
+                      resizeMode={'contain'} />
+                  </LinearGradient>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ flex: 1 }} onPress={()=>{
+                  Toast.show({
+                    title: translate('pages.adWall.btcExchangeHistory'),
+                    text: translate('pages.clasrm.comingSoon'),
+                    type: 'positive'
+                  });
+                }}>
+                  <LinearGradient
+                    start={{ x: 0.03, y: 0.7 }}
+                    end={{ x: 0.95, y: 0.8 }}
+                    // locations={[0.065, 0.22, 0.92]}
+                    useAngle={true}
+                    angle={0}
+                    colors={[
+                      // '#FFD60941',
+                      // '#D7944141',
+                      '#fff',
+                      '#fff'
+                    ]}
+                    style={[homeStyles.fill_border_box_style,{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginLeft: 10,
+                    }]}>
+                    <Image
+                      source={Images.bitcoin_logo}
+                      resizeMode={'contain'} />
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity style={{ flex: 1 }} onPress={()=>{
+                this.getUniqueUrl();
+              }}>
+                {/* <LinearGradient
+                  start={{ x: 0.03, y: 0.7 }}
+                  end={{ x: 0.95, y: 0.8 }}
+                  // locations={[0.065, 0.22, 0.92]}
+                  useAngle={true}
+                  angle={0}
+                  colors={[
+                    '#D79441',
+                    '#FFD609',
+                    '#D79441'
+                  ]}
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingVertical: 10,
+                    paddingHorizontal: 15,
+                    borderRadius: 8,
+                    marginTop: 20,
+                    flex: 1,
+                  }}>
+                  <Text style={{ fontSize: normalize(25), fontWeight: 'bold' }}>{translate('pages.adWall.clickHere')}</Text>
+                  <Text style={{ fontSize: normalize(12), fontWeight: 'bold', fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'serif' }}>{translate('pages.adWall.increaseyourPoint')}</Text>
+                </LinearGradient> */}
+                <ImageBackground source={Images.banner_img} style={{width: '100%',height:100,marginTop: 10,}}/>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
+              <Text style={[
+                {
+                  fontSize: 14,
+                  fontWeight: '600',
+                  fontFamily: Fonts.regular,
+                  color: '#0A1F44',
+                },
+              ]}>{translate('pages.adWall.other')}</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', }}>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.props.navigation.navigate('ChannelInfo',{channelItem:{channel_id: 1422}})
+                  // onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
+                }}>
+                  <View style={{
+                    width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png'}}
+                      style={{ width: 100, height: 100, borderRadius: 5 }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.earnChannels')}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.requestXanaLoginform();
+                }}>
+                <View style={{
+                  width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png'}}
+                      style={{ width: 100, height: 100, borderRadius: 5 }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.OptionalXigolo')}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.props.navigation.navigate('ChannelInfo',{channelItem:{channel_id: 800}})
+                }}>
+                <View style={{
+                  width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/welcome-page/bg-1218x812.jpg'}}
+                      style={{ width: 100, height: 100, borderRadius: 5 }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.comingSoon')}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.props.setActiveTimelineTab('ranking');
+                  this.props.navigation.navigate('Timeline',{activeTab:'ranking'})
+                }}>
+                <View style={{
+                    width: 100,
+                    marginTop: 10,
+                    marginRight: 15
+                  }}>
+                    <Image
+                      source={Images.crown_img}
+                      style={{ width: 100, height: 100, borderRadius: 5, tintColor: '#ffbf00', resizeMode: 'contain' }}
+                    />
+                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.other')}</Text>
+                  </View>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
           </KeyboardAwareScrollView>
         </View>
       </View>
@@ -1756,18 +2028,22 @@ const DropdownHeader = (props) => {
     badgeCount,
     isCollapsed,
     selectedLanguageItem,
+    icon
   } = props;
   return (
     <LinearGradient
-      start={{x: 0.03, y: 0.7}}
-      end={{x: 0.95, y: 0.8}}
+      start={{ x: 0.03, y: 0.7 }}
+      end={{ x: 0.95, y: 0.8 }}
       locations={[0.065, 0.22, 0.92]}
       useAngle={true}
       angle={222.28}
       colors={[
-        Colors.header_gradient_1,
-        Colors.header_gradient_2,
-        Colors.header_gradient_3,
+        // Colors.header_gradient_1,
+        // Colors.header_gradient_2,
+        // Colors.header_gradient_3,
+        '#fbfbfd',
+        '#fbfbfd',
+        '#fbfbfd'
       ]}
       style={{
         flexDirection: 'row',
@@ -1775,8 +2051,20 @@ const DropdownHeader = (props) => {
         alignItems: 'center',
         paddingVertical: 7,
         paddingHorizontal: 15,
+        borderColor: '#f2f3f5',
+        borderWidth: 1
       }}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image
+          source={icon}
+          style={{
+            width: 20,
+            height: 20,
+            resizeMode: 'contain',
+            marginRight: 5,
+            tintColor: '#0a1f44'
+          }}
+        />
         {Platform.OS === 'ios' ? (
           <TextInput
             pointerEvents="none"
@@ -1786,30 +2074,30 @@ const DropdownHeader = (props) => {
               {
                 fontSize: 14,
                 fontWeight: '400',
-                color: '#fff',
+                color: '#3c3a3a',
                 textShadowColor: 'rgba(0,0,0,.004)',
-                textShadowOffset: {width: 1, height: 1},
+                textShadowOffset: { width: 1, height: 1 },
                 textShadowRadius: 10,
               },
             ]}>
             {title}
           </TextInput>
         ) : (
-          <Text
-            style={[
-              globalStyles.smallRegularText,
-              {
-                fontSize: 14,
-                fontWeight: '400',
-                color: '#fff',
-                textShadowColor: 'rgba(0,0,0,.004)',
-                textShadowOffset: {width: 1, height: 1},
-                textShadowRadius: 10,
-              },
-            ]}>
-            {title}
-          </Text>
-        )}
+            <Text
+              style={[
+                globalStyles.smallRegularText,
+                {
+                  fontSize: 14,
+                  fontWeight: '400',
+                  color: '#3c3a3a',
+                  textShadowColor: 'rgba(0,0,0,.004)',
+                  textShadowOffset: { width: 1, height: 1 },
+                  textShadowRadius: 10,
+                },
+              ]}>
+              {title}
+            </Text>
+          )}
         <Text
           style={[
             globalStyles.smallRegularText,
@@ -1818,8 +2106,8 @@ const DropdownHeader = (props) => {
               fontSize: 14,
               fontWeight: '400',
               textShadowColor: 'rgba(0,0,0,.004)',
-              color: '#fff',
-              textShadowOffset: {width: 1, height: 1},
+              color: '#3c3a3a',
+              textShadowOffset: { width: 1, height: 1 },
               textShadowRadius: 1,
             },
           ]}>
@@ -1828,7 +2116,7 @@ const DropdownHeader = (props) => {
           {')'}
         </Text>
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {badgeCount > 0 ? (
           <Badge
             style={{
@@ -1836,16 +2124,17 @@ const DropdownHeader = (props) => {
               color: Colors.white,
               fontSize: Platform.isPad ? normalize(6) : normalize(9),
             }}>
-            {badgeCount}
+            {badgeCount>99?"99+":badgeCount}
           </Badge>
         ) : null}
         <Image
-          source={isCollapsed ? Icons.icon_arrow_down : Icons.icon_arrow_up}
+          source={isCollapsed ? Icons.icon_arrow_up : Icons.icon_arrow_down}
           style={{
-            width: 10,
-            height: 10,
+            width: 15,
+            height: 15,
             resizeMode: 'contain',
             marginStart: 10,
+            tintColor: '#b3b3b3'
           }}
         />
       </View>
@@ -1892,6 +2181,10 @@ const mapDispatchToProps = {
   getLocalFollowingChannels,
   setUserFriends,
   setFriendRequest,
+  assetXPValueOfChannel,
+  getAdWallUniqueUrl,
+  requestLoginForm,
+  setActiveTimelineTab
 };
 
 export default connect(

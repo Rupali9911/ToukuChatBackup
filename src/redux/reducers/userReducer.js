@@ -26,6 +26,7 @@ const initialState = {
   loading: false,
   userData: {},
   currentRouteName: '',
+
 };
 
 export default function (state = initialState, action) {
@@ -34,7 +35,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
-        userData: action.payload.data,
+        userData: {...action.payload.data},
       };
 
     case GET_UPLOAD_AVATAR_REQUEST:
@@ -485,4 +486,94 @@ export const getMissedSocketEventsByIdFromApp = (id) =>
         console.log('Error getMissedSocketEventsById');
         reject(err);
       });
+  });
+
+export const getAdWallUniqueUrl = () => (dispatch) => 
+  new Promise(function(resolve, reject) {
+    client
+      .get(`xchat/get-adwall-unique-url/`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const requestLoginForm = () => (dispatch) => 
+  new Promise(function (resolve,reject) {
+    client
+    .get(`/request-login-from/`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    });
+  });
+
+export const getExchangeHistory = (offset = 0) => (dispatch) => 
+  new Promise(function (resolve,reject) {
+    client
+    .get(`xchat/get-amazon-and-btc-history/?limit=${20}&offset=${offset}`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    });
+  });
+
+  export const getAmazonExchangeHistory = (offset = 0) => (dispatch) => 
+  new Promise(function (resolve,reject) {
+    client
+    .get(`xchat/get-amazon-history/?limit=${20}&offset=${offset}`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    });
+  });
+
+  export const getBtcExchangeHistory = (offset = 0) => (dispatch) => 
+  new Promise(function (resolve,reject) {
+    client
+    .get(`xchat/get-btc-history/?limit=${20}&offset=${offset}`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    });
+  });
+
+export const sendOtpToAddAmount = () => (dispatch) => 
+  new Promise(function (resolve,reject){
+    client
+    .post(`/xchat/send-otp-to-add-amount/`)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    })
+  });
+
+  export const verifyOtpToAddAmount = (data) => (dispatch) => 
+  new Promise(function (resolve,reject){
+    client
+    .post(`/xchat/verify-otp-to-add-amount/`,data)
+    .then((res)=>{
+      resolve(res);
+    })
+    .catch((err)=>{
+      console.log('err');
+      reject(err);
+    })
   });

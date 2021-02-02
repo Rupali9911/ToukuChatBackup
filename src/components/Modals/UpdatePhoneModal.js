@@ -103,7 +103,7 @@ class UpdatePhoneModal extends Component {
                   if (errMessage.message) {
                     Toast.show({
                       title: translate('common.sendSMS'),
-                      text: translate(errMessage.message.toString()),
+                      text: errMessage.message,
                       type: 'primary',
                     });
                   } else if (errMessage.non_field_errors) {
@@ -161,9 +161,10 @@ class UpdatePhoneModal extends Component {
                   console.log(err.response.request._response);
                   let errMessage = JSON.parse(err.response.request._response);
                   if (errMessage.message) {
+                    console.log('updating translation');
                     Toast.show({
                       title: translate('common.sendSMS'),
-                      text: translate(errMessage.message.toString()),
+                      text: errMessage.message,
                       type: 'primary',
                     });
                   } else if (errMessage.non_field_errors) {
@@ -216,6 +217,7 @@ class UpdatePhoneModal extends Component {
                 this.props.onRequestClose();
               }, 2000);
               this.props.getUserProfile();
+              this.props.onVerificationComplete && this.props.onVerificationComplete();
             } else {
               Toast.show({
                 title: translate('common.register'),
@@ -271,7 +273,6 @@ class UpdatePhoneModal extends Component {
   render() {
     const {visible, loading, userConfig, editable} = this.props;
     const {displayName, displayNameErr} = this.state;
-    console.log('editable', editable);
     return (
       <Modal
         isVisible={visible}
@@ -292,8 +293,8 @@ class UpdatePhoneModal extends Component {
             locations={[0.1, 0.5, 0.8]}
             colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
             style={styles.header}>
-            <View style={{flex: 1}}>
-              <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
+            <View style={{flex: 1,justifyContent:'center'}}>
+              <Text style={[globalStyles.normalLightText, { marginTop:5, textAlign: 'left'}]}>
                 {translate('pages.register.phoneNumber')}
               </Text>
             </View>

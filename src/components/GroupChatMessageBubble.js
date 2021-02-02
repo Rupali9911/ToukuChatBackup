@@ -475,7 +475,7 @@ class GroupChatMessageBubble extends Component {
     const animatedStyle = {
       opacity: this.state.animation,
     };
-    console.log('mentions',message.mentions);
+    // console.log('mentions',message.mentions);
     return (
       <View>
         <Menu
