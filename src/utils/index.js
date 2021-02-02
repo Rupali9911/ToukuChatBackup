@@ -1,5 +1,5 @@
 import {Dimensions, Linking, Platform, PixelRatio, PermissionsAndroid} from 'react-native';
-import {Images, Icons} from '../constants';
+import {Images, Icons, prodInvite, stagInvite} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
 import ImageResizer from 'react-native-image-resizer';
@@ -175,7 +175,7 @@ export const getChannelIdAndReferral = (url) => {
 }
 
 export const onPressHyperlink = (url) => {
-  let match_url = staging ? 'touku.angelium.net/invite/' : 'touku.net/invite/'
+  let match_url = staging ? stagInvite : prodInvite
   if (url.includes(match_url)) {
     let params = getChannelIdAndReferral(url);
     console.log('params', params);

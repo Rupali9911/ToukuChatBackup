@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText": "古いパスワードと新しいパスワードを同じにしないでください",
       "phoneNumberTextForPlaceholder": "電話番号を入力",
       "thisIsYourUsername": "ユーザーネーム",
-      "youCanChangeItUsername": "（後で一切変更はできません）"
+      "youCanChangeItUsername": "（後で一切変更はできません）",
+      "phoneNumberUpdate":"変更したい新しい携帯番号を入力"
     },
     "resetPassword": {
       "changePassword": "ログインパスワードを変更",
@@ -1209,7 +1210,9 @@
       "EnterEmailAfterChange": "変更後の新しいメールアドレスを入力してください",
       "reEnterEmailAfterChange": "変更後の新しいメールアドレスを再入力",
       "SelecImage": "画像を選択",
-      "gainedFollowers": "得られたフォロワー"
+      "gainedFollowers": "得られたフォロワー",
+      "specialSignupBonus":"新規登録スペシャルボーナス",
+      "amazonGiftCardText":"（添付画像のAmazonギフトのロゴを貼り付ける）と交換できるポイントが当たる"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

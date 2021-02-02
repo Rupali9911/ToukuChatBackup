@@ -20,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import { Colors, Icons, Fonts, Images } from '../constants';
+import {Colors, Icons, Fonts, Images, registerUrl, stagInvite, prodInvite, registerUrlStage} from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
@@ -29,11 +29,11 @@ import Toast from '../components/Toast';
 import ImageView from 'react-native-image-viewing';
 import HyperLink from 'react-native-hyperlink';
 import {
-  getAvatar,
-  normalize,
-  onPressHyperlink,
-  getUserName,
-  getUser_ActionFromUpdateText,
+    getAvatar,
+    normalize,
+    onPressHyperlink,
+    getUserName,
+    getUser_ActionFromUpdateText, getChannelIdAndReferral,
 } from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
@@ -44,6 +44,9 @@ import MenuItem from '../components/Menu/MenuItem';
 import linkify from 'linkify-it';
 import LinkPreviewComponent from './LinkPreviewComponent';
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
+import {staging} from "../helpers/api";
+import NavigationService from "../navigation/NavigationService";
 let borderRadius = 20;
 
 const options = {
@@ -385,6 +388,43 @@ class GroupChatMessageBubble extends Component {
     Linking.openURL(url[0]);
   };
 
+    hyperlinkPressed = (url) => {
+        let match_url = staging ? stagInvite : prodInvite
+        if (url.includes(match_url)) {
+            let params = getChannelIdAndReferral(url);
+            console.log('params', params);
+            NavigationService.navigate('ChannelInfo', { channelItem: params });
+        }else {
+            this.checkUrlAndNavigate(url)
+        }
+    }
+
+    checkUrlAndNavigate(url){
+        let regUrl = staging ? registerUrlStage : registerUrl
+        if (url.indexOf(regUrl) > -1) {
+            let suffixUrl = url.split(regUrl)[1].trim();
+            let invitationCode =
+                suffixUrl.split('/').length > 0
+                    ? suffixUrl.split('/')[0].trim()
+                    : suffixUrl;
+            if (invitationCode){
+                this.addFriendFromUrl(invitationCode)
+            }
+        }else{
+            Linking.openURL(url);
+        }
+    }
+
+    addFriendFromUrl(invitationCode){
+        console.log('invitationCode onfocus', invitationCode)
+        if (invitationCode) {
+            let data = {invitation_code: invitationCode};
+            this.props.addFriendByReferralCode(data).then((res) => {
+                console.log('addFriendByReferralCode response', res)
+            });
+        }
+    }
+
   getMentionsPattern = () => {
     const { groupMembers, message } = this.props;
     let mentions = message.mentions;
@@ -629,7 +669,7 @@ class GroupChatMessageBubble extends Component {
                                 }}
                               >
                                 {/* <HyperLink
-                                  onPress={(url, text) => onPressHyperlink(url)}
+                                  onPress={(url, text) => hyperlinkPressed(url)}
                                   onLongPress={() => {
                                     onMessagePress(message.msg_id);
                                     this.showMenu();
@@ -660,7 +700,7 @@ class GroupChatMessageBubble extends Component {
                                     parse={[
                                       {
                                         type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
-                                        onPress: onPressHyperlink,
+                                        onPress: this.hyperlinkPressed,
                                         onLongPress: () => {
                                           onMessagePress(message.msg_id);
                                           this.showMenu();
@@ -878,7 +918,7 @@ class GroupChatMessageBubble extends Component {
                                 }}>
                                 {/* <HyperLink
                                   onPress={(url, text) => {
-                                    onPressHyperlink(url);
+                                    hyperlinkPressed(url);
                                   }}
                                   onLongPress={() => {
                                     onMessagePress(message.msg_id);
@@ -910,7 +950,7 @@ class GroupChatMessageBubble extends Component {
                                     parse={[
                                       {
                                         type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
-                                        onPress: onPressHyperlink,
+                                        onPress: this.hyperlinkPressed,
                                         onLongPress: () => {
                                           onMessagePress(message.msg_id);
                                           this.showMenu();
@@ -1218,7 +1258,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+    addFriendByReferralCode
+};
 
 export default connect(
   mapStateToProps,

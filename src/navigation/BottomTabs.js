@@ -17,6 +17,7 @@ import {isIphoneX} from '../utils';
 import MoreScreen from '../screens/More';
 import {translate} from '../redux/reducers/languageReducer';
 import AddFriend from '../screens/AddFriend';
+import AddFriendByQr from '../screens/AddFriendByQr';
 import TabBarComp from '../components/TabBarComp';
 import {BottomTabItem} from '../components/ListItems';
 
@@ -27,6 +28,7 @@ const HomeTab = createStackNavigator({
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
   AddFriendScreen: AddFriend,
+    AddFriendByQr: AddFriendByQr,
 },{
   defaultNavigationOptions: {
     gestureResponseDistance: {horizontal: gestureResponseDistance}
@@ -49,6 +51,7 @@ const ChatTab = createStackNavigator({
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
   AddFriendScreen: AddFriend,
+    AddFriendByQr: AddFriendByQr,
 },{
   defaultNavigationOptions: {
     gestureResponseDistance: {horizontal: gestureResponseDistance}

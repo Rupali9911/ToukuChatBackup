@@ -20,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import {Colors, Fonts, Images, Icons} from '../constants';
+import {Colors, Fonts, Images, Icons, registerUrl, stagInvite, prodInvite, registerUrlStage} from '../constants';
 import {translate} from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
@@ -46,6 +46,7 @@ import {inviteUrlRoot, staging} from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
 import linkify from 'linkify-it';
 import LinkPreviewComponent from './LinkPreviewComponent';
+import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
 
 let borderRadius = 20;
 let downloaded = false
@@ -353,6 +354,42 @@ class ChatMessageBubble extends Component {
     Linking.openURL(url[0]);
   };
 
+    hyperlinkPressed = (url) => {
+        let match_url = staging ? stagInvite : prodInvite
+        if (url.includes(match_url)) {
+            let params = getChannelIdAndReferral(url);
+            console.log('params', params);
+            NavigationService.navigate('ChannelInfo', { channelItem: params });
+        }else {
+          this.checkUrlAndNavigate(url)
+        }
+    }
+
+    checkUrlAndNavigate(url){
+      let regUrl = staging ? registerUrlStage : registerUrl
+        if (url.indexOf(regUrl) > -1) {
+            let suffixUrl = url.split(regUrl)[1].trim();
+            let invitationCode =
+                suffixUrl.split('/').length > 0
+                    ? suffixUrl.split('/')[0].trim()
+                    : suffixUrl;
+            if (invitationCode){
+                this.addFriendFromUrl(invitationCode)
+            }
+        }else{
+            Linking.openURL(url);
+        }
+    }
+
+    addFriendFromUrl(invitationCode){
+        if (invitationCode) {
+            let data = {invitation_code: invitationCode};
+            this.props.addFriendByReferralCode(data).then((res) => {
+                console.log('addFriendByReferralCode response', res)
+            });
+        }
+    }
+
   _menu = null;
 
   setMenuRef = (ref) => {
@@ -481,7 +518,7 @@ class ChatMessageBubble extends Component {
                           ? this.onDocumentPress(message.message_body)
                           : message.msg_type === 'image'
                           ? message.hyperlink
-                            ? Linking.openURL(message.hyperlink)
+                            ? this.checkUrlAndNavigate(message.hyperlink)
                             : this.onImagePress(
                                 message.thumbnail === ''
                                   ? message.message_body
@@ -556,7 +593,7 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              onPressHyperlink(url);
+                                this.hyperlinkPressed(url);
                             }}
                             onLongPress={() => {
                               onMessagePress(message.id);
@@ -751,7 +788,7 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              onPressHyperlink(url);
+                                this.hyperlinkPressed(url);
                             }}
                             onLongPress={() => {
                               onMessagePress(message.id);
@@ -1068,6 +1105,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+    addFriendByReferralCode
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);

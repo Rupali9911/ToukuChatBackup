@@ -55,9 +55,11 @@ class FriendNotes extends Component {
       showTextBox: this.props.navigation.state.params
         ? this.props.navigation.state.params.showAdd
         : false,
+        deleteLoading: false
     };
 
     this.S3uploadService = new S3uploadService();
+
   }
 
   static navigationOptions = () => {
@@ -265,6 +267,8 @@ class FriendNotes extends Component {
   };
 
   onConfirmDeleteNote = () => {
+      if (this.state.deleteLoading) return
+      this.setState({deleteLoading: true})
     this.onDeleteNote(this.state.deleteIndex, this.state.deleteItem);
   };
 
@@ -334,34 +338,38 @@ class FriendNotes extends Component {
   };
   onDeleteNote = (index, item) => {
     const {data} = this.state;
-    this.props
-      .deleteFriendNotes(item.id)
-      .then((res) => {
-        this.setState({
-          data: {
-            ...data,
-            count: data.count - 1,
-            results: data.results.filter((item, noteIndex) => {
-              return noteIndex != index;
-            }),
-          },
-          deleteIndex: null,
-          deleteItem: null,
-        });
-        this.toggleDeleteNoteConfirmationModal();
-        Toast.show({
-          title: translate('pages.xchat.notes'),
-          text: translate('pages.xchat.toastr.noteDeleted'),
-          type: 'positive',
-        });
-      })
-      .catch((err) => {
-        Toast.show({
-          title: 'Touku',
-          text: translate('common.somethingWentWrong'),
-          type: 'primary',
-        });
-      });
+      if (item && item.id) {
+          this.props
+              .deleteFriendNotes(item.id)
+              .then((res) => {
+                  this.setState({
+                      data: {
+                          ...data,
+                          count: data.count - 1,
+                          results: data.results.filter((item, noteIndex) => {
+                              return noteIndex != index;
+                          }),
+                      },
+                      deleteIndex: null,
+                      deleteItem: null,
+                      deleteLoading: false
+                  });
+                  this.toggleDeleteNoteConfirmationModal();
+                  Toast.show({
+                      title: translate('pages.xchat.notes'),
+                      text: translate('pages.xchat.toastr.noteDeleted'),
+                      type: 'positive',
+                  });
+              })
+              .catch((err) => {
+                  this.setState({deleteLoading: false});
+                  Toast.show({
+                      title: 'Touku',
+                      text: translate('common.somethingWentWrong'),
+                      type: 'primary',
+                  });
+              });
+      } else{this.setState({deleteLoading: false});}
   };
 
   likeUnlike = (note_id, index) => {
@@ -419,6 +427,7 @@ class FriendNotes extends Component {
       orientation,
       showDeleteNoteConfirmationModal,
       isChangeNameModalVisible,
+        deleteLoading
     } = this.state;
     const {currentFriend} = this.props;
     console.log('currentFriend.avatar', currentFriend.avatar);
@@ -559,6 +568,7 @@ class FriendNotes extends Component {
             onConfirm={this.onConfirmDeleteNote.bind(this)}
             title={translate('pages.xchat.deleteNote')}
             message={translate('pages.xchat.deleteNoteText')}
+            isLoading={deleteLoading}
           />
           <ChangeFriendDisplayNameModal
             visible={isChangeNameModalVisible}

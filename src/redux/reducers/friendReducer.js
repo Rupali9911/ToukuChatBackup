@@ -8,6 +8,9 @@ import {
 } from '../../storage/Service';
 import {dispatch} from 'rxjs/internal/observable/pairs';
 import { realmToPlainObject } from '../../utils';
+import AsyncStorage from "@react-native-community/async-storage";
+import Toast from "../../components/Toast";
+import {translate} from "./languageReducer";
 export const GET_USER_FRIENDS_REQUEST = 'GET_USER_FRIENDS_REQUEST';
 export const GET_USER_FRIENDS_SUCCESS = 'GET_USER_FRIENDS_SUCCESS';
 export const GET_USER_FRIENDS_FAIL = 'GET_USER_FRIENDS_FAIL';
@@ -601,7 +604,7 @@ export const unpinFriend = (friendKey, friendId, data) => (dispatch) =>
   });
 
 //#region Firend Note
-export const likeUnlikeNote = (data) => (dispatch) => 
+export const likeUnlikeNote = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.post(`xchat/like-friend-note/`,data)
     .then((res)=>{
@@ -614,7 +617,7 @@ export const likeUnlikeNote = (data) => (dispatch) =>
 //#endregion
 
 //#region Comment on group note
-export const commentOnNote = (data) => (dispatch) => 
+export const commentOnNote = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.post(`xchat/friend-note-comment/`,data)
     .then((res)=>{
@@ -625,7 +628,7 @@ export const commentOnNote = (data) => (dispatch) =>
     })
   });
 
-export const getFriendCommentList = (note_id,offset) => (dispatch) => 
+export const getFriendCommentList = (note_id,offset) => (dispatch) =>
   new Promise(function(resolve,reject){
     client
     .get(`xchat/friend-note-comment-list/?note_id=${note_id}&limit=20&offset=${offset}`)
@@ -637,7 +640,7 @@ export const getFriendCommentList = (note_id,offset) => (dispatch) =>
     })
   });
 
-export const likeUnlikeComment = (data) => (dispatch) => 
+export const likeUnlikeComment = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.post(`xchat/like-friend-note-comment/`,data)
     .then((res)=>{
@@ -648,7 +651,7 @@ export const likeUnlikeComment = (data) => (dispatch) =>
     })
   });
 
-export const deleteFriendComment = (comment_id) => (dispatch) => 
+export const deleteFriendComment = (comment_id) => (dispatch) =>
   new Promise(function(resolve,reject){
     client.delete(`xchat/friend-note-comment/${comment_id}/`)
     .then((res)=>{
@@ -659,7 +662,7 @@ export const deleteFriendComment = (comment_id) => (dispatch) =>
     });
   })
 
-export const deleteFriendObject = (user_id) => (dispatch) => 
+export const deleteFriendObject = (user_id) => (dispatch) =>
   new Promise(function(resolve,reject){
     client.delete(`xchat/remove-friend-object/${user_id}/`)
     .then((res)=>{
@@ -668,3 +671,24 @@ export const deleteFriendObject = (user_id) => (dispatch) =>
       reject(err);
     })
   })
+
+export const addFriendByReferralCode = (data) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        console.log('Data to xchat/add-friend-through-referral-code/', data)
+        client.post(`xchat/add-friend-through-referral-code/`,data)
+            .then((res)=>{
+                console.log('addFriendByReferralCode response1', res)
+                if (res.status === false) {
+                    Toast.show({
+                        title: translate('common.referral'),
+                        text: res.message,
+                        type: 'primary',
+                    });
+                }
+                resolve(res);
+            })
+            .catch((err)=>{
+                console.log('addFriendByReferralCode response', err)
+                reject(err);
+            })
+    });

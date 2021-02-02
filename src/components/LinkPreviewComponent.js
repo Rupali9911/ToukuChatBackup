@@ -1,15 +1,24 @@
 import React, { Component } from 'react';
-import { View, Platform, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Platform, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import PropTypes from 'prop-types';
-import { Images, Fonts, Colors } from '../constants';
+import {Images, Fonts, Colors, registerUrl, registerUrlStage} from '../constants';
 import { ImageLoader } from './Loaders';
 import HyperLink from 'react-native-hyperlink';
 import { normalize } from '../utils';
 import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import { getLinkPreview, getPreviewFromContent } from 'link-preview-js';
+import AsyncStorage from "@react-native-community/async-storage";
+import {connect} from 'react-redux';
+import {withNavigationFocus} from "react-navigation";
+import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
+import NavigationService from "../navigation/NavigationService";
+import Toast from "./Toast";
+import {translate} from "../redux/reducers/languageReducer";
+import {staging} from "../helpers/api";
 
-export default class LinkPreviewComponent extends Component {
+
+class LinkPreviewComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,6 +45,30 @@ export default class LinkPreviewComponent extends Component {
       });
   };
 
+  checkUrlAndNavigate(url){
+      let regUrl = staging ? registerUrlStage : registerUrl
+      if (url.indexOf(regUrl) > -1) {
+          let suffixUrl = url.split(regUrl)[1].trim();
+          let invitationCode =
+              suffixUrl.split('/').length > 0
+                  ? suffixUrl.split('/')[0].trim()
+                  : suffixUrl;
+        if (invitationCode){
+          this.addFriendFromUrl(invitationCode)
+        }
+      }else{
+          Linking.openURL(url);
+      }
+  }
+    addFriendFromUrl(invitationCode){
+         console.log('invitationCode onfocus', invitationCode)
+        if (invitationCode) {
+            let data = {invitation_code: invitationCode};
+            this.props.addFriendByReferralCode(data).then((res) => {
+                 console.log('addFriendByReferralCode response', res)
+            });
+        }
+    }
   render() {
     const {
       text,
@@ -60,7 +93,7 @@ export default class LinkPreviewComponent extends Component {
             <View style={{ borderLeftWidth: 2, borderLeftColor: '#e13887', flexDirection: 'row' }}>
               <HyperLink
                 onPress={(url, text) => {
-                  Linking.openURL(url);
+                    this.checkUrlAndNavigate(url)
                 }}
                 linkStyle={{
                   color: Colors.link_color,
@@ -111,7 +144,7 @@ export default class LinkPreviewComponent extends Component {
               <View style={{ borderLeftWidth: 2, borderLeftColor: '#e13887', }}>
                 <HyperLink
                   onPress={(url, text) => {
-                    Linking.openURL(url);
+                      this.checkUrlAndNavigate(url)
                   }}
                   linkStyle={{
                     color: Colors.link_color,
@@ -139,7 +172,7 @@ export default class LinkPreviewComponent extends Component {
                 <View style={{ borderLeftWidth: 2, borderLeftColor: '#e13887', alignItems:'center' }}>
                   <HyperLink
                     onPress={(url, text) => {
-                      Linking.openURL(url);
+                        this.checkUrlAndNavigate(url)
                     }}
                     linkStyle={{
                       color: Colors.link_color,
@@ -208,3 +241,17 @@ LinkPreviewComponent.defaultProps = {
   borderSize: 0,
   borderColor: Colors.primary,
 };
+
+const mapStateToProps = (state) => {
+    return {
+    };
+};
+
+const mapDispatchToProps = {
+    addFriendByReferralCode
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withNavigationFocus(LinkPreviewComponent));

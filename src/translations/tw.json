@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText":"舊密碼和新密碼不能相同",
       "phoneNumberTextForPlaceholder":"輸入電話號碼",
       "thisIsYourUsername":"這是您的用戶名（以後無法更改）",
-      "youCanChangeItUsername":"您可以根據需要現在進行更改。"
+      "youCanChangeItUsername":"您可以根據需要現在進行更改。",
+      "phoneNumberUpdate":"輸入您要更改的新手機號碼"
     },
     "resetPassword":{
       "changePassword":"更改密码",
@@ -1208,7 +1209,9 @@
       "EnterEmailAfterChange":"更改後輸入新的電子郵件地址",
       "reEnterEmailAfterChange":"重新输入新的电子邮件地址",
       "SelecImage":"選擇圖片",
-      "gainedFollowers":"獲得關注者"
+      "gainedFollowers":"獲得關注者",
+      "specialSignupBonus":"新註冊特別獎金",
+      "amazonGiftCardText":"可以交換的贏取積分（粘貼附件中的亞馬遜禮品徽標）"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

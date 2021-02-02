@@ -74,6 +74,7 @@ import {
   setFriendConversation,
   markFriendMsgsRead,
   unFriendUser,
+    addFriendByReferralCode
 } from '../../redux/reducers/friendReducer';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -154,6 +155,7 @@ import {
 import PasswordConfirmationModal from '../../components/Modals/PasswordConfirmationModal';
 import EmailConfirmationModal from '../../components/Modals/EmailConfirmationModal';
 import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from "@react-native-community/async-storage";
 
 let channelId = [];
 let friendId = [];
@@ -205,6 +207,7 @@ class Chat extends Component {
   };
 
   async UNSAFE_componentWillMount() {
+    console.log('UNSAFE_componentWillMount called')
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
     // await eventService.subscribe();
@@ -242,7 +245,10 @@ class Chat extends Component {
     // this.getUserGroups();
     // this.getUserFriends();
     // this.setCommonConversation();
-    this.props.getUserConfiguration().then((res) => {
+    this.props.getUserConfiguration().then(async (res) => {
+      console.log('res from configuration', res)
+       await AsyncStorage.setItem('is_bonus_opened', res.is_bonus_opened);
+
       this.setState({
         sortBy: res.sort_by,
       });
@@ -314,6 +320,7 @@ class Chat extends Component {
   }
 
   async componentDidMount() {
+      console.log('componentDidMount called')
     // this.props.getUserProfile();
     // this.SingleSocket.create({user_id: this.props.userData.id});
     Orientation.addOrientationListener(this._orientationDidChange);
@@ -363,7 +370,6 @@ class Chat extends Component {
     // });
 
     // this.getCommonChat();
-
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
       async () =>
@@ -371,11 +377,31 @@ class Chat extends Component {
           this.forceUpdate();
         }, 100),
     );
+
+      this.focusListener = this.props.navigation.addListener(
+          'willFocus',
+          async () =>
+              setTimeout(() => {
+                  this.addFriendByReferralCode()
+              }, 2000),
+      );
   }
 
   componentWillUnmount() {
     // this.SingleSocket && this.SingleSocket.closeSocket();
     this.events.unsubscribe();
+      this.focusListener.remove();
+  }
+
+  async addFriendByReferralCode(){
+      const invitationCode = await AsyncStorage.getItem('invitationCode');
+      // console.log('invitationCode onfocus', invitationCode)
+      if (invitationCode) {
+          let data = {invitation_code: invitationCode};
+          this.props.addFriendByReferralCode(data).then((res) => {
+              AsyncStorage.removeItem('invitationCode');
+          });
+      }
   }
 
   _orientationDidChange = (orientation) => {
@@ -2177,22 +2203,35 @@ class Chat extends Component {
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
-      if (
-        this.props.currentRouteName == 'FriendChats' &&
+      if (this.props.currentRouteName == 'FriendChats' &&
         this.props.currentFriend &&
         message.text.data.message_details.conversation.user_id ==
-          this.props.currentFriend.user_id
-      ) {
+          this.props.currentFriend.user_id) {
         console.log('request accepted');
-        let user = getLocalUserFriend(this.props.currentFriend.user_id);
-        let users = realmToPlainObject(user);
-        if (users.length > 0) {
-          let item = users[0];
-          this.props.setCurrentFriend(item);
-        }
+          this.setFriendCommonly(this.props.currentFriend.user_id)
       }
+        if (message.text.data.message_details.invitation && this.props.currentRouteName !== 'FriendChats' ){
+            this.setFriendCommonly(message.text.data.message_details.conversation.user_id)
+            this.props.navigation.navigate('FriendChats');
+        }else if(message.text.data.message_details.invitation && this.props.currentRouteName == 'FriendChats' &&
+            this.props.currentFriend &&
+            message.text.data.message_details.conversation.user_id !==
+            this.props.currentFriend.user_id){
+            NavigationService.popToTop();
+            this.setFriendCommonly(message.text.data.message_details.conversation.user_id)
+            this.props.navigation.navigate('FriendChats');
+        }
     }
   };
+
+  setFriendCommonly(id){
+      let user = getLocalUserFriend(id);
+      let users = realmToPlainObject(user);
+      if (users.length > 0) {
+          let item = users[0];
+          this.props.setCurrentFriend(item);
+      }
+  }
 
   markChannelMsgsRead() {
     this.props.readAllChannelMessages(this.props.currentChannel.id);
@@ -3248,6 +3287,7 @@ const mapDispatchToProps = {
   deleteChat,
   multipleData,
   setDeleteChat,
+    addFriendByReferralCode
 };
 
 export default connect(

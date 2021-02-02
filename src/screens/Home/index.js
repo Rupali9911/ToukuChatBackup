@@ -1292,7 +1292,7 @@ class Home extends PureComponent {
       createFilter(this.state.searchText, ['name']),
     );
 
-    console.log('filteredChannels', filteredChannels);
+    //console.log('filteredChannels', filteredChannels);
 
     //
     if (filteredChannels.length === 0 && channelLoading) {

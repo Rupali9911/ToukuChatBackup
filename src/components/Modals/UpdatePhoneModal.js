@@ -294,7 +294,7 @@ class UpdatePhoneModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {translate('pages.register.phoneNumber')}
+                {editable ? translate('pages.register.phoneNumberUpdate') : translate('pages.register.phoneNumber')}
               </Text>
             </View>
             <ClickableImage

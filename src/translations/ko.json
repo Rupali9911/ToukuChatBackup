@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText":"\uc774\uc804 \ube44\ubc00\ubc88\ud638\uc640 \uc0c8 \ube44\ubc00\ubc88\ud638\ub294 \ub3d9\uc77c\ud558\uc9c0 \uc54a\uc544\uc57c\ud569\ub2c8\ub2e4.",
       "phoneNumberTextForPlaceholder":"\uc804\ud654 \ubc88\ud638\ub97c \uc785\ub825",
       "thisIsYourUsername":"\uc0ac\uc6a9\uc790 \uc774\ub984\uc785\ub2c8\ub2e4 (\ub098\uc911\uc5d0 \ubcc0\uacbd\ud560 \uc218 \uc5c6\uc74c).",
-      "youCanChangeItUsername":"\uc6d0\ud558\ub294 \uacbd\uc6b0 \uc9c0\uae08 \ubcc0\uacbd\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."
+      "youCanChangeItUsername":"\uc6d0\ud558\ub294 \uacbd\uc6b0 \uc9c0\uae08 \ubcc0\uacbd\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+      "phoneNumberUpdate":"변경하고자하는 새로운 휴대 번호를 입력"
     },
     "resetPassword":{
       "changePassword":"\ube44\ubc00\ubc88\ud638 \ubcc0\uacbd\ud558\uae30",
@@ -1209,7 +1210,9 @@
       "EnterEmailAfterChange":"\ubcc0\uacbd \ud6c4 \uc0c8 \uc774\uba54\uc77c \uc8fc\uc18c\ub97c \uc785\ub825\ud558\uc2ed\uc2dc\uc624.",
       "reEnterEmailAfterChange":"\uc0c8 \uc774\uba54\uc77c \uc8fc\uc18c\ub97c \ub2e4\uc2dc \uc785\ub825\ud558\uc2ed\uc2dc\uc624.",
       "SelecImage":"\uc774\ubbf8\uc9c0 \uc120\ud0dd",
-      "gainedFollowers":"\ud314\ub85c\uc6cc \ud655\ubcf4"
+      "gainedFollowers":"\ud314\ub85c\uc6cc \ud655\ubcf4",
+      "specialSignupBonus":"신규 등록 스페셜 보너스",
+      "amazonGiftCardText":"(첨부 이미지 Amazon 선물 로고를 붙여 넣기)와 교환 할 수있는 포인트가 맞는다"
     },
     "welcome":{
       "theWorldIsConnected":"\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

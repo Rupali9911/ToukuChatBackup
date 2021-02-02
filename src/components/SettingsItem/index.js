@@ -12,11 +12,11 @@ import {
 import PropTypes from 'prop-types';
 import {globalStyles} from '../../styles';
 import {
-  Icons,
-  Colors,
-  Fonts,
-  languageArray,
-  registerUrl,
+    Icons,
+    Colors,
+    Fonts,
+    languageArray,
+    registerUrl, registerUrlStage,
 } from '../../constants';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -38,6 +38,7 @@ import SwitchCustom from '../SwitchCustom';
 import Toast from '../Toast';
 import {version} from '../../../package';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
+import {staging} from "../../helpers/api";
 
 class SettingsItem extends Component {
   constructor(props) {
@@ -97,7 +98,7 @@ class SettingsItem extends Component {
   }
 
   copyCode() {
-    let invitationLink = registerUrl + this.state.referralCode;
+    let invitationLink = (staging ? registerUrlStage : registerUrl) + this.state.referralCode;
     Clipboard.setString(invitationLink);
     showToast(
       translate('pages.setting.referralLink'),

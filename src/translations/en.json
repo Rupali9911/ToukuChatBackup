@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText":"Old password and new password should not be same",
       "phoneNumberTextForPlaceholder":"Enter phone number",
       "thisIsYourUsername":"This is your user name (You cannot change later)",
-      "youCanChangeItUsername":"You can change it now if you want."
+      "youCanChangeItUsername":"You can change it now if you want.",
+      "phoneNumberUpdate":"Change mobile number"
     },
     "resetPassword":{
       "changePassword":"Change Password",
@@ -1207,7 +1208,9 @@
       "EnterEmailAfterChange":"Enter the new email address after the change",
       "reEnterEmailAfterChange":"Re-enter new email address",
       "SelecImage":"Select an image",
-      "gainedFollowers":"Gained Followers"
+      "gainedFollowers":"Gained Followers",
+      "specialSignupBonus":"The special bonus for signup",
+      "amazonGiftCardText":"You can win the points that are exchangeable with the Amazon gift card."
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",

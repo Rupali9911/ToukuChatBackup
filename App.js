@@ -15,22 +15,22 @@ import {PersistGate} from 'redux-persist/es/integration/react';
 import {store, persistor} from './src/redux/store';
 import Root from './src/screens/Root';
 import InternetInfo from './src/components/InternetInfo';
-import {CLEAR_BADGE_COUNT, client, socket, userAgent} from './src/helpers/api';
+import {CLEAR_BADGE_COUNT, client, socket, staging, userAgent} from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
-  loginUrl,
-  registerUrl,
-  channelUrl,
-  DEEPLINK,
-  Environment,
-  NotificationType,
+    loginUrl,
+    registerUrl,
+    channelUrl,
+    DEEPLINK,
+    Environment,
+    NotificationType, registerUrlStage,
 } from './src/constants/index';
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
 import {setCurrentChannel} from './src/redux/reducers/channelReducer';
-import {setCurrentFriend} from './src/redux/reducers/friendReducer';
+import {setCurrentFriend, addFriendByReferralCode} from './src/redux/reducers/friendReducer';
 import {setCurrentGroup} from './src/redux/reducers/groupReducer';
 import {
   isEventIdExists,
@@ -153,32 +153,20 @@ export default class App extends Component {
     }
   };
 
-  naviagetoChannelInfo = async (data, url) => {
+  navigateToChannelInfo = async (data, url) => {
     const userToken = await AsyncStorage.getItem('userToken');
 
     if (userToken) {
-      console.log(
-        'NavigationService.getCurrentRoute()',
-        NavigationService.getCurrentRoute(),
-      );
       let route = NavigationService.getCurrentRoute();
       let routeName = route.routeName;
-      if (
-        routeName &&
-        (routeName === 'ChannelInfo' || routeName === 'ChannelChats')
-      ) {
+      if (routeName && (routeName === 'ChannelInfo' || routeName === 'ChannelChats')) {
         NavigationService.popToTop();
       }
-      // setTimeout(() => {
-      //     console.log('Chat item',data)
       store.dispatch(setCurrentChannel(data));
       NavigationService.navigate('ChannelInfo');
-      // }, 1000 );
     } else {
       await AsyncStorage.setItem('channelData', JSON.stringify(data));
-      // setTimeout(() => {
       NavigationService.navigate('Login', {url: url});
-      // }, 1000 );
     }
   };
 
@@ -198,7 +186,6 @@ export default class App extends Component {
     }
 
     let channelLoginUrl = url.substring(0, url.indexOf('?')) + '/';
-
     // console.log('channelLoginUrl', channelLoginUrl);
     if (url.indexOf(loginUrl) > -1) {
       //setTimeout(() => {
@@ -211,17 +198,24 @@ export default class App extends Component {
           ? suffixUrl.split('/')[0].trim()
           : suffixUrl;
       await AsyncStorage.setItem('invitationCode', invitationCode);
-        // const userToken = await AsyncStorage.getItem('userToken');
-        // if (userToken) {
-        //     NavigationService.navigate('SignUp');
-        // }else{
+         const userToken = await AsyncStorage.getItem('userToken');
+         if (userToken) {
+             let route = NavigationService.getCurrentRoute();
+             let routeName = route.routeName;
+             if (routeName && (routeName === 'ChatTab')) {
+                 NavigationService.navigate('Home')
+                 NavigationService.navigate('Chat');
+             }else{
+                 NavigationService.navigate('Chat');
+             }
+         }else{
             NavigationService.navigate('SignUp', {
                 showEmail: true,
                 pageNumber: 0,
                 isSocial: false,
                 invitationCode: invitationCode,
             });
-      //  }
+         }
 
     } else if (loginUrl === channelLoginUrl) {
       let splitUrl = url.split('&');
@@ -242,7 +236,7 @@ export default class App extends Component {
         let data = {
           id: channelId,
         };
-        this.naviagetoChannelInfo(data, url);
+        this.navigateToChannelInfo(data, url);
       }
     } else if (url.indexOf(channelUrl) > -1) {
       let suffixUrl = url.split(channelUrl)[1].trim();
@@ -258,7 +252,7 @@ export default class App extends Component {
         let data = {
           id: channelId,
         };
-        this.naviagetoChannelInfo(data, url);
+        this.navigateToChannelInfo(data, url);
       }
     } else if (url.indexOf('invite') > -1) {
       let urlData = url.split('/');
@@ -267,7 +261,7 @@ export default class App extends Component {
           let data = {
             id: urlData[4],
           };
-          this.naviagetoChannelInfo(data, url);
+          this.navigateToChannelInfo(data, url);
         }
       }
     }else if( url.indexOf('channel-detail') > -1){
@@ -280,7 +274,7 @@ export default class App extends Component {
           let data = {
             id: urlData[5],
           };
-          this.naviagetoChannelInfo(data, url);
+          this.navigateToChannelInfo(data, url);
         }
       }
     }
@@ -465,6 +459,7 @@ export default class App extends Component {
     this.closedAppNotificationListener = messaging()
       .getInitialNotification()
       .then((remoteMessage) => {
+        console.log('remoteMessage', remoteMessage)
         if (remoteMessage.data) {
           console.log('remoteMessage background', remoteMessage);
           this.notificationRedirection(remoteMessage);

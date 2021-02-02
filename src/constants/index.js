@@ -1,5 +1,4 @@
 import {Dimensions, Platform} from 'react-native';
-
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 
 export const Icons = {
@@ -216,17 +215,19 @@ export const languageArray = [
   },
 ];
 
+export const Environment = 'https://www.touku.net/';
+export const EnvironmentStage = 'https://touku.angelium.net/';
 export const supportUrl = 'https://www.touku.net/#/support?frame=1';
-//export const supportUrl = 'https://touku.angelium.net/#/support?frame=1';
 export const termsUrl = 'https://touku.net/#/terms?lang=';
 export const registerUrl = 'https://www.touku.net/#/register/';
+export const registerUrlStage = 'https://touku.angelium.net/#/register/';
 export const loginUrl = 'https://www.touku.net/#/login/';
 export const channelUrl = 'https://www.touku.net/#/channels/';
 export const xanaUrl = 'https://www.xanawallet.net/#/login';
 export const xanaDeepLink = 'xana://';
 export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
 export const DEEPLINK = 'touku://';
-export const Environment = 'https://www.touku.net/';
+//export const supportUrl = 'https://touku.angelium.net/#/support?frame=1';
 
 export const SocketEvents = {
   // Friend actions
