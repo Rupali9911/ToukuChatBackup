@@ -343,7 +343,8 @@ export const SocketEvents = {
   DELETE_FRIEND_NOTE_COMMENT: 'delete friend note data',
   LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 'like or unlike friend note',
   LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment',
-  CLEAR_GROUP_CHAT: 'clear group chat from group list'
+  CLEAR_GROUP_CHAT: 'clear group chat from group list',
+  UPDATING_USER_TP: 'Updating user tp'
 };
 
 export const NotificationType = {

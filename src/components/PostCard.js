@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Linking,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -107,9 +108,9 @@ export default class PostCard extends Component {
   };
 
   renderRankedChannelItem = ({item: post, index}) => {
-    const {menuItems, isTimeline, isChannelTimeline} = this.props;
+    const {menuItems, isTimeline, isChannelTimeline, onChannelUpdate} = this.props;
     return (
-        <PostChannelRankItem post={post} index={index} isChannelTimeline={isChannelTimeline}/>
+        <PostChannelRankItem post={post} key={`${post.channel_id}`} index={index} isChannelTimeline={isChannelTimeline} onChannelUpdate={onChannelUpdate}/>
     );
   };
 
@@ -166,7 +167,8 @@ export default class PostCard extends Component {
       isChannelTimeline,
       onMomentumScrollBegin,
       onEndReached,
-      isRankedChannel
+      isRankedChannel,
+      rankingLoadMore
     } = this.props;
     return (
       <FlatList
@@ -177,10 +179,19 @@ export default class PostCard extends Component {
         onMomentumScrollBegin={onMomentumScrollBegin}
         onEndReachedThreshold={0.1}
         bounces={false}
-        maxToRenderPerBatch={20}
-        style={{backgroundColor: isRankedChannel?Colors.white:'transparent', marginBottom: 50}}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={16}
+        style={{backgroundColor: isRankedChannel?Colors.white:'transparent', marginBottom: isRankedChannel?50:0}}
         // keyExtractor={(item, index) => isRankedChannel?`${item.channel_id}`:`${item.id}`}
         ListEmptyComponent={isChannelTimeline?this.channelEmptyList:this.EmptyList(isTimeline)}
+        ListFooterComponent={()=>{
+          return (
+            (isRankedChannel && rankingLoadMore)?<View style={{height:50}}>
+              <ActivityIndicator />
+            </View>:null
+          );
+        }}
       />
     );
 

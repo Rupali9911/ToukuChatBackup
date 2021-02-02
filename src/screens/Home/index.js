@@ -1661,6 +1661,9 @@ class Home extends PureComponent {
     const filteredFriendRequest = friendRequest.filter(
       createFilter(searchText, ['from_user_display_name']),
     );
+
+    console.log('touku_tp',this.props.userData.total_tp);
+
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -1818,7 +1821,7 @@ class Home extends PureComponent {
                   <View style={{}}>
                     <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.replacementPoints')}</Text>
                     <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(TP)</Text>
-                <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{this.props.userData.total_tp}</Text>
+                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{this.props.userData.total_tp && parseInt(this.props.userData.total_tp).toLocaleString()}</Text>
                   </View>
                 </LinearGradient>
                 <LinearGradient
@@ -1876,7 +1879,13 @@ class Home extends PureComponent {
                       resizeMode={'contain'} />
                   </LinearGradient>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flex: 1 }}>
+                <TouchableOpacity style={{ flex: 1 }} onPress={()=>{
+                  Toast.show({
+                    title: translate('pages.adWall.btcExchangeHistory'),
+                    text: translate('pages.clasrm.comingSoon'),
+                    type: 'positive'
+                  });
+                }}>
                   <LinearGradient
                     start={{ x: 0.03, y: 0.7 }}
                     end={{ x: 0.95, y: 0.8 }}
@@ -1941,7 +1950,8 @@ class Home extends PureComponent {
               ]}>{translate('pages.adWall.other')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', }}>
                 <TouchableOpacity style={{  }} onPress={()=>{
-                  onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
+                  this.props.navigation.navigate('ChannelInfo',{channelItem:{channel_id: 1422}})
+                  // onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
                 }}>
                   <View style={{
                     width: 100,
@@ -1970,7 +1980,9 @@ class Home extends PureComponent {
                     <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.OptionalXigolo')}</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={{  }}>
+                <TouchableOpacity style={{  }} onPress={()=>{
+                  this.props.navigation.navigate('ChannelInfo',{channelItem:{channel_id: 800}})
+                }}>
                 <View style={{
                   width: 100,
                     marginTop: 10,

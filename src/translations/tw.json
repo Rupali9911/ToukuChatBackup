@@ -1615,10 +1615,10 @@
       "yourPoint":"你的觀點",
       "clickHere":"點擊這裡",
       "increaseyourPoint":"免費增加積分",
-      "earnChannels":"賺取頻道",
-      "OptionalXigolo":"可選的XIGOLO",
-      "comingSoon":"快來了",
-      "other":"其他",
+      "earnChannels": "直播頻道",
+      "OptionalXigolo": "XIGOLO",
+      "comingSoon": "TOUKUサポート窓口",
+      "other": "推薦的",
       "hotEarn":"熱門收入",
       "replacementPoints": "更换点",
       "gamePoint": "游戏筹码",
@@ -1639,7 +1639,13 @@
       "amazonExchangeHistory": "Amazon",
       "btcExchangeHistory": "BTC",
       "channelRank": "秩",
-      "channelRankText": "頻道排名"
+      "channelRankText": "頻道排名",
+      "GoldCrownText": "預定於五月發布",
+      "dontHaveSufficientAmount": "你沒有足夠的數量",
+      "exchangesuccessfully": "TP交換成功",
+      "minimumAmountOfTp": "您不能兑换少于500TP",
+      "noExchageHistory": "找不到交易記錄",
+      "processing": "處理中"
     }
   },
   "swal":{

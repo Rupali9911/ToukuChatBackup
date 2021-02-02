@@ -26,6 +26,11 @@ import {globalStyles} from '../styles';
 import {getImage,showToast, normalize,} from '../utils';
 import NavigationService from '../navigation/NavigationService';
 import {isEqual} from 'lodash';
+import {
+  unfollowChannel,
+  followChannel
+} from '../redux/reducers/channelReducer';
+import {ConfirmationModal} from './Modals';
 
 const {width, height} = Dimensions.get('window');
 
@@ -33,12 +38,14 @@ class PostChannelRankItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      orientation: 'PORTRAIT',
       visible: false,
-      audioPlayingId: null,
-      perviousPlayingAudioId: null,
       readMore: false,
       character: 40,
+      showConfirmationModal: false,
     };
+    this.isUnfollowing = false;
+    this.isFollowing = false;
   }
 
   _openMenu = () => this.setState({visible: true});
@@ -61,6 +68,105 @@ class PostChannelRankItem extends Component {
       'positive',
     );
   }
+
+  onCancel = () => {
+    this.toggleConfirmationModal();
+  };
+
+  onConfirm = async () => {
+    const {post,onChannelUpdate,index} = this.props;
+
+    if (this.isUnfollowing) {
+      return;
+    }
+    this.isUnfollowing = true;
+    await this.setState({
+      isLoading: true,
+    });
+    let user = {
+      user_id: this.props.userData.id,
+    };
+    this.props
+      .unfollowChannel(post.channel_id,user)
+      .then(async (res) => {
+        console.log('res', res);
+
+        if (res.status === true) {
+          this.isUnfollowing = false;
+          this.setState({
+            isLoading: false,
+          });
+          onChannelUpdate(false,index);
+          await this.toggleConfirmationModal();
+        }
+        return;
+      })
+      .catch((err) => {
+        console.log('ChannelInfo -> onConfirm -> err', err);
+        showToast(
+          'Touku',
+          translate('common.somethingWentWrong'),
+          'primary',
+        );
+        this.isUnfollowing = false;
+        this.setState({
+          isLoading: false,
+        });
+        this.toggleConfirmationModal();
+      });
+  };
+
+  toggleConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showConfirmationModal: !prevState.showConfirmationModal,
+    }));
+  };
+
+  onFollowUnfollow = async () => {
+    const {post,onChannelUpdate,index} = this.props;
+    if (post.is_following) {
+      this.setState({showConfirmationModal: true});
+    } else {
+      if (this.isFollowing) {
+        return;
+      }
+      this.isFollowing = true;
+      await this.setState({
+        isLoading: true,
+      });
+      let data = {
+        channel_id: post.channel_id,
+        user_id: this.props.userData.id,
+      };
+      this.props
+        .followChannel(data)
+        .then((res) => {
+          if (res.status === true) {
+            showToast(
+              post.channel_name,
+              translate('pages.xchat.toastr.AddedToNewChannel'),
+              'positive',
+            );
+            onChannelUpdate(true,index);
+          }
+          this.isFollowing = false;
+          this.setState({
+            isLoading: false,
+          });
+        })
+        .catch((err) => {
+          showToast(
+            'Touku',
+            translate('common.somethingWentWrong'),
+            'primary',
+          );
+          this.isFollowing = false;
+          this.setState({
+            isLoading: false,
+          });
+        });
+    }
+  };
 
   renderChannelDetail = () => {
     const {post, userData} = this.props;
@@ -165,15 +271,27 @@ class PostChannelRankItem extends Component {
             })}
           </View>
           <View style={styles.channelDetailButton}>
+            <View style={{ flexDirection: 'row', justifyContent:'flex-end' }}>
+              <Button
+                title={
+                  post.is_following
+                    ? translate('pages.xchat.unfollow')
+                    : translate('pages.xchat.follow')
+                }
+                type={'transparent'}
+                height={28}
+                onPress={() => this.onFollowUnfollow()}
+                loading={this.isFollowing}
+                fontType={'normalRegular15Text'}
+                borderColor={Colors.gradient_3}
+              />
+            </View>
             <Button
-              title={
-                post.is_following
-                  ? translate('pages.xchat.unfollow')
-                  : translate('pages.xchat.follow')
+              title={translate('pages.xchat.channelDetails')
               }
               type={'transparent'}
               height={28}
-              onPress={() => this.onFollowUnfollow()}
+              onPress={() => NavigationService.navigate('ChannelInfo', { channelItem: post, })}
               loading={this.isFollowing}
               fontType={'normalRegular15Text'}
               borderColor={Colors.gradient_3}
@@ -202,7 +320,7 @@ class PostChannelRankItem extends Component {
 
   render() {
     const {post, index, isChannelTimeline} = this.props;
-
+    const {showConfirmationModal, orientation} = this.state;
     return (
       <View
         style={{
@@ -212,8 +330,7 @@ class PostChannelRankItem extends Component {
           borderColor: '#dbdbdb',
           borderWidth: isChannelTimeline ? 1 : 0,
           paddingHorizontal: 5
-        }}
-        key={`${post.channel_id}`}>
+        }}>
         <View style={{ flexDirection: 'row' }}>
           <View style={[
             index <= 2 && {
@@ -250,6 +367,15 @@ class PostChannelRankItem extends Component {
             </ImageBackground>
           </View>
         </View>
+        <ConfirmationModal
+            visible={showConfirmationModal}
+            onCancel={this.onCancel.bind(this)}
+            onConfirm={this.onConfirm.bind(this)}
+            orientation={orientation}
+            isLoading={this.isUnfollowing}
+            title={translate('pages.xchat.toastr.areYouSure')}
+            message={translate('pages.xchat.toLeaveThisChannel')}
+          />
       </View>
     );
   }
@@ -293,12 +419,12 @@ const styles = StyleSheet.create({
     // paddingVertical: '2%',
   },
   channelDetailStatus: {
-    flex: 0.65,
+    flex: 1,
     flexDirection: 'row',
     paddingHorizontal: '2%',
   },
   channelDetailButton: {
-    flex: 0.35,
+    // flex: 0.35,
     paddingHorizontal: '1%',
     justifyContent: 'center',
   },
@@ -328,7 +454,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  
+  unfollowChannel,
+  followChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PostChannelRankItem);

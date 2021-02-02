@@ -1624,10 +1624,10 @@
       "yourPoint":"\ub124 \uc785\uc7a5",
       "clickHere":"\uc5ec\uae30\ub97c \ud074\ub9ad\ud558\uc138\uc694",
       "increaseyourPoint":"\ubb34\ub8cc\ub85c \ud3ec\uc778\ud2b8\ub97c \ub298\ub9ac\ub824\uba74",
-      "earnChannels":"\ucc44\ub110 \ud68d\ub4dd",
-      "OptionalXigolo":"\uc635\uc158 XIGOLO",
-      "comingSoon":"\uace7 \ucd9c\uc2dc",
-      "other":"\ub2e4\ub978",
+      "earnChannels": "라이브 채널",
+      "OptionalXigolo": "XIGOLO",
+      "comingSoon": "TOUKUサポート窓口",
+      "other": "추천",
       "hotEarn":"\ub728\uac70\uc6b4 \uc218\uc785",
       "replacementPoints": "교체 포인트",
       "gamePoint": "게임 칩",
@@ -1648,7 +1648,13 @@
       "amazonExchangeHistory": "Amazon",
       "btcExchangeHistory": "BTC",
       "channelRank": "계급",
-      "channelRankText": "채널 순위"
+      "channelRankText": "채널 순위",
+      "GoldCrownText": "5 월 공개 예정",
+      "dontHaveSufficientAmount": "충분한 양이 없습니다",
+      "exchangesuccessfully": "TP를 성공적으로 교환했습니다.",
+      "minimumAmountOfTp": "500TP 이하로 교환 할 수 없습니다.",
+      "noExchageHistory": "교환 내역이 없습니다.",
+      "processing": "가공"
     }
   },
   "swal":{

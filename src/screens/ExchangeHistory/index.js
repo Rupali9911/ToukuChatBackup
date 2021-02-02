@@ -18,11 +18,18 @@ import {
     followChannel,
     setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
+import {
+    getExchangeHistory,
+    getAmazonExchangeHistory,
+    getBtcExchangeHistory
+} from '../../redux/reducers/userReducer';
 import { getChannelsById, getChannels } from '../../storage/Service';
 import { realmToPlainObject, normalize } from '../../utils';
 import { RadioButton } from 'react-native-paper';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { ListLoader } from '../../components/Loaders';
+import moment from 'moment';
 
 class ExchangeHistory extends Component {
     constructor(props) {
@@ -31,7 +38,15 @@ class ExchangeHistory extends Component {
         this.state = {
             orientation: 'PORTRAIT',
             loading: false,
-            option: 1
+            amazonLoading: false,
+            btcLoading: false,
+            option: 1,
+            allHistoryResponse: null,
+            allHistory: [],
+            amazonHistoryResponse: null,
+            amazonHistory: [],
+            btcHistoryResponse: null,
+            btcHistory: []
         };
         this.S3uploadService = new S3uploadService();
         this.isPressed = false;
@@ -50,14 +65,62 @@ class ExchangeHistory extends Component {
 
     componentDidMount() {
         Orientation.addOrientationListener(this._orientationDidChange);
+        this.getAllExchangeHistory();
+        this.getAmazonHistory();
+        this.getBtcHistory();
     }
 
     _orientationDidChange = (orientation) => {
         this.setState({ orientation });
     };
 
+    getAllExchangeHistory = () => {
+        this.setState({loading: true});
+        this.props.getExchangeHistory()
+            .then((res) => {
+                console.log('res', res);
+                this.setState({loading: false});
+                if(res){
+                    this.setState({allHistory: res.results || [], allHistoryResponse: res});
+                }
+            }).catch((err) => {
+                this.setState({loading: false});
+                console.log('err', err);
+            });
+    }
+
+    getAmazonHistory = () => {
+        this.setState({amazonLoading: true});
+        this.props.getAmazonExchangeHistory()
+        .then((res)=>{
+            this.setState({amazonLoading: false});
+            if(res){
+                this.setState({amazonHistory: res.results || [], amazonHistoryResponse: res});
+            }
+        }).catch((err)=>{
+            this.setState({amazonLoading: false});
+                console.log('err', err);
+        });
+    }
+
+    getBtcHistory = () => {
+        this.setState({btcLoading: true});
+        this.props.getBtcExchangeHistory()
+        .then((res)=>{
+            this.setState({btcLoading: false});
+            if(res){
+                this.setState({btcHistory: res.results || [], btcHistoryResponse: res});
+            }
+        }).catch((err)=>{
+            this.setState({btcLoading: false});
+                console.log('err', err);
+        });
+    }
+
     render() {
-        const { isExchange, option, loading } = this.state;
+        const { isExchange, option, allHistory, amazonHistory, btcHistory, loading, amazonLoading, btcLoading } = this.state;
+        const listData = option==1?allHistory:option==2?amazonHistory:btcHistory;
+        const listLoading = option==1?loading:option==2?amazonLoading:btcLoading;
         return (
             <View style={[globalStyles.container, { backgroundColor: Colors.white }]}>
                 <HeaderWithBack
@@ -80,31 +143,34 @@ class ExchangeHistory extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={{flex:1, paddingHorizontal: 15, paddingVertical: 10, paddingBottom:20}}>
-                        <FlatList
-                            data={[1,1,1,1,1,2,1,2,1]}
-                            renderItem={({ item, index }) => {
-                                if(option==2 && item==2){
-                                    return null;
-                                }else if(option==3 && item==1){
-                                    return null;
-                                }
-                                return (
-                                    <View style={{borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row',padding: 10, borderRadius: 10, marginBottom:10}}>
-                                        <Image source={item==2?Images.bitcoin_img:Images.amazon_img}/>
-                                        <View style={{marginLeft: 10}}>
-                                            <Text style={{fontSize: normalize(13), fontWeight: 'bold'}}>{item==2?"Bitcoin":"Amazon"}</Text>
-                                            <Text>2021.01.01 20:40</Text>
-                                            <Text><Text style={{color:'#ff00a3'}}>Status: </Text>Sent</Text>
-                                        </View>
-                                        <View style={{flex:1, alignItems: 'flex-end'}}>
-                                            <Text>TP<Text style={{ fontSize: normalize(13) }}>10,000</Text></Text>
-                                            <Image source={Icons.icon_drop_down} style={{width:15,height:10}}/>
-                                            <Text style={{ color: '#ff00a3' }}>¥<Text style={{fontSize: normalize(20),fontFamily: Fonts.regular}}>10,000</Text></Text>
-                                        </View>
-                                    </View>
-                                );
-                            }}
-                            />
+                        {listLoading ?
+                            <ListLoader />
+                        : listData.length > 0
+                                ? <FlatList
+                                    data={listData}
+                                    renderItem={({ item, index }) => {
+                                        let amount = Math.round(item.amount);
+                                        return (
+                                            <View style={{ borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row', padding: 10, borderRadius: 10, marginBottom: 10 }}>
+                                                <Image source={item.exchange_type === 'AMAZON' ? Images.amazon_img : Images.bitcoin_img} />
+                                                <View style={{ marginLeft: 10 }}>
+                                                    <Text style={{ fontSize: normalize(13), fontWeight: 'bold' }}>{item.exchange_type}</Text>
+                                                    <Text>{moment(item.updated).format("YYYY.MM.DD, HH:mm")}</Text>
+                                                    <Text><Text style={{ color: '#ff00a3' }}>Status: </Text>{item.status!=='PENDING'?item.status:translate('pages.adWall.processing')}</Text>
+                                                </View>
+                                                <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                                    <Text style={{fontSize: normalize(10)}}>{item.amount_type}<Text style={{ fontSize: normalize(13) }}>{amount}</Text></Text>
+                                                    <Image source={Icons.icon_drop_down} style={{ width: 15, height: 10 }} />
+                                                    <Text style={{ color: '#ff00a3' }}>¥<Text style={{ fontSize: normalize(20), fontFamily: Fonts.regular }}>{amount}</Text></Text>
+                                                </View>
+                                            </View>
+                                        );
+                                    }}
+                                /> :
+                                <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                                    <Text style={{fontSize: normalize(16)}}>{translate('pages.adWall.noExchageHistory')}</Text>
+                                </View>
+                        }
                     </View>
                 </View>
             </View>
@@ -126,6 +192,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     followChannel,
     setCurrentChannel,
+    getExchangeHistory,
+    getAmazonExchangeHistory,
+    getBtcExchangeHistory
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExchangeHistory);

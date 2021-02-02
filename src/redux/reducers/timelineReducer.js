@@ -500,6 +500,10 @@ const getRankingChannelFailure = () => ({
   type: GET_RANKING_CHANNEL_FAIL,
 });
 
+export const updateRankingChannel = (data) => (dispatch) => {
+  dispatch(getRankingChannelSuccess(data));
+}
+
 export const getRankingChannel = (userType, pageCount, type) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getRankingChannelRequest());

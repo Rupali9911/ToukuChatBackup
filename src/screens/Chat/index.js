@@ -28,6 +28,7 @@ import {
 import {
   getUserProfile,
   getMissedSocketEventsById,
+  setToukuPoints
 } from '../../redux/reducers/userReducer';
 import {
   getUserConfiguration,
@@ -595,6 +596,8 @@ class Chat extends Component {
         break;
       case SocketEvents.UNPINED_CHANNEL:
         this.onUnpinChannel(message);
+      case SocketEvents.UPDATING_USER_TP:
+        this.onUpdateUserTP(message);
         break;
     }
   }
@@ -2321,6 +2324,13 @@ class Chat extends Component {
     });
   };
 
+  onUpdateUserTP = (message) => {
+    if(message && message.text.data.message_details.user_id==this.props.userData.id){
+      console.log('touku points',message.text.data.message_details.wallet_amount);
+      this.props.setToukuPoints(this.props.userData,message.text.data.message_details.wallet_amount);
+    }
+  }
+
   onSearch = async (text) => {
     console.log('onSearch called');
     await this.setState({searchText: text, commonConversation: []});
@@ -3248,6 +3258,7 @@ const mapDispatchToProps = {
   deleteChat,
   multipleData,
   setDeleteChat,
+  setToukuPoints
 };
 
 export default connect(

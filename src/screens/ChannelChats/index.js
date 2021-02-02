@@ -54,6 +54,7 @@ import {
   deleteMultipleChannelMessage,
   pinChannel,
   unpinChannel,
+  unfollowChannel
 } from '../../redux/reducers/channelReducer';
 import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
 import {
@@ -159,6 +160,14 @@ class ChannelChats extends Component {
                   this.onPinUnpinChannel();
                 },
               },
+              {
+                id: 5,
+                title: translate('pages.xchat.unfollow'),
+                icon: 'user-times',
+                onPress: () => {
+                  this.toggleConfirmationModal();
+                },
+              },
             ]
           : [
               {
@@ -184,11 +193,20 @@ class ChannelChats extends Component {
                   this.onPinUnpinChannel();
                 },
               },
+              {
+                id: 4,
+                title: translate('pages.xchat.unfollow'),
+                icon: 'user-times',
+                onPress: () => {
+                  this.toggleConfirmationModal();
+                },
+              },
             ],
     };
     this.S3uploadService = new S3uploadService();
     this.props.resetChannelConversation();
     this.isUploading = false;
+    this.isUnfollowing = false;
   }
 
   UNSAFE_componentWillMount() {
@@ -1157,6 +1175,28 @@ class ChannelChats extends Component {
             this.onMessageSend();
           },
         );
+      } else if(fileType === 'image') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
+      } else if(fileType === 'video') {
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            this.onMessageSend();
+          },
+        );
       }
     }
     // this.setState({uploadedFiles: []});
@@ -1270,6 +1310,7 @@ class ChannelChats extends Component {
             onCancel={this.onCancel.bind(this)}
             onConfirm={this.onConfirm.bind(this)}
             orientation={orientation}
+            isLoading={this.isUnfollowing}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.toLeaveThisChannel')}
           />
@@ -1376,8 +1417,48 @@ class ChannelChats extends Component {
     });
   };
 
-  onConfirm = () => {
-    this.toggleConfirmationModal();
+  // onConfirm = () => {
+  //   this.toggleConfirmationModal();
+  // };
+
+  onConfirm = async () => {
+    if (this.isUnfollowing) {
+      return;
+    }
+    this.isUnfollowing = true;
+    await this.setState({
+      isLoading: true,
+    });
+    let user = {
+      user_id: this.props.userData.id,
+    };
+    this.props
+      .unfollowChannel(this.props.currentChannel.id,user)
+      .then(async (res) => {
+        console.log('res', res);
+        if (res.status === true) {
+          await this.toggleConfirmationModal();
+          this.isUnfollowing = false;
+          this.setState({
+            isLoading: false,
+          });
+          this.props.navigation.popToTop();
+        }
+        return;
+      })
+      .catch((err) => {
+        console.log('ChannelInfo -> onConfirm -> err', err);
+        Toast.show({
+          title: 'Touku',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.isUnfollowing = false;
+        this.setState({
+          isLoading: false,
+        });
+        this.toggleConfirmationModal();
+      });
   };
 
   onDeletePressed = (messageId) => {
@@ -1886,6 +1967,7 @@ const mapDispatchToProps = {
   getLocalFollowingChannels,
   pinChannel,
   unpinChannel,
+  unfollowChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

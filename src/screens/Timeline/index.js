@@ -23,6 +23,7 @@ import {
   hidePost,
   hideAllPost,
   reportPost,
+  updateRankingChannel
 } from '../../redux/reducers/timelineReducer';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -326,6 +327,7 @@ class Timeline extends Component {
                   isTimeline={true}
                   navigation={this.props.navigation}
                   isRankedChannel={true}
+                  rankingLoadMore={loading}
                   onEndReached={()=>{
                     if(rankingLoadMore && !loading){
                       console.log('load_more',rankingLoadMore);
@@ -335,6 +337,18 @@ class Timeline extends Component {
                         this.showData();
                       });
                     }
+                  }}
+                  onChannelUpdate={(status,index)=>{
+                    let item = rankingChannel[index];
+                    item.is_following = status;
+                    let array = rankingChannel;
+                    array.splice(index,1,item);
+                    console.log('item',item);
+                    this.props.updateRankingChannel({
+                      channels: array,
+                      load_more: rankingLoadMore,
+                      type: 'update'
+                    });
                   }}
                 />
               )}
@@ -378,7 +392,8 @@ const mapDispatchToProps = {
   hidePost,
   hideAllPost,
   reportPost,
-  setActiveTimelineTab
+  setActiveTimelineTab,
+  updateRankingChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

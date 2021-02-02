@@ -147,6 +147,7 @@ class ChannelInfo extends Component {
           : this.props.currentChannel.id,
       )
       .then((res) => {
+        console.log('details',res);
         this.setState({channelData: res});
       })
       .catch((err) => {
@@ -255,7 +256,7 @@ class ChannelInfo extends Component {
         });
         this.isUnfollowing = false;
         this.setState({
-          isLoading: fales,
+          isLoading: false,
         });
         this.toggleConfirmationModal();
       });

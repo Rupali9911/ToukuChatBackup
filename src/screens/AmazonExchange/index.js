@@ -18,8 +18,17 @@ import {
     followChannel,
     setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
+import {
+    sendOtpToAddAmount,
+    verifyOtpToAddAmount
+} from '../../redux/reducers/userReducer';
 import { getChannelsById, getChannels } from '../../storage/Service';
-import { realmToPlainObject, normalize } from '../../utils';
+import { realmToPlainObject, normalize, isNumeric } from '../../utils';
+import {
+    ConfirmationModal,
+    UpdatePhoneModal,
+    VerifyOtpModal,
+  } from '../../components/Modals';
 
 class AmazonExchange extends Component {
     constructor(props) {
@@ -29,8 +38,13 @@ class AmazonExchange extends Component {
             orientation: 'PORTRAIT',
             isExchange: false,
             loading: false,
-            tp_point: 0,
-            point_in_yen: 0
+            tp_point: 500,
+            point_in_yen: 0,
+            showPhoneUpdateModal: false,
+            isUpdatePhoneModalVisible: false,
+            verifyOtpModalVisible: false,
+            sendOtpLoading: false,
+            verifyOtpLoading: false
         };
         this.S3uploadService = new S3uploadService();
         this.isPressed = false;
@@ -65,8 +79,79 @@ class AmazonExchange extends Component {
         }
     };
 
+    onCancel = () => {
+        this.setState({
+          showPhoneUpdateModal: false,
+        });
+      };
+
+    sendOtpToAdd = () => {
+        this.setState({sendOtpLoading: true});
+        this.props.sendOtpToAddAmount()
+            .then((res)=>{
+                if(res && res.status){
+                    this.setState({sendOtpLoading: false});
+                    Toast.show({
+                        title: 'Touku',
+                        text: translate(res.message),
+                        type: 'positive',
+                    });
+                    this.setState({verifyOtpModalVisible: true});
+                }
+            }).catch((err)=>{
+                if(err){
+                    Toast.show({
+                        title: 'Touku',
+                        text: translate(err.message),
+                        type: 'primary',
+                    });
+                }
+                this.setState({sendOtpLoading: false});
+            });
+    }
+
+    verifyOtpToAddAmount = (amount, code) => {
+        let data = {
+            amount: amount,
+            code: code,
+            exchange_type: "AMAZON",
+            amount_type: "TP"
+        }
+
+        this.setState({ verifyOtpLoading: true });
+        this.props.verifyOtpToAddAmount(data)
+            .then((res) => {
+                this.setState({ verifyOtpLoading: false });
+                if (res && res.status) {
+                    Toast.show({
+                        title: 'Touku',
+                        text: translate('pages.adWall.exchangesuccessfully'),
+                        type: 'positive',
+                    });
+                    this.setState({ verifyOtpModalVisible: false });
+                }
+            }).catch((err) => {
+                console.log('error_verify', err);
+                Toast.show({
+                    title: 'Touku',
+                    text: translate(err.response.data.errors),
+                    type: 'primary',
+                });
+                this.setState({ verifyOtpLoading: false });
+            });
+    } 
+
     render() {
-        const { isExchange, loading } = this.state;
+        const {
+            orientation,
+            isExchange,
+            showPhoneUpdateModal,
+            isUpdatePhoneModalVisible,
+            loading,
+            verifyOtpModalVisible,
+            sendOtpLoading,
+            verifyOtpLoading
+        } = this.state;
         return (
             <View
                 style={[globalStyles.container, { backgroundColor: Colors.white }]}>
@@ -220,19 +305,18 @@ class AmazonExchange extends Component {
                                     alignItems: 'center'
                                 }}>
                                     <Text style={{
-                                        flex: 0.75,
+                                        flex: 1,
                                         fontSize: normalize(15),
                                         fontWeight: '600',
                                         color: '#0a1f44',
                                     }}>{translate('pages.adWall.currentPointHeld')}</Text>
 
                                     <Text style={{
-                                        flex: 0.25,
                                         fontSize: normalize(15),
                                         textAlign: 'right',
                                         fontWeight: '600',
                                         color: '#ee6f70',
-                                    }}>0TP</Text>
+                                    }}>{parseInt(this.props.userData.total_tp)}TP</Text>
                                 </View>
                                 <View style={{
                                     marginTop: 10,
@@ -259,16 +343,20 @@ class AmazonExchange extends Component {
                                         color: '#0a1f44',
                                         textAlign: 'right'
                                     }}
-                                    value={this.state.tp_point}
+                                    keyboardType={'numeric'}
+                                    value={this.state.tp_point+""}
                                         onChangeText={(text) => {
-                                            this.setState({ tp_point: text, point_in_yen: text })
+                                            if(isNumeric(text)){
+                                                this.setState({ tp_point: text, point_in_yen: text })    
+                                            }
                                         }}
                                     />
                                     <Text style={{
                                         fontSize: normalize(14),
                                         fontWeight: '600',
                                         color: '#0a1f44',
-                                        textAlign: 'right'
+                                        textAlign: 'right',
+                                        marginLeft:5
                                     }}>TP</Text>
                                     <Image source={Images.convert_img} style={{ marginHorizontal: 15}}/>
                                     <Text numberOfLines={1} style={{
@@ -277,12 +365,13 @@ class AmazonExchange extends Component {
                                         fontWeight: '600',
                                         color: '#0a1f44',
                                         textAlign: 'right'
-                                    }}>{this.state.point_in_yen}</Text>
+                                    }}>{this.state.tp_point}</Text>
                                     <Text numberOfLines={1} style={{
                                         fontSize: normalize(14),
                                         fontWeight: '600',
                                         color: '#0a1f44',
-                                        textAlign: 'right'
+                                        textAlign: 'right',
+                                        marginLeft:5
                                     }}>YEN</Text>
                                 </View>
                                 <View style={{ width: '60%', alignSelf: 'center', marginTop: 15 }}>
@@ -290,13 +379,70 @@ class AmazonExchange extends Component {
                                         type={isExchange ? '' : 'translucent'}
                                         title={translate('pages.adWall.confirm')}
                                         onPress={() => {
-                                            
-                                        }} />
+                                            if(this.props.userData.total_tp<500){
+                                                Toast.show({
+                                                    title: 'Touku',
+                                                    text: translate(`pages.adWall.dontHaveSufficientAmount`),
+                                                    type: 'primary',
+                                                });
+                                                return;
+                                            }
+                                            if(parseFloat(this.state.tp_point)<500){
+                                                Toast.show({
+                                                    title: 'Touku',
+                                                    text: translate(`pages.adWall.minimumAmountOfTp`),
+                                                    type: 'primary',
+                                                });
+                                                return;
+                                            }
+                                            if (!this.props.userData.phone) {
+                                                this.setState({showPhoneUpdateModal: true});
+                                                return;
+                                            }
+                                            this.sendOtpToAdd();
+                                        }}
+                                        loading={sendOtpLoading} 
+                                        />
                                 </View>
                         </View>
                         :null}
                     </View>
                 </KeyboardAwareScrollView>
+                <ConfirmationModal
+                    visible={showPhoneUpdateModal}
+                    onCancel={this.onCancel.bind(this)}
+                    onConfirm={() => {
+                        this.setState({ showPhoneUpdateModal: false }, () => {
+                            setTimeout(() => {
+                                this.setState({ isUpdatePhoneModalVisible: true });
+                            }, 500);
+                        });
+                    }}
+                    orientation={orientation}
+                    confirmText={translate('swal.ok')}
+                    title={translate('pages.xchat.touku')}
+                    message={translate('pages.register.toastr.enterPhoneNumber')}
+                />
+                <UpdatePhoneModal
+                    visible={isUpdatePhoneModalVisible}
+                    onRequestClose={() =>
+                        this.setState({ isUpdatePhoneModalVisible: false })
+                    }
+                    onVerificationComplete={() => {
+                        this.sendOtpToAdd();
+                    }}
+                />
+                <VerifyOtpModal
+                    visible={verifyOtpModalVisible}
+                    onRequestClose={() =>
+                        this.setState({ verifyOtpModalVisible: false })
+                    }
+                    onVerify={(code)=>{
+                        let amount = parseFloat(this.state.tp_point);
+                        this.verifyOtpToAddAmount(amount,code);
+                    }}
+                    loading={verifyOtpLoading}
+                />
             </View>
         );
     }
@@ -316,6 +462,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     followChannel,
     setCurrentChannel,
+    sendOtpToAddAmount,
+    verifyOtpToAddAmount,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AmazonExchange);

@@ -1622,10 +1622,10 @@
       "yourPoint":"Your Points",
       "clickHere":"Click Here",
       "increaseyourPoint":"To increase point for free",
-      "earnChannels":"Earn Channels",
-      "OptionalXigolo":"Optional XIGOLO",
-      "comingSoon":"Coming soon",
-      "other":"Other",
+      "earnChannels": "Live Channel",
+      "OptionalXigolo": "XIGOLO",
+      "comingSoon": "TOUKUサポート窓口",
+      "other": "Recommended",
       "hotEarn":"Hot Earnings",
       "replacementPoints": "Replacement points",
       "gamePoint": "Game chips",
@@ -1646,7 +1646,13 @@
       "amazonExchangeHistory": "Amazon",
       "btcExchangeHistory": "BTC",
       "channelRank": "Rank",
-      "channelRankText": "Channel Rank"
+      "channelRankText": "Channel Rank",
+      "GoldCrownText": "Recommended",
+      "dontHaveSufficientAmount": "You don't have sufficient amount",
+      "exchangesuccessfully": "Exchanged TP Successfully",
+      "minimumAmountOfTp": "You can not exchange less then 500TP",
+      "noExchageHistory": "No exchange history found",
+      "processing": "Processing"
     }
   },
   "swal":{

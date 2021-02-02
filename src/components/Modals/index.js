@@ -10,6 +10,7 @@ import UploadSelectModal from './UploadSelectModal';
 import ShowAttahmentModal from './ShowAttahmentModal';
 import ShowGalleryModal from './ShowGalleryModal';
 import UpdatePhoneModal from './UpdatePhoneModal';
+import VerifyOtpModal from './VerifyOtpModal';
 
 export {
   ProfileModal,
@@ -23,5 +24,6 @@ export {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
-  UpdatePhoneModal
+  UpdatePhoneModal,
+  VerifyOtpModal
 };

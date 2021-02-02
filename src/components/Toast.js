@@ -30,8 +30,14 @@ class Toast extends Component {
   static toastInstance;
 
   static show({...config}) {
-    console.log('config', config)
-    this.toastInstance.start(config);
+    if(this.toastInstance){
+      console.log('config', config)
+      this.toastInstance.start(config);
+    }else{
+      this.toastInstance = this;
+      console.log('config', config)
+      this.toastInstance.start(config);
+    }
   }
 
   static hide() {
