@@ -39,7 +39,7 @@ class Timeline extends Component {
       orientation: 'PORTRAIT',
       activeTab: 'trend',
       isLoading: true,
-      tabBarItem: [
+      tabBarItem: (this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester') ? [
         {
           id: 1,
           title: 'trend',
@@ -97,6 +97,41 @@ class Timeline extends Component {
             //   .catch((err) => {
             //     this.setState({ isLoading: false });
             //   });
+          },
+        },
+      ] : [
+        {
+          id: 1,
+          title: 'trend',
+          icon: Icons.icon_chat,
+          action: () => {
+            this.setState({activeTab: 'trend'});
+            this.props.setActiveTimelineTab('trend');
+            this.props
+              .getTrendTimeline(this.props.userData.user_type)
+              .then((res) => {
+                this.setState({isLoading: false});
+              })
+              .catch((err) => {
+                this.setState({isLoading: false});
+              });
+          },
+        },
+        {
+          id: 2,
+          title: 'following',
+          icon: Icons.icon_setting,
+          action: () => {
+            this.setState({activeTab: 'following'});
+            this.props.setActiveTimelineTab('following');
+            this.props
+              .getFollowingTimeline()
+              .then((res) => {
+                this.setState({isLoading: false});
+              })
+              .catch((err) => {
+                this.setState({isLoading: false});
+              });
           },
         },
       ],
@@ -169,11 +204,17 @@ class Timeline extends Component {
           //     this.setState({isLoading: false});
           //     this.showData();
           //   });
-          this.props.getRankingChannelList(this.props.rankingChannel.length)
+          if(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester'){
+            this.props.getRankingChannelList(this.props.rankingChannel.length)
             .then((res)=>{
               this.setState({isLoading: false});
               this.showData();
-            });
+            });  
+          }else{
+            this.setState({isLoading: false});
+            this.showData();
+          }
+          
         });
       })
       .catch((err) => {

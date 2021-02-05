@@ -27,12 +27,14 @@ import {
   showToast,
   normalize,
   onPressHyperlink,
+  wait,
 } from '../../utils';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   getChannelDetails,
   unfollowChannel,
   followChannel,
+  subscribeAsVip
 } from '../../redux/reducers/channelReducer';
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -49,6 +51,8 @@ class ChannelInfo extends Component {
       channelImagePath: {},
       channelData: [],
       showConfirmationModal: false,
+      showVipConfirmationModal: false,
+      showPurchaseTPConfirmation: false,
       showAffiliateModal: false,
       isLoading: false,
       tabBarItem: [
@@ -92,6 +96,7 @@ class ChannelInfo extends Component {
     };
     this.isUnfollowing = false;
     this.isFollowing = false;
+    this.isVipLoading = false;
   }
 
   async OnBackAction() {
@@ -262,9 +267,74 @@ class ChannelInfo extends Component {
       });
   };
 
+  onCloseVipConfirmation = () => {
+    this.toggleVipConfirmationModal();
+  }
+
+  onConfirmVipConfirmation = () => {
+    const {userData} = this.props;
+    const {channelData} = this.state;
+    if(userData.total_tp<channelData.monthly_vip_fee){
+      this.toggleVipConfirmationModal();
+      wait(500).then(()=>{
+        this.togglePurchaseTPConfirmationModal();
+      })
+      return;
+    }
+
+    let data = {
+      channel_id: this.props.navigation.state.params
+          ? this.props.navigation.state.params.channelItem.channel_id
+          : this.props.currentChannel.id,
+      invitation_code: this.props.navigation.state.params
+          ? this.props.navigation.state.params.channelItem.referral
+          : 'ISGLGA2V',
+    }
+
+    this.props.subscribeAsVip(data)
+      .then((res) => {
+        console.log(res);
+        if(res && res.status){
+          this.toggleVipConfirmationModal();
+          Toast.show({
+            title: this.props.navigation.state.params
+              ? this.props.navigation.state.params.channelItem.channel_name
+              : this.props.currentChannel.name,
+            text: translate('pages.xchat.toastr.AddedToNewChannel'),
+            type: 'positive',
+          });
+          this.getChannelDetails();
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.toggleVipConfirmationModal();
+      });
+
+  }
+
+  onClosePurchaseTPConfirmation = () => {
+    this.togglePurchaseTPConfirmationModal();
+  }
+
+  onConfirmPurchaseTPCOnfirmation = () => {
+    this.togglePurchaseTPConfirmationModal();
+  }
+
   toggleConfirmationModal = () => {
     this.setState((prevState) => ({
       showConfirmationModal: !prevState.showConfirmationModal,
+    }));
+  };
+
+  toggleVipConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showVipConfirmationModal: !prevState.showVipConfirmationModal,
+    }));
+  };
+
+  togglePurchaseTPConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showPurchaseTPConfirmation: !prevState.showPurchaseTPConfirmation,
     }));
   };
 
@@ -338,6 +408,8 @@ class ChannelInfo extends Component {
       tabBarItem,
       orientation,
       showConfirmationModal,
+      showVipConfirmationModal,
+      showPurchaseTPConfirmation,
       showAffiliateModal,
       isTimeline,
       posts,
@@ -709,18 +781,18 @@ class ChannelInfo extends Component {
                     {/*title={translate('pages.xchat.affiliate')}*/}
                     {/*onPress={this.toggleAffiliateModal}*/}
                     {/*/>*/}
-                    {channelData.is_vip &&
-                      channelData.subscription_type === 'member' && (
+                    {channelData.is_vip && channelData.subscription_type !== 'vip' && (
                         <Button
                           isRounded={false}
                           type={'primary'}
                           title={translate('pages.xchat.vip')}
-                          onPress={() => {}}
+                          onPress={() => {
+                            this.toggleVipConfirmationModal()
+                          }}
                         />
                       )}
                   </View>
-                  {channelData.is_vip &&
-                    channelData.subscription_type === 'member' && (
+                  {channelData.is_vip && channelData.subscription_type !== 'vip' && (
                       <View style={channelInfoStyles.followerDetails}>
                         <Text
                           style={{fontFamily: Fonts.regular, marginRight: 5}}>
@@ -745,6 +817,26 @@ class ChannelInfo extends Component {
             isLoading={this.isUnfollowing}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.toLeaveThisChannel')}
+          />
+          <ConfirmationModal
+            visible={showVipConfirmationModal}
+            onCancel={this.onCloseVipConfirmation.bind(this)}
+            onConfirm={this.onConfirmVipConfirmation.bind(this)}
+            orientation={orientation}
+            isLoading={this.isVipLoading}
+            title={channelData.name}
+            message={translate('pages.xchat.vipMemberText')}
+            confirmText={translate('pages.xchat.joinVip')}
+          />
+          <ConfirmationModal
+            visible={showPurchaseTPConfirmation}
+            onCancel={this.onClosePurchaseTPConfirmation.bind(this)}
+            onConfirm={this.onConfirmPurchaseTPCOnfirmation.bind(this)}
+            orientation={orientation}
+            isLoading={this.isVipLoading}
+            title={translate('pages.xchat.joinVip')}
+            message={translate('pages.xchat.toastr.insufficientTPBalance')}
+            confirmText={translate('pages.xchat.purchase')}
           />
           <AffilicateModal
             orientation={orientation}
@@ -775,6 +867,7 @@ const mapDispatchToProps = {
   getChannelDetails,
   unfollowChannel,
   followChannel,
+  subscribeAsVip
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelInfo);

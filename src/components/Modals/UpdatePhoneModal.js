@@ -266,6 +266,7 @@ class UpdatePhoneModal extends Component {
   onRequestClose = () => {
     this.props.onRequestClose();
     wait(800).then(() => {
+      console.log('wait(800)');
       this.setState(this.initialState);
     });
   };
@@ -293,9 +294,9 @@ class UpdatePhoneModal extends Component {
             locations={[0.1, 0.5, 0.8]}
             colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
             style={styles.header}>
-            <View style={{flex: 1,justifyContent:'center'}}>
-              <Text style={[globalStyles.normalLightText, { marginTop:5, textAlign: 'left'}]}>
-                {translate('pages.register.phoneNumber')}
+            <View style={{flex: 1}}>
+              <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
+                {editable ? translate('pages.register.phoneNumberUpdate') : translate('pages.register.phoneNumber')}
               </Text>
             </View>
             <ClickableImage

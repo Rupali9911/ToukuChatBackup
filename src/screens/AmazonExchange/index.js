@@ -38,7 +38,7 @@ class AmazonExchange extends Component {
             orientation: 'PORTRAIT',
             isExchange: false,
             loading: false,
-            tp_point: 500,
+            tp_point: 5,
             point_in_yen: 0,
             showPhoneUpdateModal: false,
             isUpdatePhoneModalVisible: false,
@@ -179,14 +179,22 @@ class AmazonExchange extends Component {
                             padding: 15,
                             borderBottomWidth: 1,
                             borderBottomColor: '#e4e4e4',
-                            alignItems: 'center'
+                            // alignItems: 'center'
                         }}>
-                            <Text style={{
-                                flex: 0.75,
-                                fontSize: normalize(15),
-                                fontWeight: '600',
-                                color: '#0a1f44',
-                            }}>{translate('pages.adWall.miniExchangePoint')}</Text>
+                            <View style={{flex:0.75}}>
+                                <Text style={{
+                                    // flex: 0.75,
+                                    fontSize: normalize(15),
+                                    fontWeight: '600',
+                                    color: '#0a1f44',
+                                }}>{translate('pages.adWall.miniExchangePoint')}</Text>
+                                <Text style={{
+                                    // flex: 0.75,
+                                    fontSize: normalize(10),
+                                    fontWeight: '600',
+                                    color: '#ee6f70',
+                                }}>{translate('pages.adWall.firstTimeExchangeText')}</Text>
+                            </View>
                             <Text style={{
                                 fontSize: normalize(15),
                                 fontWeight: '600',
@@ -379,7 +387,7 @@ class AmazonExchange extends Component {
                                         type={isExchange ? '' : 'translucent'}
                                         title={translate('pages.adWall.confirm')}
                                         onPress={() => {
-                                            if(this.props.userData.total_tp<500){
+                                            if(this.props.userData.total_tp<5){
                                                 Toast.show({
                                                     title: 'Touku',
                                                     text: translate(`pages.adWall.dontHaveSufficientAmount`),
@@ -387,7 +395,7 @@ class AmazonExchange extends Component {
                                                 });
                                                 return;
                                             }
-                                            if(parseFloat(this.state.tp_point)<500){
+                                            if(parseFloat(this.state.tp_point)<5){
                                                 Toast.show({
                                                     title: 'Touku',
                                                     text: translate(`pages.adWall.minimumAmountOfTp`),

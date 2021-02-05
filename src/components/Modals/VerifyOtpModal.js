@@ -65,7 +65,7 @@ class VerifyOtpModal extends Component {
         backdropTransitionOutTiming={500}
         backdropOpacity={0.4}
         onBackButtonPress={this.onRequestClose.bind(this)}
-        onBackdropPress={this.onRequestClose.bind(this)}
+        // onBackdropPress={this.onRequestClose.bind(this)}
         style={styles.modalBackground}>
         <View style={styles.Wrapper}>
           <LinearGradient

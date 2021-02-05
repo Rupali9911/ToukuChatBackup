@@ -175,6 +175,15 @@ export default class SearchInput extends Component {
               titleStyle={{marginLeft: -25}}
               title={translate('pages.xchat.addFriend')}
             />
+              <Menu.Item
+                  icon={() => <Image source={Icons.add_friend} />}
+                  onPress={() => {
+                      navigation.navigate('AddFriendByQr');
+                      this._closeMenu();
+                  }}
+                  titleStyle={{marginLeft: -25}}
+                  title={'Add Friend by QR Code'}
+              />
           </Menu>
         )}
 

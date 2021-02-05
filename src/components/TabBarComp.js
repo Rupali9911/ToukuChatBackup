@@ -99,6 +99,7 @@ class TabBarComp extends Component {
       onTabLongPress,
       getAccessibilityLabel,
       navigation,
+      userData
     } = this.props;
     console.log(routes);
     const {index: activeRouteIndex} = navigation.state;
@@ -119,7 +120,9 @@ class TabBarComp extends Component {
         {routes.map((route, routeIndex) => {
           const isRouteActive = routeIndex === activeRouteIndex;
           const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
-
+          if(route.routeName === "Rewards" && userData.user_type!=='owner' && userData.user_type!=='tester' && userData.user_type!=='company'){
+            return null;
+          }
           return (
             <TouchableOpacity
               key={routeIndex}
@@ -194,6 +197,7 @@ class TabBarComp extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    userData: state.userReducer.userData,
   };
 };
 

@@ -81,6 +81,9 @@ import {
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 import bonusImage from '../../../assets/images/bonus_bg.png';
+import ChangeEmailModal from "../../components/Modals/ChangeEmailModal";
+import BonusModal from "../../components/Modals/BonusModal";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const dimensions = Dimensions.get('window');
 
@@ -847,7 +850,7 @@ class ChannelChats extends Component {
   getLoginBonus = () => {
     this.props
       .getLoginBonusOfChannel()
-      .then((res) => {
+      .then(async(res) => {
         console.log('getLoginBonusOfChannel', res);
         if (res) {
           this.setState({bonusXP: res.amount, bonusModal: true});
@@ -1588,6 +1591,8 @@ class ChannelChats extends Component {
       showPhoneUpdateModal,
       orientation,
       isUpdatePhoneModalVisible,
+        bonusModal,
+        bonusXP
     } = this.state;
     return (
       <View
@@ -1615,279 +1620,13 @@ class ChannelChats extends Component {
         />
         {this.props.chatConversation && this.renderConversations()}
 
-        <Modal
-          visible={this.state.bonusModal}
-          transparent
-          onRequestClose={() => this.setState({bonusModal: false})}>
-          <View style={styles.bonusModalContainer}>
-            <SafeAreaView />
-            <ImageBackground
-              source={bonusImage}
-              resizeMode={'cover'}
-              style={styles.bonusBgContainer}>
-              <View style={{flex: 1}}>
-                <Text style={styles.bonusTextHeading}>
-                  {this.state.jackpotData
-                    ? translate('pages.xchat.seeYouTomorrow')
-                    : translate('pages.xchat.loginBonusText')}
-                </Text>
-                <Text style={styles.bonusTitleText}>
-                  {translate('pages.xchat.jackPot')}{' '}
-                  <Text style={{fontSize: normalize(25), fontWeight: 'bold'}}>
-                    {this.state.bonusXP}
-                  </Text>{' '}
-                  <Text
-                    style={{
-                      fontSize: normalize(15),
-                      fontFamily: Fonts.regular,
-                      fontWeight: '300',
-                    }}>
-                    {'XP'}
-                  </Text>
-                </Text>
-                {this.state.assetXPValue ? (
-                  <Text style={styles.bonusTitleText}>
-                    {translate('pages.xchat.youOwn')}{' '}
-                    <Text style={{fontSize: normalize(25), fontWeight: 'bold'}}>
-                      {this.state.assetXPValue.XP + ''}
-                    </Text>{' '}
-                    <Text
-                      style={{
-                        fontSize: normalize(15),
-                        fontFamily: Fonts.regular,
-                        fontWeight: '300',
-                      }}>
-                      {'XP'}
-                    </Text>
-                  </Text>
-                ) : null}
-                {this.state.loadingJackpot ? (
-                  <ActivityIndicator
-                    style={{marginTop: 10}}
-                    size={'large'}
-                    color={'#fff'}
-                  />
-                ) : (
-                  <View style={styles.bonusImageContainer}>
-                    <TouchableOpacity
-                      disabled={this.state.jackpotData}
-                      onPress={() => {
-                        this.selectedLoginBonus(1);
-                      }}
-                      style={{
-                        marginHorizontal: 10,
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <View style={{flex: 1, alignItems: 'center'}}>
-                        <Image
-                          style={
-                            this.state.jackpotData &&
-                            this.state.jackpotData.picked_option == 1
-                              ? styles.bonusImageZoom
-                              : styles.bonusImage
-                          }
-                          source={{
-                            uri: this.state.jackpotData
-                              ? this.checkImageWithAmount(
-                                  this.getAmountValue(
-                                    this.state.jackpotData,
-                                  )[0],
-                                )
-                              : closeBoxImage[0].value,
-                          }}
-                          resizeMode={'contain'}
-                        />
-                      </View>
-                      {this.state.jackpotData ? (
-                        <View
-                          style={{
-                            flex: 1,
-                            borderBottomWidth: 1,
-                            borderBottomColor: '#fff',
-                          }}>
-                          <Text
-                            style={{
-                              textAlign: 'right',
-                              color:
-                                this.state.jackpotData &&
-                                this.state.jackpotData.picked_option == 1
-                                  ? '#dbf875'
-                                  : '#fff',
-                              fontSize: normalize(24),
-                              fontFamily: Fonts.beba_regular,
-                            }}>
-                            {this.getAmountValue(this.state.jackpotData)[0] +
-                              ''}{' '}
-                            XP
-                          </Text>
-                        </View>
-                      ) : null}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      disabled={this.state.jackpotData}
-                      onPress={() => {
-                        this.selectedLoginBonus(2);
-                      }}
-                      style={{
-                        marginHorizontal: 10,
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <View style={{flex: 1, alignItems: 'center'}}>
-                        <Image
-                          style={
-                            this.state.jackpotData &&
-                            this.state.jackpotData.picked_option == 2
-                              ? styles.bonusImageZoom
-                              : styles.bonusImage
-                          }
-                          source={{
-                            uri: this.state.jackpotData
-                              ? this.checkImageWithAmount(
-                                  this.getAmountValue(
-                                    this.state.jackpotData,
-                                  )[1],
-                                )
-                              : closeBoxImage[1].value,
-                          }}
-                          resizeMode={'contain'}
-                        />
-                      </View>
-                      {this.state.jackpotData ? (
-                        <View
-                          style={{
-                            flex: 1,
-                            borderBottomWidth: 1,
-                            borderBottomColor: '#fff',
-                          }}>
-                          <Text
-                            style={{
-                              textAlign: 'right',
-                              color:
-                                this.state.jackpotData &&
-                                this.state.jackpotData.picked_option == 2
-                                  ? '#dbf875'
-                                  : '#fff',
-                              fontSize: normalize(24),
-                              fontFamily: Fonts.beba_regular,
-                            }}>
-                            {this.getAmountValue(this.state.jackpotData)[1] +
-                              ''}{' '}
-                            XP
-                          </Text>
-                        </View>
-                      ) : null}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      disabled={this.state.jackpotData}
-                      onPress={() => {
-                        this.selectedLoginBonus(3);
-                      }}
-                      style={{
-                        marginHorizontal: 10,
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <View style={{flex: 1, alignItems: 'center'}}>
-                        <Image
-                          style={
-                            this.state.jackpotData &&
-                            this.state.jackpotData.picked_option == 3
-                              ? styles.bonusImageZoom
-                              : styles.bonusImage
-                          }
-                          source={{
-                            uri: this.state.jackpotData
-                              ? this.checkImageWithAmount(
-                                  this.getAmountValue(
-                                    this.state.jackpotData,
-                                  )[2],
-                                )
-                              : closeBoxImage[2].value,
-                          }}
-                          resizeMode={'contain'}
-                        />
-                      </View>
-                      {this.state.jackpotData ? (
-                        <View
-                          style={{
-                            flex: 1,
-                            borderBottomWidth: 1,
-                            borderBottomColor: '#fff',
-                          }}>
-                          <Text
-                            style={{
-                              textAlign: 'right',
-                              color:
-                                this.state.jackpotData &&
-                                this.state.jackpotData.picked_option == 3
-                                  ? '#dbf875'
-                                  : '#fff',
-                              fontSize: normalize(24),
-                              fontFamily: Fonts.beba_regular,
-                            }}>
-                            {this.getAmountValue(this.state.jackpotData)[2] +
-                              ''}{' '}
-                            XP
-                          </Text>
-                        </View>
-                      ) : null}
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: normalize(14),
-                  paddingHorizontal: normalize(5),
-                  fontWeight: '300',
-                  color: '#fff',
-                }}>
-                {translate('pages.xchat.gamePlatformText')}
-              </Text>
-              <TouchableOpacity
-                style={{margin: normalize(20)}}
-                onPress={() => {
-                  this.setState({bonusModal: false});
-                }}>
-                <Avatar.Icon
-                  size={50}
-                  icon="close"
-                  color={'#fff'}
-                  style={{backgroundColor: '#e2b2ac'}}
-                />
-              </TouchableOpacity>
-            </ImageBackground>
-            <ConfirmationModal
-              visible={showPhoneUpdateModal}
-              onCancel={this.onCancel.bind(this)}
-              onConfirm={() => {
-                this.setState({showPhoneUpdateModal: false}, () => {
-                  setTimeout(() => {
-                    this.setState({isUpdatePhoneModalVisible: true});
-                  }, 500);
-                });
-              }}
-              orientation={orientation}
-              confirmText={translate('swal.ok')}
-              title={translate('pages.xchat.touku')}
-              message={translate('swal.NeedToAddPhoneNumber')}
-            />
-            <UpdatePhoneModal
-              visible={isUpdatePhoneModalVisible}
+          <BonusModal
+              visible={bonusModal}
               onRequestClose={() =>
-                this.setState({isUpdatePhoneModalVisible: false})
+                  this.setState({bonusModal: false})
               }
-            />
-          </View>
-        </Modal>
+              bonusXP={bonusXP}
+          />
       </View>
     );
   }

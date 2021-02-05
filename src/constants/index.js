@@ -1,5 +1,4 @@
 import {Dimensions, Platform} from 'react-native';
-
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 
 export const Icons = {
@@ -73,7 +72,8 @@ export const Icons = {
   icon_print: require('../../assets/icons/print.png'),
   icon_channel_list: require('../../assets/icons/channel_list.png'),
   icon_group: require('../../assets/icons/group.png'),
-  icon_friend: require('../../assets/icons/friend.png')
+  icon_friend: require('../../assets/icons/friend.png'),
+  icon_reward: require('../../assets/icons/reward.png')
 };
 
 export const Images = {
@@ -98,7 +98,8 @@ export const Images = {
   amazon_img: require('../../assets/images/amazon_img.png'),
   bitcoin_img: require('../../assets/images/bitcoin_img.png'),
   crown_img: require('../../assets/images/crown.png'),
-  banner_img: require('../../assets/images/banner_new.png')
+  banner_img: require('../../assets/images/banner_new.png'),
+  amazon_gift_logo: require('../../assets/images/amazon_gift_logo.png')
 };
 
 export const Colors = {
@@ -230,17 +231,19 @@ export const languageArray = [
   },
 ];
 
+export const Environment = 'https://www.touku.net/';
+export const EnvironmentStage = 'https://touku.angelium.net/';
 export const supportUrl = 'https://www.touku.net/#/support?frame=1';
-//export const supportUrl = 'https://touku.angelium.net/#/support?frame=1';
 export const termsUrl = 'https://touku.net/#/terms?lang=';
 export const registerUrl = 'https://www.touku.net/#/register/';
+export const registerUrlStage = 'https://touku.angelium.net/#/register/';
 export const loginUrl = 'https://www.touku.net/#/login/';
 export const channelUrl = 'https://www.touku.net/#/channels/';
 export const xanaUrl = 'https://www.xanawallet.net/#/login';
 export const xanaDeepLink = 'xana://';
 export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
 export const DEEPLINK = 'touku://';
-export const Environment = 'https://www.touku.net/';
+//export const supportUrl = 'https://touku.angelium.net/#/support?frame=1';
 
 export const SocketEvents = {
   // Friend actions

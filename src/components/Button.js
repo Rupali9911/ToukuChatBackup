@@ -36,6 +36,8 @@ class Button extends Component {
         return ['rgba(0,0,0, 0.2)', 'rgba(0,0,0, 0.2)', 'rgba(0,0,0, 0.2)'];
       case 'translucent':
         return ['transparent', 'transparent', 'transparent'];
+      case 'custom':
+        return this.props.colors;
       default:
         return [Colors.gradient_3, Colors.gradient_2, Colors.gradient_1];
     }

@@ -8,6 +8,7 @@ import {
   Dimensions,
   Platform,
   AppState,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Orientation from 'react-native-orientation';
@@ -57,15 +58,19 @@ class Toast extends Component {
       timing: config.timing,
     });
 
+    if(this.timeout!=null){
+      clearTimeout(this.timeout);
+    }
+
     Animated.spring(this.state.toast, {
       toValue: Platform.isPad ? width - width + width * 0.15 : width - width,
       bounciness: 5,
       useNativeDriver: true,
     }).start();
 
-    const duration = config.timing > 0 ? config.timing : 2000;
+    const duration = config.timing > 0 ? config.timing : 5000;
 
-    setTimeout(() => {
+    this.timeout = setTimeout(() => {
       this.hideToast();
     }, duration);
   }
@@ -148,23 +153,29 @@ class Toast extends Component {
             ],
           },
         ]}>
-        <LinearGradient
-          start={{x: 0.1, y: 0.7}}
-          end={{x: 0.5, y: 0.8}}
-          locations={[0.1, 0.6, 1]}
-          colors={this.getGradientColors()}
-          style={styles.content}>
-          <View style={styles.iconContainer}>
-            <Image
-              source={this.getIcon()}
-              style={[styles.iconStyle, {tintColor: this.getIconColor()}]}
-            />
-          </View>
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.subtitle}>{text}</Text>
-          </View>
-        </LinearGradient>
+        <TouchableWithoutFeedback 
+          style={styles.content}
+          onPress={()=>{
+            this.hideToast();
+          }}>
+          <LinearGradient
+            start={{ x: 0.1, y: 0.7 }}
+            end={{ x: 0.5, y: 0.8 }}
+            locations={[0.1, 0.6, 1]}
+            colors={this.getGradientColors()}
+            style={styles.content}>
+            <View style={styles.iconContainer}>
+              <Image
+                source={this.getIcon()}
+                style={[styles.iconStyle, { tintColor: this.getIconColor() }]}
+              />
+            </View>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.subtitle}>{text}</Text>
+            </View>
+          </LinearGradient>
+        </TouchableWithoutFeedback>
       </Animated.View>
     );
   }

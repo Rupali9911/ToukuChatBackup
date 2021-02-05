@@ -210,7 +210,7 @@ class ShowAttahmentModal extends Component {
                       alignItems: 'center',
                       flex: 1,
                     }}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => onAttachmentPress()}
                       style={{alignItems: 'center'}}>
                       <Image
@@ -225,7 +225,21 @@ class ShowAttahmentModal extends Component {
                       <Text style={{color: '#80a9d2'}}>
                         {translate('common.upload')}
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
+                      <View
+                        style={{
+                          // flex: 0.5,
+                          width: '90%',
+                          marginHorizontal: 5,
+                        }}>
+                        <Button
+                          title={translate('common.upload')}
+                          type={'custom'}
+                          onPress={() => onGalleryPress()}
+                          isRounded={false}
+                          colors={['#5cc0de', '#5cc0de', '#5cc0de']}
+                        />
+                      </View>
                   </View>
                 )}
               </View>

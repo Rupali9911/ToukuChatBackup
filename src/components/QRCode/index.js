@@ -10,11 +10,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import {
-  Icons,
-  registerUrl,
-  Colors,
-  Fonts,
-  languageArray,
+    Icons,
+    registerUrl,
+    Colors,
+    Fonts,
+    languageArray, registerUrlStage,
 } from '../../constants';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
@@ -28,6 +28,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {staging} from '../../helpers/api'
 class QRCodeClass extends Component {
   constructor(props) {
     super(props);
@@ -82,7 +83,7 @@ class QRCodeClass extends Component {
             <View style={{top: 27}}>
               <QRCode
                 size={115}
-                value={registerUrl + this.state.referralCode}
+                value={(staging ? registerUrl : registerUrlStage) + this.state.referralCode}
               />
             </View>
           </View>

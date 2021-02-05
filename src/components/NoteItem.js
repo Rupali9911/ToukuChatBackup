@@ -148,15 +148,17 @@ class NoteItem extends Component {
   };
 
   toggleDeleteConfirmationModal = (index = null, item = null) => {
-    this.setState((prevState) => ({
-      showDeleteConfirmationModal: !prevState.showDeleteConfirmationModal,
-      deleteIndex: index,
-      deleteItem: item,
-    }));
+        this.setState((prevState) => ({
+            showDeleteConfirmationModal: !prevState.showDeleteConfirmationModal,
+            deleteIndex: index,
+            deleteItem: item,
+        }));
   };
 
   onConfirmDelete = () => {
-    this.deleteComment(this.state.deleteItem.id);
+    if (this.state.deleteItem && this.state.deleteItem.id){
+        this.deleteComment(this.state.deleteItem.id);
+    }
   };
 
   getCommentList = (note_id, offset) => {
@@ -698,7 +700,7 @@ class NoteItem extends Component {
                       fontSize: normalize(10),
                     }}
                     onPress={() => {
-                      onExpand(item.id);
+                      onExpand(item.id, item);
                       this.setState({
                         showCommentBox: !this.state.showCommentBox,
                       });
@@ -843,7 +845,7 @@ class NoteItem extends Component {
                               keyExtractor={this.props.keyExtractor}
                               renderItem={({item, index}) => {
                                 return (
-                                 
+
                                 );
                               }}
                             /> */}

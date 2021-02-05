@@ -435,6 +435,7 @@ class SignUp extends Component {
       if (isAgreeWithTerms) {
         let fcmToken = await AsyncStorage.getItem('fcmToken');
         let channelDataJson = await AsyncStorage.getItem('channelData');
+          let invitationCode = await AsyncStorage.getItem('invitationCode');
         let channelData = JSON.parse(channelDataJson);
         let registerData = {
           email: email,
@@ -451,7 +452,8 @@ class SignUp extends Component {
               ? 'ja'
               : 'zh-hant',
           username: username,
-          dev_id: fcmToken,
+          dev_id: fcmToken ? fcmToken : '',
+            invitation_code: invitationCode ? invitationCode : '',
         };
 
         console.log('registerData', registerData);
@@ -460,6 +462,7 @@ class SignUp extends Component {
           .then((res) => {
             console.log('userRegister response', res);
             if (res.token) {
+                AsyncStorage.removeItem('invitationCode');
               this.props.getUserProfile().then((res) => {
                 if (res.id) {
                   this.props.navigation.navigate('App');
@@ -726,6 +729,7 @@ class SignUp extends Component {
     } = this.state;
     let invitationCode = await AsyncStorage.getItem('invitationCode');
     let channelDataJson = await AsyncStorage.getItem('channelData');
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
     let channelData = JSON.parse(channelDataJson);
 
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -797,76 +801,6 @@ class SignUp extends Component {
       });
     }
 
-    // const {username, email, isAgreeWithTerms, password, passwordConfirm} = this.state;
-    //   let invitationCode = await AsyncStorage.getItem('invitationCode');
-    //   let channelDataJson = await AsyncStorage.getItem('channelData');
-    //   let channelData = JSON.parse(channelDataJson);
-    // let isValid = true;
-    //
-    // let regex = /^[a-zA-Z0-9- ]*$/
-    //
-    //
-    // if (username.length <= 0) {
-    //   isValid = false;
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('pages.setting.toastr.pleaseEnterUsername'),
-    //         type: 'warning',
-    //     });
-    // } else if(regex.test(username) == false) {
-    //     isValid =  false
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('pages.register.enterValueInEnglish'),
-    //         type: 'primary',
-    //     });
-    // }else  if (password.length <= 0) {
-    //     isValid = false;
-    //     // this.setState({
-    //     //     passwordStatus: 'wrong',
-    //     //     passwordErr: 'messages.required',
-    //     // });
-    //     this.setState({
-    //         passwordStatus: 'wrong',
-    //         passwordErr: 'minLengthFailed',
-    //     });
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('pages.register.minLengthPassword'),
-    //         type: 'warning',
-    //     });
-    // }else if (password.length < 8 ) {
-    //     isValid = false;
-    //     this.setState({passwordStatus: 'wrong', passwordErr: 'minLengthFailed'});
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('pages.register.minLengthPassword'),
-    //         type: 'warning',
-    //     });
-    // }else if (password.length > 64) {
-    //     isValid = false;
-    //     this.setState({passwordStatus: 'wrong',passwordErr: 'maxLengthFailed'});
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('pages.register.maxLengthPassword'),
-    //         type: 'warning',
-    //     });
-    // }else if (passwordConfirm.length <= 0) {
-    //     isValid = false;
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('toastr.pleaseEnterYourConfirmPassword'),
-    //         type: 'warning',
-    //     });
-    // }else if (password != passwordConfirm) {
-    //     isValid = false;
-    //     Toast.show({
-    //         title: translate('common.register'),
-    //         text: translate('pages.register.toastr.confirmLoginPasswordDoNotMatch'),
-    //         type: 'warning',
-    //     });
-    // }
-
     if (isValid) {
       if (isAgreeWithTerms) {
         let registrationData;
@@ -877,6 +811,7 @@ class SignUp extends Component {
             invitation_code: invitationCode ? invitationCode : '',
             email: email,
             site_from: 'touku',
+              dev_id: fcmToken ? fcmToken : '',
           });
         } else {
           registrationData = JSON.stringify({
@@ -884,6 +819,7 @@ class SignUp extends Component {
             password: password,
             invitation_code: invitationCode ? invitationCode : '',
             site_from: 'touku',
+              dev_id: fcmToken ? fcmToken : '',
           });
         }
         console.log('RegisterData through SNS', registrationData);

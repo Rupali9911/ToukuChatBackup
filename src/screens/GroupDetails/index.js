@@ -139,6 +139,7 @@ class GroupDetails extends Component {
       ],
       dropDownData: null,
       manageUsers: [],
+        deleteLoading: false
     };
 
     this.S3uploadService = new S3uploadService();
@@ -758,6 +759,8 @@ class GroupDetails extends Component {
   };
 
   onConfirmDeleteNote = () => {
+    if (this.state.deleteLoading) return
+    this.setState({deleteLoading: true})
     this.onDeleteNote(this.state.deleteIndex, this.state.deleteItem);
   };
 
@@ -837,39 +840,45 @@ class GroupDetails extends Component {
   };
   onDeleteNote = (index, item) => {
     const {data} = this.state;
-    this.props
-      .deleteGroupNotes(item.id)
-      .then((res) => {
-        this.setState({
-          data: {
-            ...data,
-            count: data.count - 1,
-            results: data.results.filter((item, noteIndex) => {
-              return noteIndex != index;
-            }),
-          },
-          deleteIndex: null,
-          deleteItem: null,
-        });
-        this.toggleDeleteNoteConfirmationModal();
-        setTimeout(() => {
-          Toast.show({
-            title: translate('pages.xchat.groupDetails'),
-            text: translate('pages.xchat.toastr.noteDeleted'),
-            type: 'positive',
-          });
-        }, 100);
-      })
-      .catch((err) => {
-        this.toggleDeleteNoteConfirmationModal();
-        setTimeout(() => {
-          Toast.show({
-            title: 'Touku',
-            text: translate('common.somethingWentWrong'),
-            type: 'primary',
-          });
-        }, 100);
-      });
+    if (item && item.id){
+        this.props
+            .deleteGroupNotes(item.id)
+            .then((res) => {
+                this.setState({
+                    data: {
+                        ...data,
+                        count: data.count - 1,
+                        results: data.results.filter((item, noteIndex) => {
+                            return noteIndex != index;
+                        }),
+                    },
+                    deleteIndex: null,
+                    deleteItem: null,
+                    deleteLoading: false
+                });
+                this.toggleDeleteNoteConfirmationModal();
+                setTimeout(() => {
+                    Toast.show({
+                        title: translate('pages.xchat.groupDetails'),
+                        text: translate('pages.xchat.toastr.noteDeleted'),
+                        type: 'positive',
+                    });
+                }, 100);
+            })
+            .catch((err) => {
+                this.setState({deleteLoading: false});
+                this.toggleDeleteNoteConfirmationModal();
+                setTimeout(() => {
+                    Toast.show({
+                        title: 'Touku',
+                        text: translate('common.somethingWentWrong'),
+                        type: 'primary',
+                    });
+                }, 100);
+            });
+    }else{
+        this.setState({deleteLoading: false});
+    }
   };
 
   likeUnlike = (note_id, index) => {
@@ -936,6 +945,7 @@ class GroupDetails extends Component {
       showLeaveGroupConfirmationModal,
       showDeleteNoteConfirmationModal,
       uploadLoading,
+        deleteLoading
     } = this.state;
 
     let filePath = {uri: this.props.currentGroupDetail.group_picture};
@@ -1297,6 +1307,7 @@ class GroupDetails extends Component {
             onConfirm={this.onConfirmDeleteNote.bind(this)}
             title={translate('pages.xchat.deleteNote')}
             message={translate('pages.xchat.deleteNoteText')}
+            isLoading={deleteLoading}
           />
         </View>
         <SafeAreaView />

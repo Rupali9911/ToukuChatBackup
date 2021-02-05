@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText":"Old password and new password should not be same",
       "phoneNumberTextForPlaceholder":"Enter phone number",
       "thisIsYourUsername":"This is your user name (You cannot change later)",
-      "youCanChangeItUsername":"You can change it now if you want."
+      "youCanChangeItUsername":"You can change it now if you want.",
+      "phoneNumberUpdate":"Change mobile number"
     },
     "resetPassword":{
       "changePassword":"Change Password",
@@ -1207,7 +1208,9 @@
       "EnterEmailAfterChange":"Enter the new email address after the change",
       "reEnterEmailAfterChange":"Re-enter new email address",
       "SelecImage":"Select an image",
-      "gainedFollowers":"Gained Followers"
+      "gainedFollowers":"Gained Followers",
+      "specialSignupBonus":"The special bonus for signup",
+      "amazonGiftCardText": "Win points that can be exchanged for"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",
@@ -1619,7 +1622,7 @@
       "login":"Login"
     },
     "adWall":{
-      "yourPoint":"Your Points",
+      "yourPoint": "My Points",
       "clickHere":"Click Here",
       "increaseyourPoint":"To increase point for free",
       "earnChannels": "Live Channel",
@@ -1652,7 +1655,12 @@
       "exchangesuccessfully": "Exchanged TP Successfully",
       "minimumAmountOfTp": "You can not exchange less then 500TP",
       "noExchageHistory": "No exchange history found",
-      "processing": "Processing"
+      "processing": "Processing",
+      "bonusUseText1": "* If you do not approve the phone number, it will disappear within 1 month after you get the points (you can set it from the setting → profile column).",
+      "bonusUseText2": "*TP can be exchanged with Amazon gift card",
+      "bonusUseText3": "*XP can be used to play XIGOLO(games) of the HOME screen",
+      "firstTimeExchangeText": "(*At least 5TP can be exchanged only during the new registration campaign)",
+      "processingDetail": "(Closed on Sundays and paid on Wednesdays after 24:00 on Wednesdays)"
     }
   },
   "swal":{
@@ -1664,7 +1672,10 @@
     "supportNow":"Support Now",
     "loginAttemptTitle":"You have done maximum fail login attempts. Do you need support?",
     "no":"NO",
-    "NeedToAddPhoneNumber":"You must need to add phone number to earn login bonus."
+    "NeedToAddPhoneNumber": "You must enter your phone number to get the bonus.",
+    "AuthenticateNumber": "Authenticate phone number",
+    "extraCashWiningText": "You can win the extra cash by playing games!",
+    "xpusedForText": "*XP can be used to play \"XIGOLO\" on the HOME screen."
   },
   "toastr":{
     "pleaseEnterYourPassword":"Please enter your password",

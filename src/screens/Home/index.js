@@ -131,7 +131,7 @@ class Home extends PureComponent {
     this.listener;
     this.state = {
       orientation: 'PORTRAIT',
-      isChannelCollapsed: false,
+      isChannelCollapsed: (this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester')?false:true,
       isFriendReqCollapse: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
@@ -1336,7 +1336,7 @@ class Home extends PureComponent {
       createFilter(this.state.searchText, ['name']),
     );
 
-    console.log('filteredChannels', filteredChannels);
+    //console.log('filteredChannels', filteredChannels);
 
     //
     if (filteredChannels.length === 0 && channelLoading) {
@@ -1795,6 +1795,7 @@ class Home extends PureComponent {
               <CollapseBody>{this.renderUserFriends()}</CollapseBody>
             </Collapse>
 
+            {(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester') && <View>
             <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
               <Text style={[
                 {
@@ -1846,73 +1847,73 @@ class Home extends PureComponent {
               </View>
             </View>
 
-            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
-              <Text style={[
-                {
-                  fontSize: 14,
-                  fontWeight: '600',
-                  fontFamily: Fonts.regular,
-                  color: '#0A1F44',
-                },
-              ]}>{translate('pages.adWall.exchangePoints')}</Text>
-              <View style={{ flexDirection: 'row', }}>
-                <TouchableOpacity style={{ flex: 1 }} onPress={()=>{this.props.navigation.navigate('AmazonExchangeScreen')}}>
-                  <LinearGradient
-                    start={{ x: 0.03, y: 0.7 }}
-                    end={{ x: 0.95, y: 0.8 }}
-                    // locations={[0.065, 0.22, 0.92]}
-                    useAngle={true}
-                    angle={0}
-                    colors={[
-                      // '#FFD60941',
-                      // '#D7944141',
-                      '#fff',
-                      '#fff'
-                    ]}
-                    style={[homeStyles.fill_border_box_style,{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginRight: 10
-                    }]}>
-                    <Image
-                      source={Images.amazon_logo}
-                      resizeMode={'contain'} />
-                  </LinearGradient>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ flex: 1 }} onPress={()=>{
-                  Toast.show({
-                    title: translate('pages.adWall.btcExchangeHistory'),
-                    text: translate('pages.clasrm.comingSoon'),
-                    type: 'positive'
-                  });
+              <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
+                <Text style={[
+                  {
+                    fontSize: 14,
+                    fontWeight: '600',
+                    fontFamily: Fonts.regular,
+                    color: '#0A1F44',
+                  },
+                ]}>{translate('pages.adWall.exchangePoints')}</Text>
+                <View style={{ flexDirection: 'row', }}>
+                  <TouchableOpacity style={{ flex: 1 }} onPress={() => { this.props.navigation.navigate('AmazonExchangeScreen') }}>
+                    <LinearGradient
+                      start={{ x: 0.03, y: 0.7 }}
+                      end={{ x: 0.95, y: 0.8 }}
+                      // locations={[0.065, 0.22, 0.92]}
+                      useAngle={true}
+                      angle={0}
+                      colors={[
+                        // '#FFD60941',
+                        // '#D7944141',
+                        '#fff',
+                        '#fff'
+                      ]}
+                      style={[homeStyles.fill_border_box_style, {
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginRight: 10
+                      }]}>
+                      <Image
+                        source={Images.amazon_logo}
+                        resizeMode={'contain'} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ flex: 1 }} onPress={() => {
+                    Toast.show({
+                      title: translate('pages.adWall.btcExchangeHistory'),
+                      text: translate('pages.clasrm.comingSoon'),
+                      type: 'positive'
+                    });
+                  }}>
+                    <LinearGradient
+                      start={{ x: 0.03, y: 0.7 }}
+                      end={{ x: 0.95, y: 0.8 }}
+                      // locations={[0.065, 0.22, 0.92]}
+                      useAngle={true}
+                      angle={0}
+                      colors={[
+                        // '#FFD60941',
+                        // '#D7944141',
+                        '#fff',
+                        '#fff'
+                      ]}
+                      style={[homeStyles.fill_border_box_style, {
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginLeft: 10,
+                      }]}>
+                      <Image
+                        source={Images.bitcoin_logo}
+                        resizeMode={'contain'} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity style={{ flex: 1 }} onPress={() => {
+                  this.getUniqueUrl();
                 }}>
-                  <LinearGradient
-                    start={{ x: 0.03, y: 0.7 }}
-                    end={{ x: 0.95, y: 0.8 }}
-                    // locations={[0.065, 0.22, 0.92]}
-                    useAngle={true}
-                    angle={0}
-                    colors={[
-                      // '#FFD60941',
-                      // '#D7944141',
-                      '#fff',
-                      '#fff'
-                    ]}
-                    style={[homeStyles.fill_border_box_style,{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginLeft: 10,
-                    }]}>
-                    <Image
-                      source={Images.bitcoin_logo}
-                      resizeMode={'contain'} />
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity style={{ flex: 1 }} onPress={()=>{
-                this.getUniqueUrl();
-              }}>
-                {/* <LinearGradient
+                  {/* <LinearGradient
                   start={{ x: 0.03, y: 0.7 }}
                   end={{ x: 0.95, y: 0.8 }}
                   // locations={[0.065, 0.22, 0.92]}
@@ -1935,84 +1936,85 @@ class Home extends PureComponent {
                   <Text style={{ fontSize: normalize(25), fontWeight: 'bold' }}>{translate('pages.adWall.clickHere')}</Text>
                   <Text style={{ fontSize: normalize(12), fontWeight: 'bold', fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'serif' }}>{translate('pages.adWall.increaseyourPoint')}</Text>
                 </LinearGradient> */}
-                <ImageBackground source={Images.banner_img} style={{width: '100%',height:100,marginTop: 10,}}/>
-              </TouchableOpacity>
-            </View>
+                  <ImageBackground source={Images.banner_img} style={{ width: '100%', height: 100, marginTop: 10, }} />
+                </TouchableOpacity>
+              </View>
 
-            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
-              <Text style={[
-                {
-                  fontSize: 14,
-                  fontWeight: '600',
-                  fontFamily: Fonts.regular,
-                  color: '#0A1F44',
-                },
-              ]}>{translate('pages.adWall.other')}</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', }}>
-                <TouchableOpacity style={{  }} onPress={()=>{
-                  this.props.navigation.navigate('ChannelInfo',{channelItem:{channel_id: 1422}})
-                  // onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
-                }}>
-                  <View style={{
-                    width: 100,
-                    marginTop: 10,
-                    marginRight: 15
+              <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
+                <Text style={[
+                  {
+                    fontSize: 14,
+                    fontWeight: '600',
+                    fontFamily: Fonts.regular,
+                    color: '#0A1F44',
+                  },
+                ]}>{translate('pages.adWall.other')}</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', }}>
+                  <TouchableOpacity style={{}} onPress={() => {
+                    this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 1422 } })
+                    // onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
                   }}>
-                    <Image
-                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png'}}
-                      style={{ width: 100, height: 100, borderRadius: 5 }}
-                    />
-                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.earnChannels')}</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity style={{  }} onPress={()=>{
-                  this.requestXanaLoginform();
-                }}>
-                <View style={{
-                  width: 100,
-                    marginTop: 10,
-                    marginRight: 15
+                    <View style={{
+                      width: 100,
+                      marginTop: 10,
+                      marginRight: 15
+                    }}>
+                      <Image
+                        source={{ uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png' }}
+                        style={{ width: 100, height: 100, borderRadius: 5 }}
+                      />
+                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.earnChannels')}</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{}} onPress={() => {
+                    this.requestXanaLoginform();
                   }}>
-                    <Image
-                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png'}}
-                      style={{ width: 100, height: 100, borderRadius: 5 }}
-                    />
-                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.OptionalXigolo')}</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity style={{  }} onPress={()=>{
-                  this.props.navigation.navigate('ChannelInfo',{channelItem:{channel_id: 800}})
-                }}>
-                <View style={{
-                  width: 100,
-                    marginTop: 10,
-                    marginRight: 15
+                    <View style={{
+                      width: 100,
+                      marginTop: 10,
+                      marginRight: 15
+                    }}>
+                      <Image
+                        source={{ uri: 'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png' }}
+                        style={{ width: 100, height: 100, borderRadius: 5 }}
+                      />
+                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.OptionalXigolo')}</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{}} onPress={() => {
+                    this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 800 } })
                   }}>
-                    <Image
-                      source={{uri: 'https://cdn.angelium.net/touku/assets/images/welcome-page/bg-1218x812.jpg'}}
-                      style={{ width: 100, height: 100, borderRadius: 5 }}
-                    />
-                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.comingSoon')}</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity style={{  }} onPress={()=>{
-                  this.props.setActiveTimelineTab('ranking');
-                  this.props.navigation.navigate('Timeline',{activeTab:'ranking'})
-                }}>
-                <View style={{
-                    width: 100,
-                    marginTop: 10,
-                    marginRight: 15
+                    <View style={{
+                      width: 100,
+                      marginTop: 10,
+                      marginRight: 15
+                    }}>
+                      <Image
+                        source={{ uri: 'https://cdn.angelium.net/touku/assets/images/welcome-page/bg-1218x812.jpg' }}
+                        style={{ width: 100, height: 100, borderRadius: 5 }}
+                      />
+                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.comingSoon')}</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{}} onPress={() => {
+                    this.props.setActiveTimelineTab('ranking');
+                    this.props.navigation.navigate('Timeline', { activeTab: 'ranking' })
                   }}>
-                    <Image
-                      source={Images.crown_img}
-                      style={{ width: 100, height: 100, borderRadius: 5, tintColor: '#ffbf00', resizeMode: 'contain' }}
-                    />
-                    <Text numberOfLines={1} style={{ flex:1, marginTop:5, fontSize: normalize(12) }}>{translate('pages.adWall.other')}</Text>
-                  </View>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
+                    <View style={{
+                      width: 100,
+                      marginTop: 10,
+                      marginRight: 15
+                    }}>
+                      <Image
+                        source={Images.crown_img}
+                        style={{ width: 100, height: 100, borderRadius: 5, tintColor: '#ffbf00', resizeMode: 'contain' }}
+                      />
+                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.other')}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </ScrollView>
+              </View>
+            </View>}
           </KeyboardAwareScrollView>
         </View>
       </View>

@@ -11,6 +11,7 @@ import {
   NativeModules,
   NativeEventEmitter,
   Platform,
+    Vibration
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Divider} from 'react-native-paper';
@@ -19,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import {Colors, Fonts, Images, Icons} from '../constants';
+import {Colors, Fonts, Images, Icons, registerUrl, stagInvite, prodInvite, registerUrlStage} from '../constants';
 import {translate} from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
@@ -28,6 +29,7 @@ import Toast from '../components/Toast';
 import HyperLink from 'react-native-hyperlink';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-viewing';
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import {
   getAvatar,
   normalize,
@@ -44,9 +46,16 @@ import {inviteUrlRoot, staging} from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
 import linkify from 'linkify-it';
 import LinkPreviewComponent from './LinkPreviewComponent';
+import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
 
 let borderRadius = 20;
 let downloaded = false
+
+const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false
+};
+
 class ChatMessageBubble extends Component {
   constructor(props) {
     super(props);
@@ -345,6 +354,42 @@ class ChatMessageBubble extends Component {
     Linking.openURL(url[0]);
   };
 
+    hyperlinkPressed = (url) => {
+        let match_url = staging ? 'touku.angelium.net/invite/' : 'touku.net/invite/'
+        if (url.includes(match_url)) {
+            let params = getChannelIdAndReferral(url);
+            console.log('params', params);
+            NavigationService.navigate('ChannelInfo', { channelItem: params });
+        }else {
+          this.checkUrlAndNavigate(url)
+        }
+    }
+
+    checkUrlAndNavigate(url){
+      let regUrl = staging ? registerUrlStage : registerUrl
+        if (url.indexOf(regUrl) > -1) {
+            let suffixUrl = url.split(regUrl)[1].trim();
+            let invitationCode =
+                suffixUrl.split('/').length > 0
+                    ? suffixUrl.split('/')[0].trim()
+                    : suffixUrl;
+            if (invitationCode){
+                this.addFriendFromUrl(invitationCode)
+            }
+        }else{
+            Linking.openURL(url);
+        }
+    }
+
+    addFriendFromUrl(invitationCode){
+        if (invitationCode) {
+            let data = {invitation_code: invitationCode};
+            this.props.addFriendByReferralCode(data).then((res) => {
+                console.log('addFriendByReferralCode response', res)
+            });
+        }
+    }
+
   _menu = null;
 
   setMenuRef = (ref) => {
@@ -357,6 +402,7 @@ class ChatMessageBubble extends Component {
   };
 
   showMenu = () => {
+    ReactNativeHapticFeedback.trigger("impactHeavy", options);
     this._menu.show();
     this.setState({visible: true});
   };
@@ -463,6 +509,7 @@ class ChatMessageBubble extends Component {
                         message.msg_type === 'audio' && {minWidth: '100%'},
                       ]}
                       onLongPress={(id) => {
+                        console.log('On LOng Press tapped')
                         onMessagePress(message.id);
                         this.showMenu();
                       }}
@@ -471,7 +518,7 @@ class ChatMessageBubble extends Component {
                           ? this.onDocumentPress(message.message_body)
                           : message.msg_type === 'image'
                           ? message.hyperlink
-                            ? Linking.openURL(message.hyperlink)
+                            ? this.checkUrlAndNavigate(message.hyperlink)
                             : this.onImagePress(
                                 message.thumbnail === ''
                                   ? message.message_body
@@ -546,7 +593,7 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              onPressHyperlink(url);
+                                this.hyperlinkPressed(url);
                             }}
                             onLongPress={() => {
                               onMessagePress(message.id);
@@ -741,7 +788,7 @@ class ChatMessageBubble extends Component {
                           }}>
                           <HyperLink
                             onPress={(url, text) => {
-                              onPressHyperlink(url);
+                                this.hyperlinkPressed(url);
                             }}
                             onLongPress={() => {
                               onMessagePress(message.id);
@@ -1058,6 +1105,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+    addFriendByReferralCode
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);

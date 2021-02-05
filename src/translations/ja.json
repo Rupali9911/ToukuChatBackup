@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText": "古いパスワードと新しいパスワードを同じにしないでください",
       "phoneNumberTextForPlaceholder": "電話番号を入力",
       "thisIsYourUsername": "ユーザーID",
-      "youCanChangeItUsername": "（後で一切変更はできません）"
+      "youCanChangeItUsername": "（後で一切変更はできません）",
+      "phoneNumberUpdate":"変更したい新しい携帯番号を入力"
     },
     "resetPassword": {
       "changePassword": "ログインパスワードを変更",
@@ -563,7 +564,7 @@
       "schedule": "スケジュール",
       "showMore": "さらに表示",
       "showLess": "少なく表示",
-      "enterMessage": "メッセージを入力してください",
+      "enterMessage": "メッセージを入力ください",
       "daily": "毎日",
       "weekly": "毎週",
       "monthly": "毎月",
@@ -1209,7 +1210,9 @@
       "EnterEmailAfterChange": "変更後の新しいメールアドレスを入力してください",
       "reEnterEmailAfterChange": "変更後の新しいメールアドレスを再入力",
       "SelecImage": "画像を選択",
-      "gainedFollowers": "得られたフォロワー"
+      "gainedFollowers": "得られたフォロワー",
+      "specialSignupBonus": "新規登録スペシャルボーナス",
+      "amazonGiftCardText": "と交換できるポイントが当たる"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",
@@ -1621,7 +1624,7 @@
       "login": "ログインする"
     },
     "adWall": {
-      "yourPoint": "あなたのポイント",
+      "yourPoint": "Myポイント",
       "clickHere": "ここをクリック",
       "increaseyourPoint": "無料でポイントを増やすには",
       "earnChannels": "ポイ活チャンネル",
@@ -1654,7 +1657,12 @@
       "exchangesuccessfully": "TPを正常に交換しました",
       "minimumAmountOfTp": "500TP未満の交換はできません",
       "noExchageHistory": "交換履歴が見つかりません",
-      "processing": "処理"
+      "processing": "処理",
+      "bonusUseText1": "※電話番号を認証しないと，ポイント取得から１ヶ月以內に消失します（設定→プロフィール欄から設定可能です）",
+      "bonusUseText2": "※TPはAmazonギフト券と交換ができます",
+      "bonusUseText3": "※XPはホーム画面のXIGOLO（ゲーム）で利用できます",
+      "firstTimeExchangeText": "（＊新規登録キャンペーン中のみ最低 5TP～交換可能）",
+      "processingDetail": "（毎週、日曜日締め水曜日の24時以降に支払われます）"
     }
   },
   "swal": {
@@ -1666,7 +1674,10 @@
     "supportNow": "今すぐサポート",
     "loginAttemptTitle": "ログイン試行に最大の失敗をしました。 サポートが必要ですか？",
     "no": "番号",
-    "NeedToAddPhoneNumber": "ログインボーナスを獲得するには、電話番号を追加する必要があります。"
+    "NeedToAddPhoneNumber": "ボーナスを獲得するには、電話番号を入力する必要があります。",
+    "AuthenticateNumber": "電話番号を認証する",
+    "extraCashWiningText": "ゲームで遊んでお小遣いGET",
+    "xpusedForText": "※XPはホーム画面の「XIGOLO（ゲーム」で利用できます"
   },
   "toastr": {
     "pleaseEnterYourPassword": "パスワードを入力",

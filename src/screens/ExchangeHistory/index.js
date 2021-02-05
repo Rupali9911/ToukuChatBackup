@@ -151,14 +151,17 @@ class ExchangeHistory extends Component {
                                     renderItem={({ item, index }) => {
                                         let amount = Math.round(item.amount);
                                         return (
-                                            <View style={{ borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row', padding: 10, borderRadius: 10, marginBottom: 10 }}>
+                                            <View style={{ borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row', padding: 10, borderRadius: 10, marginBottom: 10, alignItems:'center' }}>
                                                 <Image source={item.exchange_type === 'AMAZON' ? Images.amazon_img : Images.bitcoin_img} />
-                                                <View style={{ marginLeft: 10 }}>
+                                                <View style={{ flex:3, marginLeft: 10 }}>
                                                     <Text style={{ fontSize: normalize(13), fontWeight: 'bold' }}>{item.exchange_type}</Text>
                                                     <Text>{moment(item.updated).format("YYYY.MM.DD, HH:mm")}</Text>
-                                                    <Text><Text style={{ color: '#ff00a3' }}>Status: </Text>{item.status!=='PENDING'?item.status:translate('pages.adWall.processing')}</Text>
+                                                    <View style={{flexDirection:'row'}}>
+                                                        <Text style={{ color: '#ff00a3' }}>Status: </Text>
+                                                        <Text style={{flex:1}}>{item.status!=='PENDING'?item.status:translate('pages.adWall.processing')} {translate('pages.adWall.processingDetail')}</Text>
+                                                    </View>
                                                 </View>
-                                                <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                                <View style={{ alignItems: 'flex-end' }}>
                                                     <Text style={{fontSize: normalize(10)}}>{item.amount_type}<Text style={{ fontSize: normalize(13) }}>{amount}</Text></Text>
                                                     <Image source={Icons.icon_drop_down} style={{ width: 15, height: 10 }} />
                                                     <Text style={{ color: '#ff00a3' }}>¥<Text style={{ fontSize: normalize(20), fontFamily: Fonts.regular }}>{amount}</Text></Text>

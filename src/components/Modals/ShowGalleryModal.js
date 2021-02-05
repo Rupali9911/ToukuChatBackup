@@ -212,9 +212,9 @@ class ShowGalleryModal extends Component {
                       alignItems: 'center',
                       flex: 1,
                     }}>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => onGalleryPress()}
-                      style={{alignItems: 'center'}}>
+                      style={{alignItems: 'center',justifyContent:'center'}}>
                       <Image
                         source={Icons.icon_upload}
                         style={{
@@ -227,7 +227,21 @@ class ShowGalleryModal extends Component {
                       <Text style={{color: '#80a9d2'}}>
                         {translate('pages.xchat.SelecImage')}
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
+                      <View
+                        style={{
+                          // flex: 0.5,
+                          width: '90%',
+                          marginHorizontal: 5,
+                        }}>
+                        <Button
+                          title={translate('pages.xchat.SelecImage')}
+                          type={'custom'}
+                          onPress={() => onGalleryPress()}
+                          isRounded={false}
+                          colors={['#5cc0de', '#5cc0de', '#5cc0de']}
+                        />
+                      </View>
                   </View>
                 )}
               </View>

@@ -104,7 +104,7 @@ export const userLogin = (user) => (dispatch) =>
                 text: translate(err.response.data.email),
                 type: 'primary',
               });
-            } else if (err.response.data.indexOf('Server Error') > -1) {
+            } else if (err.response.data.length>0 && err.response.data.indexOf('Server Error') > -1) {
               Toast.show({
                 title: translate('common.loginFailed'),
                 text: translate('common.somethingWentWrong'),
@@ -117,6 +117,8 @@ export const userLogin = (user) => (dispatch) =>
                 type: 'primary',
               });
             }
+          }else{
+            reject(err);
           }
         }
       });

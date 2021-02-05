@@ -87,7 +87,7 @@ class ForgotUserName extends Component {
                     if (errMessage.message) {
                         Toast.show({
                             title: translate('pages.xchat.reconfirmUserName'),
-                            text: errMessage.message.toString(),
+                            text: errMessage.message.toString().includes('backend.')?translate(errMessage.message.toString()):errMessage.message.toString(),
                             type: 'primary',
                         });
                     }else if (errMessage.non_field_errors) {

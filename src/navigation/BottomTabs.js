@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Image, View, Text} from 'react-native';
+import {Dimensions, Image, View, Text, Linking} from 'react-native';
 import {createAppContainer} from 'react-navigation';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createStackNavigator} from 'react-navigation-stack';
@@ -19,8 +19,11 @@ import {translate} from '../redux/reducers/languageReducer';
 import AddFriend from '../screens/AddFriend';
 import AmazonExchange from '../screens/AmazonExchange';
 import ExchangeHistory from '../screens/ExchangeHistory';
+import AddFriendByQr from '../screens/AddFriendByQr';
 import TabBarComp from '../components/TabBarComp';
 import {BottomTabItem} from '../components/ListItems';
+
+import {client} from '../helpers/api';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 
@@ -30,7 +33,8 @@ const HomeTab = createStackNavigator({
   CreateChannel: CreateChannelScreen,
   AddFriendScreen: AddFriend,
   AmazonExchangeScreen: AmazonExchange,
-  ExchangeHistoryScreen: ExchangeHistory
+  ExchangeHistoryScreen: ExchangeHistory,
+  AddFriendByQr: AddFriendByQr,
 },{
   defaultNavigationOptions: {
     gestureResponseDistance: {horizontal: gestureResponseDistance}
@@ -53,6 +57,7 @@ const ChatTab = createStackNavigator({
   CreateGroupChat: CreateGroupChatScreen,
   CreateChannel: CreateChannelScreen,
   AddFriendScreen: AddFriend,
+    AddFriendByQr: AddFriendByQr,
 },{
   defaultNavigationOptions: {
     gestureResponseDistance: {horizontal: gestureResponseDistance}
@@ -128,7 +133,25 @@ const Tabs = createBottomTabNavigator(
     Home: HomeTab,
     Chat: ChatTab,
     Timeline: TimelineTab,
-    Channel: ChannelTab,
+    // Channel: ChannelTab,
+    Rewards: {
+      screen: ()=>null,
+      navigationOptions: ({navigation}) => ({
+        tabBarOnPress: () => { 
+          // console.log('navigation',navigation);
+          client
+            .get(`xchat/get-adwall-unique-url/`)
+            .then((res) => {
+              if(res){
+                Linking.openURL(res.add_wall_url);
+              }
+            })
+            .catch((err) => {
+              console.log('err');
+            });
+        },
+      })
+    },
     More: MoreTab,
   },
   {
@@ -195,6 +218,16 @@ const Tabs = createBottomTabNavigator(
               title={translate('pages.xchat.channel')}
               titleColor={focused ? Colors.yellow : Colors.white}
               routeName={'Channel'}
+              focused={focused}
+            />
+          );
+        } else if (routeName === 'Rewards') {
+          return (
+            <BottomTabItem
+              source={Icons.icon_reward}
+              title={translate('pages.xchat.rewards')}
+              titleColor={focused ? Colors.yellow : Colors.white}
+              routeName={'Rewards'}
               focused={focused}
             />
           );

@@ -254,7 +254,8 @@
       "oldAndNewPasswordIsSameText":"旧密码和新密码不能相同",
       "phoneNumberTextForPlaceholder":"输入电话号码",
       "thisIsYourUsername":"这是您的用户名（以后无法更改）",
-      "youCanChangeItUsername":"您可以根据需要现在进行更改。"
+      "youCanChangeItUsername":"您可以根据需要现在进行更改。",
+      "phoneNumberUpdate":"输入您要更改的新手机号码"
     },
     "resetPassword":{
       "changePassword":"更改密码",
@@ -1208,7 +1209,9 @@
       "EnterEmailAfterChange":"更改后输入新的电子邮件地址",
       "reEnterEmailAfterChange":"重新输入新的电子邮件地址",
       "SelecImage":"选择图片",
-      "gainedFollowers":"获得关注者"
+      "gainedFollowers":"获得关注者",
+      "specialSignupBonus": "新注册特别奖金",
+      "amazonGiftCardText": "可以兑换的赢取积分"
     },
     "welcome":{
       "theWorldIsConnected":"世界相连",
@@ -1612,7 +1615,7 @@
       "login":"登录"
     },
     "adWall":{
-      "yourPoint":"你的观点",
+      "yourPoint": "我的观点",
       "clickHere":"点击这里",
       "increaseyourPoint":"免费增加积分",
       "earnChannels": "直播频道",
@@ -1645,7 +1648,12 @@
       "exchangesuccessfully": "TP交换成功",
       "minimumAmountOfTp": "您不能兌換少於500TP",
       "noExchageHistory": "找不到交易记录",
-      "processing": "处理中"
+      "processing": "处理中",
+      "bonusUseText1": "*如果您不批准电话号码，它将在获得积分后的1个月内消失（您可以在设置→个人资料栏中进行设置）。",
+      "bonusUseText2": "* TP可以换成Amazon礼券",
+      "bonusUseText3": "* XP可以在主屏幕的XIGOLO（游戏）中使用。",
+      "firstTimeExchangeText": "（*至少在新的注册活动期间可以交换5TP）",
+      "processingDetail": "（在星期三的24:00之后的每个星期日付款）"
     }
   },
   "swal":{
@@ -1657,7 +1665,10 @@
     "supportNow":"立即支持",
     "loginAttemptTitle":"您已完成最大次数的失败登录尝试。 需要支援吗？",
     "no":" 没有",
-    "NeedToAddPhoneNumber":"您必须添加电话号码才能获得登录奖励。"
+    "NeedToAddPhoneNumber": "您必须输入电话号码才能获得奖金。",
+    "AuthenticateNumber": "验证电话号码",
+    "extraCashWiningText": "玩游戏并获得零用钱",
+    "xpusedForText": "* XP可以在主屏幕的“ XIGOLO（游戏）”中使用。"
   },
   "toastr":{
     "pleaseEnterYourPassword":"请输入您的密码",

@@ -727,6 +727,18 @@ export const selectLoginJackpotOfChannel = (payload) => (dispatch) =>
       });
   });
 
+export const selectRegisterJackpot = (payload) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    client
+      .post(`xigolo_payment/select_touku_login_jackpot/`, payload)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });  
+
 export const assetXPValueOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
@@ -761,4 +773,16 @@ export const unpinChannel = (channelId, data) => (dispatch) =>
       .catch((err) => {
         reject(err);
       });
+  });
+
+export const subscribeAsVip = (data) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    client
+    .post(`xchat/subscribe-channel/`,data)
+    .then((res) => {
+      resolve(res);
+    })
+    .catch((err) => {
+      reject(err);
+    });
   });

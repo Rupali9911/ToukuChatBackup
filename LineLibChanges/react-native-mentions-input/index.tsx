@@ -56,7 +56,7 @@ type SuggestedUsers = {
 };
 
 export default class MentionsInput extends React.Component<Props, State> {
-  
+
   _textInput: TextInput | null = null;
 
   public static defaultProps = {
