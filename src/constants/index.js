@@ -73,7 +73,8 @@ export const Icons = {
   icon_channel_list: require('../../assets/icons/channel_list.png'),
   icon_group: require('../../assets/icons/group.png'),
   icon_friend: require('../../assets/icons/friend.png'),
-  icon_reward: require('../../assets/icons/reward.png')
+  icon_reward: require('../../assets/icons/reward.png'),
+  icon_scan: require('../../assets/icons/scan_qr.png'),
 };
 
 export const Images = {

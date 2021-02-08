@@ -125,6 +125,7 @@ class ChannelChats extends Component {
       openDoc: false,
       isReply: false,
       repliedMessage: null,
+        isRegisterBonus: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -214,11 +215,25 @@ class ChannelChats extends Component {
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({orientation: initial});
+      this.setState({orientation: initial});
+     // const is_bonus_opened = await AsyncStorage.getItem('is_bonus_opened');
+     // console.log('is_bonus_opened', is_bonus_opened)
+     // if(is_bonus_opened === false){
+     //     this.setState({is_bonus_opened: true, orientation: initial});
+     // }else{
+     //
+     // }
 
-    // this.events = eventService.getMessage().subscribe((message) => {
-    //   this.checkEventTypes(message);
-    // });
+      AsyncStorage.getItem('is_bonus_opened', (errs,result) => {
+          if (!errs) {
+              if (result !== null) {
+                  console.log('is_bonus_opened', result)
+                  if (result === 'false') {
+                      this.setState({isRegisterBonus:true});
+                  }
+              }
+          }
+      })
   }
 
   componentWillUnmount() {
@@ -228,6 +243,7 @@ class ChannelChats extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getChannelConversationsInitial();
+
     if (this.props.currentChannel.id == 355) {
       this.checkHasLoginBonus();
     }
@@ -1592,7 +1608,8 @@ class ChannelChats extends Component {
       orientation,
       isUpdatePhoneModalVisible,
         bonusModal,
-        bonusXP
+        bonusXP,
+        isRegisterBonus
     } = this.state;
     return (
       <View
@@ -1626,6 +1643,7 @@ class ChannelChats extends Component {
                   this.setState({bonusModal: false})
               }
               bonusXP={bonusXP}
+              registerBonus={isRegisterBonus}
           />
       </View>
     );

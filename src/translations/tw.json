@@ -1211,7 +1211,10 @@
       "SelecImage":"選擇圖片",
       "gainedFollowers":"獲得關注者",
       "specialSignupBonus": "新註冊特別獎金",
-      "amazonGiftCardText": "可以兌換的贏取積分"
+      "amazonGiftCardText": "可以兌換的贏取積分",
+      "scanQr":"添加朋友的QR码",
+      "myQrCode":"我的二維碼",
+      "addFriendId":"添加朋友ID搜索"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

@@ -91,8 +91,9 @@ class AddFriendByQr extends Component {
       this.checkUrlAndNavigate(e.data)
     };
 
+
     checkUrlAndNavigate(url){
-            let regUrl = staging ? registerUrlStage : registerUrl
+        let regUrl = staging ? registerUrlStage : registerUrl
         if (url.indexOf(regUrl) > -1) {
             let suffixUrl = url.split(regUrl)[1].trim();
             let invitationCode =
@@ -103,15 +104,15 @@ class AddFriendByQr extends Component {
                 this.addFriendFromUrl(invitationCode)
             }else{
                 Toast.show({
-                    title: translate('common.referral'),
-                    text: 'Invalid referral Url',
+                    title: translate('pages.xchat.touku'),
+                    text: translate('pages.xchat.unableToAdd'),
                     type: 'primary',
                 });
             }
         }else{
             Toast.show({
-                title: translate('common.referral'),
-                text: 'No referral url found',
+                title: translate('pages.xchat.touku'),
+                text: translate('pages.xchat.unableToAdd'),
                 type: 'primary',
             });
         }
@@ -144,7 +145,7 @@ class AddFriendByQr extends Component {
             <View style={globalStyles.container}>
                 <HeaderWithBack
                     onBackPress={() => this.props.navigation.goBack()}
-                    title={'Add Friend by QR Code'}
+                    title={translate('pages.xchat.scanQr')}
                     // onChangeText={this.searchFriends}
                     navigation={this.props.navigation}
                 />
@@ -158,16 +159,19 @@ class AddFriendByQr extends Component {
             cameraStyle={{height: '100%'}}
             bottomContent={
                 recentImageData?
-                    <View style={{flex: 1, flexDirection: 'row', width: '100%', height: 100, position: 'absolute', bottom: 0}}>
+                    <ImageBackground
+                        source={Images.header_bg_small}
+                        style={{flex: 1, flexDirection: 'row', width: '100%', height: 80, position: 'absolute', bottom: 0}}
+                        resizeMode="cover">
                         <TouchableOpacity style={{flex: 1,alignSelf: 'center'}} onPress={() => this.showMyQrCode()}>
-                            <Text style={{alignSelf: 'center', justifyContent: 'center', fontFamily: Fonts.regular, fontWeight: '400', fontSize: 20, color: 'white'}}>My QR Code</Text>
+                            <Text style={{alignSelf: 'center', justifyContent: 'center', fontFamily: Fonts.regular, fontWeight: '400', fontSize: 20, color: 'white'}}>{translate('pages.xchat.myQrCode')}</Text>
                         </TouchableOpacity>
                             <TouchableOpacity style={{position: 'absolute', padding: 10, alignSelf: 'center', right: 0}} onPress={() => this.getRecentMedias()}>
                               <Image
                                   style={{width: 60, height: 60}}
                                  source={{ uri: recentImageData[0].node.image.uri }}/>
                              </TouchableOpacity>
-                    </View>
+                    </ImageBackground>
                     : null
 
             }

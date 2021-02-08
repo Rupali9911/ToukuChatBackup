@@ -73,10 +73,15 @@ class Toast extends Component {
     this.timeout = setTimeout(() => {
       this.hideToast();
     }, duration);
+
   }
 
   hideToast() {
-    Animated.timing(this.state.toast, {
+      if (this.timerHandle) {
+          clearTimeout(this.timerHandle);
+          this.timerHandle = 0;
+      }
+      Animated.timing(this.state.toast, {
       toValue: width + width,
       duration: 500,
       useNativeDriver: true,
@@ -94,6 +99,7 @@ class Toast extends Component {
 
   componentWillUnmount() {
     Orientation.removeOrientationListener(this._orientationDidChange);
+    console.log('Toast componentWillUnmount called')
   }
 
   _orientationDidChange = (orientation) => {
@@ -153,7 +159,7 @@ class Toast extends Component {
             ],
           },
         ]}>
-        <TouchableWithoutFeedback 
+        <TouchableWithoutFeedback
           style={styles.content}
           onPress={()=>{
             this.hideToast();

@@ -1212,7 +1212,10 @@
       "SelecImage": "画像を選択",
       "gainedFollowers": "得られたフォロワー",
       "specialSignupBonus": "新規登録スペシャルボーナス",
-      "amazonGiftCardText": "と交換できるポイントが当たる"
+      "amazonGiftCardText": "と交換できるポイントが当たる",
+      "scanQr":"QRをスキャン",
+      "myQrCode":"私のQRコード",
+      "addFriendId":"友達ID検索を追加"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

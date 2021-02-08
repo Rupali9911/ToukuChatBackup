@@ -1210,7 +1210,10 @@
       "SelecImage":"Select an image",
       "gainedFollowers":"Gained Followers",
       "specialSignupBonus":"The special bonus for signup",
-      "amazonGiftCardText": "Win points that can be exchanged for"
+      "amazonGiftCardText": "Win points that can be exchanged for",
+      "myQrCode":"My QR code",
+      "addFriendId":"Add friend ID search",
+      "scanQr":"Add friend QR code"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",
