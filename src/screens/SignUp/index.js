@@ -303,7 +303,8 @@ class SignUp extends Component {
 
   checkUserName(username) {
     let isValid = true;
-    let regex = /^[a-zA-Z0-9- ]*$/;
+    //let regex = /^[a-zA-Z0-9- ]*$/;
+    let regex = /^[a-zA-Z0-9\-\_.]*$/;
     username = username.replace(/\s/g, '');
     this.setState({username: username});
     if (username.length <= 0) {
@@ -362,7 +363,8 @@ class SignUp extends Component {
     } = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     let isValid = true;
-    let regex = /^[a-zA-Z0-9- ]*$/;
+    //let regex = /^[a-zA-Z0-9- ]*$/;
+    let regex = /^[a-zA-Z0-9\-\_.]*$/;
 
     console.log('email', email.length);
     if (email.length <= 0) {

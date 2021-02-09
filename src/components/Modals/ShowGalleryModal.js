@@ -235,7 +235,7 @@ class ShowGalleryModal extends Component {
                           marginHorizontal: 5,
                         }}>
                         <Button
-                          title={translate('pages.xchat.SelecImage')}
+                          title={translate('pages.xchat.selectFile')}
                           type={'custom'}
                           onPress={() => onGalleryPress()}
                           isRounded={false}

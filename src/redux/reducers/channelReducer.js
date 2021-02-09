@@ -578,7 +578,7 @@ export const getChannelConversations = (id, msg_id, limit = 30) => (dispatch) =>
     client
       .get(`/xchat/channel-conversation/` + id + '/?' + query_parameter)
       .then(async (res) => {
-        console.log('res_channel_conversation', JSON.stringify(res));
+        //console.log('res_channel_conversation', JSON.stringify(res));
         setChannelChatConversation(res.conversation);
         // dispatch(getFollowingChannels(0));
         dispatch(getChannelConversationsSuccess());
@@ -737,7 +737,7 @@ export const selectRegisterJackpot = (payload) => (dispatch) =>
       .catch((err) => {
         reject(err);
       });
-  });  
+  });
 
 export const assetXPValueOfChannel = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -775,7 +775,7 @@ export const unpinChannel = (channelId, data) => (dispatch) =>
       });
   });
 
-export const subscribeAsVip = (data) => (dispatch) => 
+export const subscribeAsVip = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
     .post(`xchat/subscribe-channel/`,data)

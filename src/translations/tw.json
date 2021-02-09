@@ -1215,7 +1215,8 @@
       "amazonGiftCardText": "可以兌換的贏取積分",
       "scanQr":"添加朋友的QR码",
       "myQrCode":"我的二維碼",
-      "addFriendId":"添加朋友ID搜索"
+      "addFriendId":"添加朋友ID搜索",
+      "selectFile":"選擇文件"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

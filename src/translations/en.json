@@ -1214,7 +1214,8 @@
       "amazonGiftCardText": "Win points that can be exchanged for",
       "myQrCode":"My QR code",
       "addFriendId":"Add friend ID search",
-      "scanQr":"Add friend QR code"
+      "scanQr":"Add friend QR code",
+      "selectFile":"Select file"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",

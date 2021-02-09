@@ -530,7 +530,7 @@ export default class App extends Component {
                     currentState,
                     action,
                   ) => {
-                    console.log('store.getState()',store.getState());
+                   // console.log('store.getState()',store.getState());
                     const currentRouteName = this.getActiveRouteName(
                       currentState,
                     );

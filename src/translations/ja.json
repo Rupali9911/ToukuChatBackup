@@ -1216,7 +1216,8 @@
       "amazonGiftCardText": "と交換できるポイントが当たる",
       "scanQr":"QRをスキャン",
       "myQrCode":"私のQRコード",
-      "addFriendId":"友達ID検索を追加"
+      "addFriendId":"友達ID検索を追加",
+      "selectFile":"ファイルを選択する"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

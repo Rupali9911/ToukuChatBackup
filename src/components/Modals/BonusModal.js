@@ -44,15 +44,8 @@ class BonusModal extends Component {
             loadingJackpot: false,
             showPhoneUpdateModal: false,
             isUpdatePhoneModalVisible: false,
-            //is_bonus_opened: 1
         }
 
-    }
-
-   async UNSAFE_componentWillMount() {
-        console.log('Bonus will mount')
-       //let is_bonus_opened = await AsyncStorage.getItem('is_bonus_opened');
-       // this.setState({is_bonus_opened: is_bonus_opened})
     }
 
     selectedLoginBonus = (key) => {
@@ -182,7 +175,7 @@ class BonusModal extends Component {
 
     render() {
         const {currentChannel, visible, bonusXP, registerBonus} = this.props;
-        console.log('registerBonus', registerBonus, visible)
+        //console.log('registerBonus', registerBonus, visible)
         const {
             showPhoneUpdateModal,
             orientation,
@@ -457,7 +450,7 @@ class BonusModal extends Component {
                         }}
                         orientation={orientation}
                         confirmText={translate('swal.ok')}
-                        title={registerBonus?translate('swal.AuthenticateNumber'):translate('pages.xchat.touku')}
+                        title={translate('swal.AuthenticateNumber')}
                         message={translate('swal.NeedToAddPhoneNumber')}
                     />
                     <UpdatePhoneModal

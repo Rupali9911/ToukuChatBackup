@@ -14,7 +14,7 @@ import { RNCamera } from 'react-native-camera';
 import CameraRoll from "@react-native-community/cameraroll";
 import ImagePicker from 'react-native-image-picker';
 import { QRreader } from "react-native-qr-decode-image-camera";
-import {Fonts, Images, registerUrl, registerUrlStage} from "../../constants";
+import {Colors, Fonts, Images, registerUrl, registerUrlStage} from "../../constants";
 import {globalStyles} from "../../styles";
 import HeaderWithBack from "../../components/Headers/HeaderWithBack";
 import {translate} from "../../redux/reducers/languageReducer";
@@ -30,6 +30,8 @@ class AddFriendByQr extends Component {
     this.state = {
         recentImageData: null,
         isQRVisible: false,
+        showCameraView: true,
+        showLoader: false
     };
   }
 
@@ -40,16 +42,22 @@ class AddFriendByQr extends Component {
   };
 
   UNSAFE_componentWillMount() {
-
+      this.focusListener = this.props.navigation.addListener(
+          'willFocus', this.load);
   }
+
+    load = () => {
+      console.log('AddFriendByQr willFocus called')
+        this.setState({showCameraView: true, showLoader: false})
+    }
 
   componentDidMount() {
       this.getRecentPhoto()
   }
 
-  componentWillUnmount() {
-
-  }
+    componentWillUnmount() {
+        this.focusListener.remove();
+    }
 
   getRecentPhoto = () => {
       CameraRoll.getPhotos({
@@ -122,11 +130,14 @@ class AddFriendByQr extends Component {
         console.log('invitationCode onfocus', invitationCode)
         if (invitationCode) {
             let data = {invitation_code: invitationCode};
+            this.setState({showLoader: true})
             this.props.addFriendByReferralCode(data).then((res) => {
-                // if (res.status === true) {
-                //     this.setState({showLoader: true})
-                // }
-               // console.log('addFriendByReferralCode response', res)
+                if (res.status === true) {
+                    this.setState({showCameraView: false})
+                }else{
+                    this.setState({showLoader: false})
+                }
+               console.log('addFriendByReferralCode response', res)
             });
         }
     }
@@ -136,7 +147,7 @@ class AddFriendByQr extends Component {
     }
 
   render() {
-    const {recentImageData, isQRVisible} = this.state;
+    const {recentImageData, isQRVisible, showCameraView, showLoader} = this.state;
     console.log('recentImageData', recentImageData)
     return (
         <ImageBackground
@@ -149,38 +160,55 @@ class AddFriendByQr extends Component {
                     // onChangeText={this.searchFriends}
                     navigation={this.props.navigation}
                 />
-        <QRCodeScanner
-            onRead={this.onSuccess}
-            reactivate={true}
-            reactivateTimeout={2000}
-           // flashMode={RNCamera.Constants.FlashMode.torch}
-            topViewStyle={{flex: 0}}
-            containerStyle={{flex: 1}}
-            cameraStyle={{height: '100%'}}
-            bottomContent={
-                recentImageData?
-                    <ImageBackground
-                        source={Images.header_bg_small}
-                        style={{flex: 1, flexDirection: 'row', width: '100%', height: 80, position: 'absolute', bottom: 0}}
-                        resizeMode="cover">
-                        <TouchableOpacity style={{flex: 1,alignSelf: 'center'}} onPress={() => this.showMyQrCode()}>
-                            <Text style={{alignSelf: 'center', justifyContent: 'center', fontFamily: Fonts.regular, fontWeight: '400', fontSize: 20, color: 'white'}}>{translate('pages.xchat.myQrCode')}</Text>
-                        </TouchableOpacity>
-                            <TouchableOpacity style={{position: 'absolute', padding: 10, alignSelf: 'center', right: 0}} onPress={() => this.getRecentMedias()}>
-                              <Image
-                                  style={{width: 60, height: 60}}
-                                 source={{ uri: recentImageData[0].node.image.uri }}/>
-                             </TouchableOpacity>
-                    </ImageBackground>
-                    : null
+                {
+                    showCameraView &&
+                    <QRCodeScanner
+                        onRead={this.onSuccess}
+                        reactivate={true}
+                        reactivateTimeout={2000}
+                        // flashMode={RNCamera.Constants.FlashMode.torch}
+                        topViewStyle={{flex: 0}}
+                        containerStyle={{flex: 1}}
+                        cameraStyle={{height: '100%'}}
+                        bottomContent={
+                            recentImageData?
+                                <ImageBackground
+                                    source={Images.header_bg_small}
+                                    style={{flex: 1, flexDirection: 'row', width: '100%', height: 80, position: 'absolute', bottom: 0}}
+                                    resizeMode="cover">
+                                    <TouchableOpacity style={{flex: 1,alignSelf: 'center'}} onPress={() => this.showMyQrCode()}>
+                                        <Text style={{alignSelf: 'center', justifyContent: 'center', fontFamily: Fonts.regular, fontWeight: '400', fontSize: 20, color: 'white'}}>{translate('pages.xchat.myQrCode')}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={{position: 'absolute', padding: 10, alignSelf: 'center', right: 0}} onPress={() => this.getRecentMedias()}>
+                                        <Image
+                                            style={{width: 60, height: 60}}
+                                            source={{ uri: recentImageData[0].node.image.uri }}/>
+                                    </TouchableOpacity>
+                                </ImageBackground>
+                                : null
 
-            }
-        />
+                        }
+                    />
+                }
+
             </View>
             <QRCodeClass
                 modalVisible={isQRVisible}
                 closeModal={() => this.setState({isQRVisible: false})}
             />
+            { showLoader &&
+                <ActivityIndicator
+                    color={Colors.primary}
+                    size={'large'}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                    }}
+                />
+            }
         </ImageBackground>
 
     );
