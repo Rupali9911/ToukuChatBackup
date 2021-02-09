@@ -283,6 +283,7 @@ class PostChannelRankItem extends Component {
                 onPress={() => this.onFollowUnfollow()}
                 loading={this.isFollowing}
                 fontType={'normalRegular15Text'}
+                fontSize={normalize(11)}
                 borderColor={Colors.gradient_3}
               />
             </View>
@@ -292,8 +293,8 @@ class PostChannelRankItem extends Component {
               type={'transparent'}
               height={28}
               onPress={() => NavigationService.navigate('ChannelInfo', { channelItem: post, })}
-              loading={this.isFollowing}
               fontType={'normalRegular15Text'}
+              fontSize={normalize(11)}
               borderColor={Colors.gradient_3}
             />
           </View>

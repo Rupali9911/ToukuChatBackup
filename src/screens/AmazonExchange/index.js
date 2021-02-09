@@ -279,7 +279,7 @@ class AmazonExchange extends Component {
                                 <Text>{translate('pages.adWall.sendItToYourEmail')}</Text>
                         </View>
                         <View style={{
-                            marginHorizontal: 20,
+                            marginHorizontal: 10,
                             marginVertical: 15,
                             flexDirection: 'row',
                             justifyContent: 'space-between'
@@ -291,7 +291,8 @@ class AmazonExchange extends Component {
                                     onPress={() => {
                                         this.setState({isExchange: !this.state.isExchange})
                                         this.props.navigation.navigate('ExchangeHistoryScreen');
-                                    }} />
+                                    }} 
+                                    fontSize={normalize(13)}/>
                             </View>
                             <View style={{ flex: 0.1 }} />
                             <View style={{ flex: 1 }}>
@@ -300,7 +301,8 @@ class AmazonExchange extends Component {
                                     title={translate('pages.adWall.exchange')}
                                     onPress={() => {
                                         this.setState({isExchange: !this.state.isExchange})
-                                    }} />
+                                    }} 
+                                    fontSize={normalize(13)}/>
                             </View>
                         </View>
                         {isExchange?

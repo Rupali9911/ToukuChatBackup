@@ -171,6 +171,15 @@ class BonusModal extends Component {
         }
     }
 
+    getAssetValue = () => {
+        if(this.state.jackpotData && this.state.jackpotData.picked_amount_type==="TP"){
+            let amount = this.props.userData.total_tp+this.state.jackpotData.picked_amount;
+            return `${parseInt(amount)}`;
+        }else{
+            return `${this.state.assetXPValue.XP}`;
+        }
+    }
+
     render() {
         const {currentChannel, visible, bonusXP, registerBonus} = this.props;
         console.log('registerBonus', registerBonus, visible)
@@ -210,7 +219,8 @@ class BonusModal extends Component {
                                 <Text style={styles.bonusTitleText}>
                                     {translate('pages.adWall.yourPoint')}{' '}
                                     <Text style={{fontSize: normalize(25), fontWeight: 'bold'}}>
-                                        {this.state.assetXPValue.XP + ''}
+                                        {/* {this.state.assetXPValue.XP + ''} */}
+                                        {this.getAssetValue()}
                                     </Text>{' '}
                                     <Text
                                         style={{
@@ -218,7 +228,7 @@ class BonusModal extends Component {
                                             fontFamily: Fonts.regular,
                                             fontWeight: '300',
                                         }}>
-                                        {'XP'}
+                                        {this.state.jackpotData.picked_amount_type?this.state.jackpotData.picked_amount_type:'XP'}
                                     </Text>
                                 </Text>
                             ) : null}

@@ -118,6 +118,7 @@ class Button extends Component {
       height,
       disabled,
       fontType,
+      fontSize,
       type,
       borderColor,
       leftIcon
@@ -160,6 +161,7 @@ class Button extends Component {
                 {
                   color: this.getTitleColor(),
                 },
+                fontSize && {fontSize:fontSize}
               ]}>
               {title}
             </TextInput>
@@ -170,6 +172,7 @@ class Button extends Component {
                 {
                   color: this.getTitleColor(),
                 },
+                fontSize && {fontSize:fontSize}
               ]}>
               {title}
             </Text>
