@@ -719,7 +719,8 @@
         "selectedChatRead":"Chats marked as read successfully.",
         "selectToRead":"Select chat to read chat history",
         "countryUpdated":"Country updated successfully",
-        "setPasswordTextClasrm":"It seems you have not setup password for CLASRM yet, Please click 'Set Password' to set password now, otherwise click 'Cancel'"
+        "setPasswordTextClasrm":"It seems you have not setup password for CLASRM yet, Please click 'Set Password' to set password now, otherwise click 'Cancel'",
+        "youAreNowFriends":"You and {{ friend }} are now friends"
       },
       "totalMessages":"Total messages",
       "toukuPoints":"TOUKU Points",

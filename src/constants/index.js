@@ -244,6 +244,9 @@ export const xanaUrl = 'https://www.xanawallet.net/#/login';
 export const xanaDeepLink = 'xana://';
 export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
 export const DEEPLINK = 'touku://';
+export const prodInvite = 'touku.net/invite/';
+export const stagInvite = 'touku.angelium.net/invite/';
+
 //export const supportUrl = 'https://touku.angelium.net/#/support?frame=1';
 
 export const SocketEvents = {
@@ -390,5 +393,4 @@ export const openBoxImage = {
 };
 
 export const appleStoreUserId = 4046;
-
 export const gestureResponseDistance = SCREEN_WIDTH*0.9;

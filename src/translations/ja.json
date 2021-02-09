@@ -719,7 +719,8 @@
         "selectedChatRead": "正常に読み取られたとマークされたチャット。",
         "selectToRead": "トークルームを選択してください",
         "countryUpdated": "国が正常に更新されました",
-        "setPasswordTextClasrm": "CLASRMのパスワードをまだ設定していないようです。今すぐパスワードを設定するには、[パスワードの設定]をクリックしてください。それ以外の場合は、[キャンセル]をクリックしてください。"
+        "setPasswordTextClasrm": "CLASRMのパスワードをまだ設定していないようです。今すぐパスワードを設定するには、[パスワードの設定]をクリックしてください。それ以外の場合は、[キャンセル]をクリックしてください。",
+        "youAreNowFriends": "あなたと{{friend}}は友達になりました"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",

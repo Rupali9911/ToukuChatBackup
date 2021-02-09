@@ -2214,14 +2214,15 @@ class Chat extends Component {
 
   onAcceptFriendReuqest = (message) => {
     if (message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED) {
+      let messageDetail = message.text.data.message_details
       console.log(
-        'message.text.data.message_details',
-        message.text.data.message_details.conversation.requested_from,
+        'messageDetail',
+          messageDetail.conversation.requested_from,
       );
       if (
-        message.text.data.message_details.conversation.requested_from ===
+        messageDetail.conversation.requested_from ===
           this.props.userData.username &&
-        !message.text.data.message_details.invitation
+        !messageDetail.invitation
       ) {
         Toast.show({
           title: translate('pages.xchat.friendRequest'),
@@ -2229,42 +2230,57 @@ class Chat extends Component {
             'pages.xchat.toastr.acceptedYourFriendRequest',
           ).replace(
             '[missing {{friend}} value]',
-            message.text.data.message_details.conversation.display_name,
+            messageDetail.conversation.display_name,
           ),
           type: 'positive',
         });
       }
       deleteFriendRequest(
-        message.text.data.message_details.conversation.user_id,
+        messageDetail.conversation.user_id,
       );
       this.props.setFriendRequest();
       handleRequestAccept(
-        message.text.data.message_details.conversation,
-        message.text.data.message_details.invitation,
+        messageDetail.conversation,
+        messageDetail.invitation,
       );
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
       if (this.props.currentRouteName == 'FriendChats' &&
         this.props.currentFriend &&
-        message.text.data.message_details.conversation.user_id ==
+        messageDetail.conversation.user_id ==
           this.props.currentFriend.user_id) {
-        console.log('request accepted');
           this.setFriendCommonly(this.props.currentFriend.user_id)
+          this.showAcceptedToast(messageDetail.conversation.display_name)
       }
-        if (message.text.data.message_details.invitation && this.props.currentRouteName !== 'FriendChats' ){
-            this.setFriendCommonly(message.text.data.message_details.conversation.user_id)
+        if (messageDetail.invitation && this.props.currentRouteName !== 'FriendChats' ){
+            this.setFriendCommonly(messageDetail.conversation.user_id)
             this.props.navigation.navigate('FriendChats');
-        }else if(message.text.data.message_details.invitation && this.props.currentRouteName == 'FriendChats' &&
+            this.showAcceptedToast(messageDetail.conversation.display_name)
+        }else if(messageDetail.invitation && this.props.currentRouteName == 'FriendChats' &&
             this.props.currentFriend &&
-            message.text.data.message_details.conversation.user_id !==
+            messageDetail.conversation.user_id !==
             this.props.currentFriend.user_id){
             NavigationService.popToTop();
-            this.setFriendCommonly(message.text.data.message_details.conversation.user_id)
+            this.setFriendCommonly(messageDetail.conversation.user_id)
             this.props.navigation.navigate('FriendChats');
+            this.showAcceptedToast(messageDetail.conversation.display_name)
         }
     }
   };
+
+  showAcceptedToast(displayName){
+          Toast.show({
+              title: translate('pages.xchat.friendRequest'),
+              text: translate(
+                  'pages.xchat.toastr.youAreNowFriends',
+              ).replace(
+                  '[missing {{ friend }} value]',
+                  displayName,
+              ),
+              type: 'positive',
+          });
+  }
 
   setFriendCommonly(id){
       let user = getLocalUserFriend(id);

@@ -699,7 +699,7 @@ class GroupChatMessageBubble extends Component {
                                     parse={this.getMentionsPattern()===''?[
                                       {
                                         type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
-                                        onPress: onPressHyperlink,
+                                        onPress: this.hyperlinkPressed,
                                         onLongPress: () => {
                                           onMessagePress(message.msg_id);
                                           this.showMenu();
@@ -952,7 +952,7 @@ class GroupChatMessageBubble extends Component {
                                     parse={this.getMentionsPattern()===''?[
                                       {
                                         type: 'url', style: { color: Colors.link_color, textDecorationLine: 'underline' },
-                                        onPress: onPressHyperlink,
+                                        onPress:  this.hyperlinkPressed,
                                         onLongPress: () => {
                                           onMessagePress(message.msg_id);
                                           this.showMenu();

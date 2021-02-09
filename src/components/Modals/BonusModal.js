@@ -70,6 +70,7 @@ class BonusModal extends Component {
                     console.log('register jackpotData', res);
                     this.setState({jackpotData: res.data});
                     this.getAssetXpValue();
+                    AsyncStorage.setItem('is_bonus_opened', 'true');
                 }
                 this.setState({loadingJackpot: false});
             })
