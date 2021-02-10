@@ -186,7 +186,6 @@ class AddFriendByQr extends Component {
                                     </TouchableOpacity>
                                 </ImageBackground>
                                 : null
-
                         }
                     />
                 }
