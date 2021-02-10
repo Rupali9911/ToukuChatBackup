@@ -117,6 +117,15 @@ class ExchangeHistory extends Component {
         });
     }
 
+    exchangeTypeText = (type) => {
+        if(type === 'AMAZON'){
+            return translate('pages.adWall.amazonExchangeHistory');
+        }else if(type === 'BTC'){
+            return translate('pages.adWall.btcExchangeHistory');
+        }
+        return type;
+    }
+
     render() {
         const { isExchange, option, allHistory, amazonHistory, btcHistory, loading, amazonLoading, btcLoading } = this.state;
         const listData = option==1?allHistory:option==2?amazonHistory:btcHistory;
@@ -126,20 +135,21 @@ class ExchangeHistory extends Component {
                 <HeaderWithBack
                     onBackPress={() => this.props.navigation.goBack()}
                     title={translate('pages.adWall.exchangeHistory')}
+                    isCentered
                 />
                 <View style={{flex:1}}>
                     <View style={{ flexDirection:'row', borderBottomColor: '#c5c1c1', borderBottomWidth: 1 }}>
                         <TouchableOpacity style={{flex: 1,paddingVertical: 15, alignItems:'center'}}
                             onPress={()=>this.setState({option:1})}>
-                            <Text style={{fontSize: normalize(13), color: option===1?'#ff00a3':'#0a1f44'}}>All</Text>
+                            <Text style={{fontSize: normalize(13), color: option===1?'#ff00a3':'#0a1f44'}}>{translate('pages.adWall.allExchangeHistory')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{flex: 1,paddingVertical: 15, alignItems:'center'}}
                             onPress={()=>this.setState({option:2})}>
-                            <Text style={{fontSize: normalize(13), color: option===2?'#ff00a3':'#0a1f44'}}>Amazon</Text>
+                            <Text style={{fontSize: normalize(13), color: option===2?'#ff00a3':'#0a1f44'}}>{translate('pages.adWall.amazonExchangeHistory')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{flex: 1,paddingVertical: 15, alignItems:'center'}}
                             onPress={()=>this.setState({option:3})}>
-                            <Text style={{fontSize: normalize(13), color: option===3?'#ff00a3':'#0a1f44'}}>BTC</Text>
+                            <Text style={{fontSize: normalize(13), color: option===3?'#ff00a3':'#0a1f44'}}>{translate('pages.adWall.btcExchangeHistory')}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{flex:1, paddingHorizontal: 15, paddingVertical: 10, paddingBottom:20}}>
@@ -154,7 +164,7 @@ class ExchangeHistory extends Component {
                                             <View style={{ borderColor: '#ff0078', borderWidth: 1, flexDirection: 'row', padding: 10, borderRadius: 10, marginBottom: 10, alignItems:'center' }}>
                                                 <Image source={item.exchange_type === 'AMAZON' ? Images.amazon_img : Images.bitcoin_img} />
                                                 <View style={{ flex:3, marginLeft: 10 }}>
-                                                    <Text style={{ fontSize: normalize(13), fontWeight: 'bold' }}>{item.exchange_type}</Text>
+                                                    <Text style={{ fontSize: normalize(13), fontWeight: 'bold' }}>{this.exchangeTypeText(item.exchange_type)}</Text>
                                                     <Text>{moment(item.updated).format("YYYY.MM.DD, HH:mm")}</Text>
                                                     <View style={{flexDirection:'row'}}>
                                                         <Text style={{ color: '#ff00a3' }}>Status: </Text>

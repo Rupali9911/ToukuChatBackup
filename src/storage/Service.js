@@ -380,7 +380,7 @@ export const setGroupChatConversation = (conversation) => {
                 : [item.mentions]
               : [],
             read_count: item.read_count ? item.read_count : 0,
-            created: item.created,
+            created: item.created || item.timestamp,
           },
           'modified',
         );
@@ -405,7 +405,7 @@ export const setGroupChatConversation = (conversation) => {
               : [item.mentions]
             : [],
           read_count: item.read_count ? item.read_count : 0,
-          created: item.created,
+          created: item.created || item.timestamp,
         });
       });
     }

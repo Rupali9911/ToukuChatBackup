@@ -232,7 +232,7 @@ class AmazonExchange extends Component {
                                 textAlign: 'right',
                                 fontWeight: '600',
                                 color: '#ee6f70',
-                            }}>{translate('pages.xchat.free')}</Text>
+                            }}>{translate('pages.xchat.planFreeText')}</Text>
                         </View>
                         <View style={{
                             flexDirection: 'row',
@@ -382,7 +382,7 @@ class AmazonExchange extends Component {
                                         color: '#0a1f44',
                                         textAlign: 'right',
                                         marginLeft:5
-                                    }}>YEN</Text>
+                                    }}>{translate('pages.xchat.yen')}</Text>
                                 </View>
                                 <View style={{ width: '60%', alignSelf: 'center', marginTop: 15 }}>
                                     <Button

@@ -287,16 +287,17 @@ class PostChannelRankItem extends Component {
                 borderColor={Colors.gradient_3}
               />
             </View>
-            <Button
-              title={translate('pages.xchat.channelDetails')
-              }
-              type={'transparent'}
-              height={28}
-              onPress={() => NavigationService.navigate('ChannelInfo', { channelItem: post, })}
-              fontType={'normalRegular15Text'}
-              fontSize={normalize(11)}
-              borderColor={Colors.gradient_3}
-            />
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+              <Button
+                title={translate('pages.xchat.channelDetails')}
+                type={'transparent'}
+                height={28}
+                onPress={() => NavigationService.navigate('ChannelInfo', { channelItem: post, })}
+                fontType={'normalRegular15Text'}
+                fontSize={normalize(11)}
+                borderColor={Colors.gradient_3}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -425,7 +426,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: '2%',
   },
   channelDetailButton: {
-    // flex: 0.35,
+    flex: 0.7,
     paddingHorizontal: '1%',
     justifyContent: 'center',
   },

@@ -368,7 +368,7 @@ class GroupChatContainer extends Component {
                               ? true
                               : false
                           }
-                          time={new Date(item.timestamp)}
+                          time={new Date(item.created)}
                           isRead={
                             item.read_count && item.read_count > 0
                               ? true
@@ -417,15 +417,15 @@ class GroupChatContainer extends Component {
                       </TouchableOpacity>}
                     </View>
                     {(messages[index + 1] &&
-                      new Date(item.timestamp).getDate() !==
-                        new Date(messages[index + 1].timestamp).getDate()) ||
+                      new Date(item.created).getDate() !==
+                        new Date(messages[index + 1].created).getDate()) ||
                     index === conversationLength - 1 ? (
                       item.message_body == null ? null : (
                         <Fragment>
                           <View style={chatStyle.messageDateCntainer}>
                             <View style={chatStyle.messageDate}>
                               <Text style={chatStyle.messageDateText}>
-                                {getDate(item.timestamp)}
+                                {getDate(item.created)}
                               </Text>
                             </View>
                           </View>

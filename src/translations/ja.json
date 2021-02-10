@@ -754,7 +754,7 @@
       "available": "利用可能なトークポイント",
       "amazonGiftCard": "Amazonギフトカード",
       "transferTo": "交換先",
-      "transfer": "交換",
+      "transfer": "ポイント交換",
       "tpHandlingCharge": "",
       "amazonNote": "ギフトカードは3日以内にメール({{email}})に送信されます。",
       "timeToTransfer": "ウォレットで資金が送金されるまでに25〜30分かかる場合があります",

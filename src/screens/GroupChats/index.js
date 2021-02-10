@@ -503,7 +503,8 @@ class GroupChats extends Component {
       },
       is_edited: false,
       is_unsent: false,
-      timestamp: moment().format(),
+      timestamp: new Date(),
+      created: new Date(new Date()),
       reply_to: isReply
         ? {
             display_name: repliedMessage.sender_display_name,

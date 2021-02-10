@@ -1663,7 +1663,6 @@ class Home extends PureComponent {
     );
 
     console.log('touku_tp',this.props.userData.total_tp);
-
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -1820,7 +1819,7 @@ class Home extends PureComponent {
                   ]}
                   style={[homeStyles.fill_border_box_style,{marginRight: 10}]}>
                   <View style={{}}>
-                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.replacementPoints')}</Text>
+                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.xchat.toukuPoints')}</Text>
                     <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(TP)</Text>
                     <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{this.props.userData.total_tp && parseInt(this.props.userData.total_tp).toLocaleString()}</Text>
                   </View>
@@ -1855,7 +1854,7 @@ class Home extends PureComponent {
                     fontFamily: Fonts.regular,
                     color: '#0A1F44',
                   },
-                ]}>{translate('pages.adWall.exchangePoints')}</Text>
+                ]}>{translate('pages.xchat.transfer')}</Text>
                 <View style={{ flexDirection: 'row', }}>
                   <TouchableOpacity style={{ flex: 1 }} onPress={() => { this.props.navigation.navigate('AmazonExchangeScreen') }}>
                     <LinearGradient
@@ -2009,7 +2008,7 @@ class Home extends PureComponent {
                         source={Images.crown_img}
                         style={{ width: 100, height: 100, borderRadius: 5, tintColor: '#ffbf00', resizeMode: 'contain' }}
                       />
-                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.other')}</Text>
+                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.GoldCrownText')}</Text>
                     </View>
                   </TouchableOpacity>
                 </ScrollView>
