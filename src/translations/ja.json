@@ -720,7 +720,7 @@
         "selectToRead": "トークルームを選択してください",
         "countryUpdated": "国が正常に更新されました",
         "setPasswordTextClasrm": "CLASRMのパスワードをまだ設定していないようです。今すぐパスワードを設定するには、[パスワードの設定]をクリックしてください。それ以外の場合は、[キャンセル]をクリックしてください。",
-        "youAreNowFriends": "あなたと{{friend}}は友達になりました"
+        "youAreNowFriends": "あなたと{{ friend }}は友達になりました"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",
@@ -1215,9 +1215,11 @@
       "specialSignupBonus": "新規登録スペシャルボーナス",
       "amazonGiftCardText": "と交換できるポイントが当たる",
       "scanQr":"QRをスキャン",
-      "myQrCode":"私のQRコード",
+      "myQrCode":"自分のQRコード",
       "addFriendId":"友達ID検索を追加",
-      "selectFile":"ファイルを選択する"
+      "selectFile":"ファイルを選択する",
+      "UploadQRCode":"画像フォルダのQRコードで検索",
+      "searchByImage":"画像フォルダで検索"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

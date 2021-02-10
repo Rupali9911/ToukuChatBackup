@@ -1215,7 +1215,9 @@
       "myQrCode":"My QR code",
       "addFriendId":"Add friend ID search",
       "scanQr":"Add friend QR code",
-      "selectFile":"Select file"
+      "selectFile":"Select file",
+      "UploadQRCode":"Upload a QR code",
+      "searchByImage":"Search by Image folder"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",

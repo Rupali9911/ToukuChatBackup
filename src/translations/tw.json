@@ -1216,7 +1216,9 @@
       "scanQr":"添加朋友的QR码",
       "myQrCode":"我的二維碼",
       "addFriendId":"添加朋友ID搜索",
-      "selectFile":"選擇文件"
+      "selectFile":"選擇文件",
+      "UploadQRCode":"上傳二維碼",
+      "searchByImage":"按圖像文件夾搜索"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

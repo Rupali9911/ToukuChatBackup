@@ -14,7 +14,7 @@ import { RNCamera } from 'react-native-camera';
 import CameraRoll from "@react-native-community/cameraroll";
 import ImagePicker from 'react-native-image-picker';
 import { QRreader } from "react-native-qr-decode-image-camera";
-import {Colors, Fonts, Images, registerUrl, registerUrlStage} from "../../constants";
+import {Colors, Fonts, Icons, Images, registerUrl, registerUrlStage} from "../../constants";
 import {globalStyles} from "../../styles";
 import HeaderWithBack from "../../components/Headers/HeaderWithBack";
 import {translate} from "../../redux/reducers/languageReducer";
@@ -176,14 +176,22 @@ class AddFriendByQr extends Component {
                                     source={Images.header_bg_small}
                                     style={{flex: 1, flexDirection: 'row', width: '100%', height: 80, position: 'absolute', bottom: 0}}
                                     resizeMode="cover">
-                                    <TouchableOpacity style={{flex: 1,alignSelf: 'center'}} onPress={() => this.showMyQrCode()}>
-                                        <Text style={{alignSelf: 'center', justifyContent: 'center', fontFamily: Fonts.regular, fontWeight: '400', fontSize: 20, color: 'white'}}>{translate('pages.xchat.myQrCode')}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={{position: 'absolute', padding: 10, alignSelf: 'center', right: 0}} onPress={() => this.getRecentMedias()}>
+                                    <View style={{flex: 1}}>
+                                    <TouchableOpacity activeOpacity={1} style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}} onPress={() => this.showMyQrCode()}>
                                         <Image
-                                            style={{width: 60, height: 60}}
-                                            source={{ uri: recentImageData[0].node.image.uri }}/>
+                                            style={{width: 25, height: 25, alignSelf: 'center', padding: 10}}
+                                            source={Icons.icon_qr}/>
+                                        <Text style={{textAlign: 'center',alignSelf: 'center', justifyContent: 'center', padding: 10, fontFamily: Fonts.regular, fontWeight: '400', fontSize: 14, color: 'white'}}>{translate('pages.xchat.myQrCode')}</Text>
                                     </TouchableOpacity>
+                                    </View>
+                                    <View style={{flex: 1}}>
+                                    <TouchableOpacity activeOpacity={1} style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}} onPress={() => this.getRecentMedias()}>
+                                        <Image
+                                            style={{width: 25, height: 25, alignSelf: 'center', justifyContent: 'center'}}
+                                            source={Icons.icon_searchQr}/>
+                                        <Text style={{textAlign: 'center', alignSelf: 'center', padding: 10, fontFamily: Fonts.regular, fontWeight: '400', fontSize:14 , color: 'white'}}>{translate('pages.xchat.searchByImage')}</Text>
+                                    </TouchableOpacity>
+                                    </View>
                                 </ImageBackground>
                                 : null
                         }

@@ -2274,8 +2274,7 @@ class Chat extends Component {
               title: translate('pages.xchat.friendRequest'),
               text: translate(
                   'pages.xchat.toastr.youAreNowFriends',
-              ).replace(
-                  this.props.selectedLanguageItem.language_name === 'ja' ? '[missing {{friend}} value]' : '[missing {{ friend }} value]',
+              ).replace('[missing {{ friend }} value]',
                   displayName,
               ),
               type: 'positive',

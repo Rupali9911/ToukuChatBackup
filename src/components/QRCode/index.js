@@ -83,7 +83,7 @@ class QRCodeClass extends Component {
             <View style={{top: 27}}>
               <QRCode
                 size={115}
-                value={(staging ? registerUrl : registerUrlStage) + this.state.referralCode}
+                value={(staging ? registerUrlStage : registerUrl) + this.state.referralCode}
               />
             </View>
           </View>

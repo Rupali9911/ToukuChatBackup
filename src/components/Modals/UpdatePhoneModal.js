@@ -305,7 +305,7 @@ class UpdatePhoneModal extends Component {
               onPress={this.onRequestClose.bind(this)}
             />
           </LinearGradient>
-
+          <ScrollView>
           <View style={{padding: 15}}>
             <View style={{marginTop: 20}}>
               <CountryPhoneInput
@@ -340,6 +340,7 @@ class UpdatePhoneModal extends Component {
               />
             </View>
           </View>
+          </ScrollView>
         </View>
         <View style={{position: 'absolute', width: '100%', top: 0}}>
           <Toast

@@ -1217,7 +1217,9 @@
       "scanQr":"친구 QR 코드 추가",
       "myQrCode":"내 QR 코드",
       "addFriendId":"친구 ID 검색 추가",
-      "selectFile":"파일 선택"
+      "selectFile":"파일 선택",
+      "UploadQRCode":"QR 코드 업로드",
+      "searchByImage":"이미지 폴더로 검색"
     },
     "welcome":{
       "theWorldIsConnected":"\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",
