@@ -57,7 +57,7 @@ export default function (state = initialState, action) {
     case GET_TREND_TIMELINE_SUCCESS:
       return {
         ...state,
-        trendTimline: action.payload,
+        trendTimline: [...action.payload],
         loading: false,
       };
 
@@ -296,6 +296,12 @@ export const getChannelTimeline = (groupId, lastId) => {
       });
   });
 };
+
+export const updateTrendTimeline = (data) => (dispatch) => {
+  dispatch(getTrendTimelineSuccess(data));
+}
+
+
 //
 export const getTrendTimeline = (userType) => (dispatch) =>
   new Promise(function (resolve, reject) {

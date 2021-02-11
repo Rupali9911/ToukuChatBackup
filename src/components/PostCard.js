@@ -101,6 +101,8 @@ export default class PostCard extends Component {
           post={post}
           isChannelTimeline={isChannelTimeline}
           isTimeline={isTimeline}
+          index={index}
+          onFollowUnfollowChannel={this.props.onFollowUnfollowChannel}
         />
         <PostChannelItem post={post} />
       </View>

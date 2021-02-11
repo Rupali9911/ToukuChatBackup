@@ -17,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-navigation';
 const {width, height} = Dimensions.get('window');
 import {isIphoneX} from '../utils';
+import Toast from './Toast';
 
 const S = StyleSheet.create({
   container: {
@@ -120,18 +121,42 @@ class TabBarComp extends Component {
         {routes.map((route, routeIndex) => {
           const isRouteActive = routeIndex === activeRouteIndex;
           const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
-          if(route.routeName === "Rewards" && userData.user_type!=='owner' && userData.user_type!=='tester' && userData.user_type!=='company'){
-            return null;
-          }
+          // if(route.routeName === "Rewards" && userData.user_type!=='owner' && userData.user_type!=='tester' && userData.user_type!=='company'){
+          //   return null;
+          // }
           return (
             <TouchableOpacity
               key={routeIndex}
               style={[S.tabButton]}
               onPress={() => {
-                onTabPress({route});
+                if(route.routeName === "Rewards"){
+                  if(userData.user_type==='owner' || userData.user_type==='company' || userData.user_type==='tester'){
+                    onTabPress({route});
+                  }else{
+                    Toast.show({
+                      title: translate('pages.xchat.touku'),
+                      text: translate('pages.clasrm.comingSoon'),
+                      type: 'positive'
+                    });
+                  }
+                }else{
+                  onTabPress({route});
+                }
               }}
               onLongPress={() => {
-                onTabLongPress({route});
+                if (route.routeName === "Rewards") {
+                  if (userData.user_type === 'owner' || userData.user_type === 'company' || userData.user_type === 'tester') {
+                    onTabPress({ route });
+                  } else {
+                    Toast.show({
+                      title: translate('pages.xchat.touku'),
+                      text: translate('pages.clasrm.comingSoon'),
+                      type: 'positive'
+                    });
+                  }
+                } else {
+                  onTabLongPress({ route });
+                }
               }}
               accessibilityLabel={getAccessibilityLabel({route})}>
               {renderIcon({route, focused: isRouteActive, tintColor})}

@@ -346,18 +346,19 @@ class AmazonExchange extends Component {
                                     borderRadius: 30,
                                     alignItems:'center'
                                 }}>
-                                    <TextInput style={{
-                                        flex: 1,
-                                        fontSize: normalize(14),
-                                        fontWeight: '600',
-                                        color: '#0a1f44',
-                                        textAlign: 'right'
-                                    }}
-                                    keyboardType={'numeric'}
-                                    value={this.state.tp_point+""}
+                                    <TextInput
+                                        style={{
+                                            flex: 1,
+                                            fontSize: normalize(14),
+                                            fontWeight: '600',
+                                            color: '#0a1f44',
+                                            textAlign: 'right'
+                                        }}
+                                        keyboardType={'numeric'}
+                                        value={this.state.tp_point + ""}
                                         onChangeText={(text) => {
-                                            if(isNumeric(text)){
-                                                this.setState({ tp_point: text, point_in_yen: text })    
+                                            if (isNumeric(text) || text.length==0) {
+                                                this.setState({ tp_point: text, point_in_yen: text })
                                             }
                                         }}
                                     />
@@ -389,6 +390,7 @@ class AmazonExchange extends Component {
                                         type={isExchange ? '' : 'translucent'}
                                         title={translate('pages.adWall.confirm')}
                                         onPress={() => {
+
                                             if(this.props.userData.total_tp<5){
                                                 Toast.show({
                                                     title: 'Touku',
@@ -397,13 +399,21 @@ class AmazonExchange extends Component {
                                                 });
                                                 return;
                                             }
-                                            if(parseFloat(this.state.tp_point)<5){
+                                            if(this.state.tp_point.length==0 || parseFloat(this.state.tp_point)<5){
                                                 Toast.show({
                                                     title: 'Touku',
                                                     text: translate(`pages.adWall.minimumAmountOfTp`),
                                                     type: 'primary',
                                                 });
                                                 return;
+                                            }
+                                            if(parseFloat(this.state.tp_point)>this.props.userData.total_tp){
+                                                Toast.show({
+                                                    title: 'Touku',
+                                                    text: translate(`pages.adWall.dontHaveSufficientAmount`),
+                                                    type: 'primary',
+                                                });
+                                               return; 
                                             }
                                             if (!this.props.userData.phone) {
                                                 this.setState({showPhoneUpdateModal: true});

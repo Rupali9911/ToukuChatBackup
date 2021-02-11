@@ -457,6 +457,7 @@ class GroupChatMessageBubble extends Component {
           // console.log('groupMember',groupMember);
           if (text.includes(`~${groupMember.id}~`)) {
             mention = `@${getUserName(groupMember.id) || groupMember.desplay_name || groupMember.username}`;
+            mention = text.replace(`~${groupMember.id}~`,mention);
             newMessageMentions = [...newMessageMentions, groupMember.id];
           }
         });

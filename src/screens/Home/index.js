@@ -131,7 +131,8 @@ class Home extends PureComponent {
     this.listener;
     this.state = {
       orientation: 'PORTRAIT',
-      isChannelCollapsed: (this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester')?false:true,
+      // isChannelCollapsed: (this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester')?false:true,
+      isChannelCollapsed: false,
       isFriendReqCollapse: true,
       isGroupCollapsed: false,
       isFriendsCollapsed: false,
@@ -1794,7 +1795,8 @@ class Home extends PureComponent {
               <CollapseBody>{this.renderUserFriends()}</CollapseBody>
             </Collapse>
 
-            {(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester') && <View>
+            {/* {(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester') &&  */}
+            <View>
             <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
               <Text style={[
                 {
@@ -1910,7 +1912,15 @@ class Home extends PureComponent {
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity style={{ flex: 1 }} onPress={() => {
-                  this.getUniqueUrl();
+                  if(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester'){
+                    this.getUniqueUrl();
+                  }else{
+                    Toast.show({
+                      title: translate('pages.xchat.touku'),
+                      text: translate('pages.clasrm.comingSoon'),
+                      type: 'positive'
+                    });
+                  }
                 }}>
                   {/* <LinearGradient
                   start={{ x: 0.03, y: 0.7 }}
@@ -1959,7 +1969,8 @@ class Home extends PureComponent {
                       marginRight: 15
                     }}>
                       <Image
-                        source={{ uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png' }}
+                        source = {{uri: 'https://cdn.angelium.net/touku/assets/images/lady_cartoon.jpg'}}
+                        // source={{ uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png' }}
                         style={{ width: 100, height: 100, borderRadius: 5 }}
                       />
                       <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.earnChannels')}</Text>
@@ -1996,8 +2007,16 @@ class Home extends PureComponent {
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity style={{}} onPress={() => {
-                    this.props.setActiveTimelineTab('ranking');
-                    this.props.navigation.navigate('Timeline', { activeTab: 'ranking' })
+                    if(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester'){
+                      this.props.setActiveTimelineTab('ranking');
+                      this.props.navigation.navigate('Timeline', { activeTab: 'ranking' })
+                    }else{
+                      Toast.show({
+                        title: translate('pages.xchat.touku'),
+                        text: translate('pages.clasrm.comingSoon'),
+                        type: 'positive'
+                      });
+                    }
                   }}>
                     <View style={{
                       width: 100,
@@ -2013,7 +2032,8 @@ class Home extends PureComponent {
                   </TouchableOpacity>
                 </ScrollView>
               </View>
-            </View>}
+            </View>
+            {/* } */}
           </KeyboardAwareScrollView>
         </View>
       </View>

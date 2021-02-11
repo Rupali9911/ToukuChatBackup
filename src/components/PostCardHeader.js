@@ -31,6 +31,7 @@ export default class PostCardHeader extends Component {
     super(props);
     this.state = {
       visible: false,
+      isLoading: false,
     };
   }
 
@@ -89,7 +90,7 @@ export default class PostCardHeader extends Component {
   };
 
   render() {
-    const {post, menuItems, isTimeline, isChannelTimeline} = this.props;
+    const {post, menuItems, isTimeline, isChannelTimeline, index} = this.props;
     return (
       <View
         style={{
@@ -185,6 +186,13 @@ export default class PostCardHeader extends Component {
                 type={'primaryNew'}
                 height={'85%'}
                 fontType={'normalRegular15Text'}
+                loading={this.state.isLoading && !post.is_following}
+                onPress={()=>{
+                  if(!post.is_following){
+                    this.setState({isLoading:true});
+                    this.props.onFollowUnfollowChannel(post.channel_id,index,post.channel_name)
+                  }
+                }}
               />
             </View>
 

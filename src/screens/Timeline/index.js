@@ -23,13 +23,18 @@ import {
   hidePost,
   hideAllPost,
   reportPost,
-  updateRankingChannel
+  updateRankingChannel,
+  updateTrendTimeline
 } from '../../redux/reducers/timelineReducer';
+import {
+  followChannel
+} from '../../redux/reducers/channelReducer';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {resetData} from '../../storage/Service';
 import {ListLoader} from '../../components/Loaders';
 import {setActiveTimelineTab} from '../../redux/reducers/timelineReducer';
+import {showToast} from '../../utils';
 
 class Timeline extends Component {
   constructor(props) {
@@ -132,6 +137,18 @@ class Timeline extends Component {
               .catch((err) => {
                 this.setState({isLoading: false});
               });
+          },
+        },
+        {
+          id: 3,
+          title: 'ranking',
+          icon: Icons.icon_timeline,
+          action: () => {
+            showToast(
+              translate('pages.xchat.touku'),
+              translate('pages.clasrm.comingSoon'),
+              'positive'
+            );
           },
         },
       ],
@@ -316,6 +333,41 @@ class Timeline extends Component {
     this.updateModalVisibility();
   }
 
+  onFollowUnfollow = async (channel_id, index, channel_name) => {
+    const {trendTimline} = this.props;
+    let data = {
+      channel_id: channel_id,
+      user_id: this.props.userData.id,
+    };
+    this.props
+      .followChannel(data)
+      .then((res) => {
+        if (res.status === true) {
+          showToast(
+            channel_name,
+            translate('pages.xchat.toastr.AddedToNewChannel'),
+            'positive',
+          );
+          let item = trendTimline[index];
+          item.is_following = true;
+          let array = trendTimline;
+          array.splice(index, 1, item);
+          this.props.updateTrendTimeline(array);
+        }
+      })
+      .catch((err) => {
+        showToast(
+          'Touku',
+          translate('common.somethingWentWrong'),
+          'primary',
+        );
+        this.isFollowing = false;
+        this.setState({
+          isLoading: false,
+        });
+      });
+  };
+
   render() {
     const {
       tabBarItem,
@@ -353,6 +405,7 @@ class Timeline extends Component {
                   posts={trendTimline}
                   isTimeline={true}
                   navigation={this.props.navigation}
+                  onFollowUnfollowChannel={this.onFollowUnfollow}
                 />
               ) : activeTab === 'following' ? (
                 <PostCard
@@ -434,7 +487,9 @@ const mapDispatchToProps = {
   hideAllPost,
   reportPost,
   setActiveTimelineTab,
-  updateRankingChannel
+  updateRankingChannel,
+  followChannel,
+  updateTrendTimeline
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);
