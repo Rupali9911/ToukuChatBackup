@@ -20,7 +20,7 @@ export default class InputField extends Component {
     super(props);
     this.state = {
       isFocus: false,
-      showEyeIcon: true,
+      showEyeIcon: false,
     };
   }
 
@@ -160,7 +160,7 @@ export default class InputField extends Component {
           keyboardType={keyboardType}
           maxLength={maxLength}
           secureTextEntry={
-            isEyeIcon ? (showEyeIcon ? true : false) : secureTextEntry
+            isEyeIcon ? (showEyeIcon ? false : true) : secureTextEntry
           }
           onFocus={() => this.onFocus()}
           onBlur={() => this.onBlur()}

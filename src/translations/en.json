@@ -1667,7 +1667,9 @@
       "bonusUseText2": "*TP can be exchanged with Amazon gift card",
       "bonusUseText3": "*XP can be used to play XIGOLO(games) of the HOME screen",
       "firstTimeExchangeText": "(*At least 5TP can be exchanged only during the new registration campaign)",
-      "processingDetail": "(Closed on Sundays and paid on Wednesdays after 24:00 on Wednesdays)"
+      "processingDetail": "(Closed on Sundays and paid on Wednesdays after 24:00 on Wednesdays)",
+      "pleaseEnterOtp": "Please enter OTP",
+      "enterVerificationCode": "Please enter verification code"
     }
   },
   "swal":{

@@ -155,7 +155,6 @@ export default class App extends Component {
 
   navigateToChannelInfo = async (data, url) => {
     const userToken = await AsyncStorage.getItem('userToken');
-
     if (userToken) {
       let route = NavigationService.getCurrentRoute();
       let routeName = route.routeName;
@@ -209,12 +208,14 @@ export default class App extends Component {
                  NavigationService.navigate('Chat');
              }
          }else{
-            NavigationService.navigate('SignUp', {
-                showEmail: true,
-                pageNumber: 0,
-                isSocial: false,
-                invitationCode: invitationCode,
-            });
+            // NavigationService.navigate('SignUp', {
+            //     showEmail: true,
+            //     pageNumber: 0,
+            //     isSocial: false,
+            //     invitationCode: invitationCode,
+            // });
+             NavigationService.navigate('LoginSignUp')
+             NavigationService.navigate('Login');
          }
 
     } else if (loginUrl === channelLoginUrl) {

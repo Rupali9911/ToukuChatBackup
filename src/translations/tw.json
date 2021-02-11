@@ -1660,7 +1660,9 @@
       "bonusUseText2": "* TP可以換成Amazon禮券",
       "bonusUseText3": "* XP可以在主屏幕的XIGOLO（遊戲）中使用。",
       "firstTimeExchangeText": "（*至少在新的註冊活動期間可以交換5TP）",
-      "processingDetail": "（在星期三的24:00之後的每個星期日付款）"
+      "processingDetail": "（在星期三的24:00之後的每個星期日付款）",
+      "pleaseEnterOtp": "請輸入您的短信驗證碼",
+      "enterVerificationCode": "輸入您收到的短信驗證碼"
     }
   },
   "swal":{

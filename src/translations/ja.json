@@ -1669,7 +1669,9 @@
       "bonusUseText2": "※TPはAmazonギフト券と交換ができます",
       "bonusUseText3": "※XPはホーム画面のXIGOLO（ゲーム）で利用できます",
       "firstTimeExchangeText": "（＊新規登録キャンペーン中のみ最低 5TP～交換可能）",
-      "processingDetail": "（毎週、日曜日締め水曜日の24時以降に支払われます）"
+      "processingDetail": "（毎週、日曜日締め水曜日の24時以降に支払われます）",
+      "pleaseEnterOtp": "SMS認証コードを入力ください",
+      "enterVerificationCode": "受け取ったSMS認証コードを入力"
     }
   },
   "swal": {
@@ -1684,7 +1686,7 @@
     "NeedToAddPhoneNumber": "ボーナスを獲得するには、電話番号を入力する必要があります。",
     "AuthenticateNumber": "電話番号を認証する",
     "extraCashWiningText": "ゲームで遊んでお小遣いGET",
-    "xpusedForText": "※XPはホーム画面の「XIGOLO（ゲーム」で利用できます"
+    "xpusedForText": "※XPはホーム画面のXIGOLO(ゲーム)で利用できます"
   },
   "toastr": {
     "pleaseEnterYourPassword": "パスワードを入力",

@@ -209,6 +209,7 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (message) => {
+      console.log('renderReplyMessage', message)
     let replyMessage = message.reply_to;
 
     if (replyMessage.message) {
@@ -473,11 +474,15 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderLinkMedia = (text) => {
-    return linkify().match(text).map((item) => {
-      return (
-        <LinkPreviewComponent text={item.text} url={item.url} />
-      );
-    });
+      console.log('renderLinkMedia text', text)
+      let arrLinks = linkify().match(text)
+      if (arrLinks) {
+          return arrLinks.map((item) => {
+              return (
+                  <LinkPreviewComponent text={item.text} url={item.url}/>
+              );
+          });
+      }
   }
 
   render() {

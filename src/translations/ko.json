@@ -1669,7 +1669,9 @@
       "bonusUseText2": "※ TP는 Amazon 상품권과 교환 할 수 있습니다",
       "bonusUseText3": "※ XP는 홈 화면의 XIGOLO (게임)에서 사용할 수 있습니다",
       "firstTimeExchangeText": "(* 신규 등록 캠페인 동안에 만 최소 5TP ~ 교환 가능)",
-      "processingDetail": "(매주 일요일 조이 수요일 24시 이후에 지급됩니다)"
+      "processingDetail": "(매주 일요일 조이 수요일 24시 이후에 지급됩니다)",
+      "pleaseEnterOtp": "SMS 인증 코드를 입력하세요",
+      "enterVerificationCode": "받은 SMS 인증 코드를 입력"
     }
   },
   "swal":{

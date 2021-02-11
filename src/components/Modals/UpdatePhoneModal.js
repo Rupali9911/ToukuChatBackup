@@ -309,7 +309,7 @@ class UpdatePhoneModal extends Component {
           <View style={{padding: 15}}>
             <View style={{marginTop: 20}}>
               <CountryPhoneInput
-                rightBtnText={'SMS'}
+                rightBtnText={translate('common.sms')}
                 onClickSMS={() => this.sendOTP()}
                 onChangePhoneNumber={(phone, code) =>
                   this.onChangePhoneNumber(phone, code)
@@ -323,7 +323,7 @@ class UpdatePhoneModal extends Component {
                   this.inputs['verifycode'] = ref;
                 }}
                 value={this.state.verifycode}
-                placeholder={translate('pages.xchat.PleaseEnterOtp')}
+                placeholder={translate('common.enterYourAuthenticationCode')}
                 returnKeyType={'done'}
                 keyboardType={'number-pad'}
                 onChangeText={(verifycode) => this.setState({verifycode})}

@@ -331,11 +331,14 @@ class ChatMessageBubble extends Component {
   };
 
   renderLinkMedia = (text) => {
-    return linkify().match(text).map((item)=>{
-      return(
-        <LinkPreviewComponent text={item.text} url={item.url}/>
-      );
-    });
+      let arrLinks = linkify().match(text)
+      if (arrLinks){
+          return arrLinks.map((item)=>{
+              return(
+                  <LinkPreviewComponent text={item.text} url={item.url}/>
+              );
+          });
+      }
   }
 
   isContainUrl = (text) => {

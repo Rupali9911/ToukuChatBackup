@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 45 / 2,
     backgroundColor: Colors.white,
     height: 45,
-    flex: 0.25,
+    flex: 0.35,
   },
   rightBtnSubContainer: {
     borderTopRightRadius: 45 / 2,

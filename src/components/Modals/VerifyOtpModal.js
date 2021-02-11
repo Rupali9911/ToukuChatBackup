@@ -76,7 +76,7 @@ class VerifyOtpModal extends Component {
             style={styles.header}>
             <View style={{flex: 1,justifyContent:'center'}}>
               <Text style={[globalStyles.normalLightText, { marginTop:5, textAlign: 'left'}]}>
-                {translate('pages.xchat.PleaseEnterOtp')}
+                {translate('pages.adWall.pleaseEnterOtp')}
               </Text>
             </View>
             <ClickableImage
@@ -93,7 +93,7 @@ class VerifyOtpModal extends Component {
                   this.inputs['verifycode'] = ref;
                 }}
                 value={this.state.verifycode}
-                placeholder={translate('pages.xchat.PleaseEnterOtp')}
+                placeholder={translate('pages.adWall.enterVerificationCode')}
                 returnKeyType={'done'}
                 keyboardType={'number-pad'}
                 onChangeText={(verifycode) => this.setState({verifycode})}
