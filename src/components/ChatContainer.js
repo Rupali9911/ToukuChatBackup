@@ -12,7 +12,7 @@ import {
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView, KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 
 import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
@@ -220,13 +220,14 @@ class ChatContainer extends Component {
             },
           ]}>
           <Fragment>
-            <FlatList
+            <KeyboardAwareFlatList
               // style={{flexGrow:1}}
+              enableResetScrollToCoords={false}
               contentContainerStyle={[
                 chatStyle.messareAreaScroll,
                 isReply && {paddingBottom: '20%'},
               ]}
-              ref={(view) => {
+              innerRef={(view) => {
                 this.scrollView = view;
               }}
               onContentSizeChange={() => {

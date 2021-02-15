@@ -225,6 +225,7 @@ class GroupChatContainer extends Component {
           this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
         keyboardOpeningTime={1500}
+        scrollEnabled={false}
         extraHeight={200}>
         <View
           style={[
@@ -241,13 +242,14 @@ class GroupChatContainer extends Component {
             },
           ]}>
           <Fragment>
-            <FlatList
+            <KeyboardAwareFlatList
               style={{}}
+              enableResetScrollToCoords={false}
               contentContainerStyle={[
                 chatStyle.messareAreaScroll,
                 isReply && {paddingBottom: '20%'},
               ]}
-              ref={(view) => {
+              innerRef={(view) => {
                 this.scrollView = view;
               }}
               onContentSizeChange={(contentWidth, contentHeight) => {

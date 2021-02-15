@@ -187,13 +187,16 @@ export const onPressHyperlink = (url) => {
 
 export const getUserName = (id) => {
   console.log('getUserName', id)
-  let users = getLocalUserFriend(id);
-  let user_name = '';
-  if(users && users.length>0){
-    let user = users.toJSON()[0];
-    user_name = user.display_name || user.username;
+  if(id){
+    let users = getLocalUserFriend(id);
+    let user_name = '';
+    if(users && users.length>0){
+      let user = users.toJSON()[0];
+      user_name = user.display_name || user.username;
+    }
+    return user_name;
   }
-  return user_name;
+  return '';
 }
 
 export const getUser_ActionFromUpdateText = (text) => {
