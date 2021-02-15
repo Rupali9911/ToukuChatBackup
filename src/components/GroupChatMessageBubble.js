@@ -209,7 +209,6 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (message) => {
-      console.log('renderReplyMessage', message)
     let replyMessage = message.reply_to;
 
     if (replyMessage.message) {

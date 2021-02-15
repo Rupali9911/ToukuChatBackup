@@ -186,7 +186,6 @@ export const onPressHyperlink = (url) => {
 }
 
 export const getUserName = (id) => {
-  console.log('getUserName', id)
   if(id){
     let users = getLocalUserFriend(id);
     let user_name = '';

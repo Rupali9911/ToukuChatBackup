@@ -1,6 +1,6 @@
 {
   "name": "Touku",
-  "version": "3.0.35",
+  "version": "3.0.36",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
