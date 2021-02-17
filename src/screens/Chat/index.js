@@ -37,6 +37,7 @@ import {
 import {
   setCommonChatConversation,
   setDeleteChat,
+  setSwipeItem
 } from '../../redux/reducers/commonReducer';
 import {
   getUserChannels,
@@ -49,7 +50,9 @@ import {
   updateCurrentChannel,
   checkLoginBonusOfChannel,
   getLoginBonusOfChannel,
-  selectRegisterJackpot
+  selectRegisterJackpot,
+  pinChannel,
+  unpinChannel,
 } from '../../redux/reducers/channelReducer';
 import {setFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
@@ -64,6 +67,8 @@ import {
   getGroupDetail,
   markGroupConversationRead,
   deleteChat,
+  pinGroup,
+  unpinGroup,
 } from '../../redux/reducers/groupReducer';
 import {getFriendRequest} from '../../redux/reducers/addFriendReducer';
 import {
@@ -78,7 +83,9 @@ import {
   setFriendConversation,
   markFriendMsgsRead,
   unFriendUser,
-    addFriendByReferralCode
+    addFriendByReferralCode,
+  pinFriend,
+  unpinFriend,
 } from '../../redux/reducers/friendReducer';
 import SingleSocket from '../../helpers/SingleSocket';
 
@@ -161,6 +168,7 @@ import EmailConfirmationModal from '../../components/Modals/EmailConfirmationMod
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from "@react-native-community/async-storage";
 import BonusModal from "../../components/Modals/BonusModal";
+import { SwipeItem } from '../../components/Swipeable';
 
 let channelId = [];
 let friendId = [];
@@ -207,6 +215,8 @@ class Chat extends Component {
     };
     this.SingleSocket = SingleSocket.getInstance();
   }
+
+  _showingSwipeButton = null;
 
   static navigationOptions = () => {
     return {
@@ -2957,6 +2967,7 @@ class Chat extends Component {
 
   actionDelete = async () => {
     this.setState({isDeleteLoading: true});
+    console.log('deleteObj',deleteObj);
     this.props.deleteChat(deleteObj).then((res) => {
       this.setState({isDeleteLoading: false});
       if (res && res.status) {
@@ -3010,6 +3021,153 @@ class Chat extends Component {
 
   actionEmailCancel() {
     this.updatePasswordModalVisibility();
+  }
+
+  onPinUnpinGroup = (item) => {
+    if (item.is_pined) {
+      this.props
+        .unpinGroup(item.group_id)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyUnPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    } else {
+      this.props
+        .pinGroup(item.group_id)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
+
+  onPinUnpinChannel = (item) => {
+    if (item.is_pined) {
+      this.props
+        .unpinChannel(item.id)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyUnPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    } else {
+      this.props
+        .pinChannel(item.id)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
+
+  onPinUnpinFriend = (item) => {
+    if (item.is_pined) {
+      this.props
+        .unpinFriend(item.friend, item.user_id)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyUnPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    } else {
+      this.props
+        .pinFriend(item.friend, item.user_id)
+        .then((res) => {
+          if (res.status === true) {
+            Toast.show({
+              title: 'Touku',
+              text: translate('pages.xchat.sucessFullyPined'),
+              type: 'positive',
+            });
+          }
+        })
+        .catch((err) => {
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        });
+    }
+  };
+
+  onSwipeInitial = (swipeItem) => {
+    if (swipeItem !== this._showingSwipeButton && this._showingSwipeButton != null) {
+      console.log('buttons close');
+      this._showingSwipeButton.close();
+      this._showingSwipeButton = null;
+    }
+  }
+
+  onSwipeButtonShowed = (swipeItem) => {
+    this._showingSwipeButton = swipeItem;
+  }
+
+  setDataToDeleteChat = () => {
+    let channel_ids = channelId;
+    let friend_ids = friendId;
+    let group_ids = groupId;
+    let replies_ids = [];
+    deleteObj = { channel_ids, friend_ids, group_ids, replies_ids };
+    this.updateModalVisibility();
   }
 
   renderCommonChat = () => {
@@ -3071,6 +3229,18 @@ class Chat extends Component {
                 isUncheck={isUncheck}
                 item={item}
                 isPined={item.is_pined}
+                swipeable={true}
+                onSwipeButtonShowed={this.onSwipeButtonShowed}
+                onSwipeInitial={this.onSwipeInitial}
+                onDeleteChat={(id)=>{
+                  if(id){
+                    groupId.push(id);
+                    this.setDataToDeleteChat();
+                  }
+                }}
+                onPinUnpinChat={(item)=>{
+                  this.onPinUnpinGroup(item);
+                }}
               />
             ) : item.chat === 'channel' ? (
               <ChannelListItem
@@ -3105,6 +3275,18 @@ class Chat extends Component {
                 isUncheck={isUncheck}
                 item={item}
                 isPined={item.is_pined}
+                swipeable={true}
+                onSwipeButtonShowed={this.onSwipeButtonShowed}
+                onSwipeInitial={this.onSwipeInitial}
+                onDeleteChat={(id)=>{
+                  if(id){
+                    channelId.push(id);
+                    this.setDataToDeleteChat();
+                  }
+                }}
+                onPinUnpinChat={(item)=>{
+                  this.onPinUnpinChannel(item);
+                }}
               />
             ) : (
               <FriendListItem
@@ -3151,6 +3333,18 @@ class Chat extends Component {
                 isUncheck={isUncheck}
                 item={item}
                 isPined={item.is_pined}
+                swipeable={true}
+                onSwipeButtonShowed={this.onSwipeButtonShowed}
+                onSwipeInitial={this.onSwipeInitial}
+                onDeleteChat={(id)=>{
+                  if(id){
+                    friendId.push(id);
+                    this.setDataToDeleteChat();
+                  }
+                }}
+                onPinUnpinChat={(item)=>{
+                  this.onPinUnpinFriend(item);
+                }}
               />
             )
           }
@@ -3373,7 +3567,13 @@ const mapDispatchToProps = {
   addFriendByReferralCode,
   checkLoginBonusOfChannel,
   getLoginBonusOfChannel,
-  selectRegisterJackpot
+  selectRegisterJackpot,
+  pinGroup,
+  unpinGroup,
+  pinChannel,
+  unpinChannel,
+  pinFriend,
+  unpinFriend,
 };
 
 export default connect(

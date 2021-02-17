@@ -8,10 +8,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {WebView} from 'react-native-webview';
-import VideoPlayer from 'react-native-video-player';
+// import VideoPlayer from 'react-native-video-player';
 import {createThumbnail} from 'react-native-create-thumbnail';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import YouTube from 'react-native-youtube';
+import Video from 'react-native-video';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
@@ -219,17 +220,32 @@ export default class VideoPlayerCustom extends Component {
             /> */}
         </View>
         :
-        <VideoPlayer
-          video={{
-            uri: url,
-        }}
-        // autoplay
-        fullScreenOnLongPress
-        videoWidth={width ? width : 1600}
-        videoHeight={height ? height : 900}
-        thumbnail={thumbnailUrl ? {uri: thumbnailUrl} : ''}
-        onError={(err)=>console.log('video_player_error',err)}
-      />
+      //   <VideoPlayer
+      //     video={{
+      //       uri: url,
+      //   }}
+      //   // autoplay
+      //   fullScreenOnLongPress
+      //   videoWidth={width ? width : 1600}
+      //   videoHeight={height ? height : 900}
+      //   thumbnail={thumbnailUrl ? {uri: thumbnailUrl} : ''}
+      //   onError={(err)=>console.log('video_player_error',err)}
+      // />
+        <Video source={{ uri: url }}   // Can be a URL or a local file.
+          ref={(ref) => {
+            this.player = ref
+          }} 
+          paused={true}  
+          controls={true}                                   // Store reference
+          // onBuffer={this.onBuffer}                // Callback when remote video is buffering
+          // onError={this.videoError}               // Callback when video cannot be loaded
+          style={{
+            width: 260,
+            height: 150
+          }} 
+          poster={thumbnailUrl}
+          resizeMode={'contain'}
+          />
     );
   }
 }

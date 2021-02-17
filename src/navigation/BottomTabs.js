@@ -20,6 +20,7 @@ import AddFriend from '../screens/AddFriend';
 import AmazonExchange from '../screens/AmazonExchange';
 import ExchangeHistory from '../screens/ExchangeHistory';
 import AddFriendByQr from '../screens/AddFriendByQr';
+import Rewards from '../screens/Rewards';
 import TabBarComp from '../components/TabBarComp';
 import {BottomTabItem} from '../components/ListItems';
 
@@ -135,21 +136,21 @@ const Tabs = createBottomTabNavigator(
     Timeline: TimelineTab,
     // Channel: ChannelTab,
     Rewards: {
-      screen: ()=>null,
+      screen: Rewards,
       navigationOptions: ({navigation}) => ({
-        tabBarOnPress: () => { 
-          // console.log('navigation',navigation);
-          client
-            .get(`xchat/get-adwall-unique-url/`)
-            .then((res) => {
-              if(res){
-                Linking.openURL(res.add_wall_url);
-              }
-            })
-            .catch((err) => {
-              console.log('err');
-            });
-        },
+        // tabBarOnPress: () => { 
+        //   // console.log('navigation',navigation);
+        //   client
+        //     .get(`xchat/get-adwall-unique-url/`)
+        //     .then((res) => {
+        //       if(res){
+        //         Linking.openURL(res.add_wall_url);
+        //       }
+        //     })
+        //     .catch((err) => {
+        //       console.log('err');
+        //     });
+        // },
       })
     },
     More: MoreTab,
@@ -167,6 +168,7 @@ const Tabs = createBottomTabNavigator(
       safeAreaInset: {right: 'never', left: 'never', bottom: 'always'},
       // labelStyle: {marginVertical: 5},
       showLabel: false,
+      keyboardHidesTabBar: true,
     },
     defaultNavigationOptions: ({navigation}) => ({
       tabBarIcon: ({focused, horizontal, tintColor}) => {

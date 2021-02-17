@@ -1,4 +1,4 @@
-import React, {Component, Fragment, PureComponent} from 'react';
+import React, { Component, Fragment, PureComponent } from 'react';
 import {
   View,
   Text,
@@ -10,14 +10,16 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {Badge, Divider} from 'react-native-paper';
-import {translate} from '../../redux/reducers/languageReducer';
+import { Badge, Divider } from 'react-native-paper';
+import languageReducer, { translate } from '../../redux/reducers/languageReducer';
 import RoundedImage from '../RoundedImage';
-import {globalStyles} from '../../styles';
-import {Colors} from '../../constants';
-import {getImage, getUserName, normalize} from '../../utils';
+import { globalStyles } from '../../styles';
+import { Colors } from '../../constants';
+import { getImage, getUserName, normalize, wait } from '../../utils';
 import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SwipeItem, SwipeButtonsContainer } from '../Swipeable';
 
 let groupId = [];
 export default class GroupListItem extends PureComponent {
@@ -25,17 +27,19 @@ export default class GroupListItem extends PureComponent {
     super(props);
     this.state = {
       isChecked: false,
-      newItem: {...this.props.item, isCheck: false},
+      newItem: { ...this.props.item, isCheck: false },
+      isSwipeButtonVisible: false,
     };
+    this.itemRef = null;
   }
 
   componentDidUpdate(props) {
     if (props.isVisible != this.props.isVisible) {
-      this.setState({newItem: {...this.props.item, isCheck: false}});
+      this.setState({ newItem: { ...this.props.item, isCheck: false } });
     }
   }
   componentDidMount(prevProps) {
-    this.setState({isChecked: false});
+    this.setState({ isChecked: false });
     groupId = [];
   }
 
@@ -58,7 +62,7 @@ export default class GroupListItem extends PureComponent {
         msgDate.getMinutes() < 10
           ? '0' + msgDate.getMinutes()
           : msgDate.getMinutes()
-      }`;
+        }`;
     }
     if (
       yesterday.getDate() === msgDate.getDate() &&
@@ -76,7 +80,7 @@ export default class GroupListItem extends PureComponent {
   };
 
   renderMessageWitMentions = (msg) => {
-    const {mentions} = this.props;
+    const { mentions } = this.props;
     let splitNewMessageText = msg.split(' ');
     let newMessageMentions = [];
     const newMessageTextWithMention = splitNewMessageText
@@ -87,7 +91,7 @@ export default class GroupListItem extends PureComponent {
           mentions.forEach((mentionUser) => {
             if (text.includes(`~${mentionUser.id}~`)) {
               mention = `@${getUserName(mentionUser.id) || mentionUser.desplay_name || mentionUser.username}`;
-              mention = text.replace(`~${mentionUser.id}~`,mention);
+              mention = text.replace(`~${mentionUser.id}~`, mention);
               newMessageMentions = [...newMessageMentions, mentionUser.id];
             }
           });
@@ -103,9 +107,9 @@ export default class GroupListItem extends PureComponent {
 
   manageRecord = (item, isCheck) => {
     if (isCheck === 'check') {
-      this.setState({newItem: {...item, isCheck: true}});
+      this.setState({ newItem: { ...item, isCheck: true } });
     } else if (isCheck === 'unCheck') {
-      this.setState({newItem: {...item, isCheck: false}});
+      this.setState({ newItem: { ...item, isCheck: false } });
     }
     this.props.onCheckChange('group', isCheck, item);
   };
@@ -121,155 +125,230 @@ export default class GroupListItem extends PureComponent {
       isVisible,
       item,
       isPined,
+      onSwipeButtonShowed,
+      onSwipeInitial,
+      swipeable,
+      onDeleteChat,
+      onPinUnpinChat
     } = this.props;
-    const {newItem} = this.state;
+    const { newItem,isSwipeButtonVisible } = this.state;
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
     return (
       <Fragment>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={
-            !isVisible
-              ? onPress
-              : () => {
-                  this.manageRecord(
-                    item,
-                    !newItem.isCheck ? 'check' : 'unCheck',
-                  );
-                }
-          }
-          style={styles.container}
-          // disabled={isVisible}
-        >
-          <View style={styles.firstView}>
-            {isVisible && newItem.isCheck === false ? (
-              <TouchableOpacity
-                style={styles.checkBox}
-                onPress={() => {
-                  // this.setState({isChecked: true});
-                  this.manageRecord(item, 'check');
-                }}
-              />
-            ) : (
-              isVisible &&
-              newItem.isCheck === true && (
-                <TouchableOpacity
-                  style={{alignSelf: 'center', justifyContent: 'center'}}
-                  onPress={() => {
-                    // this.setState({isChecked: false});
-                    this.manageRecord(item, 'unCheck');
+        <SwipeItem
+          style={{ flex: 1 }}
+          rightButtons={swipeable &&
+            <View style={{flexDirection:'row',height: '100%'}}>
+              <SwipeButtonsContainer
+                style={{
+                  alignSelf: 'center',
+                  aspectRatio: 1,
+                  height: '100%',
+                  flexDirection: 'row',
+                }}>
+                <TouchableOpacity style={{
+                  padding: 10,
+                  backgroundColor: '#99B1F9',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1
+                }} onPress={() => {
+                    console.log('pin chat');
+                    this.itemRef && this.itemRef.close()
+                    wait(200).then(()=>{
+                      onPinUnpinChat(item);
+                    });
                   }}>
+                <MaterialCommunityIcon
+                  name={item.is_pined ? 'pin-off' : 'pin'}
+                  size={20}
+                  color={Colors.white}
+                />
+                  {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
+                </TouchableOpacity>
+              </SwipeButtonsContainer>
+              <SwipeButtonsContainer
+                style={{
+                  alignSelf: 'center',
+                  aspectRatio: 1,
+                  height: '100%',
+                  flexDirection: 'row',
+                }}>
+                <TouchableOpacity style={{
+                  padding: 10,
+                  backgroundColor: '#F9354B',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1
+                }} onPress={() => {
+                  console.log('delete chat')
+                  this.itemRef && this.itemRef.close();
+                  onDeleteChat(item.group_id);
+                  }}>
+                  <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>
+                </TouchableOpacity>
+              </SwipeButtonsContainer>
+            </View>
+          }
+          onSwipeInitial={(item)=>onSwipeInitial(item)}
+          onMovedToOrigin={()=>{
+            // console.log('button hide');
+            this.setState({isSwipeButtonVisible: false});
+          }}
+          onRightButtonsShowed={(item)=>{
+            this.itemRef = item;
+            onSwipeButtonShowed(item)
+            this.setState({isSwipeButtonVisible: true});
+          }}
+          disableSwipeIfNoButton>
+          <View style={{ backgroundColor: '#f2f2f2' }}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={
+                isSwipeButtonVisible?()=>{this.itemRef && this.itemRef.close()}:
+                !isVisible
+                  ? onPress
+                  : () => {
+                    this.manageRecord(
+                      item,
+                      !newItem.isCheck ? 'check' : 'unCheck',
+                    );
+                  }
+              }
+              style={styles.container}
+            // disabled={isVisible}
+            >
+              <View style={styles.firstView}>
+                {isVisible && newItem.isCheck === false ? (
+                  <TouchableOpacity
+                    style={styles.checkBox}
+                    onPress={() => {
+                      // this.setState({isChecked: true});
+                      this.manageRecord(item, 'check');
+                    }}
+                  />
+                ) : (
+                    isVisible &&
+                    newItem.isCheck === true && (
+                      <TouchableOpacity
+                        style={{ alignSelf: 'center', justifyContent: 'center' }}
+                        onPress={() => {
+                          // this.setState({isChecked: false});
+                          this.manageRecord(item, 'unCheck');
+                        }}>
+                        <LinearGradient
+                          start={{ x: 0.1, y: 0.7 }}
+                          end={{ x: 0.5, y: 0.2 }}
+                          locations={[0.1, 0.6, 1]}
+                          colors={[
+                            Colors.gradient_1,
+                            Colors.gradient_2,
+                            Colors.gradient_3,
+                          ]}
+                          style={styles.checkBoxIscheck}>
+                          <Icon size={17} name="check" style={{ color: '#fff' }} />
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    )
+                  )}
+
+                {image === null || image === '' || typeof image === undefined ? (
                   <LinearGradient
-                    start={{x: 0.1, y: 0.7}}
-                    end={{x: 0.5, y: 0.2}}
+                    start={{ x: 0.1, y: 0.7 }}
+                    end={{ x: 0.5, y: 0.2 }}
                     locations={[0.1, 0.6, 1]}
                     colors={[
                       Colors.gradient_1,
                       Colors.gradient_2,
                       Colors.gradient_3,
                     ]}
-                    style={styles.checkBoxIscheck}>
-                    <Icon size={17} name="check" style={{color: '#fff'}} />
+                    style={styles.squareImage}>
+                    <Text style={globalStyles.normalRegularText}>
+                      {title.charAt(0).toUpperCase()}
+                      {/* {secondUpperCase} */}
+                    </Text>
                   </LinearGradient>
-                </TouchableOpacity>
-              )
-            )}
-
-            {image === null || image === '' || typeof image === undefined ? (
-              <LinearGradient
-                start={{x: 0.1, y: 0.7}}
-                end={{x: 0.5, y: 0.2}}
-                locations={[0.1, 0.6, 1]}
-                colors={[
-                  Colors.gradient_1,
-                  Colors.gradient_2,
-                  Colors.gradient_3,
-                ]}
-                style={styles.squareImage}>
-                <Text style={globalStyles.normalRegularText}>
-                  {title.charAt(0).toUpperCase()}
-                  {/* {secondUpperCase} */}
-                </Text>
-              </LinearGradient>
-            ) : (
-              <RoundedImage
-                source={getImage(image)}
-                isRounded={false}
-                size={50}
-              />
-            )}
-            <View style={styles.secondView}>
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'flex-start',
-                  justifyContent: 'space-between',
-                  padding: 5,
-                }}>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.black_light,
-                      // fontSize: normalize(12),
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {title}
-                </Text>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.message_gray,
-                      textAlign: 'left',
-                      fontSize: Platform.isPad ? normalize(7) : normalize(11.5),
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {this.renderMessageWitMentions(description)}
-                </Text>
-              </View>
-              {isPined ? (
-                <View style={{marginTop: 2, marginRight: 5}}>
-                  <Octicon name={'pin'} size={14} color={Colors.gray_dark} />
+                ) : (
+                    <RoundedImage
+                      source={getImage(image)}
+                      isRounded={false}
+                      size={50}
+                    />
+                  )}
+                <View style={styles.secondView}>
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                      padding: 5,
+                    }}>
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        globalStyles.smallNunitoRegularText,
+                        {
+                          color: Colors.black_light,
+                          // fontSize: normalize(12),
+                          fontWeight: '400',
+                        },
+                      ]}>
+                      {title}
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        globalStyles.smallNunitoRegularText,
+                        {
+                          color: Colors.message_gray,
+                          textAlign: 'left',
+                          fontSize: Platform.isPad ? normalize(7) : normalize(11.5),
+                          fontWeight: '400',
+                        },
+                      ]}>
+                      {this.renderMessageWitMentions(description)}
+                    </Text>
+                  </View>
+                  {isPined ? (
+                    <View style={{ marginTop: 2, marginRight: 5 }}>
+                      <Octicon name={'pin'} size={14} color={Colors.gray_dark} />
+                    </View>
+                  ) : null}
+                  <View>
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        globalStyles.smallNunitoRegularText,
+                        {
+                          color: Colors.message_gray,
+                          fontSize: 11,
+                          fontWeight: '400',
+                        },
+                      ]}>
+                      {this.getDate(date)}
+                    </Text>
+                    {unreadCount !== 0 && unreadCount != null && (
+                      <Badge
+                        style={[
+                          globalStyles.smallLightText,
+                          {
+                            backgroundColor: Colors.green,
+                            color: Colors.white,
+                            fontSize: 11,
+                            marginTop: 5,
+                          },
+                        ]}>
+                        {unreadCount}
+                      </Badge>
+                    )}
+                  </View>
                 </View>
-              ) : null}
-              <View>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    globalStyles.smallNunitoRegularText,
-                    {
-                      color: Colors.message_gray,
-                      fontSize: 11,
-                      fontWeight: '400',
-                    },
-                  ]}>
-                  {this.getDate(date)}
-                </Text>
-                {unreadCount !== 0 && unreadCount != null && (
-                  <Badge
-                    style={[
-                      globalStyles.smallLightText,
-                      {
-                        backgroundColor: Colors.green,
-                        color: Colors.white,
-                        fontSize: 11,
-                        marginTop: 5,
-                      },
-                    ]}>
-                    {unreadCount}
-                  </Badge>
-                )}
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </SwipeItem>
         <Divider />
       </Fragment>
     );
@@ -282,6 +361,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+    backgroundColor: '#f2f2f2'
   },
   firstView: {
     flexDirection: 'row',

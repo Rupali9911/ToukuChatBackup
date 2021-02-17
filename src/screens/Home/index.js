@@ -1912,15 +1912,16 @@ class Home extends PureComponent {
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity style={{ flex: 1 }} onPress={() => {
-                  if(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester'){
-                    this.getUniqueUrl();
-                  }else{
-                    Toast.show({
-                      title: translate('pages.xchat.touku'),
-                      text: translate('pages.clasrm.comingSoon'),
-                      type: 'positive'
-                    });
-                  }
+                  this.props.navigation.navigate('Rewards');
+                  // if(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester'){
+                  //   this.getUniqueUrl();
+                  // }else{
+                  //   Toast.show({
+                  //     title: translate('pages.xchat.touku'),
+                  //     text: translate('pages.clasrm.comingSoon'),
+                  //     type: 'positive'
+                  //   });
+                  // }
                 }}>
                   {/* <LinearGradient
                   start={{ x: 0.03, y: 0.7 }}

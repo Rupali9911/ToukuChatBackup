@@ -75,10 +75,10 @@ class TabBarComp extends Component {
   }
 
   keyboardWillShow = (event) => {
-    // Platform.OS==='android' &&
-    // this.setState({
-    //   isVisible: false
-    // })
+    Platform.OS==='android' &&
+    this.setState({
+      isVisible: false
+    })
   };
 
   keyboardWillHide = (event) => {
@@ -129,34 +129,36 @@ class TabBarComp extends Component {
               key={routeIndex}
               style={[S.tabButton]}
               onPress={() => {
-                if(route.routeName === "Rewards"){
-                  if(userData.user_type==='owner' || userData.user_type==='company' || userData.user_type==='tester'){
-                    onTabPress({route});
-                  }else{
-                    Toast.show({
-                      title: translate('pages.xchat.touku'),
-                      text: translate('pages.clasrm.comingSoon'),
-                      type: 'positive'
-                    });
-                  }
-                }else{
-                  onTabPress({route});
-                }
+                // if(route.routeName === "Rewards"){
+                //   if(userData.user_type==='owner' || userData.user_type==='company' || userData.user_type==='tester'){
+                //     onTabPress({route});
+                //   }else{
+                //     Toast.show({
+                //       title: translate('pages.xchat.touku'),
+                //       text: translate('pages.clasrm.comingSoon'),
+                //       type: 'positive'
+                //     });
+                //   }
+                // }else{
+                //   onTabPress({route});
+                // }
+                onTabPress({route});
               }}
               onLongPress={() => {
-                if (route.routeName === "Rewards") {
-                  if (userData.user_type === 'owner' || userData.user_type === 'company' || userData.user_type === 'tester') {
-                    onTabPress({ route });
-                  } else {
-                    Toast.show({
-                      title: translate('pages.xchat.touku'),
-                      text: translate('pages.clasrm.comingSoon'),
-                      type: 'positive'
-                    });
-                  }
-                } else {
-                  onTabLongPress({ route });
-                }
+                // if (route.routeName === "Rewards") {
+                //   if (userData.user_type === 'owner' || userData.user_type === 'company' || userData.user_type === 'tester') {
+                //     onTabPress({ route });
+                //   } else {
+                //     Toast.show({
+                //       title: translate('pages.xchat.touku'),
+                //       text: translate('pages.clasrm.comingSoon'),
+                //       type: 'positive'
+                //     });
+                //   }
+                // } else {
+                //   onTabLongPress({ route });
+                // }
+                onTabLongPress({ route });
               }}
               accessibilityLabel={getAccessibilityLabel({route})}>
               {renderIcon({route, focused: isRouteActive, tintColor})}

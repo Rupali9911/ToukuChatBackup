@@ -9,9 +9,11 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import {Colors, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
-import {normalize} from '../../utils';
+import {normalize, wait} from '../../utils';
 import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SwipeItem, SwipeButtonsContainer } from '../Swipeable';
 
 export default class FriendListItem extends PureComponent {
   constructor(props) {
@@ -19,7 +21,9 @@ export default class FriendListItem extends PureComponent {
     this.state = {
       isChecked: false,
       newItem: {...this.props.item, isCheck: false},
+      isSwipeButtonVisible: false,
     };
+    this.itemRef = null;
   }
 
   componentDidUpdate(props) {
@@ -102,11 +106,83 @@ export default class FriendListItem extends PureComponent {
       item,
       onAvtarPress,
       isPined,
+      onSwipeButtonShowed,
+      onSwipeInitial,
+      swipeable,
+      onDeleteChat,
+      onPinUnpinChat
     } = this.props;
-    const {newItem} = this.state;
+    const {newItem, isSwipeButtonVisible} = this.state;
 
     return (
       <Fragment>
+      <SwipeItem
+        style={{ flex: 1 }}
+        rightButtons={swipeable &&
+          <View style={{ flexDirection: 'row', height: '100%' }}>
+            <SwipeButtonsContainer
+              style={{
+                alignSelf: 'center',
+                aspectRatio: 1,
+                height: '100%',
+                flexDirection: 'row',
+              }}>
+              <TouchableOpacity style={{
+                padding: 10,
+                backgroundColor: '#99B1F9',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1
+              }} onPress={() => {
+                console.log('pin chat');
+                this.itemRef && this.itemRef.close()
+                wait(200).then(() => {
+                  onPinUnpinChat(item);
+                });
+              }}>
+                <MaterialCommunityIcon
+                  name={item.is_pined ? 'pin-off' : 'pin'}
+                  size={20}
+                  color={Colors.white}
+                />
+                {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
+              </TouchableOpacity>
+            </SwipeButtonsContainer>
+            <SwipeButtonsContainer
+              style={{
+                alignSelf: 'center',
+                aspectRatio: 1,
+                height: '100%',
+                flexDirection: 'row',
+              }}>
+              <TouchableOpacity style={{
+                padding: 10,
+                backgroundColor: '#F9354B',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1
+              }} onPress={() => {
+                console.log('delete chat')
+                this.itemRef && this.itemRef.close();
+                onDeleteChat(item.friend);
+              }}>
+                <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>
+              </TouchableOpacity>
+            </SwipeButtonsContainer>
+          </View>
+        }
+        onSwipeInitial={(item) => onSwipeInitial(item)}
+        onMovedToOrigin={() => {
+          // console.log('button hide');
+          this.setState({ isSwipeButtonVisible: false });
+        }}
+        onRightButtonsShowed={(item) => {
+          this.itemRef = item;
+          onSwipeButtonShowed(item)
+          this.setState({ isSwipeButtonVisible: true });
+        }}
+        disableSwipeIfNoButton>
+        <View style={{ backgroundColor: '#f2f2f2' }}>
         <View activeOpacity={0.8} style={styles.container}>
           {/* <TouchableOpacity
           activeOpacity={0.8}
@@ -168,7 +244,7 @@ export default class FriendListItem extends PureComponent {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.secondView}
-              onPress={
+              onPress={isSwipeButtonVisible ? () => { this.itemRef && this.itemRef.close() } :
                 !isVisible
                   ? onPress
                   : () => {
@@ -250,6 +326,8 @@ export default class FriendListItem extends PureComponent {
             </TouchableOpacity>
           </View>
         </View>
+          </View>
+        </SwipeItem>
         <Divider />
       </Fragment>
     );
