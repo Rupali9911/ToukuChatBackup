@@ -34,13 +34,17 @@ import {
   getChannelDetails,
   unfollowChannel,
   followChannel,
-  subscribeAsVip
+  subscribeAsVip,
+    setCurrentChannel
 } from '../../redux/reducers/channelReducer';
 import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
 import AsyncStorage from '@react-native-community/async-storage';
 import HyperLink from 'react-native-hyperlink';
 import PostCard from '../../components/PostCard';
 import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
+import {getChannelsById} from "../../storage/Service";
+import {store} from "../../redux/store";
+import NavigationService from "../../navigation/NavigationService";
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -100,8 +104,18 @@ class ChannelInfo extends Component {
   }
 
   async OnBackAction() {
-    await AsyncStorage.removeItem('channelData');
-    this.props.navigation.goBack();
+      await AsyncStorage.removeItem('channelData');
+    let channelData = this.state.channelData
+      await AsyncStorage.removeItem('channelData');
+      if (this.props.navigation.state.params && this.props.navigation.state.params.channelItem.channel_id) {
+          let channelObj = getChannelsById(this.props.navigation.state.params.channelItem.channel_id);
+          if (channelObj.length > 0) {
+              store.dispatch(setCurrentChannel(channelObj[0]));
+              NavigationService.navigate('ChannelChats');
+          }
+      }else{
+          this.props.navigation.goBack();
+      }
   }
 
   UNSAFE_componentWillMount() {
@@ -617,10 +631,7 @@ class ChannelInfo extends Component {
 
               <View style={channelInfoStyles.tabBar}>
                 {tabBarItem.map((item, index) => {
-                  if (
-                    this.props.navigation.state.params &&
-                    item.title !== 'chat'
-                  ) {
+                  if (item.title === 'chat' && !this.state.channelData.is_member ){return null} else{
                     return (
                       <TouchableOpacity
                         key={index}
@@ -641,10 +652,7 @@ class ChannelInfo extends Component {
                           style={[
                             channelInfoStyles.tabTitle,
                             {
-                              fontFamily:
-                                item.title === 'about'
-                                  ? Fonts.regular
-                                  : Fonts.regular,
+                              fontFamily: Fonts.regular,
                             },
                           ]}>
                           {translate(`pages.xchat.${item.title}`)}
@@ -652,38 +660,35 @@ class ChannelInfo extends Component {
                       </TouchableOpacity>
                     );
                   }
-                  if (!this.props.navigation.state.params) {
-                    return (
-                      <TouchableOpacity
-                        key={index}
-                        style={channelInfoStyles.tabItem}
-                        onPress={item.action}
-                        activeOpacity={activeIndex == index ? 1 : 0}>
-                        <Image
-                          source={item.icon}
-                          style={[
-                            channelInfoStyles.tabIamge,
-                            {
-                              opacity: activeIndex == index ? 1 : 0.5,
-                            },
-                          ]}
-                          resizeMode={'center'}
-                        />
-                        <Text
-                          style={[
-                            channelInfoStyles.tabTitle,
-                            {
-                              fontFamily:
-                                item.title === 'about'
-                                  ? Fonts.regular
-                                  : Fonts.regular,
-                            },
-                          ]}>
-                          {translate(`pages.xchat.${item.title}`)}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  }
+                  // if (!this.props.navigation.state.params) {
+                  //   return (
+                  //     <TouchableOpacity
+                  //       key={index}
+                  //       style={channelInfoStyles.tabItem}
+                  //       onPress={item.action}
+                  //       activeOpacity={activeIndex == index ? 1 : 0}>
+                  //       <Image
+                  //         source={item.icon}
+                  //         style={[
+                  //           channelInfoStyles.tabIamge,
+                  //           {
+                  //             opacity: activeIndex == index ? 1 : 0.5,
+                  //           },
+                  //         ]}
+                  //         resizeMode={'center'}
+                  //       />
+                  //       <Text
+                  //         style={[
+                  //           channelInfoStyles.tabTitle,
+                  //           {
+                  //             fontFamily: Fonts.regular,
+                  //           },
+                  //         ]}>
+                  //         {translate(`pages.xchat.${item.title}`)}
+                  //       </Text>
+                  //     </TouchableOpacity>
+                  //   );
+                  // }
                 })}
               </View>
               {isTimeline ? (
@@ -867,7 +872,8 @@ const mapDispatchToProps = {
   getChannelDetails,
   unfollowChannel,
   followChannel,
-  subscribeAsVip
+  subscribeAsVip,
+    setCurrentChannel
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelInfo);

@@ -1743,6 +1743,7 @@ class GroupChats extends Component {
               : translate('pages.xchat.pinThisGroup')
           }
           type={'group'}
+          navigation={this.props.navigation}
         />
         {isChatLoading && chatGroupConversation.length <= 0 ? (
           <ListLoader />

@@ -101,6 +101,7 @@ export default class ChatHeader extends Component {
                 <View style={[styles.subContainer,{flex:0,maxWidth:'90%'}]}>
                   <View style={{marginHorizontal: 10}}>
                     <TouchableOpacity
+                        activeOpacity={1}
                       onPress={() => {
                         if (!this.props.disableFriendNotes) {
                           navigation.navigate('FriendNotes');
@@ -136,12 +137,15 @@ export default class ChatHeader extends Component {
                   </View>
                 </View>
               ) : (
-                <View style={[styles.subContainer,{flex:0,maxWidth:'90%'}]}>
                   <TouchableOpacity
-                    onPress={() => {
+                      style={[styles.subContainer,{flex:0,maxWidth:'90%'}]}
+                      activeOpacity={1}
+                      onPress={() => {
                       console.log('type', type);
                       if (type === 'channel') {
                         navigation.navigate('ChannelInfo');
+                      }else if (type === 'group') {
+                          navigation.navigate('GroupDetails');
                       }
                     }}
                     >
@@ -177,7 +181,6 @@ export default class ChatHeader extends Component {
                         />
                       </View>
                     )}
-                  </TouchableOpacity>
                   <View
                     style={{
                       // flex: 1,
@@ -198,6 +201,8 @@ export default class ChatHeader extends Component {
                       onPress={() => {
                         if (type === 'channel') {
                           navigation.navigate('ChannelInfo');
+                        }else if (type === 'group') {
+                            navigation.navigate('GroupDetails');
                         }
                       }}>
                       {title}
@@ -215,7 +220,7 @@ export default class ChatHeader extends Component {
                       {description}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
               </View>
             </View>

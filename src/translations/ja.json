@@ -154,7 +154,7 @@
     "verifyAndNext": "確認して次へ",
     "goToXanaEvent": "XANAEVENTに移動します",
     "verify": "確認",
-    "networkError": "インターネット接続が遅い、またはまったくない。 インターネット接続を確認してください",
+    "networkError": "インターネット接続が弱い、もしくは接続されておりません。一度ご確認ください。",
     "subjectSetting": "件名設定",
     "hourMinute": "(時：分)",
     "unreadOption": "未読",

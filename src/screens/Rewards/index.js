@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, TouchableOpacity} from 'react-native';
+import {View, ImageBackground, TouchableOpacity, Linking} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -16,7 +16,7 @@ import {
 } from '../../redux/reducers/userReducer';
 import Toast from '../../components/Toast';
 
- 
+
 class Rewards extends Component {
   constructor(props) {
     super(props);
@@ -99,7 +99,7 @@ class Rewards extends Component {
           behavior={'position'}
           contentContainerStyle={RewardStyles.mainContainer}
           showsVerticalScrollIndicator={false}>
-          
+
           {this.rewards.map((item)=>{
               return (
                 <View>
@@ -123,7 +123,7 @@ class Rewards extends Component {
                 </View>
               );
           })}
-            
+
         </KeyboardAwareScrollView>
       </View>
     );

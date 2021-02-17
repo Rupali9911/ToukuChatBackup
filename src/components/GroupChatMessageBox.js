@@ -16,6 +16,10 @@ import RoundedImage from './RoundedImage';
 import {getAvatar, normalize, getUserName} from '../utils';
 import {translate} from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import NavigationService from "../navigation/NavigationService";
+import {getUserFriendByFriendId} from "../storage/Service";
+import {store} from "../redux/store";
+import {setCurrentFriend} from "../redux/reducers/friendReducer";
 
 const {width, height} = Dimensions.get('window');
 
@@ -239,6 +243,16 @@ export default class GroupChatMessageBox extends Component {
               size={50}
               resizeMode={'cover'}
             /> */}
+                <TouchableOpacity
+                    onPress={() => {
+                        console.log('message', message)
+                        // let friendObj = getUserFriendByFriendId(message.sender_id);
+                        // console.log('friendObj', friendObj)
+                        // if (friendObj.length > 0) {
+                        //     store.dispatch(setCurrentFriend(friendObj[0]));
+                        //     NavigationService.navigate('FriendNotes');
+                        // }
+                    }}>
               <Image
                 source={getAvatar(message.sender_picture)}
                 style={{
@@ -249,6 +263,7 @@ export default class GroupChatMessageBox extends Component {
                   marginRight: 5,
                 }}
               />
+                </TouchableOpacity>
               <View>
                 <Text
                   style={{
