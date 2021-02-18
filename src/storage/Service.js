@@ -1284,6 +1284,10 @@ export const getUserFriendByFriendId = (id) => {
   return realm.objects('user_friends').filtered(`friend == ${id}`);
 };
 
+export const getUserFriendByUserId = (id) => {
+    return realm.objects('user_friends').filtered(`user_id == ${id}`);
+};
+
 export const updateUserFriendsWhenPined = (item) => {
   realm.write(() => {
     realm.create(

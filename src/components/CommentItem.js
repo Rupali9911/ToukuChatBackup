@@ -1,35 +1,16 @@
 import React, { Component, Fragment } from 'react';
 import {
-    FlatList,
     View,
     Text,
-    StyleSheet,
     Dimensions,
-    Platform,
-    TouchableOpacity,
     Image,
 } from 'react-native';
-import { connect } from 'react-redux';
 import moment from 'moment';
-import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
-import ChatMessageBox from './ChatMessageBox';
-import ChatInput from './TextInputs/ChatInput';
 import { translate } from '../redux/reducers/languageReducer';
 import { Colors, Fonts, Images, Icons } from '../constants';
-import { getAvatar, isIphoneX, normalize, getUserName } from '../../src/utils';
-import NoData from './NoData';
-
-import TextAreaWithTitle from '../components/TextInputs/TextAreaWithTitle';
-import RoundedImage from './RoundedImage';
+import { getAvatar, normalize, getUserName } from '../../src/utils';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import VideoThumbnailPlayer from './VideoThumbnailPlayer';
-import CheckBox from './CheckBox';
-import Button from './Button';
 
 const { height } = Dimensions.get('window');
 
@@ -178,7 +159,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-    
+
 };
 
 // export default connect(mapStateToProps, mapDispatchToProps)(CommentItem);

@@ -235,6 +235,7 @@ export const getLocalUserGroups = () => (dispatch) =>
       });
       dispatch(setUnreadGroupMsgsCounts(unread_counts));
     }
+
     dispatch(getUserGroupsSuccess(array));
     resolve();
   });
@@ -375,7 +376,7 @@ export const getGroupConversation = (groupId) => (dispatch) =>
     client
       .get(`/xchat/group-conversation/` + groupId + '/')
       .then((res) => {
-        console.log('group-conversation', res);
+        //console.log('group-conversation', res);
         setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
         resolve(res);
@@ -590,7 +591,7 @@ export const deleteMultipleGroupMessage = (payload) => (dispatch) =>
       });
   });
 
-export const deleteGroupChat = (data) => (dispatch) => 
+export const deleteGroupChat = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
       .post(`/xchat/remove-group-from-list/`,data)
@@ -675,7 +676,7 @@ export const unpinGroup = (groupId, data) => (dispatch) =>
   });
 
 //#region Like/Unlike on group note and group note comment
-export const likeUnlikeGroupNote = (data) => (dispatch) => 
+export const likeUnlikeGroupNote = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.post(`xchat/like-group-note/`,data)
     .then((res)=>{
@@ -688,7 +689,7 @@ export const likeUnlikeGroupNote = (data) => (dispatch) =>
 //#endregion
 
 //#region Comment on group note
-export const commentOnGroupNote = (data) => (dispatch) => 
+export const commentOnGroupNote = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.post(`xchat/group-note-comment/`,data)
     .then((res)=>{
@@ -699,7 +700,7 @@ export const commentOnGroupNote = (data) => (dispatch) =>
     })
   });
 
-export const getGroupCommentList = (note_id,offset) => (dispatch) => 
+export const getGroupCommentList = (note_id,offset) => (dispatch) =>
   new Promise(function(resolve,reject){
     client
     .get(`xchat/group-note-comment-list/?note_id=${note_id}&limit=20&offset=${offset}`)
@@ -711,7 +712,7 @@ export const getGroupCommentList = (note_id,offset) => (dispatch) =>
     })
   });
 
-export const likeUnlikeGroupComment = (data) => (dispatch) => 
+export const likeUnlikeGroupComment = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.post(`xchat/like-group-note-comment/`,data)
     .then((res)=>{
@@ -722,7 +723,7 @@ export const likeUnlikeGroupComment = (data) => (dispatch) =>
     })
   });
 
-export const deleteComment = (comment_id) => (dispatch) => 
+export const deleteComment = (comment_id) => (dispatch) =>
   new Promise(function(resolve,reject){
     client.delete(`xchat/group-note-comment/${comment_id}/`)
     .then((res)=>{
@@ -733,7 +734,7 @@ export const deleteComment = (comment_id) => (dispatch) =>
     });
   })
 
-export const getUrlcontent = (url) => (dispatch) => 
+export const getUrlcontent = (url) => (dispatch) =>
   new Promise(function(resolve,reject){
     client.get(`xchat/get-url-content/?url=${url}`)
     .then((res)=>{

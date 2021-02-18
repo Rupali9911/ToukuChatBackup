@@ -21,7 +21,6 @@ import {connect} from 'react-redux';
 import {
   setAppLanguage,
   translate,
-  userLanguage,
 } from '../../redux/reducers/languageReducer';
 import QRCode from 'react-native-qrcode-svg';
 import LinearGradient from 'react-native-linear-gradient';
@@ -156,7 +155,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   setAppLanguage,
-  userLanguage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(QRCodeClass);

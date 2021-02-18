@@ -2,15 +2,11 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  ScrollView,
   ImageBackground,
-  StyleSheet,
   SafeAreaView,
-  Image,
   TouchableOpacity,
   Platform,
   Keyboard,
-  Linking,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';

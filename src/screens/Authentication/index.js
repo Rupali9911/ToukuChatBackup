@@ -1,25 +1,11 @@
 import React, {Component, useEffect} from 'react';
 import {
-  View,
-  Text,
   SafeAreaView,
-  ActivityIndicator,
-  StatusBar,
-  StyleSheet,
-  Image,
-  ImageBackground,
-    Linking,
-    AppState,
-    Alert
 } from 'react-native';
 import {connect} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import SplashScreen from 'react-native-splash-screen';
 import {authenticationStyles} from './styles';
-import {Colors, Images} from '../../constants';
-import {getAllLanguages, getAllLanguagesBackend} from '../../redux/reducers/languageReducer';
-import {wait} from '../../utils';
-import {globalStyles} from '../../styles';
 import {store} from '../../redux/store';
 
 export const translationGetters = {
@@ -47,14 +33,6 @@ class Authentication extends Component {
     setTimeout(()=>{
       SplashScreen.hide();
     },2000);
-    this.props.getAllLanguages().then((res) => {
-      console.log('languages',res);
-      // SplashScreen.hide();  
-      this.props.getAllLanguagesBackend().then((res) => {
-          console.log('languages_backend',res);  
-          // SplashScreen.hide();
-        })
-    })
   }
 
     render() {
@@ -81,8 +59,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  getAllLanguages,
-    getAllLanguagesBackend
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Authentication);

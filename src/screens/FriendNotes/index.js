@@ -1,20 +1,15 @@
 import React, {Component} from 'react';
 import {
-  View,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  FlatList,
-  StyleSheet,
-  Dimensions,
+    View,
+    TouchableOpacity,
+    Text,
+    StyleSheet,
+    Dimensions, ActivityIndicator, ImageBackground,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
-
 import {friendDetailStyles} from './styles';
 import {globalStyles} from '../../styles';
 import {getImage, eventService, getAvatar, normalize} from '../../utils';
@@ -24,6 +19,7 @@ import CommonNotes from '../../components/CommonNotes';
 import {ListLoader, ImageLoader} from '../../components/Loaders';
 import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
+import {getAnyUserProfile} from '../../redux/reducers/userReducer';
 import {
   getFriendNotes,
   postFriendNotes,
@@ -39,7 +35,6 @@ import RoundedImage from '../../components/RoundedImage';
 import ImageView from 'react-native-image-viewing';
 import ChangeFriendDisplayNameModal from '../../components/Modals/ChangeFriendDisplayNameModal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-const {width, height} = Dimensions.get('window');
 
 class FriendNotes extends Component {
   constructor(props) {
@@ -57,26 +52,42 @@ class FriendNotes extends Component {
         ? this.props.navigation.state.params.showAdd
         : false,
         deleteLoading: false,
-        showImage: false
+        showImage: false,
+        otherUserId: this.props.navigation.state.params ? this.props.navigation.state.params.id ? this.props.navigation.state.params.id : null : null,
+        otherUserData: null,
+        isLoading: true
     };
-
     this.S3uploadService = new S3uploadService();
-
   }
 
   static navigationOptions = () => {
     return {
-      header: null,
+        headerShown: false,
     };
   };
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.props.getFriendNotes(this.props.currentFriend.friend).then((res) => {
-      this.setState({
-        data: res,
-      });
-    });
+    const {otherUserId} = this.state
+      if (otherUserId) {
+          this.props.getAnyUserProfile (otherUserId).then((res) => {
+            console.log('getAnyUserProfile response', res)
+              this.setState({
+                  otherUserData: res,
+                  isLoading: false
+              });
+          }).catch((err) => {
+              console.log({err})
+              this.setState({isLoading: false})
+          });
+      }else{
+          this.setState({isLoading: false})
+          this.props.getFriendNotes(this.props.currentFriend.friend).then((res) => {
+              this.setState({
+                  data: res,
+              });
+          }).catch((err) => console.log({err}));
+      }
   }
 
   UNSAFE_componentWillMount() {
@@ -428,16 +439,27 @@ class FriendNotes extends Component {
     this.setState({ showImage: false });
   }
 
+  returnBgImage (data){
+    return(
+        <ImageLoader
+            style={styles.firstView}
+            source={getImage(
+                data.background_image,
+            )}></ImageLoader>
+    )
+  }
   render() {
     const {
       orientation,
       showDeleteNoteConfirmationModal,
       isChangeNameModalVisible,
         deleteLoading,
-        showImage
+        showImage,
+        otherUserData,
+        isLoading
     } = this.state;
     const {currentFriend} = this.props;
-    console.log('currentFriend.avatar', currentFriend.avatar);
+    //console.log('currentFriend.avatar', currentFriend.avatar);
     return (
       <View
         style={[
@@ -451,6 +473,10 @@ class FriendNotes extends Component {
             onBackPress={() => this.props.navigation.goBack()}
             title={translate('pages.xchat.viewProfileDetail')}
           />
+            {isLoading && (
+                <ActivityIndicator size="large" color={Colors.primary} style={{position: 'absolute',top: 0, left: 0, right: 0, bottom: 0}} />
+            )}
+            {!isLoading && (
           <KeyboardAwareScrollView
             contentContainerStyle={[
               friendDetailStyles.mainContainer,
@@ -458,117 +484,127 @@ class FriendNotes extends Component {
             ]}
             showsVerticalScrollIndicator={false}
             extraScrollHeight={100}>
-            <LinearGradient
-              start={{x: 0.1, y: 0.7}}
-              end={{x: 0.8, y: 0.3}}
-              locations={[0.3, 0.5, 0.8, 1, 1]}
-              colors={['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150']}
-              style={{height: 180}}>
-              <View style={{flex: 1}}>
-                {currentFriend.background_image != '' ? (
-                  <ImageLoader
-                    style={styles.firstView}
-                    source={getImage(
-                      currentFriend.background_image,
-                    )}></ImageLoader>
-                ) : null}
-              </View>
-            </LinearGradient>
+                  <View>
+                      <LinearGradient
+                          start={{x: 0.1, y: 0.7}}
+                          end={{x: 0.8, y: 0.3}}
+                          locations={[0.3, 0.5, 0.8, 1, 1]}
+                          colors={['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150']}
+                          style={{height: 180}}>
+                          <View style={{flex: 1}}>
+                              {otherUserData ? (otherUserData.background_image != '' ? (
+                                 this.returnBgImage(otherUserData)
+                              ) : null) : currentFriend.background_image != '' ? (
+                                  this.returnBgImage(currentFriend)
+                              ) : null}
+                          </View>
+                      </LinearGradient>
 
-            <View style={{alignSelf: 'center', marginTop: -70}}>
-              <RoundedImage
-                size={140}
-                source={getAvatar(
-                  currentFriend.avatar
-                    ? currentFriend.avatar
-                    : currentFriend.profile_picture,
-                )}
-                clickable={true}
-                onClick={()=>this.setState({showImage: true})}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignSelf: 'center',
-                alignItems: 'center',
-                marginTop: 10,
-              }}>
-              <Text
-                style={[
-                  globalStyles.normalSemiBoldText,
-                  {
-                    color: Colors.black,
-                    marginHorizontal: 10,
-                    fontSize: normalize(15),
-                  },
-                ]}>
-                {/* {userData.first_name + ' '}
+                      <View style={{alignSelf: 'center', marginTop: -70}}>
+                          <RoundedImage
+                              size={140}
+                              source={getAvatar(
+                                  otherUserData ? (otherUserData.avatar
+                                      ? otherUserData.avatar
+                                      : otherUserData.profile_picture) : (currentFriend.avatar
+                                      ? currentFriend.avatar
+                                      : currentFriend.profile_picture),
+                              )}
+                              clickable={true}
+                              onClick={()=>this.setState({showImage: true})}
+                          />
+                      </View>
+                      <View
+                          style={{
+                              flexDirection: 'row',
+                              alignSelf: 'center',
+                              alignItems: 'center',
+                              marginTop: 10,
+                          }}>
+                          <Text
+                              style={[
+                                  globalStyles.normalSemiBoldText,
+                                  {
+                                      color: Colors.black,
+                                      marginHorizontal: 10,
+                                      fontSize: normalize(15),
+                                  },
+                              ]}>
+                              {/* {userData.first_name + ' '}
+>>>>>>> Stashed changes
               {userData.last_name} */}
-                {currentFriend.display_name}
-              </Text>
-              <TouchableOpacity>
-                <FontAwesome5
-                  name={'pencil-alt'}
-                  size={20}
-                  color={Colors.black}
-                  // style={{marginRight: 5}}
-                  onPress={() => this.onShowChangeNameModal()}
-                />
-              </TouchableOpacity>
-            </View>
+                              {otherUserData? otherUserData.display_name : currentFriend.display_name}
+                          </Text>
+                          {
+                              otherUserData === null &&
+                              <TouchableOpacity>
+                                  <FontAwesome5
+                                      name={'pencil-alt'}
+                                      size={20}
+                                      color={Colors.black}
+                                      // style={{marginRight: 5}}
+                                      onPress={() => this.onShowChangeNameModal()}
+                                  />
+                              </TouchableOpacity>
+                          }
+                      </View>
 
-            <View
-              style={{
-                alignSelf: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={[
-                  globalStyles.smallRegularText,
-                  {
-                    color: Colors.black,
-                    marginBottom: 10,
-                    fontSize: normalize(12),
-                    fontFamily: Fonts.light,
-                  },
-                ]}>
-                {currentFriend.username}
-              </Text>
-            </View>
-            <View
-              style={{
-                paddingHorizontal: 10,
-                paddingTop: 10,
-                borderTopColor: Colors.light_gray,
-                borderTopWidth: 0.3,
-              }}>
-              <CommonNotes
-                ref={(common_note)=>{this.commonNote = common_note}}
-                isFriend={true}
-                data={this.state.data}
-                onPost={this.onPostNote}
-                onEdit={this.onEditNote}
-                onDelete={this.toggleDeleteNoteConfirmationModal}
-                onAdd={() =>
-                  this.setState({
-                    showTextBox: true,
-                  })
-                }
-                onCancel={() =>
-                  this.setState({
-                    showTextBox: false,
-                    editNoteIndex: null,
-                  })
-                }
-                onLikeUnlike={this.likeUnlike}
-                editNoteIndex={this.state.editNoteIndex}
-                showTextBox={this.state.showTextBox}
-                userData={this.props.userData}
-                onExpand={this.onExpand}
-              />
-            </View>
+                      <View
+                          style={{
+                              alignSelf: 'center',
+                              alignItems: 'center',
+                          }}>
+                          <Text
+                              style={[
+                                  globalStyles.smallRegularText,
+                                  {
+                                      color: Colors.black,
+                                      marginBottom: 10,
+                                      fontSize: normalize(12),
+                                      fontFamily: Fonts.light,
+                                  },
+                              ]}>
+                              {otherUserData? otherUserData.username : currentFriend.username}
+                          </Text>
+                      </View>
+                      {
+                          otherUserData === null &&
+                          <View
+                              style={{
+                                  paddingHorizontal: 10,
+                                  paddingTop: 10,
+                                  borderTopColor: Colors.light_gray,
+                                  borderTopWidth: 0.3,
+                              }}>
+                              <CommonNotes
+                                  ref={(common_note)=>{this.commonNote = common_note}}
+                                  isFriend={true}
+                                  data={this.state.data}
+                                  onPost={this.onPostNote}
+                                  onEdit={this.onEditNote}
+                                  onDelete={this.toggleDeleteNoteConfirmationModal}
+                                  onAdd={() =>
+                                      this.setState({
+                                          showTextBox: true,
+                                      })
+                                  }
+                                  onCancel={() =>
+                                      this.setState({
+                                          showTextBox: false,
+                                          editNoteIndex: null,
+                                      })
+                                  }
+                                  onLikeUnlike={this.likeUnlike}
+                                  editNoteIndex={this.state.editNoteIndex}
+                                  showTextBox={this.state.showTextBox}
+                                  userData={this.props.userData}
+                                  onExpand={this.onExpand}
+                              />
+                          </View>
+                      }
+                  </View>
           </KeyboardAwareScrollView>
+            )}
           <ConfirmationModal
             orientation={orientation}
             visible={showDeleteNoteConfirmationModal}
@@ -675,6 +711,7 @@ const mapDispatchToProps = {
   editFriendNotes,
   deleteFriendNotes,
   likeUnlikeNote,
+    getAnyUserProfile
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendNotes);

@@ -408,6 +408,7 @@ class CreateChannel extends Component {
     } else if (filteredFriends.length > 0) {
       return (
         <FlatList
+            keyExtractor={(item, index) => index.toString()}
           keyboardShouldPersistTaps={'handled'}
           behavior={'position'}
           keyExtractor={(item, index) => index.toString()}

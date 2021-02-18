@@ -25,7 +25,6 @@ import {
   setAppLanguage,
   setI18nConfig,
   translate,
-  userLanguage,
 } from '../../redux/reducers/languageReducer';
 import {
   setChannelMode,
@@ -399,7 +398,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   setAppLanguage,
-  userLanguage,
   updateChannelMode,
   setChannelMode,
   updateConfiguration,

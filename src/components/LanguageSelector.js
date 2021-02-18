@@ -13,7 +13,6 @@ import * as RNLocalize from 'react-native-localize';
 import {
   setI18nConfig,
   setAppLanguage,
-  userLanguage,
 } from '../redux/reducers/languageReducer';
 import {
     updateConfiguration,
@@ -27,9 +26,9 @@ class LanguageSelector extends Component {
       isChecked: false,
       languages: languageArray,
     };
-    this.props.userLanguage().then((res) => {
-      // console.log(JSON.stringify(res));
-    });
+    // this.props.userLanguage().then((res) => {
+    //   // console.log(JSON.stringify(res));
+    // });
   }
 
   async componentDidMount() {
@@ -180,7 +179,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   setAppLanguage,
-  userLanguage,
     updateConfiguration
 };
 

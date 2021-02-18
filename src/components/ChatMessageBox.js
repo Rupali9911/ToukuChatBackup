@@ -80,14 +80,6 @@ export default class ChatMessageBox extends Component {
     }
   };
 
-  layoutChange = (event) => {
-    var {x, y, width, height} = event.nativeEvent.layout;
-    borderRadius = height / 2;
-    if (height > 40) {
-      borderRadius = height / 2;
-    }
-  };
-
   onMessagePress = (id) => {
     this.setState({
       selectedMessageId: id,

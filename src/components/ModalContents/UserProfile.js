@@ -5,19 +5,13 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  TextInput,
-  ScrollView,
   Platform,
-  ImageBackground,
   ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {RNS3} from 'react-native-aws3';
-import * as moment from 'moment';
-
 import {Colors, Fonts, Images, Icons, environment} from '../../constants';
 import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
@@ -150,13 +144,14 @@ class UserProfile extends Component {
 
         let file = response;
         let files = [file];
-        console.log('files', files);
+        //console.log('files', files);
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
         );
+        console.log('Uploaded Image', uploadedImages)
         let bgData = {
-          // background_image: uploadedImages.image[0].image,
-          background_image: uploadedImages.image[0].thumbnail,
+           background_image: uploadedImages.image[0].image,
+          //background_image: uploadedImages.image[0].thumbnail,
         };
         this.props.updateConfiguration(bgData).then((res) => {
           Toast.show({

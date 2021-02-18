@@ -185,40 +185,29 @@ export default class App extends Component {
     }
 
     let channelLoginUrl = url.substring(0, url.indexOf('?')) + '/';
-    // console.log('channelLoginUrl', channelLoginUrl);
-    if (url.indexOf(loginUrl) > -1) {
-      //setTimeout(() => {
-      NavigationService.navigate('Login', {url: url});
-      // }, 1000 );
-    } else if (url.indexOf(registerUrl) > -1) {
-      let suffixUrl = url.split(registerUrl)[1].trim();
-      let invitationCode =
-        suffixUrl.split('/').length > 0
-          ? suffixUrl.split('/')[0].trim()
-          : suffixUrl;
-      await AsyncStorage.setItem('invitationCode', invitationCode);
-         const userToken = await AsyncStorage.getItem('userToken');
-         if (userToken) {
-             let route = NavigationService.getCurrentRoute();
-             let routeName = route.routeName;
-             if (routeName && (routeName === 'ChatTab')) {
-                 NavigationService.navigate('Home')
-                 NavigationService.navigate('Chat');
-             }else{
-                 NavigationService.navigate('Chat');
-             }
-         }else{
-            // NavigationService.navigate('SignUp', {
-            //     showEmail: true,
-            //     pageNumber: 0,
-            //     isSocial: false,
-            //     invitationCode: invitationCode,
-            // });
-             NavigationService.navigate('LoginSignUp')
-             NavigationService.navigate('Login');
-         }
-
+    if (url.indexOf(loginUrl) > -1 || url.indexOf(registerUrl) > -1) {
+      let isLoginUrl = url.indexOf(loginUrl) > -1
+        let suffixUrl = url.split(isLoginUrl ? loginUrl : registerUrl)[1].trim();
+        let invitationCode =
+            suffixUrl.split('/').length > 0
+                ? suffixUrl.split('/')[0].trim()
+                : suffixUrl;
+        await AsyncStorage.setItem('invitationCode', invitationCode);
+        const userToken = await AsyncStorage.getItem('userToken');
+        if (userToken) {
+            let route = NavigationService.getCurrentRoute();
+            let routeName = route.routeName;
+            if (routeName && (routeName === 'ChatTab')) {
+                NavigationService.navigate('Home')
+                NavigationService.navigate('Chat');
+            }else{
+                NavigationService.navigate('Chat');
+            }
+        }else{
+            NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login')
+        }
     } else if (loginUrl === channelLoginUrl) {
+        console.log('loginUrl', loginUrl, channelLoginUrl)
       let splitUrl = url.split('&');
       let invitationCode, channelId;
       if (splitUrl.length >= 2) {
@@ -241,14 +230,10 @@ export default class App extends Component {
       }
     } else if (url.indexOf(channelUrl) > -1) {
       let suffixUrl = url.split(channelUrl)[1].trim();
-      // console.log('suffixUrl', suffixUrl);
       let channelId =
         suffixUrl.split('/').length > 0
           ? suffixUrl.split('/')[0].trim()
           : suffixUrl;
-      // console.log('channelId', channelId);
-      //await AsyncStorage.setItem('invitationCode', invitationCode);
-
       if (channelId !== null || channelId !== undefined || channelId !== '') {
         let data = {
           id: channelId,
@@ -267,9 +252,6 @@ export default class App extends Component {
       }
     }else if( url.indexOf('channel-detail') > -1){
       let urlData = url.split('/');
-
-      // console.log("urlData", urlData);
-
       if (urlData.length > 4) {
         if (urlData[5] !== null || urlData[5] !== undefined || urlData[5] !== '') {
           let data = {
@@ -450,7 +432,7 @@ export default class App extends Component {
     this.backgroundNotificationListener = messaging().onNotificationOpenedApp(
       async (remoteMessage) => {
         console.log('remoteMessage background', remoteMessage);
-        if (remoteMessage.data) {
+        if (remoteMessage && remoteMessage.data) {
           this.notificationRedirection(remoteMessage);
         }
       },
@@ -461,7 +443,7 @@ export default class App extends Component {
       .getInitialNotification()
       .then((remoteMessage) => {
         console.log('remoteMessage', remoteMessage)
-        if (remoteMessage.data) {
+        if (remoteMessage && remoteMessage.data) {
           console.log('remoteMessage background', remoteMessage);
           this.notificationRedirection(remoteMessage);
         }

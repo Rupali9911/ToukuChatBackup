@@ -195,11 +195,11 @@ export const Fonts = {
 
 export const environment = {
   s3BucketConfig: {
-    accessKeyId: 'AKIA4J4DJVXPUM6H57F7',
-    secretAccessKey: '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',
+    // accessKeyId: 'AKIA4J4DJVXPUM6H57F7',
+    // secretAccessKey: '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',
     region: 'ap-southeast-1',
-      // accessKeyId: 'AKIA4J4DJVXPRVCAMSVA',
-      // secretAccessKey: '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',
+       accessKeyId: 'AKIA4J4DJVXPRVCAMSVA',
+       secretAccessKey: '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',
   },
 };
 

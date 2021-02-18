@@ -93,10 +93,10 @@ class ChangeFriendDisplayNameModal extends Component {
   render() {
     const {visible, loading, currentFriend} = this.props;
     const {displayName, isLoading, displayNameErr} = this.state;
-    console.log(
-      'ChangeFriendDisplayNameModal -> render -> isLoading',
-      isLoading,
-    );
+    // console.log(
+    //   'ChangeFriendDisplayNameModal -> render -> isLoading',
+    //   isLoading,
+    // );
     return (
       <Modal
         isVisible={visible}

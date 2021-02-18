@@ -157,6 +157,7 @@ class ExchangeHistory extends Component {
                             <ListLoader />
                         : listData.length > 0
                                 ? <FlatList
+                                    keyExtractor={(item, index) => index.toString()}
                                     data={listData}
                                     renderItem={({ item, index }) => {
                                         let amount = Math.round(item.amount);

@@ -2262,12 +2262,12 @@ class Chat extends Component {
         messageDetail.conversation.user_id ==
           this.props.currentFriend.user_id) {
           this.setFriendCommonly(this.props.currentFriend.user_id)
-          this.showAcceptedToast(messageDetail.conversation.display_name)
+          this.showFriendToast(messageDetail.conversation.display_name, messageDetail.is_already_friend)
       }
         if (messageDetail.invitation && this.props.currentRouteName !== 'FriendChats' ){
             this.setFriendCommonly(messageDetail.conversation.user_id)
             this.props.navigation.navigate('FriendChats');
-            this.showAcceptedToast(messageDetail.conversation.display_name)
+            this.showFriendToast(messageDetail.conversation.display_name, messageDetail.is_already_friend)
         }else if(messageDetail.invitation && this.props.currentRouteName == 'FriendChats' &&
             this.props.currentFriend &&
             messageDetail.conversation.user_id !==
@@ -2275,21 +2275,25 @@ class Chat extends Component {
             NavigationService.popToTop();
             this.setFriendCommonly(messageDetail.conversation.user_id)
             this.props.navigation.navigate('FriendChats');
-            this.showAcceptedToast(messageDetail.conversation.display_name)
+            this.showFriendToast(messageDetail.conversation.display_name, messageDetail.is_already_friend)
         }
     }
   };
 
-  showAcceptedToast(displayName){
-          Toast.show({
-              title: translate('pages.xchat.friendRequest'),
-              text: translate(
-                  'pages.xchat.toastr.youAreNowFriends',
-              ).replace('[missing {{ friend }} value]',
-                  displayName,
-              ),
-              type: 'positive',
-          });
+  showFriendToast(displayName, isFriendAlready){
+        Toast.show({
+            title: translate('pages.xchat.friendRequest'),
+            text: isFriendAlready ? translate(
+                'pages.xchat.toastr.isAlreadyFriend',
+            ).replace('[missing {{friendName}} value]',
+                displayName,
+            ) : translate(
+                'pages.xchat.toastr.youAreNowFriends',
+            ).replace('[missing {{ friend }} value]',
+                displayName,
+            ) ,
+            type: 'positive',
+        });
   }
 
   setFriendCommonly(id){
@@ -3208,6 +3212,7 @@ class Chat extends Component {
     if (conversations.length > 0) {
       return (
         <FlatList
+            keyExtractor={(item, index) => index.toString()}
           data={conversations}
           renderItem={({item, index}) =>
             item.chat === 'group' ? (

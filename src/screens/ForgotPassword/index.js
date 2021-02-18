@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  ScrollView,
   ImageBackground,
-  StyleSheet,
   SafeAreaView,
   Platform,
   Keyboard,

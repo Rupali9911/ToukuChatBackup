@@ -1072,7 +1072,7 @@ class GroupChats extends Component {
     this.props
       .getGroupDetail(this.props.currentGroup.group_id)
       .then((res) => {
-        console.log('res_getGroupDetail', res);
+        //console.log('res_getGroupDetail', res);
         this.props.setCurrentGroupDetail(res);
         for (let admin of res.admin_details) {
           if (admin.id === this.props.userData.id) {

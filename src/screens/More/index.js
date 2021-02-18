@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import {
   View,
-  ImageBackground,
   ScrollView,
   Linking,
-  ActivityIndicator,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';

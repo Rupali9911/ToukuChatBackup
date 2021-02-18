@@ -1,11 +1,7 @@
 import React, {Component} from 'react';
 import {
   View,
-  ImageBackground,
-  StyleSheet,
   Image,
-  Text,
-  ScrollView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';

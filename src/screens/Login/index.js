@@ -2,17 +2,11 @@ import React, {Component} from 'react';
 import {
   View,
   Text,
-  ScrollView,
   ImageBackground,
-  StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
-  Image,
   NativeModules,
   Platform,
-  Linking,
   Keyboard,
-  TextInput,
   ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -101,7 +95,7 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    this.checkSNSVisibility();
+    //this.checkSNSVisibility();
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
     Orientation.addOrientationListener(this._orientationDidChange);
   }

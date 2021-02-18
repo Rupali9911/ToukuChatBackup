@@ -323,7 +323,7 @@ class UpdatePhoneModal extends Component {
                   this.inputs['verifycode'] = ref;
                 }}
                 value={this.state.verifycode}
-                placeholder={translate('common.enterYourAuthenticationCode')}
+                placeholder={translate('pages.adWall.enterVerificationCode')}
                 returnKeyType={'done'}
                 keyboardType={'number-pad'}
                 onChangeText={(verifycode) => this.setState({verifycode})}

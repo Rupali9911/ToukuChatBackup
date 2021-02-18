@@ -3,18 +3,14 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
-  TouchableOpacity,
   TextInput,
-  ScrollView,
   Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-import {Colors, Fonts, Images, Icons} from '../../constants';
+import {Colors, Icons} from '../../constants';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
 import {wait} from '../../utils';

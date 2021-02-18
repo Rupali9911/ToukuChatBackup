@@ -121,17 +121,14 @@ export const isValidUrl = (url = '') => {
 }
 
 export const resizeImage = async (file, width, height) => {
-  // const resizedImage =
-  return await ImageResizer.createResizedImage(file, width, height, 'JPEG', 30)
+  return await ImageResizer.createResizedImage(file, width, height, 'JPEG', 10)
     .then(async ({uri}) => {
       console.log('Image resizer');
       return uri;
     })
     .catch((err) => {
       console.log(err);
-      // return err;
     });
-  // return await resizedImage;
 };
 
 export const hasStoragePermission = async () => {

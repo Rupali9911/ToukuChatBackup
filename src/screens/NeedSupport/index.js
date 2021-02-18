@@ -3,9 +3,7 @@ import {
   View,
   Text,
   ImageBackground,
-  StyleSheet,
   SafeAreaView,
-  ScrollView,
   Platform,
 } from 'react-native';
 import {connect} from 'react-redux';

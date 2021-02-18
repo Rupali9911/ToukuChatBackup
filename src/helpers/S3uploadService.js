@@ -124,10 +124,10 @@ export default class S3uploadService extends Component {
       width,
       height,
       'JPEG',
-      30,
+      10,
     )
       .then(async ({uri}) => {
-        console.log('Image resizer')
+        console.log('Image resizer1')
         return uri;
       })
       .catch((err) => {

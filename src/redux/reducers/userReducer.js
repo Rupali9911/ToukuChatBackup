@@ -488,7 +488,7 @@ export const getMissedSocketEventsByIdFromApp = (id) =>
       });
   });
 
-export const getAdWallUniqueUrl = (ad) => (dispatch) => 
+export const getAdWallUniqueUrl = (ad) => (dispatch) =>
   new Promise(function(resolve, reject) {
     client
       .get(`xchat/get-adwall-unique-url/?ad=${ad}`)
@@ -500,7 +500,7 @@ export const getAdWallUniqueUrl = (ad) => (dispatch) =>
       });
   });
 
-export const requestLoginForm = () => (dispatch) => 
+export const requestLoginForm = () => (dispatch) =>
   new Promise(function (resolve,reject) {
     client
     .get(`/request-login-from/`)
@@ -513,7 +513,7 @@ export const requestLoginForm = () => (dispatch) =>
     });
   });
 
-export const getExchangeHistory = (offset = 0) => (dispatch) => 
+export const getExchangeHistory = (offset = 0) => (dispatch) =>
   new Promise(function (resolve,reject) {
     client
     .get(`xchat/get-amazon-and-btc-history/?limit=${20}&offset=${offset}`)
@@ -526,7 +526,7 @@ export const getExchangeHistory = (offset = 0) => (dispatch) =>
     });
   });
 
-  export const getAmazonExchangeHistory = (offset = 0) => (dispatch) => 
+  export const getAmazonExchangeHistory = (offset = 0) => (dispatch) =>
   new Promise(function (resolve,reject) {
     client
     .get(`xchat/get-amazon-history/?limit=${20}&offset=${offset}`)
@@ -539,7 +539,7 @@ export const getExchangeHistory = (offset = 0) => (dispatch) =>
     });
   });
 
-  export const getBtcExchangeHistory = (offset = 0) => (dispatch) => 
+  export const getBtcExchangeHistory = (offset = 0) => (dispatch) =>
   new Promise(function (resolve,reject) {
     client
     .get(`xchat/get-btc-history/?limit=${20}&offset=${offset}`)
@@ -552,7 +552,7 @@ export const getExchangeHistory = (offset = 0) => (dispatch) =>
     });
   });
 
-export const sendOtpToAddAmount = () => (dispatch) => 
+export const sendOtpToAddAmount = () => (dispatch) =>
   new Promise(function (resolve,reject){
     client
     .post(`/xchat/send-otp-to-add-amount/`)
@@ -565,7 +565,7 @@ export const sendOtpToAddAmount = () => (dispatch) =>
     })
   });
 
-  export const verifyOtpToAddAmount = (data) => (dispatch) => 
+  export const verifyOtpToAddAmount = (data) => (dispatch) =>
   new Promise(function (resolve,reject){
     client
     .post(`/xchat/verify-otp-to-add-amount/`,data)
@@ -577,3 +577,15 @@ export const sendOtpToAddAmount = () => (dispatch) =>
       reject(err);
     })
   });
+
+export const getAnyUserProfile = (id) => (dispatch) =>
+    new Promise(function (resolve,reject) {
+        client
+            .get(`xchat/get-user-profile/?user_id=${id}`)
+            .then((res)=>{
+                resolve(res);
+            })
+            .catch((err)=>{
+                reject(err);
+            });
+    });

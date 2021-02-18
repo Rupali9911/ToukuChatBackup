@@ -59,8 +59,6 @@ export default class CommonNotes extends Component {
     });
   }
 
-  componentDidMount() {}
-
   componentWillMount() {
     this.events && this.events.unsubscribe();
   }

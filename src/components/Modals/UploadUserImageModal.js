@@ -5,8 +5,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  TextInput,
-  ScrollView,
   Platform,
 } from 'react-native';
 import {connect} from 'react-redux';

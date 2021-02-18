@@ -3,9 +3,7 @@ import {
   View,
   Text,
   ImageBackground,
-  StyleSheet,
   SafeAreaView,
-  ScrollView,
   Platform,
   Keyboard,
 } from 'react-native';

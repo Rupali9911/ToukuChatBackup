@@ -7,13 +7,9 @@ import {
   Platform,
   TouchableOpacity,
   Image,
-  Keyboard,
-  FlatList,
-  SafeAreaView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import moment from 'moment';
-import {ScrollView} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView, KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 
 import GroupChatMessageBox from './GroupChatMessageBox';

@@ -198,6 +198,7 @@ export default class PostCard extends Component {
             </View>:null
           );
         }}
+        keyExtractor={(item, index) => index.toString()}
       />
     );
 

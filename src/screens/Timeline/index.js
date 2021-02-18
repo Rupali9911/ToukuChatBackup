@@ -1,14 +1,10 @@
 import React, {Component} from 'react';
 import {
   View,
-  ImageBackground,
-  StyleSheet,
   Image,
-  ScrollView,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
-
 import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import {Images, Icons, Colors, Fonts} from '../../constants';
@@ -226,12 +222,12 @@ class Timeline extends Component {
             .then((res)=>{
               this.setState({isLoading: false});
               this.showData();
-            });  
+            });
           }else{
             this.setState({isLoading: false});
             this.showData();
           }
-          
+
         });
       })
       .catch((err) => {

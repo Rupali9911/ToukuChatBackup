@@ -12,13 +12,13 @@ import NetInfo from '@react-native-community/netinfo';
 export const staging = false ;
 
 //Staging API URL
-export const apiRootStaging = 'https://touku.angelium.net/api';
+export const apiRootStaging = 'https://touku-api.angelium.net/api';
 
 //Live API URL
 export const apiRootLive = 'https://api-touku.angelium.net/api';
 
 //Staging Socket URL
-const socketURLStaging = 'wss://touku.angelium.net/ws/v1';
+const socketURLStaging = 'wss://touku-api.angelium.net/ws/v1';
 const socketURLLive = 'wss://api-touku.angelium.net/ws/v1';
 
 // Staging url
@@ -118,7 +118,7 @@ client.interceptors.response.use(
     // }
   },
   function (error) {
-    console.log('response_console_from_interceptor_error', error.response.data);
+    console.log('response_console_from_interceptor_error', error.request);
     if (error.toString() === 'Error: Network Error') {
       Toast.show({
         title: 'Touku',

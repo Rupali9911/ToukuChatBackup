@@ -720,7 +720,8 @@
         "selectToRead": "トークルームを選択してください",
         "countryUpdated": "国が正常に更新されました",
         "setPasswordTextClasrm": "CLASRMのパスワードをまだ設定していないようです。今すぐパスワードを設定するには、[パスワードの設定]をクリックしてください。それ以外の場合は、[キャンセル]をクリックしてください。",
-        "youAreNowFriends": "あなたと{{ friend }}は友達になりました"
+        "youAreNowFriends": "あなたと{{ friend }}は友達になりました",
+        "isAlreadyFriend":"{{friendName}}はすでにあなたの友達です。"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",

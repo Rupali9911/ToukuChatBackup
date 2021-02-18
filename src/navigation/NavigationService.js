@@ -60,6 +60,20 @@ function getCurrentRoute() {
     }
     return route
 }
+
+function navigateToScreen2Via1(screen1, screen2) {
+    navigator.dispatch(
+        StackActions.reset({
+            index: 1,
+            key: null,
+            actions: [
+                NavigationActions.navigate({ routeName:  screen1}),
+                NavigationActions.navigate({ routeName:  screen2})
+            ]
+        })
+    );
+
+}
 // add other navigation functions that you need and export them
 
 export default {
@@ -69,5 +83,6 @@ export default {
   pop,
   popToTop,
   setTopLevelNavigator,
-    getCurrentRoute
+    getCurrentRoute,
+    navigateToScreen2Via1
 };

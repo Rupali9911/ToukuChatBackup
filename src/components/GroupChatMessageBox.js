@@ -10,17 +10,15 @@ import {
   Platform,
 } from 'react-native';
 import GroupChatMessageBubble from './GroupChatMessageBubble';
-
 import {Colors, Fonts} from '../constants';
 import RoundedImage from './RoundedImage';
 import {getAvatar, normalize, getUserName} from '../utils';
 import {translate} from '../redux/reducers/languageReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import NavigationService from "../navigation/NavigationService";
-import {getUserFriendByFriendId,getLocalUserFriend} from "../storage/Service";
+import {getUserFriendByUserId} from "../storage/Service";
 import {store} from "../redux/store";
 import {setCurrentFriend} from "../redux/reducers/friendReducer";
-
 const {width, height} = Dimensions.get('window');
 
 export default class GroupChatMessageBox extends Component {
@@ -82,14 +80,6 @@ export default class GroupChatMessageBox extends Component {
     }
   };
 
-  layoutChange = (event) => {
-    var {x, y, width, height} = event.nativeEvent.layout;
-    borderRadius = height / 2;
-    if (height > 40) {
-      borderRadius = height / 2;
-    }
-  };
-
   onMessagePress = (id) => {
     this.setState({selectedMessageId: id});
     this._openMenu();
@@ -105,6 +95,16 @@ export default class GroupChatMessageBox extends Component {
       });
     });
   };
+
+  navigateToUserProfile = (sender_id) =>{
+      let friendObj = getUserFriendByUserId(sender_id);
+      if (friendObj.length > 0) {
+          store.dispatch(setCurrentFriend(friendObj[0]));
+          NavigationService.navigate('FriendNotes');
+      }else{
+          NavigationService.navigate('FriendNotes', {id: sender_id});
+      }
+  }
 
   renderTransltedMessage = (msg) => {
     return (
@@ -246,12 +246,7 @@ export default class GroupChatMessageBox extends Component {
                 <TouchableOpacity
                     onPress={() => {
                         console.log('message', message)
-                        let friendObj = getLocalUserFriend(message.sender_id);
-                        console.log('friendObj', friendObj)
-                        if (friendObj.length > 0) {
-                            store.dispatch(setCurrentFriend(friendObj[0]));
-                            NavigationService.navigate('FriendNotes');
-                        }
+                       this.navigateToUserProfile(message.sender_id)
                     }}>
               <Image
                 source={getAvatar(message.sender_picture)}

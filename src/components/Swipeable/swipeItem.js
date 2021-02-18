@@ -8,8 +8,8 @@ import {
     Platform
 } from 'react-native';
 import type {
-    PanResponderInstance, 
-    GestureResponderEvent, 
+    PanResponderInstance,
+    GestureResponderEvent,
     PanResponderGestureState
 } from 'PanResponder';
 import SwipeButtonsContainer from './swipeButtonsContainer';
@@ -80,7 +80,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                 const {
                     x: offsetX
                 } = this._panDistanceOffset;
-                
+
                 if (Math.round(offsetX) === 0) {
                     this.props.onSwipeInitial && this.props.onSwipeInitial(this._swipeItem);
                 }
@@ -96,16 +96,17 @@ export default class SwipeItem extends React.Component<Props, States> {
                 [
                     null,
                     {
-                        dx: this.state.panDistance.x,
+                        dx: this.state.panDistance.x
                     },
-                ],{}
+                ],
+                {useNativeDriver: false}
             ),
             onPanResponderRelease: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 this._moveToDestination(this._getSwipePositionDestinationValueX(gestureState.dx));
             },
             onPanResponderTerminate: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 this._moveToDestination(this._getSwipePositionDestinationValueX(gestureState.dx));
-                return true;  
+                return true;
             },
             onPanResponderTerminationRequest: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 // On Android, the component will stick at the last swipe position when pan responder terminate
@@ -114,7 +115,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                     return true;
                 }
                 return false;
-                
+
             },
 
         });
@@ -135,7 +136,7 @@ export default class SwipeItem extends React.Component<Props, States> {
         this.state.panDistance.flattenOffset();
         Animated.spring(this.state.panDistance, {
             toValue: {
-                x: toX, 
+                x: toX,
                 y: 0
             },
             friction: 10,
@@ -159,7 +160,7 @@ export default class SwipeItem extends React.Component<Props, States> {
 
         let toValueX: number = 0;
         let panSide: string = (panDistanceX > 0)? 'right': 'left';
-        let containerOffset: number = this._panDistanceOffset.x;        
+        let containerOffset: number = this._panDistanceOffset.x;
 
         if (panSide === 'right' && containerOffset > leftButtonTriggerPosition) {
             toValueX = leftButtonTriggerPosition;
@@ -192,7 +193,7 @@ export default class SwipeItem extends React.Component<Props, States> {
             style,
             children
         } = leftButtons.props;
-        
+
         let scale = this.state.panDistance.x.interpolate({
             inputRange: [ -Infinity, -0.01, 0, leftButtonTriggerPosition, Infinity],
             outputRange: [ 0.01, 0.01, 0.7, 1, 1],
@@ -201,7 +202,7 @@ export default class SwipeItem extends React.Component<Props, States> {
         let widthStyle = {
             transform: [{scale}]
         };
-        
+
         return (
             <SwipeButtonsContainer
                 style={[style, buttonViewStyles.container, buttonViewStyles.left, widthStyle]}
@@ -233,7 +234,7 @@ export default class SwipeItem extends React.Component<Props, States> {
             style,
             children,
         } = rightButtons.props;
-        
+
         let scale = this.state.panDistance.x.interpolate({
             inputRange: [-Infinity , rightButtonTriggerPosition, 0, 0.1, Infinity],
             outputRange: [1, 1, 0.7, 0.01, 0.01],
@@ -242,7 +243,7 @@ export default class SwipeItem extends React.Component<Props, States> {
         let widthStyle = {
             transform: [{scale}]
         };
-        
+
         return (
             <SwipeButtonsContainer
                 style={[style, buttonViewStyles.container, buttonViewStyles.right, widthStyle]}
@@ -261,18 +262,18 @@ export default class SwipeItem extends React.Component<Props, States> {
         const panStyle = {
             transform: this.state.panDistance.getTranslateTransform()
         };
-        
+
         const {
             style,
             swipeContainerStyle,
             containerView: ContainerView = View,
         } = this.props;
-        
+
         return (
             <View>
                 <ContainerView
                     style={[
-                        style, 
+                        style,
                         containerStyles.rootContainer,
                     ]}
                 >
@@ -285,14 +286,14 @@ export default class SwipeItem extends React.Component<Props, States> {
                     <Animated.View
                         style={[containerStyles.swipeContainer, panStyle]}
                         {...this._panResponder.panHandlers}
-                    >   
+                    >
                         <View
                             style={[swipeContainerStyle, containerStyles.swipeContainer]}
                         >
                             {this.props.children}
                         </View>
                     </Animated.View>
-                    
+
                 </ContainerView>
             </View>
         );
