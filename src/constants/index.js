@@ -398,3 +398,4 @@ export const openBoxImage = {
 
 export const appleStoreUserId = 4046;
 export const gestureResponseDistance = SCREEN_WIDTH*0.9;
+export const apiRootStaging = 'https://touku-api.angelium.net/api';

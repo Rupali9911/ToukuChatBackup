@@ -98,7 +98,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                     {
                         dx: this.state.panDistance.x,
                     },
-                ],
+                ],{}
             ),
             onPanResponderRelease: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 this._moveToDestination(this._getSwipePositionDestinationValueX(gestureState.dx));
@@ -139,6 +139,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                 y: 0
             },
             friction: 10,
+            useNativeDriver: false
         }).start();
     }
 

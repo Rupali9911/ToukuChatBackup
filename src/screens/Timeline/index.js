@@ -394,7 +394,6 @@ class Timeline extends Component {
         <HomeHeader title={translate('pages.xchat.timeline')} />
         <View style={globalStyles.container}>
           <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
-
           {this.state.isLoading ? (
             <ListLoader justifyContent={'flex-start'} />
           ) : (
@@ -415,6 +414,9 @@ class Timeline extends Component {
                   navigation={this.props.navigation}
                 />
               ) : (
+                loading && rankingChannel.length<=0 ? (
+                <ListLoader justifyContent={'flex-start'} />
+                ) : 
                 <PostCard
                   menuItems={menuItems}
                   posts={rankingChannel}

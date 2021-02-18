@@ -10,7 +10,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Badge, Divider } from 'react-native-paper';
+import { Badge, Divider, ActivityIndicator } from 'react-native-paper';
 import languageReducer, { translate } from '../../redux/reducers/languageReducer';
 import RoundedImage from '../RoundedImage';
 import { globalStyles } from '../../styles';
@@ -29,6 +29,8 @@ export default class GroupListItem extends PureComponent {
       isChecked: false,
       newItem: { ...this.props.item, isCheck: false },
       isSwipeButtonVisible: false,
+      isPinUnpinLoading: false,
+      isDeleteLoading: false
     };
     this.itemRef = null;
   }
@@ -131,7 +133,7 @@ export default class GroupListItem extends PureComponent {
       onDeleteChat,
       onPinUnpinChat
     } = this.props;
-    const { newItem,isSwipeButtonVisible } = this.state;
+    const { newItem, isSwipeButtonVisible, isPinUnpinLoading, isDeleteLoading } = this.state;
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
@@ -140,7 +142,7 @@ export default class GroupListItem extends PureComponent {
         <SwipeItem
           style={{ flex: 1 }}
           rightButtons={swipeable &&
-            <View style={{flexDirection:'row',height: '100%'}}>
+            <View style={{ flexDirection: 'row', height: '100%' }}>
               <SwipeButtonsContainer
                 style={{
                   alignSelf: 'center',
@@ -155,18 +157,24 @@ export default class GroupListItem extends PureComponent {
                   justifyContent: 'center',
                   flex: 1
                 }} onPress={() => {
-                    console.log('pin chat');
-                    this.itemRef && this.itemRef.close()
-                    wait(200).then(()=>{
-                      onPinUnpinChat(item);
-                    });
-                  }}>
-                <MaterialCommunityIcon
-                  name={item.is_pined ? 'pin-off' : 'pin'}
-                  size={20}
-                  color={Colors.white}
-                />
-                  {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
+                  console.log('pin chat');
+                  // this.itemRef && this.itemRef.close()
+                  this.setState({isPinUnpinLoading: true});
+                  onPinUnpinChat(item, () => {
+                    this.setState({isPinUnpinLoading:false});
+                    this.itemRef && this.itemRef.close();
+                  });
+                  // wait(200).then(()=>{
+                  //   onPinUnpinChat(item,this.itemRef);
+                  // });
+                }}>
+                  {isPinUnpinLoading?
+                  <ActivityIndicator color={Colors.white}/>
+                  :<MaterialCommunityIcon
+                    name={item.is_pined ? 'pin-off' : 'pin'}
+                    size={20}
+                    color={Colors.white}
+                  />}
                 </TouchableOpacity>
               </SwipeButtonsContainer>
               <SwipeButtonsContainer
@@ -186,36 +194,38 @@ export default class GroupListItem extends PureComponent {
                   console.log('delete chat')
                   this.itemRef && this.itemRef.close();
                   onDeleteChat(item.group_id);
-                  }}>
-                  <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>
+                }}>
+                  {isDeleteLoading?
+                  <ActivityIndicator color={Colors.white}/>
+                  :<Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>}
                 </TouchableOpacity>
               </SwipeButtonsContainer>
             </View>
           }
-          onSwipeInitial={(item)=>onSwipeInitial(item)}
-          onMovedToOrigin={()=>{
+          onSwipeInitial={(item) => onSwipeInitial(item)}
+          onMovedToOrigin={() => {
             // console.log('button hide');
-            this.setState({isSwipeButtonVisible: false});
+            this.setState({ isSwipeButtonVisible: false });
           }}
-          onRightButtonsShowed={(item)=>{
+          onRightButtonsShowed={(item) => {
             this.itemRef = item;
             onSwipeButtonShowed(item)
-            this.setState({isSwipeButtonVisible: true});
+            this.setState({ isSwipeButtonVisible: true });
           }}
           disableSwipeIfNoButton>
           <View style={{ backgroundColor: '#f2f2f2' }}>
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={
-                isSwipeButtonVisible?()=>{this.itemRef && this.itemRef.close()}:
-                !isVisible
-                  ? onPress
-                  : () => {
-                    this.manageRecord(
-                      item,
-                      !newItem.isCheck ? 'check' : 'unCheck',
-                    );
-                  }
+                isSwipeButtonVisible ? () => { this.itemRef && this.itemRef.close() } :
+                  !isVisible
+                    ? onPress
+                    : () => {
+                      this.manageRecord(
+                        item,
+                        !newItem.isCheck ? 'check' : 'unCheck',
+                      );
+                    }
               }
               style={styles.container}
             // disabled={isVisible}

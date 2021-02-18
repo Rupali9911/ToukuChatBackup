@@ -13,8 +13,9 @@ import PropTypes from 'prop-types';
 import {Colors, Fonts} from '../constants';
 import {globalStyles} from '../styles';
 import {connect} from 'react-redux';
+import { normalize } from '../utils';
 
-class Button extends Component {
+class SecondaryButton extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -129,11 +130,7 @@ class Button extends Component {
         disabled={disabled}
         activeOpacity={1}
         onPress={loading ? null : onPress}>
-        <LinearGradient
-          start={type === 'primaryNew' ? {x: 0.2, y: 0.7} : {x: 0.1, y: 0.7}}
-          end={type === 'primaryNew' ? {x: 0.95, y: 0.8} : {x: 0.5, y: 0.8}}
-          locations={type === 'primaryNew' ? [0.1, 0.9, 1] : [0.1, 0.6, 1]}
-          colors={this.getGradientColors()}
+        <View
           style={[
             styles.linearGradient,
             {
@@ -142,6 +139,8 @@ class Button extends Component {
               borderColor: borderColor ? borderColor : this.getBorderColor(),
               opacity: disabled ? 0.5 : 1,
               paddingHorizontal: 5,
+              backgroundColor: 'transparent',
+              justifyContent: 'center'
             },
             leftIcon?{flexDirection:'row'}:{},
             containerStyle && containerStyle,
@@ -154,32 +153,20 @@ class Button extends Component {
                 color={this.getIndicatorColor()}
               />
             </View>
-          ) : Platform.OS === 'ios' ? (
-            <TextInput
-              pointerEvents="none"
-              editable={false}
-              style={[
-                this.getFont(),
-                {
-                  color: this.getTitleColor(),
-                },
-                fontSize && {fontSize:fontSize}
-              ]}>
-              {title}
-            </TextInput>
-          ) : (
-            <Text
-              style={[
-                this.getFont(),
-                {
-                  color: this.getTitleColor(),
-                },
-                fontSize && {fontSize:fontSize}
-              ]}>
-              {title}
-            </Text>
-          )}
-        </LinearGradient>
+          ) : <Text
+                style={[
+                  this.getFont(),
+                  {
+                    color: this.getTitleColor(),
+                    textAlignVertical:'center',
+                    lineHeight:20
+                  },
+                  fontSize && { fontSize: fontSize }
+                ]}>
+                {title}
+              </Text>
+          }
+        </View>
       </TouchableOpacity>
     );
   }
@@ -194,7 +181,7 @@ const styles = StyleSheet.create({
   },
 });
 
-Button.propTypes = {
+SecondaryButton.propTypes = {
   title: PropTypes.string,
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
@@ -215,8 +202,8 @@ Button.propTypes = {
   fontType: PropTypes.oneOf(['normalRegularText', 'smallRegularText']),
 };
 
-Button.defaultProps = {
-  height: Platform.isPad ? 55 : 45,
+SecondaryButton.defaultProps = {
+  height: Platform.isPad ? normalize(55) : normalize(40),
   type: 'primary',
   title: 'Submit',
   disabled: false,
@@ -234,4 +221,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Button);
+export default connect(mapStateToProps, mapDispatchToProps)(SecondaryButton);

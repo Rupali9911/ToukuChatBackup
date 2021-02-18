@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabTitle: {
-    fontSize: Platform.isPad ? normalize(10) : 18,
+    fontSize: Platform.isPad ? normalize(10) : normalize(13),
     color: Colors.gradient_1,
     fontFamily: Fonts.regular,
   },

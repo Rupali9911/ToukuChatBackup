@@ -71,8 +71,8 @@ class Rewards extends Component {
     this.setState({orientation});
   };
 
-  getUniqueUrl = () => {
-    this.props.getAdWallUniqueUrl().then((res)=>{
+  getUniqueUrl = (ad) => {
+    this.props.getAdWallUniqueUrl(ad).then((res)=>{
       if(res && res.add_wall_url){
         Linking.openURL(res.add_wall_url);
       }
@@ -100,7 +100,7 @@ class Rewards extends Component {
           contentContainerStyle={RewardStyles.mainContainer}
           showsVerticalScrollIndicator={false}>
 
-          {this.rewards.map((item)=>{
+          {this.rewards.map((item,index)=>{
               return (
                 <View>
                     <TouchableOpacity style={{ flex: 1 }} onPress={() => {
@@ -108,7 +108,7 @@ class Rewards extends Component {
                         this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 1422 } });
                         } else {
                             if (this.props.userData.user_type === 'owner' || this.props.userData.user_type === 'company' || this.props.userData.user_type === 'tester') {
-                                this.getUniqueUrl();
+                                this.getUniqueUrl(index+1);
                             } else {
                                 Toast.show({
                                     title: translate('pages.xchat.touku'),

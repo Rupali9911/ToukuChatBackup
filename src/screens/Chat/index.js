@@ -155,6 +155,7 @@ import {
   updateGroupsWhenUnpined,
   updateChannelsWhenPined,
   updateChannelsWhenUnpined,
+  multipleDeleteChatConversation
 } from '../../storage/Service';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
@@ -2973,6 +2974,8 @@ class Chat extends Component {
       if (res && res.status) {
         let commonData = [...this.props.commonChat];
 
+        multipleDeleteChatConversation(deleteObj);
+
         // channel
         if (deleteObj.channel_ids && deleteObj.channel_ids.length > 0) {
           deleteObj.channel_ids.map((channelItem, index) => {
@@ -2995,12 +2998,14 @@ class Chat extends Component {
             commonData = commonData.filter(
               (item) => item.group_id !== groupItem,
             );
-            console.log('common', commonData);
+            // console.log('common', commonData);
           });
         }
 
-        this.setState({commonChat: commonData, countChat: 0});
-        this.props.setDeleteChat(this.state.commonChat);
+        this.setState({commonChat: commonData, countChat: 0},()=>{
+          this.props.setDeleteChat(this.state.commonChat);  
+        });
+        // this.props.setDeleteChat(this.state.commonChat);
         deleteObj = null;
         count = 0;
       }
@@ -3023,11 +3028,13 @@ class Chat extends Component {
     this.updatePasswordModalVisibility();
   }
 
-  onPinUnpinGroup = (item) => {
+  onPinUnpinGroup = (item,onClose) => {
     if (item.is_pined) {
       this.props
         .unpinGroup(item.group_id)
         .then((res) => {
+          // itemRef && itemRef.close();
+          onClose();
           if (res.status === true) {
             Toast.show({
               title: 'Touku',
@@ -3037,6 +3044,8 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          // itemRef && itemRef.close();
+          onClose();
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -3047,6 +3056,8 @@ class Chat extends Component {
       this.props
         .pinGroup(item.group_id)
         .then((res) => {
+          // itemRef && itemRef.close();
+          onClose();
           if (res.status === true) {
             Toast.show({
               title: 'Touku',
@@ -3056,6 +3067,8 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          // itemRef && itemRef.close();
+          onClose();
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -3234,12 +3247,12 @@ class Chat extends Component {
                 onSwipeInitial={this.onSwipeInitial}
                 onDeleteChat={(id)=>{
                   if(id){
-                    groupId.push(id);
+                    groupId = [id];
                     this.setDataToDeleteChat();
                   }
                 }}
-                onPinUnpinChat={(item)=>{
-                  this.onPinUnpinGroup(item);
+                onPinUnpinChat={(item,onClose)=>{
+                  this.onPinUnpinGroup(item,onClose);
                 }}
               />
             ) : item.chat === 'channel' ? (
@@ -3280,7 +3293,7 @@ class Chat extends Component {
                 onSwipeInitial={this.onSwipeInitial}
                 onDeleteChat={(id)=>{
                   if(id){
-                    channelId.push(id);
+                    channelId = [id];
                     this.setDataToDeleteChat();
                   }
                 }}
@@ -3338,7 +3351,7 @@ class Chat extends Component {
                 onSwipeInitial={this.onSwipeInitial}
                 onDeleteChat={(id)=>{
                   if(id){
-                    friendId.push(id);
+                    friendId = [id]
                     this.setDataToDeleteChat();
                   }
                 }}

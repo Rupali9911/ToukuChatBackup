@@ -1376,6 +1376,7 @@ export const multipleData = (type, multichat) => {
           last_msg: null,
           last_msg_id: null,
           timestamp: multichat[0].timestamp,
+          no_msgs: true
         },
         'modified',
       );
@@ -1383,5 +1384,61 @@ export const multipleData = (type, multichat) => {
     deleteAllGroupMessageByGroupId(multichat[0].group_id);
   }
 };
+
+export const multipleDeleteChatConversation = (deletedObject) => {
+  // channel
+  if (deletedObject.channel_ids && deletedObject.channel_ids.length > 0) {
+    deletedObject.channel_ids.map((channelItem, index) => {
+      realm.write(() => {
+        realm.create(
+          'channels',
+          {
+            id: channelItem,
+            last_msg: null,
+          },
+          'modified',
+        );
+      });
+      deleteChannelAllConversationsById(channelItem);
+    });
+  }
+
+  // friend
+  if (deletedObject.friend_ids && deletedObject.friend_ids.length > 0) {
+    deletedObject.friend_ids.map((friendItem, index) => {
+      realm.write(() => {
+        realm.create(
+          'user_friends',
+          {
+            user_id: friendItem,
+            last_msg: null,
+            last_msg_id: null,
+          },
+          'modified',
+        );
+      });
+      deleteFriendAllConversationsById(friendItem);
+    });
+  }
+
+  // group
+  if (deletedObject.group_ids && deletedObject.group_ids.length > 0) {
+    deletedObject.group_ids.map((groupItem, index) => {
+      realm.write(() => {
+        realm.create(
+          'groups',
+          {
+            group_id: groupItem,
+            last_msg: null,
+            last_msg_id: null,
+            no_msgs: true
+          },
+          'modified',
+        );
+      });
+      deleteAllGroupMessageByGroupId(groupItem);
+    });
+  }
+}
 
 //#endregion

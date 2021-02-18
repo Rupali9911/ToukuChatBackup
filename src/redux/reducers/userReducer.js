@@ -488,10 +488,10 @@ export const getMissedSocketEventsByIdFromApp = (id) =>
       });
   });
 
-export const getAdWallUniqueUrl = () => (dispatch) => 
+export const getAdWallUniqueUrl = (ad) => (dispatch) => 
   new Promise(function(resolve, reject) {
     client
-      .get(`xchat/get-adwall-unique-url/`)
+      .get(`xchat/get-adwall-unique-url/?ad=${ad}`)
       .then((res) => {
         resolve(res);
       })

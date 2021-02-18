@@ -118,6 +118,7 @@ export default class PostCard extends Component {
 
   EmptyList = () => {
     console.log('isTimeline');
+    const {rankingLoadMore} = this.props;
     return (
       <>
         <ImageBackground
@@ -128,13 +129,15 @@ export default class PostCard extends Component {
             justifyContent: 'center',
             height: height / 1.3,
           }}>
-          <Text
-            style={{
-              fontFamily: Fonts.regular,
-              fontSize: 12,
-            }}>
-            {translate('pages.xchat.noTimelineFound')}
-          </Text>
+          {rankingLoadMore ?
+            <ActivityIndicator />
+            : <Text
+              style={{
+                fontFamily: Fonts.regular,
+                fontSize: 12,
+              }}>
+              {translate('pages.xchat.noTimelineFound')}
+            </Text>}
         </ImageBackground>
       </>
     );
@@ -148,14 +151,15 @@ export default class PostCard extends Component {
         height: height * 0.5,
       }}>
         <Text
-          style={{
-            fontFamily: Fonts.regular,
-            fontSize: normalize(12),
-            marginTop: 50,
-            color: Colors.dark_gray
-          }}>
-          {translate('pages.xchat.noTimelineFound')}
-        </Text>
+        style={{
+          fontFamily: Fonts.regular,
+          fontSize: normalize(12),
+          marginTop: 50,
+          color: Colors.dark_gray
+        }}>
+        {translate('pages.xchat.noTimelineFound')}
+      </Text>
+        
       </View>
     );
   }

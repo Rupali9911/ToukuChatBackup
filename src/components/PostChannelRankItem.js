@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 import {Colors, Fonts, Images, Icons} from '../constants';
 import {translate} from '../redux/reducers/languageReducer';
 import Button from './Button';
+import SecondaryButton from './SecondaryButton';
 import RoundedImage from './RoundedImage';
 import moment from 'moment';
 import {Divider} from 'react-native-paper';
@@ -230,14 +231,12 @@ class PostChannelRankItem extends Component {
             {/*/>*/}
           </TouchableOpacity>
           <View style={{flex:1, marginLeft: 10}}>
-            <Text style={{ color: Colors.white }}>{post.channel_name}</Text>
-            <Text style={{ color: Colors.white }}>{post.channel_status || "-"}</Text>
-            <View
-              style={{flexDirection: 'row', flex:1, }}
-            >
+            <Text style={{ color: Colors.white, fontSize: normalize(12) }}>{post.channel_name}</Text>
+            <Text style={{ color: Colors.white, fontSize: normalize(11) }}>{post.channel_status || "-"}</Text>
+            <View style={{flexDirection: 'row', flex:1, }}>
               <Text
                 style={[
-                  { color: Colors.white },
+                  { color: Colors.white, fontSize: normalize(11) },
                 ]}>
                 {translate('pages.invitation.referralOneField3')+" "}
                 <Text
@@ -271,34 +270,36 @@ class PostChannelRankItem extends Component {
             })}
           </View>
           <View style={styles.channelDetailButton}>
-            <View style={{ flexDirection: 'row', justifyContent:'flex-end' }}>
-              <Button
+            <View style={{flexDirection:'row',justifyContent:'flex-end'}}>
+              <SecondaryButton
                 title={
                   post.is_following
                     ? translate('pages.xchat.unfollow')
                     : translate('pages.xchat.follow')
                 }
                 type={'transparent'}
-                height={28}
+                height={normalize(22)}
                 onPress={() => this.onFollowUnfollow()}
                 loading={this.isFollowing}
                 fontType={'normalRegular15Text'}
-                fontSize={normalize(11)}
+                fontSize={normalize(10)}
                 borderColor={Colors.gradient_3}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <Button
-                title={translate('pages.xchat.channelDetails')}
-                type={'transparent'}
-                height={28}
-                onPress={() => NavigationService.navigate('ChannelInfo', { channelItem: post, })}
-                fontType={'normalRegular15Text'}
-                fontSize={normalize(11)}
-                borderColor={Colors.gradient_3}
+                containerStyle={{ marginVertical: 0 }}
               />
             </View>
           </View>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent:'flex-end'}}>
+          <SecondaryButton
+            title={translate('pages.xchat.channelDetails')}
+            type={'transparent'}
+            height={normalize(22)}
+            onPress={() => NavigationService.navigate('ChannelInfo', { channelItem: post, })}
+            fontType={'normalRegular15Text'}
+            fontSize={normalize(11)}
+            borderColor={Colors.gradient_3}
+            // containerStyle={{paddingHorizontal:0 }}
+          />
         </View>
       </View>
     );
@@ -417,18 +418,18 @@ const styles = StyleSheet.create({
   channelInfoDetail: {
     // flex: 0.15,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     // paddingVertical: '2%',
   },
   channelDetailStatus: {
-    flex: 1,
     flexDirection: 'row',
+    flex: 1,
     paddingHorizontal: '2%',
   },
   channelDetailButton: {
-    flex: 0.7,
+    flexDirection: 'row',
     paddingHorizontal: '1%',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   detailStatusItem: {
     paddingTop: '5%',
@@ -443,7 +444,7 @@ const styles = StyleSheet.create({
   detailStatusItemName: {
     alignSelf: 'center',
     color: Colors.white,
-    fontSize: 12,
+    fontSize: normalize(9),
     fontFamily: Fonts.regular,
   },
 });

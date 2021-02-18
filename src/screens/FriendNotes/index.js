@@ -36,6 +36,7 @@ import {ChangeNameModal, ConfirmationModal} from '../../components/Modals';
 import S3uploadService from '../../helpers/S3uploadService';
 import moment from 'moment';
 import RoundedImage from '../../components/RoundedImage';
+import ImageView from 'react-native-image-viewing';
 import ChangeFriendDisplayNameModal from '../../components/Modals/ChangeFriendDisplayNameModal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 const {width, height} = Dimensions.get('window');
@@ -55,7 +56,8 @@ class FriendNotes extends Component {
       showTextBox: this.props.navigation.state.params
         ? this.props.navigation.state.params.showAdd
         : false,
-        deleteLoading: false
+        deleteLoading: false,
+        showImage: false
     };
 
     this.S3uploadService = new S3uploadService();
@@ -422,12 +424,17 @@ class FriendNotes extends Component {
     }
   };
 
+  hideImage() {
+    this.setState({ showImage: false });
+  }
+
   render() {
     const {
       orientation,
       showDeleteNoteConfirmationModal,
       isChangeNameModalVisible,
-        deleteLoading
+        deleteLoading,
+        showImage
     } = this.state;
     const {currentFriend} = this.props;
     console.log('currentFriend.avatar', currentFriend.avatar);
@@ -476,7 +483,8 @@ class FriendNotes extends Component {
                     ? currentFriend.avatar
                     : currentFriend.profile_picture,
                 )}
-                // clickable={true}
+                clickable={true}
+                onClick={()=>this.setState({showImage: true})}
               />
             </View>
             <View
@@ -575,6 +583,16 @@ class FriendNotes extends Component {
             onRequestClose={() =>
               this.setState({isChangeNameModalVisible: false})
             }
+          />
+          <ImageView
+            images={[getAvatar(
+              currentFriend.avatar
+                ? currentFriend.avatar
+                : currentFriend.profile_picture,
+            )]}
+            imageIndex={0}
+            visible={showImage}
+            onRequestClose={() => this.hideImage(false)}
           />
         </View>
       </View>
