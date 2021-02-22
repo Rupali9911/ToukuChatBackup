@@ -1555,6 +1555,7 @@ class Chat extends Component {
       if (
         currentFriend.friend === message.text.data.message_details.friend_id
       ) {
+        console.log('message.text.data.message_details', message.text.data.message_details)
         this.props.updateCurrentFriendDisplayName(
           message.text.data.message_details,
         );
@@ -3007,7 +3008,7 @@ class Chat extends Component {
         }
 
         this.setState({commonChat: commonData, countChat: 0},()=>{
-          this.props.setDeleteChat(this.state.commonChat);  
+          this.props.setDeleteChat(this.state.commonChat);
         });
         // this.props.setDeleteChat(this.state.commonChat);
         deleteObj = null;

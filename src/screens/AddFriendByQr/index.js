@@ -171,7 +171,6 @@ class AddFriendByQr extends Component {
                         containerStyle={{flex: 1}}
                         cameraStyle={{height: '100%'}}
                         bottomContent={
-                            recentImageData?
                                 <ImageBackground
                                     source={Images.header_bg_small}
                                     style={{flex: 1, flexDirection: 'row', width: '100%', height: 80, position: 'absolute', bottom: 0}}
@@ -193,7 +192,6 @@ class AddFriendByQr extends Component {
                                     </TouchableOpacity>
                                     </View>
                                 </ImageBackground>
-                                : null
                         }
                     />
                 }

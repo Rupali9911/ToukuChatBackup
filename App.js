@@ -398,7 +398,8 @@ export default class App extends Component {
         //  NavigationService.navigate('Chat');
         let friendObj = getUserFriendByFriendId(notificationData.id);
         if (friendObj.length > 0) {
-          store.dispatch(setCurrentFriend(friendObj[0]));
+            let friend = JSON.parse(JSON.stringify(friendObj[0]));
+          store.dispatch(setCurrentFriend(friend));
           NavigationService.navigate('FriendChats');
         }
       } else if (

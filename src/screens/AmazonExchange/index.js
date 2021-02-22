@@ -85,6 +85,7 @@ class AmazonExchange extends Component {
         });
       };
 
+
     sendOtpToAdd = () => {
         this.setState({sendOtpLoading: true});
         this.props.sendOtpToAddAmount()
@@ -99,16 +100,51 @@ class AmazonExchange extends Component {
                     this.setState({verifyOtpModalVisible: true});
                 }
             }).catch((err)=>{
-                if(err){
+            if(err && err.response.request._response){
+                let errorbody = JSON.parse(err.response.request._response);
+                console.log('error',errorbody.message);
+                if(errorbody.message.includes('backend.')){
                     Toast.show({
                         title: 'Touku',
-                        text: translate(err.message),
+                        text: translate(errorbody.message),
+                        type: 'primary',
+                    });
+                }else{
+                    Toast.show({
+                        title: 'Touku',
+                        text: errorbody.message,
                         type: 'primary',
                     });
                 }
-                this.setState({sendOtpLoading: false});
-            });
+            }
+            this.setState({sendOtpLoading: false});
+        });
     }
+
+    // sendOtpToAdd = () => {
+    //     this.setState({sendOtpLoading: true});
+    //     this.props.sendOtpToAddAmount()
+    //         .then((res)=>{
+    //             if(res && res.status){
+    //                 this.setState({sendOtpLoading: false});
+    //                 Toast.show({
+    //                     title: 'Touku',
+    //                     text: translate(res.message),
+    //                     type: 'positive',
+    //                 });
+    //                 this.setState({verifyOtpModalVisible: true});
+    //             }
+    //         }).catch((err)=>{
+    //             if(err){
+    //                 Toast.show({
+    //                     title: 'Touku',
+    //                     text: translate(err.message),
+    //                     type: 'primary',
+    //                 });
+    //             }
+    //             this.setState({sendOtpLoading: false});
+    //         });
+    // }
 
     verifyOtpToAddAmount = (amount, code) => {
         let data = {
@@ -139,7 +175,7 @@ class AmazonExchange extends Component {
                 });
                 this.setState({ verifyOtpLoading: false });
             });
-    } 
+    }
 
     render() {
         const {
@@ -264,7 +300,7 @@ class AmazonExchange extends Component {
                             marginTop: 10,
                             marginHorizontal: 15,
                             paddingHorizontal: 10,
-                            paddingVertical: 15, 
+                            paddingVertical: 15,
                             backgroundColor: Colors.light_pink,
                             borderRadius: 10
                             }}>
@@ -274,7 +310,7 @@ class AmazonExchange extends Component {
                             marginTop: 10,
                             marginHorizontal: 15,
                             paddingHorizontal: 10,
-                            paddingVertical: 5, 
+                            paddingVertical: 5,
                             }}>
                                 <Text>{translate('pages.adWall.sendItToYourEmail')}</Text>
                         </View>
@@ -291,7 +327,7 @@ class AmazonExchange extends Component {
                                     onPress={() => {
                                         this.setState({isExchange: !this.state.isExchange})
                                         this.props.navigation.navigate('ExchangeHistoryScreen');
-                                    }} 
+                                    }}
                                     fontSize={normalize(13)}/>
                             </View>
                             <View style={{ flex: 0.1 }} />
@@ -301,7 +337,7 @@ class AmazonExchange extends Component {
                                     title={translate('pages.adWall.exchange')}
                                     onPress={() => {
                                         this.setState({isExchange: !this.state.isExchange})
-                                    }} 
+                                    }}
                                     fontSize={normalize(13)}/>
                             </View>
                         </View>
@@ -413,7 +449,7 @@ class AmazonExchange extends Component {
                                                     text: translate(`pages.adWall.dontHaveSufficientAmount`),
                                                     type: 'primary',
                                                 });
-                                               return; 
+                                               return;
                                             }
                                             if (!this.props.userData.phone) {
                                                 this.setState({showPhoneUpdateModal: true});
@@ -421,7 +457,7 @@ class AmazonExchange extends Component {
                                             }
                                             this.sendOtpToAdd();
                                         }}
-                                        loading={sendOtpLoading} 
+                                        loading={sendOtpLoading}
                                         />
                                 </View>
                         </View>

@@ -53,6 +53,7 @@ class ChangeFriendDisplayNameModal extends Component {
               type: 'positive',
             });
             setTimeout(() => {
+              console.log('this.props.currentFriend', this.props.currentFriend)
               this.props.onRequestClose();
               this.isLoading = false;
             }, 1500);

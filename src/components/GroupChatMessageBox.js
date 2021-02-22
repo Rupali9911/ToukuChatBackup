@@ -99,7 +99,9 @@ export default class GroupChatMessageBox extends Component {
   navigateToUserProfile = (sender_id) =>{
       let friendObj = getUserFriendByUserId(sender_id);
       if (friendObj.length > 0) {
-          store.dispatch(setCurrentFriend(friendObj[0]));
+          console.log('friendObj[0]', friendObj[0])
+          let friend = JSON.parse(JSON.stringify(friendObj[0]));
+          store.dispatch(setCurrentFriend(friend));
           NavigationService.navigate('FriendNotes');
       }else{
           NavigationService.navigate('FriendNotes', {id: sender_id});

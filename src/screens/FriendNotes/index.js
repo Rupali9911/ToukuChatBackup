@@ -317,6 +317,7 @@ class FriendNotes extends Component {
         });
       return;
     }
+    console.log('currentFriend', currentFriend)
     const payload = {friend: currentFriend.friend, text: text};
     this.props
       .postFriendNotes(payload)
