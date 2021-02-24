@@ -162,9 +162,10 @@ class ChatMessageBubble extends Component {
     }
   };
 
-  renderReplyMessage = (message) => {
+  renderReplyMessage = (message, isUser) => {
+    const {currentChannel, isChannel} = this.props
     let replyMessage = message.reply_to;
-
+console.log('replyMessage', message)
     if (replyMessage.message) {
       return (
         <>
@@ -210,12 +211,12 @@ class ChatMessageBubble extends Component {
                 }}>
                 <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
                   {replyMessage.sender_id === this.props.userData.id
-                    ? translate('pages.xchat.you')
-                    : getUserName(replyMessage.sender_id) ||
-                      (replyMessage.display_name &&
-                      replyMessage.display_name !== ''
-                        ? replyMessage.display_name
-                        : replyMessage.name)}
+                    ? ((isChannel && isUser) ? translate('pages.xchat.you'): translate('pages.xchat.you') )
+                    : (isChannel ? currentChannel.name  : getUserName(replyMessage.sender_id) ||
+                          (replyMessage.display_name &&
+                          replyMessage.display_name !== ''
+                              ? replyMessage.display_name
+                              : replyMessage.name)) }
                 </Text>
               </View>
               <View
@@ -430,6 +431,7 @@ class ChatMessageBubble extends Component {
       perviousPlayingAudioId,
       onAudioPlayPress,
       isMultiSelect,
+        currentChannel
     } = this.props;
     const {showImage, images} = this.state;
     const msgTime = new Date(message.created);
@@ -529,7 +531,7 @@ class ChatMessageBubble extends Component {
                               )
                           : null
                       }>
-                      {message.reply_to && this.renderReplyMessage(message)}
+                      {message.reply_to && this.renderReplyMessage(message, false)}
                       {message.message_body && message.msg_type === 'image' ? (
                         <ScalableImage
                           src={
@@ -723,7 +725,7 @@ class ChatMessageBubble extends Component {
                       activeOpacity={0.8}>
                       {message.reply_to &&
                         message.reply_to &&
-                        this.renderReplyMessage(message)}
+                        this.renderReplyMessage(message, true)}
                       {message.message_body && message.msg_type === 'image' ? (
                         <ScalableImage
                           src={

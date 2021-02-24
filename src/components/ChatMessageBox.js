@@ -310,6 +310,7 @@ export default class ChatMessageBox extends Component {
                   onReplyPress={onReplyPress}
                   showOpenLoader={showOpenLoader}
                   isMultiSelect={isMultiSelect}
+                  currentChannel={currentChannel}
                 />
                 <View
                   style={{
@@ -419,6 +420,7 @@ export default class ChatMessageBox extends Component {
                   onReplyPress={onReplyPress}
                   showOpenLoader={showOpenLoader}
                   isMultiSelect={isMultiSelect}
+                  currentChannel={currentChannel}
                 />
                 {message.msg_type === 'image' ? (
                   <View

@@ -225,6 +225,26 @@ class UpdatePhoneModal extends Component {
                 type: 'primary',
               });
             }
+          }).catch((err) => {
+              console.log('err.response', err.response)
+              if (err.response) {
+                  if (err.response.data) {
+                      if (err.response.data.detail) {
+                          Toast.show({
+                              title: translate('common.sendSMS'),
+                              text: err.response.data.detail.toString(),
+                              type: 'primary',
+                          });
+                      }else{
+                          Toast.show({
+                              title: translate('common.sendSMS'),
+                              //text: err.response.data.,
+                              text: translate(err.response.data.toString()),
+                              type: 'primary',
+                          });
+                      }
+                  }
+              }
           })
         : this.props.userVerifyOTPAndAddNumber(verifyData).then((res) => {
             console.log('userVerifyOTP response', res);

@@ -28,6 +28,7 @@ import Button from './Button';
 
 import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
+import { ListLoader } from './Loaders';
 
 const {width, height} = Dimensions.get('window');
 
@@ -206,8 +207,11 @@ class GroupChatContainer extends Component {
       onSelectedCancel,
       onSelectedDelete,
       isChatDisable,
+      groupLoading,
+      onLoadMore,
+      isLoadMore
     } = this.props;
-    console.log('isChatDisable', isChatDisable);
+    // console.log('isChatDisable', isChatDisable);
     return (
       <KeyboardAwareScrollView
         contentContainerStyle={{flex: 1}}
@@ -266,6 +270,14 @@ class GroupChatContainer extends Component {
               extraData={this.state}
               data={messages}
               inverted={true}
+              onEndReached={()=>{
+                if(messages.length>0 && messages.length % 50 === 0 && isLoadMore && !groupLoading){
+                  console.log('load more');
+                  onLoadMore && onLoadMore(messages[messages.length - 1]);
+                }
+              }}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={()=>groupLoading?<ListLoader />:null}
               renderItem={({item, index}) => {
                 getDate = (date) => {
                   const today = new Date();
@@ -704,6 +716,7 @@ const chatStyle = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
+    groupLoading: state.groupReducer.loading
   };
 };
 

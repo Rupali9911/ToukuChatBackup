@@ -292,7 +292,7 @@ class Chat extends Component {
 
       this.props.getFollowingChannels().then((res) => {
         // this.setCommonConversation();
-        console.log('channel_api_response');
+        console.log('channel_api_response', res);
         channelLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
           if (this.props.commonChat.length) {

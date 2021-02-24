@@ -197,6 +197,7 @@ export const Channels = {
     created: 'string?',
     joining_date: 'string?',
     subject_message: 'string?',
+      show_followers: 'bool?',
   },
 };
 

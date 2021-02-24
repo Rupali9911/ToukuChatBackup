@@ -369,12 +369,13 @@ export const getLocalGroupConversation = (groupId) => (dispatch) => {
   }
 };
 
-export const getGroupConversation = (groupId) => (dispatch) =>
+export const getGroupConversation = (groupId, msg_id, limit = 50) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getGroupConversationRequest());
     console.log('groupId', groupId);
+    query_parameter = msg_id?`limit=${limit}&msg_id=${msg_id}`:``
     client
-      .get(`/xchat/group-conversation/` + groupId + '/')
+      .get(`/xchat/group-conversation/` + groupId + '/?'+query_parameter)
       .then((res) => {
         //console.log('group-conversation', res);
         setGroupChatConversation(res.data);

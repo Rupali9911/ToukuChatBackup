@@ -473,7 +473,7 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderLinkMedia = (text) => {
-      console.log('renderLinkMedia text', text)
+      //console.log('renderLinkMedia text', text)
       let arrLinks = linkify().match(text)
       if (arrLinks) {
           return arrLinks.map((item) => {

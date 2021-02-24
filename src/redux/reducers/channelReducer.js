@@ -69,6 +69,7 @@ export default function (state = initialState, action) {
           channel_picture: action.payload.channel_picture,
           description: action.payload.description,
           name: action.payload.name,
+            show_followers: action.payload.show_followers,
         },
       };
 

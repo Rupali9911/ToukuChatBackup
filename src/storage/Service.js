@@ -507,6 +507,7 @@ export const setChannels = (channels) => {
                 ? item.joining_date
                 : item.created,
               subject_message: item.subject_message,
+                show_followers: item.show_followers,
             },
             'modified',
           );
@@ -536,6 +537,7 @@ export const setChannels = (channels) => {
             created: item.created,
             joining_date: item.joining_date ? item.joining_date : item.created,
             subject_message: item.subject_message,
+              show_followers: item.show_followers,
           });
         });
       } catch (err) {
@@ -690,6 +692,7 @@ export const updateChannelDetails = (id, data) => {
         channel_picture: data.channel_picture,
         description: data.description,
         name: data.name,
+          show_followers: data.show_followers,
       },
       'modified',
     );

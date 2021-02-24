@@ -292,18 +292,7 @@ export const userVerifyOTPAndUpdateNumber = (verifyData) => (dispatch) =>
       })
       .catch((err) => {
         dispatch(getVerifyOtpFailure());
-        // reject(err);
-        if (err.response) {
-          if (err.response.data) {
-            if (err.response.data.detail) {
-              Toast.show({
-                title: '',
-                text: err.response.data.detail.toString(),
-                type: 'primary',
-              });
-            }
-          }
-        }
+         reject(err);
       });
   });
 

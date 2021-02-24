@@ -105,6 +105,7 @@ export default class ChannelListItem extends PureComponent {
     return (
       <Fragment>
         <SwipeItem
+            buttonTriggerPercent={0.4}
           style={{ flex: 1 }}
           rightButtons={swipeable &&
             <View style={{ flexDirection: 'row', height: '100%' }}>

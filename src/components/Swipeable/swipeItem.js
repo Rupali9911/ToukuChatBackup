@@ -26,6 +26,7 @@ type Props = {
     onRightButtonsShowed?: (swipeItem: SwipeItem) => mixed,
     onMovedToOrigin?: (swipeItem: SwipeItem) => mixed,
     disableSwipeIfNoButton: Boolean;
+    buttonTriggerPercent: number;
 }
 
 type States = {|
@@ -157,18 +158,19 @@ export default class SwipeItem extends React.Component<Props, States> {
             leftButtonTriggerPosition,
             rightButtonTriggerPosition,
         } = this.state;
+        const {buttonTriggerPercent = 1} = this.props;
 
         let toValueX: number = 0;
         let panSide: string = (panDistanceX > 0)? 'right': 'left';
         let containerOffset: number = this._panDistanceOffset.x;
 
-        if (panSide === 'right' && containerOffset > leftButtonTriggerPosition) {
+        if (panSide === 'right' && containerOffset > (leftButtonTriggerPosition*buttonTriggerPercent)) {
             toValueX = leftButtonTriggerPosition;
             this._isLeftButtonShowing = true;
             this.props.onLeftButtonsShowed && this.props.onLeftButtonsShowed(this._swipeItem);
         }
 
-        if (panSide === 'left' && containerOffset < rightButtonTriggerPosition) {
+        if (panSide === 'left' && containerOffset < (rightButtonTriggerPosition*buttonTriggerPercent)) {
             toValueX = rightButtonTriggerPosition;
             this._isRightButtonShowing = true;
             this.props.onRightButtonsShowed && this.props.onRightButtonsShowed(this._swipeItem);

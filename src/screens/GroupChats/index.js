@@ -111,6 +111,7 @@ class GroupChats extends Component {
       isMultiSelect: false,
       selectedIds: [],
       openDoc: false,
+      isLoadMore: true,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -931,11 +932,11 @@ class GroupChats extends Component {
     }
   };
 
-  getGroupConversation = async () => {
+  getGroupConversation = async (msg_id) => {
     await this.props
-      .getGroupConversation(this.props.currentGroup.group_id)
+      .getGroupConversation(this.props.currentGroup.group_id,msg_id)
       .then((res) => {
-        if (res.status) {
+        if (res.status && res.data.length>0) {
           // console.log('response', JSON.stringify(res));
           let data = res.data;
           data.sort((a, b) =>
@@ -950,32 +951,14 @@ class GroupChats extends Component {
             this.props.currentGroup.group_id,
           );
           let conversations = [];
-          // chat.map((item, index) => {
-          //   let i = {
-          //     msg_id: item.msg_id,
-          //     sender_id: item.sender_id,
-          //     group_id: item.group_id,
-          //     sender_username: item.sender_username,
-          //     sender_display_name: item.sender_display_name,
-          //     sender_picture: item.sender_picture,
-          //     message_body: item.message_body,
-          //     is_edited: item.is_edited,
-          //     is_unsent: item.is_unsent,
-          //     timestamp: item.timestamp,
-          //     reply_to: item.reply_to,
-          //     mentions: item.mentions,
-          //     read_count: item.read_count,
-          //     created: item.created,
-          //   };
-          //   conversations = [...conversations, i];
-          // });
 
           conversations = realmToPlainObject(chat);
-          // conversations = chat.toJSON();
 
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
-          this.markGroupConversationRead();
+          !msg_id && this.markGroupConversationRead();
+        }else{
+          this.setState({isLoadMore: false});
         }
       })
       .catch((err) => {
@@ -1699,6 +1682,7 @@ class GroupChats extends Component {
       isChatLoading,
       isMultiSelect,
       openDoc,
+        isLoadMore
     } = this.state;
     const {
       chatGroupConversation,
@@ -1790,6 +1774,13 @@ class GroupChats extends Component {
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
             isChatDisable={currentGroupDetail.is_group_member}
+            isLoadMore = {isLoadMore}
+            onLoadMore = {(message)=>{
+              console.log('msg_id',message.msg_id);
+              if(message && message.msg_id){
+                this.getGroupConversation(message.msg_id);
+              }
+            }}
           />
         )}
 

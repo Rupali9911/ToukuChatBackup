@@ -1663,7 +1663,7 @@ class Home extends PureComponent {
       createFilter(searchText, ['from_user_display_name']),
     );
 
-    console.log('touku_tp',this.props.userData.total_tp);
+  //  console.log('touku_tp',this.props.userData.total_tp);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}

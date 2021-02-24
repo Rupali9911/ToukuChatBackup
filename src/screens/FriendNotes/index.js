@@ -460,7 +460,7 @@ class FriendNotes extends Component {
         isLoading
     } = this.state;
     const {currentFriend} = this.props;
-    //console.log('currentFriend.avatar', currentFriend.avatar);
+    console.log('currentFriend.avatar', currentFriend.background_image);
     return (
       <View
         style={[

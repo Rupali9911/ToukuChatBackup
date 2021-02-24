@@ -285,6 +285,7 @@ export const getUserFriends = () => (dispatch) =>
     client
       .get(`/xchat/get-my-friends/`)
       .then((res) => {
+          //console.log('/xchat/get-my-friends/', res)
         if (res.conversations) {
           var friends = res.conversations;
           let unread_counts = 0;

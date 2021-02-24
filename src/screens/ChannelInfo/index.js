@@ -414,6 +414,22 @@ class ChannelInfo extends Component {
       this.getCurrentChannelTimeline(lastPost.id);
     }
   };
+
+  hideFollowers(arrAdmins, userData, hideFollower){
+    console.log('arrAdmins, userData, hideFollowers', arrAdmins, userData, hideFollower)
+    if (arrAdmins){
+        if (arrAdmins.count === 0) {
+            return hideFollower
+        }else{
+            let item = arrAdmins.find((e) => e.id === userData.id);
+            if (item)return false
+            return hideFollower
+        }
+    } else{
+        return hideFollower
+    }
+
+  }
   //#endregion
 
   render() {
@@ -462,7 +478,7 @@ class ChannelInfo extends Component {
     const followCode =
       cahnnel_id + referralCode + String(currentChannel.id).length;
 
-    console.log('current channel', followCode);
+    console.log('current channel', channelData);
     // console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
 
     return (
@@ -594,6 +610,7 @@ class ChannelInfo extends Component {
                   <View style={channelInfoStyles.channelInfoDetail}>
                     <View style={channelInfoStyles.channelDetailStatus}>
                       {channelCountDetails.map((item, index) => {
+                          if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
                         return (
                           <View
                             key={index}
@@ -607,7 +624,7 @@ class ChannelInfo extends Component {
                               {translate(`pages.xchat.${item.title}`)}
                             </Text>
                           </View>
-                        );
+                        );}
                       })}
                     </View>
                     <View style={channelInfoStyles.channelDetailButton}>
@@ -631,7 +648,7 @@ class ChannelInfo extends Component {
 
               <View style={channelInfoStyles.tabBar}>
                 {tabBarItem.map((item, index) => {
-                  if (item.title === 'chat' && !this.state.channelData.is_member ){return null} else{
+                  if (item.title === 'chat' && !channelData.is_member ){return null} else{
                     return (
                       <TouchableOpacity
                         key={index}

@@ -433,18 +433,18 @@ class ChatContainer extends Component {
                   alignItems: 'center',
                 }}>
                 <View style={{flex: 8}}>
-                  <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-                    {this.props.isChannel ||
-                    repliedMessage.from_user.id === this.props.userData.id
-                      ? repliedMessage.from_user.id === this.props.userData.id
-                        ? translate('pages.xchat.you')
-                        : repliedMessage.from_user.display_name
-                        ? repliedMessage.from_user.display_name
-                        : repliedMessage.from_user.username
-                      : currentFriend.display_name
-                      ? currentFriend.display_name
-                      : currentFriend.username}
-                  </Text>
+                    <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+                        {this.props.isChannel ||
+                        repliedMessage.from_user.id === this.props.userData.id
+                            ? repliedMessage.from_user.id === this.props.userData.id
+                                ? translate('pages.xchat.you')
+                                :this.props.isChannel ? currentChannel.name : repliedMessage.from_user.display_name
+                                    ? repliedMessage.from_user.display_name
+                                    : repliedMessage.from_user.username
+                            : currentFriend.display_name
+                                ? currentFriend.display_name
+                                : currentFriend.username}
+                    </Text>
                 </View>
                 <View style={{flex: 2, alignItems: 'flex-end'}}>
                   <TouchableOpacity
