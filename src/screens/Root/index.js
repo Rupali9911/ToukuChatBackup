@@ -6,6 +6,9 @@ import {ProfileModal} from '../../components/Modals';
 import SingleSocket from '../../helpers/SingleSocket';
 
 class Root extends Component {
+
+  static toastInstance;
+
   render() {
     return (
       <View ref={(c) => (this._root = c)} style={{flex: 1}} {...this.props}>
@@ -13,6 +16,7 @@ class Root extends Component {
 
         <Toast
           ref={(c) => {
+            this.toastInstance = c;
             if (c) Toast.toastInstance = c;
           }}
         />

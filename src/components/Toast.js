@@ -15,6 +15,7 @@ import Orientation from 'react-native-orientation';
 
 import {isIphoneX} from '../utils';
 import {Icons, Colors, Fonts} from '../constants';
+import Root from '../screens/Root';
 
 const {height, width} = Dimensions.get('window');
 
@@ -31,12 +32,13 @@ class Toast extends Component {
   static toastInstance;
 
   static show({...config}) {
-    if(this.toastInstance){
-      console.log('config', config)
+    if(this.toastInstance && this.toastInstance instanceof Object){
+      console.log('config', config);
       this.toastInstance.start(config);
-    }else{
-      this.toastInstance = this;
-      console.log('config', config)
+    }
+    else{
+      this.toastInstance = Root.toastInstance;
+      console.log('config reInstance', config);
       this.toastInstance.start(config);
     }
   }

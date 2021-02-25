@@ -369,11 +369,11 @@ class ChannelInfo extends Component {
 
   copyCode(data) {
     Clipboard.setString(data);
-    showToast(
-      translate('pages.setting.referralLink'),
-      translate('pages.setting.toastr.linkCopiedSuccessfully'),
-      'positive',
-    );
+    Toast.show({
+      title: translate('pages.setting.referralLink'),
+      text: translate('pages.setting.toastr.linkCopiedSuccessfully'),
+      type: 'positive',
+    })
   }
 
   //#region Timeline function

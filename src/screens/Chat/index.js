@@ -77,6 +77,7 @@ import {
   setCurrentFriend,
   updateCurrentFriendAvtar,
   updateCurrentFriendDisplayName,
+  updateCurrentFriendBackgroundImage,
   updateUnreadFriendMsgsCounts,
   getUserFriendsSuccess,
   setUserFriends,
@@ -88,7 +89,7 @@ import {
   unpinFriend,
 } from '../../redux/reducers/friendReducer';
 import SingleSocket from '../../helpers/SingleSocket';
-
+import BulkSocket from '../../helpers/BulkSocket';
 import {
   updateMessageById,
   deleteMessageById,
@@ -155,7 +156,8 @@ import {
   updateGroupsWhenUnpined,
   updateChannelsWhenPined,
   updateChannelsWhenUnpined,
-  multipleDeleteChatConversation
+  multipleDeleteChatConversation,
+  updateFriendProfileData
 } from '../../storage/Service';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
@@ -215,6 +217,7 @@ class Chat extends Component {
       // ],
     };
     this.SingleSocket = SingleSocket.getInstance();
+    this.BulkSocket = BulkSocket.getInstance();
   }
 
   _showingSwipeButton = null;
@@ -258,6 +261,7 @@ class Chat extends Component {
       isSocketCalled = true;
       this.SingleSocket.create({user_id: this.props.userData.id});
     }
+    this.BulkSocket.create();
 
     Orientation.addOrientationListener(this._orientationDidChange);
     // this.getFollowingChannels();
@@ -674,6 +678,9 @@ class Chat extends Component {
         this.onUnpinChannel(message);
       case SocketEvents.UPDATING_USER_TP:
         this.onUpdateUserTP(message);
+        break;
+      case SocketEvents.UPDATE_USER_PROFILE:
+        this.onUserProfileUpdate(message);
         break;
     }
   }
@@ -2440,6 +2447,37 @@ class Chat extends Component {
     }
   }
 
+  onUserProfileUpdate = (message) => {
+    const {currentFriend} = this.props;
+    if (message.text.data.type === SocketEvents.UPDATE_USER_PROFILE) {
+      var user = getLocalUserFriend(message.text.data.message_details.user);
+      if (user && user.length > 0) {
+        updateFriendProfileData(
+          message.text.data.message_details.user,
+          message.text.data.message_details.display_name,
+          message.text.data.message_details.background_image
+        );
+        this.props.getUserFriends().then((res) => {
+          this.setCommonConversation();
+        });
+      }
+      if (
+        currentFriend.user_id === message.text.data.message_details.user
+      ) {
+        console.log('message.text.data.message_details', message.text.data.message_details)
+        if(message.text.data.message_details.background_image){
+          this.props.updateCurrentFriendBackgroundImage(
+            message.text.data.message_details
+          );
+        }else{
+          this.props.updateCurrentFriendDisplayName(
+            message.text.data.message_details,
+          );
+        }
+      }
+    }
+  }
+
   onSearch = async (text) => {
     console.log('onSearch called');
     await this.setState({searchText: text, commonConversation: []});
@@ -3007,18 +3045,18 @@ class Chat extends Component {
           });
         }
 
-        this.setState({commonChat: commonData, countChat: 0},()=>{
-          this.props.setDeleteChat(this.state.commonChat);
+        this.setState({commonChat: commonData, countChat: 0, isDeleteVisible: !this.state.isDeleteVisible, isVisible: false},()=>{
+          this.props.setDeleteChat(this.state.commonChat);  
         });
         // this.props.setDeleteChat(this.state.commonChat);
         deleteObj = null;
         count = 0;
       }
     }).catch((err)=>{
-      this.setState({isDeleteLoading: false});
+      this.setState({isDeleteLoading: false, isDeleteVisible: !this.state.isDeleteVisible, isVisible: false, countChat: 0});
     });
-    this.updateModalVisibility();
-    this.setState({isVisible: false, countChat: 0});
+    // this.updateModalVisibility();
+    // this.setState({isVisible: false, countChat: 0});
   };
 
   actionCancel() {
@@ -3555,6 +3593,7 @@ const mapDispatchToProps = {
   setCurrentFriend,
   updateCurrentFriendAvtar,
   updateCurrentFriendDisplayName,
+  updateCurrentFriendBackgroundImage,
   getUserConfiguration,
   updateConfiguration,
   setCommonChatConversation,

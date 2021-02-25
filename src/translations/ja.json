@@ -1687,7 +1687,9 @@
     "NeedToAddPhoneNumber": "ボーナスを獲得するには、電話番号を入力する必要があります。",
     "AuthenticateNumber": "電話番号を認証する",
     "extraCashWiningText": "ゲームで遊んでお小遣いGET",
-    "xpusedForText": "※XPはホーム画面のXIGOLO(ゲーム)で利用できます"
+    "xpusedForText": "※XPはホーム画面のXIGOLO(ゲーム)で利用できます",
+    "deleteFromeveyOne": "全員の画面から削除",
+    "deleteFromMe": "自分の画面だけ削除"
   },
   "toastr": {
     "pleaseEnterYourPassword": "パスワードを入力",

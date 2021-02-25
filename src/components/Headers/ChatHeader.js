@@ -64,7 +64,7 @@ export default class ChatHeader extends Component {
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
     // var secondUpperCase = firstChars.charAt(1).toUpperCase();
-     console.log('currentChannel', currentChannel);
+    //  console.log('currentChannel', currentChannel);
     return (
       <View style={styles.headerContainer}>
         <ImageBackground

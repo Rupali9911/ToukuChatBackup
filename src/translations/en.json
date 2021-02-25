@@ -1685,7 +1685,9 @@
     "NeedToAddPhoneNumber": "You must enter your phone number to get the bonus.",
     "AuthenticateNumber": "Authenticate phone number",
     "extraCashWiningText": "You can win the extra cash by playing games!",
-    "xpusedForText": "*XP can be used to play \"XIGOLO\" on the HOME screen."
+    "xpusedForText": "*XP can be used to play \"XIGOLO\" on the HOME screen.",
+    "deleteFromeveyOne": "Delete from everyone",
+    "deleteFromMe": "Delete from me"
   },
   "toastr":{
     "pleaseEnterYourPassword":"Please enter your password",

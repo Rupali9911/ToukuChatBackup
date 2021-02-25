@@ -258,7 +258,7 @@ class FriendChats extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getPersonalConversationInitial();
-    this.markFriendMsgsRead();
+    // this.markFriendMsgsRead();
     this.updateUnReadFriendChatCount();
     // alert(JSON.stringify(this.props.userData));
   }

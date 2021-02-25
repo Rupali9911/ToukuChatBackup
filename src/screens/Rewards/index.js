@@ -74,6 +74,7 @@ class Rewards extends Component {
   getUniqueUrl = (ad) => {
     this.props.getAdWallUniqueUrl(ad).then((res)=>{
       if(res && res.add_wall_url){
+        console.log('url',res.add_wall_url);
         Linking.openURL(res.add_wall_url);
       }
     }).catch((err)=>{

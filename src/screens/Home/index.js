@@ -249,7 +249,7 @@ class Home extends PureComponent {
 
   friendFilter = () => {
     const { friendLoading, userFriends } = this.props;
-
+    // console.log('userFriends',userFriends);
     const filteredFriends = userFriends.filter(
       createFilter(this.state.searchText, ['username']),
     );

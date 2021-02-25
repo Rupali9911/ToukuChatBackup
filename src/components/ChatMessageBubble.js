@@ -165,7 +165,7 @@ class ChatMessageBubble extends Component {
   renderReplyMessage = (message, isUser) => {
     const {currentChannel, isChannel} = this.props
     let replyMessage = message.reply_to;
-console.log('replyMessage', message)
+    // console.log('replyMessage', message)
     if (replyMessage.message) {
       return (
         <>

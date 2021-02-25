@@ -119,6 +119,7 @@ export default class FriendListItem extends PureComponent {
       <SwipeItem
           buttonTriggerPercent={0.4}
         style={{ flex: 1 }}
+        buttonTriggerPercent={0.4}
         rightButtons={swipeable &&
           <View style={{ flexDirection: 'row', height: '100%' }}>
             <SwipeButtonsContainer
@@ -164,7 +165,7 @@ export default class FriendListItem extends PureComponent {
                 flex: 1
               }} onPress={() => {
                 console.log('delete chat')
-                this.itemRef && this.itemRef.close();
+                // this.itemRef && this.itemRef.close();
                 onDeleteChat(item.friend);
               }}>
                 <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>

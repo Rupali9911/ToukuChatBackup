@@ -61,7 +61,7 @@ class UserProfile extends Component {
     this.setState({isUpdatePhoneModalVisible: true});
   }
 
-  onUserImageCameraPress() {
+  onUserImageCameraPress = () => {
     var options = {
       title: translate('pages.xchat.chooseOption'),
       takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
@@ -143,8 +143,9 @@ class UserProfile extends Component {
         });
 
         let file = response;
+        file['name'] = file.uri.substring(file.uri.lastIndexOf('/')+1);
         let files = [file];
-        //console.log('files', files);
+        // console.log('files', files);
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
         );

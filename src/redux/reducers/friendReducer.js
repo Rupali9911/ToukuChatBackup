@@ -25,6 +25,7 @@ export const SET_CURRENT_FRIEND_DATA = 'SET_CURRENT_FRIEND_DATA';
 export const UPDATE_CURRENT_FRIEND_AVTAR = 'UPDATE_CURRENT_FRIEND_AVTAR';
 export const UPDATE_CURRENT_FRIEND_DISPLAY_NAME =
   'UPDATE_CURRENT_FRIEND_DISPLAY_NAME';
+export const UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE = "UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE";
 export const SET_UNREAD_FRIEND_MSG_COUNTS = 'SET_UNREAD_FRIEND_MSG_COUNTS';
 
 export const GET_FRIEND_CONVERSATION = 'GET_FRIEND_CONVERSATION';
@@ -74,6 +75,15 @@ export default function (state = initialState, action) {
           display_name: action.payload.display_name,
         },
       };
+
+    case UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE:
+      return {
+        ...state,
+        currentFriend: {
+          ...state.currentFriend,
+          background_image: action.payload.background_image,
+        },
+      }
 
     //Get Friend Requests
     case GET_USER_FRIENDS_REQUEST:
@@ -179,6 +189,10 @@ export const updateCurrentFriendAvtar = (data) => ({
 export const updateCurrentFriendDisplayName = (data) => {
   return {type: UPDATE_CURRENT_FRIEND_DISPLAY_NAME, payload: data};
 };
+
+export const updateCurrentFriendBackgroundImage = (data) => {
+  return {type: UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE, payload: data};
+}
 
 export const setCurrentFriend = (friend) => (dispatch) =>
   dispatch(setCurrentFriendData(friend));

@@ -185,6 +185,24 @@ class GroupChatContainer extends Component {
     this.setState({ visible: true });
   };
 
+  getDate = (date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const msgDate = new Date(date);
+    if (
+      today.getDate() === msgDate.getDate() &&
+      today.getMonth() === msgDate.getMonth()
+    )
+      return translate('common.today');
+    if (
+      yesterday.getDate() === msgDate.getDate() &&
+      yesterday.getMonth() === msgDate.getMonth()
+    )
+      return translate('common.yesterday');
+    return moment(msgDate).format('MM/DD');
+  };
+
   render() {
     const {
       orientation,
@@ -209,6 +227,7 @@ class GroupChatContainer extends Component {
       isChatDisable,
       groupLoading,
       onLoadMore,
+      loading,
       isLoadMore
     } = this.props;
     // console.log('isChatDisable', isChatDisable);
@@ -271,36 +290,19 @@ class GroupChatContainer extends Component {
               data={messages}
               inverted={true}
               onEndReached={()=>{
-                if(messages.length>0 && messages.length % 50 === 0 && isLoadMore && !groupLoading){
+                console.log('onEndReached',groupLoading);
+                if(messages.length>0 && messages.length % 20 === 0 && isLoadMore &&!groupLoading){
                   console.log('load more');
                   onLoadMore && onLoadMore(messages[messages.length - 1]);
                 }
               }}
-              onEndReachedThreshold={0.1}
-              ListFooterComponent={()=>groupLoading?<ListLoader />:null}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={()=>(messages.length % 20 === 0 && isLoadMore)?<ListLoader />:null}
               renderItem={({item, index}) => {
-                getDate = (date) => {
-                  const today = new Date();
-                  const yesterday = new Date();
-                  yesterday.setDate(yesterday.getDate() - 1);
-                  const msgDate = new Date(date);
-                  if (
-                    today.getDate() === msgDate.getDate() &&
-                    today.getMonth() === msgDate.getMonth()
-                  )
-                    return translate('common.today');
-                  if (
-                    yesterday.getDate() === msgDate.getDate() &&
-                    yesterday.getMonth() === msgDate.getMonth()
-                  )
-                    return translate('common.yesterday');
-                  return moment(msgDate).format('MM/DD');
-                };
                 const conversationLength = messages.length;
-
                 let isSelected = selectedIds.includes(item.msg_id + '');
                 return (
-                  <Fragment key={index}>
+                  <Fragment key={`${index}`}>
                     <View style={{flexDirection: 'row', alignItems: 'center',}}>
                       {isMultiSelect && !item.is_unsent ? (
                         <CheckBox
@@ -435,7 +437,7 @@ class GroupChatContainer extends Component {
                           <View style={chatStyle.messageDateCntainer}>
                             <View style={chatStyle.messageDate}>
                               <Text style={chatStyle.messageDateText}>
-                                {getDate(item.created)}
+                                {this.getDate(item.created)}
                               </Text>
                             </View>
                           </View>

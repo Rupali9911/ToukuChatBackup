@@ -28,6 +28,7 @@ import {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
+  DeleteOptionModal,
 } from '../../components/Modals';
 import {
   translate,
@@ -79,6 +80,7 @@ import {
   updateGroupsWhenPined,
   updateGroupsWhenUnpined,
   updateGroupTranslatedMessage,
+  getGroupChatConversationLengthById
 } from '../../storage/Service';
 import uuid from 'react-native-uuid';
 
@@ -91,12 +93,14 @@ class GroupChats extends Component {
       showLeaveGroupConfirmationModal: false,
       showDeleteGroupConfirmationModal: false,
       showdeleteObjectConfirmationModal: false,
+      deletionOptionModal: false,
       isMyGroup: false,
       conversation: [],
       selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
       showMessageDeleteConfirmationModal: false,
+      showMoreMessageDeleteConfirmationModal: false,
       sentMessageType: 'text',
       showSelectModal: false,
       uploadedFiles: [],
@@ -109,9 +113,12 @@ class GroupChats extends Component {
       uploadProgress: 0,
       isChatLoading: false,
       isMultiSelect: false,
+      isDeleteMeLoading: false,
+      isDeleteEveryoneLoading: false,
       selectedIds: [],
       openDoc: false,
       isLoadMore: true,
+      loading: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -326,6 +333,8 @@ class GroupChats extends Component {
     this.props.resetGroupConversation();
     this.isUploading = false;
     this.isLeaveLoading = false;
+    this.offset = 20;
+    this.loading = false;
   }
 
   onPinUnpinGroup = () => {
@@ -772,14 +781,16 @@ class GroupChats extends Component {
 
       let singleSocket = SingleSocket.getInstance();
 
-      singleSocket.sendMessage(
-        JSON.stringify({
-          type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
-          data: {
-            group_id: this.props.currentGroup.group_id,
-          },
-        }),
-      );
+      if(singleSocket.webSocketBridge !== null && singleSocket.webSocketBridge.readyState !== singleSocket.webSocketBridge.CLOSED){
+        singleSocket.sendMessage(
+          JSON.stringify({
+            type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
+            data: {
+              group_id: this.props.currentGroup.group_id,
+            },
+          }),
+        );
+      }
     }
   }
 
@@ -902,34 +913,13 @@ class GroupChats extends Component {
   }
 
   getLocalGroupConversation = () => {
-    let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
+    let chat = getGroupChatConversationById(this.props.currentGroup.group_id,this.offset);
     if (chat) {
       let conversations = [];
-      // chat.map((item, index) => {
-      //   let i = {
-      //     msg_id: item.msg_id,
-      //     sender_id: item.sender_id,
-      //     group_id: item.group_id,
-      //     sender_username: item.sender_username,
-      //     sender_display_name: item.sender_display_name,
-      //     sender_picture: item.sender_picture,
-      //     message_body: item.message_body,
-      //     is_edited: item.is_edited,
-      //     is_unsent: item.is_unsent,
-      //     timestamp: item.timestamp,
-      //     reply_to: item.reply_to,
-      //     mentions: item.mentions,
-      //     read_count: item.read_count,
-      //     created: item.created,
-      //   };
-      //   conversations = [...conversations, i];
-      // });
-
       conversations = realmToPlainObject(chat);
-      // conversations = chat.toJSON();
-
       this.props.setGroupConversation(conversations);
     }
+    this.loading=false;
   };
 
   getGroupConversation = async (msg_id) => {
@@ -949,6 +939,7 @@ class GroupChats extends Component {
 
           let chat = getGroupChatConversationById(
             this.props.currentGroup.group_id,
+            this.offset
           );
           let conversations = [];
 
@@ -957,6 +948,11 @@ class GroupChats extends Component {
           // this.setState({ conversation: conversations });
           this.props.setGroupConversation(conversations);
           !msg_id && this.markGroupConversationRead();
+
+          if(res.data.length<50){
+            this.setState({isLoadMore:false});
+          }
+
         }else{
           this.setState({isLoadMore: false});
         }
@@ -968,7 +964,7 @@ class GroupChats extends Component {
 
   getGroupConversationInitial = async () => {
     this.setState({isChatLoading: true});
-    let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
+    let chat = getGroupChatConversationById(this.props.currentGroup.group_id,this.offset);
     if (chat) {
       let conversations = [];
       // chat.map((item, index) => {
@@ -1015,6 +1011,7 @@ class GroupChats extends Component {
 
           let chat = getGroupChatConversationById(
             this.props.currentGroup.group_id,
+            this.offset
           );
           let conversations = [];
           // chat.map((item, index) => {
@@ -1260,6 +1257,15 @@ class GroupChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
+    // if(this.state.isMyGroup){
+    //   this.setState({
+    //     showMoreMessageDeleteConfirmationModal: true,
+    //   });
+    // }else{
+    //   this.setState({
+    //     showMessageDeleteConfirmationModal: true,
+    //   });
+    // }
     this.setState({
       showMessageDeleteConfirmationModal: true,
     });
@@ -1310,10 +1316,21 @@ class GroupChats extends Component {
     }
   };
 
-  onConfirmMultipleMessageDelete = () => {
-    this.setState({showMessageDeleteConfirmationModal: false});
+  onConfirmMultipleMessageDelete = (delete_type) => {
+    // this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
-      let payload = {message_ids: this.state.selectedIds};
+      let payload = {
+        message_ids: this.state.selectedIds,
+        delete_type: delete_type
+      };
+
+      if(delete_type==='DELETE_FOR_EVERYONE'){
+        this.setState({isDeleteEveryoneLoading: true});
+      }else{
+        this.setState({isDeleteMeLoading: true});
+      }
+
+      console.log('payload',payload);
 
       this.state.selectedIds.map((item) => {
         deleteGroupMessageById(item);
@@ -1348,11 +1365,24 @@ class GroupChats extends Component {
       this.setState({isMultiSelect: false, selectedIds: []});
 
       this.props.deleteMultipleGroupMessage(payload).then((res) => {
+        this.setState({
+          isDeleteEveryoneLoading: false, 
+          isDeleteMeLoading: false,
+          showMessageDeleteConfirmationModal: false,
+          showMoreMessageDeleteConfirmationModal: false
+        });
         if (res && res.status) {
         } else {
           this.getGroupConversation();
         }
         // this.getGroupConversation();
+      }).catch((err)=>{
+        this.setState({
+          isDeleteEveryoneLoading: false, 
+          isDeleteMeLoading: false,
+          showMessageDeleteConfirmationModal: false,
+          showMoreMessageDeleteConfirmationModal: false
+        });
       });
     }
   };
@@ -1389,6 +1419,7 @@ class GroupChats extends Component {
       showLeaveGroupConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
       showMessageUnsendConfirmationModal: false,
+      showMoreMessageDeleteConfirmationModal: false
     });
   };
 
@@ -1669,12 +1700,14 @@ class GroupChats extends Component {
       showDeleteGroupConfirmationModal,
       showdeleteObjectConfirmationModal,
       showMessageUnsendConfirmationModal,
+      deletionOptionModal,
       orientation,
       isMyGroup,
       conversation,
       isReply,
       repliedMessage,
       showMessageDeleteConfirmationModal,
+      showMoreMessageDeleteConfirmationModal,
       translatedMessage,
       translatedMessageId,
       uploadFile,
@@ -1682,7 +1715,9 @@ class GroupChats extends Component {
       isChatLoading,
       isMultiSelect,
       openDoc,
-        isLoadMore
+      isDeleteMeLoading,
+      isDeleteEveryoneLoading,
+      isLoadMore
     } = this.state;
     const {
       chatGroupConversation,
@@ -1691,6 +1726,9 @@ class GroupChats extends Component {
       groupLoading,
       currentGroupMembers,
     } = this.props;
+
+    let chats = getGroupChatConversationLengthById(this.props.currentGroup.group_id);
+    let length = chats.length;
 
     // console.log('currentGroupDetail', currentGroupDetail);
     // console.log('chatGroupConversation', chatGroupConversation);
@@ -1774,11 +1812,19 @@ class GroupChats extends Component {
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
             isChatDisable={currentGroupDetail.is_group_member}
-            isLoadMore = {isLoadMore}
+            isLoadMore = {chatGroupConversation.length<length}
+            loading={this.loading}
             onLoadMore = {(message)=>{
               console.log('msg_id',message.msg_id);
               if(message && message.msg_id){
-                this.getGroupConversation(message.msg_id);
+                this.loading=true;
+                this.offset = this.offset + 20;
+                this.getLocalGroupConversation();
+                if(length%50==0 && length-this.offset<=10){
+                  console.log('api_call');
+                  this.getGroupConversation(chats[chats.length-1].msg_id);
+                }
+                // this.getGroupConversation(message.msg_id);
               }
             }}
           />
@@ -1817,10 +1863,11 @@ class GroupChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelPress.bind(this)}
-          onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(this,'DELETE_FOR_ME')}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
+          isLoading={isDeleteMeLoading}
         />
 
         <ConfirmationModal
@@ -1867,6 +1914,18 @@ class GroupChats extends Component {
           onAttachmentPress={() => this.onAttachmentPress()}
         />
         {/* {sendingMedia && <UploadLoader />} */}
+
+        <DeleteOptionModal
+          visible={showMoreMessageDeleteConfirmationModal} 
+          orientation={orientation}
+          onCancel={this.onCancelPress.bind(this)}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.youWantToDeleteThisMessage')}
+          isDeleteMeLoading={isDeleteMeLoading}
+          isDeleteEveryoneLoading={isDeleteEveryoneLoading}
+          />
+
         {openDoc && <OpenLoader />}
       </ImageBackground>
     );

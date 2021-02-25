@@ -11,6 +11,7 @@ import ShowAttahmentModal from './ShowAttahmentModal';
 import ShowGalleryModal from './ShowGalleryModal';
 import UpdatePhoneModal from './UpdatePhoneModal';
 import VerifyOtpModal from './VerifyOtpModal';
+import DeleteOptionModal from './DeleteOptionModal';
 
 export {
   ProfileModal,
@@ -25,5 +26,6 @@ export {
   ShowAttahmentModal,
   ShowGalleryModal,
   UpdatePhoneModal,
-  VerifyOtpModal
+  VerifyOtpModal,
+  DeleteOptionModal
 };

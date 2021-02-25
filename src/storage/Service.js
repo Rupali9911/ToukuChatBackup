@@ -416,7 +416,14 @@ export const getGroupChatConversation = () => {
   return realm.objects('chat_conversation_group');
 };
 
-export const getGroupChatConversationById = (id) => {
+export const getGroupChatConversationById = (id,offset) => {
+  return realm
+    .objects('chat_conversation_group')
+    .sorted('timestamp', {ascending: true})
+    .filtered(`group_id == ${id}`).slice(0,offset);
+};
+
+export const getGroupChatConversationLengthById = (id) => {
   return realm
     .objects('chat_conversation_group')
     .sorted('timestamp', {ascending: true})
@@ -1088,6 +1095,33 @@ export const updateFriendDisplayName = (userId, data) => {
   });
 };
 
+export const updateFriendProfileData = (userId, display_name, background_image) => {
+  if(background_image){
+    realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: userId,
+          display_name: display_name,
+          background_image: background_image
+        },
+        'modified',
+      );
+    });
+  }else{
+    realm.write(() => {
+      realm.create(
+        'user_friends',
+        {
+          user_id: userId,
+          display_name: display_name
+        },
+        'modified',
+      );
+    });
+  }
+};
+
 export const updateFriendTypingStatus = (id, status) => {
   console.log('status_typing_update', status);
   realm.write(() => {
@@ -1111,6 +1145,7 @@ export const removeUserFriends = async (id) => {
 };
 
 export const updateFriendStatus = (id, status) => {
+  console.log('updateFriendStatus');
   realm.write(() => {
     realm.create(
       'user_friends',
@@ -1129,7 +1164,7 @@ export const updateFriendsUnReadCount = (id, unreadCount) => {
   user.map((item) => {
     items.push(item);
   });
-
+  console.log('items[0].user_id',items[0].user_id);
   realm.write(() => {
     realm.create(
       'user_friends',
@@ -1144,6 +1179,7 @@ export const updateFriendsUnReadCount = (id, unreadCount) => {
 
 export const updateFriendLastMsgWithoutCount = async (id, message) => {
   // var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
+  console.log('updateFriendLastMsgWithoutCount');
   if (message) {
     await realm.write(() => {
       realm.create(
@@ -1176,7 +1212,7 @@ export const updateFriendLastMsgWithoutCount = async (id, message) => {
 
 export const updateFriendLastMsg = (id, message, updateCount) => {
   var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
-
+  console.log('updateFriendLastMsg');
   var items = [];
   user.map((item) => {
     items.push(item);
@@ -1413,11 +1449,12 @@ export const multipleDeleteChatConversation = (deletedObject) => {
   // friend
   if (deletedObject.friend_ids && deletedObject.friend_ids.length > 0) {
     deletedObject.friend_ids.map((friendItem, index) => {
+      var user = realm.objects('user_friends').filtered(`friend == ${friendItem}`);
       realm.write(() => {
         realm.create(
           'user_friends',
           {
-            user_id: friendItem,
+            user_id: user[0].user_id,
             last_msg: null,
             last_msg_id: null,
           },
