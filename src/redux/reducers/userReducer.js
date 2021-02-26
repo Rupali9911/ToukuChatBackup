@@ -4,6 +4,7 @@ import {KAKAO_API_KEY, apiRoot} from '../../helpers/api';
 import Toast from '../../components/Toast';
 import {translate} from './languageReducer';
 import axios from 'axios';
+import { dispatch } from 'rxjs/internal/observable/pairs';
 
 export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
 
@@ -278,6 +279,10 @@ export const getAccessCodeKakao = () => (dispatch) =>
         reject(err);
       });
   });
+
+export const updateUserProfileImage = (data) => (dispatch) => {
+  dispatch(setUserData(data));
+}
 
 //Get User Profile
 export const getUserProfile = () => (dispatch) =>

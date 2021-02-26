@@ -13,6 +13,7 @@ export const UPDATE_CHANNEL_MODE_REQUEST = 'UPDATE_CHANNEL_MODE_REQUEST';
 export const UPDATE_CHANNEL_MODE_SUCCESS = 'UPDATE_CHANNEL_MODE_SUCCESS';
 export const UPDATE_CHANNEL_MODE_FAIL = 'UPDATE_CHANNEL_MODE_FAIL';
 export const UPDATE_USER_BACKGROUND_IMAGE = "UPDATE_USER_BACKGROUND_IMAGE";
+export const UPDATE_USER_DISPLAY_NAME = "UPDATE_USER_DISPLAY_NAME";
 
 const initialState = {
   loading: false,
@@ -30,14 +31,22 @@ export default function (state = initialState, action) {
         loading: false,
         userConfig: action.payload.data,
       };
-      case UPDATE_USER_BACKGROUND_IMAGE:
-          return {
-              ...state,
-              userConfig: {
-                  ...state.userConfig,
-                  background_image: action.payload.background_image,
-              },
-          }
+    case UPDATE_USER_BACKGROUND_IMAGE:
+      return {
+        ...state,
+        userConfig: {
+          ...state.userConfig,
+          background_image: action.payload.background_image,
+        },
+      }
+    case UPDATE_USER_DISPLAY_NAME:
+      return {
+        ...state,
+        userConfig: {
+          ...state.userConfig,
+          display_name: action.payload.display_name,
+        },
+      }
     case UPDATE_CHANNEL_MODE_REQUEST:
       return {
         ...state,
@@ -83,6 +92,10 @@ const setUserConfig = (data) => ({
 
 export const updateUserBackgroundImage = (data) => {
     return {type: UPDATE_USER_BACKGROUND_IMAGE, payload: data};
+}
+
+export const updateUserDisplayName = (data) => {
+  return {type: UPDATE_USER_DISPLAY_NAME, payload: data};
 }
 
 // set channel mode

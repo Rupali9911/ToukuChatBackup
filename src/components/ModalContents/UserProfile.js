@@ -48,10 +48,11 @@ class UserProfile extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.userConfig.background_image !== prevProps.userConfig.background_image) {
-            this.setState({backgroundImagePath: {uri: this.props.userConfig.background_image}})
+            this.setState({backgroundImagePath: {uri: this.props.userConfig.background_image}});
         }
+        console.log('prevProps.userData.avatar',prevProps.userData.avatar);
         if (this.props.userData.avatar !== prevProps.userData.avatar) {
-            this.setState({profileImagePath: {uri: this.props.userData.avatar}})
+            this.setState({profileImagePath: {uri: this.props.userData.avatar}});
         }
     }
 
@@ -259,7 +260,7 @@ class UserProfile extends Component {
             ) : (
               <RoundedImage
                 size={80}
-                source={getAvatar(profileImagePath.uri)}
+                source={getAvatar(this.props.userData.avatar)}
                 clickable={true}
               />
             )}

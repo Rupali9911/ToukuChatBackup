@@ -959,6 +959,7 @@ export const setUserFriendsFromApi = (friends) => {
               last_msg: item.last_msg ? item.last_msg : '',
               last_msg_type: item.last_msg_type,
               display_name: item.display_name,
+              display_name_edited: item.display_name_edited,
               isChecked: false,
               is_online: item.is_online,
               is_typing: false,
@@ -983,6 +984,7 @@ export const setUserFriendsFromApi = (friends) => {
             last_msg: item.last_msg ? item.last_msg : '',
             last_msg_type: item.last_msg_type,
             display_name: item.display_name,
+            display_name_edited: item.display_name_edited,
             isChecked: false,
             is_online: item.is_online,
             is_typing: false,
@@ -1043,6 +1045,7 @@ export const handleRequestAccept = (item, isInvitation) => {
         last_msg: item.last_msg ? item.last_msg : '',
         last_msg_type: item.last_msg_type,
         display_name: item.display_name,
+        display_name_edited: item.display_name_edited,
         isChecked: false,
         is_online: item.is_online,
         is_typing: false,
@@ -1096,6 +1099,7 @@ export const updateFriendDisplayName = (userId, data) => {
 };
 
 export const updateFriendProfileData = (userId, display_name, background_image) => {
+  console.log('data',userId,display_name,background_image);
   if(background_image){
     realm.write(() => {
       realm.create(

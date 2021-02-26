@@ -28,12 +28,14 @@ import {
 import {
   getUserProfile,
   getMissedSocketEventsById,
-  setToukuPoints
+  setToukuPoints,
+  updateUserProfileImage
 } from '../../redux/reducers/userReducer';
 import {
   getUserConfiguration,
   updateConfiguration,
-    updateUserBackgroundImage
+  updateUserBackgroundImage,
+  updateUserDisplayName
 } from '../../redux/reducers/configurationReducer';
 import {
   setCommonChatConversation,
@@ -714,10 +716,10 @@ class Chat extends Component {
   updateUserAvtar(message) {
     const {userData, currentFriend} = this.props;
     if (message.text.data.type === SocketEvents.UPLOAD_AVTAR) {
-      if (userData.id === message.text.data.message_details.user_id) {
-        this.props.getUserProfile();
-        return;
-      }
+      // if (userData.id === message.text.data.message_details.user_id) {
+      //   this.props.getUserProfile();
+      //   return;
+      // }
       var user = getLocalUserFriend(message.text.data.message_details.user_id);
       if (user && user.length > 0) {
         updateFriendAvtar(
@@ -731,6 +733,11 @@ class Chat extends Component {
       if (currentFriend.user_id === message.text.data.message_details.user_id) {
         this.props.updateCurrentFriendAvtar(message.text.data.message_details);
         this.getLocalFriendConversation();
+      }
+      if(userData.id === message.text.data.message_details.user_id){
+        let user_data = userData;
+        user_data['avatar'] = message.text.data.message_details.avatar
+        this.props.updateUserProfileImage(user_data);
       }
     }
   }
@@ -2468,7 +2475,7 @@ class Chat extends Component {
           this.props.updateCurrentFriendBackgroundImage(
             message.text.data.message_details
           );
-        }else{
+        }else if(!currentFriend.display_name_edited){
           this.props.updateCurrentFriendDisplayName(
             message.text.data.message_details,
           );
@@ -2480,9 +2487,9 @@ class Chat extends Component {
                   message.text.data.message_details
               );
           }else{
-              // this.props.updateCurrentFriendDisplayName(
-              //     message.text.data.message_details,
-              // );
+              this.props.updateUserDisplayName(
+                  message.text.data.message_details,
+              );
           }
       }
     }
@@ -3642,7 +3649,9 @@ const mapDispatchToProps = {
   unpinChannel,
   pinFriend,
   unpinFriend,
-    updateUserBackgroundImage
+  updateUserBackgroundImage,
+  updateUserDisplayName,
+  updateUserProfileImage
 };
 
 export default connect(
