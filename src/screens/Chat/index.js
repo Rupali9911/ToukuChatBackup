@@ -33,6 +33,7 @@ import {
 import {
   getUserConfiguration,
   updateConfiguration,
+    updateUserBackgroundImage
 } from '../../redux/reducers/configurationReducer';
 import {
   setCommonChatConversation,
@@ -2017,6 +2018,7 @@ class Chat extends Component {
       for (let id of message.text.data.message_details.members) {
         if (id == userData.id) {
           var item = message.text.data.message_details;
+            let lastMsg = {text: '', type: 'text'}
           var group = {
             group_id: item.id,
             group_name: item.name,
@@ -2025,8 +2027,8 @@ class Chat extends Component {
             description: item.description,
             chat: 'group',
             group_picture: item.group_picture,
-            last_msg: null,
-            last_msg_id: null,
+            last_msg: lastMsg,
+            last_msg_id: '',
             timestamp: item.timestamp,
             joining_date: item.timestamp,
             event: `group_${item.id}`,
@@ -2448,7 +2450,7 @@ class Chat extends Component {
   }
 
   onUserProfileUpdate = (message) => {
-    const {currentFriend} = this.props;
+    const {currentFriend, userData} = this.props;
     if (message.text.data.type === SocketEvents.UPDATE_USER_PROFILE) {
       var user = getLocalUserFriend(message.text.data.message_details.user);
       if (user && user.length > 0) {
@@ -2461,10 +2463,7 @@ class Chat extends Component {
           this.setCommonConversation();
         });
       }
-      if (
-        currentFriend.user_id === message.text.data.message_details.user
-      ) {
-        console.log('message.text.data.message_details', message.text.data.message_details)
+      if (currentFriend.user_id === message.text.data.message_details.user) {
         if(message.text.data.message_details.background_image){
           this.props.updateCurrentFriendBackgroundImage(
             message.text.data.message_details
@@ -2474,6 +2473,17 @@ class Chat extends Component {
             message.text.data.message_details,
           );
         }
+      }
+      if(userData.id === message.text.data.message_details.user){
+          if(message.text.data.message_details.background_image){
+              this.props.updateUserBackgroundImage(
+                  message.text.data.message_details
+              );
+          }else{
+              // this.props.updateCurrentFriendDisplayName(
+              //     message.text.data.message_details,
+              // );
+          }
       }
     }
   }
@@ -3046,7 +3056,7 @@ class Chat extends Component {
         }
 
         this.setState({commonChat: commonData, countChat: 0, isDeleteVisible: !this.state.isDeleteVisible, isVisible: false},()=>{
-          this.props.setDeleteChat(this.state.commonChat);  
+          this.props.setDeleteChat(this.state.commonChat);
         });
         // this.props.setDeleteChat(this.state.commonChat);
         deleteObj = null;
@@ -3632,6 +3642,7 @@ const mapDispatchToProps = {
   unpinChannel,
   pinFriend,
   unpinFriend,
+    updateUserBackgroundImage
 };
 
 export default connect(

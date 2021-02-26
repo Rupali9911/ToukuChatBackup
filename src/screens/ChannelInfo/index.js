@@ -610,7 +610,8 @@ class ChannelInfo extends Component {
                   <View style={channelInfoStyles.channelInfoDetail}>
                     <View style={channelInfoStyles.channelDetailStatus}>
                       {channelCountDetails.map((item, index) => {
-                          if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
+                          //if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
+                          if (item.title === 'followers' && channelData.show_followers){return null} else{
                         return (
                           <View
                             key={index}

@@ -11,7 +11,6 @@ import {
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {KeyboardAwareScrollView, KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
-
 import GroupChatMessageBox from './GroupChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import {translate} from '../redux/reducers/languageReducer';

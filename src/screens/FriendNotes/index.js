@@ -531,9 +531,6 @@ class FriendNotes extends Component {
                                       fontSize: normalize(15),
                                   },
                               ]}>
-                              {/* {userData.first_name + ' '}
->>>>>>> Stashed changes
-              {userData.last_name} */}
                               {otherUserData? otherUserData.display_name : currentFriend.display_name}
                           </Text>
                           {

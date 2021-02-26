@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   Platform,
+    KeyboardAvoidingView
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -235,6 +236,12 @@ class UpdatePhoneModal extends Component {
                               text: err.response.data.detail.toString(),
                               type: 'primary',
                           });
+                      }else  if (err.response.data.message) {
+                          Toast.show({
+                              title: translate('common.sendSMS'),
+                              text: err.response.data.message.toString(),
+                              type: 'primary',
+                          });
                       }else{
                           Toast.show({
                               title: translate('common.sendSMS'),
@@ -326,6 +333,11 @@ class UpdatePhoneModal extends Component {
             />
           </LinearGradient>
           <ScrollView>
+              <KeyboardAvoidingView
+                  style={{ flex: 1 }}
+                  keyboardVerticalOffset={100}
+                  behavior={"position"}
+              >
           <View style={{padding: 15}}>
             <View style={{marginTop: 20}}>
               <CountryPhoneInput
@@ -360,6 +372,7 @@ class UpdatePhoneModal extends Component {
               />
             </View>
           </View>
+              </KeyboardAvoidingView>
           </ScrollView>
         </View>
         <View style={{position: 'absolute', width: '100%', top: 0}}>

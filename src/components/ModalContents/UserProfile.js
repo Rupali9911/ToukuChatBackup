@@ -46,6 +46,15 @@ class UserProfile extends Component {
     this.S3uploadService = new S3uploadService();
   }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.userConfig.background_image !== prevProps.userConfig.background_image) {
+            this.setState({backgroundImagePath: {uri: this.props.userConfig.background_image}})
+        }
+        if (this.props.userData.avatar !== prevProps.userData.avatar) {
+            this.setState({profileImagePath: {uri: this.props.userData.avatar}})
+        }
+    }
+
   onShowChangePassModal() {
     this.setState({isChangePassModalVisible: true});
   }
