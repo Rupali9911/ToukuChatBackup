@@ -109,6 +109,12 @@ class GroupDetails extends Component {
       ],
       adminOption: [
         {
+          title: translate('pages.xchat.member'),
+          onPress: (id, type) => {
+            this.setMember(id, type);
+          },
+        },
+        {
           title: translate('pages.xchat.remove'),
           onPress: (id, type) => {
             this.removeMember(id, type);
@@ -294,6 +300,7 @@ class GroupDetails extends Component {
   udateGroup = (data) => {
     this.props.updateGroupMembers(data).then((res) => {
       //this.getGroupMembers(this.props.currentGroupDetail.id)
+      console.log('udateGroup res',res);
       Toast.show({
         title: translate('pages.xchat.groupDetails'),
         text: translate('pages.xchat.toastr.groupUpdatedSuccessfully'),

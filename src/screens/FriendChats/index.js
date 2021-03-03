@@ -16,6 +16,7 @@ import {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
+  DeleteOptionModal
 } from '../../components/Modals';
 import {ListLoader} from '../../components/Loaders';
 import {UploadLoader} from '../../components/Loaders';
@@ -79,6 +80,7 @@ class FriendChats extends Component {
       translatedMessageId: null,
       showConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showMoreMessageDeleteConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showdeleteObjectConfirmationModal: false,
       deleteObjectLoading: false,
@@ -93,6 +95,8 @@ class FriendChats extends Component {
       uploadProgress: 0,
       isChatLoading: false,
       isMultiSelect: false,
+      isDeleteMeLoading: false,
+      isDeleteEveryoneLoading: false,
       selectedIds: [],
       openDoc: false,
       headerRightIconMenu:
@@ -973,6 +977,16 @@ class FriendChats extends Component {
     }));
   };
 
+  toggleMessageDeleteOptionConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showMoreMessageDeleteConfirmationModal: !prevState.showMoreMessageDeleteConfirmationModal,
+    }));
+  };
+
+  onCancelDeleteOption = () => {
+    this.toggleMessageDeleteOptionConfirmationModal();
+  }
+
   onCancelDelete = () => {
     this.toggleMessageDeleteConfirmationModal();
   };
@@ -1018,10 +1032,21 @@ class FriendChats extends Component {
     }
   };
 
-  onConfirmMultipleMessageDelete = () => {
-    this.setState({showMessageDeleteConfirmationModal: false});
+  onConfirmMultipleMessageDelete = (delete_type) => {
+    // this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
-      let payload = {message_ids: this.state.selectedIds};
+      let payload = {
+        message_ids: this.state.selectedIds,
+        delete_type: delete_type
+      };
+
+      if(delete_type==='DELETE_FOR_EVERYONE'){
+        this.setState({isDeleteEveryoneLoading: true});
+      }else{
+        this.setState({isDeleteMeLoading: true});
+      }
+
+      console.log('payload',payload);
 
       this.state.selectedIds.map((item) => {
         deleteFriendMessageById(item);
@@ -1052,10 +1077,23 @@ class FriendChats extends Component {
 
       this.props.deleteMultiplePersonalMessage(payload).then((res) => {
         //console.log(res);
+        this.setState({
+          isDeleteEveryoneLoading: false, 
+          isDeleteMeLoading: false,
+          showMessageDeleteConfirmationModal: false,
+          showMoreMessageDeleteConfirmationModal: false
+        });
         if (res && res.status) {
         } else {
           this.getPersonalConversation();
         }
+      }).catch((err)=>{
+        this.setState({
+          isDeleteEveryoneLoading: false, 
+          isDeleteMeLoading: false,
+          showMessageDeleteConfirmationModal: false,
+          showMoreMessageDeleteConfirmationModal: false
+        });
       });
     }
   };
@@ -1093,9 +1131,27 @@ class FriendChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
-    this.setState({
-      showMessageDeleteConfirmationModal: true,
-    });
+    const {chatFriendConversation, userData} = this.props;
+
+    let arr = this.state.selectedIds;
+    let isDeleteEveryOption = true;
+
+    chatFriendConversation.map((item)=>{
+      if(arr.includes(item.id+'') && item.from_user.id !== userData.id){
+        isDeleteEveryOption = false;
+        return;
+      }
+    })
+
+    if(isDeleteEveryOption){
+      this.setState({
+        showMoreMessageDeleteConfirmationModal: true,
+      });
+    }else{
+      this.setState({
+        showMessageDeleteConfirmationModal: true,
+      });
+    }
   };
 
   onUnSendPressed = (messageId) => {
@@ -1438,6 +1494,7 @@ class FriendChats extends Component {
       showMessageDeleteConfirmationModal,
       showMessageUnSendConfirmationModal,
       showdeleteObjectConfirmationModal,
+      showMoreMessageDeleteConfirmationModal,
       orientation,
       translatedMessage,
       translatedMessageId,
@@ -1446,6 +1503,8 @@ class FriendChats extends Component {
       isChatLoading,
       isMultiSelect,
       openDoc,
+      isDeleteMeLoading,
+      isDeleteEveryoneLoading,
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
    // console.log('currentFriend', currentFriend);
@@ -1552,10 +1611,11 @@ class FriendChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelDelete.bind(this)}
-          onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(this, 'DELETE_FOR_ME')}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
+          isLoading={isDeleteMeLoading}
         />
 
         <ConfirmationModal
@@ -1602,6 +1662,18 @@ class FriendChats extends Component {
           onAttachmentPress={() => this.onAttachmentPress()}
         />
         {/* {sendingMedia && <UploadLoader />} */}
+
+        <DeleteOptionModal
+          visible={showMoreMessageDeleteConfirmationModal} 
+          orientation={orientation}
+          onCancel={this.onCancelDeleteOption.bind(this)}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.youWantToDeleteThisMessage')}
+          isDeleteMeLoading={isDeleteMeLoading}
+          isDeleteEveryoneLoading={isDeleteEveryoneLoading}
+          />
+
         {openDoc && <OpenLoader />}
       </ImageBackground>
     );

@@ -2199,7 +2199,7 @@
       "OrderAllReadyCompleted":"order already completed",
       "OrderFailure":"order failure",
       "OrderAllReadyCanceled":"order already canceled",
-      "Groupdoesnotexist":"group dose not exist",
+      "Groupdoesnotexist":"group does not exist",
       "UserNotAuthorizedAddMembers":"user not authorised to add members",
       "Recordisnotexists":"record is not exists",
       "Recorddeletedsuccessfully":"record deleted successfully",

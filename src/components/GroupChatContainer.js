@@ -28,6 +28,7 @@ import Button from './Button';
 import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
 import { ListLoader } from './Loaders';
+import Toast from './Toast';
 
 const {width, height} = Dimensions.get('window');
 
@@ -650,8 +651,18 @@ class GroupChatContainer extends Component {
             <View style={{flex: 0.3}} />
             <View style={{flex: 1}}>
               <Button
-                title={translate(`common.delete`) + ` (${selectedIds.length})`}
-                onPress={onSelectedDelete}
+                title={translate(`common.delete`) + (selectedIds.length?` (${selectedIds.length})`:'')}
+                onPress={()=>{
+                  if(selectedIds.length){
+                    onSelectedDelete();
+                  }else{
+                    Toast.show({
+                      title: translate('pages.xchat.touku'),
+                      text: translate('pages.xchat.invalidMsgDelete'),
+                      type: 'primary'
+                    });
+                  }
+                }}
                 isRounded={true}
                 fontType={'smallRegularText'}
                 height={40}

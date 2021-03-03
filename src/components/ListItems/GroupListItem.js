@@ -140,7 +140,7 @@ export default class GroupListItem extends PureComponent {
     return (
       <Fragment>
         <SwipeItem
-            buttonTriggerPercent={0.4}
+          buttonTriggerPercent={0.4}
           style={{ flex: 1 }}
           buttonTriggerPercent={0.4}
           rightButtons={swipeable &&
@@ -158,25 +158,27 @@ export default class GroupListItem extends PureComponent {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flex: 1
-                }} onPress={() => {
-                  console.log('pin chat');
-                  // this.itemRef && this.itemRef.close()
-                  this.setState({isPinUnpinLoading: true});
-                  onPinUnpinChat(item, () => {
-                    this.setState({isPinUnpinLoading:false});
-                    this.itemRef && this.itemRef.close();
-                  });
-                  // wait(200).then(()=>{
-                  //   onPinUnpinChat(item,this.itemRef);
-                  // });
-                }}>
-                  {isPinUnpinLoading?
-                  <ActivityIndicator color={Colors.white}/>
-                  :<MaterialCommunityIcon
-                    name={item.is_pined ? 'pin-off' : 'pin'}
-                    size={20}
-                    color={Colors.white}
-                  />}
+                }}
+                  disabled={isPinUnpinLoading}
+                  onPress={() => {
+                    console.log('pin chat');
+                    // this.itemRef && this.itemRef.close()
+                    this.setState({ isPinUnpinLoading: true });
+                    onPinUnpinChat(item, () => {
+                      this.setState({ isPinUnpinLoading: false });
+                      this.itemRef && this.itemRef.close();
+                    });
+                    // wait(200).then(()=>{
+                    //   onPinUnpinChat(item,this.itemRef);
+                    // });
+                  }}>
+                  {isPinUnpinLoading ?
+                    <ActivityIndicator color={Colors.white} />
+                    : <MaterialCommunityIcon
+                      name={item.is_pined ? 'pin-off' : 'pin'}
+                      size={20}
+                      color={Colors.white}
+                    />}
                 </TouchableOpacity>
               </SwipeButtonsContainer>
               <SwipeButtonsContainer
@@ -194,12 +196,12 @@ export default class GroupListItem extends PureComponent {
                   flex: 1
                 }} onPress={() => {
                   console.log('delete chat')
-                  // this.itemRef && this.itemRef.close();
+                  this.itemRef && this.itemRef.close();
                   onDeleteChat(item.group_id);
                 }}>
-                  {isDeleteLoading?
-                  <ActivityIndicator color={Colors.white}/>
-                  :<Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>}
+                  {isDeleteLoading ?
+                    <ActivityIndicator color={Colors.white} />
+                    : <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>}
                 </TouchableOpacity>
               </SwipeButtonsContainer>
             </View>

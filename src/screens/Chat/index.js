@@ -162,6 +162,7 @@ import {
   multipleDeleteChatConversation,
   updateFriendProfileData
 } from '../../storage/Service';
+import {updateTrendTimeline} from '../../redux/reducers/timelineReducer';
 import Toast from '../../components/Toast';
 import NavigationService from '../../navigation/NavigationService';
 import {
@@ -1448,6 +1449,19 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER) {
       setChannels([message.text.data.message_details]);
       // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
+
+      let array = this.props.trendTimline;
+      this.props.trendTimline.map((item, index)=>{
+        if(item.channel_id === message.text.data.message_details.id){
+          let changeItem = item;
+          changeItem.is_following = true;
+          array.splice(index,1,changeItem);
+          return;
+        }
+      });
+
+      this.props.updateTrendTimeline(array);
+
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
@@ -1477,6 +1491,19 @@ class Chat extends Component {
       this.props.getLocalFollowingChannels().then((res) => {
         this.props.setCommonChatConversation();
       });
+
+      let array = this.props.trendTimline;
+      this.props.trendTimline.map((item, index)=>{
+        if(item.channel_id === message.text.data.message_details.channel_id){
+          let changeItem = item;
+          changeItem.is_following = false;
+          array.splice(index,1,changeItem);
+          return;
+        }
+      });
+
+      this.props.updateTrendTimeline(array);
+
       // for (var i in this.props.followingChannels) {
       //   if (message.text.data.message_details.channel_id === i.id) {
       //     alert('channel unfollowed');
@@ -3138,11 +3165,12 @@ class Chat extends Component {
     }
   };
 
-  onPinUnpinChannel = (item) => {
+  onPinUnpinChannel = (item,onClose) => {
     if (item.is_pined) {
       this.props
         .unpinChannel(item.id)
         .then((res) => {
+          onClose();
           if (res.status === true) {
             Toast.show({
               title: 'Touku',
@@ -3152,6 +3180,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          onClose();
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -3162,6 +3191,7 @@ class Chat extends Component {
       this.props
         .pinChannel(item.id)
         .then((res) => {
+          onClose();
           if (res.status === true) {
             Toast.show({
               title: 'Touku',
@@ -3171,6 +3201,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          onClose();
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -3180,11 +3211,12 @@ class Chat extends Component {
     }
   };
 
-  onPinUnpinFriend = (item) => {
+  onPinUnpinFriend = (item,onClose) => {
     if (item.is_pined) {
       this.props
         .unpinFriend(item.friend, item.user_id)
         .then((res) => {
+          onClose();
           if (res.status === true) {
             Toast.show({
               title: 'Touku',
@@ -3194,6 +3226,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          onClose();
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -3204,6 +3237,7 @@ class Chat extends Component {
       this.props
         .pinFriend(item.friend, item.user_id)
         .then((res) => {
+          onClose();
           if (res.status === true) {
             Toast.show({
               title: 'Touku',
@@ -3213,6 +3247,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          onClose();
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -3358,8 +3393,8 @@ class Chat extends Component {
                     this.setDataToDeleteChat();
                   }
                 }}
-                onPinUnpinChat={(item)=>{
-                  this.onPinUnpinChannel(item);
+                onPinUnpinChat={(item,onClose)=>{
+                  this.onPinUnpinChannel(item,onClose);
                 }}
               />
             ) : (
@@ -3416,8 +3451,8 @@ class Chat extends Component {
                     this.setDataToDeleteChat();
                   }
                 }}
-                onPinUnpinChat={(item)=>{
-                  this.onPinUnpinFriend(item);
+                onPinUnpinChat={(item,onClose)=>{
+                  this.onPinUnpinFriend(item,onClose);
                 }}
               />
             )
@@ -3595,6 +3630,7 @@ const mapStateToProps = (state) => {
     currentGroup: state.groupReducer.currentGroup,
     currentChannel: state.channelReducer.currentChannel,
     currentRouteName: state.userReducer.currentRouteName,
+    trendTimline: state.timelineReducer.trendTimline,
   };
 };
 
@@ -3651,7 +3687,8 @@ const mapDispatchToProps = {
   unpinFriend,
   updateUserBackgroundImage,
   updateUserDisplayName,
-  updateUserProfileImage
+  updateUserProfileImage,
+  updateTrendTimeline
 };
 
 export default connect(

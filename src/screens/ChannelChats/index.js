@@ -63,6 +63,7 @@ import {
   ShowAttahmentModal,
   ShowGalleryModal,
   UpdatePhoneModal,
+  DeleteOptionModal
 } from '../../components/Modals';
 import {eventService, normalize, realmToPlainObject} from '../../utils';
 import Toast from '../../components/Toast';
@@ -107,6 +108,7 @@ class ChannelChats extends Component {
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showMoreMessageDeleteConfirmationModal: false,
       showPhoneUpdateModal: false,
       isUpdatePhoneModalVisible: false,
       showSelectModal: false,
@@ -121,6 +123,9 @@ class ChannelChats extends Component {
       uploadProgress: 0,
       isChatLoading: false,
       isMultiSelect: false,
+      isDeleteMeLoading: false,
+      isDeleteEveryoneLoading: false,
+      isAdmin: false,
       selectedIds: [],
       openDoc: false,
       isReply: false,
@@ -742,17 +747,22 @@ class ChannelChats extends Component {
     await this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
-        if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
-          // this.props.readAllChannelMessages(this.props.currentChannel.id);
-          let chat = getChannelChatConversationById(
-            this.props.currentChannel.id,
-          );
-          let conversations = [];
-          let a = Array.from(chat);
-          conversations = realmToPlainObject(a);
-          // conversations = chat.toJSON();
-          this.props.setChannelConversation(conversations);
+        if (res.status === true) {
+          if(res.conversation.length > 0){
+            this.setState({conversations: res.conversation});
+            // this.props.readAllChannelMessages(this.props.currentChannel.id);
+            let chat = getChannelChatConversationById(
+              this.props.currentChannel.id,
+            );
+            let conversations = [];
+            let a = Array.from(chat);
+            conversations = realmToPlainObject(a);
+            // conversations = chat.toJSON();
+            this.props.setChannelConversation(conversations);
+          }
+          if(res.admin_id.length>0 && res.admin_id.includes(this.props.userData.id)){
+            this.setState({isAdmin: true});
+          }
         }
         this.setState({isChatLoading: false});
       });
@@ -1004,10 +1014,13 @@ class ChannelChats extends Component {
       showConfirmationModal,
       showMessageUnSendConfirmationModal,
       showMessageDeleteConfirmationModal,
+      showMoreMessageDeleteConfirmationModal,
       showPhoneUpdateModal,
       uploadFile,
       sendingMedia,
       isChatLoading,
+      isDeleteMeLoading,
+      isDeleteEveryoneLoading,
       isMultiSelect,
       openDoc,
       isLoadMore
@@ -1094,6 +1107,7 @@ class ChannelChats extends Component {
             orientation={orientation}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.youWantToDeleteThisMessage')}
+            isLoading={isDeleteMeLoading}
           />
           {/* <UploadSelectModal
             visible={this.state.showSelectModal}
@@ -1130,6 +1144,18 @@ class ChannelChats extends Component {
             onAttachmentPress={() => this.onAttachmentPress()}
           />
           {/* {sendingMedia && <UploadLoader />} */}
+
+          <DeleteOptionModal
+            visible={showMoreMessageDeleteConfirmationModal}
+            orientation={orientation}
+            onCancel={this.onCancel.bind(this)}
+            onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
+            title={translate('pages.xchat.toastr.areYouSure')}
+            message={translate('pages.xchat.youWantToDeleteThisMessage')}
+            isDeleteMeLoading={isDeleteMeLoading}
+            isDeleteEveryoneLoading={isDeleteEveryoneLoading}
+          />
+
           {openDoc && <OpenLoader />}
         </View>
       );
@@ -1166,9 +1192,15 @@ class ChannelChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
-    this.setState({
-      showMessageDeleteConfirmationModal: true,
-    });
+    if(this.state.isAdmin){
+      this.setState({
+        showMoreMessageDeleteConfirmationModal: true,
+      });
+    }else{
+      this.setState({
+        showMessageDeleteConfirmationModal: true,
+      });
+    }
   };
 
   onCancel = () => {
@@ -1176,6 +1208,7 @@ class ChannelChats extends Component {
       showConfirmationModal: false,
       showMessageUnSendConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
+      showMoreMessageDeleteConfirmationModal: false,
       showPhoneUpdateModal: false,
     });
   };
@@ -1256,10 +1289,21 @@ class ChannelChats extends Component {
     }
   };
 
-  onConfirmMultipleMessageDelete = () => {
-    this.setState({showMessageDeleteConfirmationModal: false});
+  onConfirmMultipleMessageDelete = (delete_type) => {
+    // this.setState({showMessageDeleteConfirmationModal: false});
     if (this.state.selectedIds.length > 0) {
-      let payload = {message_ids: this.state.selectedIds};
+      let payload = {
+        message_ids: this.state.selectedIds,
+        delete_type: delete_type
+      };
+
+      if(delete_type==='DELETE_FOR_EVERYONE'){
+        this.setState({isDeleteEveryoneLoading: true});
+      }else{
+        this.setState({isDeleteMeLoading: true});
+      }
+
+      console.log('payload',payload);
 
       this.state.selectedIds.map((item) => {
         deleteMessageById(item);
@@ -1292,10 +1336,24 @@ class ChannelChats extends Component {
 
       this.props.deleteMultipleChannelMessage(payload).then((res) => {
         //console.log(res);
+        this.setState({
+          isDeleteEveryoneLoading: false, 
+          isDeleteMeLoading: false,
+          showMessageDeleteConfirmationModal: false,
+          showMoreMessageDeleteConfirmationModal: false
+        });
         if (res && res.status) {
         } else {
           this.getChannelConversations();
         }
+      }).catch((err)=>{
+        console.log('err');
+        this.setState({
+          isDeleteEveryoneLoading: false, 
+          isDeleteMeLoading: false,
+          showMessageDeleteConfirmationModal: false,
+          showMoreMessageDeleteConfirmationModal: false
+        });
       });
     }
   };

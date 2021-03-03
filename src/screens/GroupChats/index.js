@@ -781,7 +781,7 @@ class GroupChats extends Component {
 
       let singleSocket = SingleSocket.getInstance();
 
-      if(singleSocket.webSocketBridge !== null && singleSocket.webSocketBridge.readyState !== singleSocket.webSocketBridge.CLOSED){
+      if(singleSocket.webSocketBridge !== null && singleSocket.webSocketBridge.readyState == singleSocket.webSocketBridge.OPEN){
         singleSocket.sendMessage(
           JSON.stringify({
             type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
@@ -1061,12 +1061,25 @@ class GroupChats extends Component {
         }
       })
       .catch((err) => {
-        console.log('err_getGroupDetail', err);
-        Toast.show({
-          title: 'Touku',
-          text: translate('common.somethingWentWrong'),
-          type: 'primary',
-        });
+        console.log('err_getGroupDetail', err.response.data);
+        let response_error_data = err.response.data;
+        if(response_error_data && !response_error_data.status){
+          if(response_error_data.message === 'backend.common.Groupdoesnotexist'){
+            this.deleteLocalGroup(this.props.currentGroup.group_id);
+            this.props.getUserGroups();
+          }
+          Toast.show({
+            title: 'Touku',
+            text: translate(response_error_data.message),
+            type: 'primary',
+          });
+        }else{
+          Toast.show({
+            title: 'Touku',
+            text: translate('common.somethingWentWrong'),
+            type: 'primary',
+          });
+        }
         this.props.navigation.goBack();
       });
   }
@@ -1257,18 +1270,18 @@ class GroupChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
-    // if(this.state.isMyGroup){
-    //   this.setState({
-    //     showMoreMessageDeleteConfirmationModal: true,
-    //   });
-    // }else{
-    //   this.setState({
-    //     showMessageDeleteConfirmationModal: true,
-    //   });
-    // }
-    this.setState({
-      showMessageDeleteConfirmationModal: true,
-    });
+    if(this.state.isMyGroup){
+      this.setState({
+        showMoreMessageDeleteConfirmationModal: true,
+      });
+    }else{
+      this.setState({
+        showMessageDeleteConfirmationModal: true,
+      });
+    }
+    // this.setState({
+    //   showMessageDeleteConfirmationModal: true,
+    // });
   };
 
   onUnsendMessagePressed = (messageId) => {
@@ -1727,8 +1740,12 @@ class GroupChats extends Component {
       currentGroupMembers,
     } = this.props;
 
-    let chats = getGroupChatConversationLengthById(this.props.currentGroup.group_id);
-    let length = chats.length;
+    let length = 0;
+    let chats = [];
+    if(this.props.currentGroup){
+      chats = getGroupChatConversationLengthById(this.props.currentGroup.group_id);
+      length = chats.length;
+    }
 
     // console.log('currentGroupDetail', currentGroupDetail);
     // console.log('chatGroupConversation', chatGroupConversation);

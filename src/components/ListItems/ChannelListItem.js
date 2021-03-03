@@ -10,7 +10,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Badge, Divider } from 'react-native-paper';
+import { Badge, Divider, ActivityIndicator } from 'react-native-paper';
 import RoundedImage from '../RoundedImage';
 import { globalStyles } from '../../styles';
 import { Colors } from '../../constants';
@@ -28,6 +28,8 @@ export default class ChannelListItem extends PureComponent {
       isChecked: false,
       newItem: { ...this.props.item, isCheck: false },
       isSwipeButtonVisible: false,
+      isPinUnpinLoading: false,
+      isDeleteLoading: false
     };
     this.itemRef = null;
   }
@@ -97,7 +99,7 @@ export default class ChannelListItem extends PureComponent {
       onPinUnpinChat
     } = this.props;
 
-    const { newItem, isSwipeButtonVisible } = this.state;
+    const { newItem, isSwipeButtonVisible, isPinUnpinLoading, isDeleteLoading } = this.state;
 
     // var matches = title.match(/\b(\w)/g);
     // var firstChars = matches.join('');
@@ -105,7 +107,7 @@ export default class ChannelListItem extends PureComponent {
     return (
       <Fragment>
         <SwipeItem
-            buttonTriggerPercent={0.4}
+          buttonTriggerPercent={0.4}
           style={{ flex: 1 }}
           buttonTriggerPercent={0.4}
           rightButtons={swipeable &&
@@ -123,18 +125,28 @@ export default class ChannelListItem extends PureComponent {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flex: 1
-                }} onPress={() => {
-                  console.log('pin chat');
-                  this.itemRef && this.itemRef.close()
-                  wait(200).then(() => {
-                    onPinUnpinChat(item);
-                  });
-                }}>
-                  <MaterialCommunityIcon
-                    name={item.is_pined ? 'pin-off' : 'pin'}
-                    size={20}
-                    color={Colors.white}
-                  />
+                }}
+                  disabled={isPinUnpinLoading}
+                  onPress={() => {
+                    console.log('pin chat');
+                    // this.itemRef && this.itemRef.close()
+                    this.setState({ isPinUnpinLoading: true });
+                    onPinUnpinChat(item, () => {
+                      this.setState({ isPinUnpinLoading: false });
+                      this.itemRef && this.itemRef.close();
+                    });
+                    // wait(200).then(() => {
+                    //   onPinUnpinChat(item);
+                    // });
+                  }}>
+                  {isPinUnpinLoading ?
+                    <ActivityIndicator color={Colors.white} />
+                    :
+                    <MaterialCommunityIcon
+                      name={item.is_pined ? 'pin-off' : 'pin'}
+                      size={20}
+                      color={Colors.white}
+                    />}
                   {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
                 </TouchableOpacity>
               </SwipeButtonsContainer>
@@ -153,10 +165,12 @@ export default class ChannelListItem extends PureComponent {
                   flex: 1
                 }} onPress={() => {
                   console.log('delete chat')
-                  // this.itemRef && this.itemRef.close();
+                  this.itemRef && this.itemRef.close();
                   onDeleteChat(item.id);
                 }}>
-                  <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>
+                  {isDeleteLoading ?
+                    <ActivityIndicator color={Colors.white} />
+                    : <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>}
                 </TouchableOpacity>
               </SwipeButtonsContainer>
             </View>
