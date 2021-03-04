@@ -60,7 +60,7 @@ class Rewards extends Component {
     if (this.props.userData.user_type === 'owner' || this.props.userData.user_type === 'company' || this.props.userData.user_type === 'tester') {}
     else{
         Toast.show({
-            title: translate('pages.xchat.touku'),
+            title: 'TOUKU',
             text: translate('pages.clasrm.comingSoon'),
             type: 'positive'
         });
@@ -112,7 +112,7 @@ class Rewards extends Component {
                                 this.getUniqueUrl(index+1);
                             } else {
                                 Toast.show({
-                                    title: translate('pages.xchat.touku'),
+                                    title: 'TOUKU',
                                     text: translate('pages.clasrm.comingSoon'),
                                     type: 'positive'
                                 });

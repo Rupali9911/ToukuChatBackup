@@ -72,7 +72,7 @@ client.interceptors.request.use(
         return config;
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -99,7 +99,7 @@ client.interceptors.response.use(
       singleSocket && singleSocket.closeSocket();
       resetData();
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: 'Session Expired',
         type: 'primary',
       });
@@ -121,7 +121,7 @@ client.interceptors.response.use(
     console.log('response_console_from_interceptor_error', error.request);
     if (error.toString() === 'Error: Network Error') {
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate(`common.networkError`),
         type: 'primary',
       });

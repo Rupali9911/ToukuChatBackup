@@ -156,7 +156,7 @@ class ChannelChats extends Component {
                 icon: 'user-slash',
                 onPress: () => {
                   Toast.show({
-                    title: 'Touku',
+                    title: 'TOUKU',
                     text: translate('pages.xchat.channelReported'),
                     type: 'positive',
                   });
@@ -265,7 +265,7 @@ class ChannelChats extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyUnPined'),
               type: 'positive',
             });
@@ -273,7 +273,7 @@ class ChannelChats extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -284,7 +284,7 @@ class ChannelChats extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyPined'),
               type: 'positive',
             });
@@ -292,7 +292,7 @@ class ChannelChats extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -1245,7 +1245,7 @@ class ChannelChats extends Component {
       .catch((err) => {
         console.log('ChannelInfo -> onConfirm -> err', err);
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -1368,7 +1368,7 @@ class ChannelChats extends Component {
           setMessageUnsend(this.state.selectedMessageId);
           this.getChannelConversations();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.messageUnsent'),
             type: 'positive',
           });

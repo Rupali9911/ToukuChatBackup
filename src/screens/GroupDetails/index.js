@@ -387,7 +387,7 @@ class GroupDetails extends Component {
       .then((res) => {
         if (res.status === true) {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate(res.message),
             type: 'positive',
           });
@@ -401,7 +401,7 @@ class GroupDetails extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -515,7 +515,7 @@ class GroupDetails extends Component {
       .then((res) => {
         if (res.status === true) {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.toastr.groupIsRemoved'),
             type: 'positive',
           });
@@ -528,7 +528,7 @@ class GroupDetails extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -802,7 +802,7 @@ class GroupDetails extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -834,7 +834,7 @@ class GroupDetails extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -877,7 +877,7 @@ class GroupDetails extends Component {
                 this.toggleDeleteNoteConfirmationModal();
                 setTimeout(() => {
                     Toast.show({
-                        title: 'Touku',
+                        title: 'TOUKU',
                         text: translate('common.somethingWentWrong'),
                         type: 'primary',
                     });
@@ -1050,7 +1050,7 @@ class GroupDetails extends Component {
                       fontFamily: Fonts.regular,
                     },
                   ]}>
-                  {translate(`pages.xchat.about`)}
+                  {translate(`pages.xchat.aboutGroup`)}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity

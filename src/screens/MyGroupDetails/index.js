@@ -104,7 +104,7 @@ class GroupDetails extends Component {
                     },
                   ]}
                 >
-                  {translate(`pages.xchat.about`)}
+                  {translate(`pages.xchat.aboutGroup`)}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity

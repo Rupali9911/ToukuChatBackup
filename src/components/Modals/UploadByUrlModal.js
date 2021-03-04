@@ -72,7 +72,7 @@ class UploadByUrlModal extends Component {
             this.onRequestClose();
           } else {
             Toast.show({
-              title: translate('pages.xchat.touku'),
+              title: 'TOUKU',
               text: translate('pages.xchat.toastr.pleaseSelectValidUrl'),
               type: 'primary',
             });
@@ -83,7 +83,7 @@ class UploadByUrlModal extends Component {
         });
     } else {
       Toast.show({
-        title: translate('pages.xchat.touku'),
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.pleaseSelectValidUrl'),
         type: 'primary',
       });

@@ -391,15 +391,9 @@ export default class GroupChatMessageBox extends Component {
                   }}>
                   {isRead && (
                     <Text style={styles.statusText}>
-                      {/*{message.read_count &&*/}
-                      {/*message.read_count >= memberCount - 1*/}
-                        {/*? translate('pages.xchat.read')*/}
-                        {/*: translate('pages.xchat.read') +*/}
-                          {/*' - ' +*/}
-                          {/*message.read_count}*/}
                         {message.read_count &&
                             translate('pages.xchat.read') +
-                            ' - ' +
+                             '  ' +
                             message.read_count}
                     </Text>
                   )}
@@ -451,15 +445,9 @@ export default class GroupChatMessageBox extends Component {
                   }}>
                   {isRead && (
                     <Text style={styles.statusText}>
-                      {/*{message.read_count &&*/}
-                      {/*message.read_count >= memberCount - 1*/}
-                        {/*? translate('pages.xchat.read')*/}
-                        {/*: translate('pages.xchat.read') +*/}
-                          {/*' - ' +*/}
-                          {/*message.read_count}*/}
                         {message.read_count &&
                         translate('pages.xchat.read') +
-                        ' - ' +
+                        '  ' +
                         message.read_count}
                     </Text>
                   )}

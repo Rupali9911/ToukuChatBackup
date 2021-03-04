@@ -124,7 +124,7 @@ class FriendChats extends Component {
                 icon: 'user-times',
                 onPress: () => {
                   Toast.show({
-                    title: 'Touku',
+                    title: 'TOUKU',
                     text: translate('pages.xchat.userReported'),
                     type: 'positive',
                   });
@@ -136,7 +136,7 @@ class FriendChats extends Component {
                 icon: 'user-times',
                 onPress: () => {
                   Toast.show({
-                    title: 'Touku',
+                    title: 'TOUKU',
                     text: translate('pages.xchat.userBlocked'),
                     type: 'positive',
                   });
@@ -276,7 +276,7 @@ class FriendChats extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyUnPined'),
               type: 'positive',
             });
@@ -284,7 +284,7 @@ class FriendChats extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -295,7 +295,7 @@ class FriendChats extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyPined'),
               type: 'positive',
             });
@@ -303,7 +303,7 @@ class FriendChats extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -872,7 +872,7 @@ class FriendChats extends Component {
         });
       } else {
         Toast.show({
-          title: translate('pages.xchat.touku'),
+          title: 'TOUKU',
           text: translate('pages.xchat.toastr.friendRequestAlreadySent'),
           type: 'primary',
         });
@@ -917,7 +917,7 @@ class FriendChats extends Component {
       .then((res) => {
         if (res.status === true) {
           // Toast.show({
-          //   title: 'Touku',
+          //   title: 'TOUKU',
           //   text: translate('common.success'),
           //   type: 'positive',
           // });
@@ -930,7 +930,7 @@ class FriendChats extends Component {
       .catch((err) => {
         console.log('FriendChats -> onConfirm -> err', err);
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -1115,7 +1115,7 @@ class FriendChats extends Component {
         .then((res) => {
           // this.getPersonalConversation();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.messageUnsent'),
             type: 'positive',
           });

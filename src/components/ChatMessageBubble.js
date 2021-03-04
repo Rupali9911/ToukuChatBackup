@@ -124,7 +124,7 @@ class ChatMessageBubble extends Component {
         (error, url) => {
           if (error) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('common.somethingWentWrong'),
               type: 'primary',
             });
@@ -148,7 +148,7 @@ class ChatMessageBubble extends Component {
         (error, url) => {
           if (error) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('common.somethingWentWrong'),
               type: 'primary',
             });

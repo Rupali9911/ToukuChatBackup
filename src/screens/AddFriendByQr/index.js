@@ -112,14 +112,14 @@ class AddFriendByQr extends Component {
                 this.addFriendFromUrl(invitationCode)
             }else{
                 Toast.show({
-                    title: translate('pages.xchat.touku'),
+                    title: 'TOUKU',
                     text: translate('pages.xchat.unableToAdd'),
                     type: 'primary',
                 });
             }
         }else{
             Toast.show({
-                title: translate('pages.xchat.touku'),
+                title: 'TOUKU',
                 text: translate('pages.xchat.unableToAdd'),
                 type: 'primary',
             });

@@ -364,7 +364,7 @@ class CreateChannel extends Component {
     const {channelName, isVIP} = this.state;
     if (channelName.trim() === '') {
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.channelNameIsRequired'),
         type: 'primary',
       });
@@ -376,7 +376,7 @@ class CreateChannel extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.toastr.channelCreatedSuccessfully'),
               type: 'positive',
             });
@@ -387,7 +387,7 @@ class CreateChannel extends Component {
         .catch((err) => {
           console.log('CreateChannel -> onCreateChannel -> err', err);
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });

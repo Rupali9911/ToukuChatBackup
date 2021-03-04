@@ -113,7 +113,7 @@ class ForgotUserName extends Component {
         });
     } else {
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.register.toastr.enterEmailAddress'),
         type: 'primary',
       });

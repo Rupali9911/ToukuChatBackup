@@ -2537,7 +2537,7 @@ class Chat extends Component {
         this.props.navigation.navigate('ChannelChats');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -2554,7 +2554,7 @@ class Chat extends Component {
         this.props.navigation.navigate('GroupChats');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -2570,7 +2570,7 @@ class Chat extends Component {
         this.props.navigation.navigate('FriendChats');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -2587,7 +2587,7 @@ class Chat extends Component {
         this.props.navigation.navigate('FriendNotes');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -2701,7 +2701,7 @@ class Chat extends Component {
       })
       .catch((err) => {
         // Toast.show({
-        //   title: 'Touku',
+        //   title: 'TOUKU',
         //   text: translate('common.somethingWentWrong'),
         //   type: 'primary',
         // });
@@ -3043,7 +3043,7 @@ class Chat extends Component {
         deleteObj.friend_ids.length === 0)
     ) {
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.selectChatText'),
       });
       deleteObj = null;
@@ -3124,7 +3124,7 @@ class Chat extends Component {
           onClose();
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyUnPined'),
               type: 'positive',
             });
@@ -3134,7 +3134,7 @@ class Chat extends Component {
           // itemRef && itemRef.close();
           onClose();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -3147,7 +3147,7 @@ class Chat extends Component {
           onClose();
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyPined'),
               type: 'positive',
             });
@@ -3157,7 +3157,7 @@ class Chat extends Component {
           // itemRef && itemRef.close();
           onClose();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -3173,7 +3173,7 @@ class Chat extends Component {
           onClose();
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyUnPined'),
               type: 'positive',
             });
@@ -3182,7 +3182,7 @@ class Chat extends Component {
         .catch((err) => {
           onClose();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -3194,7 +3194,7 @@ class Chat extends Component {
           onClose();
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyPined'),
               type: 'positive',
             });
@@ -3203,7 +3203,7 @@ class Chat extends Component {
         .catch((err) => {
           onClose();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -3219,7 +3219,7 @@ class Chat extends Component {
           onClose();
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyUnPined'),
               type: 'positive',
             });
@@ -3228,7 +3228,7 @@ class Chat extends Component {
         .catch((err) => {
           onClose();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -3240,7 +3240,7 @@ class Chat extends Component {
           onClose();
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyPined'),
               type: 'positive',
             });
@@ -3249,7 +3249,7 @@ class Chat extends Component {
         .catch((err) => {
           onClose();
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });

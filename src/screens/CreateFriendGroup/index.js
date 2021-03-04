@@ -180,13 +180,13 @@ class CreateFriendGroup extends Component {
     if (groupName.trim() === '') {
       this.setState({groupNameErr: 'messages.required'});
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.groupNameIsRequired'),
         type: 'primary',
       });
     } else if (addedFriends.length <= 0) {
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.pleaseSelectMember'),
         type: 'primary',
       });
@@ -208,7 +208,7 @@ class CreateFriendGroup extends Component {
 
       this.props.createNewGroup(groupData).then((res) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
           type: 'positive',
         });

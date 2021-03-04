@@ -1264,7 +1264,7 @@ class Home extends PureComponent {
         this.props.navigation.navigate('ChannelChats');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -1280,7 +1280,7 @@ class Home extends PureComponent {
         this.props.navigation.navigate('GroupChats');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -1296,7 +1296,7 @@ class Home extends PureComponent {
         this.props.navigation.navigate('FriendChats');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -1313,7 +1313,7 @@ class Home extends PureComponent {
         this.props.navigation.navigate('FriendNotes');
       } else {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate(`common.networkError`),
           type: 'primary',
         });
@@ -1586,7 +1586,7 @@ class Home extends PureComponent {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -1612,7 +1612,7 @@ class Home extends PureComponent {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -1917,7 +1917,7 @@ class Home extends PureComponent {
                   //   this.getUniqueUrl();
                   // }else{
                   //   Toast.show({
-                  //     title: translate('pages.xchat.touku'),
+                  //     title: 'TOUKU',
                   //     text: translate('pages.clasrm.comingSoon'),
                   //     type: 'positive'
                   //   });
@@ -2013,7 +2013,7 @@ class Home extends PureComponent {
                       this.props.navigation.navigate('Timeline', { activeTab: 'ranking' })
                     }else{
                       Toast.show({
-                        title: translate('pages.xchat.touku'),
+                        title: 'TOUKU',
                         text: translate('pages.clasrm.comingSoon'),
                         type: 'positive'
                       });

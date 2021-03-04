@@ -50,7 +50,6 @@ class UserProfile extends Component {
         if (this.props.userConfig.background_image !== prevProps.userConfig.background_image) {
             this.setState({backgroundImagePath: {uri: this.props.userConfig.background_image}});
         }
-        console.log('prevProps.userData.avatar',prevProps.userData.avatar);
         if (this.props.userData.avatar !== prevProps.userData.avatar) {
             this.setState({profileImagePath: {uri: this.props.userData.avatar}});
         }
@@ -115,7 +114,7 @@ class UserProfile extends Component {
             this.props.getUserProfile();
             this.setState({uploadImageLoading: false});
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.setting.toastr.userImageChanged'),
               type: 'positive',
             });
@@ -166,7 +165,7 @@ class UserProfile extends Component {
         };
         this.props.updateConfiguration(bgData).then((res) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.setting.toastr.userImageChanged'),
             type: 'positive',
           });

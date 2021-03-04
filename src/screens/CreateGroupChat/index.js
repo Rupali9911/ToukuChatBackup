@@ -141,14 +141,14 @@ class CreateGroupChat extends Component {
       this.isPressed = false;
       this.setState({groupNameErr: 'messages.required'});
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.groupNameIsRequired'),
         type: 'primary',
       });
     } else if (addedFriends.length <= 0) {
       this.isPressed = false;
       Toast.show({
-        title: 'Touku',
+        title: 'TOUKU',
         text: translate('pages.xchat.toastr.pleaseSelectMember'),
         type: 'primary',
       });
@@ -180,7 +180,7 @@ class CreateGroupChat extends Component {
           console.log('CreateGroupChat -> onCreatePress -> res', res);
           this.setState({loading: false});
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
             type: 'positive',
           });
@@ -213,7 +213,7 @@ class CreateGroupChat extends Component {
           console.log('CreateGroupChat -> onCreatePress -> res', res);
           this.setState({loading: false});
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
             type: 'positive',
           });

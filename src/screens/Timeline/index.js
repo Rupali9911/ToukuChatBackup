@@ -141,7 +141,7 @@ class Timeline extends Component {
           icon: Icons.icon_timeline,
           action: () => {
             showToast(
-              translate('pages.xchat.touku'),
+                'TOUKU',
               translate('pages.clasrm.comingSoon'),
               'positive'
             );
@@ -353,7 +353,7 @@ class Timeline extends Component {
       })
       .catch((err) => {
         showToast(
-          'Touku',
+          'TOUKU',
           translate('common.somethingWentWrong'),
           'primary',
         );
@@ -412,7 +412,7 @@ class Timeline extends Component {
               ) : (
                 loading && rankingChannel.length<=0 ? (
                 <ListLoader justifyContent={'flex-start'} />
-                ) : 
+                ) :
                 <PostCard
                   menuItems={menuItems}
                   posts={rankingChannel}

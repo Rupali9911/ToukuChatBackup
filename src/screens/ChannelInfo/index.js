@@ -171,7 +171,7 @@ class ChannelInfo extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: 'Something went wrong!',
           type: 'primary',
         });
@@ -219,7 +219,7 @@ class ChannelInfo extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -269,7 +269,7 @@ class ChannelInfo extends Component {
       .catch((err) => {
         console.log('ChannelInfo -> onConfirm -> err', err);
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });

@@ -134,7 +134,7 @@ class TabBarComp extends Component {
                 //     onTabPress({route});
                 //   }else{
                 //     Toast.show({
-                //       title: translate('pages.xchat.touku'),
+                //       title: 'TOUKU',
                 //       text: translate('pages.clasrm.comingSoon'),
                 //       type: 'positive'
                 //     });
@@ -150,7 +150,7 @@ class TabBarComp extends Component {
                 //     onTabPress({ route });
                 //   } else {
                 //     Toast.show({
-                //       title: translate('pages.xchat.touku'),
+                //       title: 'TOUKU',
                 //       text: translate('pages.clasrm.comingSoon'),
                 //       type: 'positive'
                 //     });

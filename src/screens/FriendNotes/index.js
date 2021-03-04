@@ -310,7 +310,7 @@ class FriendNotes extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -339,7 +339,7 @@ class FriendNotes extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -378,7 +378,7 @@ class FriendNotes extends Component {
               .catch((err) => {
                   this.setState({deleteLoading: false});
                   Toast.show({
-                      title: 'Touku',
+                      title: 'TOUKU',
                       text: translate('common.somethingWentWrong'),
                       type: 'primary',
                   });

@@ -476,7 +476,7 @@ class AmazonExchange extends Component {
                     }}
                     orientation={orientation}
                     confirmText={translate('swal.ok')}
-                    title={translate('pages.xchat.touku')}
+                    title={'Touku'}
                     message={translate('pages.register.toastr.enterPhoneNumber')}
                 />
                 <UpdatePhoneModal

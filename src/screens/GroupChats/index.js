@@ -155,7 +155,7 @@ class GroupChats extends Component {
                 icon: 'user-slash',
                 onPress: () => {
                   Toast.show({
-                    title: 'Touku',
+                    title: 'TOUKU',
                     text: 'Group reported',
                     type: 'positive',
                   });
@@ -249,7 +249,7 @@ class GroupChats extends Component {
                 icon: 'user-slash',
                 onPress: () => {
                   Toast.show({
-                    title: 'Touku',
+                    title: 'TOUKU',
                     text: 'Group reported',
                     type: 'positive',
                   });
@@ -346,7 +346,7 @@ class GroupChats extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyUnPined'),
               type: 'positive',
             });
@@ -354,7 +354,7 @@ class GroupChats extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -365,7 +365,7 @@ class GroupChats extends Component {
         .then((res) => {
           if (res.status === true) {
             Toast.show({
-              title: 'Touku',
+              title: 'TOUKU',
               text: translate('pages.xchat.sucessFullyPined'),
               type: 'positive',
             });
@@ -373,7 +373,7 @@ class GroupChats extends Component {
         })
         .catch((err) => {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
             type: 'primary',
           });
@@ -1189,7 +1189,7 @@ class GroupChats extends Component {
       .then((res) => {
         if (res.status === true) {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate(res.message),
             type: 'positive',
           });
@@ -1204,7 +1204,7 @@ class GroupChats extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -1232,7 +1232,7 @@ class GroupChats extends Component {
       .then((res) => {
         if (res.status === true) {
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.toastr.groupIsRemoved'),
             type: 'positive',
           });
@@ -1246,7 +1246,7 @@ class GroupChats extends Component {
       })
       .catch((err) => {
         Toast.show({
-          title: 'Touku',
+          title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
           type: 'primary',
         });
@@ -1379,7 +1379,7 @@ class GroupChats extends Component {
 
       this.props.deleteMultipleGroupMessage(payload).then((res) => {
         this.setState({
-          isDeleteEveryoneLoading: false, 
+          isDeleteEveryoneLoading: false,
           isDeleteMeLoading: false,
           showMessageDeleteConfirmationModal: false,
           showMoreMessageDeleteConfirmationModal: false
@@ -1391,7 +1391,7 @@ class GroupChats extends Component {
         // this.getGroupConversation();
       }).catch((err)=>{
         this.setState({
-          isDeleteEveryoneLoading: false, 
+          isDeleteEveryoneLoading: false,
           isDeleteMeLoading: false,
           showMessageDeleteConfirmationModal: false,
           showMoreMessageDeleteConfirmationModal: false
@@ -1418,7 +1418,7 @@ class GroupChats extends Component {
             });
           }
           Toast.show({
-            title: 'Touku',
+            title: 'TOUKU',
             text: translate('pages.xchat.messageUnsent'),
             type: 'positive',
           });
@@ -1933,7 +1933,7 @@ class GroupChats extends Component {
         {/* {sendingMedia && <UploadLoader />} */}
 
         <DeleteOptionModal
-          visible={showMoreMessageDeleteConfirmationModal} 
+          visible={showMoreMessageDeleteConfirmationModal}
           orientation={orientation}
           onCancel={this.onCancelPress.bind(this)}
           onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
