@@ -190,7 +190,9 @@ export default class PostCardHeader extends Component {
                 onPress={()=>{
                   if(!post.is_following){
                     this.setState({isLoading:true});
-                    this.props.onFollowUnfollowChannel(post.channel_id,index,post.channel_name)
+                    this.props.onFollowUnfollowChannel(post.channel_id,index,post.channel_name,()=>{
+                      this.setState({isLoading:false});
+                    })
                   }
                 }}
               />

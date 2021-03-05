@@ -329,7 +329,7 @@ class Timeline extends Component {
     this.updateModalVisibility();
   }
 
-  onFollowUnfollow = async (channel_id, index, channel_name) => {
+  onFollowUnfollow = async (channel_id, index, channel_name, onFinish) => {
     const {trendTimline} = this.props;
     let data = {
       channel_id: channel_id,
@@ -338,6 +338,7 @@ class Timeline extends Component {
     this.props
       .followChannel(data)
       .then((res) => {
+        onFinish();
         if (res.status === true) {
           showToast(
             channel_name,
@@ -352,6 +353,7 @@ class Timeline extends Component {
         }
       })
       .catch((err) => {
+        onFinish();
         showToast(
           'TOUKU',
           translate('common.somethingWentWrong'),

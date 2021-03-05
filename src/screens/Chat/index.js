@@ -613,6 +613,9 @@ class Chat extends Component {
       case SocketEvents.REMOVE_GROUP_MEMBER:
         this.onRemoveGroupMember(message);
         break;
+      case SocketEvents.GROUP_MEMBER_TO_ADMIN:
+        this.onMemberTypeUpdate(message);
+        break;
       case SocketEvents.CLEAR_GROUP_CHAT:
         this.onRemoveGroupFromList(message);
         break;
@@ -2192,6 +2195,25 @@ class Chat extends Component {
         ) {
           this.getGroupDetail();
           this.getGroupMembers();
+        }
+      }
+    }
+  }
+
+  onMemberTypeUpdate = (message) => {
+    const {userGroups, userData, currentGroup} = this.props;
+    if (message.text.data.type === SocketEvents.GROUP_MEMBER_TO_ADMIN) {
+      for (let i of message.text.data.message_details.members_data) {
+        if (i.id == userData.id) {
+          if (
+            (this.props.currentRouteName == 'GroupChats' ||
+              this.props.currentRouteName == 'GroupDetails') &&
+            currentGroup &&
+            message.text.data.message_details.group_id == currentGroup.group_id
+          ) {
+            this.getGroupDetail();
+            this.getGroupMembers();
+          }      
         }
       }
     }

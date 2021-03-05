@@ -23,6 +23,8 @@ export const RESET_GROUP_CONVERSATION = 'RESET_GROUP_CONVERSATION';
 
 export const DELETE_GROUP_MESSAGE = 'DELETE_GROUP_MESSAGE';
 
+export const SET_CURRENT_GROUP_ADMINS = 'SET_CURRENT_GROUP_ADMINS';
+
 const initialState = {
   loading: false,
   userGroups: [],
@@ -31,6 +33,7 @@ const initialState = {
   currentGroupMembers: [],
   chatGroupConversation: [],
   unreadGroupMsgsCounts: 0,
+  currentGroupAdmins: []
 };
 
 import {
@@ -152,6 +155,11 @@ export default function (state = initialState, action) {
         ),
       };
 
+    case SET_CURRENT_GROUP_ADMINS:
+      return {
+        ...state,
+        currentGroupAdmins: [...action.payload]
+      };
     default:
       return state;
   }
@@ -211,6 +219,15 @@ const deleteMessage = (data) => ({
   type: DELETE_GROUP_MESSAGE,
   payload: data,
 });
+
+const setCurrentGroupAdminsState = (data) => ({
+  type: SET_CURRENT_GROUP_ADMINS,
+  payload: data,
+});
+
+export const setCurrentGroupAdmins = (data) => (dispatch) => {
+  dispatch(setCurrentGroupAdminsState(data));
+}
 
 export const getLocalUserGroups = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -449,6 +466,12 @@ export const getGroupDetail = (groupId) => (dispatch) =>
     client
       .get(`/xchat/group-detail/` + groupId + '/')
       .then((res) => {
+        if(res && res.admin_details){
+          console.log(res.admin_details);
+          dispatch(setCurrentGroupAdminsState(res.admin_details));
+        }else{
+          dispatch(setCurrentGroupAdminsState(res.admin_details));
+        }
         resolve(res);
       })
       .catch((err) => {

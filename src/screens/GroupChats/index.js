@@ -11,7 +11,7 @@ import moment from 'moment';
 import RNFetchBlob from 'rn-fetch-blob';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-
+import {isEqual} from 'lodash';
 import {ChatHeader} from '../../components/Headers';
 import {globalStyles} from '../../styles';
 import {
@@ -794,6 +794,21 @@ class GroupChats extends Component {
     }
   }
 
+  isGroupAdmin = () => {
+    if(this.props.currentGroupAdmins && this.props.currentGroupAdmins.length>0){
+      let my_group = false;
+      this.props.currentGroupAdmins.map((item)=>{
+        if(item.id == this.props.userData.id){
+          my_group = true;
+          return;
+        }
+      });
+      return my_group;
+    }else{
+      return false;
+    }
+  }
+
   updateUnReadGroupChatCount = async () => {
     updateUnReadCount(this.props.currentGroup.group_id, 0);
 
@@ -1270,7 +1285,7 @@ class GroupChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
-    if(this.state.isMyGroup){
+    if(this.isGroupAdmin()){
       this.setState({
         showMoreMessageDeleteConfirmationModal: true,
       });
@@ -1746,11 +1761,9 @@ class GroupChats extends Component {
       chats = getGroupChatConversationLengthById(this.props.currentGroup.group_id);
       length = chats.length;
     }
-
     // console.log('currentGroupDetail', currentGroupDetail);
     // console.log('chatGroupConversation', chatGroupConversation);
     // console.log('currentGroupMembers', currentGroupMembers);
-
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1766,7 +1779,7 @@ class GroupChats extends Component {
           menuItems={
             currentGroupDetail.is_group_member === false
               ? this.state.headerRightIconMenuIsRemoveGroup
-              : isMyGroup
+              : this.isGroupAdmin()
               ? this.state.headerRightIconMenuIsGroup
               : this.state.headerRightIconMenu
           }
@@ -1958,6 +1971,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     currentGroupMembers: state.groupReducer.currentGroupMembers,
+    currentGroupAdmins: state.groupReducer.currentGroupAdmins
   };
 };
 
