@@ -160,7 +160,7 @@
     "unreadOption":"Unread",
     "leftGroup":"{{username}} left the group.",
     "addedInGroup":"{{username}} added {{toUsername}} to the group.",
-    "removedToGroup":"{{username}} removed {{toUsername}} to the group.",
+    "removedToGroup":"{{username}} removed {{toUsername}} from the group.",
     "uploadImage":"Upload",
     "confirm":"Okay",
     "sendCodeForEmail":"Send Code",

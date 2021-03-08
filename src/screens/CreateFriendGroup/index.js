@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, Text, FlatList, Dimensions} from 'react-native';
+import {View, ImageBackground, Text, FlatList, Dimensions, Image, TextInput} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -18,7 +18,9 @@ import {createNewGroup, getUserGroups, setCurrentGroup} from '../../redux/reduce
 import {ListLoader} from '../../components/Loaders';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
+import {createFilter} from "react-native-search-filter";
 const {width, height} = Dimensions.get('window');
+
 
 class CreateFriendGroup extends Component {
   constructor(props) {
@@ -29,8 +31,8 @@ class CreateFriendGroup extends Component {
       groupName: '',
       groupNameErr: null,
       addedFriends: [this.props.currentFriend.user_id],
-      recent: [this.props.currentFriend],
-      filteredFriends: this.props.userFriends,
+      recent: [],
+        searchText: '',
     };
   }
 
@@ -47,21 +49,7 @@ class CreateFriendGroup extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-
-    this.props.getUserFriends().then((res) => {
-      // for (let friend of this.state.filteredFriends) {
-      //   // alert(JSON.stringify(friend));
-      //   if (friend.user_id === this.props.currentFriend.user_id) {
-      //     const index = this.state.filteredFriends.indexOf(friend.user_id);
-      //     if (index > -1) {
-      //       friend.isChecked = true;
-      //       this.state.addedFriends.push(friend.user_id);
-      //       this.setState({filteredFriends: this.state.filteredFriends});
-      //     }
-      //   }
-      // }
-    });
-    // this.state.addedFriends.push(this.props.currentFriend.user_id);
+    this.props.getUserFriends()
   }
 
   _orientationDidChange = (orientation) => {
@@ -69,29 +57,40 @@ class CreateFriendGroup extends Component {
   };
 
   onCheckRecentPress = (status, item, index) => {
-    const recent = this.state.recent.map((recent) =>
-      recent.user_id === item.user_id ? {...recent, isChecked: status} : recent,
-    );
+    // const recent = this.state.recent.map((recent) =>
+    //   recent.user_id === item.user_id ? {...recent, isChecked: status} : recent,
+    // );
+    //
+    // this.setState({
+    //   recent: recent,
+    // });
+      const {addedFriends} = this.state;
+      let tmpFriends = addedFriends
+      if (status === true) {
+          tmpFriends.push(item.user_id);
+      } else {
+          const index = addedFriends.indexOf(item.user_id);
+          if (index > -1) {
+              tmpFriends.splice(index, 1);
+          }
+      }
 
-    this.setState({
-      recent: recent,
-    });
+      this.setState({addedFriends: tmpFriends});
   };
 
   onCheckFriendPress = (status, item, index) => {
-    const {filteredFriends, addedFriends} = this.state;
-
-    filteredFriends[index].isChecked = status;
+    const {addedFriends} = this.state;
+    let tmpFriends = addedFriends
     if (status === true) {
-      addedFriends.push(item.user_id);
+        tmpFriends.push(item.user_id);
     } else {
       const index = addedFriends.indexOf(item.user_id);
       if (index > -1) {
-        addedFriends.splice(index, 1);
+          tmpFriends.splice(index, 1);
       }
     }
 
-    this.setState({filteredFriends: this.state.filteredFriends});
+    this.setState({addedFriends: tmpFriends});
   };
 
   handleGroupName(groupName) {
@@ -104,29 +103,22 @@ class CreateFriendGroup extends Component {
   }
 
   renderRecent = () => {
-    const {currentFriend} = this.props;
-    const {recent} = this.state;
-    let friendIndex = -1;
-    const index = recent.map((item, index) => {
-      if (item.user_id === currentFriend.user_id) {
-        friendIndex = index;
-      }
-    });
-    if (friendIndex > -1) {
-      recent[friendIndex].isChecked = true;
-    }
-
+    const {currentFriend, userFriends} = this.props;
+    const {recent, addedFriends, searchText} = this.state;
+      let itemFriends = userFriends.slice(0, 5)
+      const searchedFriend = itemFriends.filter(
+          createFilter(searchText, ['display_name']),
+      );
     return (
       <FlatList
-        data={recent}
+        data={searchedFriend}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item, index}) => (
           <GroupFriend
             user={item}
             isCheckBox
-            onCheckPress={(isCheck) =>
-              this.onCheckRecentPress(isCheck, item, index)
-            }
+            isSelected={addedFriends.includes(item.user_id)}
+            onAddPress={(isAdded) => this.onCheckRecentPress(isAdded, item, index)}
           />
         )}
       />
@@ -134,34 +126,32 @@ class CreateFriendGroup extends Component {
   };
 
   renderFriends = () => {
-    const {friendLoading, currentFriend} = this.props;
-    const {filteredFriends} = this.state;
+    const {friendLoading, currentFriend, userFriends} = this.props;
+    const {addedFriends, searchText} = this.state;
+      let itemFriends = userFriends
+      console.log('userFriends.length', userFriends.length)
+    // if (userFriends.length > 4) {
+        itemFriends = userFriends.slice(5, userFriends.length)
+    // }else{
+    //     itemFriends = userFriends
+    // }
+    const searchedFriend = itemFriends.filter(
+          createFilter(searchText, ['display_name']),
+      );
 
-    if (filteredFriends.length === 0 && friendLoading) {
+    if (searchedFriend.length === 0 && friendLoading) {
       return <ListLoader />;
-    } else if (filteredFriends.length > 0) {
-      let friendIndex = -1;
-      const index = filteredFriends.map((item, index) => {
-        if (item.user_id === currentFriend.user_id) {
-          friendIndex = index;
-        }
-      });
-      if (friendIndex > -1) {
-        filteredFriends[friendIndex].isChecked = true;
-      }
+    } else if (searchedFriend.length > 0) {
       return (
         <FlatList
-          data={filteredFriends}
+          data={searchedFriend}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => (
             <GroupFriend
               user={item}
               isCheckBox
-              onCheckPress={(isCheck) =>
-                item.user_id === currentFriend.user_id
-                  ? null
-                  : this.onCheckFriendPress(isCheck, item, index)
-              }
+              isSelected={addedFriends.includes(item.user_id)}
+              onAddPress={(isAdded) => this.onCheckFriendPress(isAdded, item, index)}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -238,6 +228,22 @@ class CreateFriendGroup extends Component {
             contentContainerStyle={createGroupStyles.mainContainer}
             showsVerticalScrollIndicator={false}
             bounces={false}>
+              <View style={createGroupStyles.searchContainer}>
+                  <Image
+                      source={Icons.icon_search}
+                      style={createGroupStyles.iconSearch}
+                  />
+                  <TextInput
+                      style={[createGroupStyles.inputStyle]}
+                      placeholder={translate('pages.xchat.search')}
+                      onChangeText={(searchText) => this.setState({searchText})}
+                      returnKeyType={'done'}
+                      autoCorrect={false}
+                      autoCapitalize={'none'}
+                      underlineColorAndroid={'transparent'}
+                  />
+              </View>
+
             <View
               style={{
                 height: '5%',

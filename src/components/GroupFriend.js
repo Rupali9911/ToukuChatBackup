@@ -95,7 +95,7 @@ export default class GroupFriend extends Component {
                   // borderWidth: 1,
                   // borderColor: Colors.green,
                 },
-                user.isChecked
+                  isSelected
                   ? {
                       backgroundColor: Colors.green,
                     }
@@ -104,8 +104,8 @@ export default class GroupFriend extends Component {
                       borderColor: Colors.green,
                     },
               ]}
-              onPress={this.onChecked.bind(this)}>
-              {user.isChecked && (
+              onPress={this.onAddPress.bind(this)}>
+              {isSelected && (
                 <Image
                   style={{
                     height: '100%',
