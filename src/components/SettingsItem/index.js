@@ -149,6 +149,7 @@ class SettingsItem extends Component {
       isInvitation,
       isToukuPoints,
       isCustomerSupport,
+        isFAQ,
       isVersion,
     } = this.props;
     const {
@@ -286,10 +287,17 @@ class SettingsItem extends Component {
               </Text>
             </View>
           )}
+            {isFAQ && (
+                <View style={styles.vwRightInv}>
+                    <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>
+                        {translate('common.open')}
+                    </Text>
+                </View>
+            )}
           {isCustomerSupport && (
             <View style={styles.vwRightInv}>
               <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>
-                Chat
+                  {translate('pages.xchat.chat')}
               </Text>
             </View>
           )}
@@ -368,6 +376,7 @@ SettingsItem.propTypes = {
   isInvitation: PropTypes.bool,
   isToukuPoints: PropTypes.bool,
   isCustomerSupport: PropTypes.bool,
+    isFAQ: PropTypes.bool,
 };
 
 SettingsItem.defaultProps = {
@@ -385,6 +394,7 @@ SettingsItem.defaultProps = {
   isInvitation: false,
   isToukuPoints: false,
   isCustomerSupport: false,
+    isFAQ: false,
   isVersion: false,
 };
 

@@ -20,6 +20,7 @@ import {
   xanaUrl,
   xanaDeepLink,
   xanaAppStore,
+    faqUrl
 } from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from '../../components/Modals/ProfileModal';
@@ -134,6 +135,10 @@ class More extends Component {
     //Linking.openURL(supportUrl);
   }
 
+    actionFaq() {
+        Linking.openURL(faqUrl);
+    }
+
   render() {
     const {
       orientation,
@@ -229,6 +234,13 @@ class More extends Component {
             isCustomerSupport={true}
             onPress={() => this.onNeedSupportClick()}
           />
+            <SettingsItem
+                icon_name={'question'}
+                title={translate('pages.xchat.fqa')}
+                isFontAwesome={true}
+                isFAQ={true}
+                onPress={() => this.actionFaq()}
+            />
           <SettingsItem
             icon_name={'code-branch'}
             title={translate('pages.setting.version')}

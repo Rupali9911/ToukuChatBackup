@@ -239,6 +239,7 @@ export const languageArray = [
 export const Environment = 'https://www.touku.net/';
 export const EnvironmentStage = 'https://touku.angelium.net/';
 export const supportUrl = 'https://www.touku.net/#/support?frame=1';
+export const faqUrl = 'https://site.touku.net/';
 export const termsUrl = 'https://touku.net/#/terms?lang=';
 export const registerUrl = 'https://www.touku.net/#/register/';
 export const registerUrlStage = 'https://touku.angelium.net/#/register/';

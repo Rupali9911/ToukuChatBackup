@@ -1687,8 +1687,8 @@
     "AuthenticateNumber": "Authenticate phone number",
     "extraCashWiningText": "You can win the extra cash by playing games!",
     "xpusedForText": "*XP can be used to play \"XIGOLO\" on the HOME screen.",
-    "deleteFromeveyOne": "Delete from everyone",
-    "deleteFromMe": "Delete from me"
+    "deleteFromeveyOne": "Delete for everyone",
+    "deleteFromMe": "Delete for me"
   },
   "toastr":{
     "pleaseEnterYourPassword":"Please enter your password",
