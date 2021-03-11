@@ -119,12 +119,11 @@ class Rewards extends Component {
                             }
                         }
                     }}>
-                        <ImageBackground source={{url: item.url}} style={{ width: '100%', height: 120, marginTop: 10, }} />
+                        <ImageBackground source={{uri: item.url}} resizeMode={'cover'} style={{ width: '100%', height: 120, marginTop: 10}} />
                     </TouchableOpacity>
                 </View>
               );
           })}
-
         </KeyboardAwareScrollView>
       </View>
     );

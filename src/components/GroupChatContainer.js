@@ -676,10 +676,14 @@ class GroupChatContainer extends Component {
             onGalleryPress={() => onGalleryPress()}
             onChangeText={(message) => handleMessage(message)}
             onSend={() => {
-              onMessageSend();
-              messages.length > 0 &&
-                this.scrollView &&
-                this.scrollView.scrollToIndex({index: 0, animated: false});
+              if(newMessageText && newMessageText.trim().length>0){
+                onMessageSend();
+                messages.length > 0 &&
+                  this.scrollView &&
+                  this.scrollView.scrollToIndex({index: 0, animated: false});
+              }else{
+                handleMessage('');
+              }
             }}
             value={newMessageText}
             groupMembers={groupMembers}

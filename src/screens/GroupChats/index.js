@@ -133,6 +133,14 @@ class GroupChats extends Component {
                   });
                 },
               },
+              // {
+              //   id: 2,
+              //   title: translate('common.invitation'),
+              //   icon: 'id-card',
+              //   onPress: () => {
+              //     this.props.navigation.navigate('GroupInvitation');
+              //   },
+              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
@@ -181,6 +189,14 @@ class GroupChats extends Component {
                   });
                 },
               },
+              // {
+              //   id: 2,
+              //   title: translate('common.invitation'),
+              //   icon: 'id-card',
+              //   onPress: () => {
+              //     this.props.navigation.navigate('GroupInvitation');
+              //   },
+              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
@@ -219,6 +235,14 @@ class GroupChats extends Component {
                   });
                 },
               },
+              // {
+              //   id: 2,
+              //   title: translate('common.invitation'),
+              //   icon: 'id-card',
+              //   onPress: () => {
+              //     this.props.navigation.navigate('GroupInvitation');
+              //   },
+              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
@@ -275,6 +299,14 @@ class GroupChats extends Component {
                   });
                 },
               },
+              // {
+              //   id: 2,
+              //   title: translate('common.invitation'),
+              //   icon: 'id-card',
+              //   onPress: () => {
+              //     this.props.navigation.navigate('GroupInvitation');
+              //   },
+              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),

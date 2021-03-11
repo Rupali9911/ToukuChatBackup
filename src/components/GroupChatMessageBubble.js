@@ -45,7 +45,7 @@ import linkify from 'linkify-it';
 import LinkPreviewComponent from './LinkPreviewComponent';
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
-import {staging} from "../helpers/api";
+import {staging, inviteUrlRoot} from "../helpers/api";
 import NavigationService from "../navigation/NavigationService";
 let borderRadius = 20;
 
@@ -394,7 +394,11 @@ class GroupChatMessageBubble extends Component {
             let params = getChannelIdAndReferral(url);
             console.log('params', params);
             NavigationService.navigate('ChannelInfo', { channelItem: params });
-        }else {
+        } else if(url.includes(`${inviteUrlRoot}/Groups/invite/`)) {
+          let s_url = url.split(`${inviteUrlRoot}/Groups/invite/`)[1];
+          let group_id = s_url.substring(0,s_url.lastIndexOf('/'));
+          NavigationService.navigate('GroupDetails', { group_id: group_id });
+        } else {
             this.checkUrlAndNavigate(url)
         }
     }

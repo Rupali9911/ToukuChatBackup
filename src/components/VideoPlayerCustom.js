@@ -6,13 +6,15 @@ import {
   Platform,
   ActivityIndicator,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import {WebView} from 'react-native-webview';
-// import VideoPlayer from 'react-native-video-player';
+import VideoPlayer from 'react-native-video-player';
 import {createThumbnail} from 'react-native-create-thumbnail';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import YouTube from 'react-native-youtube';
-import Video from 'react-native-video';
+import VideoIos from 'react-native-video';
+import VideoAndroid from './Video/components/Video';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
@@ -175,33 +177,34 @@ export default class VideoPlayerCustom extends Component {
     const {url, width, height, thumbnailImage} = this.props;
     const {playing, isLoading, isFullscreen, thumbnailUrl,} = this.state;
     return (
-      url.includes('youtube.com') ?
-        <View style={{ height: 150, width: 260}}>
-          {Platform.OS === 'ios' ?
-            <YouTube
-              videoId={this.getVideoId(url)} // The YouTube video ID
-              play={false} // control playback of video with true/false
-              fullscreen // control whether the video should play in fullscreen or inline
-              loop // control whether the video should loop when ended
-              onReady={e => this.setState({ isReady: true })}
-              onChangeState={e => this.setState({ status: e.state })}
-              onChangeQuality={e => this.setState({ quality: e.quality })}
-              onError={e => this.setState({ error: e.error })}
-              style={{ alignSelf: 'stretch', height: 150 }}
-              origin={"https://youtube.com/"}
-            />
-            :
-            <YoutubePlayer
-              height={150}
-              play={playing}
-              videoId={this.getVideoId(url)}
-              onChangeState={this.onStateChange}
-              onError={(err) => {
-                console.log('youtube err', err);
-              }}
-            />}
+      <View style={{}}>
+        {url.includes('youtube.com') ?
+          <View style={{ height: 150, width: 260 }}>
+            {Platform.OS === 'ios' ?
+              <YouTube
+                videoId={this.getVideoId(url)} // The YouTube video ID
+                play={false} // control playback of video with true/false
+                fullscreen // control whether the video should play in fullscreen or inline
+                loop // control whether the video should loop when ended
+                onReady={e => this.setState({ isReady: true })}
+                onChangeState={e => this.setState({ status: e.state })}
+                onChangeQuality={e => this.setState({ quality: e.quality })}
+                onError={e => this.setState({ error: e.error })}
+                style={{ alignSelf: 'stretch', height: 150 }}
+                origin={"https://youtube.com/"}
+              />
+              :
+              <YoutubePlayer
+                height={150}
+                play={playing}
+                videoId={this.getVideoId(url)}
+                onChangeState={this.onStateChange}
+                onError={(err) => {
+                  console.log('youtube err', err);
+                }}
+              />}
 
-          {/* <WebView
+            {/* <WebView
             ref={this.webViewRef}
             allowsFullscreenVideo
             useWebKit
@@ -218,34 +221,46 @@ export default class VideoPlayerCustom extends Component {
               return request.mainDocumentURL === 'about:blank';
             }}
             /> */}
-        </View>
-        :
-      //   <VideoPlayer
-      //     video={{
-      //       uri: url,
-      //   }}
-      //   // autoplay
-      //   fullScreenOnLongPress
-      //   videoWidth={width ? width : 1600}
-      //   videoHeight={height ? height : 900}
-      //   thumbnail={thumbnailUrl ? {uri: thumbnailUrl} : ''}
-      //   onError={(err)=>console.log('video_player_error',err)}
-      // />
-        <Video source={{ uri: url }}   // Can be a URL or a local file.
-          ref={(ref) => {
-            this.player = ref
-          }} 
-          paused={true}  
-          controls={true}                                   // Store reference
-          // onBuffer={this.onBuffer}                // Callback when remote video is buffering
-          // onError={this.videoError}               // Callback when video cannot be loaded
-          style={{
-            width: 260,
-            height: 150
-          }} 
-          poster={thumbnailUrl}
-          resizeMode={'contain'}
-          />
+          </View>
+          :
+          (Platform.OS === 'android' ?
+            <VideoAndroid
+              ref={(ref) => {
+                this.player = ref
+              }}
+              url={url}
+              paused={true}
+              controls={true}
+              style={{
+                width: 260,
+                // height: 100
+              }}
+              hideFullScreenControl
+              inlineOnly
+              lockRatio={16 / 9}
+              poster={thumbnailUrl}
+              resizeMode={'contain'}
+            />
+            :
+            <VideoIos 
+              ref={(ref) => {
+                this.player = ref
+              }}
+              source={{uri:url}} // Can be a URL or a local file.
+              paused={true}
+              controls={true}                                   // Store reference
+              // onBuffer={this.onBuffer}                // Callback when remote video is buffering
+              // onError={this.videoError}               // Callback when video cannot be loaded
+              style={{
+                width: 260,
+                height: 150
+              }}
+              poster={thumbnailUrl}
+              resizeMode={'contain'}
+            />
+            )
+            }
+      </View>
     );
   }
 }

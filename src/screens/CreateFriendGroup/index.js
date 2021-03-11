@@ -227,6 +227,7 @@ class CreateFriendGroup extends Component {
           <KeyboardAwareScrollView
             contentContainerStyle={createGroupStyles.mainContainer}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps
             bounces={false}>
               <View style={createGroupStyles.searchContainer}>
                   <Image
@@ -272,8 +273,8 @@ class CreateFriendGroup extends Component {
                   {
                     color: Colors.danger,
                     textAlign: 'left',
-                    marginTop: -10,
-                    marginStart: 10,
+                    // marginTop: 10,
+                    // marginStart: 10,
                     marginBottom: 5,
                   },
                 ]}>
