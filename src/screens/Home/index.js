@@ -452,6 +452,7 @@ class Home extends PureComponent {
     for (let friend of this.props.userFriends) {
       counts = counts + friend.unread_msg;
     }
+    counts = counts + this.props.acceptedRequest.length;
     // this.setState({ friendHeaderCounts: counts });
     return counts;
   }
@@ -2179,6 +2180,7 @@ const mapStateToProps = (state) => {
     friendRequestLoading: state.addFriendReducer.loading,
     isAcceptLoading: state.addFriendReducer.isAcceptLoading,
     isRejectLoading: state.addFriendReducer.isRejectLoading,
+    acceptedRequest: state.addFriendReducer.acceptedRequest
   };
 };
 

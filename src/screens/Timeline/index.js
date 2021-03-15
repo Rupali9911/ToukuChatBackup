@@ -20,7 +20,8 @@ import {
   hideAllPost,
   reportPost,
   updateRankingChannel,
-  updateTrendTimeline
+  updateTrendTimeline,
+  setSpecificPostId
 } from '../../redux/reducers/timelineReducer';
 import {
   followChannel
@@ -179,6 +180,7 @@ class Timeline extends Component {
       showConfirmation: false,
       currentPost: null,
     };
+    this.specificPosts = null;
   }
 
   static navigationOptions = () => {
@@ -205,10 +207,19 @@ class Timeline extends Component {
       this.setState({activeTab});
     }
 
+    let postId = this.props.specificPostId;
+
+    console.log('postId',postId);
+
     await this.props
-      .getTrendTimeline(this.props.userData.user_type)
+      .getTrendTimeline(this.props.userData.user_type, postId)
       .then((res) => {
         this.setState({isLoading: false});
+
+        if(postId && res.status){
+          this.specificPosts = res.posts;
+        }
+
         this.props.getFollowingTimeline().then((res) => {
           this.setState({isLoading: false});
           // this.props
@@ -233,14 +244,30 @@ class Timeline extends Component {
       .catch((err) => {
         this.setState({isLoading: false});
       });
+
+      this.focusListener = this.props.navigation.addListener(
+        'didBlur',
+        async () =>
+          this.props.setSpecificPostId(null)
+      );
+
   }
 
-  componentWillReceiveProps(nextProps){
-    let activeTab = nextProps.navigation.getParam('activeTab');
-    console.log('called',activeTab);
-    if(activeTab){
-      this.setState({activeTab});
-      nextProps.navigation.setParams({activeTab:null});
+  UNSAFE_componentWillReceiveProps(nextProps){    
+    if(this.props.specificPostId && !nextProps.specificPostId){
+      this.setState({isLoading:true});
+      this.props.getTrendTimeline(this.props.userData.user_type)
+      .then((res)=>{this.setState({isLoading:false})});
+    }
+    if(nextProps.specificPostId){
+      this.setState({isLoading:true});
+      this.props.getTrendTimeline(this.props.userData.user_type, nextProps.specificPostId)
+      .then((res) => {        
+        if(res.status){
+          this.specificPosts = res.posts;
+        }
+        this.setState({isLoading: false});
+      });
     }
   }
 
@@ -383,6 +410,14 @@ class Timeline extends Component {
       loading,
       activeTab
     } = this.props;
+
+    let postId = this.props.specificPostId;
+    if(!postId){
+      this.specificPosts = null;
+    }
+    
+    console.log('postId',postId,'posts',this.specificPosts);
+
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -399,7 +434,7 @@ class Timeline extends Component {
               {activeTab === 'trend' ? (
                 <PostCard
                   menuItems={menuItems}
-                  posts={trendTimline}
+                  posts={this.specificPosts || trendTimline}
                   isTimeline={true}
                   navigation={this.props.navigation}
                   onFollowUnfollowChannel={this.onFollowUnfollow}
@@ -475,6 +510,7 @@ const mapStateToProps = (state) => {
     rankingLoadMore: state.timelineReducer.rankingLoadMore,
     activeTab: state.timelineReducer.activeTab,
     userData: state.userReducer.userData,
+    specificPostId: state.timelineReducer.specificPostId
   };
 };
 
@@ -489,7 +525,8 @@ const mapDispatchToProps = {
   setActiveTimelineTab,
   updateRankingChannel,
   followChannel,
-  updateTrendTimeline
+  updateTrendTimeline,
+  setSpecificPostId
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

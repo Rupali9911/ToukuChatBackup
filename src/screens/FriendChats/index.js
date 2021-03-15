@@ -46,7 +46,7 @@ import {
   deleteFriendObject,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
-import {sendFriendRequest} from '../../redux/reducers/addFriendReducer';
+import {sendFriendRequest,setAcceptedRequest} from '../../redux/reducers/addFriendReducer';
 import Toast from '../../components/Toast';
 import {eventService, realmToPlainObject} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
@@ -313,6 +313,13 @@ class FriendChats extends Component {
 
   updateUnReadFriendChatCount = () => {
     updateFriendsUnReadCount(this.props.currentFriend.friend, 0);
+
+    let array = this.props.acceptedRequest;
+    const index = array.indexOf(this.props.currentFriend.user_id);
+    if (index > -1) {
+      array.splice(index, 1);
+    }
+    this.props.setAcceptedRequest(array);
 
     this.props.updateUnreadFriendMsgsCounts(0);
 
@@ -1688,6 +1695,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
+    acceptedRequest: state.addFriendReducer.acceptedRequest
   };
 };
 
@@ -1713,6 +1721,7 @@ const mapDispatchToProps = {
   deleteFriendObject,
   setCurrentFriend,
   sendFriendRequest,
+  setAcceptedRequest
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

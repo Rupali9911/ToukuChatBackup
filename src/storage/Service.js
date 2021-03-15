@@ -1027,7 +1027,7 @@ export const handleRequestAccept = (item, isInvitation) => {
         'user_friends',
         isInvitation
           ? {user_id: item.user_id, friend_status: 'ACCEPTED'}
-          : {user_id: item.user_id, unread_msg: 1, friend_status: 'ACCEPTED'},
+          : {user_id: item.user_id, unread_msg: 0, friend_status: 'ACCEPTED'},
         'modified',
       );
     });
@@ -1036,7 +1036,7 @@ export const handleRequestAccept = (item, isInvitation) => {
       realm.create('user_friends', {
         user_id: item.user_id,
         friend: item.friend,
-        unread_msg: 1,
+        unread_msg: 0,
         last_msg_id: item.last_msg_id,
         username: item.username,
         avatar: item.avatar,

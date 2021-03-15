@@ -51,7 +51,7 @@ export default class PostChannelItem extends Component {
 
   render() {
     const {post} = this.props;
-console.log('post', post)
+    // console.log('post', post)
     let newArray = [];
     post.text &&
       post.text.length > 0 &&

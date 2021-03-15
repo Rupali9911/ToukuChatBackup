@@ -215,8 +215,8 @@ export default class GroupChatMessageBox extends Component {
                   : message.message_body &&
                     message.message_body.type === 'image'
                     ? isMultiSelect
-                      ? width - 80
-                      : width - 40
+                      ? width - 90
+                      : width - 50
                     : width * 0.65,
               justifyContent: 'flex-start',
             },
@@ -276,39 +276,43 @@ export default class GroupChatMessageBox extends Component {
                 <View
                 style={{
                   alignItems: 'flex-end',
-                  flexDirection:
-                    message.message_body &&
-                    message.message_body.type === 'image'
-                      ? 'column'
-                      : 'row',
+                  flexDirection: 'row',
+                    // message.message_body &&
+                    // message.message_body.type === 'image'
+                    //   ? 'column'
+                    //   : 'row',
                 }}>
-                  <GroupChatMessageBubble
-                    ref={(view) => {
-                      this[`bubble_box_${message.msg_id}`] = view;
-                    }}
-                    message={message}
-                    isUser={isUser}
-                    onMessageReply={onMessageReply}
-                    onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-                    longPressMenu={longPressMenu}
-                    openMenu={this._openMenu}
-                    closeMenu={this._closeMenu}
-                    selectedMessageId={selectedMessageId}
-                    onMessageTranslate={onMessageTranslate}
-                    translatedMessage={translatedMessage}
-                    translatedMessageId={translatedMessageId}
-                    onDelete={onDelete}
-                    onUnSend={onUnSend}
-                    onEditMessage={onEditMessage}
-                    onDownloadMessage={onDownloadMessage}
-                    audioPlayingId={audioPlayingId}
-                    perviousPlayingAudioId={perviousPlayingAudioId}
-                    onAudioPlayPress={onAudioPlayPress}
-                    onReplyPress={onReplyPress}
-                    groupMembers={groupMembers}
-                    showOpenLoader={showOpenLoader}
-                    isMultiSelect={isMultiSelect}
-                  />
+                  <View style={
+                    message.message_body && message.message_body.type !== 'image' ? {} : { maxWidth: width - normalize(80) }
+                  }>
+                    <GroupChatMessageBubble
+                      ref={(view) => {
+                        this[`bubble_box_${message.msg_id}`] = view;
+                      }}
+                      message={message}
+                      isUser={isUser}
+                      onMessageReply={onMessageReply}
+                      onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                      longPressMenu={longPressMenu}
+                      openMenu={this._openMenu}
+                      closeMenu={this._closeMenu}
+                      selectedMessageId={selectedMessageId}
+                      onMessageTranslate={onMessageTranslate}
+                      translatedMessage={translatedMessage}
+                      translatedMessageId={translatedMessageId}
+                      onDelete={onDelete}
+                      onUnSend={onUnSend}
+                      onEditMessage={onEditMessage}
+                      onDownloadMessage={onDownloadMessage}
+                      audioPlayingId={audioPlayingId}
+                      perviousPlayingAudioId={perviousPlayingAudioId}
+                      onAudioPlayPress={onAudioPlayPress}
+                      onReplyPress={onReplyPress}
+                      groupMembers={groupMembers}
+                      showOpenLoader={showOpenLoader}
+                      isMultiSelect={isMultiSelect}
+                    />
+                  </View>
                 <View
                   style={{
                     // marginHorizontal: '1.5%',
@@ -358,7 +362,7 @@ export default class GroupChatMessageBox extends Component {
               ? {
                   flexDirection: 'row',
                   alignSelf: 'flex-end',
-                  paddingHorizontal: 0,
+                  // paddingHorizontal: 0,
                 }
               : {
                   alignItems: 'flex-end',
@@ -375,12 +379,12 @@ export default class GroupChatMessageBox extends Component {
             ]}>
             <View
               style={{
-                flexDirection:
-                  message.message_body && message.message_body.type === 'image'
-                    ? 'column'
-                    : 'row',
+                flexDirection: 'row',
+                  // message.message_body && message.message_body.type === 'image'
+                  //   ? 'column'
+                  //   : 'row',
               }}>
-              {message.message_body && message.message_body.type !== 'image' ? (
+              {/* {message.message_body && message.message_body.type !== 'image' ? ( */}
                 <View
                   style={{
                     marginHorizontal: '1.5%',
@@ -405,7 +409,10 @@ export default class GroupChatMessageBox extends Component {
                     }`}
                   </Text>
                 </View>
-              ) : null}
+              {/* ) : null} */}
+              <View style={
+                message.message_body && message.message_body.type !== 'image' ? {} : { maxWidth: width - normalize(60) }
+              }>
               <GroupChatMessageBubble
                 ref={(view) => {
                   console.log(`bubble_box_${message.msg_id}`);
@@ -434,7 +441,8 @@ export default class GroupChatMessageBox extends Component {
                 showOpenLoader={showOpenLoader}
                 isMultiSelect={isMultiSelect}
               />
-              {message.message_body && message.message_body.type === 'image' ? (
+              </View>
+              {/* {message.message_body && message.message_body.type === 'image' ? (
                 <View
                   style={{
                     marginHorizontal: '1.5%',
@@ -459,7 +467,7 @@ export default class GroupChatMessageBox extends Component {
                     }`}
                   </Text>
                 </View>
-              ) : null}
+              ) : null} */}
             </View>
             {message.translated &&
               this.renderTransltedMessage(message.translated)}

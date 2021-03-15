@@ -195,8 +195,8 @@ export default class ChatMessageBox extends Component {
                     : width * 0.67
                   : message.msg_type === 'image'
                   ? isMultiSelect
-                    ? width - 80
-                    : width - 40
+                    ? width - 90
+                    : width - 50
                   : width * 0.65,
               justifyContent: 'flex-start',
             },
@@ -283,35 +283,39 @@ export default class ChatMessageBox extends Component {
               <View
                 style={{
                   alignItems: 'flex-end',
-                  flexDirection:
-                    message.msg_type === 'image' ? 'column' : 'row',
+                  flexDirection: 'row',
+                    // message.msg_type === 'image' ? 'column' : 'row',
                   marginTop: 2,
                 }}>
-                <ChatMessageBubble
-                  message={message}
-                  isUser={isUser}
-                  onMessageReply={onMessageReply}
-                  onMessagePress={(id) => this.onMessagePress(id)}
-                  longPressMenu={longPressMenu}
-                  openMenu={this._openMenu}
-                  closeMenu={this._closeMenu}
-                  selectedMessageId={selectedMessageId}
-                  isChannel={isChannel}
-                  onMessageTranslate={onMessageTranslate}
-                  onEditMessage={onEditMessage}
-                  onDownloadMessage={onDownloadMessage}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
-                  onDelete={onDelete}
-                  onUnSend={onUnSend}
-                  audioPlayingId={audioPlayingId}
-                  perviousPlayingAudioId={perviousPlayingAudioId}
-                  onAudioPlayPress={onAudioPlayPress}
-                  onReplyPress={onReplyPress}
-                  showOpenLoader={showOpenLoader}
-                  isMultiSelect={isMultiSelect}
-                  currentChannel={currentChannel}
-                />
+                <View style={
+                  message.msg_type !== 'image' ? {} : { maxWidth: width - normalize(80) }
+                }>
+                  <ChatMessageBubble
+                    message={message}
+                    isUser={isUser}
+                    onMessageReply={onMessageReply}
+                    onMessagePress={(id) => this.onMessagePress(id)}
+                    longPressMenu={longPressMenu}
+                    openMenu={this._openMenu}
+                    closeMenu={this._closeMenu}
+                    selectedMessageId={selectedMessageId}
+                    isChannel={isChannel}
+                    onMessageTranslate={onMessageTranslate}
+                    onEditMessage={onEditMessage}
+                    onDownloadMessage={onDownloadMessage}
+                    translatedMessage={translatedMessage}
+                    translatedMessageId={translatedMessageId}
+                    onDelete={onDelete}
+                    onUnSend={onUnSend}
+                    audioPlayingId={audioPlayingId}
+                    perviousPlayingAudioId={perviousPlayingAudioId}
+                    onAudioPlayPress={onAudioPlayPress}
+                    onReplyPress={onReplyPress}
+                    showOpenLoader={showOpenLoader}
+                    isMultiSelect={isMultiSelect}
+                    currentChannel={currentChannel}
+                  />
+                </View>
                 <View
                   style={{
                     // marginHorizontal: '1.5%',
@@ -349,7 +353,7 @@ export default class ChatMessageBox extends Component {
                       : width * 0.9
                     : message.msg_type === 'image'
                     ? isMultiSelect
-                      ? width - 40
+                      ? width - 80
                       : width
                     : width * 0.75,
               },
@@ -357,7 +361,7 @@ export default class ChatMessageBox extends Component {
                 ? {
                     flexDirection: 'row',
                     alignSelf: 'flex-end',
-                    paddingHorizontal: 0,
+                    // paddingHorizontal: 0,
                   }
                 : {
                     alignItems: 'flex-end',
@@ -370,10 +374,10 @@ export default class ChatMessageBox extends Component {
               ]}>
               <View
                 style={{
-                  flexDirection:
-                    message.msg_type === 'image' ? 'column' : 'row',
+                  flexDirection: 'row'
+                    // message.msg_type === 'image' ? 'column' : 'row',
                 }}>
-                {message.msg_type !== 'image' ? (
+                {/* {message.msg_type !== 'image' ? ( */}
                   <View
                     style={{
                       marginHorizontal: '1.5%',
@@ -396,7 +400,10 @@ export default class ChatMessageBox extends Component {
                       }`}
                     </Text>
                   </View>
-                ) : null}
+                {/* ) : null} */}
+                <View style={
+                  message.msg_type !== 'image' ? {} : {maxWidth: width-normalize(60)}
+                  }>
                 <ChatMessageBubble
                   message={message}
                   isUser={isUser}
@@ -422,7 +429,8 @@ export default class ChatMessageBox extends Component {
                   isMultiSelect={isMultiSelect}
                   currentChannel={currentChannel}
                 />
-                {message.msg_type === 'image' ? (
+                </View>
+                {/* {message.msg_type === 'image' ? (
                   <View
                     style={{
                       marginHorizontal: '1.5%',
@@ -445,7 +453,7 @@ export default class ChatMessageBox extends Component {
                       }`}
                     </Text>
                   </View>
-                ) : null}
+                ) : null} */}
               </View>
               {message.translated &&
                 this.renderTransltedMessage(message.translated)}

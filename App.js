@@ -47,6 +47,7 @@ import {
 } from './src/redux/reducers/userReducer';
 import SingleSocket from './src/helpers/SingleSocket';
 import {eventService} from './src/utils';
+import { setSpecificId, setActiveTab } from './src/redux/reducers/timelineReducer';
 
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
@@ -170,7 +171,7 @@ export default class App extends Component {
   };
 
   handleOpenURL = async (event) => {
-    // console.log('Deep linking Url', event.url);
+    console.log('Deep linking Url', event.url);
     let url = event.url;
 
     if (url.indexOf(DEEPLINK.toLowerCase()) > -1) {
@@ -259,6 +260,17 @@ export default class App extends Component {
           };
           this.navigateToChannelInfo(data, url);
         }
+      }
+    } else if(url.indexOf('/timeline-post') > -1){
+      let post_id = url.substring(url.lastIndexOf('/')+1);
+      console.log('post_id',post_id);
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (userToken) {
+        store.dispatch(setActiveTab('trend'));
+        store.dispatch(setSpecificId(post_id));
+        NavigationService.navigate('Timeline');
+      }else{
+        NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
       }
     }
   };

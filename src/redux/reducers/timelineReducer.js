@@ -30,6 +30,7 @@ export const HIDE_POST_SUCCESS = 'HIDE_POST_SUCCESS';
 export const HIDE_POST_FAIL = 'HIDE_POST_FAIL';
 
 export const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
+export const SET_SPECIFIC_POST_ID = 'SET_SPECIFIC_POST_ID';
 
 const initialState = {
   loading: false,
@@ -42,7 +43,8 @@ const initialState = {
   trendLoadMore: false,
   followingLoadMore: false,
   rankingLoadMore: false,
-  activeTab: 'trend'
+  activeTab: 'trend',
+  specificPostId: null
 };
 
 export default function (state = initialState, action) {
@@ -246,6 +248,12 @@ export default function (state = initialState, action) {
         ...state,
         activeTab: action.payload
       };
+    
+    case SET_SPECIFIC_POST_ID:
+      return {
+        ...state,
+        specificPostId: action.payload
+      };
 
     default:
       return state;
@@ -303,17 +311,19 @@ export const updateTrendTimeline = (data) => (dispatch) => {
 
 
 //
-export const getTrendTimeline = (userType) => (dispatch) =>
+export const getTrendTimeline = (userType,postId) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getTrendTimelineRequest());
     let url = ['tester', 'owner', 'company'].includes(userType)
-      ? `/xchat/timeline-trend-for-testers/?last_id=0`
-      : `/xchat/timeline-trend/?last_id=0`;
+      ? `/xchat/timeline-trend-for-testers/?last_id=${postId?postId:0}`
+      : `/xchat/timeline-trend/?last_id=${postId?postId:0}`;
     client
       .get(url)
       .then((res) => {
         if (res.status) {
-          dispatch(getTrendTimelineSuccess(res.posts));
+          if(!postId){
+            dispatch(getTrendTimelineSuccess(res.posts));
+          }
         }
         resolve(res);
       })
@@ -337,14 +347,23 @@ const getFollowingTimelineFailure = () => ({
   type: GET_FOLLOWING_TIMELINE_FAIL,
 });
 
-const setActiveTab = (data) => ({
+export const setActiveTab = (data) => ({
   type: SET_ACTIVE_TAB,
+  payload: data
+})
+
+export const setSpecificId = (data) => ({
+  type: SET_SPECIFIC_POST_ID,
   payload: data
 })
 
 export const setActiveTimelineTab = (data) => (dispatch) => {
   dispatch(setActiveTab(data));
 };
+
+export const setSpecificPostId = (data) => (dispatch) => {
+  dispatch(setSpecificId(data));
+}
 
 export const getFollowingTimeline = () => (dispatch) =>
   new Promise(function (resolve, reject) {

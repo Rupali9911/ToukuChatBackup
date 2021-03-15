@@ -57,7 +57,7 @@ import {
   pinChannel,
   unpinChannel,
 } from '../../redux/reducers/channelReducer';
-import {setFriendRequest} from '../../redux/reducers/addFriendReducer';
+import {setFriendRequest,setAcceptedRequest} from '../../redux/reducers/addFriendReducer';
 import {
   getUserGroups,
   setCurrentGroup,
@@ -880,6 +880,14 @@ class Chat extends Component {
         this.getLocalFriendConversation();
       }
       if (user && user.length > 0) {
+
+        let array = this.props.acceptedRequest;
+        const index = array.indexOf(user.user_id);
+        if (index > -1) {
+          array.splice(index, 1);
+        }
+        this.props.setAcceptedRequest(array);
+
         if (
           user[0].friend == detail.friend_id &&
           detail.read_by === this.props.userData.id
@@ -2320,6 +2328,15 @@ class Chat extends Component {
         messageDetail.conversation,
         messageDetail.invitation,
       );
+
+      let array = this.props.acceptedRequest;
+
+      if(!array.includes()){
+        array.push(messageDetail.conversation.user_id);
+        this.props.setAcceptedRequest(array);
+      }
+
+      
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
@@ -3653,6 +3670,7 @@ const mapStateToProps = (state) => {
     currentChannel: state.channelReducer.currentChannel,
     currentRouteName: state.userReducer.currentRouteName,
     trendTimline: state.timelineReducer.trendTimline,
+    acceptedRequest: state.addFriendReducer.acceptedRequest
   };
 };
 
@@ -3710,7 +3728,8 @@ const mapDispatchToProps = {
   updateUserBackgroundImage,
   updateUserDisplayName,
   updateUserProfileImage,
-  updateTrendTimeline
+  updateTrendTimeline,
+  setAcceptedRequest
 };
 
 export default connect(

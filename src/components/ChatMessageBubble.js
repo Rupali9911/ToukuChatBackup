@@ -47,6 +47,7 @@ import NavigationService from '../navigation/NavigationService';
 import linkify from 'linkify-it';
 import LinkPreviewComponent from './LinkPreviewComponent';
 import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
+import {setSpecificPostId,setActiveTimelineTab} from '../redux/reducers/timelineReducer';
 
 let borderRadius = 20;
 let downloaded = false
@@ -380,7 +381,13 @@ class ChatMessageBubble extends Component {
             if (invitationCode){
                 this.addFriendFromUrl(invitationCode)
             }
-        }else{
+        } else if(url.indexOf('/timeline-post') > -1){
+          let post_id = url.substring(url.lastIndexOf('/')+1);
+          console.log('post_id',post_id);
+          this.props.setActiveTimelineTab('trend');
+          this.props.setSpecificPostId(post_id);
+            NavigationService.navigate('Timeline');
+        } else{
             Linking.openURL(url);
         }
     }
@@ -507,9 +514,9 @@ class ChatMessageBubble extends Component {
                               borderRadius: borderRadius,
                               justifyContent: 'center',
                               paddingHorizontal:
-                                message.msg_type === 'image' ? 5 : 10,
+                                message.msg_type === 'image' ? 8 : 10,
                               paddingVertical:
-                                message.msg_type === 'image' ? 5 : 10,
+                                message.msg_type === 'image' ? 8 : 10,
                             },
                         message.msg_type === 'audio' && {minWidth: '100%'},
                       ]}
@@ -645,14 +652,15 @@ class ChatMessageBubble extends Component {
                   styles.talkBubble,
                   message.msg_type === 'image' ? {marginVertical: 5} : {},
                 ]}>
-                {message.msg_type === 'image' ? null : (
+                {/* {message.msg_type === 'image' ? null : 
+                ( */}
                   <View
                     style={[
                       styles.talkBubbleAbsoluteRight,
                       message.is_unsent && {borderLeftColor: Colors.gray},
                     ]}
                   />
-                )}
+                {/* )} */}
                 {message.is_unsent ? (
                   <View
                     style={[
@@ -690,10 +698,10 @@ class ChatMessageBubble extends Component {
                       {
                         minHeight: 40,
                         borderRadius: borderRadius,
-                        backgroundColor:
-                          message.msg_type === 'image'
-                            ? 'transparent'
-                            : Colors.pink_chat,
+                        backgroundColor: Colors.pink_chat,
+                          // message.msg_type === 'image'
+                          //   ? 'transparent'
+                          //   : Colors.pink_chat,
                         // padding: 5,
                       },
                       message.msg_type === 'audio' && {minWidth: '100%'},
@@ -704,8 +712,9 @@ class ChatMessageBubble extends Component {
                         flex: 1,
                         justifyContent: 'center',
                         paddingHorizontal:
-                          message.msg_type === 'image' ? 0 : 10,
-                        paddingVertical: message.msg_type === 'image' ? 0 : 10,
+                          message.msg_type === 'image' ? 8 : 10,
+                        paddingVertical:
+                          message.msg_type === 'image' ? 8 : 10,
                       }}
                       onLongPress={() => {
                         onMessagePress(message.id);
@@ -734,7 +743,7 @@ class ChatMessageBubble extends Component {
                               : message.thumbnail
                           }
                           isHyperlink={message.hyperlink}
-                          // borderRadius={message.hyperlink ? 0 : borderRadius}
+                          borderRadius={message.hyperlink ? 0 : borderRadius}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
@@ -1111,7 +1120,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-    addFriendByReferralCode
+    addFriendByReferralCode,
+    setSpecificPostId,
+    setActiveTimelineTab
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);

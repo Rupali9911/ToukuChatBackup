@@ -6,6 +6,7 @@ import {
 } from '../../helpers/api';
 
 import {setFriendRequests, getLocalFriendRequests} from '../../storage/Service';
+import { dispatch } from 'rxjs/internal/observable/pairs';
 
 export const SET_SEARCHED_FRIEND = 'SET_SEARCHED_FRIEND';
 
@@ -22,12 +23,15 @@ export const REJECT_FRIENDS_REQUEST = 'REJECT_FRIENDS_REQUEST';
 export const REJECT_FRIENDS_SUCCESS = 'REJECT_FRIENDS_SUCCESS';
 export const REJECT_FRIENDS_FAIL = 'REJECT_FRIENDS_FAIL';
 
+export const SET_ACCEPTED_REQUEST = 'SET_ACCEPTED_REQUEST';
+
 const initialState = {
   loading: false,
   searchedFriend: {},
   friendRequest: [],
   isRejectLoading: false,
   isAcceptLoading: false,
+  acceptedRequest: []
 };
 
 export default function (state = initialState, action) {
@@ -103,6 +107,11 @@ export default function (state = initialState, action) {
         ...state,
         isRejectLoading: false,
       };
+    case SET_ACCEPTED_REQUEST:
+      return {
+        ...state,
+        acceptedRequest: [...action.payload]
+      }
     default:
       return state;
   }
@@ -158,6 +167,15 @@ const rejectFriendsSuccess = (data) => ({
 const rejectFriendsFailure = () => ({
   type: REJECT_FRIENDS_FAIL,
 });
+
+const setAcceptedRequestData = (data) => ({
+  type: SET_ACCEPTED_REQUEST,
+  payload: data
+});
+
+export const setAcceptedRequest = (data) => (dispatch) => {
+  dispatch(setAcceptedRequestData(data));
+}
 
 export const getSearchedFriends = (param) => (dispatch) =>
   new Promise(function (resolve, reject) {

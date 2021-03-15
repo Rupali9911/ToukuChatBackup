@@ -47,6 +47,7 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import {addFriendByReferralCode} from "../redux/reducers/friendReducer";
 import {staging, inviteUrlRoot} from "../helpers/api";
 import NavigationService from "../navigation/NavigationService";
+import {setSpecificPostId,setActiveTimelineTab} from '../redux/reducers/timelineReducer';
 let borderRadius = 20;
 
 const options = {
@@ -414,7 +415,13 @@ class GroupChatMessageBubble extends Component {
             if (invitationCode){
                 this.addFriendFromUrl(invitationCode)
             }
-        }else{
+        } else if(url.indexOf('/timeline-post') > -1){
+          let post_id = url.substring(url.lastIndexOf('/')+1);
+          console.log('post_id',post_id);
+          this.props.setActiveTimelineTab('trend');
+          this.props.setSpecificPostId(post_id);
+            NavigationService.navigate('Timeline');
+        } else{
             Linking.openURL(url);
         }
     }
@@ -782,15 +789,15 @@ class GroupChatMessageBubble extends Component {
                       : {},
                     animatedStyle,
                   ]}>
-                  {message.message_body &&
-                    message.message_body.type === 'image' ? null : (
+                  {/* {message.message_body &&
+                    message.message_body.type === 'image' ? null : ( */}
                       <View
                         style={[
                           styles.talkBubbleAbsoluteRight,
                           message.is_unsent && { borderLeftColor: Colors.gray },
                         ]}
                       />
-                    )}
+                    {/* )} */}
                   {message.is_unsent ? (
                     <View
                       style={[
@@ -828,11 +835,11 @@ class GroupChatMessageBubble extends Component {
                           {
                             minHeight: 40,
                             borderRadius: borderRadius,
-                            backgroundColor:
-                              message.message_body &&
-                                message.message_body.type === 'image'
-                                ? 'transparent'
-                                : Colors.pink_chat,
+                            backgroundColor: Colors.pink_chat,
+                              // message.message_body &&
+                              //   message.message_body.type === 'image'
+                              //   ? 'transparent'
+                              //   : Colors.pink_chat,
                           },
                           message.message_body.type === 'audio' && {
                             minWidth: '100%',
@@ -844,9 +851,9 @@ class GroupChatMessageBubble extends Component {
                             flex: 1,
                             justifyContent: 'center',
                             paddingHorizontal:
-                              message.message_body.type === 'image' ? 0 : 10,
+                              message.message_body.type === 'image' ? 8 : 10,
                             paddingVertical:
-                              message.message_body.type === 'image' ? 0 : 10,
+                              message.message_body.type === 'image' ? 8 : 10,
                           }}
                           onLongPress={(msg_id) => {
                             onMessagePress(message.msg_id);
@@ -870,7 +877,7 @@ class GroupChatMessageBubble extends Component {
                             message.message_body.text !== null ? (
                               <ScalableImage
                                 src={message.message_body.text}
-                              // borderRadius={borderRadius}
+                                borderRadius={borderRadius}
                               />
                             ) : message.message_body.type === 'video' ? (
                               <VideoPlayerCustom url={message.message_body.text} />
@@ -1273,7 +1280,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-    addFriendByReferralCode
+    addFriendByReferralCode,
+    setSpecificPostId,
+    setActiveTimelineTab
 };
 
 export default connect(
