@@ -170,7 +170,9 @@
     "quickLink":"快速链接",
     "categories":"分类目录",
     "footerContent":"学习新技能永远不会太晚！ 学习编码并加入我们的4500万以上的用户。 享受额外的测验和项目以及独家内容。 与我们的应用程序一起练习。 立即注册！ 协作学习。 提升您的技能。 初学者友好。 立即升级您的职业。",
-    "SomethingWentWrong":"出问题了，请稍后再试"
+    "SomethingWentWrong":"出问题了，请稍后再试",
+    "likedTheMemo": "{{username}} 喜欢备忘录",
+    "commentonMemo": "{{username}} 对备忘录发表了评论"
   },
   "messages":{
     "required":"规定的（必填）"
@@ -721,7 +723,9 @@
         "countryUpdated":"国家成功更新",
         "setPasswordTextClasrm":"似乎您尚未为CLASRM设置密码，请点击“设置密码”以立即设置密码，否则请点击“取消”",
         "youAreNowFriends":"您和{{ friend }}现在是朋友",
-        "isAlreadyFriend":"{{friendName}}已经是您的朋友。"
+        "isAlreadyFriend":"{{friendName}}已经是您的朋友。",
+        "alreadyAGroupMember": "您已经是该组的成员。",
+        "youAreAMemberNow": "您已成功加入{{groupName}}组。"
       },
       "totalMessages":"消息总数",
       "toukuPoints":"TOUKU积分",
@@ -1220,7 +1224,16 @@
       "selectFile":"选择文件",
       "UploadQRCode":"上传二维码",
       "searchByImage":"按图像文件夹搜索",
-      "aboutGroup":"关于"
+      "aboutGroup":"关于",
+      "groupInvitation": "团体邀请",
+      "inviteUserToGroupText": "邀请用户分组就像扫描QR码或点击按钮一样简单。",
+      "scanOrShareQRImage": "用户可以使用QR码阅读器扫描该图像以找到要加入的组。 下载图像或复制HTML标签，以通过社交媒体，电子邮件等分享。",
+      "joinGroup": "加入组",
+      "userJoinedGroup": "{{displayName}}加入了群组。",
+      "totalMembers": "会员总数",
+      "joinThisGroup": "加入这个小组",
+      "issueGroupInvitation": "发行组邀请URL",
+      "goToGroupChat": "转到群聊"
     },
     "welcome":{
       "theWorldIsConnected":"世界相连",
@@ -1257,7 +1270,8 @@
       "wrongFollowCode":"错误的频道追踪码",
       "referralOneField":"该通道ID为",
       "referralOneField2":"",
-      "referralOneField3":"*频道ID："
+      "referralOneField3":"*频道ID：",
+      "invitationToGroup": "邀请参加"
     },
     "changeDisplayName":"更改显示名称",
     "terms":{

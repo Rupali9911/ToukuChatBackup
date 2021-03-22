@@ -314,6 +314,7 @@ export default class ChatMessageBox extends Component {
                     showOpenLoader={showOpenLoader}
                     isMultiSelect={isMultiSelect}
                     currentChannel={currentChannel}
+                    onMediaPlay={this.props.onMediaPlay}
                   />
                 </View>
                 <View
@@ -428,6 +429,7 @@ export default class ChatMessageBox extends Component {
                   showOpenLoader={showOpenLoader}
                   isMultiSelect={isMultiSelect}
                   currentChannel={currentChannel}
+                  onMediaPlay={this.props.onMediaPlay}
                 />
                 </View>
                 {/* {message.msg_type === 'image' ? (

@@ -20,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import {Colors, Icons, Fonts, Images, registerUrl, stagInvite, prodInvite, registerUrlStage} from '../constants';
+import {Colors, Icons, Fonts, Images, registerUrl, stagInvite, prodInvite, registerUrlStage, Environment, EnvironmentStage} from '../constants';
 import { translate, setI18nConfig } from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import AudioPlayerCustom from './AudioPlayerCustom';
@@ -421,6 +421,11 @@ class GroupChatMessageBubble extends Component {
           this.props.setActiveTimelineTab('trend');
           this.props.setSpecificPostId(post_id);
             NavigationService.navigate('Timeline');
+        } else if(url.indexOf('/#/groups/') > -1) {
+          let split_url = url.split('/');
+          let group_id = split_url[split_url.length-2];
+          console.log('group_id',group_id);
+          NavigationService.navigate('JoinGroup', { group_id: group_id });
         } else{
             Linking.openURL(url);
         }
@@ -488,11 +493,41 @@ class GroupChatMessageBubble extends Component {
       let arrLinks = linkify().match(text)
       if (arrLinks) {
           return arrLinks.map((item) => {
-              return (
-                  <LinkPreviewComponent text={item.text} url={item.url}/>
-              );
+            let checkUrl = staging ? EnvironmentStage : Environment;
+            if (checkUrl) {
+              return null;
+            }
+            return (
+              <LinkPreviewComponent text={item.text} url={item.url} />
+            );
           });
       }
+  }
+
+  renderMemoText = (message) => {
+    let update_text = '';
+    if(message && message.message_body.type === 'update'){
+
+      let user_id = '';
+      let text = '';
+      let action = '';
+
+      let split_txt = message.message_body.text.split(',');
+      if (split_txt.length > 0) {
+        user_id = split_txt[0].trim();
+        action = split_txt[1].trim();
+        text = split_txt[2].trim();
+      }
+
+      let update_by = message.sender_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(message.sender_id) || message.sender_display_name || message.sender_username;
+      // let update_by = user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(user_id);
+      // let update_to = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || update_obj.user_name;
+      // console.log('update_to',update_obj);
+      
+      update_text = text;
+      
+      return {update_text,update_by};
+    }
   }
 
   render() {
@@ -582,11 +617,7 @@ class GroupChatMessageBubble extends Component {
                         {translate('pages.xchat.messageUnsent')}
                       </Text>
                     </View>
-                  ) : message.message_body &&
-                    message.message_body.type &&
-                    message.message_body.type === 'update' ? (
-                        this.renderGroupUpdate(message)
-                      ) : (
+                  ) : (
                         <TouchableOpacity
                           disabled={isMultiSelect}
                           activeOpacity={0.8}
@@ -598,7 +629,7 @@ class GroupChatMessageBubble extends Component {
                               borderRadius: borderRadius,
                               justifyContent: 'center',
                               paddingHorizontal:
-                                message.message_body.type === 'image' ? 5 : 10,
+                                message.message_body.type === 'update' ? 0 : message.message_body.type === 'image' ? 5 : 10,
                               paddingVertical:
                                 message.message_body.type === 'image' ? 5 : 10,
                             },
@@ -634,6 +665,8 @@ class GroupChatMessageBubble extends Component {
                                 audioPlayingId={audioPlayingId}
                                 perviousPlayingAudioId={perviousPlayingAudioId}
                                 onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                                onPlay={()=>{this.props.onMediaPlay && this.props.onMediaPlay(true)}}
+                                onPause={()=>{this.props.onMediaPlay && this.props.onMediaPlay(false)}}
                                 postId={message.msg_id}
                                 url={message.message_body.text}
                                 isSmall={true}
@@ -673,7 +706,54 @@ class GroupChatMessageBubble extends Component {
                             </Text>
                                 </View>
                               </Fragment>
-                            ) : this.isContainUrl(message.message_body.text) ? (
+                            ) : message.message_body &&
+                            message.message_body.type &&
+                            message.message_body.type === 'update' ? (
+                                <View>
+                                  <View style={{ paddingHorizontal: 10 }}>
+                                    <Text
+                                      style={{
+                                        fontFamily: Fonts.regular,
+                                        fontWeight: '300',
+                                        fontSize: 15,
+                                      }}
+                                      numberOfLines={3}
+                                    >
+                                      {this.renderMemoText(message).update_text}
+                                    </Text>
+                                  </View>
+                                  <View style={{
+                                    borderTopWidth: 1,
+                                    borderTopColor: '#ccc',
+                                    marginVertical: 5
+                                  }} />
+                                  <TouchableOpacity
+                                    style={{
+                                      flexDirection: 'row',
+                                      paddingHorizontal: 10,
+                                      alignItems: 'center',
+                                    }}
+                                    onPress={() => {
+                                      NavigationService.navigate('GroupDetails', { isNotes: true });
+                                    }}>
+                                    <Text
+                                      style={{
+                                        flex: 1,
+                                        color: Colors.black_light,
+                                        fontSize: 13,
+                                        fontFamily: Fonts.regular,
+                                        fontWeight: '600'
+                                      }}>
+                                      {translate('pages.xchat.notes')}
+                                    </Text>
+                                    <FontAwesome
+                                      name={'angle-right'}
+                                      size={20}
+                                      color={Colors.black_light}
+                                    />
+                                  </TouchableOpacity>
+                                </View>
+                              ) : this.isContainUrl(message.message_body.text) ? (
                               <TouchableOpacity
                                 // onPress={() =>
                                 //   this.openUrl(message.message_body.text)
@@ -851,7 +931,7 @@ class GroupChatMessageBubble extends Component {
                             flex: 1,
                             justifyContent: 'center',
                             paddingHorizontal:
-                              message.message_body.type === 'image' ? 8 : 10,
+                              message.message_body.type === 'update' ? 0 : message.message_body.type === 'image' ? 8 : 10,
                             paddingVertical:
                               message.message_body.type === 'image' ? 8 : 10,
                           }}
@@ -886,6 +966,8 @@ class GroupChatMessageBubble extends Component {
                                 audioPlayingId={audioPlayingId}
                                 perviousPlayingAudioId={perviousPlayingAudioId}
                                 onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                                onPlay={()=>{this.props.onMediaPlay && this.props.onMediaPlay(true)}}
+                                onPause={()=>{this.props.onMediaPlay && this.props.onMediaPlay(false)}}
                                 postId={message.msg_id}
                                 url={message.message_body.text}
                                 isSmall={true}
@@ -925,6 +1007,51 @@ class GroupChatMessageBubble extends Component {
                             </Text>
                                 </View>
                               </Fragment>
+                            ) : message.message_body.type === 'update' ? (
+                                    <View>
+                                      <View style={{paddingHorizontal: 10}}>
+                                        <Text
+                                          style={{
+                                            fontFamily: Fonts.regular,
+                                            fontWeight: '300',
+                                            fontSize: 15,
+                                          }}
+                                          numberOfLines={3}
+                                          >
+                                          {this.renderMemoText(message).update_text}
+                                        </Text>
+                                      </View>
+                                      <View style={{
+                                          borderTopWidth: 1,
+                                          borderTopColor: '#ccc',
+                                          marginVertical: 5
+                                          }}/>
+                                      <TouchableOpacity
+                                        style={{
+                                          flexDirection: 'row',
+                                          paddingHorizontal: 10,
+                                          alignItems:'center',
+                                        }}
+                                        onPress={()=>{
+                                          NavigationService.navigate('GroupDetails', { isNotes: true });
+                                        }}>
+                                        <Text
+                                          style={{
+                                            flex:1,
+                                            color: Colors.black_light,
+                                            fontSize: 13,
+                                            fontFamily: Fonts.regular,
+                                            fontWeight: '600'
+                                          }}>
+                                          {translate('pages.xchat.notes')}
+                                        </Text>
+                                        <FontAwesome
+                                          name={'angle-right'}
+                                          size={20}
+                                          color={Colors.black_light}
+                                        />
+                                      </TouchableOpacity>
+                                    </View>
                             ) : this.isContainUrl(message.message_body.text) ? (
                               <TouchableOpacity
                                 // onPress={() =>
@@ -1067,7 +1194,7 @@ class GroupChatMessageBubble extends Component {
             />
           )}
           {/* {isUser && ( */}
-          <MenuItem
+          {message.message_body && message.message_body.type !== 'update' && <MenuItem
             // icon={() => (
             //   <FontAwesome5 name={'language'} size={20} color={Colors.white} />
             // )}
@@ -1086,12 +1213,12 @@ class GroupChatMessageBubble extends Component {
                 </Text>
               </View>
             }
-          />
+          />}
           {/* )} */}
           {isUser &&
             isEditable > new Date() &&
             message.message_body &&
-            message.message_body.type === 'text' && (
+            message.message_body.type === 'text' && message.message_body.type !== 'update' && (
               <MenuItem
                 // icon={() => (
                 //   <FontAwesome5
@@ -1141,7 +1268,7 @@ class GroupChatMessageBubble extends Component {
               </View>
             }
           />
-          {isUser && isEditable > new Date() && (
+          {isUser && isEditable > new Date() && message.message_body && message.message_body.type !== 'update' && (
             <MenuItem
               // icon={() => (
               //   <FontAwesome5
@@ -1173,7 +1300,7 @@ class GroupChatMessageBubble extends Component {
               }
             />
           )}
-          {message.message_body && message.message_body.type === 'text' && (
+          {message.message_body && message.message_body.type === 'text' && message.message_body.type !== 'update' && (
             <MenuItem
               // icon={() => (
               //   <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
@@ -1194,7 +1321,7 @@ class GroupChatMessageBubble extends Component {
               }
             />
           )}
-          {message.message_body && message.message_body.type !== 'text' && (
+          {message.message_body && message.message_body.type !== 'text' && message.message_body.type !== 'update' && (
             <MenuItem
               // icon={() => (
               //   <FontAwesome name={'download'} size={20} color={Colors.white} />

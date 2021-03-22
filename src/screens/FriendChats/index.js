@@ -246,6 +246,12 @@ class FriendChats extends Component {
     this.isUploading = false;
   }
 
+  static navigationOptions = ({navigation}) => {
+    return {
+      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
+    }
+  }
+
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
@@ -1592,6 +1598,19 @@ class FriendChats extends Component {
               currentFriend.friend_status === 'UNFRIEND' ||
               currentFriend.friend_status === 'REQUESTED'
             }
+            onMediaPlay = {(isPlay)=>{
+              if(isPlay){
+                console.log('palying media');
+                this.props.navigation.setParams({
+                  isAudioPlaying: true
+                });
+              }else{
+                console.log('pause media');
+                this.props.navigation.setParams({
+                  isAudioPlaying: false
+                });
+              }
+            }}
           />
         )}
 

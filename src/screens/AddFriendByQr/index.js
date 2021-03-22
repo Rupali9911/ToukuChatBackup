@@ -23,7 +23,9 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Toast from '../../components/Toast';
 import {staging} from "../../helpers/api";
 import {addFriendByReferralCode} from "../../redux/reducers/friendReducer";
+import {setCurrentChannel} from '../../redux/reducers/channelReducer';
 import QRCodeClass from "../../components/QRCode";
+import NavigationService from '../../navigation/NavigationService';
 class AddFriendByQr extends Component {
   constructor(props) {
     super(props);
@@ -117,7 +119,22 @@ class AddFriendByQr extends Component {
                     type: 'primary',
                 });
             }
-        }else{
+        } else if(url.indexOf('/#/groups/') > -1) {
+            let split_url = url.split('/');
+            let group_id = split_url[split_url.length-2];
+            console.log('group_id',group_id);
+            NavigationService.navigate('JoinGroup', { group_id: group_id });
+        } else if (url.indexOf('invite') > -1) {
+            let urlData = url.split('/');
+            if (urlData.length > 4) {
+              if (urlData[4] !== null || urlData[4] !== undefined || urlData[4] !== '') {
+                let data = {
+                  id: urlData[4],
+                };
+                this.navigateToChannelInfo(data, url);
+              }
+            }
+        } else{
             Toast.show({
                 title: 'TOUKU',
                 text: translate('pages.xchat.unableToAdd'),
@@ -125,6 +142,16 @@ class AddFriendByQr extends Component {
             });
         }
     }
+
+    navigateToChannelInfo = async (data, url) => {
+        let route = NavigationService.getCurrentRoute();
+        let routeName = route.routeName;
+        if (routeName && (routeName === 'ChannelInfo' || routeName === 'ChannelChats')) {
+            NavigationService.popToTop();
+        }
+        this.props.setCurrentChannel(data);
+        NavigationService.navigate('ChannelInfo');
+    };
 
     addFriendFromUrl(invitationCode){
         console.log('invitationCode onfocus', invitationCode)
@@ -227,7 +254,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-    addFriendByReferralCode
+    addFriendByReferralCode,
+    setCurrentChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddFriendByQr);

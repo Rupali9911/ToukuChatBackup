@@ -170,7 +170,9 @@
     "quickLink":"快速鏈接",
     "categories":"分類目錄",
     "footerContent":"學習新技能永遠不會太晚！ 學習編碼並加入我們的4500萬以上的用戶。 享受額外的測驗和項目以及獨家內容。 與我們的應用程序一起練習。 立即註冊！ 協作學習。 提升您的技能。 初學者友好。 立即升級您的職業。",
-    "SomethingWentWrong":"出問題了，請稍後再試"
+    "SomethingWentWrong":"出問題了，請稍後再試",
+    "likedTheMemo": "{{username}} 喜歡備忘錄",
+    "commentonMemo": "{{username}} 對備忘錄發表了評論"
   },
   "messages":{
     "required":"規定的（必填）"
@@ -721,7 +723,9 @@
         "countryUpdated":"国家成功更新",
         "setPasswordTextClasrm":"似乎您尚未为CLASRM设置密码，请点击“设置密码”以立即设置密码，否则请点击“取消”",
         "youAreNowFriends":"您和{{ friend }}現在是朋友",
-        "isAlreadyFriend":"{{friendName}}已經是您的朋友。"
+        "isAlreadyFriend":"{{friendName}}已經是您的朋友。",
+        "alreadyAGroupMember": "您已經是該組的成員。",
+        "youAreAMemberNow": "您已成功加入{{groupName}}組。"
       },
       "totalMessages":"消息總數",
       "toukuPoints":"TOUKU积分",
@@ -1220,7 +1224,16 @@
       "selectFile":"選擇文件",
       "UploadQRCode":"上傳二維碼",
       "searchByImage":"按圖像文件夾搜索",
-      "aboutGroup":"關於"
+      "aboutGroup":"關於",
+      "groupInvitation": "團體邀請",
+      "inviteUserToGroupText": "邀請用戶分組就像掃描QR碼或點擊按鈕一樣簡單。",
+      "scanOrShareQRImage": "用戶可以使用QR碼閱讀器掃描該圖像以找到要加入的組。 下載圖像或複制HTML標籤，以通過社交媒體，電子郵件等分享。",
+      "joinGroup": "加入組",
+      "userJoinedGroup": "{{displayName}}加入了群組。",
+      "totalMembers": "會員總數",
+      "joinThisGroup": "加入這個小組",
+      "issueGroupInvitation": "發行組邀請URL",
+      "goToGroupChat": "轉到群聊"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",
@@ -1257,7 +1270,8 @@
       "wrongFollowCode":"錯誤的頻道追踪碼",
       "referralOneField":"該通道ID為",
       "referralOneField2":"",
-      "referralOneField3":"*頻道ID："
+      "referralOneField3":"*頻道ID：",
+      "invitationToGroup": "邀請參加"
     },
     "changeDisplayName":"更改顯示名稱",
     "terms":{

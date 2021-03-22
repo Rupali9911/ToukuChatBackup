@@ -179,6 +179,11 @@ class GroupDetails extends Component {
       this.props.navigation.state.params.isInvite
     ) {
       this.setState({isManage: true, isAbout: false, isNotes: false});
+    } else if(
+      this.props.navigation.state.params &&
+      this.props.navigation.state.params.isNotes
+      ){
+        this.setState({isManage: false, isAbout: false, isNotes: true});
     }
   }
 
@@ -577,8 +582,7 @@ class GroupDetails extends Component {
                 }
                 isRightDropDown={true}
                 disableEdit={
-                  this.isMemberCheck(item.id ? item.id : item.user_Id) &&
-                  !this.state.isMyGroup
+                  this.isFounderCheck(item.id ? item.id : item.user_Id) || (this.isMemberCheck(item.id ? item.id : item.user_Id) && !this.state.isMyGroup)
                 }
                 dropDownData={
                   this.isMemberCheck(item.id ? item.id : item.user_Id)
@@ -630,6 +634,15 @@ class GroupDetails extends Component {
     }
     return [];
   };
+
+  isFounderCheck = (userId) => {
+    const {currentGroupMembers} = this.props;
+    if (currentGroupMembers && currentGroupMembers.length > 0) {
+      let founderMember = currentGroupMembers.filter((member) => member.id && member.id === userId);
+      return founderMember.length>0 && founderMember[0].is_group_creator;
+    }
+    return false;
+  }
 
   hendleNewNote = (detail) => {
     const {userData, currentGroup} = this.props;

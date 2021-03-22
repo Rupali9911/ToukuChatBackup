@@ -352,6 +352,7 @@ class ChatContainer extends Component {
                           showOpenLoader={this.props.showOpenLoader}
                           isMultiSelect={isMultiSelect}
                           isChatDisable={isChatDisable}
+                          onMediaPlay={this.props.onMediaPlay}
                         />
                       </TouchableOpacity>
                     </View>

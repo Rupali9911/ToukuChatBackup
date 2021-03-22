@@ -153,10 +153,7 @@ class ChannelInvitation extends Component {
       referralCode = arrLink[arrLink.length - 1];
     }
 
-    const invitation_url = `${inviteUrlRoot}/Groups/invite/${currentGroup.group_id}/${referralCode}/invite.member`;
-    const followCode =
-    currentGroup.group_id + referralCode + String(currentGroup.group_id).length;
-    const invitation_lp_url = `${inviteUrlRoot}/web/reader/?channel=${currentGroup.group_id}&referral=${referralCode}`;
+    const invitation_url = `${inviteUrlRoot}/#/groups/${currentGroup.group_id}/`;
 
     return (
       <View
@@ -175,7 +172,7 @@ class ChannelInvitation extends Component {
           contentContainerStyle={GroupInvitationStyles.mainContainer}
           showsVerticalScrollIndicator={false}>
           <View style={GroupInvitationStyles.inputesContainer}>
-            <RoundedImage
+            {/* <RoundedImage
               source={Images.image_app_logo}
               style={GroupInvitationStyles.profileImage}
               isRounded={false}
@@ -190,7 +187,7 @@ class ChannelInvitation extends Component {
                 fontWeight: '300',
               }}>
               {translate('pages.invitation.findOutAllTheNewWayForFollower')}
-            </Text>
+            </Text> */}
 
             {/* <Text
               style={{
@@ -213,8 +210,9 @@ class ChannelInvitation extends Component {
                 marginTop: normalize(25),
                 fontSize: normalize(18),
                 fontWeight: '300',
+                alignSelf:'center'
               }}>
-              {translate('pages.invitation.reachOutSocialMediaText')}
+              {translate('pages.xchat.issueGroupInvitation')}
             </Text>
             <Text
               style={{
@@ -224,7 +222,7 @@ class ChannelInvitation extends Component {
                 fontSize: normalize(11.5),
                 fontWeight: '300',
               }}>
-              {translate('pages.invitation.invitationToChannel')}
+              {translate('pages.invitation.invitationToGroup')}
             </Text>
             <UrlField url={invitation_url} />
             {/* <Text
@@ -321,7 +319,7 @@ class ChannelInvitation extends Component {
                 fontSize: normalize(9),
                 fontWeight: '300',
               }}>
-              {translate('pages.invitation.scanImageForFollower')}
+              {translate('pages.xchat.scanOrShareQRImage')}
             </Text>
           </View>
         </KeyboardAwareScrollView>

@@ -311,6 +311,7 @@ export default class GroupChatMessageBox extends Component {
                       groupMembers={groupMembers}
                       showOpenLoader={showOpenLoader}
                       isMultiSelect={isMultiSelect}
+                      onMediaPlay={this.props.onMediaPlay}
                     />
                   </View>
                 <View
@@ -440,6 +441,7 @@ export default class GroupChatMessageBox extends Component {
                 groupMembers={groupMembers}
                 showOpenLoader={showOpenLoader}
                 isMultiSelect={isMultiSelect}
+                onMediaPlay={this.props.onMediaPlay}
               />
               </View>
               {/* {message.message_body && message.message_body.type === 'image' ? (

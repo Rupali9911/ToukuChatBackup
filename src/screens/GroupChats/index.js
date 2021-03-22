@@ -133,20 +133,20 @@ class GroupChats extends Component {
                   });
                 },
               },
-              // {
-              //   id: 2,
-              //   title: translate('common.invitation'),
-              //   icon: 'id-card',
-              //   onPress: () => {
-              //     this.props.navigation.navigate('GroupInvitation');
-              //   },
-              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
                 icon: 'bars',
                 onPress: () => {
                   this.props.navigation.navigate('GroupDetails');
+                },
+              },
+              {
+                id: 2,
+                title: translate('pages.xchat.groupInvitation'),
+                icon: 'id-card',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupInvitation');
                 },
               },
               {
@@ -189,20 +189,20 @@ class GroupChats extends Component {
                   });
                 },
               },
-              // {
-              //   id: 2,
-              //   title: translate('common.invitation'),
-              //   icon: 'id-card',
-              //   onPress: () => {
-              //     this.props.navigation.navigate('GroupInvitation');
-              //   },
-              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
                 icon: 'bars',
                 onPress: () => {
                   this.props.navigation.navigate('GroupDetails');
+                },
+              },
+              {
+                id: 2,
+                title: translate('pages.xchat.groupInvitation'),
+                icon: 'id-card',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupInvitation');
                 },
               },
               {
@@ -235,20 +235,20 @@ class GroupChats extends Component {
                   });
                 },
               },
-              // {
-              //   id: 2,
-              //   title: translate('common.invitation'),
-              //   icon: 'id-card',
-              //   onPress: () => {
-              //     this.props.navigation.navigate('GroupInvitation');
-              //   },
-              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
                 icon: 'bars',
                 onPress: () => {
                   this.props.navigation.navigate('GroupDetails');
+                },
+              },
+              {
+                id: 2,
+                title: translate('pages.xchat.groupInvitation'),
+                icon: 'id-card',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupInvitation');
                 },
               },
               {
@@ -299,20 +299,20 @@ class GroupChats extends Component {
                   });
                 },
               },
-              // {
-              //   id: 2,
-              //   title: translate('common.invitation'),
-              //   icon: 'id-card',
-              //   onPress: () => {
-              //     this.props.navigation.navigate('GroupInvitation');
-              //   },
-              // },
               {
                 id: 2,
                 title: translate('pages.xchat.groupDetails'),
                 icon: 'bars',
                 onPress: () => {
                   this.props.navigation.navigate('GroupDetails');
+                },
+              },
+              {
+                id: 2,
+                title: translate('pages.xchat.groupInvitation'),
+                icon: 'id-card',
+                onPress: () => {
+                  this.props.navigation.navigate('GroupInvitation');
                 },
               },
               {
@@ -367,6 +367,12 @@ class GroupChats extends Component {
     this.isLeaveLoading = false;
     this.offset = 20;
     this.loading = false;
+  }
+
+  static navigationOptions = ({navigation}) => {
+    return {
+      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
+    }
   }
 
   onPinUnpinGroup = () => {
@@ -1887,6 +1893,19 @@ class GroupChats extends Component {
                   this.getGroupConversation(chats[chats.length-1].msg_id);
                 }
                 // this.getGroupConversation(message.msg_id);
+              }
+            }}
+            onMediaPlay = {(isPlay)=>{
+              if(isPlay){
+                console.log('palying media');
+                this.props.navigation.setParams({
+                  isAudioPlaying: true
+                });
+              }else{
+                console.log('pause media');
+                this.props.navigation.setParams({
+                  isAudioPlaying: false
+                });
               }
             }}
           />

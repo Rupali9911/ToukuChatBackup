@@ -170,7 +170,9 @@
     "quickLink":"\ube60\ub978 \ub9c1\ud06c",
     "categories":"\uce74\ud14c\uace0\ub9ac",
     "footerContent":"\uc0c8\ub85c\uc6b4 \uae30\uc220\uc744 \ubc30\uc6b0\uae30\uc5d0 \ub108\ubb34 \ub2a6\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4! 4 \ucc9c 5 \ubc31\ub9cc \uba85 \uc774\uc0c1\uc758 \uc0ac\uc6a9\uc790\ub97c \ucf54\ub529\ud558\uace0 \ucc38\uc5ec\ud558\uc2ed\uc2dc\uc624. \ucd94\uac00 \ud034\uc988 \ubc0f \ud504\ub85c\uc81d\ud2b8 \ubc0f \ub3c5\uc810 \ucf58\ud150\uce20\ub97c \uc990\uae30\uc2ed\uc2dc\uc624. \uc6b0\ub9ac \uc571\uc73c\ub85c \uc5f0\uc2b5\ud558\uc2ed\uc2dc\uc624. \uc624\ub298 \ub4f1\ub85d\ud558\uc2ed\uc2dc\uc624! \ud611\uc5c5 \ud559\uc2b5. \uae30\uc220 \uc218\uc900\uc744 \ub192\uc774\uc2ed\uc2dc\uc624. \ucd08\ubcf4\uc790\uc5d0\uac8c \uce5c\uc219\ud569\ub2c8\ub2e4. \uc624\ub298 \uacbd\ub825\uc744 \uc5c5\uadf8\ub808\uc774\ub4dc\ud558\uc2ed\uc2dc\uc624.",
-    "SomethingWentWrong":"\ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \uc2dc\ub3c4\ud574\uc8fc\uc138\uc694."
+    "SomethingWentWrong":"\ubb38\uc81c\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. \uc7a0\uc2dc \ud6c4 \uc2dc\ub3c4\ud574\uc8fc\uc138\uc694.",
+    "likedTheMemo": "{{username}} 메모를 좋아했습니다",
+    "commentonMemo": "{{username}} 메모에 댓글 작성"
   },
   "messages":{
     "required":"{{field}} \uc774(\uac00) \ud544\uc694\ud569\ub2c8\ub2e4"
@@ -721,7 +723,9 @@
         "countryUpdated":"\uad6d\uac00\uac00 \uc131\uacf5\uc801\uc73c\ub85c \uc5c5\ub370\uc774\ud2b8\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
         "setPasswordTextClasrm":"\uc544\uc9c1 CLASRM\uc5d0 \ub300\ud55c \ube44\ubc00\ubc88\ud638\ub97c \uc124\uc815\ud558\uc9c0 \uc54a\uc740 \uac83 \uac19\uc2b5\ub2c8\ub2e4. \uc9c0\uae08 \ube44\ubc00\ubc88\ud638\ub97c \uc124\uc815\ud558\ub824\uba74 '\ube44\ubc00\ubc88\ud638 \uc124\uc815'\uc744 \ud074\ub9ad\ud558\uace0, \uadf8\ub807\uc9c0 \uc54a\uc73c\uba74 '\ucde8\uc18c'\ub97c \ud074\ub9ad\ud558\uc2ed\uc2dc\uc624.",
         "youAreNowFriends":"귀하와 {{ friend }}는 이제 친구입니다.",
-        "isAlreadyFriend":"{{friendName}}는 이미 당신의 친구입니다."
+        "isAlreadyFriend":"{{friendName}}는 이미 당신의 친구입니다.",
+        "alreadyAGroupMember": "이미이 그룹의 회원입니다.",
+        "youAreAMemberNow": "{{groupName}}그룹에 성공적으로 가입했습니다."
       },
       "totalMessages":"\ucd1d \uba54\uc2dc\uc9c0",
       "toukuPoints":"TOUKU \ud3ec\uc778\ud2b8",
@@ -1221,7 +1225,16 @@
       "selectFile":"파일 선택",
       "UploadQRCode":"QR 코드 업로드",
       "searchByImage":"이미지 폴더로 검색",
-      "aboutGroup":"약"
+      "aboutGroup":"약",
+      "groupInvitation": "그룹 초대",
+      "inviteUserToGroupText": "사용자를 그룹에 초대하는 것은 QR 코드를 스캔하거나 버튼을 탭하는 것만 큼 간단합니다.",
+      "scanOrShareQRImage": "사용자는 QR 코드 리더로이 이미지를 스캔하여 가입 할이 그룹을 찾을 수 있습니다. 이미지를 다운로드하거나 HTML 태그를 복사하여 소셜 미디어, 이메일 등을 통해 공유하세요.",
+      "joinGroup": "그룹 가입",
+      "userJoinedGroup": "{{displayName}} 님이 그룹에 가입했습니다.",
+      "totalMembers": "총 회원",
+      "joinThisGroup": "이 그룹에 가입",
+      "issueGroupInvitation": "이슈 그룹 초대 URL",
+      "goToGroupChat": "그룹 채팅으로 이동"
     },
     "welcome":{
       "theWorldIsConnected":"\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",
@@ -1258,7 +1271,8 @@
       "wrongFollowCode":"\uc798\ubabb\ub41c \ucc44\ub110 \ud314\ub85c\uc6b0 \ucf54\ub4dc",
       "referralOneField":"\uc5ec\uae30\uc758 \ucc44\ub110 ID\ub294",
       "referralOneField2":"\uc785\ub2c8\ub2e4",
-      "referralOneField3":"\u203b \ucc44\ub110 ID :"
+      "referralOneField3":"\u203b \ucc44\ub110 ID :",
+      "invitationToGroup": "그룹 초대"
     },
     "changeDisplayName":"\ud45c\uc2dc \uc774\ub984 \ubcc0\uacbd",
     "terms":{

@@ -272,7 +272,17 @@ export default class App extends Component {
       }else{
         NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
       }
-    }
+    } else if(url.indexOf('/#/groups/') > -1) {
+      let split_url = url.split('/');
+      let group_id = split_url[split_url.length-2];
+      console.log('group_id',group_id);
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (userToken) {
+        NavigationService.navigate('JoinGroup', { group_id: group_id });
+      }else{
+        NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
+      }
+    } 
   };
 
   clearBatchCount = async () => {

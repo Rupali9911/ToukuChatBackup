@@ -1511,6 +1511,7 @@ class Home extends PureComponent {
                 }
               }}
               isPined={item.is_pined}
+              acceptedRequest={this.props.acceptedRequest.includes(item.user_id)?1:0}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}

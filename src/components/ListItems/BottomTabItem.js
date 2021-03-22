@@ -86,7 +86,7 @@ class BottomTabItem extends Component {
                 right: -6,
               },
             ]}>
-            {this.getBadgeCounts()}
+            {this.getBadgeCounts()>99?'99+':this.getBadgeCounts()}
           </Badge>
         </View>
       </View>

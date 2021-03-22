@@ -1046,7 +1046,7 @@ class Chat extends Component {
         setGroupChatConversation([message.text.data.message_details]);
 
         if (
-          this.props.currentRouteName == 'GroupChats' &&
+          this.props.currentRouteName == 'GroupChats' && this.props.currentRouteName == 'GroupDetails' &&
           currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id
         ) {

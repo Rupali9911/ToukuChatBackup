@@ -19,6 +19,7 @@ import ChannelInvitation from '../screens/ChannelInvitation';
 import GroupDetails from '../screens/GroupDetails';
 import ChannelTimeline from '../screens/ChannelTimeline';
 import GroupInvitation from '../screens/GroupInvitation';
+import JoinGroup from '../screens/JoinGroup';
 import Drawer from './DrawerNavigation';
 import BottomTabs from "./BottomTabs";
 import { gestureResponseDistance } from '../constants';
@@ -52,6 +53,7 @@ const AppStack = createStackNavigator(
     GroupDetails: GroupDetails,
     FriendNotes: FriendNotes,
     GroupInvitation: GroupInvitation,
+    JoinGroup: JoinGroup
   },
   {
     //initialRouteName: 'Drawer',

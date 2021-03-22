@@ -170,7 +170,9 @@
     "quickLink": "クイックリンク",
     "categories": "カテゴリ",
     "footerContent": "新しいスキルを学ぶのに遅すぎることはありません！ 4,500万人以上のユーザーをコーディングして参加する方法を学びましょう。 追加のクイズとプロジェクト、および独占コンテンツをお楽しみください。 私たちのアプリで練習。 今日登録してください！ 共同学習。 スキルをレベルアップします。 初心者に優しい。 今日あなたのキャリアをアップグレードしてください。",
-    "SomethingWentWrong": "何か問題が発生しました。しばらくしてからお試しください"
+    "SomethingWentWrong": "何か問題が発生しました。しばらくしてからお試しください",
+    "likedTheMemo": "{{username}} 메모를 좋아했습니다",
+    "commentonMemo": "{{username}} メモにコメントしました"
   },
   "messages": {
     "required": "{{field}} 必須"
@@ -721,7 +723,9 @@
         "countryUpdated": "国が正常に更新されました",
         "setPasswordTextClasrm": "CLASRMのパスワードをまだ設定していないようです。今すぐパスワードを設定するには、[パスワードの設定]をクリックしてください。それ以外の場合は、[キャンセル]をクリックしてください。",
         "youAreNowFriends": "あなたと{{ friend }}は友達になりました",
-        "isAlreadyFriend":"{{friendName}}はすでにあなたの友達です。"
+        "isAlreadyFriend":"{{friendName}}はすでにあなたの友達です。",
+        "alreadyAGroupMember": "あなたはすでにこのグループのメンバーです。",
+        "youAreAMemberNow": "グループ{{groupName}}に正常に参加しました。"
       },
       "totalMessages": "合計メッセージ",
       "toukuPoints": "TOUKUポイント",
@@ -1221,7 +1225,16 @@
       "selectFile":"ファイルを選択する",
       "UploadQRCode":"画像フォルダのQRコードで検索",
       "searchByImage":"画像フォルダで検索",
-      "aboutGroup":"グループ詳細"
+      "aboutGroup":"グループ詳細",
+      "groupInvitation": "グループ招待",
+      "inviteUserToGroupText": "ユーザーをグループに招待するのは、QRコードをスキャンするかボタンをタップするだけです。",
+      "scanOrShareQRImage": "ユーザーはQRコードリーダーでこの画像をスキャンして、参加するこのグループを見つけることができます。 画像をダウンロードするか、HTMLタグをコピーして、ソーシャルメディアやメールなどで共有します。",
+      "joinGroup": "グループに参加",
+      "userJoinedGroup": "{{displayName}}がグループに参加しました。",
+      "totalMembers": "総会員数",
+      "joinThisGroup": "このグループに参加する",
+      "issueGroupInvitation": "グループ招待URLを発行",
+      "goToGroupChat": "グループチャットに移動"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",
@@ -1258,7 +1271,8 @@
       "wrongFollowCode": "間違ったチャンネルフォローコード",
       "referralOneField": "こちらのチャンネルIDは",
       "referralOneField2": "です",
-      "referralOneField3": "※チャンネルID:"
+      "referralOneField3": "※チャンネルID:",
+      "invitationToGroup": "グループへの招待"
     },
     "changeDisplayName": "表示名を変更",
     "terms": {

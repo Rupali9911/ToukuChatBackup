@@ -466,15 +466,17 @@ export const getGroupDetail = (groupId) => (dispatch) =>
     client
       .get(`/xchat/group-detail/` + groupId + '/')
       .then((res) => {
+        console.log('res',res);
         if(res && res.admin_details){
           console.log(res.admin_details);
           dispatch(setCurrentGroupAdminsState(res.admin_details));
         }else{
-          dispatch(setCurrentGroupAdminsState(res.admin_details));
+          dispatch(setCurrentGroupAdminsState([]));
         }
         resolve(res);
       })
       .catch((err) => {
+        console.log(err);
         reject(err);
       });
   });

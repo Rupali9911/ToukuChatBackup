@@ -218,6 +218,12 @@ class ChannelChats extends Component {
     this.isUnfollowing = false;
   }
 
+  static navigationOptions = ({navigation}) => {
+    return {
+      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
+    }
+  }
+
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
       this.setState({orientation: initial});
@@ -1079,6 +1085,19 @@ class ChannelChats extends Component {
                 this.getChannelConversations(message.id);
               }
             }}
+            onMediaPlay = {(isPlay)=>{
+              if(isPlay){
+                console.log('palying media');
+                this.props.navigation.setParams({
+                  isAudioPlaying: true
+                });
+              }else{
+                console.log('pause media');
+                this.props.navigation.setParams({
+                  isAudioPlaying: false
+                });
+              }
+            }}
           />
 
           <ConfirmationModal
@@ -1424,7 +1443,9 @@ class ChannelChats extends Component {
             ' ' +
             translate('pages.xchat.followers')
           }
-          onBackPress={() => this.props.navigation.goBack()}
+          onBackPress={() => {
+            this.props.navigation.goBack()
+          }}
           menuItems={this.state.headerRightIconMenu}
           navigation={this.props.navigation}
           image={currentChannel.channel_picture}

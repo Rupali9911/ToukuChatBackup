@@ -170,7 +170,9 @@
     "quickLink":"Quick Links",
     "categories":"Categories",
     "footerContent":"It's Never Too Late to Learn a New Skill! Learn to Code and Join Our 45+ Million Users. Enjoy Extra Quizzes & Projects and Exclusive Content. Practice with Our App. Enrol Today! Collaborative Learning. Level Up Your Skills. Beginner-Friendly. Upgrade Your Career Today.",
-    "SomethingWentWrong":"Something went wrong please try after sometime"
+    "SomethingWentWrong":"Something went wrong please try after sometime",
+    "likedTheMemo": "{{username}} liked the memo",
+    "commentonMemo": "{{username}} commented on the memo"
   },
   "messages":{
     "required":"{{field}} is required"
@@ -721,7 +723,9 @@
         "countryUpdated":"Country updated successfully",
         "setPasswordTextClasrm":"It seems you have not setup password for CLASRM yet, Please click 'Set Password' to set password now, otherwise click 'Cancel'",
         "youAreNowFriends":"You and {{ friend }} are now friends",
-        "isAlreadyFriend":"{{friendName}} is already your friend."
+        "isAlreadyFriend":"{{friendName}} is already your friend.",
+        "alreadyAGroupMember": "You are already a member of this group.",
+        "youAreAMemberNow": "You have joined group {{groupName}} successfully."
       },
       "totalMessages":"Total messages",
       "toukuPoints":"TOUKU Points",
@@ -1219,7 +1223,16 @@
       "selectFile":"Select file",
       "UploadQRCode":"Upload a QR code",
       "searchByImage":"Search by Image folder",
-      "aboutGroup":"About"
+      "aboutGroup":"About",
+      "groupInvitation": "Group Invitation",
+      "inviteUserToGroupText": "Inviting user to group is as simple as scanning a QR code or tapping a button.",
+      "scanOrShareQRImage": "Users can scan this image with a QR code reader to find this group to join. Download the image or copy HTML tag to share it via social media, email and more.",
+      "joinGroup": "Join Group",
+      "userJoinedGroup": "{{displayName}} joined group.",
+      "totalMembers": "Total Members",
+      "joinThisGroup": "Join This Group",
+      "issueGroupInvitation": "Issue Group Invitation URL",
+      "goToGroupChat": "Go To Group Chat"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",
@@ -1256,7 +1269,8 @@
       "wrongFollowCode":"Wrong channel follow code",
       "referralOneField":"This channel ID is",
       "referralOneField2":"",
-      "referralOneField3":"* Channel ID:"
+      "referralOneField3":"* Channel ID:",
+      "invitationToGroup": "Invitation to Group"
     },
     "changeDisplayName":"Change Display Name",
     "terms":{

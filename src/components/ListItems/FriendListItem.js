@@ -112,7 +112,8 @@ export default class FriendListItem extends PureComponent {
       onSwipeInitial,
       swipeable,
       onDeleteChat,
-      onPinUnpinChat
+      onPinUnpinChat,
+      acceptedRequest
     } = this.props;
     const { newItem, isSwipeButtonVisible, isPinUnpinLoading, isDeleteLoading } = this.state;
 
@@ -323,7 +324,7 @@ export default class FriendListItem extends PureComponent {
                       ]}>
                       {this.getDate(date)}
                     </Text>
-                    {unreadCount !== 0 && unreadCount != null && (
+                    {((unreadCount !== 0 && unreadCount != null) || acceptedRequest>0) && (
                       <Badge
                         style={[
                           globalStyles.smallLightText,
@@ -334,7 +335,7 @@ export default class FriendListItem extends PureComponent {
                             marginTop: 5,
                           },
                         ]}>
-                        {unreadCount}
+                        {acceptedRequest ? unreadCount + acceptedRequest : unreadCount}
                       </Badge>
                     )}
                   </View>

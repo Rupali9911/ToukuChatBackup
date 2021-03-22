@@ -141,9 +141,17 @@ class GroupChatContainer extends Component {
       if(update_obj.action==='left'){
         update_text = translate('common.leftGroup',{username: update_by});
       }else if(update_obj.action==='added'){
-        update_text = translate('common.addedInGroup',{username: update_by,toUsername: update_to});
+        if(update_by===update_to){
+          update_text = translate('pages.xchat.userJoinedGroup',{displayName: update_by});
+        }else{
+          update_text = translate('common.addedInGroup',{username: update_by,toUsername: update_to});
+        }
       }else if(update_obj.action==='removed'){
         update_text = translate('common.removedToGroup',{username: update_by,toUsername: update_to});
+      }else if(message.message_body.text.includes('liked the memo')){
+        update_text = translate('common.likedTheMemo',{username: update_by,toUsername: update_to});
+      }else if(message.message_body.text.includes('commented on the memo')){
+        update_text = translate('common.commentonMemo',{username: update_by,toUsername: update_to});
       }
       return update_text;
     }
@@ -310,7 +318,7 @@ class GroupChatContainer extends Component {
                           onCheck={() => onSelect(item.msg_id)}
                         />
                       ) : null}
-                      {(item.message_body && item.message_body.type && item.message_body.type === 'update') ?
+                      {(item.message_body && item.message_body.type && item.message_body.type === 'update' && !item.message_body.text.includes('add a memo')) ?
                         <TouchableOpacity
                           style={{ width:'100%', marginLeft: isMultiSelect?-35:0}}
                           onPress={() => {
@@ -425,6 +433,7 @@ class GroupChatContainer extends Component {
                           groupMembers={groupMembers}
                           showOpenLoader={this.props.showOpenLoader}
                           isMultiSelect={isMultiSelect}
+                          onMediaPlay={this.props.onMediaPlay}
                         />
                       </TouchableOpacity>}
                     </View>

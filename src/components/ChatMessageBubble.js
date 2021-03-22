@@ -20,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
 import OpenFile from 'react-native-doc-viewer';
 
-import {Colors, Fonts, Images, Icons, registerUrl, stagInvite, prodInvite, registerUrlStage} from '../constants';
+import {Colors, Fonts, Images, Icons, registerUrl, stagInvite, prodInvite, registerUrlStage, Environment, EnvironmentStage} from '../constants';
 import {translate} from '../redux/reducers/languageReducer';
 import ScalableImage from './ScalableImage';
 import VideoPlayerCustom from './VideoPlayerCustom';
@@ -336,6 +336,10 @@ class ChatMessageBubble extends Component {
       let arrLinks = linkify().match(text)
       if (arrLinks){
           return arrLinks.map((item)=>{
+              let checkUrl = staging ? EnvironmentStage : Environment;
+              if(checkUrl){
+                return null;
+              }
               return(
                   <LinkPreviewComponent text={item.text} url={item.url}/>
               );
@@ -387,6 +391,11 @@ class ChatMessageBubble extends Component {
           this.props.setActiveTimelineTab('trend');
           this.props.setSpecificPostId(post_id);
             NavigationService.navigate('Timeline');
+        } else if(url.indexOf('/#/groups/') > -1) {
+          let split_url = url.split('/');
+          let group_id = split_url[split_url.length-2];
+          console.log('group_id',group_id);
+          NavigationService.navigate('JoinGroup', { group_id: group_id });
         } else{
             Linking.openURL(url);
         }
@@ -556,6 +565,8 @@ class ChatMessageBubble extends Component {
                           audioPlayingId={audioPlayingId}
                           perviousPlayingAudioId={perviousPlayingAudioId}
                           onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                          onPlay={()=>{this.props.onMediaPlay && this.props.onMediaPlay(true)}}
+                          onPause={()=>{this.props.onMediaPlay && this.props.onMediaPlay(false)}}
                           postId={message.id}
                           url={message.message_body}
                           isSmall={true}
@@ -752,6 +763,8 @@ class ChatMessageBubble extends Component {
                           audioPlayingId={audioPlayingId}
                           perviousPlayingAudioId={perviousPlayingAudioId}
                           onAudioPlayPress={(id) => onAudioPlayPress(id)}
+                          onPlay={()=>{this.props.onMediaPlay && this.props.onMediaPlay(true)}}
+                          onPause={()=>{this.props.onMediaPlay && this.props.onMediaPlay(false)}}
                           postId={message.id}
                           url={message.message_body}
                           isSmall={true}
