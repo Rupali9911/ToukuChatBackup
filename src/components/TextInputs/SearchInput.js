@@ -182,7 +182,7 @@ export default class SearchInput extends Component {
                       this._closeMenu();
                   }}
                   titleStyle={{marginLeft: -25}}
-                  title={translate('pages.xchat.scanQr')}
+                  title={translate('pages.xchat.searchByQr')}
               />
           </Menu>
         )}

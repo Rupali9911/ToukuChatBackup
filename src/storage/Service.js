@@ -738,7 +738,7 @@ export const setGroups = async (group) => {
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
       //console.log('setGroups -> obj', obj);
-      await realm.write(() => {
+      realm.write(() => {
         realm.create(
           'groups',
           {
@@ -767,7 +767,7 @@ export const setGroups = async (group) => {
         );
       });
     } else {
-      await realm.write(() => {
+      realm.write(() => {
         realm.create('groups', {
           group_id: item.group_id,
           group_name: item.group_name,
@@ -793,6 +793,7 @@ export const setGroups = async (group) => {
       });
     }
   }
+  console.log('insert all object');
 };
 
 export const getGroups = () => {

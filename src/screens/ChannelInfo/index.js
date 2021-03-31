@@ -710,14 +710,16 @@ class ChannelInfo extends Component {
                 })}
               </View>
               {isTimeline ? (
-                <View style={{padding: normalize(15)}}>
+                <View style={{
+                  // padding: normalize(15)
+                  }}>
                   {this.state.isLoading ? (
                     <ListLoader justifyContent={'flex-start'} />
                   ) : (
                     <PostCard
                       posts={posts}
                       isTimeline={true}
-                      useFlatlist={true}
+                      // useFlatlist={true}
                       isChannelTimeline={true}
                       onMomentumScrollBegin={this.onMomentumScrollBegin}
                       onEndReached={this.onEndReached}

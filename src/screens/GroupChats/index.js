@@ -371,7 +371,7 @@ class GroupChats extends Component {
 
   static navigationOptions = ({navigation}) => {
     return {
-      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
+      gestureEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
     }
   }
 

@@ -32,6 +32,8 @@ export default class HomeHeader extends Component {
 
   _closeMenu = () => this.setState({visible: false});
 
+  _closeOption = () => this.SearchInput && this.SearchInput._closeMenu();
+
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
@@ -62,7 +64,6 @@ export default class HomeHeader extends Component {
       countObject,
       currentRouteName,
     } = this.props;
-
     return (
       <View style={styles.headerContainer}>
         <ImageBackground
@@ -112,6 +113,7 @@ export default class HomeHeader extends Component {
               }}>
               {isSortOptions && (
                 <Menu
+                  ref={(menu)=>this.menu=menu}
                   style={{marginTop: 30}}
                   visible={this.state.visible}
                   onDismiss={this._closeMenu}
@@ -196,6 +198,7 @@ export default class HomeHeader extends Component {
           </View>
           {isSearchBar && (
             <SearchInput
+              ref={(search_input)=>this.SearchInput = search_input}
               onChangeText={onChangeText}
               navigation={navigation}
               onIconRightClick={onIconRightClick}

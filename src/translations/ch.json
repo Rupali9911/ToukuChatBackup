@@ -1233,7 +1233,8 @@
       "totalMembers": "会员总数",
       "joinThisGroup": "加入这个小组",
       "issueGroupInvitation": "发行组邀请URL",
-      "goToGroupChat": "转到群聊"
+      "goToGroupChat": "转到群聊",
+      "searchByQr": "通过二维码搜索"
     },
     "welcome":{
       "theWorldIsConnected":"世界相连",

@@ -183,7 +183,7 @@ class AddFriendByQr extends Component {
             <View style={globalStyles.container}>
                 <HeaderWithBack
                     onBackPress={() => this.props.navigation.goBack()}
-                    title={translate('pages.xchat.scanQr')}
+                    title={translate('pages.xchat.searchByQr')}
                     // onChangeText={this.searchFriends}
                     navigation={this.props.navigation}
                 />

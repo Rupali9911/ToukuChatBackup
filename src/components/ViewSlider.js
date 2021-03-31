@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, ScrollView, Dimensions } from 'react-native';
-
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const { width } = Dimensions.get('window');
 
 export default class ViewSlider extends Component {
@@ -67,7 +67,7 @@ export default class ViewSlider extends Component {
 
   setStep = (step = 1) => {
     const scrollToX = (this.slidesCount * width) - ((this.slidesCount - (step - 1)) * width);
-    
+    // console.log('scrollToX',step,(this.slidesCount * width),((this.slidesCount - (step - 1)) * width));
     setTimeout(() => this.scroll && this.scroll.scrollTo({ x: scrollToX }), 50);
   }
 
@@ -76,8 +76,9 @@ export default class ViewSlider extends Component {
   }
 
   onMomentumScrollEnd = ({ nativeEvent }) => {
+    
     const index = Math.round(nativeEvent.contentOffset.x / width) + 1;
- 
+    // console.log('x',index);
     this.setState({ step: index }, this.onScrollCb(index));
   }
  
@@ -89,7 +90,7 @@ export default class ViewSlider extends Component {
       dotsContainerStyle,
     } = this.props;
     const { step } = this.state;
-
+    // console.log('this.slidesCount',this.slidesCount);
     return (
       <View style={[{ width, height: this.props.height }, this.props.style]}>
         <ScrollView
@@ -98,11 +99,35 @@ export default class ViewSlider extends Component {
           pagingEnabled={true}
           ref={(node) => (this.scroll = node)}
           scrollEventThrottle={70}
-        //   onMomentumScrollEnd={this.onMomentumScrollEnd}
+          automaticallyAdjustContentInsets
+          onMomentumScrollEnd={this.onMomentumScrollEnd}
           showsHorizontalScrollIndicator={false}
         >
           {this.props.renderSlides}
         </ScrollView>
+        {this.slidesCount > 1 ?
+          <View 
+          pointerEvents={'box-none'}
+          style={{
+            position: 'absolute', 
+            paddingHorizontal: 10,
+            flexDirection: 'row', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            overflow: 'hidden',
+            width: '100%', 
+            height: '100%'
+          }}>
+            {step>1?<FontAwesome name={'angle-left'} size={25} color={'#fff'} 
+              style={{ padding: 10, backgroundColor: '#00000040' }} 
+              onPress={()=>{this.setStep(step-1)}}
+              />:<View />}
+            {step<this.slidesCount?<FontAwesome name={'angle-right'} size={25} color={'#fff'} 
+              style={{ padding: 10, backgroundColor: '#00000040' }} 
+              onPress={()=>{this.setStep(step+1)}}
+              />:<View />}
+          </View>
+          : null}
       </View>
     );
   }

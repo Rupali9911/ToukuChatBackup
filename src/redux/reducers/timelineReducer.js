@@ -43,7 +43,7 @@ const initialState = {
   trendLoadMore: false,
   followingLoadMore: false,
   rankingLoadMore: false,
-  activeTab: 'trend',
+  activeTab: 'following',
   specificPostId: null
 };
 
@@ -365,14 +365,17 @@ export const setSpecificPostId = (data) => (dispatch) => {
   dispatch(setSpecificId(data));
 }
 
-export const getFollowingTimeline = () => (dispatch) =>
+export const getFollowingTimeline = (postId) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingTimelineRequest());
+    console.log('postId',postId);
     client
-      .get(`/xchat/timeline-following/?last_id=0`)
+      .get(`/xchat/timeline-following/?last_id=${postId?postId:0}`)
       .then((res) => {
         if (res.status) {
-          dispatch(getFollowingTimelineSuccess(res.posts));
+          if(!postId){
+            dispatch(getFollowingTimelineSuccess(res.posts));
+          }
         }
         resolve(res);
       })

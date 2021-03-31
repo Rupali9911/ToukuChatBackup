@@ -147,7 +147,7 @@ export const setCommonChatConversation = () => (dispatch) =>
       // );
     }
     dispatch(setCommonChat(array));
-    console.log('commonData length',array.length);
+    // console.log('commonData length',array.length);
     resolve();
   });
 

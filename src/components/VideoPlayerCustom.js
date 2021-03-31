@@ -252,8 +252,8 @@ export default class VideoPlayerCustom extends Component {
               // onBuffer={this.onBuffer}                // Callback when remote video is buffering
               // onError={this.videoError}               // Callback when video cannot be loaded
               style={{
-                width: 260,
-                height: 150
+                width: width || 260,
+                height: height || 150
               }}
               poster={thumbnailUrl}
               resizeMode={'contain'}

@@ -53,6 +53,7 @@ export default class FriendListItem extends PureComponent {
       // this.typingTimeout && clearTimeout(this.typingTimeout);
     }
   }
+  
   getDate = (date) => {
     if (date === null || date === '' || date === undefined) {
       return '';
