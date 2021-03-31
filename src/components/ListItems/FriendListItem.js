@@ -1,36 +1,36 @@
-import React, { Component, Fragment, PureComponent } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import React, {Component, Fragment, PureComponent} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Badge, Divider, ActivityIndicator } from 'react-native-paper';
+import {Badge, Divider, ActivityIndicator} from 'react-native-paper';
 
 import RoundedImage from '../RoundedImage';
-import { globalStyles } from '../../styles';
-import { Colors, Images } from '../../constants';
-import { translate } from '../../redux/reducers/languageReducer';
-import { normalize, wait } from '../../utils';
+import {globalStyles} from '../../styles';
+import {Colors, Images} from '../../constants';
+import {translate} from '../../redux/reducers/languageReducer';
+import {normalize, wait} from '../../utils';
 import Icon from 'react-native-vector-icons/Feather';
 import Octicon from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { SwipeItem, SwipeButtonsContainer } from '../Swipeable';
+import {SwipeItem, SwipeButtonsContainer} from '../Swipeable';
 
 export default class FriendListItem extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       isChecked: false,
-      newItem: { ...this.props.item, isCheck: false },
+      newItem: {...this.props.item, isCheck: false},
       isSwipeButtonVisible: false,
       isPinUnpinLoading: false,
-      isDeleteLoading: false
+      isDeleteLoading: false,
     };
     this.itemRef = null;
   }
 
   componentDidUpdate(props) {
     if (props.isVisible != this.props.isVisible) {
-      this.setState({ newItem: { ...this.props.item, isCheck: false } });
+      this.setState({newItem: {...this.props.item, isCheck: false}});
     }
   }
 
@@ -86,9 +86,9 @@ export default class FriendListItem extends PureComponent {
 
   manageRecord = (item, isCheck) => {
     if (isCheck === 'check') {
-      this.setState({ newItem: { ...item, isCheck: true } });
+      this.setState({newItem: {...item, isCheck: true}});
     } else if (isCheck === 'unCheck') {
-      this.setState({ newItem: { ...item, isCheck: false } });
+      this.setState({newItem: {...item, isCheck: false}});
     }
     this.props.onCheckChange('friend', isCheck, item);
   };
@@ -113,92 +113,108 @@ export default class FriendListItem extends PureComponent {
       swipeable,
       onDeleteChat,
       onPinUnpinChat,
-      acceptedRequest
+      acceptedRequest,
     } = this.props;
-    const { newItem, isSwipeButtonVisible, isPinUnpinLoading, isDeleteLoading } = this.state;
+    const {
+      newItem,
+      isSwipeButtonVisible,
+      isPinUnpinLoading,
+      isDeleteLoading,
+    } = this.state;
 
     return (
       <Fragment>
         <SwipeItem
           buttonTriggerPercent={0.4}
-          style={{ flex: 1 }}
+          style={{flex: 1}}
           buttonTriggerPercent={0.4}
-          rightButtons={swipeable &&
-            <View style={{ flexDirection: 'row', height: '100%' }}>
-              <SwipeButtonsContainer
-                style={{
-                  alignSelf: 'center',
-                  aspectRatio: 1,
-                  height: '100%',
-                  flexDirection: 'row',
-                }}>
-                <TouchableOpacity style={{
-                  padding: 10,
-                  backgroundColor: '#99B1F9',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flex: 1
-                }}
-                  disabled={isPinUnpinLoading}
-                  onPress={() => {
-                    console.log('pin chat');
-                    // this.itemRef && this.itemRef.close()
-                    this.setState({ isPinUnpinLoading: true });
-                    onPinUnpinChat(item, () => {
-                      this.setState({ isPinUnpinLoading: false });
-                      this.itemRef && this.itemRef.close();
-                    });
-                    // wait(200).then(() => {
-                    //   onPinUnpinChat(item);
-                    // });
+          rightButtons={
+            swipeable && (
+              <View style={{flexDirection: 'row', height: '100%'}}>
+                <SwipeButtonsContainer
+                  style={{
+                    alignSelf: 'center',
+                    aspectRatio: 1,
+                    height: '100%',
+                    flexDirection: 'row',
                   }}>
-                  {isPinUnpinLoading ?
-                    <ActivityIndicator color={Colors.white} />
-                    : <MaterialCommunityIcon
-                      name={item.is_pined ? 'pin-off' : 'pin'}
-                      size={20}
-                      color={Colors.white}
-                    />}
-                  {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
-                </TouchableOpacity>
-              </SwipeButtonsContainer>
-              <SwipeButtonsContainer
-                style={{
-                  alignSelf: 'center',
-                  aspectRatio: 1,
-                  height: '100%',
-                  flexDirection: 'row',
-                }}>
-                <TouchableOpacity style={{
-                  padding: 10,
-                  backgroundColor: '#F9354B',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flex: 1
-                }} onPress={() => {
-                  console.log('delete chat')
-                  // this.itemRef && this.itemRef.close();
-                  onDeleteChat(item.friend);
-                }}>
-                  {isDeleteLoading ?
-                    <ActivityIndicator color={Colors.white} />
-                    : <Text style={{ color: Colors.white }}>{translate('common.delete')}</Text>}
-                </TouchableOpacity>
-              </SwipeButtonsContainer>
-            </View>
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      backgroundColor: '#99B1F9',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: 1,
+                    }}
+                    disabled={isPinUnpinLoading}
+                    onPress={() => {
+                      console.log('pin chat');
+                      // this.itemRef && this.itemRef.close()
+                      this.setState({isPinUnpinLoading: true});
+                      onPinUnpinChat(item, () => {
+                        this.setState({isPinUnpinLoading: false});
+                        this.itemRef && this.itemRef.close();
+                      });
+                      // wait(200).then(() => {
+                      //   onPinUnpinChat(item);
+                      // });
+                    }}>
+                    {isPinUnpinLoading ? (
+                      <ActivityIndicator color={Colors.white} />
+                    ) : (
+                      <MaterialCommunityIcon
+                        name={item.is_pined ? 'pin-off' : 'pin'}
+                        size={20}
+                        color={Colors.white}
+                      />
+                    )}
+                    {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
+                  </TouchableOpacity>
+                </SwipeButtonsContainer>
+                <SwipeButtonsContainer
+                  style={{
+                    alignSelf: 'center',
+                    aspectRatio: 1,
+                    height: '100%',
+                    flexDirection: 'row',
+                  }}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      backgroundColor: '#F9354B',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: 1,
+                    }}
+                    onPress={() => {
+                      console.log('delete chat');
+                      // this.itemRef && this.itemRef.close();
+                      onDeleteChat(item.friend);
+                    }}>
+                    {isDeleteLoading ? (
+                      <ActivityIndicator color={Colors.white} />
+                    ) : (
+                      <Text style={{color: Colors.white}}>
+                        {translate('common.delete')}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </SwipeButtonsContainer>
+              </View>
+            )
           }
           onSwipeInitial={(item) => onSwipeInitial(item)}
           onMovedToOrigin={() => {
             // console.log('button hide');
-            this.setState({ isSwipeButtonVisible: false });
+            this.setState({isSwipeButtonVisible: false});
           }}
           onRightButtonsShowed={(item) => {
             this.itemRef = item;
-            onSwipeButtonShowed(item)
-            this.setState({ isSwipeButtonVisible: true });
+            onSwipeButtonShowed(item);
+            this.setState({isSwipeButtonVisible: true});
           }}
           disableSwipeIfNoButton>
-          <View style={{ backgroundColor: '#f2f2f2' }}>
+          <View style={{backgroundColor: '#f2f2f2'}}>
             <View activeOpacity={0.8} style={styles.container}>
               {/* <TouchableOpacity
           activeOpacity={0.8}
@@ -215,41 +231,41 @@ export default class FriendListItem extends PureComponent {
                     }}
                   />
                 ) : (
-                    isVisible &&
-                    newItem.isCheck === true && (
-                      <TouchableOpacity
-                        style={{ alignSelf: 'center', justifyContent: 'center' }}
-                        onPress={() => {
-                          // this.setState({isChecked: false});
-                          this.manageRecord(item, 'unCheck');
-                        }}>
-                        <LinearGradient
-                          start={{ x: 0.1, y: 0.7 }}
-                          end={{ x: 0.5, y: 0.2 }}
-                          locations={[0.1, 0.6, 1]}
-                          colors={[
-                            Colors.gradient_1,
-                            Colors.gradient_2,
-                            Colors.gradient_3,
-                          ]}
-                          style={styles.checkBoxIscheck}>
-                          <Icon size={17} name="check" style={{ color: '#fff' }} />
-                        </LinearGradient>
-                      </TouchableOpacity>
-                    )
-                  )}
+                  isVisible &&
+                  newItem.isCheck === true && (
+                    <TouchableOpacity
+                      style={{alignSelf: 'center', justifyContent: 'center'}}
+                      onPress={() => {
+                        // this.setState({isChecked: false});
+                        this.manageRecord(item, 'unCheck');
+                      }}>
+                      <LinearGradient
+                        start={{x: 0.1, y: 0.7}}
+                        end={{x: 0.5, y: 0.2}}
+                        locations={[0.1, 0.6, 1]}
+                        colors={[
+                          Colors.gradient_1,
+                          Colors.gradient_2,
+                          Colors.gradient_3,
+                        ]}
+                        style={styles.checkBoxIscheck}>
+                        <Icon size={17} name="check" style={{color: '#fff'}} />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  )
+                )}
                 <TouchableOpacity
                   onPress={
                     !isVisible
                       ? onAvtarPress
                       : () => {
-                        this.manageRecord(
-                          item,
-                          !newItem.isCheck ? 'check' : 'unCheck',
-                        );
-                      }
+                          this.manageRecord(
+                            item,
+                            !newItem.isCheck ? 'check' : 'unCheck',
+                          );
+                        }
                   }
-                // disabled={isVisible}
+                  // disabled={isVisible}
                 >
                   <RoundedImage
                     source={image}
@@ -260,17 +276,21 @@ export default class FriendListItem extends PureComponent {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.secondView}
-                  onPress={isSwipeButtonVisible ? () => { this.itemRef && this.itemRef.close() } :
-                    !isVisible
+                  onPress={
+                    isSwipeButtonVisible
+                      ? () => {
+                          this.itemRef && this.itemRef.close();
+                        }
+                      : !isVisible
                       ? onPress
                       : () => {
-                        this.manageRecord(
-                          item,
-                          !newItem.isCheck ? 'check' : 'unCheck',
-                        );
-                      }
+                          this.manageRecord(
+                            item,
+                            !newItem.isCheck ? 'check' : 'unCheck',
+                          );
+                        }
                   }
-                // disabled={isVisible}
+                  // disabled={isVisible}
                 >
                   <View
                     style={{
@@ -298,7 +318,9 @@ export default class FriendListItem extends PureComponent {
                         {
                           color: Colors.message_gray,
                           textAlign: 'left',
-                          fontSize: Platform.isPad ? normalize(7) : normalize(11.5),
+                          fontSize: Platform.isPad
+                            ? normalize(7)
+                            : normalize(11.5),
                           fontWeight: '400',
                         },
                       ]}>
@@ -307,8 +329,12 @@ export default class FriendListItem extends PureComponent {
                     </Text>
                   </View>
                   {isPined ? (
-                    <View style={{ marginTop: 2, marginRight: 5 }}>
-                      <Octicon name={'pin'} size={14} color={Colors.gray_dark} />
+                    <View style={{marginTop: 2, marginRight: 5}}>
+                      <Octicon
+                        name={'pin'}
+                        size={14}
+                        color={Colors.gray_dark}
+                      />
                     </View>
                   ) : null}
                   <View>
@@ -324,7 +350,8 @@ export default class FriendListItem extends PureComponent {
                       ]}>
                       {this.getDate(date)}
                     </Text>
-                    {((unreadCount !== 0 && unreadCount != null) || acceptedRequest>0) && (
+                    {((unreadCount !== 0 && unreadCount != null) ||
+                      acceptedRequest > 0) && (
                       <Badge
                         style={[
                           globalStyles.smallLightText,
@@ -335,7 +362,9 @@ export default class FriendListItem extends PureComponent {
                             marginTop: 5,
                           },
                         ]}>
-                        {acceptedRequest ? unreadCount + acceptedRequest : unreadCount}
+                        {acceptedRequest
+                          ? unreadCount + acceptedRequest
+                          : unreadCount}
                       </Badge>
                     )}
                   </View>
