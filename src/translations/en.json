@@ -1232,7 +1232,8 @@
       "totalMembers": "Total Members",
       "joinThisGroup": "Join This Group",
       "issueGroupInvitation": "Issue Group Invitation URL",
-      "goToGroupChat": "Go To Group Chat"
+      "goToGroupChat": "Go To Group Chat",
+      "searchByQr": "Search by QR code"
     },
     "welcome":{
       "theWorldIsConnected":"The world is connected",

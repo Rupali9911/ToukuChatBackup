@@ -22,6 +22,7 @@ import VideoPlayerCustom from './VideoPlayerCustom';
 import AudioPlayerCustom from './AudioPlayerCustom';
 import HyperLink from 'react-native-hyperlink';
 import {normalize, onPressHyperlink} from '../utils';
+import ViewSlider from './ViewSlider';
 
 const {width, height} = Dimensions.get('window');
 
@@ -34,6 +35,8 @@ export default class PostChannelItem extends Component {
       perviousPlayingAudioId: null,
       readMore: false,
       character: 40,
+      page_height: 250,
+      step: 1
     };
   }
 
@@ -51,6 +54,7 @@ export default class PostChannelItem extends Component {
 
   render() {
     const {post} = this.props;
+    const {page_height} = this.state;
     // console.log('post', post)
     let newArray = [];
     post.text &&
@@ -58,10 +62,85 @@ export default class PostChannelItem extends Component {
       post.text.map((data, index) => {
         return newArray.push(data.text);
       });
-
+      // console.log('post',page_height);
+    
+    let medias = [];
+    post.media.image && post.media.image.map(item => medias.push({type:'image',url:item}));
+    post.media.video && post.media.video.map(item => medias.push({type:'video',url:item}));
+    post.media.audio && post.media.audio.map(item => medias.push({type:'audio',url:item}));
     return (
       <View>
-        {post.media.audio && post.media.audio.length ? (
+        <ViewSlider 
+          step={this.state.step}
+          onScroll={(index)=>{
+            if(medias[this.state.step-1].type=='audio'){
+              this.audio && this.audio.stopSound();
+            }
+            this.setState({step:index});
+          }}
+          renderSlides={
+            <>
+            {medias.map(item => {
+              return (
+              <>
+                {item.type === 'image' &&
+                  <View style={{
+                    justifyContent: 'center',
+                    width: width,
+                    alignItems: 'center',
+                    height: 250
+                  }}
+                    onLayout={(event) => {
+                      let { width, height } = event.nativeEvent.layout
+                      this.setState({ page_height: height });
+                    }}
+                  >
+                    <ScalableImage src={item.url} />
+                  </View>
+                }
+                {item.type === 'video' &&
+                  <View style={{
+                    justifyContent: 'center',
+                    width: width,
+                    alignItems: 'center',
+                    height: 250
+                  }}>
+                    <VideoPlayerCustom 
+                      url={item.url} 
+                      width={width} 
+                      height={250} />
+                  </View>
+                }
+                {item.type === 'audio' &&
+                  <View style={{
+                    paddingHorizontal: 20,
+                    justifyContent: 'center',
+                    width: width,
+                    padding: 10,
+                    alignItems: 'center',
+                    height: 250
+                  }}>
+                    <AudioPlayerCustom
+                      ref={(audio)=>this.audio=audio}
+                      onAudioPlayPress={(id) =>
+                        this.setState({
+                          audioPlayingId: id,
+                          perviousPlayingAudioId: this.state.audioPlayingId,
+                        })
+                      }
+                      audioPlayingId={this.state.audioPlayingId}
+                      perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                      postId={post.id}
+                      url={item.url}
+                    />
+                  </View>
+                }
+              </>
+              );
+            })}
+            </>
+          }/>
+          {/* {post.media.audio && post.media.audio.length ? (
           <View style={{marginTop: 10}}>
             <AudioPlayerCustom
               onAudioPlayPress={(id) =>
@@ -84,7 +163,7 @@ export default class PostChannelItem extends Component {
           <View style={{margin: 5}}>
             <VideoPlayerCustom url={post.media.video[0]} />
           </View>
-        ) : null}
+        ) : null} */}
         <View style={{marginHorizontal: '4%', marginVertical: 5}}>
           <HyperLink
             onPress={(url, text) => {

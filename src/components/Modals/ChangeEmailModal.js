@@ -336,6 +336,7 @@ class ChangeEmailModal extends Component {
 
               <View style={styles.inputContainer}>
                 <TextInput
+                    color={Colors.black}
                   placeholder={translate('common.oldEmailVerificationCode')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
@@ -399,6 +400,7 @@ class ChangeEmailModal extends Component {
                 {/*) : null}*/}
 
                 <TextInput
+                    color={Colors.black}
                   placeholder={translate('common.enterNewEmail')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
@@ -411,6 +413,7 @@ class ChangeEmailModal extends Component {
               </View>
               <View style={styles.inputContainer}>
                 <TextInput
+                    color={Colors.black}
                   placeholder={translate('pages.xchat.reEnterNewEmailAddress')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}

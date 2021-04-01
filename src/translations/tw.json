@@ -1233,7 +1233,8 @@
       "totalMembers": "會員總數",
       "joinThisGroup": "加入這個小組",
       "issueGroupInvitation": "發行組邀請URL",
-      "goToGroupChat": "轉到群聊"
+      "goToGroupChat": "轉到群聊",
+      "searchByQr": "通過二維碼搜索"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

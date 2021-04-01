@@ -196,7 +196,9 @@ class ChangePassModal extends Component {
             <View style={{padding: 15}}>
               {isSetPassword?null:<View style={styles.inputContainer}>
                 <TextInput
+                    color={Colors.black}
                   placeholder={translate('pages.setting.oldPassword')}
+                    placeholderTextColor={'gray'}
                   value={oldPassword}
                   onChangeText={(oldPassword) =>
                     this.handleOldPassword(oldPassword)
@@ -229,10 +231,12 @@ class ChangePassModal extends Component {
 
               <View style={styles.inputContainer}>
                 <TextInput
+                    color={Colors.black}
                   ref={(ref) => {
                     this.inputs['newpassword'] = ref;
                   }}
                   placeholder={translate('pages.setting.newPassword')}
+                    placeholderTextColor={'gray'}
                   value={newPassword}
                   onChangeText={(newPassword) =>
                     this.handleNewPassword(newPassword)
@@ -265,10 +269,12 @@ class ChangePassModal extends Component {
 
               <View style={styles.inputContainer}>
                 <TextInput
+                    color={Colors.black}
                   ref={(ref) => {
                     this.inputs['confirmpassword'] = ref;
                   }}
                   placeholder={translate('pages.setting.confirmPassword')}
+                    placeholderTextColor={'gray'}
                   value={confirmPassword}
                   onChangeText={(confirmPassword) =>
                     this.handleConfirmPassword(confirmPassword)

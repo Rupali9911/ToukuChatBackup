@@ -1,11 +1,12 @@
 import {
-  client,
-  GET_USER_CONFIG,
-  UPDATE_CHANNEL_MODE,
-  GET_TOUKU_POINTS,
+    client,
+    GET_USER_CONFIG,
+    UPDATE_CHANNEL_MODE,
+    GET_TOUKU_POINTS, apiRoot, userAgent,
 } from '../../helpers/api';
 import {wSetChannelMode} from '../utility/worker';
 import {UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE} from "./friendReducer";
+import axios from "axios";
 
 export const SET_USER_CONFIGURATION = 'SET_USER_CONFIGURATION';
 
@@ -14,6 +15,11 @@ export const UPDATE_CHANNEL_MODE_SUCCESS = 'UPDATE_CHANNEL_MODE_SUCCESS';
 export const UPDATE_CHANNEL_MODE_FAIL = 'UPDATE_CHANNEL_MODE_FAIL';
 export const UPDATE_USER_BACKGROUND_IMAGE = "UPDATE_USER_BACKGROUND_IMAGE";
 export const UPDATE_USER_DISPLAY_NAME = "UPDATE_USER_DISPLAY_NAME";
+
+export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
+export const GET_UPLOAD_AVATAR_SUCCESS = 'GET_UPLOAD_AVATAR_SUCCESS';
+export const GET_UPLOAD_AVATAR_FAIL = 'GET_UPLOAD_AVATAR_FAIL';
+let uuid = require('react-native-uuid');
 
 const initialState = {
   loading: false,
@@ -63,6 +69,21 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
+      case GET_UPLOAD_AVATAR_REQUEST:
+          return {
+              ...state,
+              loading: true,
+          };
+      case GET_UPLOAD_AVATAR_SUCCESS:
+          return {
+              ...state,
+              loading: false,
+          };
+      case GET_UPLOAD_AVATAR_FAIL:
+          return {
+              ...state,
+              loading: false,
+          };
     default:
       return state;
   }
@@ -79,6 +100,18 @@ const updateChannelModeSuccess = () => ({
 
 const updateChannelModeFailure = () => ({
   type: UPDATE_CHANNEL_MODE_FAIL,
+});
+
+const getUploadAvatarRequest = () => ({
+    type: GET_UPLOAD_AVATAR_REQUEST,
+});
+
+const getUploadAvatarSuccess = () => ({
+    type: GET_UPLOAD_AVATAR_SUCCESS,
+});
+
+const getUploadAvatarFailure = () => ({
+    type: GET_UPLOAD_AVATAR_FAIL,
 });
 
 //Actions
@@ -159,3 +192,46 @@ export const getToukuPoints = (data) => (dispatch) =>
         reject(err);
       });
   });
+
+export const uploadAvatar = (data, token) => (dispatch) =>
+    new Promise(function (resolve, reject) {
+        dispatch(getUploadAvatarRequest());
+        let name = uuid.v4();
+        let formData = new FormData();
+        formData.append('avatar_thumbnail', {
+            uri: data.replace('file://', ''),
+            mineType: 'image/jpeg',
+            fileType: 'image/jpg',
+            type: 'image/jpg',
+            name: name + '.jpg',
+        });
+        formData.append('avatar', {
+            uri: data.replace('file://', ''),
+            mineType: 'image/jpeg',
+            fileType: 'image/jpg',
+            type: 'image/jpg',
+            name: name + '.jpg',
+        });
+        console.log('Token and Form Data', token, formData);
+        axios
+            .post(`${apiRoot}/avatar-upload/`, formData, {
+                headers: {
+                    'Content-Type':
+                        'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
+                    'User-Agent': userAgent,
+                    Origin: 'touku',
+                    Authorization: token,
+                },
+            })
+            .then((resp) => {
+                console.log('uploadAvatar API responser', resp);
+                dispatch(getUploadAvatarSuccess());
+                resolve(resp);
+            })
+            .catch((err) => {
+                console.log('uploadAvatar API response', err.response);
+                dispatch(getUploadAvatarFailure());
+                reject(err);
+            });
+    });
+

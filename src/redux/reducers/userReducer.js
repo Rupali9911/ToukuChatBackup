@@ -10,10 +10,6 @@ export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
 
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
-export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
-export const GET_UPLOAD_AVATAR_SUCCESS = 'GET_UPLOAD_AVATAR_SUCCESS';
-export const GET_UPLOAD_AVATAR_FAIL = 'GET_UPLOAD_AVATAR_FAIL';
-
 export const GET_CHANGE_NAME_REQUEST = 'GET_CHANGE_NAME_REQUEST';
 export const GET_CHANGE_NAME_SUCCESS = 'GET_CHANGE_NAME_SUCCESS';
 export const GET_CHANGE_NAME_FAIL = 'GET_CHANGE_NAME_FAIL';
@@ -37,22 +33,6 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
         userData: {...action.payload.data},
-      };
-
-    case GET_UPLOAD_AVATAR_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case GET_UPLOAD_AVATAR_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-      };
-    case GET_UPLOAD_AVATAR_FAIL:
-      return {
-        ...state,
-        loading: false,
       };
 
     case GET_CHANGE_NAME_REQUEST:
@@ -112,18 +92,6 @@ const setUserData = (data) => ({
   payload: {
     data: data,
   },
-});
-
-const getUploadAvatarRequest = () => ({
-  type: GET_UPLOAD_AVATAR_REQUEST,
-});
-
-const getUploadAvatarSuccess = () => ({
-  type: GET_UPLOAD_AVATAR_SUCCESS,
-});
-
-const getUploadAvatarFailure = () => ({
-  type: GET_UPLOAD_AVATAR_FAIL,
 });
 
 //Change Name
@@ -341,48 +309,6 @@ export const getUserProfile = () => (dispatch) =>
       .catch((err) => {
         reject(err);
       });
-  });
-
-export const uploadAvatar = (data, token) => (dispatch) =>
-  new Promise(function (resolve, reject) {
-    dispatch(getUploadAvatarRequest());
-    let name = uuid.v4();
-    let formData = new FormData();
-    formData.append('avatar_thumbnail', {
-      uri: data.replace('file://', ''),
-      mineType: 'image/jpeg',
-      fileType: 'image/jpg',
-      type: 'image/jpg',
-      name: name + '.jpg',
-    });
-    formData.append('avatar', {
-      uri: data.replace('file://', ''),
-      mineType: 'image/jpeg',
-      fileType: 'image/jpg',
-      type: 'image/jpg',
-      name: name + '.jpg',
-    });
-     console.log('Token and Form Data', token, formData);
-      // axios
-      //   .post(`${apiRoot}/avatar-upload/`, formData, {
-      //     headers: {
-      //       'Content-Type':
-      //         'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
-      //       'User-Agent': userAgent,
-      //       Origin: 'touku',
-      //       Authorization: token,
-      //     },
-      //   })
-      //   .then((resp) => {
-      //     console.log('uploadAvatar API responser', resp);
-      //     dispatch(getUploadAvatarSuccess());
-      //     resolve(resp);
-      //   })
-      //   .catch((err) => {
-      //     console.log('uploadAvatar API response', err.response);
-      //     dispatch(getUploadAvatarFailure());
-      //     reject(err);
-      //   });
   });
 
 export const changeNameDetails = (data) => (dispatch) =>

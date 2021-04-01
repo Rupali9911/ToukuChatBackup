@@ -250,7 +250,8 @@ class Home extends PureComponent {
   friendFilter = () => {
     const { friendLoading, userFriends } = this.props;
     // console.log('userFriends',userFriends);
-    const filteredFriends = userFriends.filter(
+    const Friends = userFriends.filter((friend) => friend.friend_status !== 'UNFRIEND')
+    const filteredFriends = Friends.filter(
       createFilter(this.state.searchText, ['username']),
     );
     const pinedFriends = filteredFriends.filter((friend) => friend.is_pined);
@@ -293,6 +294,16 @@ class Home extends PureComponent {
           this.getAssetXpValue();
         }, 100),
     );
+
+    this.focusListener = this.props.navigation.addListener(
+      'willBlur',
+      () => {
+        console.log('focus change');
+        // this.header && this.header._closeMenu();
+        this.header && this.header._closeOption();
+      }
+    );
+
     // this.props.getFriendRequests();
     // this.props.getUserConfiguration();
     // this.focusListener = this.props.navigation.addListener(
@@ -1639,6 +1650,7 @@ class Home extends PureComponent {
       groupHeaderCounts,
       friendHeaderCounts,
       friendRequestHeaderCounts,
+      getFriendData,
       assetXPValue
     } = this.state;
 
@@ -1672,6 +1684,7 @@ class Home extends PureComponent {
       //   style={globalStyles.container}>
       <View style={globalStyles.container}>
         <HomeHeader
+          ref={(header)=>this.header = header}
           title={translate('pages.xchat.home')}
           onChangeText={this.onSearch.bind(this)}
           onIconRightClick={this.showDropdown}
@@ -1789,7 +1802,7 @@ class Home extends PureComponent {
                 <DropdownHeader
                   title={translate('pages.xchat.friends')}
                   isCollapsed={isFriendsCollapsed}
-                  listcounts={filteredFriends.length}
+                  listcounts={getFriendData.length}
                   badgeCount={this.setFriendHeaderCount()}
                   selectedLanguageItem={selectedLanguageItem}
                   icon={Icons.icon_friend}

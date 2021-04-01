@@ -1132,6 +1132,7 @@ class GroupDetails extends Component {
                     <TextInput
                       style={[groupDetailStyles.inputStyle]}
                       placeholder={translate('pages.xchat.search')}
+                      placeholderTextColor={'gray'}
                       onChangeText={(searchText) => this.setState({searchText})}
                       returnKeyType={'done'}
                       autoCorrect={false}

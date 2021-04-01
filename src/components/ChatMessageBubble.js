@@ -388,7 +388,7 @@ class ChatMessageBubble extends Component {
         } else if(url.indexOf('/timeline-post') > -1){
           let post_id = url.substring(url.lastIndexOf('/')+1);
           console.log('post_id',post_id);
-          this.props.setActiveTimelineTab('trend');
+          this.props.setActiveTimelineTab('following');
           this.props.setSpecificPostId(post_id);
             NavigationService.navigate('Timeline');
         } else if(url.indexOf('/#/groups/') > -1) {

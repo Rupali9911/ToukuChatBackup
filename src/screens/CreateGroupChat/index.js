@@ -345,6 +345,7 @@ class CreateGroupChat extends Component {
                 <TextInput
                   style={[createGroupStyles.inputStyle]}
                   placeholder={translate('pages.xchat.search')}
+                  placeholderTextColor={'grey'}
                   onChangeText={(searchText) => this.setState({searchText})}
                   returnKeyType={'done'}
                   autoCorrect={false}

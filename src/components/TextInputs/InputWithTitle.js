@@ -43,6 +43,7 @@ export default class InputWithTitle extends Component {
           value={value}
           keyboardType={keyboardType ? keyboardType : 'default'}
           placeholder={placeholder ? placeholder : ''}
+          placeholderTextColor={'grey'}
         />
       </View>
     );

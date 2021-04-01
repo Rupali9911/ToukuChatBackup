@@ -140,6 +140,7 @@ class ChangeFriendDisplayNameModal extends Component {
             </Text>
             <View style={styles.inputContainer}>
               <TextInput
+                  color={Colors.black}
                 placeholder={translate('common.enterDisplayName')}
                 value={displayName}
                 onChangeText={(displayName) =>

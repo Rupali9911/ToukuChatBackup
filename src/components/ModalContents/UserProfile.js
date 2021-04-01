@@ -25,8 +25,8 @@ import {getAvatar, getImage, normalize, resizeImage} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
-import {updateConfiguration} from '../../redux/reducers/configurationReducer';
-import {getUserProfile, uploadAvatar} from "../../redux/reducers/userReducer";
+import {updateConfiguration, uploadAvatar} from '../../redux/reducers/configurationReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
 import AsyncStorage from '@react-native-community/async-storage';
 import Toast from '../ToastModal';
 import Modal from 'react-native-modal';
@@ -113,21 +113,21 @@ class UserProfile extends Component {
         }
 
         console.log('imageFile, token and this.props', imageFile, jwtToken, this.props )
-        uploadAvatar(imageFile, jwtToken)
-          //   .then((res) => {
-          //   console.log('uploadAvatar response final');
-          //   getUserProfile();
-          //   this.setState({uploadImageLoading: false});
-          //   Toast.show({
-          //     title: 'TOUKU',
-          //     text: translate('pages.setting.toastr.userImageChanged'),
-          //     type: 'positive',
-          //   });
-          // })
-          // .catch((err) => {
-          //   //alert(JSON.stringify(err));
-          //     console.log('Error from UploadAvatar', err)
-          // });
+       this.props.uploadAvatar(imageFile, jwtToken)
+            .then((res) => {
+            console.log('uploadAvatar response final');
+            getUserProfile();
+            this.setState({uploadImageLoading: false});
+            Toast.show({
+              title: 'TOUKU',
+              text: translate('pages.setting.toastr.userImageChanged'),
+              type: 'positive',
+            });
+          })
+          .catch((err) => {
+            //alert(JSON.stringify(err));
+              console.log('Error from UploadAvatar', err)
+          });
       }
     });
   }
@@ -282,7 +282,7 @@ class UserProfile extends Component {
                 <ClickableImage
                   source={Icons.icon_camera}
                   size={14}
-                  onClick={this.onUserImageCameraPress.bind(this)}
+                  onClick={() => this.onUserImageCameraPress()}
                 />
               </View>
             </View>
@@ -304,8 +304,6 @@ class UserProfile extends Component {
                   fontSize: normalize(15),
                 },
               ]}>
-              {/* {userData.first_name + ' '}
-              {userData.last_name} */}
               {userConfig.display_name}
             </Text>
             <RoundedImage
@@ -546,6 +544,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   updateConfiguration,
+  uploadAvatar,
+  getUserProfile
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

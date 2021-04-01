@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, FlatList} from 'react-native';
+import {View, ImageBackground, FlatList, Platform} from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -94,6 +94,7 @@ import {
 import SingleSocket from '../../helpers/SingleSocket';
 import BulkSocket from '../../helpers/BulkSocket';
 import {
+  getChannels,
   updateMessageById,
   deleteMessageById,
   setMessageUnsend,
@@ -298,10 +299,9 @@ class Chat extends Component {
       let groupLoadingStatus = true;
       let userLoadingStatus = true;
 
-      this.props.getFollowingChannels().then((res) => {
+      this.props.getUserFriends().then((res) => {
         // this.setCommonConversation();
-        //console.log('channel_api_response', res);
-        channelLoadingStatus = false;
+        userLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
           if (this.props.commonChat.length) {
             this.setState({
@@ -315,6 +315,7 @@ class Chat extends Component {
           }
         });
       });
+
       this.props.getUserGroups().then((res) => {
         // this.setCommonConversation();
         groupLoadingStatus = false;
@@ -331,9 +332,11 @@ class Chat extends Component {
           }
         });
       });
-      this.props.getUserFriends().then((res) => {
+
+      this.props.getFollowingChannels().then((res) => {
         // this.setCommonConversation();
-        userLoadingStatus = false;
+        console.log('channel_api_response', res);
+        channelLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
           if (this.props.commonChat.length) {
             this.setState({
@@ -409,13 +412,23 @@ class Chat extends Component {
         }, 100),
     );
 
-      this.focusListener = this.props.navigation.addListener(
-          'willFocus',
-          async () =>
-              setTimeout(() => {
-                  this.addFriendByReferralCode()
-              }, 2000),
-      );
+    this.focusListener = this.props.navigation.addListener(
+      'willFocus',
+      async () =>
+        setTimeout(() => {
+          this.addFriendByReferralCode()
+        }, 2000),
+    );
+
+    this.willBlurfocusListener = this.props.navigation.addListener(
+      'willBlur',
+      () => {
+        console.log('focus change');
+        this.header && this.header._closeMenu();
+        this.header && this.header._closeOption();
+      },
+    );
+
   }
 
   componentWillUnmount() {
@@ -1906,7 +1919,8 @@ class Chat extends Component {
   unFriendUser = (message) => {
     const {currentFriend} = this.props;
     if (message) {
-      removeUserFriends(message.text.data.message_details.user_id);
+      // removeUserFriends(message.text.data.message_details.user_id);
+      updateFriendStatus(message.text.data.message_details.user_id,message.text.data.message_details.status);
       this.props.setUserFriends().then((res) => {
         this.props.setCommonChatConversation();
       });
@@ -3532,6 +3546,7 @@ class Chat extends Component {
       //   style={globalStyles.container}>
       <View style={globalStyles.container}>
         <HomeHeader
+          ref={(header)=>this.header = header}
           title={translate('pages.xchat.chat')}
           isSortOptions
           menuItems={[

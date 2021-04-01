@@ -266,7 +266,7 @@ export default class App extends Component {
       console.log('post_id',post_id);
       const userToken = await AsyncStorage.getItem('userToken');
       if (userToken) {
-        store.dispatch(setActiveTab('trend'));
+        store.dispatch(setActiveTab('following'));
         store.dispatch(setSpecificId(post_id));
         NavigationService.navigate('Timeline');
       }else{

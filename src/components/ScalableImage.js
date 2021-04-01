@@ -31,7 +31,7 @@ export default class ScalableImage extends Component {
         <FastImage
             style={{
                 width: isHyperlink?WIDTH:'100%',
-                aspectRatio: ratio,
+                aspectRatio: ratio || 1,
                 borderRadius: borderRadius ? borderRadius : 0,
             }}
             source={{

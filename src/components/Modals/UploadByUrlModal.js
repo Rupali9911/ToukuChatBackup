@@ -135,7 +135,9 @@ class UploadByUrlModal extends Component {
             <View style={{padding: 15}}>
               <View style={styles.inputContainer}>
                 <TextInput
+                    color={Colors.black}
                   placeholder={translate('pages.xchat.enterUrl')}
+                    placeholderTextColor={'grey'}
                   value={url}
                   onChangeText={(text) => {
                     this.setState({url: text});

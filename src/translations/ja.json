@@ -1234,7 +1234,8 @@
       "totalMembers": "総会員数",
       "joinThisGroup": "このグループに参加する",
       "issueGroupInvitation": "グループ招待URLを発行",
-      "goToGroupChat": "グループチャットに移動"
+      "goToGroupChat": "グループチャットに移動",
+      "searchByQr": "QRコードで検索"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

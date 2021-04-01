@@ -284,6 +284,7 @@ export const getUserGroups = () => (dispatch) =>
               ? 1
               : -1,
           );
+          console.log('begin insertion of object');
           setGroups(res.conversations);
           dispatch(getUserGroupsSuccess(res.conversations));
         }

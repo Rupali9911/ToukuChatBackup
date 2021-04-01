@@ -1234,7 +1234,8 @@
       "totalMembers": "총 회원",
       "joinThisGroup": "이 그룹에 가입",
       "issueGroupInvitation": "이슈 그룹 초대 URL",
-      "goToGroupChat": "그룹 채팅으로 이동"
+      "goToGroupChat": "그룹 채팅으로 이동",
+      "searchByQr": "QR 코드로 검색"
     },
     "welcome":{
       "theWorldIsConnected":"\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",
