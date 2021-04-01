@@ -300,7 +300,7 @@ class Chat extends Component {
 
       this.props.getFollowingChannels().then((res) => {
         // this.setCommonConversation();
-        console.log('channel_api_response', res);
+        //console.log('channel_api_response', res);
         channelLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
           if (this.props.commonChat.length) {
@@ -1046,7 +1046,7 @@ class Chat extends Component {
         setGroupChatConversation([message.text.data.message_details]);
 
         if (
-          this.props.currentRouteName == 'GroupChats' && this.props.currentRouteName == 'GroupDetails' &&
+            (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
           currentGroup &&
           message.text.data.message_details.group_id == currentGroup.group_id
         ) {
@@ -2221,7 +2221,7 @@ class Chat extends Component {
           ) {
             this.getGroupDetail();
             this.getGroupMembers();
-          }      
+          }
         }
       }
     }
@@ -2336,7 +2336,7 @@ class Chat extends Component {
         this.props.setAcceptedRequest(array);
       }
 
-      
+
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });

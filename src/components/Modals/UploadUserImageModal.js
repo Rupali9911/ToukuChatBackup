@@ -17,8 +17,6 @@ import RoundedImage from '../RoundedImage';
 import {globalStyles} from '../../styles';
 import Button from '../Button';
 import {getImage, wait} from '../../utils';
-
-import {uploadAvatar} from '../../redux/reducers/userReducer';
 import Toast from '../Toast';
 import {translate} from '../../redux/reducers/languageReducer';
 
@@ -67,18 +65,7 @@ class UploadUserImageModal extends Component {
   };
 
   onUploadImage = () => {
-    // let uploadData = {
-    //   avatar_thumbnail: 'data:image/jpeg;base64,' + this.state.filePath.data,
-    //   avatar: 'data:image/jpeg;base64,' + this.state.filePath.data,
-    // };
-    // this.props.uploadAvatar(uploadData);
-    //   .then((res) => {
-    //     Toast.show({
-    //       title: 'Upload Avatar',
-    //       text: translate('pages.xchat.userImageChanged'),
-    //       type: 'positive',
-    //     });
-    //   })
+
   };
 
   render() {
@@ -232,7 +219,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  uploadAvatar,
 };
 
 export default connect(

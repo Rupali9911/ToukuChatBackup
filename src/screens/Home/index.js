@@ -1711,6 +1711,7 @@ class Home extends PureComponent {
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
             enableOnAndroid={true}
+            //horizontal={false}
             style={{backgroundColor: Colors.white}}>
             {filteredFriendRequest.length > 0 && (
               <Collapse

@@ -346,17 +346,6 @@ export const getUserProfile = () => (dispatch) =>
 export const uploadAvatar = (data, token) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUploadAvatarRequest());
-    // client
-    //   .post(`/avatar-upload/`, data)
-    //   .then((res) => {
-    //     dispatch(getUploadAvatarSuccess());
-    //     resolve(res);
-    //   })
-    //   .catch((err) => {
-    //     dispatch(getUploadAvatarFailure());
-    //     reject(err);
-    //   });
-
     let name = uuid.v4();
     let formData = new FormData();
     formData.append('avatar_thumbnail', {
@@ -373,30 +362,27 @@ export const uploadAvatar = (data, token) => (dispatch) =>
       type: 'image/jpg',
       name: name + '.jpg',
     });
-
-    setTimeout(() => {
-      console.log('Token and Form Data', token, formData);
-      axios
-        .post(`${apiRoot}/avatar-upload/`, formData, {
-          headers: {
-            'Content-Type':
-              'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
-            'User-Agent': userAgent,
-            Origin: 'touku',
-            Authorization: token,
-          },
-        })
-        .then((resp) => {
-          console.log('uploadAvatar API responser', resp);
-          dispatch(getUploadAvatarSuccess());
-          resolve(resp);
-        })
-        .catch((err) => {
-          console.log('uploadAvatar API response', err.response);
-          dispatch(getUploadAvatarFailure());
-          reject(err);
-        });
-    }, 1000);
+     console.log('Token and Form Data', token, formData);
+      // axios
+      //   .post(`${apiRoot}/avatar-upload/`, formData, {
+      //     headers: {
+      //       'Content-Type':
+      //         'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
+      //       'User-Agent': userAgent,
+      //       Origin: 'touku',
+      //       Authorization: token,
+      //     },
+      //   })
+      //   .then((resp) => {
+      //     console.log('uploadAvatar API responser', resp);
+      //     dispatch(getUploadAvatarSuccess());
+      //     resolve(resp);
+      //   })
+      //   .catch((err) => {
+      //     console.log('uploadAvatar API response', err.response);
+      //     dispatch(getUploadAvatarFailure());
+      //     reject(err);
+      //   });
   });
 
 export const changeNameDetails = (data) => (dispatch) =>

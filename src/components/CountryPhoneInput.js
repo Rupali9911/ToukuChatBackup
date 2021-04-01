@@ -138,7 +138,7 @@ class CountryPhoneInput extends Component {
             value={countryCode + number}
             style={{ flex: 1 }}
             flagStyle={{ height: 30, width: 30, }}
-            textStyle={{  }}
+            //textStyle={{  }}
             autoFormat={true}
             offset={0}
             allowZeroAfterCountryCode={false}

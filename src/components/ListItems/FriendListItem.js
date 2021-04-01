@@ -45,14 +45,15 @@ export default class FriendListItem extends PureComponent {
       console.log('timer_set', this.typingTimeout);
     }
   };
+// Commented by Shubham to avoid warning of componentWillReceiveProps
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.isTyping !== this.props.isTyping) {
+  //     this.checkTyping(nextProps.isTyping);
+  //   } else {
+  //     // this.typingTimeout && clearTimeout(this.typingTimeout);
+  //   }
+  // }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.isTyping !== this.props.isTyping) {
-      this.checkTyping(nextProps.isTyping);
-    } else {
-      // this.typingTimeout && clearTimeout(this.typingTimeout);
-    }
-  }
   getDate = (date) => {
     if (date === null || date === '' || date === undefined) {
       return '';

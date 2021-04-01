@@ -26,7 +26,7 @@ import S3uploadService from '../../helpers/S3uploadService';
 import {ListLoader, ImageLoader} from '../Loaders';
 import {translate} from '../../redux/reducers/languageReducer';
 import {updateConfiguration} from '../../redux/reducers/configurationReducer';
-import {getUserProfile, uploadAvatar} from '../../redux/reducers/userReducer';
+import {getUserProfile, uploadAvatar} from "../../redux/reducers/userReducer";
 import AsyncStorage from '@react-native-community/async-storage';
 import Toast from '../ToastModal';
 import Modal from 'react-native-modal';
@@ -44,6 +44,10 @@ class UserProfile extends Component {
       profileImagePath: {uri: this.props.userData.avatar},
     };
     this.S3uploadService = new S3uploadService();
+  }
+
+  componentDidMount(): void {
+    console.log('this.props', this.props)
   }
 
     componentDidUpdate(prevProps) {
@@ -82,6 +86,7 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
+      console.log('this.props', this.props)
     ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
@@ -107,23 +112,22 @@ class UserProfile extends Component {
           jwtToken = `JWT ${userAndSocialToken[1][1]}`;
         }
 
-        this.props
-          .uploadAvatar(imageFile, jwtToken)
-          .then((res) => {
-            console.log('uploadAvatar response final');
-            this.props.getUserProfile();
-            this.setState({uploadImageLoading: false});
-            Toast.show({
-              title: 'TOUKU',
-              text: translate('pages.setting.toastr.userImageChanged'),
-              type: 'positive',
-            });
-
-            // alert(JSON.stringify(res));
-          })
-          .catch((err) => {
-            //alert(JSON.stringify(err));
-          });
+        console.log('imageFile, token and this.props', imageFile, jwtToken, this.props )
+        uploadAvatar(imageFile, jwtToken)
+          //   .then((res) => {
+          //   console.log('uploadAvatar response final');
+          //   getUserProfile();
+          //   this.setState({uploadImageLoading: false});
+          //   Toast.show({
+          //     title: 'TOUKU',
+          //     text: translate('pages.setting.toastr.userImageChanged'),
+          //     type: 'positive',
+          //   });
+          // })
+          // .catch((err) => {
+          //   //alert(JSON.stringify(err));
+          //     console.log('Error from UploadAvatar', err)
+          // });
       }
     });
   }
@@ -278,7 +282,7 @@ class UserProfile extends Component {
                 <ClickableImage
                   source={Icons.icon_camera}
                   size={14}
-                  onClick={() => this.onUserImageCameraPress()}
+                  onClick={this.onUserImageCameraPress.bind(this)}
                 />
               </View>
             </View>
@@ -542,8 +546,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   updateConfiguration,
-  uploadAvatar,
-  getUserProfile,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);

@@ -20,7 +20,8 @@ import {
   xanaUrl,
   xanaDeepLink,
   xanaAppStore,
-    faqUrl
+    faqUrl,
+    faqUrl1
 } from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from '../../components/Modals/ProfileModal';
@@ -136,7 +137,7 @@ class More extends Component {
   }
 
     actionFaq() {
-        Linking.openURL(faqUrl);
+        Linking.openURL(faqUrl1 + this.props.selectedLanguageItem.language_name);
     }
 
   render() {

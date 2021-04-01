@@ -70,6 +70,7 @@ export default class AudioPlayerCustom extends Component {
   onPlaySound = async (url) => {
     const {onAudioPlayPress, postId, audioPlayingId, onPlay} = this.props;
 
+    console.log('onPlaySound', url)
     var plarUrl =
       'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
     if (postId !== audioPlayingId) {
@@ -79,9 +80,10 @@ export default class AudioPlayerCustom extends Component {
     try {
       var fileFormate = url.split('.').pop();
       console.log('fileFormate',fileFormate);
-      // if (fileFormate === 'mp3') {
+
+      //if (fileFormate === 'mp3' || fileFormate === 'm4a') {
         plarUrl = url;
-      // }
+     // }
       this.setState({
         isLoading: true,
       });
@@ -217,7 +219,7 @@ export default class AudioPlayerCustom extends Component {
           height: 45,
           borderRadius: 100,
         }}
-        
+
         >
         <View style={{flex: 0.1}}>
           {isLoading ? (
