@@ -1,60 +1,41 @@
-import React, {Component} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Platform,
-  Text,
-} from 'react-native';
-import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {connect} from 'react-redux';
+
 import {Colors, Icons} from '../../constants';
 import {globalStyles} from '../../styles';
+import data from './data';
+import styles from './styles';
+
+const initialState = {
+  isChecked: false,
+  selectedItem: 'Select',
+  data,
+};
 
 class DropDown extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isChecked: false,
-      selectedItem: 'Select',
-      data: [
-        {
-          id: 1,
-          title: 'Unable To Register',
-          selected: false,
-        },
-
-        {
-          id: 2,
-          title: 'Not Getting Currect Data',
-          selected: false,
-        },
-
-        {
-          id: 3,
-          title: 'Unable To Login',
-          selected: false,
-        },
-      ],
-    };
+    this.state = initialState;
   }
 
   componentDidMount() {
     this.state.data.map((item) => {
-      if (item.selected == true) {
+      if (item.selected) {
+        // TODO: Do something when item is selected!
       }
     });
   }
 
   onSelectItem = (item, index) => {
-    let data = this.state.data;
-    data.map((item) => {
-      item.selected = false;
+    let tempData = this.state.data;
+    tempData.map((itemValue) => {
+      itemValue.selected = false;
     });
 
-    data[index].selected = true;
+    tempData[index].selected = true;
     this.setState((prevState) => {
       return {
         isChecked: !prevState.isChecked,
@@ -81,12 +62,11 @@ class DropDown extends Component {
   };
 
   render() {
-    const {isChecked, data, selectedItem} = this.state;
     return (
       <View style={styles.container}>
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => this.onSelectPress(selectedItem)}>
+          onPress={() => this.onSelectPress(this.state.selectedItem)}>
           <LinearGradient
             start={{x: 0.1, y: 0.7}}
             end={{x: 0.5, y: 0.8}}
@@ -94,26 +74,22 @@ class DropDown extends Component {
             colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
             style={styles.subContainer}>
             <View>
-              <Text style={globalStyles.smallLightText}>{selectedItem}</Text>
+              <Text style={globalStyles.smallLightText}>
+                {this.state.selectedItem}
+              </Text>
             </View>
             <View>
               <Image
                 source={Icons.icon_triangle_down}
-                style={{width: 10, height: 10, resizeMode: 'contain'}}
+                style={styles.dropdownIcon}
               />
             </View>
           </LinearGradient>
         </TouchableOpacity>
 
-        {isChecked ? (
-          <View
-            style={{
-              zIndex: 100,
-              overflow: 'hidden',
-              paddingTop: 10,
-              backgroundColor: Colors.white,
-            }}>
-            {data.map((item, key) => (
+        {this.state.isChecked ? (
+          <View style={styles.checkedContainer}>
+            {this.state.data.map((item, key) => (
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => this.onSelectItem(item.title, key)}>
@@ -148,30 +124,9 @@ class DropDown extends Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    borderRadius: 10,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    position: 'absolute',
-    left: 0,
-    overflow: 'hidden',
-  },
-  subContainer: {
-    width: '100%',
-    height: 45,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-  },
-});
 
 DropDown.propTypes = {
   isChecked: PropTypes.bool,
-  /**
-   * Callbacks
-   */
   onPress: PropTypes.func,
   onOtherLanguagePress: PropTypes.func,
 };
@@ -188,6 +143,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {};
-
-export default connect(mapStateToProps, mapDispatchToProps)(DropDown);
+export default connect(mapStateToProps, null)(DropDown);

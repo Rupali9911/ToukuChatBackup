@@ -21,8 +21,8 @@ import ChannelTimeline from '../screens/ChannelTimeline';
 import GroupInvitation from '../screens/GroupInvitation';
 import JoinGroup from '../screens/JoinGroup';
 import Drawer from './DrawerNavigation';
-import BottomTabs from "./BottomTabs";
-import { gestureResponseDistance } from '../constants';
+import BottomTabs from './BottomTabs';
+import {gestureResponseDistance} from '../constants';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 
@@ -41,8 +41,8 @@ const ChannelStack = createStackNavigator(
 
 const AppStack = createStackNavigator(
   {
-      Tabs: BottomTabs,
-   // Drawer: Drawer,
+    Tabs: BottomTabs,
+    // Drawer: Drawer,
     GroupChats: GroupChats,
     FriendChats: FriendChats,
     CreateFriendGroup: CreateFriendGroup,
@@ -53,16 +53,16 @@ const AppStack = createStackNavigator(
     GroupDetails: GroupDetails,
     FriendNotes: FriendNotes,
     GroupInvitation: GroupInvitation,
-    JoinGroup: JoinGroup
+    JoinGroup: JoinGroup,
   },
   {
     //initialRouteName: 'Drawer',
     initialRouteName: 'Tabs',
     defaultNavigationOptions: {
       headerShown: false,
-        disableGestures: true,
-        gestureResponseDistance: {horizontal: gestureResponseDistance}
-    }
+      disableGestures: true,
+      gestureResponseDistance: {horizontal: gestureResponseDistance},
+    },
   },
 );
 

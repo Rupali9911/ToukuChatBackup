@@ -60,8 +60,10 @@ class NeedSupport extends Component {
 
     return (
       <ImageBackground
-          //source={Images.image_touku_bg}
-          source={Platform.isPad ? Images.image_touku_bg :  Images.image_touku_bg_phone}
+        //source={Images.image_touku_bg}
+        source={
+          Platform.isPad ? Images.image_touku_bg : Images.image_touku_bg_phone
+        }
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
@@ -124,7 +126,13 @@ class NeedSupport extends Component {
                   }}>
                   <DropDown />
                 </View>
-                <View style={{marginTop: 30, zIndex: 0, overflow: 'visible'}}>
+                <View
+                  style={{
+                    marginTop: 30,
+                    zIndex: 0,
+                    overflow: 'visible',
+                    backgroundColor: 'ref',
+                  }}>
                   <Button
                     type={'primary'}
                     title={translate('common.submit')}
