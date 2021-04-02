@@ -1,36 +1,39 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  Platform,
   ActivityIndicator,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import LinearGradient from 'react-native-linear-gradient';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {Colors, Fonts, Images, Icons, environment} from '../../constants';
-import RoundedImage from '../RoundedImage';
-import {globalStyles} from '../../styles';
+import LinearGradient from 'react-native-linear-gradient';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {connect} from 'react-redux';
+import {Colors, Fonts, Icons} from '../../constants';
+import S3uploadService from '../../helpers/S3uploadService';
 import {
-  ChangePassModal,
+  updateConfiguration,
+  getUserProfile,
+  uploadAvatar,
+} from '../../redux/reducers/configurationReducer';
+// import {getUserProfile, uploadAvatar} from '../../redux/reducers/userReducer';
+import {translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import {getAvatar, getImage, normalize, resizeImage} from '../../utils';
+import {ImageLoader, ListLoader} from '../Loaders';
+import {
   ChangeEmailModal,
   ChangeNameModal,
+  ChangePassModal,
   UpdatePhoneModal,
 } from '../Modals';
-import {getAvatar, getImage, normalize, resizeImage} from '../../utils';
-import S3uploadService from '../../helpers/S3uploadService';
-import {ListLoader, ImageLoader} from '../Loaders';
-import {translate} from '../../redux/reducers/languageReducer';
-import {updateConfiguration} from '../../redux/reducers/configurationReducer';
-import {getUserProfile, uploadAvatar} from '../../redux/reducers/userReducer';
-import AsyncStorage from '@react-native-community/async-storage';
+import RoundedImage from '../RoundedImage';
 import Toast from '../ToastModal';
-import Modal from 'react-native-modal';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -46,14 +49,19 @@ class UserProfile extends Component {
     this.S3uploadService = new S3uploadService();
   }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.userConfig.background_image !== prevProps.userConfig.background_image) {
-            this.setState({backgroundImagePath: {uri: this.props.userConfig.background_image}});
-        }
-        if (this.props.userData.avatar !== prevProps.userData.avatar) {
-            this.setState({profileImagePath: {uri: this.props.userData.avatar}});
-        }
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.userConfig.background_image !==
+      prevProps.userConfig.background_image
+    ) {
+      this.setState({
+        backgroundImagePath: {uri: this.props.userConfig.background_image},
+      });
     }
+    if (this.props.userData.avatar !== prevProps.userData.avatar) {
+      this.setState({profileImagePath: {uri: this.props.userData.avatar}});
+    }
+  }
 
   onShowChangePassModal() {
     this.setState({isChangePassModalVisible: true});
@@ -71,7 +79,7 @@ class UserProfile extends Component {
   }
 
   onUserImageCameraPress = () => {
-    var options = {
+    let options = {
       title: translate('pages.xchat.chooseOption'),
       takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
       chooseFromLibraryButtonTitle: translate('pages.xchat.chooseFromLibrary'),
@@ -82,7 +90,7 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, async (response) => {
+    launchImageLibrary(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
         console.log('response.error', response.error);
@@ -107,6 +115,10 @@ class UserProfile extends Component {
           jwtToken = `JWT ${userAndSocialToken[1][1]}`;
         }
 
+        // console.log('token::', jwtToken);
+        // const result = await this.props.uploadAvatar(imageFile, jwtToken);
+        // const anotherResult = await result();
+        // console.log('Another Result', Object.values(anotherResult));
         this.props
           .uploadAvatar(imageFile, jwtToken)
           .then((res) => {
@@ -122,14 +134,15 @@ class UserProfile extends Component {
             // alert(JSON.stringify(res));
           })
           .catch((err) => {
+            console.error('this.props.uploadAvatar::err', err);
             //alert(JSON.stringify(err));
           });
       }
     });
-  }
+  };
 
   chooseBackgroundImage = async () => {
-    var options = {
+    let options = {
       title: translate('pages.xchat.chooseOption'),
       takePhotoButtonTitle: translate('pages.xchat.takePhoto'),
       chooseFromLibraryButtonTitle: translate('pages.xchat.chooseFromLibrary'),
@@ -140,7 +153,7 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, async (response) => {
+    launchImageLibrary(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
@@ -152,15 +165,15 @@ class UserProfile extends Component {
         });
 
         let file = response;
-        file['name'] = file.uri.substring(file.uri.lastIndexOf('/')+1);
+        file.name = file.uri.substring(file.uri.lastIndexOf('/') + 1);
         let files = [file];
         // console.log('files', files);
         const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
           files,
         );
-        console.log('Uploaded Image', uploadedImages)
+        console.log('Uploaded Image', uploadedImages);
         let bgData = {
-           background_image: uploadedImages.image[0].image,
+          background_image: uploadedImages.image[0].image,
           //background_image: uploadedImages.image[0].thumbnail,
         };
         this.props.updateConfiguration(bgData).then((res) => {
@@ -177,13 +190,14 @@ class UserProfile extends Component {
 
   render() {
     const {onRequestClose, userData, userConfig} = this.props;
+    console.log('Props', this.props);
     const {
       isChangePassModalVisible,
       isChangeEmailModalVisible,
       isChangeNameModalVisible,
       isUpdatePhoneModalVisible,
       backgroundImagePath,
-      profileImagePath,
+
       uploadLoading,
       uploadImageLoading,
     } = this.state;

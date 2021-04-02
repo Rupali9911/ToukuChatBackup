@@ -14,43 +14,44 @@ import configurationReducer from './configurationReducer';
 import addFriendReducer from './addFriendReducer';
 import timelineReducer from './timelineReducer';
 import commonReducer from './commonReducer';
-import {client} from "../../helpers/api";
+import {client} from '../../helpers/api';
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
 const allReducers = combineReducers({
-  userReducer: userReducer,
-  loginReducer: loginReducer,
-  signupReducer: signupReducer,
-  languageReducer: languageReducer,
-  forgotPassReducer: forgotPassReducer,
-  channelReducer: channelReducer,
-  groupReducer: groupReducer,
-  friendReducer: friendReducer,
-  configurationReducer: configurationReducer,
-  addFriendReducer: addFriendReducer,
-  timelineReducer: timelineReducer,
-  commonReducer: commonReducer,
+  userReducer,
+  loginReducer,
+  signupReducer,
+  languageReducer,
+  forgotPassReducer,
+  channelReducer,
+  groupReducer,
+  friendReducer,
+  configurationReducer,
+  addFriendReducer,
+  timelineReducer,
+  commonReducer,
 });
 
-export const logout = (data) => (dispatch, getState) =>
-    new Promise(function (resolve, reject) {
-        client
-           .post(`/xchat/logout/`, data)
-           .then((res) => {
-               dispatch({
-                   type: LOGOUT_SUCCESS,
-               });
-               resolve(true);
-          })
-         .catch((err) => {
-             dispatch({
-                 type: LOGOUT_SUCCESS,
-             });
-             resolve(true);
-               // reject(err);
-         });
-});
+export const logout = (data) => (dispatch) =>
+  new Promise(function (resolve) {
+    client
+      .post('/xchat/logout/', data)
+      .then((res) => {
+        dispatch({
+          type: LOGOUT_SUCCESS,
+        });
+        resolve(true);
+      })
+      .catch((err) => {
+        console.error('logout::err', err);
+        dispatch({
+          type: LOGOUT_SUCCESS,
+        });
+        resolve(true);
+        // reject(err);
+      });
+  });
 
 const rootReducer = (state, action) => {
   if (action.type === LOGOUT_SUCCESS) {

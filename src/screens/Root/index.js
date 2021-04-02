@@ -3,10 +3,8 @@ import {View, ViewPropTypes, Text} from 'react-native';
 import PropTypes from 'prop-types';
 import Toast from '../../components/Toast';
 import {ProfileModal} from '../../components/Modals';
-import SingleSocket from '../../helpers/SingleSocket';
 
 class Root extends Component {
-
   static toastInstance;
 
   render() {
@@ -17,13 +15,17 @@ class Root extends Component {
         <Toast
           ref={(c) => {
             this.toastInstance = c;
-            if (c) Toast.toastInstance = c;
+            if (c) {
+              Toast.toastInstance = c;
+            }
           }}
         />
 
         <ProfileModal
           ref={(c) => {
-            if (c) ProfileModal.userProfleInstance = c;
+            if (c) {
+              ProfileModal.userProfleInstance = c;
+            }
           }}
         />
 

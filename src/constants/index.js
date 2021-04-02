@@ -102,7 +102,7 @@ export const Images = {
   bitcoin_img: require('../../assets/images/bitcoin_img.png'),
   crown_img: require('../../assets/images/crown.png'),
   banner_img: require('../../assets/images/banner_new.png'),
-  amazon_gift_logo: require('../../assets/images/amazon_gift_logo.png')
+  amazon_gift_logo: require('../../assets/images/amazon_gift_logo.png'),
 };
 
 export const Colors = {
@@ -146,7 +146,7 @@ export const Colors = {
   light_pink: '#FFEDEE',
   message_gray: '#9FA7B0',
   textTitle_orange: '#e26161',
-  update_bg: '#e4d5d580'
+  update_bg: '#e4d5d580',
 };
 
 export const Fonts = {
@@ -198,8 +198,8 @@ export const environment = {
     // accessKeyId: 'AKIA4J4DJVXPUM6H57F7',
     // secretAccessKey: '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',
     region: 'ap-southeast-1',
-       accessKeyId: 'AKIA4J4DJVXPRVCAMSVA',
-       secretAccessKey: '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',
+    accessKeyId: 'AKIA4J4DJVXPRVCAMSVA',
+    secretAccessKey: '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',
   },
 };
 
@@ -356,7 +356,7 @@ export const SocketEvents = {
   LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 'like or unlike friend note',
   LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment',
   CLEAR_GROUP_CHAT: 'clear group chat from group list',
-  UPDATING_USER_TP: 'Updating user tp'
+  UPDATING_USER_TP: 'Updating user tp',
 };
 
 export const NotificationType = {
@@ -398,5 +398,5 @@ export const openBoxImage = {
 };
 
 export const appleStoreUserId = 4046;
-export const gestureResponseDistance = SCREEN_WIDTH*0.9;
+export const gestureResponseDistance = SCREEN_WIDTH * 0.9;
 export const apiRootStaging = 'https://touku-api.angelium.net/api';
