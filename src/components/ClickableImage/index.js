@@ -1,14 +1,15 @@
+// Library imports
 import React, {Component} from 'react';
 import {TouchableOpacity, Image} from 'react-native';
 import PropTypes from 'prop-types';
+
+// Local imports
 import {Images, Colors} from '../../constants';
 
+/**
+ * Image with click functionality component
+ */
 export default class ClickableImage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   render() {
     const {source, size, color, resizeMode, onPress} = this.props;
     return (
@@ -27,6 +28,9 @@ export default class ClickableImage extends Component {
   }
 }
 
+/**
+ * Component prop types
+ */
 ClickableImage.propTypes = {
   source: PropTypes.any,
   size: PropTypes.any,
@@ -35,6 +39,9 @@ ClickableImage.propTypes = {
   onPress: PropTypes.func,
 };
 
+/**
+ * Component default props
+ */
 ClickableImage.defaultProps = {
   source: Images.image_default_profile,
   size: 60,

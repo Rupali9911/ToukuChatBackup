@@ -24,7 +24,7 @@ import {
   changeEmail,
   getUserProfile,
 } from '../../redux/reducers/userReducer';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 import {Divider} from 'react-native-paper';
 import {isValidUrl} from '../../utils';
 import {getUrlcontent} from '../../redux/reducers/groupReducer';

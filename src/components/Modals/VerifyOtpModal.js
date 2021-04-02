@@ -1,10 +1,5 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-} from 'react-native';
+import {StyleSheet, View, Text, Platform} from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import {Colors, Icons} from '../../constants';
@@ -13,7 +8,7 @@ import Button from '../Button';
 import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 import Toast from '../ToastModal';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 import VerificationInputField from '../VerificationInputField';
 
 class VerifyOtpModal extends Component {
@@ -21,20 +16,22 @@ class VerifyOtpModal extends Component {
     super(props);
     this.state = {
       verifycode: '',
-      loading: false
+      loading: false,
     };
     this.inputs = {};
   }
 
   verifyOtpUpdateNumber = () => {
-    const { verifycode } = this.state;
+    const {verifycode} = this.state;
 
     if (verifycode != '') {
       this.props.onVerify(verifycode);
     } else {
       Toast.show({
         title: translate('pages.xchat.PleaseEnterOtp'),
-        text: translate('pages.resetPassword.toastr.pleaseCheckOTPCodeandTryAgain'),
+        text: translate(
+          'pages.resetPassword.toastr.pleaseCheckOTPCodeandTryAgain',
+        ),
         type: 'warning',
       });
     }
@@ -47,7 +44,7 @@ class VerifyOtpModal extends Component {
     });
   };
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({loading: nextProps.loading});
   }
 
@@ -74,8 +71,12 @@ class VerifyOtpModal extends Component {
             locations={[0.1, 0.5, 0.8]}
             colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
             style={styles.header}>
-            <View style={{flex: 1,justifyContent:'center'}}>
-              <Text style={[globalStyles.normalLightText, { marginTop:5, textAlign: 'left'}]}>
+            <View style={{flex: 1, justifyContent: 'center'}}>
+              <Text
+                style={[
+                  globalStyles.normalLightText,
+                  {marginTop: 5, textAlign: 'left'},
+                ]}>
                 {translate('pages.adWall.pleaseEnterOtp')}
               </Text>
             </View>

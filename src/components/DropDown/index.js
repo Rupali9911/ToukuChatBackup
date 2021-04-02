@@ -1,3 +1,9 @@
+/**
+ * - UNABLE TO FIX
+ * - GUIDANCE REQURIED
+ * - REASON: Couldn't find component in physical/emulator.
+ */
+
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';

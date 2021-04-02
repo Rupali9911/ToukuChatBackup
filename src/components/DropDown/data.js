@@ -1,3 +1,6 @@
+/**
+ * Drop down list items
+ */
 export default [
   {
     id: 1,

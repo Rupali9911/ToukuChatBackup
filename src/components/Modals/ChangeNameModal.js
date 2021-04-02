@@ -1,11 +1,5 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  Platform,
-} from 'react-native';
+import {StyleSheet, View, Text, TextInput, Platform} from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,7 +12,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {updateConfiguration} from '../../redux/reducers/configurationReducer';
 import Toast from '../ToastModal';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 
 class ChangeNameModal extends Component {
   constructor(props) {
@@ -51,18 +45,18 @@ class ChangeNameModal extends Component {
               title: translate('pages.changeDisplayName'),
               text: translate('pages.setting.toastr.nameUpdatedSuccessfully'),
               type: 'positive',
-            })
-              setTimeout(() => {
-                  this.props.onRequestClose();
-              }, 2000);
+            });
+            setTimeout(() => {
+              this.props.onRequestClose();
+            }, 2000);
 
             this.props.getUserProfile();
           }
         })
         .catch((err) => {
-            setTimeout(() => {
-                this.props.onRequestClose();
-            }, 2000);
+          setTimeout(() => {
+            this.props.onRequestClose();
+          }, 2000);
           Toast.show({
             title: translate('pages.changeDisplayName'),
             text: translate('common.somethingWentWrong'),
@@ -125,54 +119,54 @@ class ChangeNameModal extends Component {
             />
           </LinearGradient>
 
-            <View style={{padding: 15}}>
-              <Text
-                style={{
-                  color: Colors.gray_dark,
-                  textAlign: 'right',
-                }}>
-                {displayName.length}/{32}
-              </Text>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  placeholder={translate('common.enterDisplayName')}
-                  value={displayName}
-                  onChangeText={(displayName) =>
-                    this.handleDisplayName(displayName)
-                  }
-                  maxLength={32}
-                  autoCapitalize={'none'}
-                  onSubmitEditing={() => {}}
-                />
-              </View>
-              {displayNameErr !== null ? (
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {
-                      color: Colors.danger,
-                      textAlign: 'left',
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
-                  ]}>
-                  {translate(displayNameErr)}
-                </Text>
-              ) : null}
-              <Button
-                isRounded={false}
-                title={translate('pages.changeDisplayName')}
-                onPress={this.onChangePress.bind(this)}
-                loading={loading}
+          <View style={{padding: 15}}>
+            <Text
+              style={{
+                color: Colors.gray_dark,
+                textAlign: 'right',
+              }}>
+              {displayName.length}/{32}
+            </Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholder={translate('common.enterDisplayName')}
+                value={displayName}
+                onChangeText={(displayName) =>
+                  this.handleDisplayName(displayName)
+                }
+                maxLength={32}
+                autoCapitalize={'none'}
+                onSubmitEditing={() => {}}
               />
             </View>
-        </View>
-        <View style={{position:'absolute', width: '100%', top: 0}}>
-            <Toast
-                ref={c => {
-                    if (c) Toast.toastInstance = c;
-                }}
+            {displayNameErr !== null ? (
+              <Text
+                style={[
+                  globalStyles.smallLightText,
+                  {
+                    color: Colors.danger,
+                    textAlign: 'left',
+                    marginStart: 10,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {translate(displayNameErr)}
+              </Text>
+            ) : null}
+            <Button
+              isRounded={false}
+              title={translate('pages.changeDisplayName')}
+              onPress={this.onChangePress.bind(this)}
+              loading={loading}
             />
+          </View>
+        </View>
+        <View style={{position: 'absolute', width: '100%', top: 0}}>
+          <Toast
+            ref={(c) => {
+              if (c) Toast.toastInstance = c;
+            }}
+          />
         </View>
       </Modal>
     );

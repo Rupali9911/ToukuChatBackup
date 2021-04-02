@@ -1,11 +1,5 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  Platform,
-} from 'react-native';
+import {StyleSheet, View, Text, TextInput, Platform} from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
@@ -21,12 +15,12 @@ import {
   changeEmail,
   getUserProfile,
 } from '../../redux/reducers/userReducer';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 
 class ChangeEmailModal extends Component {
   constructor(props) {
     super(props);
-      setI18nConfig(this.props.selectedLanguageItem.language_name);
+    setI18nConfig(this.props.selectedLanguageItem.language_name);
     this.state = this.initialState;
     this.focusNextField = this.focusNextField.bind(this);
     this.inputs = {};
@@ -488,8 +482,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-      selectedLanguageItem: state.languageReducer.selectedLanguageItem,
-      userData: state.userReducer.userData,
+    selectedLanguageItem: state.languageReducer.selectedLanguageItem,
+    userData: state.userReducer.userData,
     loading: state.userReducer.loading,
   };
 };

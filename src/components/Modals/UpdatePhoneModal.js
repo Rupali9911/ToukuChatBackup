@@ -8,7 +8,7 @@ import {
   TextInput,
   ScrollView,
   Platform,
-    KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -23,7 +23,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {updateConfiguration} from '../../redux/reducers/configurationReducer';
 import Toast from '../ToastModal';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 import CountryPhoneInput from '../CountryPhoneInput';
 import Inputfield from '../InputField';
 import VerificationInputField from '../VerificationInputField';
@@ -206,53 +206,57 @@ class UpdatePhoneModal extends Component {
       };
 
       this.props.editable
-        ? this.props.userVerifyOTPAndUpdateNumber(verifyData).then((res) => {
-            console.log('userVerifyOTP response', res);
-            if (res.status === true) {
-              Toast.show({
-                title: translate('pages.xchat.toukuPoints'),
-                text: translate('pages.register.toastr.phoneNumberAdded'),
-                type: 'positive',
-              });
-              setTimeout(() => {
-                this.props.onRequestClose();
-              }, 2000);
-              this.props.getUserProfile();
-              this.props.onVerificationComplete && this.props.onVerificationComplete();
-            } else {
-              Toast.show({
-                title: translate('common.register'),
-                text: translate('pages.register.toastr.enterCorrectOTP'),
-                type: 'primary',
-              });
-            }
-          }).catch((err) => {
-              console.log('err.response', err.response)
-              if (err.response) {
-                  if (err.response.data) {
-                      if (err.response.data.detail) {
-                          Toast.show({
-                              title: translate('common.sendSMS'),
-                              text: err.response.data.detail.toString(),
-                              type: 'primary',
-                          });
-                      }else  if (err.response.data.message) {
-                          Toast.show({
-                              title: translate('common.sendSMS'),
-                              text: err.response.data.message.toString(),
-                              type: 'primary',
-                          });
-                      }else{
-                          Toast.show({
-                              title: translate('common.sendSMS'),
-                              //text: err.response.data.,
-                              text: translate(err.response.data.toString()),
-                              type: 'primary',
-                          });
-                      }
-                  }
+        ? this.props
+            .userVerifyOTPAndUpdateNumber(verifyData)
+            .then((res) => {
+              console.log('userVerifyOTP response', res);
+              if (res.status === true) {
+                Toast.show({
+                  title: translate('pages.xchat.toukuPoints'),
+                  text: translate('pages.register.toastr.phoneNumberAdded'),
+                  type: 'positive',
+                });
+                setTimeout(() => {
+                  this.props.onRequestClose();
+                }, 2000);
+                this.props.getUserProfile();
+                this.props.onVerificationComplete &&
+                  this.props.onVerificationComplete();
+              } else {
+                Toast.show({
+                  title: translate('common.register'),
+                  text: translate('pages.register.toastr.enterCorrectOTP'),
+                  type: 'primary',
+                });
               }
-          })
+            })
+            .catch((err) => {
+              console.log('err.response', err.response);
+              if (err.response) {
+                if (err.response.data) {
+                  if (err.response.data.detail) {
+                    Toast.show({
+                      title: translate('common.sendSMS'),
+                      text: err.response.data.detail.toString(),
+                      type: 'primary',
+                    });
+                  } else if (err.response.data.message) {
+                    Toast.show({
+                      title: translate('common.sendSMS'),
+                      text: err.response.data.message.toString(),
+                      type: 'primary',
+                    });
+                  } else {
+                    Toast.show({
+                      title: translate('common.sendSMS'),
+                      //text: err.response.data.,
+                      text: translate(err.response.data.toString()),
+                      type: 'primary',
+                    });
+                  }
+                }
+              }
+            })
         : this.props.userVerifyOTPAndAddNumber(verifyData).then((res) => {
             console.log('userVerifyOTP response', res);
             if (res.status === true) {
@@ -323,7 +327,9 @@ class UpdatePhoneModal extends Component {
             style={styles.header}>
             <View style={{flex: 1}}>
               <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {editable ? translate('pages.register.phoneNumberUpdate') : translate('pages.register.phoneNumber')}
+                {editable
+                  ? translate('pages.register.phoneNumberUpdate')
+                  : translate('pages.register.phoneNumber')}
               </Text>
             </View>
             <ClickableImage
@@ -333,46 +339,47 @@ class UpdatePhoneModal extends Component {
             />
           </LinearGradient>
           <ScrollView>
-              <KeyboardAvoidingView
-                  style={{ flex: 1 }}
-                  keyboardVerticalOffset={100}
-                  behavior={"position"}
-              >
-          <View style={{padding: 15}}>
-            <View style={{marginTop: 20}}>
-              <CountryPhoneInput
-                rightBtnText={translate('common.sms')}
-                onClickSMS={() => this.sendOTP()}
-                onChangePhoneNumber={(phone, code) =>
-                  this.onChangePhoneNumber(phone, code)
-                }
-                // value={this.state.phone}
-                loading={this.props.loadingSMS}
-                isUpdatePhone
-              />
-              <VerificationInputField
-                onRef={(ref) => {
-                  this.inputs['verifycode'] = ref;
-                }}
-                value={this.state.verifycode}
-                placeholder={translate('pages.adWall.enterVerificationCode')}
-                returnKeyType={'done'}
-                keyboardType={'number-pad'}
-                onChangeText={(verifycode) => this.setState({verifycode})}
-                onSubmitEditing={() => {}}
-                maxLength={6}
-                isUpdatePhone
-              />
-              <Button
-                type={'primary'}
-                title={translate('common.verify')}
-                onPress={() => this.verifyOtpUpdateNumber()}
-                loading={this.props.loading}
-                isRounded={false}
-              />
-            </View>
-          </View>
-              </KeyboardAvoidingView>
+            <KeyboardAvoidingView
+              style={{flex: 1}}
+              keyboardVerticalOffset={100}
+              behavior={'position'}>
+              <View style={{padding: 15}}>
+                <View style={{marginTop: 20}}>
+                  <CountryPhoneInput
+                    rightBtnText={translate('common.sms')}
+                    onClickSMS={() => this.sendOTP()}
+                    onChangePhoneNumber={(phone, code) =>
+                      this.onChangePhoneNumber(phone, code)
+                    }
+                    // value={this.state.phone}
+                    loading={this.props.loadingSMS}
+                    isUpdatePhone
+                  />
+                  <VerificationInputField
+                    onRef={(ref) => {
+                      this.inputs['verifycode'] = ref;
+                    }}
+                    value={this.state.verifycode}
+                    placeholder={translate(
+                      'pages.adWall.enterVerificationCode',
+                    )}
+                    returnKeyType={'done'}
+                    keyboardType={'number-pad'}
+                    onChangeText={(verifycode) => this.setState({verifycode})}
+                    onSubmitEditing={() => {}}
+                    maxLength={6}
+                    isUpdatePhone
+                  />
+                  <Button
+                    type={'primary'}
+                    title={translate('common.verify')}
+                    onPress={() => this.verifyOtpUpdateNumber()}
+                    loading={this.props.loading}
+                    isRounded={false}
+                  />
+                </View>
+              </View>
+            </KeyboardAvoidingView>
           </ScrollView>
         </View>
         <View style={{position: 'absolute', width: '100%', top: 0}}>

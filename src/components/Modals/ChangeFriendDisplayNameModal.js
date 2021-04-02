@@ -12,7 +12,7 @@ import {translate} from '../../redux/reducers/languageReducer';
 import {getUserProfile} from '../../redux/reducers/userReducer';
 import {updateFriendDisplayName} from '../../redux/reducers/friendReducer';
 import Toast from '../ToastModal';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 
 class ChangeFriendDisplayNameModal extends Component {
   constructor(props) {
@@ -53,7 +53,7 @@ class ChangeFriendDisplayNameModal extends Component {
               type: 'positive',
             });
             setTimeout(() => {
-              console.log('this.props.currentFriend', this.props.currentFriend)
+              console.log('this.props.currentFriend', this.props.currentFriend);
               this.props.onRequestClose();
               this.isLoading = false;
             }, 1500);

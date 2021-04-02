@@ -12,7 +12,7 @@ import {wait} from '../../utils';
 import {translate} from '../../redux/reducers/languageReducer';
 import Toast from '../ToastModal';
 import {changePassword, getUserProfile} from '../../redux/reducers/userReducer';
-import {ClickableImage} from '../ImageComponents';
+import ClickableImage from '../ClickableImage';
 
 class ChangePassModal extends Component {
   constructor(props) {
@@ -119,9 +119,9 @@ class ChangePassModal extends Component {
       this.props
         .changePassword(changePassData)
         .then((res) => {
-            setTimeout(() => {
-                this.props.onRequestClose();
-            }, 2000);
+          setTimeout(() => {
+            this.props.onRequestClose();
+          }, 2000);
           if (res.status === true) {
             Toast.show({
               title: translate('pages.resetPassword.changePassword'),
@@ -158,7 +158,6 @@ class ChangePassModal extends Component {
     } = this.state;
 
     return (
-
       <Modal
         isVisible={visible}
         animationIn="fadeIn"
@@ -171,44 +170,52 @@ class ChangePassModal extends Component {
         onBackButtonPress={this.onRequestClose.bind(this)}
         onBackdropPress={this.onRequestClose.bind(this)}
         style={styles.modalBackground}>
-          <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={{flex: 1, width: '80%'}} contentContainerStyle={{flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'}}>
-        <View style={styles.Wrapper}>
-          <LinearGradient
-            start={{x: 0.1, y: 0.7}}
-            end={{x: 0.8, y: 0.3}}
-            locations={[0.1, 0.5, 0.8]}
-            colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
-            style={styles.header}>
-            <View style={{flex: 1}}>
-              <Text style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
-                {translate('pages.resetPassword.changePassword')}
-              </Text>
-            </View>
-            <ClickableImage
-              size={14}
-              source={Icons.icon_close}
-              onPress={this.onRequestClose.bind(this)}
-            />
-          </LinearGradient>
+        <KeyboardAwareScrollView
+          showsVerticalScrollIndicator={false}
+          style={{flex: 1, width: '80%'}}
+          contentContainerStyle={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <View style={styles.Wrapper}>
+            <LinearGradient
+              start={{x: 0.1, y: 0.7}}
+              end={{x: 0.8, y: 0.3}}
+              locations={[0.1, 0.5, 0.8]}
+              colors={[Colors.gradient_1, Colors.gradient_2, Colors.gradient_3]}
+              style={styles.header}>
+              <View style={{flex: 1}}>
+                <Text
+                  style={[globalStyles.normalLightText, {textAlign: 'left'}]}>
+                  {translate('pages.resetPassword.changePassword')}
+                </Text>
+              </View>
+              <ClickableImage
+                size={14}
+                source={Icons.icon_close}
+                onPress={this.onRequestClose.bind(this)}
+              />
+            </LinearGradient>
 
             <View style={{padding: 15}}>
-              {isSetPassword?null:<View style={styles.inputContainer}>
-                <TextInput
-                  placeholder={translate('pages.setting.oldPassword')}
-                  value={oldPassword}
-                  onChangeText={(oldPassword) =>
-                    this.handleOldPassword(oldPassword)
-                  }
-                  onSubmitEditing={() => {
-                    this.focusNextField('newpassword');
-                  }}
-                  autoCapitalize={'none'}
-                  secureTextEntry={true}
-                  returnKeyType={'next'}
-                />
-              </View>}
+              {isSetPassword ? null : (
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    placeholder={translate('pages.setting.oldPassword')}
+                    value={oldPassword}
+                    onChangeText={(oldPassword) =>
+                      this.handleOldPassword(oldPassword)
+                    }
+                    onSubmitEditing={() => {
+                      this.focusNextField('newpassword');
+                    }}
+                    autoCapitalize={'none'}
+                    secureTextEntry={true}
+                    returnKeyType={'next'}
+                  />
+                </View>
+              )}
               {oldPasswordErr !== null ? (
                 <Text
                   style={[
@@ -303,18 +310,16 @@ class ChangePassModal extends Component {
                 loading={loading}
               />
             </View>
-
-        </View>
-        </KeyboardAwareScrollView>
-          <View style={{position:'absolute', width: '100%', top: 0}}>
-              <Toast
-                  ref={c => {
-                      if (c) Toast.toastInstance = c;
-                  }}
-              />
           </View>
+        </KeyboardAwareScrollView>
+        <View style={{position: 'absolute', width: '100%', top: 0}}>
+          <Toast
+            ref={(c) => {
+              if (c) Toast.toastInstance = c;
+            }}
+          />
+        </View>
       </Modal>
-
     );
   }
 }
@@ -325,10 +330,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 0,
-    display: 'flex'
+    display: 'flex',
   },
   Wrapper: {
-    width:'100%',
+    width: '100%',
     backgroundColor: Colors.white,
     display: 'flex',
     elevation: 4,
