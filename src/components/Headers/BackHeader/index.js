@@ -1,16 +1,17 @@
-import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Platform,
-  ImageBackground,
-} from 'react-native';
+// Library imports
 import PropTypes from 'prop-types';
-import {Icons, Colors} from '../../constants';
+import React, {Component} from 'react';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 
+// Local imports
+import {Icons} from '../../../constants';
+
+// Stylesheet imports
+import styles from './styles';
+
+/**
+ * Header with back navigation only
+ */
 export default class BackHeader extends Component {
   constructor(props) {
     super(props);
@@ -31,45 +32,23 @@ export default class BackHeader extends Component {
         <View>
           <Text style={styles.titleTxt}>{title}</Text>
         </View>
-        <View></View>
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    marginTop: Platform.OS === 'ios' ? 0 : 30,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-  },
-  titleTxt: {
-    color: Colors.black,
-    fontSize: 20,
-  },
-});
-
+/**
+ * Header prop types
+ */
 BackHeader.propTypes = {
   isIconLeft: PropTypes.bool,
   title: PropTypes.string,
-
-  /**
-   * Callbacks
-   */
   onBackPress: PropTypes.func,
 };
 
+/**
+ * Header deault props
+ */
 BackHeader.defaultProps = {
   title: '',
   isIconLeft: true,
