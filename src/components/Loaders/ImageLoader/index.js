@@ -1,8 +1,18 @@
-import React from 'react';
+// Library imports
 import PropTypes from 'prop-types';
-import {Image, ImageBackground, ActivityIndicator, View} from 'react-native';
-import {Colors, Images} from '../../constants';
+import React from 'react';
+import {Image, ImageBackground, View} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+// Local imports
+import {Colors, Images} from '../../../constants';
+
+// StyleSheet import
+import styles from './styles';
+
+/**
+ * Image loader component
+ */
 class ImageLoader extends React.Component {
   static propTypes = {
     isShowActivity: PropTypes.bool,
@@ -20,12 +30,14 @@ class ImageLoader extends React.Component {
     };
   }
 
+  // When image is loaded
   onLoadEnd() {
     this.setState({
       isLoaded: true,
     });
   }
 
+  // When an image encounter errors
   onError() {
     this.setState({
       isError: true,
@@ -65,7 +77,7 @@ class ImageLoader extends React.Component {
             ]}>
             {this.props.isShowActivity &&
             !this.state.isError &&
-            source != null ? (
+            source !== null ? (
               <Image
                 style={
                   placeholderStyle
@@ -77,58 +89,24 @@ class ImageLoader extends React.Component {
                 }
                 source={
                   placeholderSource ? placeholderSource : Images.image_loader
-                }></Image>
+                }
+              />
             ) : null}
           </View>
         )}
         {this.props.children && (
           <View style={styles.viewChildrenStyles}>{this.props.children}</View>
         )}
-        {source ? showPlayButton && (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <FontAwesome name="play" size={15} color={Colors.white} />
-          </View>
-        ): null}
+        {source
+          ? showPlayButton && (
+              <View style={styles.playButtonContainer}>
+                <FontAwesome name="play" size={15} color={Colors.white} />
+              </View>
+            )
+          : null}
       </ImageBackground>
     );
   }
 }
-
-const styles = {
-  backgroundImage: {
-    position: 'relative',
-  },
-  activityIndicator: {
-    position: 'absolute',
-    margin: 'auto',
-    zIndex: 9,
-  },
-  viewImageStyles: {
-    flex: 1,
-    backgroundColor: '#e9eef1',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imagePlaceholderStyles: {
-    width: 60,
-    height: 60,
-    resizeMode: 'contain',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  viewChildrenStyles: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    position: 'absolute',
-    backgroundColor: 'transparent',
-  },
-};
 
 export default ImageLoader;
