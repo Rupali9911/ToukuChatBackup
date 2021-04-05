@@ -1,5 +1,5 @@
-import React from 'react';
-
+// Library imports
+import React, {Component} from 'react';
 import {
   Animated,
   Dimensions,
@@ -13,6 +13,10 @@ import {
   View,
 } from 'react-native';
 
+// StyleSheet import
+import styles from './styles';
+
+// Initial states
 const STATES = {
   HIDDEN: 'HIDDEN',
   ANIMATING: 'ANIMATING',
@@ -22,7 +26,10 @@ const STATES = {
 const EASING = Easing.bezier(0.4, 0, 0.2, 1);
 const SCREEN_INDENT = 8;
 
-class Menu extends React.Component {
+/**
+ * Menu component
+ */
+class Menu extends Component {
   _container = null;
 
   constructor(props) {
@@ -45,6 +52,7 @@ class Menu extends React.Component {
     };
   }
 
+  // Set container reference
   _setContainerRef = (ref) => {
     this._container = ref;
   };
@@ -82,12 +90,14 @@ class Menu extends React.Component {
     );
   };
 
+  // When the menu dismisses
   _onDismiss = () => {
     if (this.props.onHidden) {
       this.props.onHidden();
     }
   };
 
+  // Show the menu
   show = () => {
     this._container.measureInWindow((left, top, buttonWidth, buttonHeight) => {
       this.setState({
@@ -100,6 +110,7 @@ class Menu extends React.Component {
     });
   };
 
+  // Hide the menu
   hide = (onHidden) => {
     Animated.timing(this.state.opacityAnimation, {
       toValue: 0,
@@ -128,7 +139,7 @@ class Menu extends React.Component {
     });
   };
 
-  // @@ TODO: Rework this
+  // TODO: Rework this
   _hide = () => {
     this.hide();
   };
@@ -240,33 +251,11 @@ class Menu extends React.Component {
   }
 }
 
+/**
+ * Menu default props
+ */
 Menu.defaultProps = {
   animationDuration: 300,
 };
-
-const styles = StyleSheet.create({
-  shadowMenuContainer: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    borderRadius: 4,
-    opacity: 0,
-
-    // Shadow
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.14,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-  menuContainer: {
-    overflow: 'hidden',
-  },
-});
 
 export default Menu;

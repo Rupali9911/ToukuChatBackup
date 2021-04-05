@@ -1,34 +1,41 @@
-import * as React from 'react';
+// Library imports
+import React, {Component, isValidElement} from 'react';
 import {
-  Platform,
-  StyleProp,
-  StyleSheet,
   Animated,
   BackHandler,
   Dimensions,
   Easing,
+  findNodeHandle,
   I18nManager,
-  LayoutRectangle,
+  Platform,
+  ScrollView,
+  StyleSheet,
   TouchableWithoutFeedback,
   View,
-  ViewStyle,
-  ScrollView,
-  findNodeHandle,
 } from 'react-native';
-import PropTypes from 'prop-types';
-import { withTheme, Theme, Portal, Surface } from 'react-native-paper';
-import MenuItem, { MenuItem as _MenuItem } from 'react-native-paper/src/components/Menu/MenuItem';
-import { APPROX_STATUSBAR_HEIGHT } from 'react-native-paper/src/constants';
+import {Portal, Surface, withTheme} from 'react-native-paper';
+import MenuItem from 'react-native-paper/src/components/Menu/MenuItem';
+import {APPROX_STATUSBAR_HEIGHT} from 'react-native-paper/src/constants';
+
+// StyleSheet import
+import styles from './styles';
 
 // Minimum padding between the edge of the screen and the menu
 const SCREEN_INDENT = 0;
-// From https://material.io/design/motion/speed.html#duration
+
+/**
+ * From
+ * https://material.io/design/motion/speed.html#duration
+ */
 const ANIMATION_DURATION = 250;
-// From the 'Standard easing' section of https://material.io/design/motion/speed.html#easing
+
+/**
+ * From the 'Standard easing' section of
+ * https://material.io/design/motion/speed.html#easing
+ */
 const EASING = Easing.bezier(0.4, 0, 0.2, 1);
 
-class Menu extends React.Component {
-  // @component ./MenuItem.tsx
+class Menu extends Component {
   static Item = MenuItem;
 
   static defaultProps = {
@@ -36,9 +43,10 @@ class Menu extends React.Component {
     overlayAccessibilityLabel: 'Close menu',
   };
 
+  // Render or not render based on the props
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.visible && !prevState.rendered) {
-      return { rendered: true };
+      return {rendered: true};
     }
 
     return null;
@@ -48,52 +56,61 @@ class Menu extends React.Component {
     rendered: this.props.visible,
     top: 0,
     left: 0,
-    menuLayout: { width: 0, height: 0 },
-    anchorLayout: { width: 0, height: 0 },
+    menuLayout: {width: 0, height: 0},
+    anchorLayout: {width: 0, height: 0},
     opacityAnimation: new Animated.Value(0),
-    scaleAnimation: new Animated.ValueXY({ x: 0, y: 0 }),
+    scaleAnimation: new Animated.ValueXY({x: 0, y: 0}),
   };
 
+  /**
+   * Update visibility when previous visiblity prop is not
+   * equal to the current visible prop
+   */
   componentDidUpdate(prevProps) {
     if (prevProps.visible !== this.props.visible) {
       this.updateVisibility();
     }
   }
 
+  // Remove listeners when component unmounts
   componentWillUnmount() {
     this.removeListeners();
   }
 
-  anchor = View | null;
-  menu = View | null;
+  anchor = View || null;
+  menu = View || null;
 
-  isAnchorCoord = () => !React.isValidElement(this.props.anchor);
+  // Check if the anchor is a valid element or not
+  isAnchorCoord = () => !isValidElement(this.props.anchor);
 
+  // Measure menu layout
   measureMenuLayout = () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       if (this.menu) {
         this.menu.measureInWindow((x, y, width, height) => {
-          resolve({ x, y, width, height });
+          resolve({x, y, width, height});
         });
       }
     });
 
+  // Measure anchor layout
   measureAnchorLayout = () =>
-    new Promise(resolve => {
-      const { anchor } = this.props;
+    new Promise((resolve) => {
+      const {anchor} = this.props;
       if (this.isAnchorCoord()) {
         // @ts-ignore
-        resolve({ x: anchor.x, y: anchor.y, width: 0, height: 0 });
+        resolve({x: anchor.x, y: anchor.y, width: 0, height: 0});
         return;
       }
 
       if (this.anchor) {
         this.anchor.measureInWindow((x, y, width, height) => {
-          resolve({ x, y, width, height });
+          resolve({x, y, width, height});
         });
       }
     });
 
+  // Update visibility
   updateVisibility = async () => {
     // Menu is rendered in Portal, which updates items asynchronously
     // We need to do the same here so that the ref is up-to-date
@@ -106,8 +123,10 @@ class Menu extends React.Component {
     }
   };
 
+  // Detect platform
   isBrowser = () => Platform.OS === 'web' && 'document' in global;
 
+  // Elements to focus on when on browser
   focusFirstDOMNode = (el) => {
     if (el && this.isBrowser()) {
       // When in the browser, we want to focus the first focusable item on toggle
@@ -116,13 +135,14 @@ class Menu extends React.Component {
       const node = findNodeHandle(el);
       const focusableNode = node.querySelector(
         // This is a rough list of selectors that can be focused
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
 
       focusableNode?.focus();
     }
   };
 
+  // Handle when dismissed
   handleDismiss = () => {
     if (this.props.visible) {
       this.props.onDismiss();
@@ -130,12 +150,19 @@ class Menu extends React.Component {
     return true;
   };
 
+  // Handle key press
   handleKeypress = (e) => {
     if (e.key === 'Escape') {
       this.props.onDismiss();
     }
   };
 
+  /**
+   * Attach listeners:
+   * - Back press in Android
+   * - Changes in dimensions
+   * - When the up key is pressed in the browser
+   */
   attachListeners = () => {
     BackHandler.addEventListener('hardwareBackPress', this.handleDismiss);
     Dimensions.addEventListener('change', this.handleDismiss);
@@ -143,6 +170,7 @@ class Menu extends React.Component {
     this.isBrowser() && document.addEventListener('keyup', this.handleKeypress);
   };
 
+  // Remove all listeners
   removeListeners = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.handleDismiss);
     Dimensions.removeEventListener('change', this.handleDismiss);
@@ -151,6 +179,14 @@ class Menu extends React.Component {
       document.removeEventListener('keyup', this.handleKeypress);
   };
 
+  /**
+   * When visible is true for first render
+   * native views can be still not rendered and
+   * measureMenuLayout/measureAnchorLayout functions
+   * return wrong values e.g { x:0, y: 0, width: 0, height: 0 }
+   * so we have to wait until views are ready
+   * and rerun this function to show menu
+   */
   show = async () => {
     const windowLayout = Dimensions.get('window');
     const [menuLayout, anchorLayout] = await Promise.all([
@@ -158,12 +194,6 @@ class Menu extends React.Component {
       this.measureAnchorLayout(),
     ]);
 
-    // When visible is true for first render
-    // native views can be still not rendered and
-    // measureMenuLayout/measureAnchorLayout functions
-    // return wrong values e.g { x:0, y: 0, width: 0, height: 0 }
-    // so we have to wait until views are ready
-    // and rerun this function to show menu
     if (
       !windowLayout.width ||
       !windowLayout.height ||
@@ -192,10 +222,10 @@ class Menu extends React.Component {
       () => {
         this.attachListeners();
 
-        const { animation } = this.props.theme;
+        const {animation} = this.props.theme;
         Animated.parallel([
           Animated.timing(this.state.scaleAnimation, {
-            toValue: { x: menuLayout.width, y: menuLayout.height },
+            toValue: {x: menuLayout.width, y: menuLayout.height},
             duration: ANIMATION_DURATION * animation.scale,
             easing: EASING,
             useNativeDriver: true,
@@ -206,53 +236,54 @@ class Menu extends React.Component {
             easing: EASING,
             useNativeDriver: true,
           }),
-        ]).start(({ finished }) => {
+        ]).start(({finished}) => {
           if (finished) {
             this.focusFirstDOMNode(this.menu);
           }
         });
-        let { left, top } = this.state;
+        let {top} = this.state;
         const additionalVerticalValue = Platform.select({
-            android: this.props.statusBarHeight,
-            default: 0,
-          });
+          android: this.props.statusBarHeight,
+          default: 0,
+        });
         if (
-            // Check if menu fits vertically
-            top <=
-              windowLayout.height -
-                menuLayout.height -
-                SCREEN_INDENT -
-                additionalVerticalValue ||
-            // Or if the menu overflows from bottom side
-            (top >=
-              windowLayout.height -
-                menuLayout.height -
-                SCREEN_INDENT -
-                additionalVerticalValue &&
-              // And bottom side of the screen has more space than top side
-              top <= windowLayout.height - top)
-          ) {
-            this.props.onPosition(true);
-          } else {
-            this.props.onPosition(false);
-          }
-      }
+          // Check if menu fits vertically
+          top <=
+            windowLayout.height -
+              menuLayout.height -
+              SCREEN_INDENT -
+              additionalVerticalValue ||
+          // Or if the menu overflows from bottom side
+          (top >=
+            windowLayout.height -
+              menuLayout.height -
+              SCREEN_INDENT -
+              additionalVerticalValue &&
+            // And bottom side of the screen has more space than top side
+            top <= windowLayout.height - top)
+        ) {
+          this.props.onPosition(true);
+        } else {
+          this.props.onPosition(false);
+        }
+      },
     );
   };
 
+  // Hide native views
   hide = () => {
     this.removeListeners();
 
-    const { animation } = this.props.theme;
+    const {animation} = this.props.theme;
     Animated.timing(this.state.opacityAnimation, {
       toValue: 0,
       duration: ANIMATION_DURATION * animation.scale,
       easing: EASING,
       useNativeDriver: true,
-    }).start(({ finished }) => {
+    }).start(({finished}) => {
       if (finished) {
-        this.setState({ menuLayout: { width: 0, height: 0 }, rendered: false });
-        this.state.scaleAnimation.setValue({ x: 0, y: 0 });
+        this.setState({menuLayout: {width: 0, height: 0}, rendered: false});
+        this.state.scaleAnimation.setValue({x: 0, y: 0});
         this.focusFirstDOMNode(this.anchor);
       }
     });
@@ -269,7 +300,6 @@ class Menu extends React.Component {
       statusBarHeight,
       onDismiss,
       overlayAccessibilityLabel,
-      onPosition
     } = this.props;
 
     const {
@@ -280,7 +310,7 @@ class Menu extends React.Component {
       scaleAnimation,
     } = this.state;
 
-    let { left, top } = this.state;
+    let {left, top} = this.state;
 
     // I don't know why but on Android measure function is wrong by 24
     const additionalVerticalValue = Platform.select({
@@ -443,33 +473,31 @@ class Menu extends React.Component {
       opacity: opacityAnimation,
       transform: scaleTransforms,
       borderRadius: theme.roundness,
-      ...(scrollableMenuHeight ? { height: scrollableMenuHeight } : {}),
+      ...(scrollableMenuHeight ? {height: scrollableMenuHeight} : {}),
     };
 
     const positionStyle = {
       top: this.isAnchorCoord() ? top : top + additionalVerticalValue,
-      ...(I18nManager.isRTL ? { right: left } : { left }),
+      ...(I18nManager.isRTL ? {right: left} : {left}),
     };
 
     return (
       <View
-        ref={ref => {
+        ref={(ref) => {
           this.anchor = ref;
         }}
-        collapsable={false}
-      >
+        collapsable={false}>
         {this.isAnchorCoord() ? null : anchor}
-        {rendered ? (
+        {rendered && (
           <Portal>
             <TouchableWithoutFeedback
               accessibilityLabel={overlayAccessibilityLabel}
               accessibilityRole="button"
-              onPress={onDismiss}
-            >
+              onPress={onDismiss}>
               <View style={StyleSheet.absoluteFill} />
             </TouchableWithoutFeedback>
             <View
-              ref={ref => {
+              ref={(ref) => {
                 this.menu = ref;
               }}
               collapsable={false}
@@ -477,40 +505,25 @@ class Menu extends React.Component {
               style={[styles.wrapper, positionStyle, style]}
               pointerEvents={visible ? 'box-none' : 'none'}
               // @ts-ignore - FIX ME
-              onAccessibilityEscape={onDismiss}
-            >
-              <Animated.View style={{ transform: positionTransforms }}>
+              onAccessibilityEscape={onDismiss}>
+              <Animated.View style={{transform: positionTransforms}}>
                 <Surface
-                  style={
-                    [
-                      styles.shadowMenuContainer,
-                      shadowMenuContainerStyle,
-                      contentStyle,
-                    ]
-                  }
-                >
+                  style={[
+                    styles.shadowMenuContainer,
+                    shadowMenuContainerStyle,
+                    contentStyle,
+                  ]}>
                   {(scrollableMenuHeight && (
                     <ScrollView>{children}</ScrollView>
-                  )) || <React.Fragment>{children}</React.Fragment>}
+                  )) || <>{children}</>}
                 </Surface>
               </Animated.View>
             </View>
           </Portal>
-        ) : null}
+        )}
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    position: 'absolute',
-  },
-  shadowMenuContainer: {
-    opacity: 0,
-    paddingVertical: 8,
-    elevation: 8,
-  },
-});
 
 export default withTheme(Menu);

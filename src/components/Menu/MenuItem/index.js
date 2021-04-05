@@ -1,20 +1,35 @@
+// Library imports
 import React from 'react';
-
 import {
   Platform,
-  StyleSheet,
   Text,
   TouchableHighlight,
   TouchableNativeFeedback,
   View,
 } from 'react-native';
 
+// StyleSheet import
+import styles from './styles';
+
+// Define touchable component for Android devices
 const Touchable =
   Platform.OS === 'android' && Platform.Version >= 21
     ? TouchableNativeFeedback
     : TouchableHighlight;
 
-function MenuItem({
+/**
+ * Menu item component
+ * @prop {JSX} children - children within the menu item
+ * @prop {boolean} disabled - wheather the menu item is disabled or not
+ * @prop {ColorValue} disabledTextColor - color when menu item is disabled
+ * @prop {string} ellipsizeMode - how the end of a line should be ellipsized
+ * @prop {func} onPress - function when a menu item is pressed
+ * @prop {object | array} style - style of the menu item
+ * @prop {object | array} textStyle - text style of the menu item text
+ * @prop {JSX} customComponent - adding custom component to the menu item
+ * @returns JSX
+ */
+const MenuItem = ({
   children,
   disabled,
   disabledTextColor,
@@ -24,7 +39,7 @@ function MenuItem({
   textStyle,
   customComponent,
   ...props
-}) {
+}) => {
   const touchableProps =
     Platform.OS === 'android' && Platform.Version >= 21
       ? {background: TouchableNativeFeedback.SelectableBackground()}
@@ -54,28 +69,16 @@ function MenuItem({
       )}
     </Touchable>
   );
-}
+};
 
+/**
+ * Menu item default props
+ */
 MenuItem.defaultProps = {
   disabled: false,
   disabledTextColor: '#bdbdbd',
   ellipsizeMode: Platform.OS === 'ios' ? 'clip' : 'tail',
   underlayColor: '#e0e0e0',
 };
-
-const styles = StyleSheet.create({
-  container: {
-    height: 48,
-    justifyContent: 'center',
-    maxWidth: 248,
-    minWidth: 124,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '400',
-    paddingHorizontal: 16,
-    textAlign: 'left',
-  },
-});
 
 export default MenuItem;
