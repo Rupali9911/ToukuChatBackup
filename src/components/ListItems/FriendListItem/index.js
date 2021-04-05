@@ -1,20 +1,29 @@
-import React, {Component, Fragment, PureComponent} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import PropTypes from 'prop-types';
+// Library imports
 import moment from 'moment';
-import {Badge, Divider, ActivityIndicator} from 'react-native-paper';
-
-import RoundedImage from '../RoundedImage';
-import {globalStyles} from '../../styles';
-import {Colors, Images} from '../../constants';
-import {translate} from '../../redux/reducers/languageReducer';
-import {normalize, wait} from '../../utils';
+import PropTypes from 'prop-types';
+import React, {Fragment, PureComponent} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {ActivityIndicator, Badge, Divider} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Feather';
-import Octicon from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {SwipeItem, SwipeButtonsContainer} from '../Swipeable';
+import Octicon from 'react-native-vector-icons/Octicons';
 
+// Local imports
+import {Colors, Images} from '../../../constants';
+import {translate} from '../../../redux/reducers/languageReducer';
+import {globalStyles} from '../../../styles';
+
+// Component imports
+import RoundedImage from '../../RoundedImage';
+import {SwipeButtonsContainer, SwipeItem} from '../../Swipeable';
+
+// Stylesheet import
+import styles from './styles';
+
+/**
+ * Friend list item component
+ */
 export default class FriendListItem extends PureComponent {
   constructor(props) {
     super(props);
@@ -28,12 +37,14 @@ export default class FriendListItem extends PureComponent {
     this.itemRef = null;
   }
 
+  // Update state based on new old prop comparison
   componentDidUpdate(props) {
-    if (props.isVisible != this.props.isVisible) {
+    if (props.isVisible !== this.props.isVisible) {
       this.setState({newItem: {...this.props.item, isCheck: false}});
     }
   }
 
+  // Detect if the user is typing or not
   checkTyping = (typing) => {
     if (typing) {
       this.typingTimeout && clearTimeout(this.typingTimeout);
@@ -46,6 +57,10 @@ export default class FriendListItem extends PureComponent {
     }
   };
 
+  /**
+   * Compare received props for detecting
+   * wheather user is typing or not
+   */
   componentWillReceiveProps(nextProps) {
     if (nextProps.isTyping !== this.props.isTyping) {
       this.checkTyping(nextProps.isTyping);
@@ -53,37 +68,8 @@ export default class FriendListItem extends PureComponent {
       // this.typingTimeout && clearTimeout(this.typingTimeout);
     }
   }
-  getDate = (date) => {
-    if (date === null || date === '' || date === undefined) {
-      return '';
-    }
 
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    const msgDate = new Date(date);
-    if (
-      today.getDate() === msgDate.getDate() &&
-      today.getMonth() === msgDate.getMonth() &&
-      today.getFullYear() === msgDate.getFullYear()
-    ) {
-      return moment(date).format('HH:mm');
-    }
-    if (
-      yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth() &&
-      yesterday.getFullYear() === msgDate.getFullYear()
-    ) {
-      return translate('common.yesterday');
-    }
-
-    if (today.getFullYear() === msgDate.getFullYear()) {
-      return moment(date).format('MM/DD');
-    } else {
-      return moment(date).format('YYYY/MM/DD');
-    }
-  };
-
+  // Manages record
   manageRecord = (item, isCheck) => {
     if (isCheck === 'check') {
       this.setState({newItem: {...item, isCheck: true}});
@@ -103,7 +89,6 @@ export default class FriendListItem extends PureComponent {
       isOnline,
       isTyping,
       unreadCount,
-      callTypingStop,
       isVisible,
       item,
       onAvtarPress,
@@ -126,38 +111,20 @@ export default class FriendListItem extends PureComponent {
       <Fragment>
         <SwipeItem
           buttonTriggerPercent={0.4}
-          style={{flex: 1}}
-          buttonTriggerPercent={0.4}
+          style={styles.singleFlex}
           rightButtons={
             swipeable && (
-              <View style={{flexDirection: 'row', height: '100%'}}>
-                <SwipeButtonsContainer
-                  style={{
-                    alignSelf: 'center',
-                    aspectRatio: 1,
-                    height: '100%',
-                    flexDirection: 'row',
-                  }}>
+              <View style={styles.swipeRightButtonContainer}>
+                <SwipeButtonsContainer style={styles.swipeButtonContainer}>
                   <TouchableOpacity
-                    style={{
-                      padding: 10,
-                      backgroundColor: '#99B1F9',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flex: 1,
-                    }}
+                    style={styles.swipeButtonActionContainer}
                     disabled={isPinUnpinLoading}
                     onPress={() => {
-                      console.log('pin chat');
-                      // this.itemRef && this.itemRef.close()
                       this.setState({isPinUnpinLoading: true});
                       onPinUnpinChat(item, () => {
                         this.setState({isPinUnpinLoading: false});
                         this.itemRef && this.itemRef.close();
                       });
-                      // wait(200).then(() => {
-                      //   onPinUnpinChat(item);
-                      // });
                     }}>
                     {isPinUnpinLoading ? (
                       <ActivityIndicator color={Colors.white} />
@@ -168,29 +135,12 @@ export default class FriendListItem extends PureComponent {
                         color={Colors.white}
                       />
                     )}
-                    {/* <Octicon name={'pin'} color={Colors.white} size={20}/> */}
                   </TouchableOpacity>
                 </SwipeButtonsContainer>
-                <SwipeButtonsContainer
-                  style={{
-                    alignSelf: 'center',
-                    aspectRatio: 1,
-                    height: '100%',
-                    flexDirection: 'row',
-                  }}>
+                <SwipeButtonsContainer style={styles.swipeButtonContainer}>
                   <TouchableOpacity
-                    style={{
-                      padding: 10,
-                      backgroundColor: '#F9354B',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flex: 1,
-                    }}
-                    onPress={() => {
-                      console.log('delete chat');
-                      // this.itemRef && this.itemRef.close();
-                      onDeleteChat(item.friend);
-                    }}>
+                    style={styles.swipeButtonActionContainer}
+                    onPress={() => onDeleteChat(item.friend)}>
                     {isDeleteLoading ? (
                       <ActivityIndicator color={Colors.white} />
                     ) : (
@@ -203,24 +153,16 @@ export default class FriendListItem extends PureComponent {
               </View>
             )
           }
-          onSwipeInitial={(item) => onSwipeInitial(item)}
-          onMovedToOrigin={() => {
-            // console.log('button hide');
-            this.setState({isSwipeButtonVisible: false});
-          }}
-          onRightButtonsShowed={(item) => {
-            this.itemRef = item;
-            onSwipeButtonShowed(item);
+          onSwipeInitial={(swipeItem) => onSwipeInitial(swipeItem)}
+          onMovedToOrigin={() => this.setState({isSwipeButtonVisible: false})}
+          onRightButtonsShowed={(swipeItem) => {
+            this.itemRef = swipeItem;
+            onSwipeButtonShowed(swipeItem);
             this.setState({isSwipeButtonVisible: true});
           }}
           disableSwipeIfNoButton>
-          <View style={{backgroundColor: '#f2f2f2'}}>
+          <View style={styles.swipeItemContainer}>
             <View activeOpacity={0.8} style={styles.container}>
-              {/* <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onPress}
-          style={styles.container}
-          disabled={isVisible}> */}
               <View style={styles.firstView}>
                 {isVisible && newItem.isCheck === false ? (
                   <TouchableOpacity
@@ -234,11 +176,8 @@ export default class FriendListItem extends PureComponent {
                   isVisible &&
                   newItem.isCheck === true && (
                     <TouchableOpacity
-                      style={{alignSelf: 'center', justifyContent: 'center'}}
-                      onPress={() => {
-                        // this.setState({isChecked: false});
-                        this.manageRecord(item, 'unCheck');
-                      }}>
+                      style={styles.checkedActionContainer}
+                      onPress={() => this.manageRecord(item, 'unCheck')}>
                       <LinearGradient
                         start={{x: 0.1, y: 0.7}}
                         end={{x: 0.5, y: 0.2}}
@@ -249,7 +188,11 @@ export default class FriendListItem extends PureComponent {
                           Colors.gradient_3,
                         ]}
                         style={styles.checkBoxIscheck}>
-                        <Icon size={17} name="check" style={{color: '#fff'}} />
+                        <Icon
+                          size={17}
+                          name="check"
+                          style={styles.checkIconColor}
+                        />
                       </LinearGradient>
                     </TouchableOpacity>
                   )
@@ -292,22 +235,12 @@ export default class FriendListItem extends PureComponent {
                   }
                   // disabled={isVisible}
                 >
-                  <View
-                    style={{
-                      flex: 1,
-                      alignItems: 'flex-start',
-                      justifyContent: 'space-between',
-                      padding: 5,
-                    }}>
+                  <View style={styles.titleContainer}>
                     <Text
                       numberOfLines={1}
                       style={[
                         globalStyles.smallNunitoRegular17Text,
-                        {
-                          color: Colors.black_light,
-                          // fontSize: normalize(11.5),
-                          fontWeight: '400',
-                        },
+                        styles.titleText,
                       ]}>
                       {title}
                     </Text>
@@ -315,21 +248,13 @@ export default class FriendListItem extends PureComponent {
                       numberOfLines={1}
                       style={[
                         globalStyles.smallNunitoRegularText,
-                        {
-                          color: Colors.message_gray,
-                          textAlign: 'left',
-                          fontSize: Platform.isPad
-                            ? normalize(7)
-                            : normalize(11.5),
-                          fontWeight: '400',
-                        },
+                        styles.descriptionText,
                       ]}>
                       {isTyping ? 'Typing...' : description}
-                      {/* {description} */}
                     </Text>
                   </View>
                   {isPined ? (
-                    <View style={{marginTop: 2, marginRight: 5}}>
+                    <View style={styles.pinnedIconContainer}>
                       <Octicon
                         name={'pin'}
                         size={14}
@@ -342,25 +267,16 @@ export default class FriendListItem extends PureComponent {
                       numberOfLines={1}
                       style={[
                         globalStyles.smallNunitoRegularText,
-                        {
-                          color: Colors.message_gray,
-                          fontSize: 12,
-                          fontWeight: '400',
-                        },
+                        styles.dateText,
                       ]}>
-                      {this.getDate(date)}
+                      {getDate(date)}
                     </Text>
                     {((unreadCount !== 0 && unreadCount != null) ||
                       acceptedRequest > 0) && (
                       <Badge
                         style={[
                           globalStyles.smallLightText,
-                          {
-                            backgroundColor: Colors.green,
-                            color: Colors.white,
-                            fontSize: 12,
-                            marginTop: 5,
-                          },
+                          styles.badgeStyle,
                         ]}>
                         {acceptedRequest
                           ? unreadCount + acceptedRequest
@@ -379,49 +295,41 @@ export default class FriendListItem extends PureComponent {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
-  firstView: {
-    flexDirection: 'row',
-  },
-  secondView: {
-    flex: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 10,
-  },
-  squareImage: {
-    width: 50,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkBox: {
-    height: 20,
-    width: 20,
-    borderRadius: 20 / 2,
-    borderColor: '#ff62a5',
-    borderWidth: 1,
-    alignSelf: 'center',
-    margin: 5,
-    marginRight: 15,
-  },
-  checkBoxIscheck: {
-    height: 20,
-    width: 20,
-    borderRadius: 20 / 2,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    margin: 5,
-    marginRight: 15,
-  },
-});
+// Format relative date
+const getDate = (date) => {
+  if (!date) {
+    return '';
+  }
 
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const msgDate = new Date(date);
+  if (
+    today.getDate() === msgDate.getDate() &&
+    today.getMonth() === msgDate.getMonth() &&
+    today.getFullYear() === msgDate.getFullYear()
+  ) {
+    return moment(date).format('HH:mm');
+  }
+  if (
+    yesterday.getDate() === msgDate.getDate() &&
+    yesterday.getMonth() === msgDate.getMonth() &&
+    yesterday.getFullYear() === msgDate.getFullYear()
+  ) {
+    return translate('common.yesterday');
+  }
+
+  if (today.getFullYear() === msgDate.getFullYear()) {
+    return moment(date).format('MM/DD');
+  } else {
+    return moment(date).format('YYYY/MM/DD');
+  }
+};
+
+/**
+ * Friend list item prop types
+ */
 FriendListItem.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
@@ -429,12 +337,12 @@ FriendListItem.propTypes = {
   image: PropTypes.any,
   isOnline: PropTypes.bool,
   isTyping: PropTypes.bool,
-  /**
-   * Callbacks
-   */
   onPress: PropTypes.func,
 };
 
+/**
+ * Friend list item default props
+ */
 FriendListItem.defaultProps = {
   title: 'Friend Name',
   description: 'description',
