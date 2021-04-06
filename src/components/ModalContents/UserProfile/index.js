@@ -1,10 +1,9 @@
+// Library imports
 import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
 import {
   ActivityIndicator,
   Image,
-  Platform,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -14,27 +13,38 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
-import {Colors, Fonts, Icons} from '../../constants';
-import S3uploadService from '../../helpers/S3uploadService';
+
+// Local imports
+import {Colors, Fonts, Icons} from '../../../constants';
+import S3uploadService from '../../../helpers/S3uploadService';
 import {
-  updateConfiguration,
   getUserProfile,
+  updateConfiguration,
   uploadAvatar,
-} from '../../redux/reducers/configurationReducer';
-// import {getUserProfile, uploadAvatar} from '../../redux/reducers/userReducer';
-import {translate} from '../../redux/reducers/languageReducer';
-import {globalStyles} from '../../styles';
-import {getAvatar, getImage, normalize, resizeImage} from '../../utils';
-import {ImageLoader, ListLoader} from '../Loaders';
+} from '../../../redux/reducers/configurationReducer';
+import {translate} from '../../../redux/reducers/languageReducer';
+import {globalStyles} from '../../../styles';
+import {getAvatar, getImage, resizeImage} from '../../../utils';
+
+// Component imports
+import {ImageLoader, ListLoader} from '../../Loaders';
 import {
   ChangeEmailModal,
   ChangeNameModal,
   ChangePassModal,
   UpdatePhoneModal,
-} from '../Modals';
-import RoundedImage from '../RoundedImage';
-import Toast from '../ToastModal';
+} from '../../Modals';
+import RoundedImage from '../../RoundedImage';
+import Toast from '../../ToastModal';
+import ProfileItem from './components/ProfileItem';
+import ClickableImage from './components/ClickableImage';
 
+// StyleSheet import
+import styles from './styles';
+
+/**
+ * User profile component
+ */
 class UserProfile extends Component {
   constructor(props) {
     super(props);
@@ -49,6 +59,7 @@ class UserProfile extends Component {
     this.S3uploadService = new S3uploadService();
   }
 
+  // Set state based on latest props
   componentDidUpdate(prevProps) {
     if (
       this.props.userConfig.background_image !==
@@ -63,21 +74,29 @@ class UserProfile extends Component {
     }
   }
 
+  // Display edit password modal
   onShowChangePassModal() {
     this.setState({isChangePassModalVisible: true});
   }
 
+  // Display edit email modal
   onShowChangeEmailModal() {
     this.setState({isChangeEmailModalVisible: true});
   }
 
+  // Display edit name modal
   onShowChangeNameModal() {
     this.setState({isChangeNameModalVisible: true});
   }
+  // Display edit phone modal
   onShowChangeMobileModal() {
     this.setState({isUpdatePhoneModalVisible: true});
   }
 
+  /**
+   * Display gallery for user to pick
+   * an image profile picture
+   */
   onUserImageCameraPress = () => {
     let options = {
       title: translate('pages.xchat.chooseOption'),
@@ -141,6 +160,10 @@ class UserProfile extends Component {
     });
   };
 
+  /**
+   * Display gallery for user to pick
+   * a background
+   */
   chooseBackgroundImage = async () => {
     let options = {
       title: translate('pages.xchat.chooseOption'),
@@ -158,7 +181,6 @@ class UserProfile extends Component {
       } else if (response.error) {
       } else {
         // console.log('response data',response);
-        let source = {uri: 'data:image/jpeg;base64,' + response.data};
         this.setState({
           uploadLoading: true,
           backgroundImagePath: response,
@@ -201,6 +223,7 @@ class UserProfile extends Component {
       uploadLoading,
       uploadImageLoading,
     } = this.state;
+    const colors = ['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150'];
     return (
       <View style={styles.Wrapper}>
         <KeyboardAwareScrollView
@@ -210,18 +233,18 @@ class UserProfile extends Component {
             start={{x: 0.1, y: 0.7}}
             end={{x: 0.8, y: 0.3}}
             locations={[0.3, 0.5, 0.8, 1, 1]}
-            colors={['#9440a3', '#c13468', '#ee2e3b', '#fa573a', '#fca150']}
-            style={{height: 150}}>
+            colors={colors}
+            style={styles.linearGradientStyle}>
             {uploadLoading ? (
               <ListLoader />
             ) : (
-              <View style={{flex: 1}}>
-                {backgroundImagePath.uri != '' ? (
+              <View style={styles.singleFlex}>
+                {backgroundImagePath.uri !== '' ? (
                   <ImageLoader
                     style={styles.firstView}
                     source={getImage(backgroundImagePath.uri)}>
                     <TouchableOpacity
-                      style={{padding: 10}}
+                      style={styles.closeIconPadding}
                       onPress={onRequestClose}>
                       <Image
                         source={Icons.icon_close}
@@ -232,16 +255,7 @@ class UserProfile extends Component {
                 ) : null}
                 <View style={styles.firstBottomView}>
                   <View
-                    style={[
-                      globalStyles.iconStyle,
-                      {
-                        backgroundColor: Colors.white,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 12,
-                        borderWidth: 1,
-                      },
-                    ]}>
+                    style={[globalStyles.iconStyle, styles.cameraContainer]}>
                     <ClickableImage
                       source={Icons.icon_camera}
                       size={14}
@@ -256,18 +270,9 @@ class UserProfile extends Component {
             </TouchableOpacity>
           </LinearGradient>
 
-          <View style={{alignSelf: 'center', marginTop: -40}}>
+          <View style={styles.avatarContainer}>
             {uploadImageLoading ? (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: 80,
-                  width: 80,
-                  backgroundColor: '#e9eef1',
-                  borderRadius: 40,
-                  borderWidth: 0.5,
-                }}>
+              <View style={styles.avatarLoadingContainer}>
                 <ActivityIndicator color={Colors.primary} size={'small'} />
               </View>
             ) : (
@@ -279,16 +284,7 @@ class UserProfile extends Component {
             )}
             <View style={styles.centerBottomView}>
               <View
-                style={[
-                  globalStyles.iconStyle,
-                  {
-                    backgroundColor: Colors.white,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    borderWidth: 1,
-                  },
-                ]}>
+                style={[globalStyles.iconStyle, styles.cameraIconContainer]}>
                 <ClickableImage
                   source={Icons.icon_camera}
                   size={14}
@@ -298,24 +294,8 @@ class UserProfile extends Component {
             </View>
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignSelf: 'center',
-              alignItems: 'center',
-              marginTop: 10,
-            }}>
-            <Text
-              style={[
-                globalStyles.normalSemiBoldText,
-                {
-                  color: Colors.black,
-                  marginHorizontal: 10,
-                  fontSize: normalize(15),
-                },
-              ]}>
-              {/* {userData.first_name + ' '}
-              {userData.last_name} */}
+          <View style={styles.nameContainer}>
+            <Text style={[globalStyles.normalSemiBoldText, styles.nameText]}>
               {userConfig.display_name}
             </Text>
             <RoundedImage
@@ -328,21 +308,8 @@ class UserProfile extends Component {
             />
           </View>
 
-          <View
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={[
-                globalStyles.smallRegularText,
-                {
-                  color: Colors.black,
-                  marginBottom: 10,
-                  fontSize: normalize(12),
-                  fontFamily: Fonts.light,
-                },
-              ]}>
+          <View style={styles.usernameContainer}>
+            <Text style={[globalStyles.smallRegularText, styles.usernameText]}>
               {userData.username}
             </Text>
           </View>
@@ -377,7 +344,7 @@ class UserProfile extends Component {
             />
           ) : (
             <View style={styles.inputTextContainer}>
-              <View style={{flex: 1}}>
+              <View style={styles.singleFlex}>
                 <Text
                   style={[
                     globalStyles.smallRegularText,
@@ -391,7 +358,7 @@ class UserProfile extends Component {
                 name={'plus'}
                 size={18}
                 color={'#638bbb'}
-                style={{padding: 5}}
+                style={styles.addIcon}
                 onPress={() => {
                   this.setState({isUpdatePhoneModalVisible: true});
                 }}
@@ -399,10 +366,12 @@ class UserProfile extends Component {
             </View>
           )}
         </KeyboardAwareScrollView>
-        <View style={{position: 'absolute', width: '100%', top: 0}}>
+        <View style={styles.toastContainer}>
           <Toast
             ref={(c) => {
-              if (c) Toast.toastInstance = c;
+              if (c) {
+                Toast.toastInstance = c;
+              }
             }}
           />
         </View>
@@ -436,117 +405,11 @@ class UserProfile extends Component {
   }
 }
 
-const ProfileItem = (props) => {
-  const {title, value, editable, onEditIconPress} = props;
-  return (
-    <View style={styles.inputTextContainer}>
-      <View style={{flex: 1}}>
-        <Text
-          style={[
-            globalStyles.smallRegularText,
-            styles.textNormal,
-            {fontFamily: Fonts.light},
-          ]}>
-          {title}
-        </Text>
-        <Text
-          style={[
-            globalStyles.smallRegularText,
-            styles.textNormal,
-            {
-              fontSize: Platform.isPad ? normalize(8) : normalize(13),
-              fontFamily: Fonts.light,
-              color: 'rgba(87,132,178,1)',
-            },
-          ]}>
-          {value}
-        </Text>
-      </View>
-      {editable ? (
-        <RoundedImage
-          source={Icons.icon_pencil}
-          size={18}
-          clickable={true}
-          isRounded={false}
-          onClick={onEditIconPress}
-        />
-      ) : null}
-    </View>
-  );
-};
-
-export const ClickableImage = (props) => {
-  const {size, source, onClick} = props;
-  return (
-    <TouchableOpacity onPress={onClick}>
-      <Image
-        source={source}
-        style={{width: size, height: size, resizeMode: 'contain'}}
-      />
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
-  modalBackground: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 0,
-    display: 'flex',
-  },
-  Wrapper: {
-    width: '80%',
-    backgroundColor: 'transparent',
-    display: 'flex',
-    elevation: 4,
-    shadowColor: Colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    overflow: 'hidden',
-  },
-  firstView: {
-    height: 150,
-    width: '100%',
-  },
-  firstBottomView: {
-    bottom: 0,
-    right: 0,
-    position: 'absolute',
-    padding: 10,
-  },
-  centerBottomView: {
-    bottom: 0,
-    right: 0,
-    position: 'absolute',
-  },
-  iconClose: {
-    width: 12,
-    height: 12,
-    resizeMode: 'contain',
-    tintColor: Colors.white,
-    top: 10,
-    right: 10,
-    position: 'absolute',
-  },
-  textNormal: {
-    textAlign: 'left',
-    color: Colors.black,
-  },
-  inputTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-  },
-});
-
+/**
+ * @Redux - Map following state to props
+ * @param {object} state - current state in storeed in redux
+ * @returns object
+ */
 const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
@@ -554,6 +417,7 @@ const mapStateToProps = (state) => {
   };
 };
 
+// Actions to be accessed from redux
 const mapDispatchToProps = {
   updateConfiguration,
   uploadAvatar,

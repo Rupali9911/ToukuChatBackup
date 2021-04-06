@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import LinearGradient from 'react-native-linear-gradient';
 
-import {Colors, Fonts, Images, Icons} from '../../constants';
+import {Colors} from '../../constants';
 import {UserProfile} from '../ModalContents';
 
 export default class ProfileModal extends Component {

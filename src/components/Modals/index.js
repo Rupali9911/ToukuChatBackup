@@ -27,5 +27,5 @@ export {
   ShowGalleryModal,
   UpdatePhoneModal,
   VerifyOtpModal,
-  DeleteOptionModal
+  DeleteOptionModal,
 };

@@ -1,11 +1,22 @@
+// Library imports
 import {Platform, StyleSheet} from 'react-native';
-import {Colors, Fonts} from '../../constants';
-import {normalize} from '../../utils';
 
+// Local imports
+import {Colors, Fonts} from '../../../constants';
+import {normalize} from '../../../utils';
+
+/**
+ * Similar styles
+ */
+const center = {
+  alignSelf: 'center',
+  alignItems: 'center',
+};
+
+/**
+ * StyleSheet for user profile component
+ */
 export default StyleSheet.create({
-  gradientContainer: {
-    height: 150,
-  },
   modalBackground: {
     flex: 1,
     alignItems: 'center',
@@ -63,24 +74,27 @@ export default StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#ccc',
   },
+  linearGradientStyle: {
+    height: 150,
+  },
   singleFlex: {
     flex: 1,
   },
-  closeActionContainer: {
+  closeIconPadding: {
     padding: 10,
   },
-  iconContainer: {
+  cameraContainer: {
     backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
     borderWidth: 1,
   },
-  imageContainer: {
+  avatarContainer: {
     alignSelf: 'center',
     marginTop: -40,
   },
-  loadingContainer: {
+  avatarLoadingContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     height: 80,
@@ -89,10 +103,16 @@ export default StyleSheet.create({
     borderRadius: 40,
     borderWidth: 0.5,
   },
+  cameraIconContainer: {
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+  },
   nameContainer: {
     flexDirection: 'row',
-    alignSelf: 'center',
-    alignItems: 'center',
+    ...center,
     marginTop: 10,
   },
   nameText: {
@@ -101,8 +121,7 @@ export default StyleSheet.create({
     fontSize: normalize(15),
   },
   usernameContainer: {
-    alignSelf: 'center',
-    alignItems: 'center',
+    ...center,
   },
   usernameText: {
     color: Colors.black,
@@ -110,17 +129,17 @@ export default StyleSheet.create({
     fontSize: normalize(12),
     fontFamily: Fonts.light,
   },
-  addIcon: {
-    padding: 5,
-  },
   toastContainer: {
     position: 'absolute',
     width: '100%',
     top: 0,
   },
-  valueText: {
+  itemLabel: {
     fontSize: Platform.isPad ? normalize(8) : normalize(13),
     fontFamily: Fonts.light,
-    color: 'rgba(87, 132, 178, 1)',
+    color: 'rgba(87,132,178,1)',
+  },
+  addIcon: {
+    padding: 5,
   },
 });
