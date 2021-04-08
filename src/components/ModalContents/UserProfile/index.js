@@ -417,7 +417,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-// Actions to be accessed from redux
+// Actions to be dispatched from redux
 const mapDispatchToProps = {
   updateConfiguration,
   uploadAvatar,
