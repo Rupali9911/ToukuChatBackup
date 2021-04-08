@@ -17,16 +17,19 @@ import ChatMessageBox from './ChatMessageBox';
 import ChatInput from './TextInputs/ChatInput';
 import {translate} from '../redux/reducers/languageReducer';
 import {Colors, Fonts, Images, Icons} from '../constants';
-import {isIphoneX} from '../../src/utils';
+import {isIphoneX, getUserName, getUser_ActionFromUpdateText, normalize} from '../../src/utils';
 import NoData from './NoData';
 
 import RoundedImage from './RoundedImage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import CheckBox from './CheckBox';
 import Button from './Button';
 import { ListLoader } from './Loaders';
 import Toast from './Toast';
+import Menu from './Menu/Menu';
+import MenuItem from './Menu/MenuItem';
 
 const {height} = Dimensions.get('window');
 
@@ -158,6 +161,42 @@ class ChatContainer extends Component {
     return result;
   };
 
+  hideMenu = (id) => {
+    this[`_menu_${id}`] && this[`_menu_${id}`].hide();
+    this.setState({ visible: false });
+  };
+
+  showMenu = (id) => {
+    this[`_menu_${id}`] && this[`_menu_${id}`].show();
+    this.setState({ visible: true });
+  };
+
+  renderUpdate = (message) => {
+    let update_text = '';
+    if(message && message.msg_type === 'update'){
+      let update_obj = getUser_ActionFromUpdateText(message.message_body);
+      let update_by = message.from_user.id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(message.from_user.id) || message.from_user.display_name || message.from_user.username;
+      let update_to = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || update_obj.user_name;
+      // console.log('update_to',update_obj);
+      if(update_obj.action==='left'){
+        update_text = translate('common.leftGroup',{username: update_by});
+      }else if(update_obj.action==='added'){
+        if(update_by===update_to){
+          update_text = translate('pages.xchat.userJoinedGroup',{displayName: update_by});
+        }else{
+          update_text = translate('common.addedInGroup',{username: update_by,toUsername: update_to});
+        }
+      }else if(update_obj.action==='removed'){
+        update_text = translate('common.removedToGroup',{username: update_by,toUsername: update_to});
+      }else if(message.message_body.includes('liked the memo')){
+        update_text = translate('common.likedTheMemo',{username: update_by,toUsername: update_to});
+      }else if(message.message_body.includes('commented on the memo')){
+        update_text = translate('common.commentonMemo',{username: update_by,toUsername: update_to});
+      }
+      return update_text;
+    }
+  }
+
   render() {
     const {
       orientation,
@@ -199,7 +238,7 @@ class ChatContainer extends Component {
         }}
         keyboardShouldPersistTaps={'always'}
         onKeyboardWillShow={(contentWidth, contentHeight) => {
-          this.keyboardAwareScrollView.scrollToEnd({animated: false});
+          this.keyboardAwareScrollView && this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
         keyboardOpeningTime={1500}
         scrollEnabled={false}
@@ -287,7 +326,57 @@ class ChatContainer extends Component {
                           onCheck={() => onSelect(item.id)}
                         />
                       ) : null}
-                      <TouchableOpacity
+                      {(item.msg_type && item.msg_type === 'update' && !item.message_body.includes('add a memo')) ?
+                        <TouchableOpacity
+                          style={{ width:'100%', marginLeft: isMultiSelect?-35:0}}
+                          onPress={() => {
+                            isMultiSelect &&
+                              !item.is_unsent &&
+                              onSelect(item.id);
+                          }}>
+                          <Menu
+                            ref={(ref) => {
+                              this[`_menu_${item.id}`] = ref;
+                            }}
+                            style={{
+                              marginTop: 15,
+                              marginLeft: 20,
+                              backgroundColor: Colors.gradient_3,
+                              opacity: 0.9,
+                            }}
+                            tabHeight={110}
+                            headerHeight={80}
+                            button={
+                              <TouchableOpacity
+                                disabled={isMultiSelect}
+                                onLongPress={() => {
+                                  this.showMenu(item.id);
+                                }}
+                                style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 5 }}>
+                                <View style={{maxWidth: '90%', backgroundColor: Colors.update_bg, padding: normalize(5), paddingHorizontal: normalize(8), borderRadius: 12 }}>
+                                  <Text style={[chatStyle.messageDateText]}>
+                                    {this.renderUpdate(item)}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            }>
+                            <MenuItem
+                              onPress={() => {
+                                this.props.onDelete(item.id);
+                                this.hideMenu(item.id);
+                              }}
+                              customComponent={
+                                <View style={{ flex: 1, flexDirection: 'row', margin: 15 }}>
+                                  <FontAwesome5 name={'trash'} size={20} color={Colors.white} />
+                                  <Text style={{ marginLeft: 10, color: '#fff' }}>
+                                    {translate('common.delete')}
+                                  </Text>
+                                </View>
+                              }
+                            />
+                          </Menu>
+                        </TouchableOpacity>
+                    : <TouchableOpacity
                         style={{flex: 1}}
                         disabled={!isMultiSelect}
                         onPress={() => {
@@ -353,8 +442,9 @@ class ChatContainer extends Component {
                           isMultiSelect={isMultiSelect}
                           isChatDisable={isChatDisable}
                           onMediaPlay={this.props.onMediaPlay}
+                          UserDisplayName={this.props.UserDisplayName}
                         />
-                      </TouchableOpacity>
+                      </TouchableOpacity>}
                     </View>
                     {(messages[index + 1] &&
                       new Date(item.created).getDate() !==

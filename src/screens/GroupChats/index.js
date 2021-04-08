@@ -1107,9 +1107,11 @@ class GroupChats extends Component {
       .then((res) => {
         //console.log('res_getGroupDetail', res);
         this.props.setCurrentGroupDetail(res);
-        for (let admin of res.admin_details) {
-          if (admin.id === this.props.userData.id) {
-            this.setState({isMyGroup: true});
+        if(res && res.admin_details){
+          for (let admin of res.admin_details) {
+            if (admin.id === this.props.userData.id) {
+              this.setState({isMyGroup: true});
+            }
           }
         }
       })
@@ -1834,6 +1836,7 @@ class GroupChats extends Component {
           }
           type={'group'}
           navigation={this.props.navigation}
+          disableDetails={currentGroupDetail.is_group_member === false}
         />
         {isChatLoading && chatGroupConversation.length <= 0 ? (
           <ListLoader />

@@ -427,6 +427,46 @@ class ChatMessageBubble extends Component {
     this.setState({visible: true});
   };
 
+  renderMemoText = (message) => {
+    let update_text = '';
+    if(message && message.msg_type === 'update'){
+
+      let user_id = '';
+      let text = '';
+      let action = '';
+
+      let split_txt = message.message_body.split(',');
+      if (split_txt.length > 0) {
+        user_id = split_txt[0].trim();
+        action = split_txt[1].trim();
+        text = split_txt[2].trim();
+      }
+
+      let update_by = message.from_user.id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(message.from_user.id) || message.from_user.display_name || message.from_user.username;
+      // let update_by = user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(user_id);
+      // let update_to = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || update_obj.user_name;
+      // console.log('update_to',update_obj);
+      
+      update_text = text;
+      
+      return {update_text,update_by};
+    }
+  }
+
+  renderDisplayNameText = (text) => {
+    const {isChannel,message, UserDisplayName} = this.props;
+    if(isChannel){
+      if(text.includes('{Display Name}')){
+        let update_txt = text.replace("{Display Name}",UserDisplayName);
+        return update_txt;
+      }else {
+        return text;
+      }
+    }else{
+      return text;
+    }
+  }
+
   render() {
     const {
       message,
@@ -607,7 +647,54 @@ class ChatMessageBubble extends Component {
                             </Text>
                           </View>
                         </Fragment>
-                      ) : this.isContainUrl(message.message_body) ? (
+                      ) : message.msg_type &&
+                      message.msg_type === 'update' ? (
+                          <View>
+                            <View style={{ paddingHorizontal: 10 }}>
+                              <Text
+                                style={{
+                                  fontFamily: Fonts.regular,
+                                  fontWeight: '300',
+                                  fontSize: 15,
+                                }}
+                                numberOfLines={3}
+                              >
+                                {this.renderMemoText(message).update_text}
+                              </Text>
+                            </View>
+                            <View style={{
+                              minWidth: 100,
+                              borderTopWidth: 1,
+                              borderTopColor: '#ccc',
+                              marginVertical: 5
+                            }} />
+                            <TouchableOpacity
+                              style={{
+                                flexDirection: 'row',
+                                paddingHorizontal: 10,
+                                alignItems: 'center',
+                              }}
+                              onPress={() => {
+                                NavigationService.navigate('FriendNotes', { isNotes: true });
+                              }}>
+                              <Text
+                                style={{
+                                  flex: 1,
+                                  color: Colors.black_light,
+                                  fontSize: 13,
+                                  fontFamily: Fonts.regular,
+                                  fontWeight: '600'
+                                }}>
+                                {translate('pages.xchat.notes')}
+                              </Text>
+                              <FontAwesome
+                                name={'angle-right'}
+                                size={20}
+                                color={Colors.black_light}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
                           // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {
@@ -634,7 +721,7 @@ class ChatMessageBubble extends Component {
                                   ? normalize(7.5)
                                   : normalize(12),
                               }}>
-                              {message.message_body}
+                              {this.renderDisplayNameText(message.message_body)}
                             </Text>
                           </HyperLink>
 
@@ -650,7 +737,7 @@ class ChatMessageBubble extends Component {
                               ? normalize(7.5)
                               : normalize(12),
                           }}>
-                          {message.message_body}
+                          {this.renderDisplayNameText(message.message_body)}
                         </Text>
                       )}
                     </TouchableOpacity>
@@ -723,7 +810,7 @@ class ChatMessageBubble extends Component {
                         flex: 1,
                         justifyContent: 'center',
                         paddingHorizontal:
-                          message.msg_type === 'image' ? 8 : 10,
+                          message.msg_type === 'update' ? 0 : message.msg_type === 'image' ? 8 : 10,
                         paddingVertical:
                           message.msg_type === 'image' ? 8 : 10,
                       }}
@@ -806,7 +893,54 @@ class ChatMessageBubble extends Component {
                             </Text>
                           </View>
                         </Fragment>
-                      ) : this.isContainUrl(message.message_body) ? (
+                      ) : message.msg_type &&
+                      message.msg_type === 'update' ? (
+                          <View>
+                            <View style={{ paddingHorizontal: 10 }}>
+                              <Text
+                                style={{
+                                  fontFamily: Fonts.regular,
+                                  fontWeight: '300',
+                                  fontSize: 15,
+                                }}
+                                numberOfLines={3}
+                              >
+                                {this.renderMemoText(message).update_text}
+                              </Text>
+                            </View>
+                            <View style={{
+                              minWidth: 100,
+                              borderTopWidth: 1,
+                              borderTopColor: '#ccc',
+                              marginVertical: 5
+                            }} />
+                            <TouchableOpacity
+                              style={{
+                                flexDirection: 'row',
+                                paddingHorizontal: 10,
+                                alignItems: 'center',
+                              }}
+                              onPress={() => {
+                                NavigationService.navigate('FriendNotes', { isNotes: true });
+                              }}>
+                              <Text
+                                style={{
+                                  flex: 1,
+                                  color: Colors.black_light,
+                                  fontSize: 13,
+                                  fontFamily: Fonts.regular,
+                                  fontWeight: '600'
+                                }}>
+                                {translate('pages.xchat.notes')}
+                              </Text>
+                              <FontAwesome
+                                name={'angle-right'}
+                                size={20}
+                                color={Colors.black_light}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
                           // onPress={() => this.openUrl(message.message_body)}
                           onLongPress={(id) => {

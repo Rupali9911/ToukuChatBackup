@@ -79,7 +79,7 @@ export default function (state = initialState, action) {
     case GET_FOLLOWING_TIMELINE_SUCCESS:
       return {
         ...state,
-        followingTimeline: action.payload,
+        followingTimeline: [...action.payload],
         loading: false,
       };
 
@@ -309,6 +309,9 @@ export const updateTrendTimeline = (data) => (dispatch) => {
   dispatch(getTrendTimelineSuccess(data));
 }
 
+export const updateFollowingTimeline = (data) => (dispatch) => {
+  dispatch(getFollowingTimelineSuccess(data));
+}
 
 //
 export const getTrendTimeline = (userType,postId) => (dispatch) =>
@@ -608,6 +611,56 @@ export const reportPost = (postId) => (dispatch) =>
         }
       })
       .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const likeUnlikeTimelinePost = (id, action) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    let data = {
+      post_id: id,
+      like: action
+    }
+    client
+      .post(`/xchat/like-timeline-post/`, data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+export const timelinePostComment = (id, text) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    let data = {
+      schedule_post: id,
+      text: text
+    }
+    client.post(`/xchat/timeline-post-comment/`, data)
+      .then((res) => {
+        resolve(res);
+      }).catch((err) => {
+        reject(err);
+      })
+  });
+
+export const getPostComments = (id) => (dispatch) => 
+  new Promise(function(resolve,reject) {
+    client.get(`/xchat/timeline-post-comment-list/?post_id=${id}`)
+      .then((res)=>{
+        resolve(res);
+      }).catch((err)=>{
+        reject(err);
+      })
+  });
+
+export const deletePostComment = (id) => (dispatch) => 
+  new Promise(function(resolve, reject){
+    client.delete(`/xchat/timeline-post-comment/${id}/`)
+      .then((res)=>{
+        resolve(res);
+      }).catch((err)=>{
         reject(err);
       });
   });

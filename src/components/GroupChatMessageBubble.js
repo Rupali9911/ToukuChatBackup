@@ -723,6 +723,7 @@ class GroupChatMessageBubble extends Component {
                                     </Text>
                                   </View>
                                   <View style={{
+                                    minWidth: 100,
                                     borderTopWidth: 1,
                                     borderTopColor: '#ccc',
                                     marginVertical: 5
@@ -1022,6 +1023,7 @@ class GroupChatMessageBubble extends Component {
                                         </Text>
                                       </View>
                                       <View style={{
+                                          minWidth: 100,
                                           borderTopWidth: 1,
                                           borderTopColor: '#ccc',
                                           marginVertical: 5

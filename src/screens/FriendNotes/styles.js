@@ -41,17 +41,20 @@ export const friendDetailStyles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    marginVertical: 10,
-    justifyContent: 'space-evenly',
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.gray,
-    // paddingBottom: 10,
+    marginTop: 10,
+    justifyContent: 'space-evenly'
   },
   tabItem: {
     marginHorizontal: 10,
     alignItems: 'center',
     paddingBottom: 10,
     paddingHorizontal: 20,
+  },
+  tabImage: {
+    tintColor: Colors.gradient_2,
+    marginVertical: 5,
+    height: 30,
+    width: 30,
   },
   tabTitle: {
     fontSize: 16,

@@ -27,7 +27,7 @@ import { Badge } from 'react-native-paper';
 import { withNavigationFocus } from 'react-navigation';
 import NetInfo from '@react-native-community/netinfo';
 
-import { homeStyles } from './styles';
+import styles from './styles';
 import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
 import { Images, Colors, Icons, Fonts, SocketEvents } from '../../constants';
@@ -122,6 +122,8 @@ import {
   updateChannelLastMsgWithOutCount,
   getLocalFriendRequests,
   updateFriendTypingStatus,
+  getChannels,
+  getFriendChatConversationById,
 } from '../../storage/Service';
 
 class Home extends PureComponent {
@@ -248,7 +250,7 @@ class Home extends PureComponent {
   };
 
   friendFilter = () => {
-    const { friendLoading, userFriends } = this.props;
+    const { userFriends } = this.props;
     // console.log('userFriends',userFriends);
     const Friends = userFriends.filter((friend) => friend.friend_status !== 'UNFRIEND')
     const filteredFriends = Friends.filter(
@@ -381,7 +383,9 @@ class Home extends PureComponent {
       .then((res) => {
         if (res) {
           console.log('asset_xp', res);
-          if (res && res.data) this.setState({assetXPValue: res.data});
+          if (res && res.data) {
+            this.setState({assetXPValue: res.data});
+          }
         }
       })
       .catch((err) => {
@@ -400,14 +404,19 @@ class Home extends PureComponent {
   }
 
   requestXanaLoginform = () => {
-    this.props.requestLoginForm().then((res)=>{
-      if(res && res.status){
-        console.log('res',res);
-        Linking.openURL(`https://www.xigolo.com/xigolo/#/popup-login?nkt=${res.data}`);
-      }
-    }).catch((err)=>{
-      console.log('error',err);
-    });
+    this.props
+      .requestLoginForm()
+      .then((res) => {
+        if (res && res.status) {
+          console.log('res', res);
+          Linking.openURL(
+            `https://www.xigolo.com/xigolo/#/popup-login?nkt=${res.data}`,
+          );
+        }
+      })
+      .catch((err) => {
+        console.log('error', err);
+      });
   }
 
   getFollowingChannels() {
@@ -416,7 +425,7 @@ class Home extends PureComponent {
     //   this.handleLoadMoreChannels();
     // }
     let counts = 0;
-    for (var channel of this.props.followingChannels) {
+    for (let channel of this.props.followingChannels) {
       counts = counts + channel.unread_msg;
     }
     this.setState({ channelHeaderCounts: counts });
@@ -451,7 +460,7 @@ class Home extends PureComponent {
 
   setChannelHeaderCount() {
     let counts = 0;
-    for (var channel of this.props.followingChannels) {
+    for (let channel of this.props.followingChannels) {
       counts = counts + channel.unread_msg;
     }
     // this.setState({ channelHeaderCounts: counts });
@@ -588,7 +597,7 @@ class Home extends PureComponent {
   friendIsTyping(message) {
     const { userFriends } = this.props;
     if (message.text.data.message_details.type === 'personal') {
-      for (var i in userFriends) {
+      for (let i in userFriends) {
         if (
           userFriends[i].user_id ==
           message.text.data.message_details.sender_user_id &&
@@ -604,7 +613,7 @@ class Home extends PureComponent {
         }
       }
     } else {
-      for (var i in userFriends) {
+      for (let i in userFriends) {
         userFriends[i].is_typing = false;
       }
     }
@@ -614,7 +623,7 @@ class Home extends PureComponent {
   setFriendsOnlineStatus(message) {
     const { userFriends } = this.props;
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
-      for (var i in userFriends) {
+      for (let i in userFriends) {
         if (
           userFriends[i].user_id == message.text.data.message_details.user_id
         ) {
@@ -636,14 +645,14 @@ class Home extends PureComponent {
 
     if (message.text.data.type === SocketEvents.MESSAGE_IN_FOLLOWING_CHANNEL) {
       for (let i of followingChannels) {
-        if (message.text.data.message_details.channel == i.id) {
-          if (message.text.data.message_details.from_user.id == userData.id) {
+        if (message.text.data.message_details.channel === i.id) {
+          if (message.text.data.message_details.from_user.id === userData.id) {
             // this.getFollowingChannels();
-            var result = getChannelsById(
+            let result = getChannelsById(
               message.text.data.message_details.channel,
             );
 
-            var channels = [];
+            let channels = [];
 
             result.map((item) => {
               channels.push(item);
@@ -659,14 +668,14 @@ class Home extends PureComponent {
             break;
           } else if (
             message.text.data.message_details.to_user != null &&
-            message.text.data.message_details.to_user.id == userData.id
+            message.text.data.message_details.to_user.id === userData.id
           ) {
             // this.getFollowingChannels();
-            var result = getChannelsById(
+            let result = getChannelsById(
               message.text.data.message_details.channel,
             );
 
-            var channels = [];
+            let channels = [];
 
             result.map((item) => {
               channels.push(item);
@@ -698,10 +707,10 @@ class Home extends PureComponent {
         console.log('item', item);
         for (let i of followingChannels) {
           if (item.channel == i.id) {
-            var result = getChannelsById(item.channel);
-            var channels = [];
-            result.map((item) => {
-              channels.push(item);
+            let result = getChannelsById(item.channel);
+            let channels = [];
+            result.map((channel) => {
+              channels.push(channel);
             });
             setChannelChatConversation([item]);
             updateChannelLastMsg(
@@ -725,11 +734,11 @@ class Home extends PureComponent {
       SocketEvents.MESSAGE_EDITED_IN_FOLLOWING_CHANNEL
     ) {
       for (let i of followingChannels) {
-        if (message.text.data.message_details.channel == i.id) {
-          var result = getChannelsById(
+        if (message.text.data.message_details.channel === i.id) {
+          let result = getChannelsById(
             message.text.data.message_details.channel,
           );
-          var channels = [];
+          let channels = [];
           result.map((item) => {
             channels.push(item);
           });
@@ -737,7 +746,7 @@ class Home extends PureComponent {
             message.text.data.message_details.id,
             message.text.data.message_details.message_body,
           );
-          if (channels[0].last_msg.id == message.text.data.message_details.id) {
+          if (channels[0].last_msg.id === message.text.data.message_details.id) {
             console.log('updateasdasdasd');
             updateChannelLastMsgWithOutCount(
               message.text.data.message_details.channel,
@@ -758,17 +767,17 @@ class Home extends PureComponent {
       message.text.data.type ===
       SocketEvents.DELETE_MESSAGE_IN_FOLLOWING_CHANNEL
     ) {
-      var result = getChannelsById(message.text.data.message_details.channel);
-      var channels = [];
+      let result = getChannelsById(message.text.data.message_details.channel);
+      let channels = [];
       result.map((item) => {
         channels.push(item);
       });
       deleteMessageById(message.text.data.message_details.id);
-      if (channels[0].last_msg.id == message.text.data.message_details.id) {
-        var chats = getChannelChatConversationById(
+      if (channels[0].last_msg.id === message.text.data.message_details.id) {
+        let chats = getChannelChatConversationById(
           message.text.data.message_details.channel,
         );
-        var array = [];
+        let array = [];
         for (let chat of chats) {
           array = [...array, chat];
         }
@@ -789,17 +798,17 @@ class Home extends PureComponent {
       message.text.data.type ===
       SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL
     ) {
-      var result = getChannelsById(message.text.data.message_details.channel);
-      var channels = [];
+      let result = getChannelsById(message.text.data.message_details.channel);
+      let channels = [];
       result.map((item) => {
         channels.push(item);
       });
       setMessageUnsend(message.text.data.message_details.id);
-      if (channels[0].last_msg.id == message.text.data.message_details.id) {
-        var chats = getChannelChatConversationById(
+      if (channels[0].last_msg.id === message.text.data.message_details.id) {
+        let chats = getChannelChatConversationById(
           message.text.data.message_details.channel,
         );
-        var array = [];
+        let array = [];
         for (let chat of chats) {
           array = [...array, chat];
         }
@@ -815,8 +824,6 @@ class Home extends PureComponent {
   }
 
   onNewFriendRequest = (message) => {
-    const { friendRequest } = this.props;
-
     if (message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST) {
       this.getFriendRequest();
     }
@@ -824,11 +831,10 @@ class Home extends PureComponent {
 
   //New Message in Friend
   onNewMessageInFriend(message) {
-    const { userFriends } = this.props;
     const { userData } = this.props;
 
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
+      if (message.text.data.message_details.from_user.id === userData.id) {
         // this.getUserFriends();
         setFriendChatConversation([message.text.data.message_details]);
         updateFriendLastMsg(
@@ -837,7 +843,7 @@ class Home extends PureComponent {
         );
         this.props.setUserFriends();
         this.setFriendHeaderCount();
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
+      } else if (message.text.data.message_details.to_user.id === userData.id) {
         setFriendChatConversation([message.text.data.message_details]);
         updateFriendLastMsg(
           message.text.data.message_details.from_user.id,
@@ -863,11 +869,11 @@ class Home extends PureComponent {
         let messageType = message.text.data.message_details.msg_type;
         updateFriendMessageById(editMessageId, newMessageText, messageType);
 
-        var users = getLocalUserFriend(
+        let users = getLocalUserFriend(
           message.text.data.message_details.to_user.id,
         );
 
-        var array = [];
+        let array = [];
 
         for (let u of users) {
           array = [...array, u];
@@ -889,11 +895,11 @@ class Home extends PureComponent {
         let messageType = message.text.data.message_details.msg_type;
         updateFriendMessageById(editMessageId, newMessageText, messageType);
 
-        var users = getLocalUserFriend(
+        let users = getLocalUserFriend(
           message.text.data.message_details.from_user.id,
         );
 
-        var array = [];
+        let array = [];
 
         for (let u of users) {
           array = [...array, u];
@@ -918,23 +924,23 @@ class Home extends PureComponent {
     const { userData } = this.props;
     if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id == userData.id) {
-        var users = getLocalUserFriend(
+        let users = getLocalUserFriend(
           message.text.data.message_details.to_user.id,
         );
-        var array = [];
+        let array = [];
         for (let u of users) {
           array = [...array, u];
         }
         deleteFriendMessageById(message.text.data.message_details.id);
         if (array[0].last_msg.id == message.text.data.message_details.id) {
-          var chats = getFriendChatConversationById(
+          let chats = getFriendChatConversationById(
             message.text.data.message_details.channel,
           );
-          var array = [];
+          let arr = [];
           for (let chat of chats) {
-            array = [...array, chat];
+            arr = [...arr, chat];
           }
-          console.log('updated_last_messgae', JSON.stringify(array[0]));
+          console.log('updated_last_messgae', JSON.stringify(arr[0]));
           updateFriendLastMsgWithoutCount(
             message.text.data.message_details.to_user.id,
             message.text.data.message_details,
@@ -942,24 +948,24 @@ class Home extends PureComponent {
         }
         // this.props.getLocalFollowingChannels();
         this.setChannelHeaderCount();
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
-        var users = getLocalUserFriend(
+      } else if (message.text.data.message_details.to_user.id === userData.id) {
+        let users = getLocalUserFriend(
           message.text.data.message_details.from_user.id,
         );
-        var array = [];
+        let array = [];
         for (let u of users) {
           array = [...array, u];
         }
         deleteFriendMessageById(message.text.data.message_details.id);
-        if (array[0].last_msg.id == message.text.data.message_details.id) {
-          var chats = getFriendChatConversationById(
+        if (array[0].last_msg.id === message.text.data.message_details.id) {
+          let chats = getFriendChatConversationById(
             message.text.data.message_details.channel,
           );
-          var array = [];
+          let arr = [];
           for (let chat of chats) {
-            array = [...array, chat];
+            arr = [...arr, chat];
           }
-          console.log('updated_last_messgae', JSON.stringify(array[0]));
+          console.log('updated_last_messgae', JSON.stringify(arr[0]));
           updateFriendLastMsgWithoutCount(
             message.text.data.message_details.from_user.id,
             message.text.data.message_details,
@@ -977,32 +983,32 @@ class Home extends PureComponent {
     const { userData } = this.props;
 
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
+      if (message.text.data.message_details.from_user.id === userData.id) {
         // this.getUserFriends();
         setFriendMessageUnsend(message.text.data.message_details.id);
-        var users = getLocalUserFriend(
+        let users = getLocalUserFriend(
           message.text.data.message_details.to_user.id,
         );
-        var array = [];
+        let array = [];
         for (let u of users) {
           array = [...array, u];
         }
-        if (array[0].last_msg.id == message.text.data.message_details.id) {
+        if (array[0].last_msg.id === message.text.data.message_details.id) {
           updateFriendLastMsgWithoutCount(
             message.text.data.message_details.to_user.id,
             message.text.data.message_details,
           );
         }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
+      } else if (message.text.data.message_details.to_user.id === userData.id) {
         setFriendMessageUnsend(message.text.data.message_details.id);
-        var users = getLocalUserFriend(
+        let users = getLocalUserFriend(
           message.text.data.message_details.from_user.id,
         );
-        var array = [];
+        let array = [];
         for (let u of users) {
           array = [...array, u];
         }
-        if (array[0].last_msg.id == message.text.data.message_details.id) {
+        if (array[0].last_msg.id === message.text.data.message_details.id) {
           updateFriendLastMsgWithoutCount(
             message.text.data.message_details.from_user.id,
             message.text.data.message_details,
@@ -1021,9 +1027,9 @@ class Home extends PureComponent {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.group_id) {
           // this.getUserGroups();
-          var item = message.text.data.message_details.unread_msg.filter(
-            (item) => {
-              return item.user__id === this.props.userData.id;
+          let item = message.text.data.message_details.unread_msg.filter(
+            (detail) => {
+              return detail.user__id === this.props.userData.id;
             },
           );
 
@@ -1058,7 +1064,7 @@ class Home extends PureComponent {
           });
           console.log('checking group', group);
           if (
-            group[0].last_msg_id == message.text.data.message_details.msg_id
+            group[0].last_msg_id === message.text.data.message_details.msg_id
           ) {
             updateLastMsgGroups(
               message.text.data.message_details.group_id,
@@ -1087,7 +1093,7 @@ class Home extends PureComponent {
             group = [item];
           });
           if (
-            group[0].last_msg_id == message.text.data.message_details.msg_id
+            group[0].last_msg_id === message.text.data.message_details.msg_id
           ) {
             setGroupLastMessageUnsend(
               message.text.data.message_details.group_id,
@@ -1105,9 +1111,9 @@ class Home extends PureComponent {
     const { userGroups } = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       let unread_counts = 0;
-      for (var i in userGroups) {
+      for (let i in userGroups) {
         if (
-          userGroups[i].group_id == message.text.data.message_details.group_id
+          userGroups[i].group_id === message.text.data.message_details.group_id
         ) {
           // userGroups[i].unread_msg =
           //   message.text.data.message_details.read_count;
@@ -1154,9 +1160,9 @@ class Home extends PureComponent {
   readAllMessageChannelChat(message) {
     const { followingChannels } = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_CHANNEL_CHAT) {
-      for (var i in followingChannels) {
+      for (let i in followingChannels) {
         if (
-          followingChannels[i].id ==
+          followingChannels[i].id ===
           message.text.data.message_details.channel_id
         ) {
           // followingChannels[i].unread_msg =
@@ -1183,9 +1189,9 @@ class Home extends PureComponent {
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       let unread_counts = 0;
-      for (var i in userFriends) {
+      for (let i in userFriends) {
         if (
-          userFriends[i].friend == detail.friend_id &&
+          userFriends[i].friend === detail.friend_id &&
           detail.read_by === this.props.userData.id
         ) {
           // userFriends[i].unread_msg =
@@ -1357,7 +1363,7 @@ class Home extends PureComponent {
     } else if (filteredChannels.length > 0) {
       return (
         <FlatList
-          contentContainerStyle={{ display: 'flex' }}
+          contentContainerStyle={styles.flexDisplay}
           data={filteredChannels}
           extraData={this.state}
           renderItem={({ item, index }) => (
@@ -1395,7 +1401,7 @@ class Home extends PureComponent {
           //     {channelLoading && loadMoreVisible ? <ListLoader /> : null}
           //   </View>
           // )}
-          keyExtractor={(item, index) => String(index)}
+          keyExtractor={(_, index) => String(index)}
           // onEndReached={this.handleLoadMoreChannels.bind(this)}
           onEndReachedThreshold={1}
         />
@@ -1459,7 +1465,7 @@ class Home extends PureComponent {
           // ListFooterComponent={() => (
           //   <View>{groupLoading ? <ListLoader /> : null}</View>
           // )}
-          keyExtractor={(item, index) => String(index)}
+          keyExtractor={(_, index) => String(index)}
         />
       );
     } else {
@@ -1482,54 +1488,61 @@ class Home extends PureComponent {
         <FlatList
           data={filteredFriends}
           extraData={this.state}
-          renderItem={({ item, index }) => (
-            <FriendListItem
+          renderItem={({ item, index }) => {
+            const description = item.last_msg
+              ? item.last_msg_type === 'text'
+                ? item.last_msg
+                : item.last_msg_type === 'image'
+                ? translate('pages.xchat.photo')
+                : item.last_msg_type === 'video'
+                ? translate('pages.xchat.video')
+                : item.last_msg_type === 'doc'
+                ? translate('pages.xchat.document')
+                : item.last_msg_type === 'audio'
+                ? translate('pages.xchat.audio')
+                : ''
+              : item.last_msg_id
+              ? translate('pages.xchat.messageUnsent')
+              : '';
+
+            const handleTypingEnd = (id) => {
+              updateFriendTypingStatus(id, false);
+              this.props.setUserFriends();
+            };
+
+            const handleAvatarPress = () => {
+              if (item.friend_status !== 'UNFRIEND') {
+                this.onOpenFriendDetails(item);
+              }
+            };
+            return (
+              <FriendListItem
               key={index}
               user_id={item.user_id}
               last_msg_id={item.last_msg_id}
               title={item.display_name}
-              description={
-                item.last_msg
-                  ? item.last_msg_type === 'text'
-                    ? item.last_msg
-                    : item.last_msg_type === 'image'
-                      ? translate('pages.xchat.photo')
-                      : item.last_msg_type === 'video'
-                        ? translate('pages.xchat.video')
-                        : item.last_msg_type === 'doc'
-                          ? translate('pages.xchat.document')
-                          : item.last_msg_type === 'audio'
-                            ? translate('pages.xchat.audio')
-                            : ''
-                  : item.last_msg_id
-                    ? translate('pages.xchat.messageUnsent')
-                    : ''
-              }
+              description={description}
               image={getAvatar(item.profile_picture)}
               date={item.timestamp}
               isOnline={item.is_online}
               isTyping={item.is_typing}
               onPress={() => this.onOpenFriendChats(item)}
               unreadCount={item.unread_msg}
-              callTypingStop={(id) => {
-                console.log('home_user_id', id);
-                updateFriendTypingStatus(id, false);
-                this.props.setUserFriends();
-              }}
-              onAvtarPress={() => {
-                if (item.friend_status !== 'UNFRIEND') {
-                  this.onOpenFriendDetails(item);
-                }
-              }}
+              callTypingStop={handleTypingEnd}
+              onAvtarPress={handleAvatarPress}
               isPined={item.is_pined}
-              acceptedRequest={this.props.acceptedRequest.includes(item.user_id)?1:0}
+              acceptedRequest={
+                this.props.acceptedRequest.includes(item.user_id) ? 1 : 0
+              }
             />
           )}
+        }
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
           // ListFooterComponent={() => (
           //   <View>{friendLoading ? <ListLoader /> : null}</View>
           // )}
-          keyExtractor={(item, index) => String(index)}
+          maxToRenderPerBatch={5}
+          keyExtractor={(_, index) => String(index)}
         />
       );
     } else {
@@ -1701,22 +1714,10 @@ class Home extends PureComponent {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => this.onUserProfilePress()}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingVertical: 7,
-              paddingHorizontal: 10,
-            }}>
+            style={styles.headerContainer}>
             <RoundedImage source={getAvatar(userData.avatar)} size={50} />
             <Text
-              style={[
-                globalStyles.smallNunitoRegularText,
-                {
-                  color: Colors.black,
-                  marginStart: 10,
-                  fontSize: 14,
-                },
-              ]}>
+              style={[globalStyles.smallNunitoRegularText,styles.displayName]}>
               {userConfig.display_name}
             </Text>
           </TouchableOpacity>
@@ -1813,16 +1814,11 @@ class Home extends PureComponent {
 
             {/* {(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester') &&  */}
             <View>
-            <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
-              <Text style={[
-                {
-                  fontSize: 14,
-                  fontWeight: '600',
-                  fontFamily: Fonts.regular,
-                  color: '#0A1F44',
-                },
-              ]}>{translate('pages.adWall.yourPoint')}</Text>
-              <View style={{ flexDirection: 'row', }}>
+            <View style={styles.headingContainer}>
+              <Text style={styles.headingText}>
+                {translate('pages.adWall.yourPoint')}
+              </Text>
+              <View style={styles.rowContainer}>
                 <LinearGradient
                   start={{ x: 0.03, y: 0.7 }}
                   end={{ x: 0.95, y: 0.8 }}
@@ -1835,11 +1831,20 @@ class Home extends PureComponent {
                     '#fff3f5',
                     '#fff3f5'
                   ]}
-                  style={[homeStyles.fill_border_box_style,{marginRight: 10}]}>
-                  <View style={{}}>
-                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.xchat.toukuPoints')}</Text>
-                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(TP)</Text>
-                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{this.props.userData.total_tp && parseInt(this.props.userData.total_tp).toLocaleString()}</Text>
+                  style={[
+                    styles.fill_border_box_style,
+                    styles.tpPointsGradientContainer
+                    ]}>
+                  <View>
+                    <Text style={styles.pointsText}>{translate('pages.xchat.toukuPoints')}</Text>
+                    <Text style={styles.pointsText}>(TP)</Text>
+                    <Text style={styles.pointsCount}>
+                      {this.props.userData.total_tp && 
+                          parseInt(
+                            this.props.userData.total_tp,
+                            10
+                          ).toLocaleString()}
+                    </Text>
                   </View>
                 </LinearGradient>
                 <LinearGradient
@@ -1854,27 +1859,31 @@ class Home extends PureComponent {
                     '#fff3f5',
                     '#fff3f5'
                   ]}
-                  style={[homeStyles.fill_border_box_style,{marginLeft: 10}]}>
-                  <View style={{}}>
-                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>{translate('pages.adWall.gamePoint')}</Text>
-                    <Text style={{ color: '#0a1f44', fontFamily: Fonts.regular }}>(XP)</Text>
-                    <Text style={{ marginTop: -10, textAlign: 'right', color: '#0a1f44', fontFamily: Fonts.regular, fontSize: normalize(20) }}>{assetXPValue?assetXPValue.XP:0}</Text>
+                  style={[
+                    styles.fill_border_box_style,
+                    styles.xpPointsGradientContainer,
+                  ]}>
+                  <View>
+                    <Text style={styles.pointsText}>{translate('pages.adWall.gamePoint')}</Text>
+                    <Text style={styles.pointsText}>(XP)</Text>
+                    <Text style={styles.pointsCount}>
+                      {assetXPValue?assetXPValue.XP:0}
+                    </Text>
                   </View>
                 </LinearGradient>
               </View>
             </View>
 
-              <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
-                <Text style={[
-                  {
-                    fontSize: 14,
-                    fontWeight: '600',
-                    fontFamily: Fonts.regular,
-                    color: '#0A1F44',
-                  },
-                ]}>{translate('pages.xchat.transfer')}</Text>
-                <View style={{ flexDirection: 'row', }}>
-                  <TouchableOpacity style={{ flex: 1 }} onPress={() => { this.props.navigation.navigate('AmazonExchangeScreen') }}>
+              <View style={styles.headingContainer}>
+                <Text style={[styles.headingText]}>
+                  {translate('pages.xchat.transfer')}
+                </Text>
+                <View style={styles.rowContainer}>
+                  <TouchableOpacity 
+                    style={styles.singleFlex} 
+                    onPress={() => { 
+                      this.props.navigation.navigate('AmazonExchangeScreen') 
+                    }}>
                     <LinearGradient
                       start={{ x: 0.03, y: 0.7 }}
                       end={{ x: 0.95, y: 0.8 }}
@@ -1884,20 +1893,19 @@ class Home extends PureComponent {
                       colors={[
                         // '#FFD60941',
                         // '#D7944141',
-                        '#fff',
-                        '#fff'
+                        'white',
+                        'white'
                       ]}
-                      style={[homeStyles.fill_border_box_style, {
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginRight: 10
-                      }]}>
+                      style={[
+                        styles.fill_border_box_style,
+                        styles.amazonContainer,
+                      ]}>
                       <Image
                         source={Images.amazon_logo}
                         resizeMode={'contain'} />
                     </LinearGradient>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{ flex: 1 }} onPress={() => {
+                  <TouchableOpacity style={styles.singleFlex} onPress={() => {
                     Toast.show({
                       title: translate('pages.adWall.btcExchangeHistory'),
                       text: translate('pages.clasrm.comingSoon'),
@@ -1913,21 +1921,20 @@ class Home extends PureComponent {
                       colors={[
                         // '#FFD60941',
                         // '#D7944141',
-                        '#fff',
-                        '#fff'
+                        'white',
+                        'white'
                       ]}
-                      style={[homeStyles.fill_border_box_style, {
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginLeft: 10,
-                      }]}>
+                      style={[
+                        styles.fill_border_box_style,
+                        styles.bitcoinContainer,
+                      ]}>
                       <Image
                         source={Images.bitcoin_logo}
                         resizeMode={'contain'} />
                     </LinearGradient>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={{ flex: 1 }} onPress={() => {
+                <TouchableOpacity style={styles.singleFlex} onPress={() => {
                   this.props.navigation.navigate('Rewards');
                   // if(this.props.userData.user_type==='owner' || this.props.userData.user_type==='company' || this.props.userData.user_type==='tester'){
                   //   this.getUniqueUrl();
@@ -1962,65 +1969,57 @@ class Home extends PureComponent {
                   <Text style={{ fontSize: normalize(25), fontWeight: 'bold' }}>{translate('pages.adWall.clickHere')}</Text>
                   <Text style={{ fontSize: normalize(12), fontWeight: 'bold', fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'serif' }}>{translate('pages.adWall.increaseyourPoint')}</Text>
                 </LinearGradient> */}
-                  <ImageBackground source={Images.banner_img} style={{ width: '100%', height: 100, marginTop: 10, }} />
+                  <ImageBackground 
+                    source={Images.banner_img} 
+                    style={styles.bannerImage} 
+                  />
                 </TouchableOpacity>
               </View>
 
-              <View style={{ paddingHorizontal: 15, marginTop: 10 }}>
-                <Text style={[
-                  {
-                    fontSize: 14,
-                    fontWeight: '600',
-                    fontFamily: Fonts.regular,
-                    color: '#0A1F44',
-                  },
-                ]}>{translate('pages.adWall.other')}</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', }}>
+              <View style={styles.headingContainer}>
+                <Text style={[styles.headingText]}>
+                  {translate('pages.adWall.other')}
+                </Text>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false} 
+                  style={styles.rowContainer}>
                   <TouchableOpacity style={{}} onPress={() => {
                     this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 1422 } })
                     // onPressHyperlink('https://touku.angelium.net/api/xchat/channel-details/1422/')
                   }}>
-                    <View style={{
-                      width: 100,
-                      marginTop: 10,
-                      marginRight: 15
-                    }}>
+                    <View style={styles.recommendedContainers}>
                       <Image
                         source = {{uri: 'https://cdn.angelium.net/touku/assets/images/lady_cartoon.jpg'}}
                         // source={{ uri: 'https://cdn.angelium.net/touku/assets/images/person_money.png' }}
-                        style={{ width: 100, height: 100, borderRadius: 5 }}
+                        style={styles.recommendedPosters}
                       />
-                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.earnChannels')}</Text>
+                      <Text numberOfLines={1} style={styles.recommendedLabels}>
+                        {translate('pages.adWall.earnChannels')}
+                      </Text>
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{}} onPress={() => {
-                    this.requestXanaLoginform();
-                  }}>
-                    <View style={{
-                      width: 100,
-                      marginTop: 10,
-                      marginRight: 15
+                  <TouchableOpacity style={{}} 
+                    onPress={() => {
+                      this.requestXanaLoginform();
                     }}>
+                    <View style={styles.recommendedContainers}>
                       <Image
                         source={{ uri: 'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png' }}
-                        style={{ width: 100, height: 100, borderRadius: 5 }}
+                        style={styles.recommendedPosters}
                       />
-                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.OptionalXigolo')}</Text>
+                      <Text numberOfLines={1} style={styles.recommendedLabels}>{translate('pages.adWall.OptionalXigolo')}</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity style={{}} onPress={() => {
                     this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 800 } })
                   }}>
-                    <View style={{
-                      width: 100,
-                      marginTop: 10,
-                      marginRight: 15
-                    }}>
+                    <View style={styles.recommendedContainers}>
                       <Image
                         source={{ uri: 'https://cdn.angelium.net/touku/assets/images/welcome-page/bg-1218x812.jpg' }}
-                        style={{ width: 100, height: 100, borderRadius: 5 }}
+                        style={styles.recommendedPosters}
                       />
-                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.comingSoon')}</Text>
+                      <Text numberOfLines={1} style={styles.recommendedLabels}>{translate('pages.adWall.comingSoon')}</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity style={{}} onPress={() => {
@@ -2035,16 +2034,14 @@ class Home extends PureComponent {
                       });
                     }
                   }}>
-                    <View style={{
-                      width: 100,
-                      marginTop: 10,
-                      marginRight: 15
-                    }}>
+                    <View style={styles.recommendedContainers}>
                       <Image
                         source={Images.crown_img}
-                        style={{ width: 100, height: 100, borderRadius: 5, tintColor: '#ffbf00', resizeMode: 'contain' }}
+                        style={styles.recommendedImage}
                       />
-                      <Text numberOfLines={1} style={{ flex: 1, marginTop: 5, fontSize: normalize(12) }}>{translate('pages.adWall.GoldCrownText')}</Text>
+                      <Text numberOfLines={1} style={styles.recommendedLabels}>
+                        {translate('pages.adWall.GoldCrownText')}
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 </ScrollView>

@@ -168,6 +168,7 @@ export default class ChatMessageBox extends Component {
       onReplyPress,
       isMultiSelect,
       showOpenLoader,
+      UserDisplayName
     } = this.props;
 
     if (!message.message_body && !message.is_unsent) {
@@ -315,6 +316,7 @@ export default class ChatMessageBox extends Component {
                     isMultiSelect={isMultiSelect}
                     currentChannel={currentChannel}
                     onMediaPlay={this.props.onMediaPlay}
+                    UserDisplayName={UserDisplayName}
                   />
                 </View>
                 <View
@@ -430,6 +432,7 @@ export default class ChatMessageBox extends Component {
                   isMultiSelect={isMultiSelect}
                   currentChannel={currentChannel}
                   onMediaPlay={this.props.onMediaPlay}
+                  UserDisplayName={UserDisplayName}
                 />
                 </View>
                 {/* {message.msg_type === 'image' ? (

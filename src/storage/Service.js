@@ -1394,6 +1394,7 @@ export const multipleData = (type, multichat) => {
           id: multichat[0].id,
           last_msg: null,
           timestamp: multichat[0].timestamp,
+          unread_msg: 0
         },
         'modified',
       );
@@ -1409,6 +1410,7 @@ export const multipleData = (type, multichat) => {
           user_id: multichat[0].user_id,
           last_msg: null,
           last_msg_id: null,
+          unread_msg: 0
         },
         'modified',
       );
@@ -1424,7 +1426,8 @@ export const multipleData = (type, multichat) => {
           last_msg: null,
           last_msg_id: null,
           timestamp: multichat[0].timestamp,
-          no_msgs: true
+          no_msgs: true,
+          unread_msg: 0
         },
         'modified',
       );

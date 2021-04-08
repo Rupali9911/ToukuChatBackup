@@ -8,7 +8,7 @@ import {withNavigationFocus} from 'react-navigation';
 
 import {Images, languageArray, SocketEvents} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
-import {getAvatar, eventService, realmToPlainObject} from '../../utils';
+import {getAvatar, eventService, realmToPlainObject, getUserName} from '../../utils';
 import {
   ChannelListItem,
   FriendListItem,
@@ -1057,7 +1057,6 @@ class Chat extends Component {
         let unreadCount = item.length > 0 ? item[0].unread_count : 0;
 
         setGroupChatConversation([message.text.data.message_details]);
-
         if (
             (this.props.currentRouteName == 'GroupChats' || this.props.currentRouteName == 'GroupDetails') &&
           currentGroup &&
@@ -1567,7 +1566,7 @@ class Chat extends Component {
           this.props.setCommonChatConversation();
         });
         if (
-          this.props.currentRouteName == 'FriendChats' &&
+          (this.props.currentRouteName == 'FriendChats' || this.props.currentRouteName == 'FriendNotes')  &&
           currentFriend &&
           message.text.data.message_details.to_user.id == currentFriend.user_id
         ) {
@@ -1578,7 +1577,7 @@ class Chat extends Component {
         setFriendChatConversation([message.text.data.message_details]);
 
         if (
-          this.props.currentRouteName == 'FriendChats' &&
+          (this.props.currentRouteName == 'FriendChats' || this.props.currentRouteName == 'FriendNotes') &&
           currentFriend &&
           message.text.data.message_details.from_user.id ==
             currentFriend.user_id
@@ -3331,6 +3330,16 @@ class Chat extends Component {
     this.updateModalVisibility();
   }
 
+  renderDisplayNameText = (text, message) => {
+    console.log('message',message);
+    if(message, text.includes('{Display Name}')){
+      let update_txt = text.replace("{Display Name}",this.props.userConfig.display_name);
+      return update_txt;
+    }else {
+      return text;
+    }
+  }
+
   renderCommonChat = () => {
     const {isLoading, isVisible, isUncheck} = this.state;
     const commonChat = this.props.commonChat;
@@ -3417,7 +3426,7 @@ class Chat extends Component {
                     ? item.last_msg.is_unsent
                       ? translate('pages.xchat.messageUnsent')
                       : item.last_msg.msg_type === 'text'
-                      ? item.last_msg.message_body
+                      ? this.renderDisplayNameText(item.last_msg.message_body,item.last_msg)
                       : item.last_msg.msg_type === 'image'
                       ? translate('pages.xchat.photo')
                       : item.last_msg.msg_type === 'video'

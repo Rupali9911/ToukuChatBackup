@@ -77,6 +77,13 @@ export const Icons = {
   icon_scan: require('../../assets/icons/scan_qr.png'),
   icon_qr: require('../../assets/icons/qr.png'),
   icon_searchQr: require('../../assets/icons/search_icon.png'),
+  icon_like: require('../../assets/icons/Like/like.png'),
+  icon_like_black: require('../../assets/icons/Like/like_black.png'),
+  icon_like_white: require('../../assets/icons/Like/like_white.png'),
+  icon_comment: require('../../assets/icons/Comment/comment.png'),
+  icon_comment_black: require('../../assets/icons/Comment/black_comment.png'),
+  icon_comment_white: require('../../assets/icons/Comment/white_comment.png'),
+  icon_notes: require('../../assets/icons/notes.png')
 };
 
 export const Images = {
@@ -357,7 +364,11 @@ export const SocketEvents = {
   LIKE_OR_UNLIKE_FRIEND_NOTE_DATA: 'like or unlike friend note',
   LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment',
   CLEAR_GROUP_CHAT: 'clear group chat from group list',
-  UPDATING_USER_TP: 'Updating user tp'
+  UPDATING_USER_TP: 'Updating user tp',
+  //Timeline post 
+  LIKE_TIMELINE_POST: 'like timeline post',
+  TIMELINE_POST_COMMENT_DATA: 'timeline post comments',
+  TIMELINE_POST_COMMENT_DELETE: 'delete timeline post comments'
 };
 
 export const NotificationType = {

@@ -1550,7 +1550,7 @@ class FriendChats extends Component {
               ? translate('pages.xchat.unPinThisChat')
               : translate('pages.xchat.pinThisChat')
           }
-          disableFriendNotes={currentFriend.friend_status === 'UNFRIEND'}
+          disableDetails={currentFriend.friend_status === 'UNFRIEND'}
         />
         {isChatLoading && chatFriendConversation.length <= 0 ? (
           <ListLoader />

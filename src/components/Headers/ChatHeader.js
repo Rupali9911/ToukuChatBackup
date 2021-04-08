@@ -103,7 +103,7 @@ export default class ChatHeader extends Component {
                     <TouchableOpacity
                         activeOpacity={1}
                       onPress={() => {
-                        if (!this.props.disableFriendNotes) {
+                        if (!this.props.disableDetails) {
                           navigation.navigate('FriendNotes');
                         }
                       }}>
@@ -120,7 +120,7 @@ export default class ChatHeader extends Component {
                     <Text
                       numberOfLines={1}
                       onPress={() => {
-                        if (!this.props.disableFriendNotes) {
+                        if (!this.props.disableDetails) {
                           navigation.navigate('FriendNotes');
                         }
                       }}
@@ -144,7 +144,7 @@ export default class ChatHeader extends Component {
                       console.log('type', type);
                       if (type === 'channel') {
                         navigation.navigate('ChannelInfo');
-                      }else if (type === 'group') {
+                      }else if (type === 'group' && !this.props.disableDetails) {
                           navigation.navigate('GroupDetails');
                       }
                     }}
@@ -201,7 +201,7 @@ export default class ChatHeader extends Component {
                       onPress={() => {
                         if (type === 'channel') {
                           navigation.navigate('ChannelInfo');
-                        }else if (type === 'group') {
+                        }else if (type === 'group' && !this.props.disableDetails) {
                             navigation.navigate('GroupDetails');
                         }
                       }}>

@@ -1009,7 +1009,7 @@ class ChannelChats extends Component {
   };
 
   renderConversations() {
-    const {channelLoading, chatConversation} = this.props;
+    const {channelLoading, chatConversation,userConfig} = this.props;
     const {
       conversations,
       newMessageText,
@@ -1098,6 +1098,7 @@ class ChannelChats extends Component {
                 });
               }
             }}
+            UserDisplayName={userConfig.display_name}
           />
 
           <ConfirmationModal
@@ -1525,6 +1526,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatConversation: state.channelReducer.chatConversation,
+    userConfig: state.configurationReducer.userConfig,
   };
 };
 

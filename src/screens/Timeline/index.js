@@ -7,7 +7,7 @@ import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
 import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Icons, Colors, Fonts } from '../../constants';
+import { Images, Icons, Colors, Fonts, SocketEvents } from '../../constants';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import TabBar from '../../components/TabBar';
 import PostCard from '../../components/PostCard';
@@ -21,7 +21,12 @@ import {
   reportPost,
   updateRankingChannel,
   updateTrendTimeline,
-  setSpecificPostId
+  setSpecificPostId,
+  likeUnlikeTimelinePost,
+  updateFollowingTimeline,
+  timelinePostComment,
+  getPostComments,
+  deletePostComment
 } from '../../redux/reducers/timelineReducer';
 import {
   followChannel
@@ -31,7 +36,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { resetData } from '../../storage/Service';
 import { ListLoader } from '../../components/Loaders';
 import { setActiveTimelineTab } from '../../redux/reducers/timelineReducer';
-import { showToast } from '../../utils';
+import { showToast, eventService } from '../../utils';
 
 class Timeline extends Component {
   constructor(props) {
@@ -192,6 +197,10 @@ class Timeline extends Component {
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
     this.setState({ orientation: initial });
+
+    this.events = eventService.getMessage().subscribe((message) => {
+          this.checkEventTypes(message);
+      });
   }
 
   async componentDidMount() {
@@ -288,6 +297,92 @@ class Timeline extends Component {
           }
           this.setState({ isLoading: false });
         });
+    }
+  }
+
+  checkEventTypes(message) {
+    console.log('event_message',message)
+    switch (message.text.data.type) {
+      case SocketEvents.LIKE_TIMELINE_POST:
+        this.handlePostLikeUnlike(message);
+        break;
+      case SocketEvents.TIMELINE_POST_COMMENT_DATA:
+        this.handlePostTimelineComment(message);
+        break;
+      case SocketEvents.TIMELINE_POST_COMMENT_DELETE:
+        this.handlePostCommentDelete(message);
+        break;
+    }
+  }
+
+  handlePostLikeUnlike = (message) => {
+    console.log('handlePostLikeUnlike',message);
+    const {followingTimeline} = this.props;
+    const message_details = message.text.data.message_details;
+    console.log('message_details',message_details);
+    if(followingTimeline && followingTimeline.length>0){
+      let index = followingTimeline.findIndex((value,index)=>{
+        return value.id == message_details.post_id;
+      });
+      console.log('index',index);
+      if(index==0 || index>0){
+        let item = followingTimeline[index];
+        if(message_details.user_id == this.props.userData.id){
+          item.is_liked = message_details.like.like;
+        }
+        item.liked_by_count = message_details.like.like?item.liked_by_count+1:item.liked_by_count-1;
+        let array = followingTimeline;
+        array.splice(index, 1, item);
+        this.props.updateFollowingTimeline(array);
+      }
+    }
+  }
+
+  handlePostTimelineComment = (message) => {
+    const {followingTimeline} = this.props;
+    const message_details = message.text.data.message_details;
+    console.log('message_details',message_details);
+    if(followingTimeline && followingTimeline.length>0){
+      let index = followingTimeline.findIndex((value,index)=>{
+        return value.id == message_details.schedule_post;
+      });
+      console.log('index',index);
+      if(index==0 || index>0){
+        let item = followingTimeline[index];
+        let isCommentExists = item.post_comments.findIndex((value,index)=>{
+          return value.id == message_details.id;
+        });
+        if(isCommentExists==-1){
+          item.post_comments.splice(0,0,message_details);
+          let array = followingTimeline;
+          array.splice(index, 1, item);
+          this.props.updateFollowingTimeline(array);
+        }
+      }
+    }
+  }
+
+  handlePostCommentDelete = (message) => {
+    const {followingTimeline} = this.props;
+    const message_details = message.text.data.message_details;
+    console.log('message_details',message_details);
+    if(followingTimeline && followingTimeline.length>0){
+      let index = followingTimeline.findIndex((value,index)=>{
+        return value.id == message_details.post_id;
+      });
+      console.log('index',index);
+      if(index==0 || index>0){
+        let item = followingTimeline[index];
+        let commentIndex = item.post_comments.findIndex((value,index)=>{
+          return value.id == message_details.comment_id;
+        });
+        if(commentIndex>-1){
+          item.post_comments.splice(commentIndex,1);
+          let array = followingTimeline;
+          array.splice(index, 1, item);
+          this.props.updateFollowingTimeline(array);
+        }
+      }
     }
   }
 
@@ -415,6 +510,36 @@ class Timeline extends Component {
       });
   };
 
+  likeUnlikePost = (id,action,index) => {
+    const {followingTimeline} = this.props;
+    this.props.likeUnlikeTimelinePost(id,action).then((res)=>{
+      if(res){
+        console.log('response',res);
+        // if(followingTimeline && followingTimeline.length>0){
+        //   let item = followingTimeline[index];
+        //   item.is_liked = res.like;
+        //   item.liked_by_count = res.like?item.liked_by_count+1:item.liked_by_count-1
+        //   let array = followingTimeline;
+        //   array.splice(index, 1, item);
+        //   console.log('item',item);
+        //   this.props.updateFollowingTimeline(array);
+        // }
+      }
+    }).catch((err)=>{
+      console.log('error',err);
+    });
+  }
+
+  createCommentOnPost = (id,text) => {
+    this.props.timelinePostComment(id,text).then((res)=>{
+      if(res){
+        console.log('response comment',res);
+      }
+    }).catch((err)=>{
+      console.log('err',err);
+    });
+  }
+
   onMomentumScrollBegin = () => {
     this.doUpdate = false;
   };
@@ -482,10 +607,15 @@ class Timeline extends Component {
                   activeTab === 'following' ? (
                     <PostCard
                       menuItems={menuItems}
-                      posts={this.specificPosts?[this.specificPosts[0],...followingTimeline]:followingTimeline}
+                      posts={this.specificPosts ? [this.specificPosts[0], ...followingTimeline] : followingTimeline}
                       isTimeline={true}
+                      userData={this.props.userData}
                       navigation={this.props.navigation}
                       onFollowUnfollowChannel={this.onFollowUnfollow}
+                      likeUnlikePost={this.likeUnlikePost}
+                      addComment={this.props.timelinePostComment}
+                      getPostComments={this.props.getPostComments}
+                      deleteComment={this.props.deletePostComment}
                     />
                   ) : (
                       loading && rankingChannel.length <= 0 ? (
@@ -534,6 +664,7 @@ class Timeline extends Component {
           message={translate('pages.xchat.ifYouCancelIt')}
           isLoading={loading}
         />
+
       </View>
       // </ImageBackground>
     );
@@ -567,7 +698,12 @@ const mapDispatchToProps = {
   updateRankingChannel,
   followChannel,
   updateTrendTimeline,
-  setSpecificPostId
+  setSpecificPostId,
+  likeUnlikeTimelinePost,
+  updateFollowingTimeline,
+  timelinePostComment,
+  getPostComments,
+  deletePostComment
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

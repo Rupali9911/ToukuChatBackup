@@ -84,7 +84,7 @@ export default class PostCard extends Component {
         return newArray.push(data.text);
       });
 
-    const {menuItems, isTimeline, isChannelTimeline} = this.props;
+    const {menuItems, isTimeline, isChannelTimeline, userData, likeUnlikePost, addComment, getPostComments, deleteComment} = this.props;
     return (
       <View
         style={{
@@ -104,7 +104,7 @@ export default class PostCard extends Component {
           index={index}
           onFollowUnfollowChannel={this.props.onFollowUnfollowChannel}
         />
-        <PostChannelItem post={post} />
+        <PostChannelItem post={post} index={index} userData={userData} likeUnlikePost={likeUnlikePost} addComment={addComment} deleteComment={deleteComment} getPostComments={getPostComments}/>
       </View>
     );
   };
@@ -188,6 +188,7 @@ export default class PostCard extends Component {
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         windowSize={16}
+        keyboardShouldPersistTaps={'always'}
         style={{backgroundColor: isRankedChannel?Colors.white:'transparent', marginBottom: isRankedChannel?50:0}}
         // keyExtractor={(item, index) => isRankedChannel?`${item.channel_id}`:`${item.id}`}
         ListEmptyComponent={isChannelTimeline?this.channelEmptyList:this.EmptyList(isTimeline)}
