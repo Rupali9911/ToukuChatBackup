@@ -792,7 +792,7 @@ class Chat extends Component {
   }
 
   deleteMultipleChat = async (message) => {
-    console.log('message', message);
+    console.log('message2', message);
     let commonData = [...this.props.commonChat];
 
     // channel
@@ -3331,7 +3331,7 @@ class Chat extends Component {
   }
 
   renderDisplayNameText = (text, message) => {
-    console.log('message',message);
+    console.log('message1',message);
     if(message, text.includes('{Display Name}')){
       let update_txt = text.replace("{Display Name}",this.props.userConfig.display_name);
       return update_txt;

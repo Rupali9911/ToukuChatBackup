@@ -7,6 +7,7 @@ import {
 
 import {setFriendRequests, getLocalFriendRequests} from '../../storage/Service';
 import { dispatch } from 'rxjs/internal/observable/pairs';
+import {LOGOUT_SUCCESS} from "./index";
 
 export const SET_SEARCHED_FRIEND = 'SET_SEARCHED_FRIEND';
 
@@ -63,12 +64,11 @@ export default function (state = initialState, action) {
         loading: false,
       };
 
-    case SET_FRIEND_REQUEST: {
+    case SET_FRIEND_REQUEST:
       return {
         ...state,
         friendRequest: action.payload.data,
       };
-    }
 
     //Accept Friend Request
     case ACCEPT_FRIENDS_REQUEST:
@@ -112,6 +112,12 @@ export default function (state = initialState, action) {
         ...state,
         acceptedRequest: [...action.payload]
       }
+
+      case LOGOUT_SUCCESS:
+          return {
+              ...state,
+              acceptedRequest: []
+          }
     default:
       return state;
   }

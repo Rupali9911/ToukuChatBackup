@@ -247,7 +247,7 @@ export default class GroupChatMessageBox extends Component {
             /> */}
                 <TouchableOpacity
                     onPress={() => {
-                        console.log('message', message)
+                        //console.log('message', message)
                        this.navigateToUserProfile(message.sender_id)
                     }}>
               <Image
