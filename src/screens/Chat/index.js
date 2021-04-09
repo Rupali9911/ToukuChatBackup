@@ -2051,6 +2051,7 @@ class Chat extends Component {
                 null,
                 null,
                 group[0].timestamp,
+                true
               );
             }
             this.props.getLocalUserGroups().then((res) => {
@@ -3331,9 +3332,8 @@ class Chat extends Component {
   }
 
   renderDisplayNameText = (text, message) => {
-    console.log('message1',message);
     if(message, text.includes('{Display Name}')){
-      let update_txt = text.replace("{Display Name}",this.props.userConfig.display_name);
+      let update_txt = text.replaceAll("{Display Name}",this.props.userConfig.display_name);
       return update_txt;
     }else {
       return text;

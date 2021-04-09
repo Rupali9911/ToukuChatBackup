@@ -1,4 +1,5 @@
 import Realm from 'realm';
+import moment from 'moment';
 import {
   ChatConversation,
   UserFriends,
@@ -876,6 +877,7 @@ export const updateLastMsgGroupsWithoutCount = (
   text,
   last_msg_id,
   timestamp,
+  no_msgs = false
 ) => {
   let last_msg = {
     type: type,
@@ -888,7 +890,7 @@ export const updateLastMsgGroupsWithoutCount = (
         group_id: id,
         last_msg: text === null && type === null ? null : last_msg,
         last_msg_id: last_msg_id,
-        no_msgs: false,
+        no_msgs: no_msgs,
         timestamp: timestamp,
       },
       'modified',
@@ -1027,8 +1029,8 @@ export const handleRequestAccept = (item, isInvitation) => {
       realm.create(
         'user_friends',
         isInvitation
-          ? {user_id: item.user_id, friend_status: 'ACCEPTED'}
-          : {user_id: item.user_id, unread_msg: 0, friend_status: 'ACCEPTED'},
+          ? {user_id: item.user_id, friend_status: 'ACCEPTED', timestamp: moment(new Date()).format("YYYY-MM-DDTHH:mm:ss")}
+          : {user_id: item.user_id, unread_msg: 0, friend_status: 'ACCEPTED', timestamp: moment(new Date()).format("YYYY-MM-DDTHH:mm:ss")},
         'modified',
       );
     });

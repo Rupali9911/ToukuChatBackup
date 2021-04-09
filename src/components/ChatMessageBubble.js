@@ -457,7 +457,7 @@ class ChatMessageBubble extends Component {
     const {isChannel,message, UserDisplayName} = this.props;
     if(isChannel){
       if(text.includes('{Display Name}')){
-        let update_txt = text.replace("{Display Name}",UserDisplayName);
+        let update_txt = text.replaceAll("{Display Name}",UserDisplayName);
         return update_txt;
       }else {
         return text;
