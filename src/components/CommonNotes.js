@@ -1,18 +1,19 @@
+import moment from 'moment';
 import React, {Component} from 'react';
-import {View, Image, TouchableOpacity, Text, FlatList} from 'react-native';
-
-import {getImage, eventService, normalize} from '../utils';
-import {Images, Icons, Colors, Fonts, SocketEvents} from '../constants';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Button from '../components/Button';
 import NoData from '../components/NoData';
-import {ListLoader, ImageLoader} from '../components/Loaders';
 import TextAreaWithTitle from '../components/TextInputs/TextAreaWithTitle';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {translate, setI18nConfig} from '../redux/reducers/languageReducer';
-import moment from 'moment';
+import {Colors, Fonts, Icons, SocketEvents} from '../constants';
+import {translate} from '../redux/reducers/languageReducer';
+import {eventService, normalize} from '../utils';
 import NoteItem from './NoteItem';
 
 export default class CommonNotes extends Component {
@@ -42,14 +43,14 @@ export default class CommonNotes extends Component {
             if (this.props.isFriend) {
               let id = data.note_id || data.friend_note;
               if (data && id) {
-                this[`note_item_` + id] &&
-                  this[`note_item_` + id].checkEventTypes(message);
+                this['note_item_' + id] &&
+                  this['note_item_' + id].checkEventTypes(message);
               }
             } else {
               let id = data.note_id || data.group_note;
               if (data && id) {
-                this[`note_item_` + id] &&
-                  this[`note_item_` + id].checkEventTypes(message);
+                this['note_item_' + id] &&
+                  this['note_item_' + id].checkEventTypes(message);
               }
             }
           }
@@ -68,7 +69,7 @@ export default class CommonNotes extends Component {
   };
 
   render() {
-    const {text, commentText, showCommentBoxIndex} = this.state;
+    const {text} = this.state;
     const {
       data,
       onPost,
@@ -78,7 +79,6 @@ export default class CommonNotes extends Component {
       onAdd,
       onCancel,
       editNoteIndex,
-      userData,
       onLikeUnlike,
       isFriend,
       groupMembers,
@@ -86,40 +86,20 @@ export default class CommonNotes extends Component {
     } = this.props;
 
     return (
-      <React.Fragment>
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'space-between',
-            marginBottom: 10,
-          }}>
-          <Text
-            style={{
-              color: Colors.black,
-              fontFamily: Fonts.regular,
-              fontWeight: '400',
-              fontSize: normalize(12),
-            }}>
-            {translate(`pages.xchat.notes`)}{' '}
-            <Text
-              style={{
-                color: '#e26161',
-                fontFamily: Fonts.regular,
-                fontWeight: '400',
-                fontSize: normalize(12),
-              }}>
-              {data ? data.count : 0}
-            </Text>
+      <>
+        <View style={styles.container}>
+          <Text style={styles.notes}>
+            {translate('pages.xchat.notes')}{' '}
+            <Text style={styles.count}>{data ? data.count : 0}</Text>
           </Text>
 
           <TouchableOpacity
-            style={{alignSelf: 'flex-end'}}
+            style={styles.addIconActionContainer}
             onPress={() => onAdd()}>
             <Image
               source={Icons.plus_icon_select}
               resizeMode={'cover'}
-              style={[{height: 20, width: 20}]}
+              style={styles.addIcon}
             />
           </TouchableOpacity>
         </View>
@@ -127,27 +107,14 @@ export default class CommonNotes extends Component {
           {showTextBox && (
             <>
               <TextAreaWithTitle
-                onChangeText={(text) => this.setState({text})}
+                onChangeText={(note) => this.setState({text: note})}
                 value={text}
                 rightTitle={`${text.length}/300`}
                 maxLength={300}
                 placeholder={translate('pages.xchat.addNewNote')}
               />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'flex-end',
-                  justifyContent: 'flex-end',
-                  // flex: 0.5,
-                  marginTop: 10,
-                  height: 30,
-                  width: '100%',
-                }}>
-                <View
-                  style={{
-                    marginHorizontal: 5,
-                    // width: 60,
-                  }}>
+              <View style={styles.textBoxContainer}>
+                <View style={styles.buttonContainer}>
                   <Button
                     title={translate('common.cancel')}
                     type={'secondary'}
@@ -159,11 +126,7 @@ export default class CommonNotes extends Component {
                     isRounded={false}
                   />
                 </View>
-                <View
-                  style={{
-                    // width: 60,
-                    marginHorizontal: 5,
-                  }}>
+                <View style={styles.buttonContainer}>
                   <Button
                     title={translate('pages.xchat.post')}
                     type={'primary'}
@@ -205,7 +168,7 @@ export default class CommonNotes extends Component {
                   onExpand={onExpand}
                 />
               )}
-              ItemSeparatorComponent={() => <View style={{height: 10}} />}
+              ItemSeparatorComponent={() => <View style={styles.divider} />}
               // ListFooterComponent={() => (
               //   <View>{loading ? <ListLoader /> : null}</View>
               // )}
@@ -215,18 +178,71 @@ export default class CommonNotes extends Component {
               <View>
                 <NoData
                   title={translate('pages.xchat.noNotesFound')}
-                  style={{paddingBottom: 0}}
+                  style={styles.emptyNotesLabel}
                 />
                 <NoData
                   title={translate('pages.xchat.notesFoundText')}
-                  style={{paddingTop: 0}}
-                  textStyle={{marginTop: 0}}
+                  style={styles.emptyNotesFoundText}
+                  textStyle={styles.emptyNotesFoundTextStyle}
                 />
               </View>
             )
           )}
         </View>
-      </React.Fragment>
+      </>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  notes: {
+    color: Colors.black,
+    fontFamily: Fonts.regular,
+    fontWeight: '400',
+    fontSize: normalize(12),
+  },
+  count: {
+    color: '#e26161',
+    fontFamily: Fonts.regular,
+    fontWeight: '400',
+    fontSize: normalize(12),
+  },
+  addIconActionContainer: {
+    alignSelf: 'flex-end',
+  },
+  addIcon: {
+    height: 20,
+    width: 20,
+  },
+  textBoxContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    // flex: 0.5,
+    marginTop: 10,
+    height: 30,
+    width: '100%',
+  },
+  buttonContainer: {
+    marginHorizontal: 5,
+    // width: 60,
+  },
+  emptyNotesLabel: {
+    paddingBottom: 0,
+  },
+  emptyNotesFoundText: {
+    paddingTop: 0,
+  },
+  emptyNotesFoundTextStyle: {
+    marginTop: 0,
+  },
+  divider: {
+    height: 10,
+  },
+});

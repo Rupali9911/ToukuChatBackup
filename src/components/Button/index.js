@@ -1,25 +1,20 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
   Platform,
+  Text,
   TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import PropTypes from 'prop-types';
-import {Colors, Fonts} from '../constants';
-import {globalStyles} from '../styles';
 import {connect} from 'react-redux';
+import {Colors} from '../../constants';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 class Button extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   getGradientColors() {
     switch (this.props.type) {
       case 'primary':
@@ -117,13 +112,26 @@ class Button extends Component {
       isRounded,
       height,
       disabled,
-      fontType,
       fontSize,
       type,
       borderColor,
       leftIcon,
-      containerStyle
+      containerStyle,
     } = this.props;
+
+    const linearGradientStyle = [
+      styles.linearGradient,
+      {
+        height,
+        borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
+        borderColor: borderColor ? borderColor : this.getBorderColor(),
+        opacity: disabled ? 0.5 : 1,
+      },
+      styles.linearGradientStyle,
+      leftIcon ? styles.row : null,
+      containerStyle && containerStyle,
+    ];
+
     return (
       <TouchableOpacity
         disabled={disabled}
@@ -134,21 +142,10 @@ class Button extends Component {
           end={type === 'primaryNew' ? {x: 0.95, y: 0.8} : {x: 0.5, y: 0.8}}
           locations={type === 'primaryNew' ? [0.1, 0.9, 1] : [0.1, 0.6, 1]}
           colors={this.getGradientColors()}
-          style={[
-            styles.linearGradient,
-            {
-              height: height,
-              borderRadius: isRounded ? (Platform.isPad ? 55 / 2 : 45 / 2) : 4,
-              borderColor: borderColor ? borderColor : this.getBorderColor(),
-              opacity: disabled ? 0.5 : 1,
-              paddingHorizontal: 5,
-            },
-            leftIcon?{flexDirection:'row'}:{},
-            containerStyle && containerStyle,
-          ]}>
+          style={linearGradientStyle}>
           {leftIcon}
           {loading ? (
-            <View style={{paddingHorizontal: 5}}>
+            <View style={styles.loadingContainer}>
               <ActivityIndicator
                 size={'small'}
                 color={this.getIndicatorColor()}
@@ -163,7 +160,7 @@ class Button extends Component {
                 {
                   color: this.getTitleColor(),
                 },
-                fontSize && {fontSize:fontSize}
+                fontSize && {fontSize: fontSize},
               ]}>
               {title}
             </TextInput>
@@ -174,7 +171,7 @@ class Button extends Component {
                 {
                   color: this.getTitleColor(),
                 },
-                fontSize && {fontSize:fontSize}
+                fontSize && {fontSize: fontSize},
               ]}>
               {title}
             </Text>
@@ -184,15 +181,6 @@ class Button extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  linearGradient: {
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-});
 
 Button.propTypes = {
   title: PropTypes.string,

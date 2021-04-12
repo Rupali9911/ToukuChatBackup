@@ -1,19 +1,18 @@
-import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {
-  View,
+  ActivityIndicator,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  TextInput
+  View,
 } from 'react-native';
-import PhoneInput from 'react-native-phone-input';
-import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
-import { Colors, Icons, Fonts } from '../constants';
-import { globalStyles } from '../styles';
-import { setI18nConfig, translate } from '../redux/reducers/languageReducer';
-import { connect } from 'react-redux';
+import PhoneInput from 'react-native-phone-input';
+import {connect} from 'react-redux';
+import {Colors, Fonts} from '../constants';
+import {setI18nConfig, translate} from '../redux/reducers/languageReducer';
+import {globalStyles} from '../styles';
 
 class CountryPhoneInput extends Component {
   constructor(props) {
@@ -29,38 +28,39 @@ class CountryPhoneInput extends Component {
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
+    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({
       countryCode: '+' + this.phone.getCountryCode(),
     });
-    console.log('this.phone.getCountryCode()', this.phone.getCountryCode())
+    console.log('this.phone.getCountryCode()', this.phone.getCountryCode());
   }
   onSubmitEditing() {
     this.props.onSubmitEditing();
   }
 
   focus() {
-    console.log('focus called')
+    console.log('focus called');
     this.textInput.focus();
   }
   onFocus() {
-    console.log('onFocus called')
-    this.setState({ isFocus: true });
+    console.log('onFocus called');
+    this.setState({isFocus: true});
   }
   onBlur() {
-    console.log('onBlur called')
-    this.setState({ isFocus: false });
+    console.log('onBlur called');
+    this.setState({isFocus: false});
   }
 
   onChangeText = (text) => {
     if (text.length > 0) {
-      this.setState({ isFocus: true });
+      this.setState({isFocus: true});
     } else {
-      this.setState({ isFocus: false });
+      this.setState({isFocus: false});
     }
   };
 
   onChangePhoneNumber(number, countryCode) {
-    console.log('Numbera nd Country Code', number, countryCode)
+    console.log('Numbera nd Country Code', number, countryCode);
     this.onChangeText(number);
 
     // this.setState({countryCode: countryCode}, () => {
@@ -68,23 +68,22 @@ class CountryPhoneInput extends Component {
     // });
 
     if (number.includes(countryCode)) {
-      let txt = number.replace(countryCode, '')
-      txt = txt.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/, '')
+      let txt = number.replace(countryCode, '');
+      txt = txt.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/, '');
       if (!txt.startsWith('0')) {
-        this.setState({ number: txt, countryCode: countryCode }, () => {
+        this.setState({number: txt, countryCode: countryCode}, () => {
           this.props.onChangePhoneNumber(countryCode + txt, countryCode);
         });
       }
     }
-
   }
 
   onChangeNumber = (text) => {
-    const { countryCode } = this.state
-    console.log('onChangeNumber', text)
+    const {countryCode} = this.state;
+    console.log('onChangeNumber', text);
     if (text.includes(countryCode)) {
-      let txt = text.replace(countryCode, '')
-      this.setState({ number: txt, countryCode: countryCode }, () => {
+      let txt = text.replace(countryCode, '');
+      this.setState({number: txt, countryCode: countryCode}, () => {
         this.props.onChangePhoneNumber(countryCode + txt, countryCode);
       });
     }
@@ -101,54 +100,51 @@ class CountryPhoneInput extends Component {
     // this.props.onPressConfirm();
   };
 
-
   render() {
-    const { isFocus, countryCode, number } = this.state;
-    const { value, onPressConfirm, loading, isUpdatePhone } = this.props;
-    let placeholder = countryCode + ' Enter number here'
-    return (
-      isUpdatePhone ?
-        <View
-          style={[
-            styles.container,
-            {
-              borderRadius: 0,
-              borderColor: 'rgba(0,0,0,0.3)',
-              backgroundColor: 'transparent',
-              borderWidth: 1,
-              paddingLeft: 10,
-            }
-          ]}>
-          {number.length === 0 &&
-            <Text disabled={true}
-              selectable={false}
-              style={{ position: 'absolute', color: 'white', left: '32%', opacity: 0.8 }}>
-              {translate('pages.register.phoneNumberTextForPlaceholder')}</Text>
-          }
+    const {isFocus, countryCode, number} = this.state;
+    const {loading, isUpdatePhone} = this.props;
 
-          <PhoneInput
-            ref={(ref) => {
-              this.phone = ref;
-            }}
-            onChangePhoneNumber={(number) =>
-              this.onChangePhoneNumber(number, countryCode)
-            }
-            initialCountry={'jp'}
-            onSelectCountry={(tag) => this.onSelectCountry(tag)}
-            value={countryCode + number}
-            style={{ flex: 1 }}
-            flagStyle={{ height: 30, width: 30, }}
-            textStyle={{  }}
-            autoFormat={true}
-            offset={0}
-            allowZeroAfterCountryCode={false}
-            textProps={{
-              placeholder: '',
-              maxLength: 16,
-              placeholderTextColor: 'white',
-              opacity: 0.8,
-            }}
-            onPressConfirm={this.onPressConfirm.bind(this)}
+    const phoneInputContainer = [
+      styles.container,
+      {
+        borderColor: isFocus ? Colors.gradient_2 : 'transparent',
+        borderWidth: isFocus ? 1 : 0,
+      },
+    ];
+    // let placeholder = countryCode + ' Enter number here';
+    return isUpdatePhone ? (
+      <View style={[styles.container, styles.containerStyle]}>
+        {number.length === 0 && (
+          <Text
+            disabled={true}
+            selectable={false}
+            style={styles.phoneNumberPlaceHolder}>
+            {translate('pages.register.phoneNumberTextForPlaceholder')}
+          </Text>
+        )}
+
+        <PhoneInput
+          ref={(ref) => {
+            this.phone = ref;
+          }}
+          onChangePhoneNumber={(num) =>
+            this.onChangePhoneNumber(num, countryCode)
+          }
+          initialCountry={'jp'}
+          onSelectCountry={(tag) => this.onSelectCountry(tag)}
+          value={countryCode + number}
+          style={styles.singleFlex}
+          flagStyle={styles.flagStyle}
+          autoFormat={true}
+          offset={0}
+          allowZeroAfterCountryCode={false}
+          textProps={{
+            placeholder: '',
+            maxLength: 16,
+            placeholderTextColor: 'white',
+            opacity: 0.8,
+          }}
+          onPressConfirm={this.onPressConfirm.bind(this)}
           // textComponent={() => (
           //             <TextInput
           //                 keyboardType="phone-pad"
@@ -159,69 +155,61 @@ class CountryPhoneInput extends Component {
           //                 opacity={0.8}
           //             />
           // )}
-          />
-          <TouchableOpacity
-            activeOpacity={0.6}
-            style={[styles.rightBtnContainer]}
-            onPress={this.props.onClickSMS}>
-            <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.5, y: 0.8 }}
-              locations={[0.1, 0.6, 1]}
-              colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
-              style={[styles.rightBtnSubContainer,{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                }]}>
-              {loading ? (
-                <ActivityIndicator color={Colors.white} />
-              ) : (
-                  <Text style={globalStyles.smallRegularText}>
-                    {this.props.rightBtnText}
-                  </Text>
-                )}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-        :
-        <View
-          style={[
-            styles.container,
-            {
-              borderColor: isFocus ? Colors.gradient_2 : 'transparent',
-              borderWidth: isFocus ? 1 : 0,
-            }
-          ]}>
-          {number.length === 0 &&
-            <Text disabled={true}
-              selectable={false}
-              style={{ position: 'absolute', color: 'white', left: '32%', opacity: 0.8 }}>
-              {translate('pages.register.phoneNumberTextForPlaceholder')}</Text>
-          }
+        />
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={[styles.rightBtnContainer]}
+          onPress={this.props.onClickSMS}>
+          <LinearGradient
+            start={{x: 0.1, y: 0.7}}
+            end={{x: 0.5, y: 0.8}}
+            locations={[0.1, 0.6, 1]}
+            colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
+            style={[styles.rightBtnSubContainer, styles.linearGradientStyle]}>
+            {loading ? (
+              <ActivityIndicator color={Colors.white} />
+            ) : (
+              <Text style={globalStyles.smallRegularText}>
+                {this.props.rightBtnText}
+              </Text>
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <View style={phoneInputContainer}>
+        {number.length === 0 && (
+          <Text
+            disabled={true}
+            selectable={false}
+            style={styles.phoneNumberPlaceHolder}>
+            {translate('pages.register.phoneNumberTextForPlaceholder')}
+          </Text>
+        )}
 
-          <PhoneInput
-            ref={(ref) => {
-              this.phone = ref;
-            }}
-            onChangePhoneNumber={(number) =>
-              this.onChangePhoneNumber(number, countryCode)
-            }
-            initialCountry={'jp'}
-            onSelectCountry={(tag) => this.onSelectCountry(tag)}
-            value={countryCode + number}
-            style={{ flex: 1 }}
-            flagStyle={{ height: 30, width: 30, borderRadius: 15 }}
-            textStyle={{ color: 'white' }}
-            autoFormat={true}
-            offset={0}
-            allowZeroAfterCountryCode={false}
-            textProps={{
-              placeholder: '',
-              maxLength: 16,
-              placeholderTextColor: 'white',
-              opacity: 0.8,
-            }}
-            onPressConfirm={this.onPressConfirm.bind(this)}
+        <PhoneInput
+          ref={(ref) => {
+            this.phone = ref;
+          }}
+          onChangePhoneNumber={(num) =>
+            this.onChangePhoneNumber(num, countryCode)
+          }
+          initialCountry={'jp'}
+          onSelectCountry={(tag) => this.onSelectCountry(tag)}
+          value={countryCode + number}
+          style={styles.singleFlex}
+          flagStyle={styles.phoneInputFlagStyle}
+          textStyle={styles.phoneInputTextStyle}
+          autoFormat={true}
+          offset={0}
+          allowZeroAfterCountryCode={false}
+          textProps={{
+            placeholder: '',
+            maxLength: 16,
+            placeholderTextColor: 'white',
+            opacity: 0.8,
+          }}
+          onPressConfirm={this.onPressConfirm.bind(this)}
           // textComponent={() => (
           //             <TextInput
           //                 keyboardType="phone-pad"
@@ -232,27 +220,27 @@ class CountryPhoneInput extends Component {
           //                 opacity={0.8}
           //             />
           // )}
-          />
-          <TouchableOpacity
-            activeOpacity={0.6}
-            style={styles.rightBtnContainer}
-            onPress={this.props.onClickSMS}>
-            <LinearGradient
-              start={{ x: 0.1, y: 0.7 }}
-              end={{ x: 0.5, y: 0.8 }}
-              locations={[0.1, 0.6, 1]}
-              colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
-              style={styles.rightBtnSubContainer}>
-              {loading ? (
-                <ActivityIndicator color={Colors.white} />
-              ) : (
-                  <Text style={globalStyles.smallRegularText}>
-                    {this.props.rightBtnText}
-                  </Text>
-                )}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        />
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={styles.rightBtnContainer}
+          onPress={this.props.onClickSMS}>
+          <LinearGradient
+            start={{x: 0.1, y: 0.7}}
+            end={{x: 0.5, y: 0.8}}
+            locations={[0.1, 0.6, 1]}
+            colors={[Colors.gradient_3, Colors.gradient_2, Colors.gradient_1]}
+            style={styles.rightBtnSubContainer}>
+            {loading ? (
+              <ActivityIndicator color={Colors.white} />
+            ) : (
+              <Text style={globalStyles.smallRegularText}>
+                {this.props.rightBtnText}
+              </Text>
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     );
   }
 }
@@ -300,7 +288,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  containerStyle: {
+    borderRadius: 0,
+    borderColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    paddingLeft: 10,
+  },
+  phoneNumberPlaceHolder: {
+    position: 'absolute',
+    color: 'white',
+    left: '32%',
+    opacity: 0.8,
+  },
+  singleFlex: {
+    flex: 1,
+  },
+  flagStyle: {
+    height: 30,
+    width: 30,
+  },
+  phoneInputFlagStyle: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+  },
+  phoneInputTextStyle: {
+    color: 'white',
+  },
+  linearGradientStyle: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
 });
+
 CountryPhoneInput.propTypes = {
   loading: PropTypes.bool,
   value: PropTypes.any,
@@ -341,7 +362,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CountryPhoneInput);

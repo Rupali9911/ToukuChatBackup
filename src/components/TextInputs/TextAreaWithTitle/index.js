@@ -1,18 +1,21 @@
+// Library imports
 import React, {Component} from 'react';
-import {View, TextInput, StyleSheet, Text, Platform} from 'react-native';
-import {Fonts, Colors} from '../../constants';
+import {Text, TextInput, View} from 'react-native';
 
+// StyleSheet imports
+import styles from './styles';
+
+/**
+ * Text area with title component
+ */
 export default class TextAreaWithTitle extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
+  // Update references if available
   componentDidMount() {
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
   }
+  s;
 
   render() {
     const {
@@ -27,13 +30,15 @@ export default class TextAreaWithTitle extends Component {
       isBorder,
       placeholder,
     } = this.props;
+
+    const titleContainer = {
+      flex: rightTitle ? 0.5 : 1,
+    };
+
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View
-            style={{
-              flex: rightTitle ? 0.5 : 1,
-            }}>
+        <View style={styles.textContainer}>
+          <View style={titleContainer}>
             <Text
               style={[
                 styles.title,
@@ -44,7 +49,7 @@ export default class TextAreaWithTitle extends Component {
             </Text>
           </View>
           {rightTitle && (
-            <View style={{flex: 0.5, alignItems: 'flex-end'}}>
+            <View style={styles.rightTitleContainer}>
               <Text
                 style={[
                   styles.rightFont,
@@ -59,7 +64,7 @@ export default class TextAreaWithTitle extends Component {
           style={[
             styles.textBox,
             extraHeight && {height: extraHeight},
-            isBorder && {borderWidth: 1, borderColor: Colors.orange},
+            isBorder && styles.textInputBorder,
           ]}
           multiline={true}
           numberOfLines={10}
@@ -72,27 +77,3 @@ export default class TextAreaWithTitle extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-  },
-  title: {
-    fontFamily: Fonts.light,
-  },
-  textBox: {
-    borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
-    backgroundColor: Colors.white,
-    borderRadius: 7,
-    borderColor: Colors.gray_dark,
-    marginTop: 10,
-    height: 100,
-    textAlignVertical: 'top',
-    paddingHorizontal: 10,
-    fontFamily: Fonts.light,
-  },
-  rightFont: {
-    fontFamily: Fonts.light,
-    color: Colors.gray_dark,
-  },
-});

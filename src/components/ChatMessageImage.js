@@ -29,7 +29,7 @@ export default class ChatMessageImage extends Component {
           colors={this.getGradients(isUser)}
           style={[
             styles.imageContainer,
-            !isUser && {marginLeft: 5},
+            !isUser && styles.isNotUser,
             isPortrait && {
               minHeight:
                 orientation === 'PORTRAIT' ? height * 0.4 : height * 1.5,
@@ -66,5 +66,8 @@ const styles = StyleSheet.create({
     width: null,
     borderRadius: 10,
     backgroundColor: Colors.white,
+  },
+  isNotUser: {
+    marginLeft: 5,
   },
 });

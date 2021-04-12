@@ -1,32 +1,31 @@
-import React, {Component, Fragment} from 'react';
-import {
-  FlatList,
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Platform,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import {connect} from 'react-redux';
 import moment from 'moment';
-import {KeyboardAwareScrollView, KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
-
-import ChatMessageBox from './ChatMessageBox';
-import ChatInput from './TextInputs/ChatInput';
-import {translate} from '../redux/reducers/languageReducer';
-import {Colors, Fonts, Images, Icons} from '../constants';
-import {isIphoneX} from '../../src/utils';
-import NoData from './NoData';
-
-import RoundedImage from './RoundedImage';
+import React, {Component} from 'react';
+import {
+  Dimensions,
+  Image,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {
+  KeyboardAwareFlatList,
+  KeyboardAwareScrollView,
+} from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import VideoThumbnailPlayer from './VideoThumbnailPlayer';
-import CheckBox from './CheckBox';
-import Button from './Button';
-import { ListLoader } from './Loaders';
-import Toast from './Toast';
+import {connect} from 'react-redux';
+import {Colors, Fonts, Icons, Images} from '../../constants';
+import {translate} from '../../redux/reducers/languageReducer';
+import Button from '../Button';
+import ChatMessageBox from '../ChatMessageBox';
+import CheckBox from '../CheckBox';
+import {ListLoader} from '../Loaders';
+import NoData from '../NoData';
+import RoundedImage from '../RoundedImage';
+import ChatInput from '../TextInputs/ChatInput';
+import Toast from '../Toast';
+import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
+import styles from './styles';
 
 const {height} = Dimensions.get('window');
 
@@ -40,6 +39,23 @@ class ChatContainer extends Component {
     };
   }
 
+  getDate = (date) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const msgDate = new Date(date);
+    if (today.getDate() === msgDate.getDate()) {
+      return translate('common.today');
+    }
+    if (
+      yesterday.getDate() === msgDate.getDate() &&
+      yesterday.getMonth() === msgDate.getMonth()
+    ) {
+      return translate('common.yesterday');
+    }
+    return moment(msgDate).format('MM/DD');
+  };
+
   renderMessage = (messages) => {
     if (!messages || !messages.length) {
       return (
@@ -52,49 +68,32 @@ class ChatContainer extends Component {
       );
     }
 
-    getDate = (date) => {
-      const today = new Date();
-      const yesterday = new Date();
-      yesterday.setDate(today.getDate() - 1);
-      const msgDate = new Date(date);
-      if (
-        today.getDate() === msgDate.getDate() &&
-        today.getMonth() === today.getMonth()
-      )
-        return translate('common.today');
-      if (
-        yesterday.getDate() === msgDate.getDate() &&
-        yesterday.getMonth() === msgDate.getMonth()
-      )
-        return translate('common.yesterday');
-      return moment(msgDate).format('MM/DD');
-    };
     const conversationLength = messages.length;
     const msg = messages.map((item, index) => {
       return (
-        <Fragment>
+        <>
           {(messages[index + 1] &&
             new Date(item.created).getDate() !==
               new Date(messages[index + 1].created).getDate()) ||
           index === conversationLength - 1 ? (
             item.message_body == null && !item.is_unsent ? null : (
-              <Fragment>
-                <View style={chatStyle.messageDateCntainer}>
-                  <View style={chatStyle.messageDate}>
-                    <Text style={chatStyle.messageDateText}>
-                      {getDate(item.created)}
+              <>
+                <View style={styles.messageDateCntainer}>
+                  <View style={styles.messageDate}>
+                    <Text style={styles.messageDateText}>
+                      {this.getDate(item.created)}
                     </Text>
                   </View>
                 </View>
-              </Fragment>
+              </>
             )
           ) : null}
           <ChatMessageBox
             key={item.id}
             message={item}
             isUser={
-              item.from_user.id == this.props.userData.id ||
-              item.from_user == this.props.userData.id
+              item.from_user.id === this.props.userData.id ||
+              item.from_user === this.props.userData.id
                 ? true
                 : false
             }
@@ -103,11 +102,15 @@ class ChatContainer extends Component {
             currentChannel={this.props.currentChannel}
             is_read={item.is_read}
             onMessageReply={(id) => this.props.onMessageReply(id)}
-            onMessageTranslate={(msg) => this.props.onMessageTranslate(msg)}
+            onMessageTranslate={(translatedMessage) =>
+              this.props.onMessageTranslate(translatedMessage)
+            }
             onMessageTranslateClose={this.props.onMessageTranslateClose}
-            onEditMessage={(msg) => this.props.onEditMessage(msg)}
-            onDownloadMessage={(msg) => {
-              this.props.onDownloadMessage(msg);
+            onEditMessage={(editedMessage) =>
+              this.props.onEditMessage(editedMessage)
+            }
+            onDownloadMessage={(downloadedMessages) => {
+              this.props.onDownloadMessage(downloadedMessages);
             }}
             translatedMessage={this.props.translatedMessage}
             translatedMessageId={this.props.translatedMessageId}
@@ -125,11 +128,11 @@ class ChatContainer extends Component {
             }}
             showOpenLoader={this.props.showOpenLoader}
           />
-        </Fragment>
+        </>
       );
     });
 
-    return <Fragment>{msg.reverse()}</Fragment>;
+    return <>{msg.reverse()}</>;
   };
 
   closeMenu = () => {
@@ -183,31 +186,35 @@ class ChatContainer extends Component {
       currentFriend,
       isChatDisable,
       onLoadMore,
-      isLoadMore
+      isLoadMore,
     } = this.props;
 
-    // console.log('messages', currentFriend);
+    const replayContainer = [
+      {
+        height: repliedMessage && repliedMessage.msg_type !== 'text' ? 100 : 80,
+      },
+      styles.replayContainer,
+    ];
 
     return (
       <KeyboardAwareScrollView
-        style={{flex:1}}
-        contentContainerStyle={{flex: 1}}
+        style={styles.singleFlex}
+        contentContainerStyle={styles.singleFlex}
         showsVerticalScrollIndicator={false}
         bounces={false}
         ref={(view) => {
           this.keyboardAwareScrollView = view;
         }}
         keyboardShouldPersistTaps={'always'}
-        onKeyboardWillShow={(contentWidth, contentHeight) => {
+        onKeyboardWillShow={() => {
           this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
         keyboardOpeningTime={1500}
         scrollEnabled={false}
-        extraHeight={200}
-        >
+        extraHeight={200}>
         <View
           style={[
-            chatStyle.messageAreaConatiner,
+            styles.messageAreaConatiner,
             {
               paddingBottom:
                 Platform.OS === 'android'
@@ -219,23 +226,23 @@ class ChatContainer extends Component {
                   : height * 0.03,
             },
           ]}>
-          <Fragment>
+          <>
             <KeyboardAwareFlatList
               // style={{flexGrow:1}}
               enableResetScrollToCoords={false}
               contentContainerStyle={[
-                chatStyle.messareAreaScroll,
-                isReply && {paddingBottom: '20%'},
+                styles.messareAreaScroll,
+                isReply && styles.keyboardFlatlistContentContainer,
               ]}
               innerRef={(view) => {
                 this.scrollView = view;
               }}
-              onContentSizeChange={() => {
-                if (this.props.translatedMessageId) {
-                } else {
-                  // messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
-                }
-              }}
+              // onContentSizeChange={() => {
+              //   if (this.props.translatedMessageId) {
+              //   } else {
+              //     // messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
+              //   }
+              // }}
               // getItemLayout={(data, index) => (
               //   {length: 250, offset: 250 * index, index}
               // )}
@@ -250,45 +257,51 @@ class ChatContainer extends Component {
               }}
               data={messages}
               inverted={true}
-              onEndReached={()=>{
-                if(messages.length>0 && messages.length % 30 === 0 && isLoadMore && !channelLoading){
+              onEndReached={() => {
+                if (
+                  messages.length > 0 &&
+                  messages.length % 30 === 0 &&
+                  isLoadMore &&
+                  !channelLoading
+                ) {
                   console.log('load more');
                   onLoadMore && onLoadMore(messages[messages.length - 1]);
                 }
               }}
               onEndReachedThreshold={0.1}
-              ListFooterComponent={()=>channelLoading?<ListLoader />:null}
+              ListFooterComponent={() =>
+                channelLoading ? <ListLoader /> : null
+              }
               renderItem={({item, index}) => {
-                getDate = (date) => {
+                this.getDate = (date) => {
                   const today = new Date();
                   const yesterday = new Date();
                   yesterday.setDate(today.getDate() - 1);
                   const msgDate = new Date(date);
-                  if (
-                    today.getDate() === msgDate.getDate() &&
-                    today.getMonth() === today.getMonth()
-                  )
+                  if (today.getDate() === msgDate.getDate()) {
                     return translate('common.today');
+                  }
                   if (
                     yesterday.getDate() === msgDate.getDate() &&
                     yesterday.getMonth() === msgDate.getMonth()
-                  )
+                  ) {
                     return translate('common.yesterday');
+                  }
                   return moment(msgDate).format('MM/DD');
                 };
                 const conversationLength = messages.length;
                 let isSelected = selectedIds.includes(item.id + '');
                 return (
-                  <Fragment>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      {isMultiSelect && !item.is_unsent ? (
+                  <>
+                    <View style={styles.listItemContainer}>
+                      {isMultiSelect && !item.is_unsent && (
                         <CheckBox
                           isChecked={isSelected}
                           onCheck={() => onSelect(item.id)}
                         />
-                      ) : null}
+                      )}
                       <TouchableOpacity
-                        style={{flex: 1}}
+                        style={styles.singleFlex}
                         disabled={!isMultiSelect}
                         onPress={() => {
                           isMultiSelect && !item.is_unsent && onSelect(item.id);
@@ -300,10 +313,10 @@ class ChatContainer extends Component {
                           key={item.id}
                           message={item}
                           isUser={
-                            item.from_user.id == this.props.userData.id ||
-                            item.from_user == this.props.userData.id
+                            item.from_user.id === this.props.userData.id ||
+                            item.from_user === this.props.userData.id
                               ? item.to_user &&
-                                item.to_user.id == this.props.userData.id
+                                item.to_user.id === this.props.userData.id
                                 ? false
                                 : item.schedule_post
                                 ? false
@@ -361,18 +374,18 @@ class ChatContainer extends Component {
                         new Date(messages[index + 1].created).getDate()) ||
                     index === conversationLength - 1 ? (
                       item.message_body == null && !item.is_unsent ? null : (
-                        <Fragment>
-                          <View style={chatStyle.messageDateCntainer}>
-                            <View style={chatStyle.messageDate}>
-                              <Text style={chatStyle.messageDateText}>
-                                {getDate(item.created)}
+                        <>
+                          <View style={styles.messageDateCntainer}>
+                            <View style={styles.messageDate}>
+                              <Text style={styles.messageDateText}>
+                                {this.getDate(item.created)}
                               </Text>
                             </View>
                           </View>
-                        </Fragment>
+                        </>
                       )
                     ) : null}
-                  </Fragment>
+                  </>
                 );
               }}
               ListEmptyComponent={() => (
@@ -386,7 +399,7 @@ class ChatContainer extends Component {
                 />
               )}
             />
-          </Fragment>
+          </>
           {/* <ScrollView
             contentContainerStyle={[
               chatStyle.messareAreaScroll,
@@ -417,60 +430,33 @@ class ChatContainer extends Component {
             </View>
           </ScrollView> */}
           {isReply ? (
-            <View
-              style={{
-                height: repliedMessage.msg_type !== 'text' ? 100 : 80,
-                width: '100%',
-                backgroundColor: '#FFDBE9',
-                // position: 'absolute',
-                padding: 10,
-                // bottom: Platform.OS=='ios'?20:30,
-                borderTopColor: Colors.gradient_1,
-                borderTopWidth: 1,
-              }}>
-              <View
-                style={{
-                  flex: 3,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <View style={{flex: 8}}>
-                    <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
-                        {this.props.isChannel ||
-                        repliedMessage.from_user.id === this.props.userData.id
-                            ? repliedMessage.from_user.id === this.props.userData.id
-                                ? translate('pages.xchat.you')
-                                :this.props.isChannel ? currentChannel.name : repliedMessage.from_user.display_name
-                                    ? repliedMessage.from_user.display_name
-                                    : repliedMessage.from_user.username
-                            : currentFriend.display_name
-                                ? currentFriend.display_name
-                                : currentFriend.username}
-                    </Text>
+            <View style={replayContainer}>
+              <View style={styles.replyHeader}>
+                <View style={styles.replyUser}>
+                  <Text numberOfLines={2} style={{color: Colors.gradient_1}}>
+                    {this.props.isChannel ||
+                    repliedMessage.from_user.id === this.props.userData.id
+                      ? repliedMessage.from_user.id === this.props.userData.id
+                        ? translate('pages.xchat.you')
+                        : this.props.isChannel
+                        ? currentChannel.name
+                        : repliedMessage.from_user.display_name
+                        ? repliedMessage.from_user.display_name
+                        : repliedMessage.from_user.username
+                      : currentFriend.display_name
+                      ? currentFriend.display_name
+                      : currentFriend.username}
+                  </Text>
                 </View>
-                <View style={{flex: 2, alignItems: 'flex-end'}}>
+                <View style={styles.replyCloseIcon}>
                   <TouchableOpacity
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '70%',
-                      width: '18%',
-                      borderRadius: 100,
-                      backgroundColor: Colors.gradient_1,
-                    }}
+                    style={styles.replyCloseActionContainer}
                     onPress={cancelReply}>
-                    <Image
-                      source={Icons.icon_close}
-                      style={{
-                        tintColor: Colors.white,
-                        height: '50%',
-                        width: '100%',
-                      }}
-                    />
+                    <Image source={Icons.icon_close} style={styles.closeIcon} />
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={{flex: 7, justifyContent: 'center', width: '95%'}}>
+              <View style={styles.messageTypeContainer}>
                 {repliedMessage.msg_type === 'image' &&
                 repliedMessage.message_body !== null ? (
                   <RoundedImage
@@ -484,77 +470,41 @@ class ChatContainer extends Component {
                     showPlayButton
                   />
                 ) : repliedMessage.msg_type === 'audio' ? (
-                  <Fragment>
-                    <Text
-                      style={{
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: '500',
-                        fontFamily: Fonts.light,
-                      }}>
+                  <>
+                    <Text style={styles.mediaMessageBody}>
                       {repliedMessage.message_body
                         .split('/')
                         .pop()
                         .split('%2F')
                         .pop()}
                     </Text>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginTop: 5,
-                      }}>
+                    <View style={styles.mediaContainer}>
                       <FontAwesome
                         name={'volume-up'}
                         size={15}
                         color={Colors.black_light}
                       />
-                      <Text
-                        style={{
-                          color: Colors.dark_gray,
-                          fontSize: 13,
-                          marginLeft: 5,
-                          fontFamily: Fonts.light,
-                        }}>
-                        Audio
-                      </Text>
+                      <Text style={styles.mediaLabel}>Audio</Text>
                     </View>
-                  </Fragment>
+                  </>
                 ) : repliedMessage.msg_type === 'doc' ? (
-                  <Fragment>
-                    <Text
-                      style={{
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: '500',
-                        fontFamily: Fonts.light,
-                      }}>
+                  <>
+                    <Text style={styles.mediaMessageBody}>
                       {repliedMessage.message_body
                         .split('/')
                         .pop()
                         .split('%2F')
                         .pop()}
                     </Text>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginTop: 5,
-                      }}>
+                    <View style={styles.mediaContainer}>
                       <FontAwesome
                         name={'file-o'}
                         size={15}
                         color={Colors.black_light}
                       />
-                      <Text
-                        style={{
-                          color: Colors.dark_gray,
-                          fontSize: 13,
-                          marginLeft: 5,
-                          fontFamily: Fonts.light,
-                        }}>
-                        File
-                      </Text>
+                      <Text style={styles.mediaLabel}>File</Text>
                     </View>
-                  </Fragment>
+                  </>
                 ) : (
                   <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
                     {repliedMessage.message_body}
@@ -568,19 +518,10 @@ class ChatContainer extends Component {
           ) : null}
         </View>
         {isMultiSelect ? (
-          <View
-            style={{
-              backgroundColor: Colors.light_pink,
-              flexDirection: 'row',
-              borderTopColor: Colors.pink_chat,
-              borderTopWidth: 3,
-              paddingBottom: 20,
-              justifyContent: 'space-between',
-              padding: 10,
-            }}>
-            <View style={{flex: 1}}>
+          <View style={styles.multiSelectContainer}>
+            <View style={styles.singleFlex}>
               <Button
-                title={translate(`common.cancel`)}
+                title={translate('common.cancel')}
                 onPress={onSelectedCancel}
                 isRounded={true}
                 type={'secondary'}
@@ -588,18 +529,21 @@ class ChatContainer extends Component {
                 height={40}
               />
             </View>
-            <View style={{flex: 0.3}} />
-            <View style={{flex: 1}}>
+            <View style={styles.divider} />
+            <View style={styles.singleFlex}>
               <Button
-                title={translate(`common.delete`) + (selectedIds.length?` (${selectedIds.length})`:'')}
-                onPress={()=>{
-                  if(selectedIds.length){
+                title={
+                  translate('common.delete') +
+                  (selectedIds.length ? ` (${selectedIds.length})` : '')
+                }
+                onPress={() => {
+                  if (selectedIds.length) {
                     onSelectedDelete();
-                  }else{
+                  } else {
                     Toast.show({
                       title: translate('pages.xchat.touku'),
                       text: translate('pages.xchat.invalidMsgDelete'),
-                      type: 'primary'
+                      type: 'primary',
                     });
                   }
                 }}
@@ -616,12 +560,12 @@ class ChatContainer extends Component {
             onGalleryPress={() => onGalleryPress()}
             onChangeText={(message) => handleMessage(message)}
             onSend={() => {
-              if(newMessageText && newMessageText.trim().length>0){
+              if (newMessageText && newMessageText.trim().length > 0) {
                 onMessageSend();
                 messages.length > 0 &&
                   this.scrollView &&
                   this.scrollView.scrollToIndex({index: 0, animated: false});
-              }else{
+              } else {
                 handleMessage('');
               }
             }}
@@ -635,36 +579,6 @@ class ChatContainer extends Component {
     );
   }
 }
-
-const chatStyle = StyleSheet.create({
-  messageAreaConatiner: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: Colors.light_pink,
-    // marginBottom: isIphoneX() ? 70 : 50,
-  },
-  messareAreaScroll: {flexGrow: 1, paddingBottom: 20},
-  messageContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  messageDateCntainer: {
-    alignItems: 'center',
-    marginVertical: 15,
-  },
-  messageDate: {
-    // backgroundColor: Colors.orange_header,
-    // paddingVertical: 4,
-    // paddingHorizontal: 11,
-    // borderRadius: 18,
-  },
-  messageDateText: {
-    color: Colors.dark_pink,
-    fontFamily: Fonts.medium,
-    fontSize: 13,
-    fontWeight: '300',
-  },
-});
 
 const mapStateToProps = (state) => {
   return {

@@ -1,19 +1,18 @@
+// Library imports
 import React, {Component} from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Platform,
-  Text,
-} from 'react-native';
-import {Colors, Icons, Fonts, Images} from '../../constants';
-import {globalStyles} from '../../styles';
+import {Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {Menu} from 'react-native-paper';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import Icon from 'react-native-vector-icons/EvilIcons';
-import {normalize} from '../../utils';
+
+// Local imports
+import {Colors, Icons} from '../../../constants';
+import {translate} from '../../../redux/reducers/languageReducer';
+
+// StyleSheet imports
+import styles from './styles';
+
+/**
+ * Search input component
+ */
 export default class SearchInput extends Component {
   constructor(props) {
     super(props);
@@ -23,8 +22,9 @@ export default class SearchInput extends Component {
     };
   }
 
+  // Update visibility for left button
   componentDidUpdate(props) {
-    if (props.isVisibleButton != this.props.isVisibleButton) {
+    if (props.isVisibleButton !== this.props.isVisibleButton) {
       if (props.isVisibleButton === true) {
         this.setState({isVisibleLeft: false});
       } else {
@@ -32,10 +32,13 @@ export default class SearchInput extends Component {
     }
   }
 
+  // Set menu visiblity to true
   _openMenu = () => this.setState({visible: true});
 
+  // Set menu visiblity to false
   _closeMenu = () => this.setState({visible: false});
 
+  // Update references
   componentDidMount() {
     if (this.props.onRef != null) {
       this.props.onRef(this);
@@ -46,26 +49,18 @@ export default class SearchInput extends Component {
   //     this.props.onSubmitEditing();
   // }
 
+  // Focus on text input
   focus() {
     this.textInput.focus();
   }
-
-  onFocus() {}
-
-  onBlur() {}
 
   render() {
     const {
       placeholder,
       onChangeText,
       isIconRight,
-      isIconLeft,
-      onIconLeftClick,
-      onIconRightClick,
       onSubmitEditing,
       navigation,
-      isIconDelete,
-      title,
       onDeletePress,
       onCanclePress,
       onDeleteConfrimPress,
@@ -79,8 +74,7 @@ export default class SearchInput extends Component {
       <View style={styles.container}>
         {currentRouteName === 'ChatTab' && !isVisibleLeft && isDeleteVisible && (
           <Menu
-            style={{marginTop: 40}}
-            contentStyle={{}}
+            style={styles.menuStyle}
             visible={this.state.isVisibleLeft}
             // onDismiss={() => {
             //   this.setState({isVisibleLeft: false});
@@ -90,7 +84,7 @@ export default class SearchInput extends Component {
                 activeOpacity={0.8}
                 style={[
                   styles.iconRightContainer,
-                  {marginStart: -5, marginEnd: 5},
+                  styles.removeActionContainer,
                 ]}
                 onPress={() =>
                   this.setState({isVisibleLeft: true}, () => onDeletePress())
@@ -98,13 +92,14 @@ export default class SearchInput extends Component {
                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                 <Image source={Icons.icon_bin} style={styles.deleteIcon} />
               </TouchableOpacity>
-            }></Menu>
+            }
+          />
         )}
 
         {!isVisibleLeft && (
           <View style={styles.searchContainer}>
             <Image source={Icons.icon_search} style={styles.iconSearch} />
-            <View style={{flex: 1}}>
+            <View style={styles.singleFlex}>
               <TextInput
                 style={styles.inputStyle}
                 placeholder={placeholder || translate('pages.xchat.search')}
@@ -114,8 +109,8 @@ export default class SearchInput extends Component {
                 onSubmitEditing={onSubmitEditing}
                 returnKeyType={'done'}
                 autoCorrect={false}
-                onFocus={() => this.onFocus()}
-                onBlur={() => this.onBlur()}
+                onFocus={() => this.focus()}
+                // onBlur={() => this.onBlur()}
                 autoCapitalize={'none'}
                 underlineColorAndroid={'transparent'}
               />
@@ -129,14 +124,7 @@ export default class SearchInput extends Component {
           //   onPress={onIconRightClick}>
           //   <Image source={Icons.icon_edit_pen} style={styles.iconRight} />
           <Menu
-            style={{
-              marginTop: 20,
-              marginLeft: -40,
-              shadowOffset: {width: 0.5, height: 0.5},
-              shadowColor: 'black',
-              shadowOpacity: 0.5,
-            }}
-            contentStyle={{}}
+            style={styles.menu}
             visible={this.state.visible}
             onDismiss={this._closeMenu}
             anchor={
@@ -150,7 +138,7 @@ export default class SearchInput extends Component {
             }>
             <Menu.Item
               icon={() => <Image source={Icons.icon_create_group_chat} />}
-              titleStyle={{marginLeft: -25}}
+              titleStyle={styles.menuItemTitle}
               onPress={() => {
                 navigation.navigate('CreateGroupChat');
                 this._closeMenu();
@@ -163,7 +151,7 @@ export default class SearchInput extends Component {
                 navigation.navigate('CreateChannel');
                 this._closeMenu();
               }}
-              titleStyle={{marginLeft: -25}}
+              titleStyle={styles.menuItemTitle}
               title={translate('pages.xchat.createChannel')}
             /> */}
             <Menu.Item
@@ -172,36 +160,31 @@ export default class SearchInput extends Component {
                 navigation.navigate('AddFriendScreen');
                 this._closeMenu();
               }}
-              titleStyle={{marginLeft: -25}}
+              titleStyle={styles.menuItemTitle}
               title={translate('pages.xchat.addFriendId')}
             />
-              <Menu.Item
-                  icon={() => <Image source={Icons.icon_scan} />}
-                  onPress={() => {
-                      navigation.navigate('AddFriendByQr');
-                      this._closeMenu();
-                  }}
-                  titleStyle={{marginLeft: -25}}
-                  title={translate('pages.xchat.scanQr')}
-              />
+            <Menu.Item
+              icon={() => <Image source={Icons.icon_scan} />}
+              onPress={() => {
+                navigation.navigate('AddFriendByQr');
+                this._closeMenu();
+              }}
+              titleStyle={styles.menuItemTitle}
+              title={translate('pages.xchat.scanQr')}
+            />
           </Menu>
         )}
 
         {isVisibleLeft && (
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={styles.actionContainer}>
+            <View style={styles.actionSubContainer}>
               <TouchableOpacity
                 style={styles.buttonStyle}
                 onPress={() => {
                   this.setState({}, () => onDeleteConfrimPress());
                 }}>
                 <Text style={styles.buttonTextStyle}>
-                  {countObject == 0
+                  {countObject === 0
                     ? translate('common.delete')
                     : translate('common.delete') +
                       ' ' +
@@ -226,71 +209,3 @@ export default class SearchInput extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-    marginLeft: 10,
-    // backgroundColor: Colors.home_header,
-  },
-  searchContainer: {
-    height: Platform.OS === 'ios' ? (Platform.isPad ? 50 : 'auto') : 45,
-    // height: 30,
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 50,
-    paddingHorizontal: 10,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
-    backgroundColor: Colors.white,
-  },
-  inputStyle: {
-    flex: 1,
-    // width: '100%',
-    color: Colors.black,
-    fontSize: Platform.isPad ? normalize(8) : 16,
-    fontFamily: Fonts.regular,
-    marginStart: 10,
-    //alignSelf: 'center',
-    paddingTop: 0,
-    paddingBottom: 0,
-    // fontWeight: '300',
-  },
-  iconRight: {
-    height: 25,
-    width: 25,
-    resizeMode: 'center',
-  },
-  iconSearch: {
-    width: Platform.isPad ? 20 : 15,
-    height: Platform.isPad ? 20 : 15,
-    resizeMode: 'contain',
-    marginTop: 2,
-    marginLeft: 5,
-  },
-  iconRightContainer: {
-    marginStart: 15,
-    alignSelf: 'center',
-    width: 35,
-  },
-
-  buttonStyle: {
-    flex: 1,
-    borderWidth: 1,
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10,
-    borderColor: '#fff',
-  },
-  buttonTextStyle: {
-    fontFamily: Fonts.light,
-    fontSize: 14,
-    color: '#fff',
-    fontWeight: '300',
-  },
-  deleteIcon: {height: 28, width: 28, tintColor: 'white'},
-});
