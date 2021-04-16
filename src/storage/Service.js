@@ -607,7 +607,7 @@ export const updateChannelLastMsgWithOutCount = (id, message) => {
       {
         id: id,
         last_msg: last_msg,
-        subject_message: message.last_msg,
+        subject_message: message?message.last_msg:'',
       },
       'modified',
     );
