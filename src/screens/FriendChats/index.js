@@ -104,14 +104,6 @@ class FriendChats extends Component {
           ? [
               {
                 id: 1,
-                title: translate('pages.xchat.unfriend'),
-                icon: 'user-times',
-                onPress: () => {
-                  this.toggleConfirmationModal();
-                },
-              },
-              {
-                id: 2,
                 title: translate('pages.xchat.createGroup'),
                 icon: 'users',
                 onPress: () => {
@@ -119,7 +111,7 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 3,
+                id: 2,
                 title: translate('pages.xchat.reportUser'),
                 icon: 'user-times',
                 onPress: () => {
@@ -131,7 +123,7 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 4,
+                id: 3,
                 title: translate('pages.xchat.blockUser'),
                 icon: 'user-times',
                 onPress: () => {
@@ -143,7 +135,7 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 5,
+                id: 4,
                 title: translate('pages.xchat.blockUser'),
                 icon: 'sticky-note',
                 onPress: () => {
@@ -153,32 +145,32 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 6,
+                id: 5,
                 pinUnpinItem: true,
                 onPress: () => {
                   this.onPinUnpinFriend();
                 },
               },
               {
-                id: 7,
+                id: 6,
                 title: translate('pages.changeDisplayName'),
                 icon: Icons.print,
                 onPress: () => {
                   this.props.navigation.navigate('FriendNotes');
                 },
               },
+                {
+                    id: 7,
+                    title: translate('pages.xchat.unfriend'),
+                    icon: 'user-times',
+                    onPress: () => {
+                        this.toggleConfirmationModal();
+                    },
+                },
             ]
           : [
               {
                 id: 1,
-                title: translate('pages.xchat.unfriend'),
-                icon: 'user-times',
-                onPress: () => {
-                  this.toggleConfirmationModal();
-                },
-              },
-              {
-                id: 2,
                 title: translate('pages.xchat.createGroup'),
                 icon: 'users',
                 onPress: () => {
@@ -186,7 +178,7 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 3,
+                id: 2,
                 title: translate('pages.xchat.addNote'),
                 icon: 'sticky-note',
                 onPress: () => {
@@ -196,20 +188,28 @@ class FriendChats extends Component {
                 },
               },
               {
-                id: 4,
+                id: 3,
                 pinUnpinItem: true,
                 onPress: () => {
                   this.onPinUnpinFriend();
                 },
               },
               {
-                id: 5,
+                id: 4,
                 title: translate('pages.changeDisplayName'),
                 icon: Icons.icon_print,
                 onPress: () => {
                   this.props.navigation.navigate('FriendNotes');
                 },
               },
+                {
+                    id: 5,
+                    title: translate('pages.xchat.unfriend'),
+                    icon: 'user-times',
+                    onPress: () => {
+                        this.toggleConfirmationModal();
+                    },
+                },
             ],
       unfriendMenus: [
         {
@@ -1091,7 +1091,7 @@ class FriendChats extends Component {
       this.props.deleteMultiplePersonalMessage(payload).then((res) => {
         //console.log(res);
         this.setState({
-          isDeleteEveryoneLoading: false, 
+          isDeleteEveryoneLoading: false,
           isDeleteMeLoading: false,
           showMessageDeleteConfirmationModal: false,
           showMoreMessageDeleteConfirmationModal: false
@@ -1102,7 +1102,7 @@ class FriendChats extends Component {
         }
       }).catch((err)=>{
         this.setState({
-          isDeleteEveryoneLoading: false, 
+          isDeleteEveryoneLoading: false,
           isDeleteMeLoading: false,
           showMessageDeleteConfirmationModal: false,
           showMoreMessageDeleteConfirmationModal: false
@@ -1690,7 +1690,7 @@ class FriendChats extends Component {
         {/* {sendingMedia && <UploadLoader />} */}
 
         <DeleteOptionModal
-          visible={showMoreMessageDeleteConfirmationModal} 
+          visible={showMoreMessageDeleteConfirmationModal}
           orientation={orientation}
           onCancel={this.onCancelDeleteOption.bind(this)}
           onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}

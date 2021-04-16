@@ -3333,7 +3333,7 @@ class Chat extends Component {
 
   renderDisplayNameText = (text, message) => {
     if(message, text.includes('{Display Name}')){
-      let update_txt = text.replaceAll("{Display Name}",this.props.userConfig.display_name);
+      let update_txt = text.replace(/{Display Name}/g,this.props.userConfig.display_name);
       return update_txt;
     }else {
       return text;

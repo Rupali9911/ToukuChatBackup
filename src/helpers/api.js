@@ -43,6 +43,7 @@ export const SEND_FRIEND_REQUEST = apiRoot + '/xchat/send-friend-request/';
 export const CANCEL_FRIEND_REQUEST = apiRoot + '/xchat/cancel-sent-request/';
 export const CLEAR_BADGE_COUNT =
   'https://api-angelium.net/api/xchat/reset-badge-count/';
+export const GET_MAINTENANCE = apiRoot + '/maintenance/';
 
 export const client = axios.create({
   baseURL: apiRoot,

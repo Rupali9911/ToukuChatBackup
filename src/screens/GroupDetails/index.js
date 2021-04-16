@@ -323,6 +323,7 @@ class GroupDetails extends Component {
         //let arrTemp = [...responseArray, ...this.props.userFriends]
 
         let arrTemp2 = this.props.userFriends;
+
         let arrTemp = [...arrTemp2];
 
         console.log('arrTemp2', arrTemp2, responseArray);

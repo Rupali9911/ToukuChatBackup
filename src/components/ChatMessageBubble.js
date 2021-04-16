@@ -333,13 +333,15 @@ class ChatMessageBubble extends Component {
   };
 
   renderLinkMedia = (text) => {
+    // console.log('renderLinkMedia', text)
       let arrLinks = linkify().match(text)
       if (arrLinks){
           return arrLinks.map((item)=>{
-              let checkUrl = staging ? EnvironmentStage : Environment;
-              if(checkUrl){
-                return null;
-              }
+              // let checkUrl = staging ? EnvironmentStage : Environment;
+              // console.log('checkUrl', checkUrl)
+              // if(checkUrl){
+              //   return null;
+              // }
               return(
                   <LinkPreviewComponent text={item.text} url={item.url}/>
               );
@@ -446,9 +448,9 @@ class ChatMessageBubble extends Component {
       // let update_by = user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(user_id);
       // let update_to = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || update_obj.user_name;
       // console.log('update_to',update_obj);
-      
+
       update_text = text;
-      
+
       return {update_text,update_by};
     }
   }
@@ -457,7 +459,7 @@ class ChatMessageBubble extends Component {
     const {isChannel,message, UserDisplayName} = this.props;
     if(isChannel){
       if(text.includes('{Display Name}')){
-        let update_txt = text.replaceAll("{Display Name}",UserDisplayName);
+        let update_txt = text.replace(/{Display Name}/g,UserDisplayName);
         return update_txt;
       }else {
         return text;
@@ -750,7 +752,7 @@ class ChatMessageBubble extends Component {
                   styles.talkBubble,
                   message.msg_type === 'image' ? {marginVertical: 5} : {},
                 ]}>
-                {/* {message.msg_type === 'image' ? null : 
+                {/* {message.msg_type === 'image' ? null :
                 ( */}
                   <View
                     style={[

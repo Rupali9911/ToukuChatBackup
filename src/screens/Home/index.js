@@ -1350,7 +1350,7 @@ class Home extends PureComponent {
 
   renderDisplayNameText = (text, message) => {
     if(message, text.includes('{Display Name}')){
-      let update_txt = text.replaceAll("{Display Name}",this.props.userConfig.display_name);
+      let update_txt = text.replace(/{Display Name}/g,this.props.userConfig.display_name);
       return update_txt;
     }else {
       return text;
@@ -1848,7 +1848,7 @@ class Home extends PureComponent {
                     <Text style={styles.pointsText}>{translate('pages.xchat.toukuPoints')}</Text>
                     <Text style={styles.pointsText}>(TP)</Text>
                     <Text style={styles.pointsCount}>
-                      {this.props.userData.total_tp && 
+                      {this.props.userData.total_tp &&
                           parseInt(
                             this.props.userData.total_tp,
                             10
@@ -1888,10 +1888,10 @@ class Home extends PureComponent {
                   {translate('pages.xchat.transfer')}
                 </Text>
                 <View style={styles.rowContainer}>
-                  <TouchableOpacity 
-                    style={styles.singleFlex} 
-                    onPress={() => { 
-                      this.props.navigation.navigate('AmazonExchangeScreen') 
+                  <TouchableOpacity
+                    style={styles.singleFlex}
+                    onPress={() => {
+                      this.props.navigation.navigate('AmazonExchangeScreen')
                     }}>
                     <LinearGradient
                       start={{ x: 0.03, y: 0.7 }}
@@ -1978,9 +1978,9 @@ class Home extends PureComponent {
                   <Text style={{ fontSize: normalize(25), fontWeight: 'bold' }}>{translate('pages.adWall.clickHere')}</Text>
                   <Text style={{ fontSize: normalize(12), fontWeight: 'bold', fontFamily: Platform.OS === 'ios' ? 'Times New Roman' : 'serif' }}>{translate('pages.adWall.increaseyourPoint')}</Text>
                 </LinearGradient> */}
-                  <ImageBackground 
-                    source={Images.banner_img} 
-                    style={styles.bannerImage} 
+                  <ImageBackground
+                    source={Images.banner_img}
+                    style={styles.bannerImage}
                   />
                 </TouchableOpacity>
               </View>
@@ -1989,9 +1989,9 @@ class Home extends PureComponent {
                 <Text style={[styles.headingText]}>
                   {translate('pages.adWall.other')}
                 </Text>
-                <ScrollView 
-                  horizontal 
-                  showsHorizontalScrollIndicator={false} 
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
                   style={styles.rowContainer}>
                   <TouchableOpacity style={{}} onPress={() => {
                     this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 1422 } })
@@ -2008,7 +2008,7 @@ class Home extends PureComponent {
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{}} 
+                  <TouchableOpacity style={{}}
                     onPress={() => {
                       this.requestXanaLoginform();
                     }}>

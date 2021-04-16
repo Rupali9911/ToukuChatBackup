@@ -77,12 +77,12 @@ export default class PostCard extends Component {
   };
 
   renderPostItem = ({item: post, index}) => {
-    let newArray = [];
-    post.text &&
-      post.text.length > 0 &&
-      post.text.map((data, index) => {
-        return newArray.push(data.text);
-      });
+    // let newArray = [];
+    // post.text &&
+    //   post.text.length > 0 &&
+    //   post.text.map((data, index) => {
+    //     return newArray.push(data.text);
+    //   });
 
     const {menuItems, isTimeline, isChannelTimeline, userData, likeUnlikePost, addComment, getPostComments, deleteComment} = this.props;
     return (
@@ -159,7 +159,7 @@ export default class PostCard extends Component {
         }}>
         {translate('pages.xchat.noTimelineFound')}
       </Text>
-        
+
       </View>
     );
   }

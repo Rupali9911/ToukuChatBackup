@@ -48,6 +48,7 @@ import {
 import SingleSocket from './src/helpers/SingleSocket';
 import {eventService} from './src/utils';
 import { setSpecificId, setActiveTab } from './src/redux/reducers/timelineReducer';
+import {getMaintenance} from './src/redux/reducers/configurationReducer';
 
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
@@ -108,7 +109,7 @@ export default class App extends Component {
     this.onTokenRefreshListener;
   }
 
-  _handleAppStateChange = (nextAppState) => {
+  _handleAppStateChange = async (nextAppState) => {
     // console.log('nextAppState', nextAppState);
     const {appState} = this.state;
     this.setState({appState: nextAppState});
@@ -126,8 +127,14 @@ export default class App extends Component {
       (appState.match(/background/) && nextAppState === 'active') ||
       (appState.match(/unknown/) && nextAppState === 'active')
     ) {
-      // console.log('From background to active or unknown to active');
+       console.log('From background to active or unknown to active');
       //this.clearBatchCount()
+
+        const userToken = await AsyncStorage.getItem('userToken');
+        if (userToken) {
+            getMaintenance()
+        }
+
 
       if (appState.match(/background/) && nextAppState === 'active') {
         this.getToken();
@@ -282,7 +289,7 @@ export default class App extends Component {
       }else{
         NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
       }
-    } 
+    }
   };
 
   clearBatchCount = async () => {
@@ -366,15 +373,6 @@ export default class App extends Component {
       await AsyncStorage.setItem('fcmToken', fcmToken);
       this.updateToken(registeredFcmToken);
     }
-
-    // let fcmToken = await AsyncStorage.getItem('fcmToken');
-    // if (!fcmToken) {
-    //     fcmToken = await messaging().getToken()
-    //     if (fcmToken) {
-    //         await AsyncStorage.setItem('fcmToken', fcmToken);
-    //     }
-    // }
-    // console.log('getToken() fcm token: ', fcmToken);
   }
 
   //2

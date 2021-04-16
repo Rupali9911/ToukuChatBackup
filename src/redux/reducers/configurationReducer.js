@@ -2,7 +2,7 @@ import {
     client,
     GET_USER_CONFIG,
     UPDATE_CHANNEL_MODE,
-    GET_TOUKU_POINTS, apiRoot, userAgent,
+    GET_TOUKU_POINTS, apiRoot, userAgent,GET_MAINTENANCE
 } from '../../helpers/api';
 import {wSetChannelMode} from '../utility/worker';
 import {UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE} from "./friendReducer";
@@ -235,3 +235,15 @@ export const uploadAvatar = (data, token) => (dispatch) =>
             });
     });
 
+export const getMaintenance = () =>
+    new Promise(function (resolve, reject) {
+        client
+            .get(GET_MAINTENANCE)
+            .then((res) => {
+                console.log('getMaintenance Response', res)
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });

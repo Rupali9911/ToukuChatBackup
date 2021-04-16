@@ -493,10 +493,10 @@ class GroupChatMessageBubble extends Component {
       let arrLinks = linkify().match(text)
       if (arrLinks) {
           return arrLinks.map((item) => {
-            let checkUrl = staging ? EnvironmentStage : Environment;
-            if (checkUrl) {
-              return null;
-            }
+           // let checkUrl = staging ? EnvironmentStage : Environment;
+            // if (checkUrl) {
+            //   return null;
+            // }
             return (
               <LinkPreviewComponent text={item.text} url={item.url} />
             );
@@ -523,9 +523,9 @@ class GroupChatMessageBubble extends Component {
       // let update_by = user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(user_id);
       // let update_to = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || update_obj.user_name;
       // console.log('update_to',update_obj);
-      
+
       update_text = text;
-      
+
       return {update_text,update_by};
     }
   }

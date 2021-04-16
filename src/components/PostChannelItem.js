@@ -180,14 +180,18 @@ export default class PostChannelItem extends Component {
   render() {
     const { post, index, likeUnlikePost, addComment, getPostComments } = this.props;
     const { page_height, showDeleteConfirmation, deleteLoading } = this.state;
-    // console.log('post', post)
+     console.log('post', post)
     let newArray = [];
     post.text &&
       post.text.length > 0 &&
       post.text.map((data, index) => {
-        return newArray.push(data.text);
+          let text = data.text
+          if (text && text.includes('{Display Name}')){
+            text = text.replace(/{Display Name}/g,'');
+        }
+        return newArray.push(text);
       });
-    // console.log('post',post);
+     console.log('newArray',newArray);
 
     let medias = [];
     post.media.image && post.media.image.map(item => medias.push({ type: 'image', url: item }));
