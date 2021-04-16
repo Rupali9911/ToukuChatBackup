@@ -16,7 +16,7 @@ import {
   UploadSelectModal,
   ShowAttahmentModal,
   ShowGalleryModal,
-  DeleteOptionModal
+  DeleteOptionModal,
 } from '../../components/Modals';
 import {ListLoader} from '../../components/Loaders';
 import {UploadLoader} from '../../components/Loaders';
@@ -46,7 +46,10 @@ import {
   deleteFriendObject,
   setCurrentFriend,
 } from '../../redux/reducers/friendReducer';
-import {sendFriendRequest,setAcceptedRequest} from '../../redux/reducers/addFriendReducer';
+import {
+  sendFriendRequest,
+  setAcceptedRequest,
+} from '../../redux/reducers/addFriendReducer';
 import Toast from '../../components/Toast';
 import {eventService, realmToPlainObject} from '../../utils';
 import S3uploadService from '../../helpers/S3uploadService';
@@ -248,9 +251,12 @@ class FriendChats extends Component {
 
   static navigationOptions = ({navigation}) => {
     return {
-      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
-    }
-  }
+      gesturesEnabled:
+        navigation.state.params && navigation.state.params.isAudioPlaying
+          ? false
+          : true,
+    };
+  };
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
@@ -395,7 +401,7 @@ class FriendChats extends Component {
       let file = uploadFile.uri;
       let files = [file];
       let fileType = uploadFile.type;
-      console.log('file', uploadFile)
+      console.log('file', uploadFile);
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
         uploadFile.type,
@@ -403,9 +409,9 @@ class FriendChats extends Component {
           console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
         },
-          uploadFile.name
+        uploadFile.name,
       );
-      console.log('uploadedApplication', uploadedApplication)
+      console.log('uploadedApplication', uploadedApplication);
       msgText = uploadedApplication;
     }
 
@@ -998,7 +1004,7 @@ class FriendChats extends Component {
 
   onCancelDeleteOption = () => {
     this.toggleMessageDeleteOptionConfirmationModal();
-  }
+  };
 
   onCancelDelete = () => {
     this.toggleMessageDeleteConfirmationModal();
@@ -1050,16 +1056,16 @@ class FriendChats extends Component {
     if (this.state.selectedIds.length > 0) {
       let payload = {
         message_ids: this.state.selectedIds,
-        delete_type: delete_type
+        delete_type: delete_type,
       };
 
-      if(delete_type==='DELETE_FOR_EVERYONE'){
+      if (delete_type === 'DELETE_FOR_EVERYONE') {
         this.setState({isDeleteEveryoneLoading: true});
-      }else{
+      } else {
         this.setState({isDeleteMeLoading: true});
       }
 
-      console.log('payload',payload);
+      console.log('payload', payload);
 
       this.state.selectedIds.map((item) => {
         deleteFriendMessageById(item);
@@ -1088,26 +1094,29 @@ class FriendChats extends Component {
       this.getLocalFriendConversation();
       this.setState({isMultiSelect: false, selectedIds: []});
 
-      this.props.deleteMultiplePersonalMessage(payload).then((res) => {
-        //console.log(res);
-        this.setState({
-          isDeleteEveryoneLoading: false, 
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
+      this.props
+        .deleteMultiplePersonalMessage(payload)
+        .then((res) => {
+          //console.log(res);
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
+          if (res && res.status) {
+          } else {
+            this.getPersonalConversation();
+          }
+        })
+        .catch((err) => {
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
         });
-        if (res && res.status) {
-        } else {
-          this.getPersonalConversation();
-        }
-      }).catch((err)=>{
-        this.setState({
-          isDeleteEveryoneLoading: false, 
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
-        });
-      });
     }
   };
 
@@ -1149,18 +1158,18 @@ class FriendChats extends Component {
     let arr = this.state.selectedIds;
     let isDeleteEveryOption = true;
 
-    chatFriendConversation.map((item)=>{
-      if(arr.includes(item.id+'') && item.from_user.id !== userData.id){
+    chatFriendConversation.map((item) => {
+      if (arr.includes(item.id + '') && item.from_user.id !== userData.id) {
         isDeleteEveryOption = false;
         return;
       }
-    })
+    });
 
-    if(isDeleteEveryOption){
+    if (isDeleteEveryOption) {
       this.setState({
         showMoreMessageDeleteConfirmationModal: true,
       });
-    }else{
+    } else {
       this.setState({
         showMessageDeleteConfirmationModal: true,
       });
@@ -1319,7 +1328,7 @@ class FriendChats extends Component {
       this.setState({
         uploadedFiles: [...this.state.uploadedFiles, ...results],
       });
-      console.log('results', results)
+      console.log('results', results);
       this.toggleAttachmentModal(true);
       // for (const res of results) {
       //   let fileType = res.type.substr(0, res.type.indexOf('/'));
@@ -1460,7 +1469,7 @@ class FriendChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'image') {
+      } else if (fileType === 'image') {
         await this.setState(
           {
             uploadFile: source,
@@ -1471,7 +1480,7 @@ class FriendChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'video') {
+      } else if (fileType === 'video') {
         await this.setState(
           {
             uploadFile: source,
@@ -1520,7 +1529,7 @@ class FriendChats extends Component {
       isDeleteEveryoneLoading,
     } = this.state;
     const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
-   // console.log('currentFriend', currentFriend);
+    // console.log('currentFriend', currentFriend);
 
     return (
       <ImageBackground
@@ -1591,23 +1600,24 @@ class FriendChats extends Component {
               this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
-            showOpenLoader={(isLoading) =>
-            {console.log('showOpenLoader in Friend Chat', isLoading)
-                this.setState({openDoc: isLoading})}}
+            showOpenLoader={(isLoading) => {
+              console.log('showOpenLoader in Friend Chat', isLoading);
+              this.setState({openDoc: isLoading});
+            }}
             isChatDisable={
               currentFriend.friend_status === 'UNFRIEND' ||
               currentFriend.friend_status === 'REQUESTED'
             }
-            onMediaPlay = {(isPlay)=>{
-              if(isPlay){
+            onMediaPlay={(isPlay) => {
+              if (isPlay) {
                 console.log('palying media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: true
+                  isAudioPlaying: true,
                 });
-              }else{
+              } else {
                 console.log('pause media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: false
+                  isAudioPlaying: false,
                 });
               }
             }}
@@ -1637,7 +1647,10 @@ class FriendChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelDelete.bind(this)}
-          onConfirm={this.onConfirmMultipleMessageDelete.bind(this, 'DELETE_FOR_ME')}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(
+            this,
+            'DELETE_FOR_ME',
+          )}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
@@ -1690,7 +1703,7 @@ class FriendChats extends Component {
         {/* {sendingMedia && <UploadLoader />} */}
 
         <DeleteOptionModal
-          visible={showMoreMessageDeleteConfirmationModal} 
+          visible={showMoreMessageDeleteConfirmationModal}
           orientation={orientation}
           onCancel={this.onCancelDeleteOption.bind(this)}
           onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
@@ -1698,7 +1711,7 @@ class FriendChats extends Component {
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
           isDeleteMeLoading={isDeleteMeLoading}
           isDeleteEveryoneLoading={isDeleteEveryoneLoading}
-          />
+        />
 
         {openDoc && <OpenLoader />}
       </ImageBackground>
@@ -1714,7 +1727,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
-    acceptedRequest: state.addFriendReducer.acceptedRequest
+    acceptedRequest: state.addFriendReducer.acceptedRequest,
   };
 };
 
@@ -1740,7 +1753,7 @@ const mapDispatchToProps = {
   deleteFriendObject,
   setCurrentFriend,
   sendFriendRequest,
-  setAcceptedRequest
+  setAcceptedRequest,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

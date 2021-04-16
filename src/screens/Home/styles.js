@@ -8,7 +8,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fill_border_box_style:{
+  fill_border_box_style: {
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 15,

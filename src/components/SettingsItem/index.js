@@ -6,17 +6,17 @@ import {
   Image,
   TouchableOpacity,
   Clipboard,
-  StatusBar,
   Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {globalStyles} from '../../styles';
 import {
-    Icons,
-    Colors,
-    Fonts,
-    languageArray,
-    registerUrl, registerUrlStage,
+  Icons,
+  Colors,
+  Fonts,
+  languageArray,
+  registerUrl,
+  registerUrlStage,
 } from '../../constants';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -37,7 +37,7 @@ import SwitchCustom from '../SwitchCustom';
 import Toast from '../Toast';
 import {version} from '../../../package';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
-import {staging} from "../../helpers/api";
+import {staging} from '../../helpers/api';
 
 class SettingsItem extends Component {
   constructor(props) {
@@ -97,7 +97,8 @@ class SettingsItem extends Component {
   }
 
   copyCode() {
-    let invitationLink = (staging ? registerUrlStage : registerUrl) + this.state.referralCode;
+    let invitationLink =
+      (staging ? registerUrlStage : registerUrl) + this.state.referralCode;
     Clipboard.setString(invitationLink);
     showToast(
       translate('pages.setting.referralLink'),
@@ -149,7 +150,7 @@ class SettingsItem extends Component {
       isInvitation,
       isToukuPoints,
       isCustomerSupport,
-        isFAQ,
+      isFAQ,
       isVersion,
     } = this.props;
     const {
@@ -181,10 +182,11 @@ class SettingsItem extends Component {
       }
     };
 
-    let renderMenu = () => {
+    const renderMenu = () => {
       return arrLanguage.map((item) => {
         return (
           <Menu.Item
+            key={`${item.language_name}_${item.language_id}`}
             style={styles.txtDrpDwn}
             titleStyle={[styles.txtLanguage, {color: 'white'}]}
             title={item.language_display}
@@ -209,7 +211,7 @@ class SettingsItem extends Component {
                 {
                   color: Colors.black,
                   fontWeight: '300',
-                  marginLeft: Platform.isPad && 25,
+                  marginLeft: Platform.isPad ? 25 : 0,
                 },
               ]}>
               {title}
@@ -287,17 +289,17 @@ class SettingsItem extends Component {
               </Text>
             </View>
           )}
-            {isFAQ && (
-                <View style={styles.vwRightInv}>
-                    <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>
-                        {translate('common.open')}
-                    </Text>
-                </View>
-            )}
+          {isFAQ && (
+            <View style={styles.vwRightInv}>
+              <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>
+                {translate('common.open')}
+              </Text>
+            </View>
+          )}
           {isCustomerSupport && (
             <View style={styles.vwRightInv}>
               <Text style={[styles.txtInvitation, {color: Colors.light_gray}]}>
-                  {translate('pages.xchat.chat')}
+                {translate('pages.xchat.chat')}
               </Text>
             </View>
           )}
@@ -366,7 +368,7 @@ SettingsItem.propTypes = {
   title: PropTypes.string,
   icon_name: PropTypes.string,
   onPress: PropTypes.func,
-  isImage: PropTypes.string,
+  isImage: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   isFontAwesome: PropTypes.bool,
   isLanguage: PropTypes.bool,
   isChannelMode: PropTypes.bool,
@@ -376,7 +378,7 @@ SettingsItem.propTypes = {
   isInvitation: PropTypes.bool,
   isToukuPoints: PropTypes.bool,
   isCustomerSupport: PropTypes.bool,
-    isFAQ: PropTypes.bool,
+  isFAQ: PropTypes.bool,
 };
 
 SettingsItem.defaultProps = {
@@ -394,7 +396,7 @@ SettingsItem.defaultProps = {
   isInvitation: false,
   isToukuPoints: false,
   isCustomerSupport: false,
-    isFAQ: false,
+  isFAQ: false,
   isVersion: false,
 };
 

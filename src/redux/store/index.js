@@ -22,8 +22,8 @@ const persistConfig = {
     'commonReducer',
   ],
   writeFailHandler: (err) => {
-    console.log('redux_persist_error',err);
-  }
+    console.log('redux_persist_error', err);
+  },
 };
 
 // Middleware: Redux Persist Persisted Reducer
@@ -34,6 +34,7 @@ const store = createStore(
   persistedReducer,
   composeWithDevTools(applyMiddleware(thunk)),
 );
+console.log('STORE::', store);
 
 // Middleware: Redux Persist Persister
 let persistor = persistStore(store);

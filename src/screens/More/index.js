@@ -1,9 +1,5 @@
 import React, {Component} from 'react';
-import {
-  View,
-  ScrollView,
-  Linking,
-} from 'react-native';
+import {View, ScrollView, Linking} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
 
@@ -20,8 +16,7 @@ import {
   xanaUrl,
   xanaDeepLink,
   xanaAppStore,
-    faqUrl,
-    faqUrl1
+  faqUrl,
 } from '../../constants';
 import SettingsItem from '../../components/SettingsItem';
 import ProfileModal from '../../components/Modals/ProfileModal';
@@ -136,9 +131,9 @@ class More extends Component {
     //Linking.openURL(supportUrl);
   }
 
-    actionFaq() {
-        Linking.openURL(faqUrl1 + this.props.selectedLanguageItem.language_name);
-    }
+  actionFaq() {
+    Linking.openURL(faqUrl);
+  }
 
   render() {
     const {
@@ -235,13 +230,13 @@ class More extends Component {
             isCustomerSupport={true}
             onPress={() => this.onNeedSupportClick()}
           />
-            <SettingsItem
-                icon_name={'question'}
-                title={translate('pages.xchat.fqa')}
-                isFontAwesome={true}
-                isFAQ={true}
-                onPress={() => this.actionFaq()}
-            />
+          <SettingsItem
+            icon_name={'question'}
+            title={translate('pages.xchat.fqa')}
+            isFontAwesome={true}
+            isFAQ={true}
+            onPress={() => this.actionFaq()}
+          />
           <SettingsItem
             icon_name={'code-branch'}
             title={translate('pages.setting.version')}

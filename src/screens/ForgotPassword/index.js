@@ -160,7 +160,9 @@ class ForgotPassword extends Component {
             } else {
               Toast.show({
                 title: translate('common.sendSMS'),
-                text: errMessage.message.toString().includes('backend.')?translate(errMessage.message.toString()):errMessage.message.toString(),
+                text: errMessage.message.toString().includes('backend.')
+                  ? translate(errMessage.message.toString())
+                  : errMessage.message.toString(),
                 type: 'primary',
               });
             }
@@ -277,7 +279,9 @@ class ForgotPassword extends Component {
                 if (errMessage.message) {
                   Toast.show({
                     title: translate('pages.resetPassword.resetPassword'),
-                    text: errMessage.message.toString().includes('backend.')?translate(errMessage.message.toString()):errMessage.message.toString(),
+                    text: errMessage.message.toString().includes('backend.')
+                      ? translate(errMessage.message.toString())
+                      : errMessage.message.toString(),
                     type: 'primary',
                   });
                 } else if (errMessage.non_field_errors) {

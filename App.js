@@ -15,22 +15,32 @@ import {PersistGate} from 'redux-persist/es/integration/react';
 import {store, persistor} from './src/redux/store';
 import Root from './src/screens/Root';
 import InternetInfo from './src/components/InternetInfo';
-import {CLEAR_BADGE_COUNT, client, socket, staging, userAgent} from './src/helpers/api';
+import {
+  CLEAR_BADGE_COUNT,
+  client,
+  socket,
+  staging,
+  userAgent,
+} from './src/helpers/api';
 import NavigationService from './src/navigation/NavigationService';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
-    loginUrl,
-    registerUrl,
-    channelUrl,
-    DEEPLINK,
-    Environment,
-    NotificationType, registerUrlStage,
+  loginUrl,
+  registerUrl,
+  channelUrl,
+  DEEPLINK,
+  Environment,
+  NotificationType,
+  registerUrlStage,
 } from './src/constants/index';
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
 import {setCurrentChannel} from './src/redux/reducers/channelReducer';
-import {setCurrentFriend, addFriendByReferralCode} from './src/redux/reducers/friendReducer';
+import {
+  setCurrentFriend,
+  addFriendByReferralCode,
+} from './src/redux/reducers/friendReducer';
 import {setCurrentGroup} from './src/redux/reducers/groupReducer';
 import {
   isEventIdExists,
@@ -47,7 +57,10 @@ import {
 } from './src/redux/reducers/userReducer';
 import SingleSocket from './src/helpers/SingleSocket';
 import {eventService} from './src/utils';
-import { setSpecificId, setActiveTab } from './src/redux/reducers/timelineReducer';
+import {
+  setSpecificId,
+  setActiveTab,
+} from './src/redux/reducers/timelineReducer';
 
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
@@ -159,7 +172,10 @@ export default class App extends Component {
     if (userToken) {
       let route = NavigationService.getCurrentRoute();
       let routeName = route.routeName;
-      if (routeName && (routeName === 'ChannelInfo' || routeName === 'ChannelChats')) {
+      if (
+        routeName &&
+        (routeName === 'ChannelInfo' || routeName === 'ChannelChats')
+      ) {
         NavigationService.popToTop();
       }
       store.dispatch(setCurrentChannel(data));
@@ -187,28 +203,28 @@ export default class App extends Component {
 
     let channelLoginUrl = url.substring(0, url.indexOf('?')) + '/';
     if (url.indexOf(loginUrl) > -1 || url.indexOf(registerUrl) > -1) {
-      let isLoginUrl = url.indexOf(loginUrl) > -1
-        let suffixUrl = url.split(isLoginUrl ? loginUrl : registerUrl)[1].trim();
-        let invitationCode =
-            suffixUrl.split('/').length > 0
-                ? suffixUrl.split('/')[0].trim()
-                : suffixUrl;
-        await AsyncStorage.setItem('invitationCode', invitationCode);
-        const userToken = await AsyncStorage.getItem('userToken');
-        if (userToken) {
-            let route = NavigationService.getCurrentRoute();
-            let routeName = route.routeName;
-            if (routeName && (routeName === 'ChatTab')) {
-                NavigationService.navigate('Home')
-                NavigationService.navigate('Chat');
-            }else{
-                NavigationService.navigate('Chat');
-            }
-        }else{
-            NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login')
+      let isLoginUrl = url.indexOf(loginUrl) > -1;
+      let suffixUrl = url.split(isLoginUrl ? loginUrl : registerUrl)[1].trim();
+      let invitationCode =
+        suffixUrl.split('/').length > 0
+          ? suffixUrl.split('/')[0].trim()
+          : suffixUrl;
+      await AsyncStorage.setItem('invitationCode', invitationCode);
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (userToken) {
+        let route = NavigationService.getCurrentRoute();
+        let routeName = route.routeName;
+        if (routeName && routeName === 'ChatTab') {
+          NavigationService.navigate('Home');
+          NavigationService.navigate('Chat');
+        } else {
+          NavigationService.navigate('Chat');
         }
+      } else {
+        NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
+      }
     } else if (loginUrl === channelLoginUrl) {
-        console.log('loginUrl', loginUrl, channelLoginUrl)
+      console.log('loginUrl', loginUrl, channelLoginUrl);
       let splitUrl = url.split('&');
       let invitationCode, channelId;
       if (splitUrl.length >= 2) {
@@ -244,45 +260,53 @@ export default class App extends Component {
     } else if (url.indexOf('invite') > -1) {
       let urlData = url.split('/');
       if (urlData.length > 4) {
-        if (urlData[4] !== null || urlData[4] !== undefined || urlData[4] !== '') {
+        if (
+          urlData[4] !== null ||
+          urlData[4] !== undefined ||
+          urlData[4] !== ''
+        ) {
           let data = {
             id: urlData[4],
           };
           this.navigateToChannelInfo(data, url);
         }
       }
-    }else if( url.indexOf('channel-detail') > -1){
+    } else if (url.indexOf('channel-detail') > -1) {
       let urlData = url.split('/');
       if (urlData.length > 4) {
-        if (urlData[5] !== null || urlData[5] !== undefined || urlData[5] !== '') {
+        if (
+          urlData[5] !== null ||
+          urlData[5] !== undefined ||
+          urlData[5] !== ''
+        ) {
           let data = {
             id: urlData[5],
           };
           this.navigateToChannelInfo(data, url);
         }
       }
-    } else if(url.indexOf('/timeline-post') > -1){
-      let post_id = url.substring(url.lastIndexOf('/')+1);
-      console.log('post_id',post_id);
+    } else if (url.indexOf('/timeline-post') > -1) {
+      let post_id = url.substring(url.lastIndexOf('/') + 1);
+      console.log('post_id', post_id);
       const userToken = await AsyncStorage.getItem('userToken');
       if (userToken) {
         store.dispatch(setActiveTab('following'));
         store.dispatch(setSpecificId(post_id));
         NavigationService.navigate('Timeline');
-      }else{
+      } else {
         NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
       }
-    } else if(url.indexOf('/#/groups/') > -1) {
+    } else if (url.indexOf('/#/groups/') > -1) {
       let split_url = url.split('/');
-      let group_id = split_url[split_url.length-2];
-      console.log('group_id',group_id);
+      let group_id = split_url[split_url.length - 2];
+      console.log('group_id', group_id);
       const userToken = await AsyncStorage.getItem('userToken');
       if (userToken) {
-        NavigationService.navigate('JoinGroup', { group_id: group_id });
-      }else{
+        NavigationService.navigate('JoinGroup', {group_id: group_id});
+      } else {
         NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
       }
-    } 
+    }
   };
 
   clearBatchCount = async () => {
@@ -420,7 +444,7 @@ export default class App extends Component {
         //  NavigationService.navigate('Chat');
         let friendObj = getUserFriendByFriendId(notificationData.id);
         if (friendObj.length > 0) {
-            let friend = JSON.parse(JSON.stringify(friendObj[0]));
+          let friend = JSON.parse(JSON.stringify(friendObj[0]));
           store.dispatch(setCurrentFriend(friend));
           NavigationService.navigate('FriendChats');
         }
@@ -465,7 +489,7 @@ export default class App extends Component {
     this.closedAppNotificationListener = messaging()
       .getInitialNotification()
       .then((remoteMessage) => {
-        console.log('remoteMessage', remoteMessage)
+        console.log('remoteMessage', remoteMessage);
         if (remoteMessage && remoteMessage.data) {
           console.log('remoteMessage background', remoteMessage);
           this.notificationRedirection(remoteMessage);
@@ -536,7 +560,7 @@ export default class App extends Component {
                     currentState,
                     action,
                   ) => {
-                   // console.log('store.getState()',store.getState());
+                    // console.log('store.getState()',store.getState());
                     const currentRouteName = this.getActiveRouteName(
                       currentState,
                     );
