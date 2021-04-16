@@ -36,6 +36,7 @@ import {
   getChannelIdAndReferral,
   onPressHyperlink,
   getUserName,
+  checkDeepLinkUrl,
 } from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
@@ -333,15 +334,12 @@ class ChatMessageBubble extends Component {
   };
 
   renderLinkMedia = (text) => {
-    // console.log('renderLinkMedia', text)
       let arrLinks = linkify().match(text)
       if (arrLinks){
           return arrLinks.map((item)=>{
-              // let checkUrl = staging ? EnvironmentStage : Environment;
-              // console.log('checkUrl', checkUrl)
-              // if(checkUrl){
-              //   return null;
-              // }
+              if(checkDeepLinkUrl(item.url)){
+                return null;
+              }
               return(
                   <LinkPreviewComponent text={item.text} url={item.url}/>
               );

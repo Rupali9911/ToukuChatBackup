@@ -1396,7 +1396,7 @@ class Chat extends Component {
       SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
     ) {
       message.text.data.message_details.map((item) => {
-        if (item.deleted_for.includes(this.props.userData.id)) {
+        // if (item.deleted_for.includes(this.props.userData.id)) {
           let result = getChannelsById(item.channel);
           let channels = [];
           let a = Array.from(result);
@@ -1425,7 +1425,7 @@ class Chat extends Component {
             // this.props.setChannelConversation(chat.toJSON());
             this.props.setChannelConversation(conversations);
           }
-        }
+        // }
       });
     }
   }

@@ -1,5 +1,5 @@
 import {Dimensions, Linking, Platform, PixelRatio, PermissionsAndroid} from 'react-native';
-import {Images, Icons, prodInvite, stagInvite} from '../constants';
+import {Images, Icons, prodInvite, stagInvite, Environment, EnvironmentStage} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
 import ImageResizer from 'react-native-image-resizer';
@@ -230,4 +230,9 @@ export function isNumeric(str) {
   if (typeof str != "string") return false // we only process strings!
   return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
          !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}
+
+export const checkDeepLinkUrl = (url) => {
+  let checkUrl = staging ? 'touku.angelium.net/' : 'touku.net/';
+  return url.includes(checkUrl);
 }

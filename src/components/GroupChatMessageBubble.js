@@ -33,7 +33,7 @@ import {
     normalize,
     onPressHyperlink,
     getUserName,
-    getUser_ActionFromUpdateText, getChannelIdAndReferral,
+    getUser_ActionFromUpdateText, getChannelIdAndReferral, checkDeepLinkUrl,
 } from '../utils';
 import VideoThumbnailPlayer from './VideoThumbnailPlayer';
 import RoundedImage from './RoundedImage';
@@ -489,14 +489,12 @@ class GroupChatMessageBubble extends Component {
   };
 
   renderLinkMedia = (text) => {
-      //console.log('renderLinkMedia text', text)
       let arrLinks = linkify().match(text)
       if (arrLinks) {
           return arrLinks.map((item) => {
-           // let checkUrl = staging ? EnvironmentStage : Environment;
-            // if (checkUrl) {
-            //   return null;
-            // }
+            if (checkDeepLinkUrl(item.url)) {
+              return null;
+            }
             return (
               <LinkPreviewComponent text={item.text} url={item.url} />
             );

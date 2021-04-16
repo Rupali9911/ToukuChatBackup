@@ -1123,7 +1123,7 @@ class ChannelChats extends Component {
           <ConfirmationModal
             visible={showMessageDeleteConfirmationModal}
             onCancel={this.onCancel.bind(this)}
-            onConfirm={this.onConfirmMultipleMessageDelete.bind(this)}
+            onConfirm={this.onConfirmMultipleMessageDelete.bind(this, 'DELETE_FOR_ME')}
             orientation={orientation}
             title={translate('pages.xchat.toastr.areYouSure')}
             message={translate('pages.xchat.youWantToDeleteThisMessage')}
