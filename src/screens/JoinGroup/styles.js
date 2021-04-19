@@ -1,13 +1,12 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-import { normalize } from '../../utils';
-const {width, height} = Dimensions.get('window');
+import {Platform, StyleSheet} from 'react-native';
+import {Colors, Fonts} from '../../constants';
+import {normalize} from '../../utils';
 
-export const groupDetailStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 15,
     paddingBottom: 50,
-    flex:1
+    flex: 1,
   },
   imageContainer: {
     // height: height * 0.13,
@@ -15,7 +14,7 @@ export const groupDetailStyles = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'row',
     marginBottom: 20,
-    paddingTop: 50
+    paddingTop: 50,
   },
   imageView: {
     height: normalize(100),
@@ -31,7 +30,7 @@ export const groupDetailStyles = StyleSheet.create({
 
     elevation: 3,
     borderColor: '#fff',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   profileImage: {
     height: '100%',
@@ -89,5 +88,29 @@ export const groupDetailStyles = StyleSheet.create({
   },
   frindListContainer: {
     paddingHorizontal: 15,
+  },
+  loaderContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  nameBackgroundContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nameContainer: {
+    marginBottom: 10,
+    alignSelf: 'center',
+  },
+  interactionContainer: {
+    width: '70%',
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
+  totalMemberContainer: {
+    marginVertical: 10,
+  },
+  totalMembersText: {
+    color: '#697794',
   },
 });

@@ -1,50 +1,47 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
 import {
-  View,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  Text,
   Clipboard,
-  Linking,
+  Image,
+  ImageBackground,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
+import HyperLink from 'react-native-hyperlink';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
-
-import {channelInfoStyles} from './styles';
-import {globalStyles} from '../../styles';
-import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import {Images, Icons, Fonts, SocketEvents, Colors} from '../../constants';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
+import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import {ListLoader} from '../../components/Loaders';
-import Toast from '../../components/Toast';
+import {AffilicateModal, ConfirmationModal} from '../../components/Modals';
+import PostCard from '../../components/PostCard';
 import RoundedImage from '../../components/RoundedImage';
+import Toast from '../../components/Toast';
+import {Colors, Fonts, Icons} from '../../constants';
+import NavigationService from '../../navigation/NavigationService';
 import {
-  getImage,
+  followChannel,
+  getChannelDetails,
+  setCurrentChannel,
+  subscribeAsVip,
+  unfollowChannel,
+} from '../../redux/reducers/channelReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
+import {store} from '../../redux/store';
+import {getChannelsById} from '../../storage/Service';
+import {globalStyles} from '../../styles';
+import {
   eventService,
-  showToast,
+  getImage,
   normalize,
   onPressHyperlink,
   wait,
 } from '../../utils';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {
-  getChannelDetails,
-  unfollowChannel,
-  followChannel,
-  subscribeAsVip,
-    setCurrentChannel
-} from '../../redux/reducers/channelReducer';
-import {ConfirmationModal, AffilicateModal} from '../../components/Modals';
-import AsyncStorage from '@react-native-community/async-storage';
-import HyperLink from 'react-native-hyperlink';
-import PostCard from '../../components/PostCard';
-import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
-import {getChannelsById} from "../../storage/Service";
-import {store} from "../../redux/store";
-import NavigationService from "../../navigation/NavigationService";
+import styles from './styles';
 
 class ChannelInfo extends Component {
   constructor(props) {
@@ -104,18 +101,23 @@ class ChannelInfo extends Component {
   }
 
   async OnBackAction() {
-      await AsyncStorage.removeItem('channelData');
-    let channelData = this.state.channelData
-      await AsyncStorage.removeItem('channelData');
-      if (this.props.navigation.state.params && this.props.navigation.state.params.channelItem.channel_id) {
-          let channelObj = getChannelsById(this.props.navigation.state.params.channelItem.channel_id);
-          if (channelObj.length > 0) {
-              store.dispatch(setCurrentChannel(channelObj[0]));
-              NavigationService.navigate('ChannelChats');
-          }
-      }else{
-          this.props.navigation.goBack();
+    await AsyncStorage.removeItem('channelData');
+    // let channelData = this.state.channelData;
+    await AsyncStorage.removeItem('channelData');
+    if (
+      this.props.navigation.state.params &&
+      this.props.navigation.state.params.channelItem.channel_id
+    ) {
+      let channelObj = getChannelsById(
+        this.props.navigation.state.params.channelItem.channel_id,
+      );
+      if (channelObj.length > 0) {
+        store.dispatch(setCurrentChannel(channelObj[0]));
+        NavigationService.navigate('ChannelChats');
       }
+    } else {
+      this.props.navigation.goBack();
+    }
   }
 
   UNSAFE_componentWillMount() {
@@ -166,10 +168,11 @@ class ChannelInfo extends Component {
           : this.props.currentChannel.id,
       )
       .then((res) => {
-        console.log('details',res);
+        console.log('details', res);
         this.setState({channelData: res});
       })
       .catch((err) => {
+        console.error(err);
         Toast.show({
           title: 'TOUKU',
           text: 'Something went wrong!',
@@ -218,6 +221,7 @@ class ChannelInfo extends Component {
           });
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -283,32 +287,33 @@ class ChannelInfo extends Component {
 
   onCloseVipConfirmation = () => {
     this.toggleVipConfirmationModal();
-  }
+  };
 
   onConfirmVipConfirmation = () => {
     const {userData} = this.props;
     const {channelData} = this.state;
-    if(userData.total_tp<channelData.monthly_vip_fee){
+    if (userData.total_tp < channelData.monthly_vip_fee) {
       this.toggleVipConfirmationModal();
-      wait(500).then(()=>{
+      wait(500).then(() => {
         this.togglePurchaseTPConfirmationModal();
-      })
+      });
       return;
     }
 
     let data = {
       channel_id: this.props.navigation.state.params
-          ? this.props.navigation.state.params.channelItem.channel_id
-          : this.props.currentChannel.id,
+        ? this.props.navigation.state.params.channelItem.channel_id
+        : this.props.currentChannel.id,
       invitation_code: this.props.navigation.state.params
-          ? this.props.navigation.state.params.channelItem.referral
-          : 'ISGLGA2V',
-    }
+        ? this.props.navigation.state.params.channelItem.referral
+        : 'ISGLGA2V',
+    };
 
-    this.props.subscribeAsVip(data)
+    this.props
+      .subscribeAsVip(data)
       .then((res) => {
         console.log(res);
-        if(res && res.status){
+        if (res && res.status) {
           this.toggleVipConfirmationModal();
           Toast.show({
             title: this.props.navigation.state.params
@@ -319,20 +324,20 @@ class ChannelInfo extends Component {
           });
           this.getChannelDetails();
         }
-      }).catch((err) => {
+      })
+      .catch((err) => {
         console.log(err);
         this.toggleVipConfirmationModal();
       });
-
-  }
+  };
 
   onClosePurchaseTPConfirmation = () => {
     this.togglePurchaseTPConfirmationModal();
-  }
+  };
 
   onConfirmPurchaseTPCOnfirmation = () => {
     this.togglePurchaseTPConfirmationModal();
-  }
+  };
 
   toggleConfirmationModal = () => {
     this.setState((prevState) => ({
@@ -373,7 +378,7 @@ class ChannelInfo extends Component {
       title: translate('pages.setting.referralLink'),
       text: translate('pages.setting.toastr.linkCopiedSuccessfully'),
       type: 'positive',
-    })
+    });
   }
 
   //#region Timeline function
@@ -415,20 +420,26 @@ class ChannelInfo extends Component {
     }
   };
 
-  hideFollowers(arrAdmins, userData, hideFollower){
-    console.log('arrAdmins, userData, hideFollowers', arrAdmins, userData, hideFollower)
-    if (arrAdmins){
-        if (arrAdmins.count === 0) {
-            return hideFollower
-        }else{
-            let item = arrAdmins.find((e) => e.id === userData.id);
-            if (item)return false
-            return hideFollower
+  hideFollowers(arrAdmins, userData, hideFollower) {
+    console.log(
+      'arrAdmins, userData, hideFollowers',
+      arrAdmins,
+      userData,
+      hideFollower,
+    );
+    if (arrAdmins) {
+      if (arrAdmins.count === 0) {
+        return hideFollower;
+      } else {
+        let item = arrAdmins.find((e) => e.id === userData.id);
+        if (item) {
+          return false;
         }
-    } else{
-        return hideFollower
+        return hideFollower;
+      }
+    } else {
+      return hideFollower;
     }
-
   }
   //#endregion
 
@@ -489,11 +500,11 @@ class ChannelInfo extends Component {
           <HeaderWithBack
             isCentered
             onBackPress={() => this.props.navigation.goBack()}
-            title= {translate('pages.xchat.channelInfo')}
+            title={translate('pages.xchat.channelInfo')}
           />
           {!channelLoading ? (
             <KeyboardAwareScrollView
-              contentContainerStyle={channelInfoStyles.mainContainer}
+              contentContainerStyle={styles.mainContainer}
               showsVerticalScrollIndicator={false}
               bounces={false}>
               <LinearGradient
@@ -501,38 +512,29 @@ class ChannelInfo extends Component {
                 end={{x: 0.8, y: 0.3}}
                 locations={[0.1, 0.5, 1]}
                 colors={['#c13468', '#ee2e3b', '#fa573a']}
-                style={channelInfoStyles.channelImageContainer}>
+                style={styles.channelImageContainer}>
                 <ImageBackground
-                  style={channelInfoStyles.channelCoverContainer}
+                  style={styles.channelCoverContainer}
                   source={getImage(channelData.cover_image)}>
                   <LinearGradient
                     colors={['rgba(255, 98, 165, 0.8)', 'rgba(0,0,0,0)']}
                     start={{x: 0, y: 1}}
                     end={{x: 0, y: 0}}
-                    style={[
-                      {position: 'absolute', width: '100%', height: '100%'},
-                    ]}></LinearGradient>
+                    style={styles.gradientBackground}
+                  />
 
                   {/* <View
                     style={channelInfoStyles.updateBackgroundContainer}></View> */}
-                  <View style={channelInfoStyles.channelInfoContainer}>
+                  <View style={styles.channelInfoContainer}>
                     <View
                       style={[
-                        channelInfoStyles.imageContainer,
-                        {alignItems: 'center'},
+                        styles.imageContainer,
+                        styles.channelInfoSubContainer,
                       ]}>
-                      <View style={channelInfoStyles.imageView}>
+                      <View style={styles.imageView}>
                         {/* <View style={channelInfoStyles.imageView}> */}
                         {!channelData.channel_picture ? (
-                          <View
-                            style={[
-                              {height: '100%', width: '100%'},
-                              {
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: Colors.white,
-                              },
-                            ]}>
+                          <View style={styles.channelPictureContainer}>
                             <Text
                               style={[
                                 globalStyles.bigSemiBoldText,
@@ -546,7 +548,7 @@ class ChannelInfo extends Component {
                         ) : (
                           <RoundedImage
                             source={getImage(channelData.channel_picture)}
-                            style={channelInfoStyles.profileImage}
+                            style={styles.profileImage}
                             isRounded={false}
                             resizeMode={'cover'}
                             size={'100%'}
@@ -555,26 +557,21 @@ class ChannelInfo extends Component {
                         {/* </View> */}
                       </View>
                     </View>
-                    <View style={channelInfoStyles.detailView}>
+                    <View style={styles.detailView}>
                       <View
-                        style={channelInfoStyles.changeChannelContainer}
+                        style={styles.changeChannelContainer}
                         // onPress={() => this.toggleChannelBusinessMenu()}
                       >
-                        <Text
-                          style={channelInfoStyles.channelNameText}
-                          numberOfLines={1}>
+                        <Text style={styles.channelNameText} numberOfLines={1}>
                           {channelData.name}
                         </Text>
                       </View>
                       <View
-                        style={channelInfoStyles.changeChannelContainer}
+                        style={styles.changeChannelContainer}
                         // onPress={() => this.toggleChannelBusinessMenu()}
                       >
                         <Text
-                          style={[
-                            channelInfoStyles.channelNameText,
-                            {fontSize: 13},
-                          ]}
+                          style={[styles.channelNameText, styles.channelStatus]}
                           numberOfLines={1}>
                           {channelData.channel_status
                             ? channelData.channel_status === ''
@@ -584,22 +581,19 @@ class ChannelInfo extends Component {
                         </Text>
                       </View>
                       <View
-                        style={channelInfoStyles.changeChannelContainer}
+                        style={styles.changeChannelContainer}
                         // onPress={() => this.toggleChannelBusinessMenu()}
                       >
                         <Text
                           style={[
-                            channelInfoStyles.channelNameText,
-                            {fontSize: 14},
+                            styles.channelNameText,
+                            styles.invitationText,
                           ]}
                           numberOfLines={1}>
                           {translate('pages.invitation.referralOneField3')}
                         </Text>
                         <Text
-                          style={[
-                            channelInfoStyles.channelNameText,
-                            {fontSize: 14, textDecorationLine: 'underline'},
-                          ]}
+                          style={[styles.channelNameText, styles.followCode]}
                           numberOfLines={1}
                           onPress={() => this.copyCode(followCode)}>
                           {followCode}
@@ -607,28 +601,30 @@ class ChannelInfo extends Component {
                       </View>
                     </View>
                   </View>
-                  <View style={channelInfoStyles.channelInfoDetail}>
-                    <View style={channelInfoStyles.channelDetailStatus}>
+                  <View style={styles.channelInfoDetail}>
+                    <View style={styles.channelDetailStatus}>
                       {channelCountDetails.map((item, index) => {
-                          //if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
-                          if (item.title === 'followers' && channelData.show_followers){return null} else{
-                        return (
-                          <View
-                            key={index}
-                            style={channelInfoStyles.detailStatusItem}>
-                            <Text
-                              style={channelInfoStyles.detailStatusItemCount}>
-                              {item.count}
-                            </Text>
-                            <Text
-                              style={channelInfoStyles.detailStatusItemName}>
-                              {translate(`pages.xchat.${item.title}`)}
-                            </Text>
-                          </View>
-                        );}
+                        //if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
+                        if (
+                          item.title === 'followers' &&
+                          channelData.show_followers
+                        ) {
+                          return null;
+                        } else {
+                          return (
+                            <View key={index} style={styles.detailStatusItem}>
+                              <Text style={styles.detailStatusItemCount}>
+                                {item.count}
+                              </Text>
+                              <Text style={styles.detailStatusItemName}>
+                                {translate(`pages.xchat.${item.title}`)}
+                              </Text>
+                            </View>
+                          );
+                        }
                       })}
                     </View>
-                    <View style={channelInfoStyles.channelDetailButton}>
+                    <View style={styles.channelDetailButton}>
                       <Button
                         title={
                           channelData.is_member
@@ -647,28 +643,31 @@ class ChannelInfo extends Component {
                 </ImageBackground>
               </LinearGradient>
 
-              <View style={channelInfoStyles.tabBar}>
+              <View style={styles.tabBar}>
                 {tabBarItem.map((item, index) => {
-                  if (item.title === 'chat' && !channelData.is_member ){return null} else{
+                  if (item.title === 'chat' && !channelData.is_member) {
+                    return null;
+                  } else {
+                    const tabStyle = [
+                      styles.tabIamge,
+                      {
+                        opacity: activeIndex === index ? 1 : 0.5,
+                      },
+                    ];
                     return (
                       <TouchableOpacity
                         key={index}
-                        style={channelInfoStyles.tabItem}
+                        style={styles.tabItem}
                         onPress={item.action}
-                        activeOpacity={activeIndex == index ? 1 : 0}>
+                        activeOpacity={activeIndex === index ? 1 : 0}>
                         <Image
                           source={item.icon}
-                          style={[
-                            channelInfoStyles.tabIamge,
-                            {
-                              opacity: activeIndex == index ? 1 : 0.5,
-                            },
-                          ]}
+                          style={tabStyle}
                           resizeMode={'center'}
                         />
                         <Text
                           style={[
-                            channelInfoStyles.tabTitle,
+                            styles.tabTitle,
                             {
                               fontFamily: Fonts.regular,
                             },
@@ -726,19 +725,16 @@ class ChannelInfo extends Component {
                 </View>
               ) : (
                 <View>
-                  <View style={channelInfoStyles.about}>
-                    <Text style={channelInfoStyles.aboutHeading}>
+                  <View style={styles.about}>
+                    <Text style={styles.aboutHeading}>
                       {translate('pages.xchat.about')}
                     </Text>
                     <HyperLink
                       onPress={(url, text) => {
                         onPressHyperlink(url);
                       }}
-                      linkStyle={{
-                        color: 'blue',
-                        textDecorationLine: 'underline',
-                      }}>
-                      <Text style={channelInfoStyles.aboutText}>
+                      linkStyle={styles.aboutLink}>
+                      <Text style={styles.aboutText}>
                         {channelData.description}
                       </Text>
                     </HyperLink>
@@ -779,11 +775,11 @@ class ChannelInfo extends Component {
                   </View>
                   {channelData.is_vip && (
                     <React.Fragment>
-                      <View style={channelInfoStyles.about}>
-                        <Text style={channelInfoStyles.aboutHeading}>
+                      <View style={styles.about}>
+                        <Text style={styles.aboutHeading}>
                           {translate('pages.xchat.vipFeature')}
                         </Text>
-                        <Text style={channelInfoStyles.aboutText}>
+                        <Text style={styles.aboutText}>
                           {channelData.vip_description}
                         </Text>
                       </View>
@@ -797,31 +793,32 @@ class ChannelInfo extends Component {
                     </React.Fragment>
                   )}
 
-                  <View style={channelInfoStyles.buttonContainer}>
+                  <View style={styles.buttonContainer}>
                     {/*<Button*/}
                     {/*isRounded={false}*/}
                     {/*type={'primary'}*/}
                     {/*title={translate('pages.xchat.affiliate')}*/}
                     {/*onPress={this.toggleAffiliateModal}*/}
                     {/*/>*/}
-                    {channelData.is_vip && channelData.subscription_type !== 'vip' && (
+                    {channelData.is_vip &&
+                      channelData.subscription_type !== 'vip' && (
                         <Button
                           isRounded={false}
                           type={'primary'}
                           title={translate('pages.xchat.vip')}
                           onPress={() => {
-                            this.toggleVipConfirmationModal()
+                            this.toggleVipConfirmationModal();
                           }}
                         />
                       )}
                   </View>
-                  {channelData.is_vip && channelData.subscription_type !== 'vip' && (
-                      <View style={channelInfoStyles.followerDetails}>
-                        <Text
-                          style={{fontFamily: Fonts.regular, marginRight: 5}}>
+                  {channelData.is_vip &&
+                    channelData.subscription_type !== 'vip' && (
+                      <View style={styles.followerDetails}>
+                        <Text style={styles.vipMonth}>
                           {translate('pages.xchat.vipMonth')}
                         </Text>
-                        <Text style={channelInfoStyles.detailText}>
+                        <Text style={styles.detailText}>
                           {channelData.monthly_vip_fee} TP
                         </Text>
                       </View>
@@ -891,7 +888,7 @@ const mapDispatchToProps = {
   unfollowChannel,
   followChannel,
   subscribeAsVip,
-    setCurrentChannel
+  setCurrentChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelInfo);

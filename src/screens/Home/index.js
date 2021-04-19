@@ -1,120 +1,115 @@
-import React, {Component, PureComponent, Fragment} from 'react';
-import {
-  View,
-  ImageBackground,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  Platform,
-  TextInput,
-  ScrollView,
-  Linking,
-} from 'react-native';
-import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
-import Realm from 'realm';
+import NetInfo from '@react-native-community/netinfo';
 import {
   Collapse,
-  CollapseHeader,
   CollapseBody,
+  CollapseHeader,
 } from 'accordion-collapse-react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, {PureComponent} from 'react';
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  Linking,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {createFilter} from 'react-native-search-filter';
+import LinearGradient from 'react-native-linear-gradient';
+import Orientation from 'react-native-orientation';
 import {Badge} from 'react-native-paper';
+import {createFilter} from 'react-native-search-filter';
 import {withNavigationFocus} from 'react-navigation';
-import NetInfo from '@react-native-community/netinfo';
-
-import styles from './styles';
-import {globalStyles} from '../../styles';
+import {connect} from 'react-redux';
+import Realm from 'realm';
 import HomeHeader from '../../components/HomeHeader';
-import {Images, Colors, Icons, SocketEvents} from '../../constants';
-import RoundedImage from '../../components/RoundedImage';
-import {getAvatar, normalize} from '../../utils';
-import {ProfileModal} from '../../components/Modals';
 import {
   ChannelListItem,
   FriendListItem,
-  GroupListItem,
   FriendRequestListItem,
+  GroupListItem,
 } from '../../components/ListItems';
-import NoData from '../../components/NoData';
 import {ListLoader} from '../../components/Loaders';
+import {ProfileModal} from '../../components/Modals';
+import NoData from '../../components/NoData';
+import RoundedImage from '../../components/RoundedImage';
+import Toast from '../../components/Toast';
+import {Colors, Icons, Images, SocketEvents} from '../../constants';
 import SingleSocket from '../../helpers/SingleSocket';
-
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
-  getUserProfile,
-  getMissedSocketEventsById,
-  getAdWallUniqueUrl,
-  requestLoginForm,
-} from '../../redux/reducers/userReducer';
-
-import {
-  getFriendRequest,
   acceptFriendRequst,
+  getFriendRequest,
   rejectFriendRequst,
   setFriendRequest,
 } from '../../redux/reducers/addFriendReducer';
-
+import {
+  assetXPValueOfChannel,
+  getFollowingChannels,
+  getLocalFollowingChannels,
+  getMoreFollowingChannels,
+  setCurrentChannel,
+} from '../../redux/reducers/channelReducer';
 import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
 import {
-  getMoreFollowingChannels,
-  getFollowingChannels,
-  setCurrentChannel,
-  getLocalFollowingChannels,
-  assetXPValueOfChannel,
-} from '../../redux/reducers/channelReducer';
+  getFriendRequests,
+  getUserFriends,
+  setCurrentFriend,
+  setUserFriends,
+  updateUnreadFriendMsgsCounts,
+} from '../../redux/reducers/friendReducer';
 import {
-  getUserGroups,
   getLocalUserGroups,
+  getUserGroups,
   setCurrentGroup,
   updateUnreadGroupMsgsCounts,
 } from '../../redux/reducers/groupReducer';
-import {
-  getUserFriends,
-  getFriendRequests,
-  setCurrentFriend,
-  updateUnreadFriendMsgsCounts,
-  setUserFriends,
-} from '../../redux/reducers/friendReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {setActiveTimelineTab} from '../../redux/reducers/timelineReducer';
-import Toast from '../../components/Toast';
-
 import {
-  updateMessageById,
-  deleteMessageById,
-  setMessageUnsend,
-  getChannelsById,
-  getChannelChatConversationById,
-  setChannelChatConversation,
-  updateChannelLastMsg,
-  updateFriendsUnReadCount,
-  setFriendChatConversation,
-  updateFriendLastMsg,
-  updateFriendMessageById,
-  getLocalUserFriend,
-  updateFriendLastMsgWithoutCount,
-  deleteFriendMessageById,
-  setFriendMessageUnsend,
-  UpdateGroupDetail,
-  getGroupsById,
-  updateLastMsgGroups,
-  updateUnReadCount,
-  updateGroupMessageById,
-  setGroupMessageUnsend,
-  setGroupLastMessageUnsend,
-  setGroupChatConversation,
-  updateChannelUnReadCountById,
-  removeUserFriends,
+  getAdWallUniqueUrl,
+  getMissedSocketEventsById,
+  getUserProfile,
+  requestLoginForm,
+} from '../../redux/reducers/userReducer';
+import {
   deleteChannelById,
-  updateChannelTotalMember,
-  updateChannelLastMsgWithOutCount,
-  updateFriendTypingStatus,
+  deleteFriendMessageById,
+  deleteMessageById,
+  getChannelChatConversationById,
   getChannels,
+  getChannelsById,
   getFriendChatConversationById,
+  getGroupsById,
+  getLocalUserFriend,
+  removeUserFriends,
+  setChannelChatConversation,
+  setFriendChatConversation,
+  setFriendMessageUnsend,
+  setGroupChatConversation,
+  setGroupLastMessageUnsend,
+  setGroupMessageUnsend,
+  setMessageUnsend,
+  updateChannelLastMsg,
+  updateChannelLastMsgWithOutCount,
+  updateChannelTotalMember,
+  updateChannelUnReadCountById,
+  updateFriendLastMsg,
+  updateFriendLastMsgWithoutCount,
+  updateFriendMessageById,
+  updateFriendsUnReadCount,
+  updateFriendTypingStatus,
+  UpdateGroupDetail,
+  updateGroupMessageById,
+  updateLastMsgGroups,
+  updateMessageById,
+  updateUnReadCount,
 } from '../../storage/Service';
+import {globalStyles} from '../../styles';
+import {getAvatar, normalize} from '../../utils';
+import styles from './styles';
 
 class Home extends PureComponent {
   constructor(props) {
@@ -337,10 +332,10 @@ class Home extends PureComponent {
     let channels = getChannels();
     if (channels.length) {
       let array = [];
-      channels.map((item, index) => {
+      channels.map((item) => {
         array = [...array, item];
       });
-      dispatch(getFollowingChannelsSuccess(array));
+      dispatch(getFollowingChannelsSuccess(array)); // TODO: Cannot find dispatch
     }
     this.props.getFollowingChannels().then((res) => {
       // if (res.conversations.length > 0) {

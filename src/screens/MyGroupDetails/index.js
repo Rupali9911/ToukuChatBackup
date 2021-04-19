@@ -1,27 +1,21 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-  View,
-  ImageBackground,
   Image,
-  TouchableOpacity,
+  ImageBackground,
   Text,
-  StyleSheet,
-  Dimensions,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Orientation from 'react-native-orientation';
-import { connect } from 'react-redux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
-// import { createGroupStyles } from './styles';
-import { globalStyles } from '../../styles';
+import {connect} from 'react-redux';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import { Images, Icons, Colors, Fonts } from '../../constants';
-import InputWithTitle from '../../components/TextInputs/InputWithTitle';
-
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import { getImage } from '../../utils';
-import { red } from 'color-name';
-const { width, height } = Dimensions.get('window');
+import {Fonts, Icons, Images} from '../../constants';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+// import { createGroupStyles } from './styles';
+import {globalStyles} from '../../styles';
+import {getImage} from '../../utils';
+import styles from './styles';
 
 class GroupDetails extends Component {
   constructor(props) {
@@ -47,7 +41,7 @@ class GroupDetails extends Component {
 
   componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-    this.setState({ orientation: initial });
+    this.setState({orientation: initial});
   }
 
   componentDidMount() {
@@ -55,119 +49,99 @@ class GroupDetails extends Component {
   }
 
   _orientationDidChange = (orientation) => {
-    this.setState({ orientation });
+    this.setState({orientation});
   };
 
   render() {
     return (
       <ImageBackground
         source={Images.image_home_bg}
-        style={globalStyles.container}
-      >
+        style={globalStyles.container}>
         <View style={globalStyles.container}>
           <HeaderWithBack
             onBackPress={() => this.props.navigation.goBack()}
             title={translate('pages.xchat.groupDetails')}
           />
           <KeyboardAwareScrollView
-            contentContainerStyle={createGroupStyles.mainContainer}
+            contentContainerStyle={styles.mainContainer}
             showsVerticalScrollIndicator={false}
-            extraScrollHeight={100}
-          >
-            <View style={createGroupStyles.imageContainer}>
-              <View style={createGroupStyles.imageView}>
+            extraScrollHeight={100}>
+            <View style={styles.imageContainer}>
+              <View style={styles.imageView}>
                 <Image
                   // source={{uri: this.state.filePath.uri}}
                   source={getImage(this.state.filePath.uri)}
                   resizeMode={'cover'}
-                  style={createGroupStyles.profileImage}
+                  style={styles.profileImage}
                 />
               </View>
               <TouchableOpacity style={{}}>
                 <Image
                   source={Icons.icon_edit_pen}
                   resizeMode={'cover'}
-                  style={createGroupStyles.editIcon}
+                  style={styles.editIcon}
                 />
               </TouchableOpacity>
             </View>
-            <View style={createGroupStyles.tabBar}>
+            <View style={styles.tabBar}>
               <TouchableOpacity
-                style={createGroupStyles.tabItem}
+                style={styles.tabItem}
                 // onPress={item.action}
               >
                 <Text
                   style={[
-                    createGroupStyles.tabTitle,
+                    styles.tabTitle,
                     {
                       fontFamily: Fonts.regular,
                     },
-                  ]}
-                >
-                  {translate(`pages.xchat.aboutGroup`)}
+                  ]}>
+                  {translate('pages.xchat.aboutGroup')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={createGroupStyles.tabItem}
+                style={styles.tabItem}
                 // onPress={item.action}
               >
                 <Text
                   style={[
-                    createGroupStyles.tabTitle,
+                    styles.tabTitle,
                     {
                       fontFamily: Fonts.regular,
                     },
-                  ]}
-                >
-                  {translate(`pages.xchat.manage`)}
+                  ]}>
+                  {translate('pages.xchat.manage')}
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={{ marginBottom: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text
-                  style={{
-                    color: Colors.gradient_2,
-                    fontSize: 16,
-                    fontFamily: Fonts.regular,
-                  }}
-                >
-                  {translate(`pages.xchat.groupName`)}
+            <View style={styles.contentContainer}>
+              <View style={styles.contentSubContainer}>
+                <Text style={styles.contentText}>
+                  {translate('pages.xchat.groupName')}
                 </Text>
                 <TouchableOpacity style={{}}>
                   <Image
                     source={Icons.icon_edit_pen}
                     resizeMode={'cover'}
-                    style={createGroupStyles.editIcon}
+                    style={styles.editIcon}
                   />
                 </TouchableOpacity>
               </View>
-              <Text style={{ fontSize: 13, fontFamily: Fonts.light }}>
-                name
-              </Text>
+              <Text style={styles.contentLabel}>name</Text>
             </View>
-            <View style={{ marginBottom: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text
-                  style={{
-                    color: Colors.gradient_2,
-                    fontSize: 16,
-                    fontFamily: Fonts.regular,
-                  }}
-                >
-                  {translate(`pages.xchat.note`)}
+            <View style={styles.contentContainer}>
+              <View style={styles.contentSubContainer}>
+                <Text style={styles.contentText}>
+                  {translate('pages.xchat.note')}
                 </Text>
                 <TouchableOpacity style={{}}>
                   <Image
                     source={Icons.icon_edit_pen}
                     resizeMode={'cover'}
-                    style={createGroupStyles.editIcon}
+                    style={styles.editIcon}
                   />
                 </TouchableOpacity>
               </View>
-              <Text style={{ fontSize: 13, fontFamily: Fonts.light }}>
-                Group note
-              </Text>
+              <Text style={styles.contentLabel}>Group note</Text>
             </View>
           </KeyboardAwareScrollView>
         </View>
@@ -175,66 +149,6 @@ class GroupDetails extends Component {
     );
   }
 }
-
-const createGroupStyles = StyleSheet.create({
-  mainContainer: {
-    // flex: 1,
-    paddingHorizontal: 15,
-    paddingBottom: 50,
-  },
-  imageContainer: {
-    height: height * 0.18,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  imageView: {
-    height: height * 0.13,
-    width: height * 0.13,
-    borderWidth: 3,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-
-    elevation: 3,
-    borderColor: '#fff',
-  },
-  profileImage: {
-    height: '100%',
-    width: '100%',
-  },
-  editIcon: {
-    height: 15,
-    width: 15,
-    tintColor: Colors.gradient_2,
-    marginLeft: 5,
-  },
-  tabBar: {
-    flexDirection: 'row',
-    marginVertical: 10,
-    justifyContent: 'space-evenly',
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.gray,
-    // paddingBottom: 10,
-  },
-  tabItem: {
-    marginHorizontal: 10,
-    alignItems: 'center',
-    borderBottomWidth: 5,
-    paddingBottom: 10,
-    paddingHorizontal: 20,
-    borderBottomColor: Colors.gradient_2,
-  },
-  tabTitle: {
-    fontSize: 16,
-    color: Colors.gradient_2,
-  },
-});
 
 const mapStateToProps = (state) => {
   return {

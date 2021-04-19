@@ -1,50 +1,43 @@
+/* eslint-disable no-useless-escape */
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
   ImageBackground,
-  SafeAreaView,
-  TouchableOpacity,
-  Platform,
   Keyboard,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
-import StepIndicator from 'react-native-step-indicator';
-import AsyncStorage from '@react-native-community/async-storage';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-import Inputfield from '../../components/InputField';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
 import CheckBox from '../../components/CheckBox';
-import {
-  Icons,
-  Colors,
-  Images,
-  termsUrl,
-  supportUrl,
-  xanaUrl,
-} from '../../constants';
-import {BackHeader} from '../../components/Headers';
-import {signUpStyles, stepIndicatorStyle} from './styles';
-import LanguageSelector from '../../components/LanguageSelector';
-import {globalStyles} from '../../styles';
 import CountryPhoneInput from '../../components/CountryPhoneInput';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
-import {getUserProfile} from '../../redux/reducers/userReducer';
-import {
-  userSendOTP,
-  userVerifyOTP,
-  userEmailCheck,
-  userNameCheck,
-  userRegister,
-  socialRegistration,
-  userNewRegister,
-  socialRegistrationNew,
-} from '../../redux/reducers/signupReducer';
+import {BackHeader} from '../../components/Headers';
+import Inputfield from '../../components/InputField';
+import LanguageSelector from '../../components/LanguageSelector';
 import Toast from '../../components/Toast';
 import WebViewClass from '../../components/WebView';
+import {Images, termsUrl} from '../../constants';
 import {setCurrentChannel} from '../../redux/reducers/channelReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {
+  socialRegistration,
+  socialRegistrationNew,
+  userEmailCheck,
+  userNameCheck,
+  userNewRegister,
+  userRegister,
+  userSendOTP,
+  userVerifyOTP,
+} from '../../redux/reducers/signupReducer';
+import {getUserProfile} from '../../redux/reducers/userReducer';
+import {globalStyles} from '../../styles';
+import styles from './styles';
+
 class SignUp extends Component {
   constructor(props) {
     super(props);
@@ -114,7 +107,7 @@ class SignUp extends Component {
   }
 
   sendOTP() {
-    const {phone, countryCode} = this.state;
+    const {phone} = this.state;
 
     if (phone.length <= 0) {
       Toast.show({
@@ -143,8 +136,8 @@ class SignUp extends Component {
               text: translate('pages.register.toastr.sentOTPtoMobile'),
               type: 'positive',
             });
-            this.inputs['verifycode'].focus();
-          } else if (res.status === false && res.data.phone != '') {
+            this.inputs.verifycode.focus();
+          } else if (res.status === false && res.data.phone !== '') {
             Toast.show({
               title: translate('common.sendSMS'),
               text: translate('backend.common.PhoneNumberAlreadRegistered'),
@@ -198,10 +191,10 @@ class SignUp extends Component {
 
   onPageChange(position) {
     Keyboard.dismiss();
-    const {phone, countryCode, verifycode, email, emailconfirm} = this.state;
+    const {phone, verifycode, email, emailconfirm} = this.state;
     switch (position) {
       case 1:
-        if (phone !== '' && verifycode != '') {
+        if (phone !== '' && verifycode !== '') {
           let verifyData = {
             code: verifycode,
             phone: phone,
@@ -289,7 +282,9 @@ class SignUp extends Component {
                 });
               }
             })
-            .catch((err) => {});
+            .catch((err) => {
+              console.error(err);
+            });
           this.setState({emailStatus: 'right'});
         }
         break;
@@ -298,22 +293,22 @@ class SignUp extends Component {
   }
 
   checkUserName(username) {
-    let isValid = true;
+    // let isValid = true;
     //let regex = /^[a-zA-Z0-9- ]*$/;
     let regex = /^[a-zA-Z0-9\-\_.]*$/;
     username = username.replace(/\s/g, '');
     this.setState({username: username});
     if (username.length <= 0) {
       console.log('username.length', username.length);
-      isValid = false;
+      // isValid = false;
       this.setState({
         userNameStatus: 'normal',
         userNameErr: 'messages.required',
         userNameSuggestions: [],
       });
       return;
-    } else if (regex.test(username) == false) {
-      isValid = false;
+    } else if (regex.test(username) === false) {
+      // isValid = false;
       this.setState({
         userNameStatus: 'wrong',
         userNameErr: 'notValid',
@@ -350,13 +345,7 @@ class SignUp extends Component {
   }
 
   async onSignUpPress() {
-    const {
-      username,
-      password,
-      passwordConfirm,
-      isAgreeWithTerms,
-      email,
-    } = this.state;
+    const {username, password, isAgreeWithTerms, email} = this.state;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     let isValid = true;
     //let regex = /^[a-zA-Z0-9- ]*$/;
@@ -421,7 +410,7 @@ class SignUp extends Component {
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
-    } else if (regex.test(username) == false) {
+    } else if (regex.test(username) === false) {
       isValid = false;
       Toast.show({
         title: translate('common.register'),
@@ -433,7 +422,7 @@ class SignUp extends Component {
       if (isAgreeWithTerms) {
         let fcmToken = await AsyncStorage.getItem('fcmToken');
         let channelDataJson = await AsyncStorage.getItem('channelData');
-          let invitationCode = await AsyncStorage.getItem('invitationCode');
+        let invitationCode = await AsyncStorage.getItem('invitationCode');
         let channelData = JSON.parse(channelDataJson);
         let registerData = {
           email: email,
@@ -451,7 +440,7 @@ class SignUp extends Component {
               : 'zh-hant',
           username: username,
           dev_id: fcmToken ? fcmToken : '',
-            invitation_code: invitationCode ? invitationCode : '',
+          invitation_code: invitationCode ? invitationCode : '',
         };
 
         console.log('registerData', registerData);
@@ -460,9 +449,9 @@ class SignUp extends Component {
           .then((res) => {
             console.log('userRegister response', res);
             if (res.token) {
-                AsyncStorage.removeItem('invitationCode');
-              this.props.getUserProfile().then((res) => {
-                if (res.id) {
+              AsyncStorage.removeItem('invitationCode');
+              this.props.getUserProfile().then((response) => {
+                if (response.id) {
                   this.props.navigation.navigate('App');
                   if (channelData) {
                     this.props.setCurrentChannel(channelData);
@@ -537,7 +526,7 @@ class SignUp extends Component {
     }
     if (
       this.state.emailconfirm.length > 0 &&
-      email != this.state.emailconfirm
+      email !== this.state.emailconfirm
     ) {
       this.setState({emailConfirmStatus: 'wrong'});
     }
@@ -563,9 +552,9 @@ class SignUp extends Component {
                 userNameErr: null,
               });
 
-              this.props.userNameCheck(newUsername).then((res) => {
-                console.log('userNameCheck res', res, newUsername);
-                if (res.status === false) {
+              this.props.userNameCheck(newUsername).then((response) => {
+                console.log('userNameCheck response', response, newUsername);
+                if (response.status === false) {
                   this.setState({userNameSuggestions: []});
                   AsyncStorage.setItem('username', newUsername);
                   if (newUsername.length <= 0) {
@@ -575,7 +564,7 @@ class SignUp extends Component {
                   }
                 } else {
                   this.setState({
-                    userNameSuggestions: res.suggestions,
+                    userNameSuggestions: response.suggestions,
                     userNameStatus: 'wrong',
                   });
                 }
@@ -585,6 +574,7 @@ class SignUp extends Component {
             }
           })
           .catch((err) => {
+            console.error(err);
             this.setState({emailStatus: 'wrong'});
           });
       }, 500);
@@ -603,7 +593,7 @@ class SignUp extends Component {
     } else if (reg.test(emailconfirm) === false) {
       isValid = false;
       this.setState({emailConfirmStatus: 'wrong'});
-    } else if (this.state.email != emailconfirm) {
+    } else if (this.state.email !== emailconfirm) {
       isValid = false;
       this.setState({emailConfirmStatus: 'wrong'});
     }
@@ -633,7 +623,7 @@ class SignUp extends Component {
         passwordConfirmStatus: 'wrong',
         confirmPasswordErr: 'messages.required',
       });
-    } else if (this.state.password != passwordConfirm) {
+    } else if (this.state.password !== passwordConfirm) {
       this.setState({
         passwordConfirmStatus: 'wrong',
         confirmPasswordErr: 'matchFailed',
@@ -657,52 +647,26 @@ class SignUp extends Component {
         return `${item}`;
       });
       return (
-        <View
-          style={{
-            marginBottom: 15,
-            flexDirection: 'column',
-            marginStart: 10,
-          }}>
-          <Text
-            style={[
-              globalStyles.smallLightText,
-              {
-                textAlign: 'left',
-                marginBottom: 5,
-              },
-            ]}>
+        <View style={styles.suggestionsContainer}>
+          <Text style={[globalStyles.smallLightText, styles.usernamExistText]}>
             {translate('pages.register.toastr.usrenameExist')}
           </Text>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-              }}>
+          <View style={styles.suggestionsSubContainer}>
+            <View style={styles.suggestionsTextContainer}>
               <Text style={globalStyles.smallLightText}>
                 {translate('pages.register.suggestions')}:
               </Text>
             </View>
-            <View
-              style={{
-                flex: 1,
-                borderColor: 'red',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                paddingLeft: 5,
-              }}>
-              {suggestions.map((item, index) => {
+            <View style={styles.suggestionsListContainer}>
+              {suggestions.map((item) => {
                 return (
                   <TouchableOpacity
-                    style={{marginBottom: 10}}
+                    style={styles.suggestionsListItemActionContainer}
                     onPress={() => this.selectSuggestedUserName(item)}>
                     <Text
                       style={[
                         globalStyles.smallLightText,
-                        {textDecorationLine: 'underline', marginHorizontal: 8},
+                        styles.suggestionsListItemActionText,
                       ]}>
                       {item}
                     </Text>
@@ -713,21 +677,16 @@ class SignUp extends Component {
           </View>
         </View>
       );
-    } else return null;
+    } else {
+      return null;
+    }
   };
 
   async onSocialSignUp() {
-    const {
-      username,
-      password,
-      passwordConfirm,
-      isAgreeWithTerms,
-      email,
-      showEmail,
-    } = this.state;
+    const {username, password, isAgreeWithTerms, email, showEmail} = this.state;
     let invitationCode = await AsyncStorage.getItem('invitationCode');
     let channelDataJson = await AsyncStorage.getItem('channelData');
-      let fcmToken = await AsyncStorage.getItem('fcmToken');
+    let fcmToken = await AsyncStorage.getItem('fcmToken');
     let channelData = JSON.parse(channelDataJson);
 
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -790,7 +749,7 @@ class SignUp extends Component {
         text: translate('pages.setting.toastr.pleaseEnterUsername'),
         type: 'warning',
       });
-    } else if (regex.test(username) == false) {
+    } else if (regex.test(username) === false) {
       isValid = false;
       Toast.show({
         title: translate('common.register'),
@@ -809,7 +768,7 @@ class SignUp extends Component {
             invitation_code: invitationCode ? invitationCode : '',
             email: email,
             site_from: 'touku',
-              dev_id: fcmToken ? fcmToken : '',
+            dev_id: fcmToken ? fcmToken : '',
           });
         } else {
           registrationData = JSON.stringify({
@@ -817,7 +776,7 @@ class SignUp extends Component {
             password: password,
             invitation_code: invitationCode ? invitationCode : '',
             site_from: 'touku',
-              dev_id: fcmToken ? fcmToken : '',
+            dev_id: fcmToken ? fcmToken : '',
           });
         }
         console.log('RegisterData through SNS', registrationData);
@@ -899,7 +858,6 @@ class SignUp extends Component {
     const {
       userNameErr,
       passwordErr,
-      confirmPasswordErr,
       userNameStatus,
       emailStatus,
       passwordStatus,
@@ -912,11 +870,11 @@ class SignUp extends Component {
             <Text
               style={[
                 globalStyles.smallLightText,
-                {paddingHorizontal: Platform.isPad ? 50 : 20},
+                styles.registrationStepText,
               ]}>
               {translate('common.registerStepOne')}
             </Text>
-            <View style={{marginTop: Platform.isPad ? 200 : 50}}>
+            <View style={styles.registrationInputContainer}>
               <CountryPhoneInput
                 rightBtnText={'SMS'}
                 onClickSMS={() => this.sendOTP()}
@@ -928,7 +886,7 @@ class SignUp extends Component {
               />
               <Inputfield
                 onRef={(ref) => {
-                  this.inputs['verifycode'] = ref;
+                  this.inputs.verifycode = ref;
                 }}
                 value={this.state.verifycode}
                 placeholder={translate('common.smsVerificationCode')}
@@ -953,11 +911,11 @@ class SignUp extends Component {
             <Text
               style={[
                 globalStyles.smallLightText,
-                {paddingHorizontal: Platform.isPad ? 50 : 20},
+                styles.registrationStepText,
               ]}>
               {translate('common.registerStepTwo')}
             </Text>
-            <View style={{marginTop: Platform.isPad ? 200 : 50}}>
+            <View style={styles.registrationInputContainer}>
               <Inputfield
                 value={this.state.email}
                 placeholder={translate('common.email')}
@@ -994,16 +952,18 @@ class SignUp extends Component {
           </View>
         );
       case 2:
+        const usernameErrorText =
+          this.state.userNameSuggestions.length > 0 ? 10 : -10;
         return (
           <View>
             {/*<Text*/}
             {/*style={[*/}
             {/*globalStyles.smallLightText,*/}
-            {/*{paddingHorizontal: Platform.isPad ? 50 : 20},*/}
+            {/*styles.registrationStepText,*/}
             {/*]}>*/}
             {/*{translate('common.registerStepThree')}*/}
             {/*</Text>*/}
-            <View style={{marginTop: Platform.isPad ? 200 : 50}}>
+            <View style={styles.registrationInputContainer}>
               {showEmail && (
                 <Inputfield
                   value={this.state.email}
@@ -1039,12 +999,7 @@ class SignUp extends Component {
                 <Text
                   style={[
                     globalStyles.smallLightText,
-                    {
-                      textAlign: 'left',
-                      marginTop: -10,
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
+                    styles.passwordErrorText,
                   ]}>
                   {/*{passwordErr === 'messages.required' ? translate(passwordErr).replace(*/}
                   {/*'[missing {{field}} value]',*/}
@@ -1056,12 +1011,9 @@ class SignUp extends Component {
                 </Text>
               ) : null}
 
-              <View style={{marginTop: 50}}>
+              <View style={styles.usernameContainer}>
                 <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {textAlign: 'left', marginStart: 10, marginBottom: 5},
-                  ]}>
+                  style={[globalStyles.smallLightText, styles.usernameHeading]}>
                   {translate('pages.register.thisIsYourUsername') +
                     '  ' +
                     translate('pages.register.youCanChangeItUsername')}
@@ -1091,12 +1043,9 @@ class SignUp extends Component {
                     style={[
                       globalStyles.smallLightText,
                       {
-                        textAlign: 'left',
-                        marginTop:
-                          this.state.userNameSuggestions.length > 0 ? 10 : -10,
-                        marginStart: 10,
-                        marginBottom: 5,
+                        marginTop: usernameErrorText,
                       },
+                      styles.usernameErrorText,
                     ]}>
                     {userNameErr === 'messages.required'
                       ? translate('pages.register.minLengthUserName')
@@ -1105,7 +1054,7 @@ class SignUp extends Component {
                 ) : null}
                 {this.showSuggestions()}
               </View>
-              <View style={signUpStyles.termsContainer}>
+              <View style={styles.termsContainer}>
                 <TouchableOpacity
                   onPress={() => this.onCheckRememberMe()}
                   activeOpacity={1}>
@@ -1121,7 +1070,7 @@ class SignUp extends Component {
                   <Text
                     style={[
                       globalStyles.smallLightText,
-                      {textDecorationLine: 'underline'},
+                      styles.termsAndConditionText,
                     ]}>
                     {translate('pages.register.iAgreeToTheTerms&Conditions')}
                   </Text>
@@ -1152,7 +1101,8 @@ class SignUp extends Component {
   }
 
   render() {
-    const {currentPosition, orientation, isWebViewVisible} = this.state;
+    const {orientation, isWebViewVisible} = this.state;
+    const pageContainerPadding = orientation !== 'PORTRAIT' ? 50 : 0;
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -1168,17 +1118,14 @@ class SignUp extends Component {
           <KeyboardAwareScrollView
             keyboardShouldPersistTaps={'handled'}
             behavior={'position'}
-            contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
+            contentContainerStyle={styles.keyboardScrollContentContainer}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.actionBackPres()} />
             <View
-              style={{
-                flex: 1,
-                maxWidth: Platform.isPad ? '75%' : '100%',
-                alignSelf: 'center',
-                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-                marginTop: 20,
-              }}>
+              style={[
+                {paddingHorizontal: pageContainerPadding},
+                styles.pageContainer,
+              ]}>
               {/*<View*/}
               {/*style={{*/}
               {/*paddingHorizontal: orientation != 'PORTRAIT' ? 200 : 100,*/}

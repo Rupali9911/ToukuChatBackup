@@ -16,7 +16,7 @@ import {createFilter} from 'react-native-search-filter';
 import LinearGradient from 'react-native-linear-gradient';
 import ImagePicker from 'react-native-image-picker';
 
-import {createChannelStyles} from './styles';
+import styles from './styles';
 import {globalStyles} from '../../styles';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
@@ -310,10 +310,10 @@ class CreateChannel extends Component {
       channel_name: 'create_new_channel',
       is_vip: isVIP,
     };
-    if (about.trim() != '') {
+    if (about.trim() !== '') {
       normalChannelData.discription = about;
     }
-    if (status.trim() != '') {
+    if (status.trim() !== '') {
       normalChannelData.channel_status = status;
     }
     if (addedFriends.length > 0) {
@@ -340,10 +340,10 @@ class CreateChannel extends Component {
       channel_name: 'create_new_channel',
       is_vip: isVIP,
     };
-    if (about.trim() != '') {
+    if (about.trim() !== '') {
       vipChannelData.discription = about;
     }
-    if (status.trim() != '') {
+    if (status.trim() !== '') {
       vipChannelData.channel_status = status;
     }
     if (addedFriends.length > 0) {
@@ -354,7 +354,7 @@ class CreateChannel extends Component {
       vipChannelData.affiliate_percent_vip = affiliateReward;
       vipChannelData.affiliate_follower_amount = 0;
     }
-    if (isVIP && about_vip != '') {
+    if (isVIP && about_vip !== '') {
       vipChannelData.vip_description = about_vip;
     }
     return vipChannelData;
@@ -408,10 +408,9 @@ class CreateChannel extends Component {
     } else if (filteredFriends.length > 0) {
       return (
         <FlatList
-            keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => index.toString()}
           keyboardShouldPersistTaps={'handled'}
           behavior={'position'}
-          keyExtractor={(item, index) => index.toString()}
           data={filteredFriends}
           renderItem={({item, index}) => (
             <GroupFriend
@@ -509,10 +508,7 @@ class CreateChannel extends Component {
       isManage,
       isVIP,
       updateBackgroundMenu,
-      channelBusinessMenuVisible,
       setSelectedBgItem,
-      channelCategory,
-      selectedChannelCategory,
       affiliateReward,
       vipPerMonth,
     } = this.state;
@@ -532,28 +528,28 @@ class CreateChannel extends Component {
             // extraScrollHeight={100}
             extraHeight={100}
             behavior={'position'}
-            contentContainerStyle={createChannelStyles.mainContainer}
+            contentContainerStyle={styles.mainContainer}
             showsVerticalScrollIndicator={false}>
             <LinearGradient
               start={{x: 0.1, y: 0.7}}
               end={{x: 0.8, y: 0.3}}
               locations={[0.1, 0.5, 1]}
               colors={['#c13468', '#ee2e3b', '#fa573a']}
-              style={createChannelStyles.channelImageContainer}>
+              style={styles.channelImageContainer}>
               <ImageBackground
-                style={createChannelStyles.channelCoverContainer}
+                style={styles.channelCoverContainer}
                 source={{uri: setSelectedBgItem.uri}}>
-                <View style={createChannelStyles.updateBackgroundContainer}>
+                <View style={styles.updateBackgroundContainer}>
                   <Menu
                     visible={updateBackgroundMenu}
                     onDismiss={this._closeMenu}
                     anchor={
                       <TouchableOpacity
-                        style={createChannelStyles.updateBackground}
+                        style={styles.updateBackground}
                         onPress={this._openMenu}>
                         <Image
                           source={Icons.icon_edit_pen}
-                          style={createChannelStyles.updateBackgroundIcon}
+                          style={styles.updateBackgroundIcon}
                         />
                       </TouchableOpacity>
                     }>
@@ -575,35 +571,33 @@ class CreateChannel extends Component {
                     <Divider />
                   </Menu>
                 </View>
-                <View style={createChannelStyles.channelInfoContainer}>
-                  <View style={createChannelStyles.imageContainer}>
-                    <View style={createChannelStyles.imageView}>
+                <View style={styles.channelInfoContainer}>
+                  <View style={styles.imageContainer}>
+                    <View style={styles.imageView}>
                       <Image
                         source={getImage(this.state.channelImagePath.uri)}
                         resizeMode={'cover'}
-                        style={createChannelStyles.profileImage}
+                        style={styles.profileImage}
                       />
                       <TouchableOpacity
                         onPress={this.chooseChannelImage.bind(this)}
-                        style={createChannelStyles.uploadImageButton}>
+                        style={styles.uploadImageButton}>
                         <Image
                           source={Icons.icon_edit_pen}
                           resizeMode={'cover'}
-                          style={createChannelStyles.uploadImageIcon}
+                          style={styles.uploadImageIcon}
                         />
                       </TouchableOpacity>
                     </View>
                   </View>
-                  <View style={createChannelStyles.detailView}>
+                  <View style={styles.detailView}>
                     <TextInput
-                      style={createChannelStyles.channelNameInput}
+                      style={styles.channelNameInput}
                       placeholder={translate('pages.xchat.channelName')}
                       placeholderTextColor={Colors.white}
-                      onChangeText={(channelName) =>
-                        this.setState({channelName})
-                      }
-                      ref={(channelName) => {
-                        this.channelNameTextInput = channelName;
+                      onChangeText={(cName) => this.setState({cName})}
+                      ref={(refInput) => {
+                        this.channelNameTextInput = refInput;
                       }}
                       onFocus={() => this.focusedInput('channelName')}
                       onBlur={() => this.blurredInput('channelName')}
@@ -612,25 +606,16 @@ class CreateChannel extends Component {
 
                     {/* <View> */}
                     {showStatusCount && (
-                      <Text
-                        style={{
-                          position: 'absolute',
-                          top: 25,
-                          width: '95%',
-                          color: Colors.white,
-                          textAlign: 'right',
-                        }}>
-                        {status.length}/20
-                      </Text>
+                      <Text style={styles.statusCount}>{status.length}/20</Text>
                     )}
                     <TextInput
-                      style={createChannelStyles.channelNameInput}
+                      style={styles.channelNameInput}
                       placeholder={translate('pages.xchat.status')}
                       placeholderTextColor={Colors.white}
                       maxLength={20}
-                      onChangeText={(status) => this.setState({status})}
-                      ref={(status) => {
-                        this.statusTextInput = status;
+                      onChangeText={(name) => this.setState({status: name})}
+                      ref={(nameRef) => {
+                        this.statusTextInput = nameRef;
                       }}
                       onFocus={() => this.focusedInput('status')}
                       onBlur={() => this.blurredInput('status')}
@@ -694,30 +679,24 @@ class CreateChannel extends Component {
                 </View>
               </ImageBackground>
             </LinearGradient>
-            <View style={createChannelStyles.tabBar}>
+            <View style={styles.tabBar}>
               <TouchableOpacity
-                style={[
-                  createChannelStyles.tabItem,
-                  !isManage && createChannelStyles.tabBarBorder,
-                ]}
+                style={[styles.tabItem, !isManage && styles.tabBarBorder]}
                 onPress={this.onAboutPress}>
                 <Text
                   style={[
-                    createChannelStyles.tabBarTitle,
+                    styles.tabBarTitle,
                     isManage && {fontFamily: Fonts.regular},
                   ]}>
                   {translate('pages.xchat.about')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  createChannelStyles.tabItem,
-                  isManage && createChannelStyles.tabBarBorder,
-                ]}
+                style={[styles.tabItem, isManage && styles.tabBarBorder]}
                 onPress={this.onManagePress}>
                 <Text
                   style={[
-                    createChannelStyles.tabBarTitle,
+                    styles.tabBarTitle,
                     !isManage && {fontFamily: Fonts.regular},
                   ]}>
                   {translate('pages.xchat.manage')}
@@ -725,14 +704,11 @@ class CreateChannel extends Component {
               </TouchableOpacity>
             </View>
             {isManage ? (
-              <View style={{paddingHorizontal: 5}}>
-                <View style={createChannelStyles.searchContainer}>
-                  <Image
-                    source={Icons.icon_search}
-                    style={createChannelStyles.iconSearch}
-                  />
+              <View style={styles.headerContainer}>
+                <View style={styles.searchContainer}>
+                  <Image source={Icons.icon_search} style={styles.iconSearch} />
                   <TextInput
-                    style={[createChannelStyles.inputStyle]}
+                    style={[styles.inputStyle]}
                     placeholder={translate('pages.xchat.search')}
                     onChangeText={(searchText) => this.setState({searchText})}
                     returnKeyType={'done'}
@@ -741,27 +717,27 @@ class CreateChannel extends Component {
                     underlineColorAndroid={'transparent'}
                   />
                 </View>
-                <View style={createChannelStyles.frindListContainer}>
+                <View style={styles.frindListContainer}>
                   {this.renderUserFriends()}
                 </View>
               </View>
             ) : (
-              <View style={{paddingHorizontal: 5}}>
-                <View style={createChannelStyles.inputesContainer}>
+              <View style={styles.headerContainer}>
+                <View style={styles.inputesContainer}>
                   {/* TextAreaWithTitle */}
                   <TextAreaWithTitle
                     title={translate('pages.xchat.about')}
                     rightTitle={about.length + '/4000'}
                     value={about}
-                    onChangeText={(about) => this.setState({about})}
+                    onChangeText={(text) => this.setState({about: text})}
                     maxLength={4000}
                     extraHeight={200}
                     titleFontColor={Colors.gradient_2}
                     titleFontSize={20}
                   />
                 </View>
-                <View style={createChannelStyles.swithContainer}>
-                  <Text style={createChannelStyles.VIPText}>
+                <View style={styles.swithContainer}>
+                  <Text style={styles.VIPText}>
                     {translate('pages.xchat.showPastHistory')}
                   </Text>
                   <SwitchCustom
@@ -773,8 +749,8 @@ class CreateChannel extends Component {
                     }
                   />
                 </View>
-                <View style={createChannelStyles.swithContainer}>
-                  <Text style={createChannelStyles.VIPText}>
+                <View style={styles.swithContainer}>
+                  <Text style={styles.VIPText}>
                     {translate('pages.xchat.vip')}
                   </Text>
                   <SwitchCustom
@@ -795,7 +771,7 @@ class CreateChannel extends Component {
                       title={translate('pages.xchat.vipFeature')}
                       rightTitle={about_vip.length + '/4000'}
                       value={about_vip}
-                      onChangeText={(about_vip) => this.setState({about_vip})}
+                      onChangeText={(text) => this.setState({about_vip: text})}
                       maxLength={4000}
                       extraHeight={150}
                       titleFontColor={Colors.orange}
@@ -803,61 +779,52 @@ class CreateChannel extends Component {
                       isBorder
                     />
 
-                    <View style={createChannelStyles.vipDetails}>
-                      <Text style={createChannelStyles.detailHeadingText}>
+                    <View style={styles.vipDetails}>
+                      <Text style={styles.detailHeadingText}>
                         {translate('pages.xchat.vipMonth')}
                       </Text>
-                      <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <View style={styles.detailContainer}>
                         <TextInput
-                          style={createChannelStyles.detailTextInput}
+                          style={styles.detailTextInput}
                           placeholder={vipPerMonth.toString()}
                           placeholderTextColor={Colors.orange}
-                          onChangeText={(vipPerMonth) =>
+                          onChangeText={(text) =>
                             this.setState({
-                              vipPerMonth: vipPerMonth.lenght ? vipPerMonth : 0,
+                              vipPerMonth: text.length ? vipPerMonth : 0,
                             })
                           }
                           value={vipPerMonth}
                           keyboardType={'number-pad'}
                         />
-                        <Text style={createChannelStyles.detailText}>TP</Text>
+                        <Text style={styles.detailText}>TP</Text>
                       </View>
                     </View>
                   </Fragment>
                 )}
 
-                <View style={createChannelStyles.followerDetails}>
+                <View style={styles.followerDetails}>
                   <Text style={{fontFamily: Fonts.regular}}>
                     {translate('pages.xchat.affiliateFollower')}
                   </Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
+                  <View style={styles.detailContainer}>
                     <TextInput
-                      style={createChannelStyles.detailTextInput}
+                      style={styles.detailTextInput}
                       placeholder={affiliateReward.toString()}
                       placeholderTextColor={Colors.orange}
-                      onChangeText={(affiliateReward) =>
+                      onChangeText={(text) =>
                         this.setState({
-                          affiliateReward: affiliateReward.lenght
-                            ? affiliateReward
-                            : 0,
+                          affiliateReward: text.length ? text : 0,
                         })
                       }
                       value={affiliateReward}
                       keyboardType={'number-pad'}
                     />
-                    <Text style={createChannelStyles.detailText}>
-                      {!isVIP ? 'TP' : '%'}
-                    </Text>
+                    <Text style={styles.detailText}>{!isVIP ? 'TP' : '%'}</Text>
                   </View>
                 </View>
               </View>
             )}
-            <View style={createChannelStyles.buttonContainer}>
+            <View style={styles.buttonContainer}>
               <Button
                 type={'primary'}
                 title={translate('pages.xchat.create')}

@@ -1,25 +1,23 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-import {followChannelStyles} from './styles';
-import {globalStyles} from '../../styles';
+import Button from '../../components/Button';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
-import {Colors, Fonts} from '../../constants';
-import Button from '../../components/Button';
 import Toast from '../../components/Toast';
+import {Colors} from '../../constants';
 import S3uploadService from '../../helpers/S3uploadService';
-
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {
   followChannel,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
-import {getChannelsById, getChannels} from '../../storage/Service';
-import { realmToPlainObject } from '../../utils';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {getChannels, getChannelsById} from '../../storage/Service';
+import {globalStyles} from '../../styles';
+import {realmToPlainObject} from '../../utils';
+import styles from './styles';
 
 class FollowChannel extends Component {
   constructor(props) {
@@ -91,7 +89,7 @@ class FollowChannel extends Component {
   };
 
   followChannel = () => {
-    const {channel_id, referral_code} = this.state;
+    const {channel_id} = this.state;
     let channelInfo = channel_id;
 
     const code = channelInfo.slice(0, -1);
@@ -154,14 +152,14 @@ class FollowChannel extends Component {
               // channels = result.toJSON();
 
               //find channel into list
-              let channelIndex = channels.findIndex(
+              let cIndex = channels.findIndex(
                 (item) => item.id === Number(decryptedData[0]),
               );
 
               //set current channel with navigation
-              if (channelIndex !== -1) {
-                let setCurrentChannel = channels[channelIndex];
-                this.props.setCurrentChannel(setCurrentChannel);
+              if (cIndex !== -1) {
+                let currentChannel = channels[cIndex];
+                this.props.setCurrentChannel(currentChannel);
                 this.props.navigation.navigate('ChannelChats');
               }
             }
@@ -180,7 +178,7 @@ class FollowChannel extends Component {
   };
 
   render() {
-    const {channel_id, referral_code, loading} = this.state;
+    const {channel_id, loading} = this.state;
     return (
       <View
         style={[globalStyles.container, {backgroundColor: Colors.light_pink}]}>
@@ -195,20 +193,15 @@ class FollowChannel extends Component {
           // extraScrollHeight={100}
           extraHeight={100}
           behavior={'position'}
-          contentContainerStyle={followChannelStyles.mainContainer}
+          contentContainerStyle={styles.mainContainer}
           showsVerticalScrollIndicator={false}>
-          <View style={followChannelStyles.inputesContainer}>
+          <View style={styles.inputesContainer}>
             <InputWithTitle
               title={translate('pages.xchat.channelId') + ' :'}
-              titleStyle={{
-                Colors: '#000',
-                fontFamily: Fonts.regular,
-              }}
+              titleStyle={styles.channelTitleStyle}
               // keyboardType={'number-pad'}
               value={channel_id}
-              onChangeText={(channel_id) =>
-                this.setState({channel_id: channel_id})
-              }
+              onChangeText={(text) => this.setState({channel_id: text})}
             />
             {/* <InputWithTitle
               title={
@@ -225,7 +218,7 @@ class FollowChannel extends Component {
             /> */}
           </View>
 
-          <View style={{marginTop: 10, justifyContent: 'center'}}>
+          <View style={styles.addChannelButtonContainer}>
             <Button
               type={'primary'}
               title={translate('pages.xchat.addChannel')}
