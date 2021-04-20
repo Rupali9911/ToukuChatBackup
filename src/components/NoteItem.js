@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
@@ -52,10 +53,16 @@ import {
 } from '../redux/reducers/friendReducer';
 import CommentItem from './CommentItem';
 import {ConfirmationModal} from './Modals';
+import { ImageLoader } from './Loaders';
+import ScalableImage from './ScalableImage';
 import {TouchableOpacity as GHTouchableHighlight} from 'react-native-gesture-handler';
 import MentionsInput, {
   parseMarkdown,
 } from '../../LineLibChanges/react-native-mentions-input/index.tsx';
+import linkify from 'linkify-it';
+import { getLinkPreview } from 'link-preview-js';
+import {createThumbnail} from 'react-native-create-thumbnail';
+import VideoPreview from './VideoPreview';
 
 const {height} = Dimensions.get('window');
 
@@ -77,6 +84,7 @@ class NoteItem extends Component {
       loadComment: false,
       suggestionData: [],
       suggestionDataHeight: 0,
+      linkPreview: null
     };
   }
 
@@ -103,6 +111,7 @@ class NoteItem extends Component {
       if (!this.state.commentResult)
         this.getCommentList(this.props.item.id, this.props.offset);
     }
+    this.hasLink(this.props.item.text);
   }
 
   _orientationDidChange = (orientation) => {
@@ -542,6 +551,108 @@ class NoteItem extends Component {
     });
   };
 
+  getThumbnailImageForVideo = (url) => {
+    console.log('thumbnail_response',url);
+    createThumbnail({
+      url: url,
+      timeStamp: 2000,
+    }).then((res)=>{
+      return res.path;
+    });
+    // console.log('thumbnail_response',thumbnail_response);
+    // return thumbnail_response ? thumbnail_response.path : '';
+  }
+
+  getUrlByVideoId = (url) => {
+    let thumb_url = '';
+    if (url.includes('youtube.com')) {
+      let video_id = '';
+      if (url.includes('watch?v=')) {
+        let params = url.split('?')[1];
+        let video_param = params.split('&')[0];
+        video_id = video_param.substring(video_param.indexOf('=')+1);
+      }else if (url.includes('youtu.be')){
+        video_id = url.substring(url.lastIndexOf('/') + 1);
+      }
+      thumb_url = `https://img.youtube.com/vi/${video_id}/sddefault.jpg`;
+    }
+    console.log('thumb_url',thumb_url);
+    return thumb_url;
+  };
+
+  hasLink = (text) => {
+    let arrLinks = linkify().match(text);
+    if(arrLinks && arrLinks.length>0){
+      console.debug('arrLinks',arrLinks[0].url);
+      getLinkPreview(arrLinks[0].url)
+        .then(data => {
+          console.debug(data);
+          this.setState({ linkPreview: data });
+        }).catch((err)=>console.debug(err));
+    }
+  }
+
+  renderLinkPreview = (linkPreview) => {
+    console.log('render linkPreview',linkPreview);
+      return linkPreview ? (
+        linkPreview.mediaType.includes("video") ?
+          <VideoPreview url={linkPreview.url} /> :
+          linkPreview.mediaType.includes("image") ?
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => { Linking.openURL(linkPreview.url) }}
+              style={{
+                flex: 1,
+                marginBottom: 5,
+              }}>
+              <ScalableImage
+                src={linkPreview.url}
+              />
+              <View style={{ width: '100%', paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#00000040', position: 'absolute', bottom: 0 }}>
+                <Text style={{ color: 'white', fontSize: normalize(12) }} numberOfLines={2}>{linkPreview.url}</Text>
+              </View>
+            </TouchableOpacity>
+            : linkPreview.contentType.includes("text/html") ?
+              linkPreview.url.includes('youtube.com') ?
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => { Linking.openURL(linkPreview.url) }}
+                  style={{
+                    flex: 1,
+                    marginBottom: 5,
+                  }}>
+                  <ScalableImage
+                    src={this.getUrlByVideoId(linkPreview.url)}
+                  />
+                  <View style={{ width: '100%', flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#00000040', position: 'absolute', bottom: 0 }}>
+                    <Text style={{ flex: 1, color: 'white', fontSize: normalize(12) }} numberOfLines={2}>{linkPreview.url}</Text>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <FontAwesome name="play" size={15} color={Colors.white} />
+                    </View>
+                  </View>
+                </TouchableOpacity> :
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => { Linking.openURL(linkPreview.url) }}
+                  style={{
+                    flex: 1,
+                    marginBottom: 5,
+                  }}>
+                  <ScalableImage
+                    src={linkPreview.images[0]}
+                  />
+                  <View style={{ width: '100%', paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#00000040', position: 'absolute', bottom: 0 }}>
+                    <Text style={{ color: 'white', fontSize: normalize(12) }} numberOfLines={2}>{linkPreview.url}</Text>
+                  </View>
+                </TouchableOpacity> :
+              null
+      ) : null;
+  }
+
   render() {
     const {
       index,
@@ -569,8 +680,9 @@ class NoteItem extends Component {
       loadComment,
       suggestionData,
       suggestionDataHeight,
+      linkPreview
     } = this.state;
-
+    console.log('linkPreview',linkPreview);
     return (
       <View
         style={{
@@ -654,6 +766,7 @@ class NoteItem extends Component {
                 )}
               </View>
               <View style={{marginTop: 5}}>
+                {this.renderLinkPreview(linkPreview)}
                 <Text
                   style={{
                     color: Colors.black,

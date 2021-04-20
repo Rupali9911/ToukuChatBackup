@@ -177,6 +177,7 @@ import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from "@react-native-community/async-storage";
 import BonusModal from "../../components/Modals/BonusModal";
 import { SwipeItem } from '../../components/Swipeable';
+import { isArray } from 'lodash';
 
 let channelId = [];
 let friendId = [];
@@ -467,7 +468,7 @@ class Chat extends Component {
 
   async addFriendByReferralCode(){
       const invitationCode = await AsyncStorage.getItem('invitationCode');
-      // console.log('invitationCode onfocus', invitationCode)
+      console.log('invitationCode onfocus', invitationCode)
       if (invitationCode) {
           let data = {invitation_code: invitationCode};
           this.props.addFriendByReferralCode(data).then((res) => {
@@ -523,6 +524,9 @@ class Chat extends Component {
       updateLastEventId(message.text.data.socket_event_id);
     }
     switch (message.text.data.type) {
+      case SocketEvents.SOCKET_CONNECTED:
+        this.onSocketConnected();
+        break;
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
         break;
@@ -703,6 +707,11 @@ class Chat extends Component {
         this.onUserProfileUpdate(message);
         break;
     }
+  }
+
+  onSocketConnected = () => {
+    console.log('Action on socket connection');
+
   }
 
   updateChannelDetail(message) {
@@ -1395,38 +1404,67 @@ class Chat extends Component {
       message.text.data.type ===
       SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
     ) {
-      message.text.data.message_details.map((item) => {
-        // if (item.deleted_for.includes(this.props.userData.id)) {
-          let result = getChannelsById(item.channel);
-          let channels = [];
-          let a = Array.from(result);
-          channels = realmToPlainObject(a);
-          // channels = result.toJSON();
-          deleteMessageById(item.id);
-          if (channels[0].last_msg && channels[0].last_msg.id == item.id) {
-            var chats = getChannelChatConversationById(item.channel);
-            var array = [];
-            array = realmToPlainObject(chats);
-            // array = chats.toJSON();
-
-            if (array.length > 0) {
-              updateChannelLastMsgWithOutCount(item.channel, array[0]);
-            } else {
-              updateChannelLastMsgWithOutCount(item.channel, null);
+      if(isArray(message.text.data.message_details)){
+        message.text.data.message_details.map((item) => {
+          // if (item.deleted_for.includes(this.props.userData.id)) {
+            let result = getChannelsById(item.channel);
+            let channels = [];
+            let a = Array.from(result);
+            channels = realmToPlainObject(a);
+            // channels = result.toJSON();
+            deleteMessageById(item.id);
+            if (channels[0].last_msg && channels[0].last_msg.id == item.id) {
+              var chats = getChannelChatConversationById(item.channel);
+              var array = [];
+              array = realmToPlainObject(chats);
+              // array = chats.toJSON();
+  
+              if (array.length > 0) {
+                updateChannelLastMsgWithOutCount(item.channel, array[0]);
+              } else {
+                updateChannelLastMsgWithOutCount(item.channel, null);
+              }
+  
+              this.props.getLocalFollowingChannels().then(() => {
+                this.props.setCommonChatConversation();
+              });
             }
+            if (currentChannel && item.channel == currentChannel.id) {
+              let chat = getChannelChatConversationById(currentChannel.id);
+              let conversations = realmToPlainObject(chat);
+              // this.props.setChannelConversation(chat.toJSON());
+              this.props.setChannelConversation(conversations);
+            }
+          // }
+        });
+      }else {
+        let item = message.text.data.message_details;
+        let result = getChannelsById(item.channel);
+        let channels = [];
+        let a = Array.from(result);
+        channels = realmToPlainObject(a);
+        deleteMessageById(item.id);
+        if (channels[0].last_msg && channels[0].last_msg.id == item.id) {
+          var chats = getChannelChatConversationById(item.channel);
+          var array = [];
+          array = realmToPlainObject(chats);
 
-            this.props.getLocalFollowingChannels().then(() => {
-              this.props.setCommonChatConversation();
-            });
+          if (array.length > 0) {
+            updateChannelLastMsgWithOutCount(item.channel, array[0]);
+          } else {
+            updateChannelLastMsgWithOutCount(item.channel, null);
           }
-          if (currentChannel && item.channel == currentChannel.id) {
-            let chat = getChannelChatConversationById(currentChannel.id);
-            let conversations = realmToPlainObject(chat);
-            // this.props.setChannelConversation(chat.toJSON());
-            this.props.setChannelConversation(conversations);
-          }
-        // }
-      });
+
+          this.props.getLocalFollowingChannels().then(() => {
+            this.props.setCommonChatConversation();
+          });
+        }
+        if (currentChannel && item.channel == currentChannel.id) {
+          let chat = getChannelChatConversationById(currentChannel.id);
+          let conversations = realmToPlainObject(chat);
+          this.props.setChannelConversation(conversations);
+        }
+      }
     }
   }
 
@@ -2345,7 +2383,7 @@ class Chat extends Component {
 
       let array = this.props.acceptedRequest;
 
-      if(!array.includes()){
+      if(!array.includes(messageDetail.conversation.user_id)){
         array.push(messageDetail.conversation.user_id);
         this.props.setAcceptedRequest(array);
       }

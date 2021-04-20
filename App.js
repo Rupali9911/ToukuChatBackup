@@ -212,7 +212,11 @@ export default class App extends Component {
                 NavigationService.navigate('Chat');
             }
         }else{
-            NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login')
+          if(url.indexOf(registerUrl) > -1){
+            NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
+          }else{
+            NavigationService.navigate('LoginSignUp');
+          }
         }
     } else if (loginUrl === channelLoginUrl) {
         console.log('loginUrl', loginUrl, channelLoginUrl)
@@ -277,7 +281,8 @@ export default class App extends Component {
         store.dispatch(setSpecificId(post_id));
         NavigationService.navigate('Timeline');
       }else{
-        NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
+        // NavigationService.navigateToScreen2Via1('LoginSignUp', 'Login');
+        NavigationService.navigate('LoginSignUp');
       }
     } else if(url.indexOf('/#/groups/') > -1) {
       let split_url = url.split('/');

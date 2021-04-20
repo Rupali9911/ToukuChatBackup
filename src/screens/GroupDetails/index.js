@@ -206,6 +206,7 @@ class GroupDetails extends Component {
 
   checkEventTypes(message) {
     const {currentGroupDetail} = this.props;
+    console.log('checkEventTypes_GroupDetails',message);
     switch (message.text.data.type) {
       case SocketEvents.ADD_GROUP_MEMBER: {
         this.getGroupMembers(message.text.data.message_details.group_id);
