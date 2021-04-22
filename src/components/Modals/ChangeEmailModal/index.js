@@ -465,7 +465,7 @@ class ChangeEmailModal extends Component {
 
 /**
  * @Redux - Map following state to props
- * @param {object} state - current state in storeed in redux
+ * @param {object} state - current state in stored in redux
  * @returns object
  */
 const mapStateToProps = (state) => {

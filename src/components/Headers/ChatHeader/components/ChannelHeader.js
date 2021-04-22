@@ -30,7 +30,7 @@ const ChannelHeader = ({
     <TouchableOpacity
       style={styles.headerTypeContainer}
       activeOpacity={1}
-      onPress={this.handleChannelOrGroupNav}>
+      onPress={handleChannelOrGroupNav}>
       {!image ? (
         <DefaultAvatar title={title} />
       ) : (

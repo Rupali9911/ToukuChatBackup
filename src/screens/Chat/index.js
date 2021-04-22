@@ -240,7 +240,9 @@ class Chat extends Component {
         if (res.id) {
           console.log('user_id_from_res', this.props.userData.id);
 
-          if (!isSocketCalled) this.SingleSocket.create({user_id: res.id});
+          if (!isSocketCalled) {
+            this.SingleSocket.create({user_id: res.id});
+          }
 
           if (!res.email) {
             // this.setState({isSetEmailVisible: true});
@@ -3205,6 +3207,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           // itemRef && itemRef.close();
           onClose();
           Toast.show({
@@ -3228,6 +3231,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           // itemRef && itemRef.close();
           onClose();
           Toast.show({
@@ -3254,6 +3258,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           onClose();
           Toast.show({
             title: 'TOUKU',
@@ -3275,6 +3280,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           onClose();
           Toast.show({
             title: 'TOUKU',
@@ -3300,6 +3306,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           onClose();
           Toast.show({
             title: 'TOUKU',
@@ -3321,6 +3328,7 @@ class Chat extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           onClose();
           Toast.show({
             title: 'TOUKU',
@@ -3433,8 +3441,8 @@ class Chat extends Component {
                     this.setDataToDeleteChat();
                   }
                 }}
-                onPinUnpinChat={(item, onClose) => {
-                  this.onPinUnpinGroup(item, onClose);
+                onPinUnpinChat={(chatPinStatus, onClose) => {
+                  this.onPinUnpinGroup(chatPinStatus, onClose);
                 }}
               />
             ) : item.chat === 'channel' ? (
@@ -3479,8 +3487,8 @@ class Chat extends Component {
                     this.setDataToDeleteChat();
                   }
                 }}
-                onPinUnpinChat={(item, onClose) => {
-                  this.onPinUnpinChannel(item, onClose);
+                onPinUnpinChat={(chatPinStatus, onClose) => {
+                  this.onPinUnpinChannel(chatPinStatus, onClose);
                 }}
               />
             ) : (
@@ -3537,8 +3545,8 @@ class Chat extends Component {
                     this.setDataToDeleteChat();
                   }
                 }}
-                onPinUnpinChat={(item, onClose) => {
-                  this.onPinUnpinFriend(item, onClose);
+                onPinUnpinChat={(chatPinStatus, onClose) => {
+                  this.onPinUnpinFriend(chatPinStatus, onClose);
                 }}
               />
             )

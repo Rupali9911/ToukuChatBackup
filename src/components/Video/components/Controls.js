@@ -1,60 +1,54 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {
   View,
   Animated,
   StyleSheet,
-  TouchableWithoutFeedback as Touchable
-} from 'react-native'
-import {
-  PlayButton,
-  ControlBar,
-  Loading,
-  TopBar,
-  ProgressBar
-} from './'
+  TouchableWithoutFeedback as Touchable,
+} from 'react-native';
+import {PlayButton, ControlBar, Loading, TopBar, ProgressBar} from './';
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    zIndex: 99
+    zIndex: 99,
   },
   flex: {
-    flex: 1
-  }
-})
+    flex: 1,
+  },
+});
 
 class Controls extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
       hideControls: false,
       seconds: 0,
-      seeking: false
-    }
-    this.animControls = new Animated.Value(1)
-    this.scale = new Animated.Value(1)
-    this.progressbar = new Animated.Value(2)
+      seeking: false,
+    };
+    this.animControls = new Animated.Value(1);
+    this.scale = new Animated.Value(1);
+    this.progressbar = new Animated.Value(2);
   }
 
   componentDidMount() {
-    this.setTimer()
+    this.setTimer();
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer)
+    clearInterval(this.timer);
   }
 
   onSeek(pos) {
-    this.props.onSeek(pos)
+    this.props.onSeek(pos);
     if (!this.state.seeking) {
-      this.setState({ seeking: true })
+      this.setState({seeking: true});
     }
   }
 
   onSeekRelease(pos) {
-    this.props.onSeekRelease(pos)
-    this.setState({ seeking: false, seconds: 0 })
+    this.props.onSeekRelease(pos);
+    this.setState({seeking: false, seconds: 0});
   }
 
   setTimer() {
@@ -62,47 +56,53 @@ class Controls extends Component {
       switch (true) {
         case this.state.seeking:
           // do nothing
-          break
+          break;
         case this.props.paused:
-          if (this.state.seconds > 0) this.setState({ seconds: 0 })
-          break
+          if (this.state.seconds > 0) {
+            this.setState({seconds: 0});
+          }
+          break;
         case this.state.hideControls:
-          break
+          break;
         case this.state.seconds > this.props.controlDuration:
-          this.hideControls()
-          break
+          this.hideControls();
+          break;
         default:
-          this.setState({ seconds: this.state.seconds + 1 })
+          this.setState({seconds: this.state.seconds + 1});
       }
-    }, 1000)
+    }, 1000);
   }
 
   showControls() {
-    this.setState({ hideControls: false }, () => {
-      this.progressbar.setValue(2)
+    this.setState({hideControls: false}, () => {
+      this.progressbar.setValue(2);
       Animated.parallel([
-        Animated.timing(this.animControls, { toValue: 1, duration: 200 }),
-        Animated.timing(this.scale, { toValue: 1, duration: 200 })
-      ]).start()
-    })
+        Animated.timing(this.animControls, {toValue: 1, duration: 200}),
+        Animated.timing(this.scale, {toValue: 1, duration: 200}),
+      ]).start();
+    });
   }
 
   hideControls() {
     Animated.parallel([
-      Animated.timing(this.animControls, { toValue: 0, duration: 200 }),
-      Animated.timing(this.scale, { toValue: 0.25, duration: 200 })
-    ]).start(() => this.setState({ hideControls: true, seconds: 0 }))
+      Animated.timing(this.animControls, {toValue: 0, duration: 200}),
+      Animated.timing(this.scale, {toValue: 0.25, duration: 200}),
+    ]).start(() => this.setState({hideControls: true, seconds: 0}));
   }
 
   hiddenControls() {
-    Animated.timing(this.progressbar, { toValue: 0, duration: 200 }).start()
+    Animated.timing(this.progressbar, {toValue: 0, duration: 200}).start();
     return (
       <Touchable style={styles.container} onPress={() => this.showControls()}>
-        <Animated.View style={[styles.container, { paddingBottom: this.progressbar }]}>
-          <ProgressBar theme={this.props.theme.progress} progress={this.props.progress} />
+        <Animated.View
+          style={[styles.container, {paddingBottom: this.progressbar}]}>
+          <ProgressBar
+            theme={this.props.theme.progress}
+            progress={this.props.progress}
+          />
         </Animated.View>
       </Touchable>
-    )
+    );
   }
 
   loading() {
@@ -110,7 +110,7 @@ class Controls extends Component {
       <View style={styles.container}>
         <Loading theme={this.props.theme.loading} />
       </View>
-    )
+    );
   }
 
   displayedControls() {
@@ -128,22 +128,23 @@ class Controls extends Component {
       duration,
       theme,
       inlineOnly,
-      hideFullScreenControl
-    } = this.props
+      hideFullScreenControl,
+    } = this.props;
 
-    const { center, ...controlBar } = theme
+    const {center, ...controlBar} = theme;
 
     return (
       <Touchable onPress={() => this.hideControls()}>
-        <Animated.View style={[styles.container, { opacity: this.animControls }]}>
+        <Animated.View style={[styles.container, {opacity: this.animControls}]}>
           <TopBar
             title={title}
             logo={logo}
             more={more}
             onMorePress={() => onMorePress()}
-            theme={{ title: theme.title, more: theme.more }}
+            theme={{title: theme.title, more: theme.more}}
           />
-          <Animated.View style={[styles.flex, { transform: [{ scale: this.scale }] }]}>
+          <Animated.View
+            style={[styles.flex, {transform: [{scale: this.scale}]}]}>
             <PlayButton
               onPress={() => this.props.togglePlay()}
               paused={paused}
@@ -158,8 +159,8 @@ class Controls extends Component {
             muted={muted}
             paused={paused}
             fullscreen={fullscreen}
-            onSeek={pos => this.onSeek(pos)}
-            onSeekRelease={pos => this.onSeekRelease(pos)}
+            onSeek={(pos) => this.onSeek(pos)}
+            onSeekRelease={(pos) => this.onSeekRelease(pos)}
             progress={progress}
             currentTime={currentTime}
             duration={duration}
@@ -169,15 +170,17 @@ class Controls extends Component {
           />
         </Animated.View>
       </Touchable>
-    )
+    );
   }
 
   render() {
-    if (this.props.loading) return this.loading()
-    if (this.state.hideControls) {
-      return this.hiddenControls()
+    if (this.props.loading) {
+      return this.loading();
     }
-    return this.displayedControls()
+    if (this.state.hideControls) {
+      return this.hiddenControls();
+    }
+    return this.displayedControls();
   }
 }
 
@@ -200,7 +203,7 @@ Controls.propTypes = {
   duration: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   logo: PropTypes.string.isRequired,
-  theme: PropTypes.object.isRequired
-}
+  theme: PropTypes.object.isRequired,
+};
 
-export { Controls }
+export {Controls};

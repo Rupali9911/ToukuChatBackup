@@ -1,8 +1,8 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet, Dimensions, Platform} from 'react-native';
 import {Images, Colors, Icons, Fonts} from '../../constants';
 const {width, height} = Dimensions.get('window');
 
-export const createChannelStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 10,
     paddingBottom: 50,
@@ -190,5 +190,19 @@ export const createChannelStyles = StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 5,
+  },
+  statusCount: {
+    position: 'absolute',
+    top: 25,
+    width: '95%',
+    color: Colors.white,
+    textAlign: 'right',
+  },
+  headerContainer: {
+    paddingHorizontal: 5,
+  },
+  detailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

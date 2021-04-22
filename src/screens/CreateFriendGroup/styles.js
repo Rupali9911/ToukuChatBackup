@@ -1,8 +1,8 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { Images, Colors, Icons } from '../../constants';
-const { width, height } = Dimensions.get('window');
+import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Colors} from '../../constants';
+const {height} = Dimensions.get('window');
 
-export const createGroupStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     flex: 1,
     paddingHorizontal: 15,
@@ -40,7 +40,6 @@ export const createGroupStyles = StyleSheet.create({
     height: '60%',
     width: '60%',
   },
-  inputesContainer: {},
   searchContainer: {
     height: 35,
     flexDirection: 'row',
@@ -78,5 +77,19 @@ export const createGroupStyles = StyleSheet.create({
   },
   frindListContainer: {
     marginVertical: 20,
+  },
+  titleHeaderContainer: {
+    height: '5%',
+    justifyContent: 'center',
+  },
+  contentContainer: {
+    maxHeight: '30%',
+  },
+  groupName: {
+    color: Colors.danger,
+    textAlign: 'left',
+    // marginTop: 10,
+    // marginStart: 10,
+    marginBottom: 5,
   },
 });

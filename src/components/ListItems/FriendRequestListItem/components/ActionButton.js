@@ -1,6 +1,7 @@
 import React from 'react';
-import {View, Button, Platform} from 'react-native';
+import {View, Platform} from 'react-native';
 import styles from '../styles';
+import Button from '../../../Button';
 
 const ActionButton = ({title, onPress, type, loadingStatus}) => {
   return (

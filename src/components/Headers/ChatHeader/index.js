@@ -104,7 +104,7 @@ export default class ChatHeader extends Component {
       styles.container,
       {
         paddingTop:
-          orientation === 'PORTRAIT'
+          this.state.orientation === 'PORTRAIT'
             ? Platform.OS === 'ios'
               ? isIphoneX()
                 ? 50

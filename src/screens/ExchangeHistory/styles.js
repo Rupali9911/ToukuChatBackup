@@ -1,83 +1,80 @@
 import {StyleSheet, Dimensions} from 'react-native';
 import {Images, Colors, Icons, Fonts} from '../../constants';
+import {normalize} from '../../utils';
 const {width, height} = Dimensions.get('window');
 
-export const exchangeHistoryStyles = StyleSheet.create({
-  mainContainer: {
-    // flex: 1,
-    paddingHorizontal: 15,
-    paddingBottom: 50,
-    paddingVertical: 15
+export default StyleSheet.create({
+  singleFlex: {
+    flex: 1,
   },
-  imageContainer: {
-    height: height * 0.22,
-    justifyContent: 'flex-end',
+  container: {
+    flexDirection: 'row',
+    borderBottomColor: '#c5c1c1',
+    borderBottomWidth: 1,
+  },
+  actionContainer: {
+    flex: 1,
+    paddingVertical: 15,
     alignItems: 'center',
   },
-  imageView: {
-    height: height * 0.17,
-    width: height * 0.17,
+  listContainer: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingBottom: 20,
   },
-  profileImage: {
-    height: '90%',
-    width: '90%',
-    borderWidth: 3,
-    borderColor: '#fff',
-  },
-  cameraButton: {
-    height: height * 0.03,
-    width: height * 0.03,
-    borderRadius: height * 0.15,
-    backgroundColor: '#fff',
+  itemContainer: {
+    borderColor: '#ff0078',
     borderWidth: 1,
-    borderColor: '#000',
+    flexDirection: 'row',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  statusContainer: {
+    flex: 3,
+    marginLeft: 10,
+  },
+  exchanceType: {
+    fontSize: normalize(13),
+    fontWeight: 'bold',
+  },
+  statusContentContainer: {
+    flexDirection: 'row',
+  },
+  statusText: {
+    color: '#ff00a3',
+  },
+  amountContainer: {
+    alignItems: 'flex-end',
+  },
+  dropdownIcon: {
+    width: 15,
+    height: 10,
+  },
+  currencyText: {
+    color: '#ff00a3',
+  },
+  amountText: {
+    fontSize: normalize(20),
+    fontFamily: Fonts.regular,
+  },
+  itemAmountType: {
+    fontSize: normalize(10),
+  },
+  amountType: {
+    fontSize: normalize(13),
+  },
+  noExchageHistoryContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'absolute',
-    right: '5%',
-    bottom: '5%',
   },
-  cameraIcon: {
-    height: '60%',
-    width: '60%',
+  noExchageHistoryText: {
+    fontSize: normalize(16),
   },
-  inputesContainer: {},
-  searchContainer: {
-    height: 35,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    borderWidth: Platform.OS === 'android' ? 0.2 : 0.5,
-    borderColor: Colors.gray_dark,
-    marginTop: 20,
-  },
-  inputStyle: {
-    flex: 1,
-    color: Colors.black,
-    fontSize: 13,
-    marginStart: 10,
-    alignSelf: 'center',
-    fontFamily: Fonts.light,
-    paddingVertical: 0,
-  },
-  iconRight: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  iconSearch: {
-    width: 18,
-    height: 18,
-    resizeMode: 'contain',
-  },
-  iconRightContainer: {
-    marginStart: 15,
-    alignSelf: 'center',
-  },
-  frindListContainer: {
-    marginVertical: 20,
+  actionText: {
+    fontSize: normalize(13),
   },
 });

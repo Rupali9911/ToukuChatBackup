@@ -1,8 +1,9 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-const {width, height} = Dimensions.get('window');
+import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Colors, Fonts} from '../../constants';
+import {normalize} from '../../utils';
+const {height} = Dimensions.get('window');
 
-export const friendDetailStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 15,
     paddingBottom: 50,
@@ -85,5 +86,109 @@ export const friendDetailStyles = StyleSheet.create({
     width: 18,
     height: 18,
     resizeMode: 'contain',
+  },
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 0,
+    display: 'flex',
+  },
+  Wrapper: {
+    width: '80%',
+    backgroundColor: 'transparent',
+    display: 'flex',
+    elevation: 4,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    overflow: 'hidden',
+  },
+  firstView: {
+    height: '100%',
+    width: '100%',
+  },
+  firstBottomView: {
+    bottom: 0,
+    right: 0,
+    position: 'absolute',
+    padding: 10,
+  },
+  centerBottomView: {
+    bottom: 0,
+    right: 0,
+    position: 'absolute',
+  },
+  iconClose: {
+    width: 12,
+    height: 12,
+    resizeMode: 'contain',
+    tintColor: Colors.white,
+    top: 10,
+    right: 10,
+    position: 'absolute',
+  },
+  textNormal: {
+    textAlign: 'left',
+    color: Colors.black,
+  },
+  inputTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
+  loader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  container: {
+    paddingHorizontal: 0,
+  },
+  gradientContainer: {
+    height: 180,
+  },
+  singleFlex: {
+    flex: 1,
+  },
+  displayNameContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  displayNameText: {
+    color: Colors.black,
+    marginHorizontal: 10,
+    fontSize: normalize(15),
+  },
+  usernameContainer: {
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  usernameText: {
+    color: Colors.black,
+    marginBottom: 10,
+    fontSize: normalize(12),
+    fontFamily: Fonts.light,
+  },
+  avatarContainer: {
+    alignSelf: 'center',
+    marginTop: -70,
+  },
+  interactionContainer: {
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    borderTopColor: Colors.light_gray,
+    borderTopWidth: 0.3,
   },
 });

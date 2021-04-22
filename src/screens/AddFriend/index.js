@@ -1,32 +1,22 @@
-import React, {Component, Fragment} from 'react';
-import {
-  View,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  FlatList,
-} from 'react-native';
+import React, {Component} from 'react';
+import {FlatList, ImageBackground, View} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
-import {addFriendStyles} from './styles';
-import {globalStyles} from '../../styles';
-import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import {Images, Icons, Colors, Fonts, SocketEvents} from '../../constants';
-import NoData from '../../components/NoData';
-import Toast from '../../components/Toast';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {ListLoader} from '../../components/Loaders';
 import FriendWithStatus from '../../components/FriendWithStatus';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
+import HeaderWithBack from '../../components/Headers/HeaderWithBack';
+import {ListLoader} from '../../components/Loaders';
+import NoData from '../../components/NoData';
+import {Images, SocketEvents} from '../../constants';
 import {
+  cancelFriendRequest,
   getSearchedFriends,
   sendFriendRequest,
-  cancelFriendRequest,
   setIsRequestedParam,
 } from '../../redux/reducers/addFriendReducer';
+import {translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
 import {eventService, showToast} from '../../utils';
+import {addFriendStyles} from './styles';
 
 let searchedText = '';
 
@@ -67,11 +57,11 @@ class AddFriend extends Component {
   checkEventTypes(message) {
     console.log('Socket message', message, message.text.data.message_details);
     if (
-      message.text.data.type == SocketEvents.UNFRIEND ||
-      message.text.data.type == SocketEvents.NEW_FRIEND_REQUEST ||
-      message.text.data.type == SocketEvents.FRIEND_REQUEST_ACCEPTED ||
-      message.text.data.type == SocketEvents.FRIEND_REQUEST_REJECTED ||
-      message.text.data.type == SocketEvents.FRIEND_REQUEST_CANCELLED
+      message.text.data.type === SocketEvents.UNFRIEND ||
+      message.text.data.type === SocketEvents.NEW_FRIEND_REQUEST ||
+      message.text.data.type === SocketEvents.FRIEND_REQUEST_ACCEPTED ||
+      message.text.data.type === SocketEvents.FRIEND_REQUEST_REJECTED ||
+      message.text.data.type === SocketEvents.FRIEND_REQUEST_CANCELLED
     ) {
       if (searchedText && searchedText.length !== 0) {
         this.props.getSearchedFriends(searchedText).then((res) => {
@@ -103,11 +93,10 @@ class AddFriend extends Component {
 
   searchFriends = (txt) => {
     searchedText = txt;
-    const {getSearchedFriends} = this.props;
     clearTimeout(timeout);
     if (txt && txt.length !== 0) {
       timeout = setTimeout(() => {
-        getSearchedFriends(txt).then((res) => {
+        this.props.getSearchedFriends(txt).then((res) => {
           this.setState({arrFriends: res});
         });
       }, 500);
@@ -117,23 +106,21 @@ class AddFriend extends Component {
   };
 
   actionOnStatus(user, index) {
-    const {
-      cancelFriendRequest,
-      setIsRequestedParam,
-      sendFriendRequest,
-      searchedFriend,
-    } = this.props;
     if (user.is_requested && user.is_requested === true) {
-      cancelFriendRequest(user.id).then((res) => {
-        setIsRequestedParam(searchedFriend, false, index).then((res) => {
-          this.setState({arrFriends: res});
-        });
+      this.props.cancelFriendRequest(user.id).then((res) => {
+        this.props
+          .setIsRequestedParam(this.props.searchedFriend, false, index)
+          .then((result) => {
+            this.setState({arrFriends: result});
+          });
       });
     } else {
-      sendFriendRequest(user.id).then((res) => {
-        setIsRequestedParam(searchedFriend, true, index).then((res) => {
-          this.setState({arrFriends: res});
-        });
+      this.props.sendFriendRequest(user.id).then((res) => {
+        this.props
+          .setIsRequestedParam(this.props.searchedFriend, true, index)
+          .then((res) => {
+            this.setState({arrFriends: res});
+          });
         showToast(
           translate('pages.xchat.toastr.added'),
           translate('pages.xchat.toastr.friendRequestSentSuccessfully'),

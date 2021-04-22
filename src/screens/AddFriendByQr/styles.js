@@ -1,82 +1,65 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-const {width, height} = Dimensions.get('window');
+import {StyleSheet} from 'react-native';
+import {Fonts} from '../../constants';
 
-export const addFriendStyles = StyleSheet.create({
-  mainContainer: {
-    paddingHorizontal: 15,
-    paddingBottom: 50,
+export default StyleSheet.create({
+  qrTopViewStyle: {
+    flex: 0,
   },
-  channelImageContainer: {
-    height: height * 0.55,
-    marginVertical: 15,
-  },
-  searchContainer: {
-    height: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
-    backgroundColor: Colors.white,
-    borderRadius: 5,
-    borderWidth: Platform.OS === 'android' ? 0.1 : 0.2,
-    borderColor: Colors.gray_dark,
-  },
-  inputStyle: {
+  qrContainerStyle: {
     flex: 1,
-    color: Colors.black,
-    fontSize: 13,
-    marginStart: 10,
-    alignSelf: 'center',
-    fontFamily: Fonts.medium,
-    paddingVertical: 0,
-    height: 20,
   },
-  iconSearch: {
-    width: 18,
-    height: 18,
-    resizeMode: 'contain',
+  qrCameraStyle: {
+    height: '100%',
   },
-  frindListContainer: {
-    marginVertical: 20,
-  },
-  swithContainer: {
+  background: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginVertical: 20,
+    width: '100%',
+    height: 80,
+    position: 'absolute',
+    bottom: 0,
   },
-  VIPText: {
-    color: Colors.orange,
-    marginRight: 2,
-    fontSize: 12,
+  actionContainer: {
+    flex: 1,
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
-  vipDetails: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    marginVertical: 10,
+  qrIcon: {
+    width: 25,
+    height: 25,
+    alignSelf: 'center',
+    padding: 10,
   },
-  followerDetails: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    marginVertical: 20,
-  },
-  detailHeadingText: {
+  myQrCodeText: {
+    textAlign: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    padding: 10,
     fontFamily: Fonts.regular,
+    fontWeight: '400',
+    fontSize: 14,
+    color: 'white',
   },
-  detailText: {
-    fontFamily: Fonts.light,
-    color: Colors.orange,
-    fontSize: 18,
+  searchQRIcon: {
+    width: 25,
+    height: 25,
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
-  detailTextInput: {
-    height: 50,
-    color: Colors.orange,
-    marginRight: 2,
-    width: '80%',
-    paddingHorizontal: 5,
-    textAlign: 'right',
-    fontSize: 18,
-    fontFamily: Fonts.medium,
+  searchByImageText: {
+    textAlign: 'center',
+    alignSelf: 'center',
+    padding: 10,
+    fontFamily: Fonts.regular,
+    fontWeight: '400',
+    fontSize: 14,
+    color: 'white',
+  },
+  loaderStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

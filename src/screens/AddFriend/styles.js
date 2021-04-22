@@ -1,5 +1,5 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
+import {Dimensions, StyleSheet, Platform} from 'react-native';
+import {Colors, Fonts} from '../../constants';
 const {width, height} = Dimensions.get('window');
 
 export const addFriendStyles = StyleSheet.create({

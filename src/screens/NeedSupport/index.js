@@ -1,25 +1,24 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
   ImageBackground,
-  SafeAreaView,
   Platform,
+  SafeAreaView,
+  Text,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-import Inputfield from '../../components/InputField';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
-import {Images, Icons} from '../../constants';
-import {BackHeader} from '../../components/Headers';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import LanguageSelector from '../../components/LanguageSelector';
-import {globalStyles} from '../../styles';
-import {forgotUserName} from '../../redux/reducers/forgotPassReducer';
-import Toast from '../../components/Toast';
 import DropDown from '../../components/DropDown';
+import {BackHeader} from '../../components/Headers';
+import Inputfield from '../../components/InputField';
+import LanguageSelector from '../../components/LanguageSelector';
+import {Images} from '../../constants';
+import {forgotUserName} from '../../redux/reducers/forgotPassReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 class NeedSupport extends Component {
   constructor(props) {
@@ -58,6 +57,9 @@ class NeedSupport extends Component {
   render() {
     const {orientation, description, title} = this.state;
 
+    const containerPadding = orientation !== 'PORTRAIT' ? 50 : 0;
+    const subContainerMargin = orientation !== 'PORTRAIT' ? 0 : 50;
+
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -67,41 +69,20 @@ class NeedSupport extends Component {
         style={globalStyles.container}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <KeyboardAwareScrollView
-            contentContainerStyle={{
-              flex: Platform.isPad ? 1 : 0,
-              padding: 20,
-              paddingBottom: 100,
-            }}
+            contentContainerStyle={styles.keyboardScrollContentContainer}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
-              style={{
-                flex: 1,
-                width: Platform.isPad ? '75%' : '100%',
-                alignSelf: 'center',
-                justifyContent: Platform.isPad ? 'center' : 'flex-start',
-                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-              }}>
-              <Text
-                style={[
-                  globalStyles.bigSemiBoldText,
-                  {
-                    fontSize: 30,
-                    marginVertical: 50,
-                    opacity: 0.8,
-                  },
-                ]}>
+              style={[{paddingHorizontal: containerPadding}, styles.container]}>
+              <Text style={[globalStyles.bigSemiBoldText, styles.createTicket]}>
                 {translate('pages.setting.createTicket')}
               </Text>
               <View
-                style={{
-                  justifyContent: 'center',
-                  marginTop: orientation != 'PORTRAIT' ? 0 : 50,
-                }}>
+                style={[{marginTop: subContainerMargin}, styles.subContainer]}>
                 <Inputfield
                   value={title}
                   placeholder={translate('pages.setting.ticketTitle')}
-                  onChangeText={(title) => this.setState({title})}
+                  onChangeText={(text) => this.setState({title: text})}
                   onSubmitEditing={() => {
                     this.focusNextField('description');
                   }}
@@ -110,34 +91,18 @@ class NeedSupport extends Component {
                   height={100}
                   numberOfLines={5}
                   onRef={(ref) => {
-                    this.inputs['description'] = ref;
+                    this.inputs.description = ref;
                   }}
                   value={description}
                   placeholder={translate('pages.setting.ticketDescription')}
-                  onChangeText={(description) => this.setState({description})}
-                  onSubmitEditing={() => {}}
+                  onChangeText={(text) => this.setState({description: text})}
                 />
 
-                <View
-                  style={{
-                    paddingBottom: 30,
-                    zIndex: 100,
-                    overflow: 'visible',
-                  }}>
+                <View style={styles.dropdownContainer}>
                   <DropDown />
                 </View>
-                <View
-                  style={{
-                    marginTop: 30,
-                    zIndex: 0,
-                    overflow: 'visible',
-                    backgroundColor: 'ref',
-                  }}>
-                  <Button
-                    type={'primary'}
-                    title={translate('common.submit')}
-                    //   onPress={() => this.onSubmitPress()}
-                  />
+                <View style={styles.submitButttonContainer}>
+                  <Button type={'primary'} title={translate('common.submit')} />
                 </View>
               </View>
             </View>

@@ -2,7 +2,7 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {Images, Colors, Icons, Fonts} from '../../constants';
 const {width, height} = Dimensions.get('window');
 
-export const channelInfoStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     paddingBottom: 50,
     backgroundColor: Colors.white,
@@ -143,5 +143,38 @@ export const channelInfoStyles = StyleSheet.create({
     fontFamily: Fonts.regular,
     color: Colors.orange,
     fontSize: 16,
+  },
+  gradientBackground: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  channelInfoSubContainer: {
+    alignItems: 'center',
+  },
+  channelPictureContainer: {
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.white,
+  },
+  channelStatus: {
+    fontSize: 13,
+  },
+  invitationText: {
+    fontSize: 14,
+  },
+  followCode: {
+    fontSize: 14,
+    textDecorationLine: 'underline',
+  },
+  aboutLink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  vipMonth: {
+    fontFamily: Fonts.regular,
+    marginRight: 5,
   },
 });

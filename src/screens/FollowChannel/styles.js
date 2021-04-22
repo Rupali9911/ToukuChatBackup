@@ -1,13 +1,14 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-const {width, height} = Dimensions.get('window');
+import {Dimensions, StyleSheet, Platform} from 'react-native';
+import {Colors, Fonts} from '../../constants';
 
-export const followChannelStyles = StyleSheet.create({
+const {height} = Dimensions.get('window');
+
+export default StyleSheet.create({
   mainContainer: {
     // flex: 1,
     paddingHorizontal: 15,
     paddingBottom: 50,
-    paddingVertical: 15
+    paddingVertical: 15,
   },
   imageContainer: {
     height: height * 0.22,
@@ -41,7 +42,6 @@ export const followChannelStyles = StyleSheet.create({
     height: '60%',
     width: '60%',
   },
-  inputesContainer: {},
   searchContainer: {
     height: 35,
     flexDirection: 'row',
@@ -79,5 +79,13 @@ export const followChannelStyles = StyleSheet.create({
   },
   frindListContainer: {
     marginVertical: 20,
+  },
+  channelTitleStyle: {
+    color: '#000',
+    fontFamily: Fonts.regular,
+  },
+  addChannelButtonContainer: {
+    marginTop: 10,
+    justifyContent: 'center',
   },
 });

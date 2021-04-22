@@ -1,44 +1,51 @@
+// Library imports
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
   Clipboard,
+  Image,
   Platform,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import PropTypes from 'prop-types';
-import {globalStyles} from '../../styles';
+import {Menu} from 'react-native-paper';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {connect} from 'react-redux';
+
+// Local imports
+import {version} from '../../../package';
 import {
-  Icons,
   Colors,
-  Fonts,
+  Icons,
   languageArray,
   registerUrl,
   registerUrlStage,
 } from '../../constants';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Menu} from 'react-native-paper';
-import {
-  setAppLanguage,
-  setI18nConfig,
-  translate,
-} from '../../redux/reducers/languageReducer';
+import {staging} from '../../helpers/api';
 import {
   setChannelMode,
   updateChannelMode,
   updateConfiguration,
 } from '../../redux/reducers/configurationReducer';
-import {connect} from 'react-redux';
-import {showToast, normalize} from '../../utils';
-import SwitchCustom from '../SwitchCustom';
-import Toast from '../Toast';
-import {version} from '../../../package';
-import {getStatusBarHeight} from 'react-native-status-bar-height';
-import {staging} from '../../helpers/api';
+import {
+  setAppLanguage,
+  setI18nConfig,
+  translate,
+} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import {showToast} from '../../utils';
 
+// Component imports
+import SwitchCustom from '../SwitchCustom';
+
+// StyleSheet imports
+import styles from './styles';
+
+/**
+ * Settings item component
+ */
 class SettingsItem extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +57,8 @@ class SettingsItem extends Component {
       referralCode: '',
     };
   }
+
+  // Set selected language and referral code
   async componentDidMount() {
     const {selectedLanguageItem} = this.props;
     await Promise.all(
@@ -67,6 +76,7 @@ class SettingsItem extends Component {
     }
   }
 
+  // Display the list of langauges
   onPressLanguage() {
     this.props.scrollToBottom();
     const {arrLanguage, selectedLanguage} = this.state;
@@ -76,8 +86,9 @@ class SettingsItem extends Component {
     this.setState({isLanguageSelected: true, arrLanguage: filteredArray});
   }
 
+  // When a language is selected fgr
   onPressSelLanguage(value) {
-    const {arrLanguage, selectedLanguage} = this.state;
+    const {arrLanguage} = this.state;
     let filteredArray = arrLanguage.filter(
       (item) => item.language_display === value,
     );
@@ -96,6 +107,7 @@ class SettingsItem extends Component {
     }
   }
 
+  // Copy code to clipboard
   copyCode() {
     let invitationLink =
       (staging ? registerUrlStage : registerUrl) + this.state.referralCode;
@@ -107,18 +119,20 @@ class SettingsItem extends Component {
     );
   }
 
+  // Displays QR Code
   showQR() {
     this.props.onPressQR();
   }
 
+  // Updates channels IM
   updateChannelM(value) {
-    const {updateChannelMode, setChannelMode, userConfig} = this.props;
     this.setState({channelMode: value});
     let updateChannelModeParam = {
       channel_mode: value,
     };
-    updateChannelMode(updateChannelModeParam)
-      .then((res) => {
+    this.props
+      .updateChannelMode(updateChannelModeParam)
+      .then(() => {
         if (value === true) {
           showToast(
             translate('pages.xchat.channelModeText'),
@@ -126,9 +140,9 @@ class SettingsItem extends Component {
             'positive',
           );
         }
-        setChannelMode(userConfig, value);
+        this.props.setChannelMode(this.props.userConfig, value);
       })
-      .catch((err) => {
+      .catch(() => {
         showToast(
           translate('pages.xchat.channelModeText'),
           translate('common.somethingWentWrong'),
@@ -153,6 +167,7 @@ class SettingsItem extends Component {
       isFAQ,
       isVersion,
     } = this.props;
+
     const {
       isLanguageSelected,
       arrLanguage,
@@ -161,15 +176,13 @@ class SettingsItem extends Component {
       referralCode,
     } = this.state;
 
+    // Conditional render the image component
     const conditionalRender = () => {
       if (isImage) {
         return (
           <Image
             source={isImage}
-            style={{
-              width: Platform.isPad ? 25 : 20,
-              height: Platform.isPad ? 25 : 20,
-            }}
+            style={styles.conditionalImage}
             resizeMode={'cover'}
           />
         );
@@ -182,13 +195,14 @@ class SettingsItem extends Component {
       }
     };
 
+    // Renders the menu
     const renderMenu = () => {
       return arrLanguage.map((item) => {
         return (
           <Menu.Item
             key={`${item.language_name}_${item.language_id}`}
             style={styles.txtDrpDwn}
-            titleStyle={[styles.txtLanguage, {color: 'white'}]}
+            titleStyle={[styles.txtLanguage, styles.menuTitle]}
             title={item.language_display}
             onPress={() => {
               this.onPressSelLanguage(item.language_display);
@@ -197,6 +211,7 @@ class SettingsItem extends Component {
         );
       });
     };
+
     return (
       <TouchableOpacity
         style={styles.container}
@@ -204,29 +219,19 @@ class SettingsItem extends Component {
         onPress={onPress}>
         <View style={styles.row}>
           <View style={styles.row}>
-            <View style={{width: 30}}>{conditionalRender()}</View>
+            <View style={styles.conditionalContainer}>
+              {conditionalRender()}
+            </View>
             <Text
-              style={[
-                globalStyles.smallNunitoRegularFW300Text,
-                {
-                  color: Colors.black,
-                  fontWeight: '300',
-                  marginLeft: Platform.isPad ? 25 : 0,
-                },
-              ]}>
+              style={[globalStyles.smallNunitoRegularFW300Text, styles.title]}>
               {title}
             </Text>
           </View>
 
           {isLanguage && (
             <Menu
-              style={{
-                marginTop:
-                  Platform.OS === 'ios' ? 23 : getStatusBarHeight() + 23,
-              }}
-              contentStyle={{
-                backgroundColor: 'transparent',
-              }}
+              style={styles.menuStyle}
+              contentStyle={styles.menuContentStyle}
               visible={isLanguageSelected}
               onDismiss={() => this.setState({isLanguageSelected: false})}
               anchor={
@@ -234,7 +239,7 @@ class SettingsItem extends Component {
                   activeOpacity={1}
                   onPress={() => this.onPressLanguage()}>
                   <View style={styles.vwRight}>
-                    <Text style={[styles.txtLanguage, {width: 105}]}>
+                    <Text style={[styles.txtLanguage, styles.selectedLanguage]}>
                       {selectedLanguage}
                     </Text>
                     <Image
@@ -260,23 +265,13 @@ class SettingsItem extends Component {
               <TouchableOpacity
                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 onPress={() => this.copyCode()}>
-                <Image
-                  style={{
-                    marginEnd: 10,
-                    height: Platform.isPad ? 20 : 13,
-                    width: Platform.isPad ? 20 : 13,
-                  }}
-                  source={Icons.icon_copy}
-                />
+                <Image style={styles.copyIcon} source={Icons.icon_copy} />
               </TouchableOpacity>
               <TouchableOpacity
                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 onPress={() => this.showQR()}>
                 <Image
-                  style={{
-                    height: Platform.isPad ? 20 : 13,
-                    width: Platform.isPad ? 20 : 13,
-                  }}
+                  style={styles.downloadIcon}
                   source={Icons.icon_download}
                 />
               </TouchableOpacity>
@@ -316,54 +311,9 @@ class SettingsItem extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-  },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  vwRight: {
-    justifyContent: 'flex-end',
-    borderWidth: 1,
-    borderColor: Colors.dark_orange,
-    padding: 7,
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderRadius: 5,
-  },
-  txtLanguage: {
-    fontFamily: Fonts.light,
-    color: Colors.dark_orange,
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  txtInvitation: {
-    fontFamily: Fonts.regular,
-    color: Colors.black,
-    fontSize: Platform.isPad ? normalize(6.5) : 13,
-    fontWeight: '300',
-    marginEnd: 10,
-  },
-  imgLang: {
-    height: 8,
-    width: 8,
-  },
-  txtDrpDwn: {
-    backgroundColor: Colors.dark_orange,
-    height: 30,
-  },
-  vwRightInv: {
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-});
-
+/**
+ * Settings item component prop types
+ */
 SettingsItem.propTypes = {
   title: PropTypes.string,
   icon_name: PropTypes.string,
@@ -381,6 +331,9 @@ SettingsItem.propTypes = {
   isFAQ: PropTypes.bool,
 };
 
+/**
+ * Settings item component default props
+ */
 SettingsItem.defaultProps = {
   icon: Icons.icon_more,
   title: 'Title',
@@ -400,6 +353,11 @@ SettingsItem.defaultProps = {
   isVersion: false,
 };
 
+/**
+ * @Redux - Map following state to props
+ * @param {object} state - current state in stored in redux
+ * @returns object
+ */
 const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
@@ -408,6 +366,7 @@ const mapStateToProps = (state) => {
   };
 };
 
+// Actions to be dispatched from redux
 const mapDispatchToProps = {
   setAppLanguage,
   updateChannelMode,

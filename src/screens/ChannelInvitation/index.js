@@ -1,39 +1,24 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-  Clipboard,
-  Platform,
-} from 'react-native';
-import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import LinearGradient from 'react-native-linear-gradient';
-import {ChannelInvitationStyles} from './styles';
-import {globalStyles} from '../../styles';
-import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import InputWithTitle from '../../components/TextInputs/InputWithTitle';
-import {Colors, Fonts, Images} from '../../constants';
-import Button from '../../components/Button';
-import Toast from '../../components/Toast';
-import UrlField from '../../components/UrlField';
-import QRCode from 'react-native-qrcode-svg';
-import {getImage, normalize, showToast, hasStoragePermission} from '../../utils';
-import RoundedImage from '../../components/RoundedImage';
-import S3uploadService from '../../helpers/S3uploadService';
-import RNFetchBlob from 'rn-fetch-blob';
-import RNFS from 'react-native-fs';
-
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {followChannel} from '../../redux/reducers/channelReducer';
-import {getChannelsById} from '../../storage/Service';
-import {inviteUrlRoot} from '../../helpers/api';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import {TouchableHighlight} from 'react-native-gesture-handler';
+import {Clipboard, Platform, Text, View} from 'react-native';
 import FileViewer from 'react-native-file-viewer';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Orientation from 'react-native-orientation';
+import QRCode from 'react-native-qrcode-svg';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import {connect} from 'react-redux';
+import RNFetchBlob from 'rn-fetch-blob';
+import Button from '../../components/Button';
+import HeaderWithBack from '../../components/Headers/HeaderWithBack';
+import RoundedImage from '../../components/RoundedImage';
+import UrlField from '../../components/UrlField';
+import {Colors, Images} from '../../constants';
+import {inviteUrlRoot} from '../../helpers/api';
+import S3uploadService from '../../helpers/S3uploadService';
+import {followChannel} from '../../redux/reducers/channelReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import {hasStoragePermission, showToast} from '../../utils';
+import styles from './styles';
 
 class ChannelInvitation extends Component {
   constructor(props) {
@@ -89,44 +74,45 @@ class ChannelInvitation extends Component {
   }
 
   downloadQRCodeImage = (data) => {
-      var RNFS = require('react-native-fs');
-      const dirs = RNFetchBlob.fs.dirs;
-      let path = null
-    if(Platform.OS==='ios'){
-      path = RNFS.DocumentDirectoryPath + `/qr_code_${new Date().getTime()}.png`;
-        RNFS.writeFile(path, data, 'base64')
-            .then((success) => {
-                showToast(
-                    translate('pages.xchat.downloadFile'),
-                    translate('pages.setting.downloadedSuccessfully'),
-                    'positive',
-                );
-                FileViewer.open(path)
-                    .then(() => {
-                        // success
-                    })
-                    .catch(error => {
-                        // error
-                        console.log(error);
-                    });
+    var RNFS = require('react-native-fs');
+    const dirs = RNFetchBlob.fs.dirs;
+    let path = null;
+    if (Platform.OS === 'ios') {
+      path =
+        RNFS.DocumentDirectoryPath + `/qr_code_${new Date().getTime()}.png`;
+      RNFS.writeFile(path, data, 'base64')
+        .then((success) => {
+          showToast(
+            translate('pages.xchat.downloadFile'),
+            translate('pages.setting.downloadedSuccessfully'),
+            'positive',
+          );
+          FileViewer.open(path)
+            .then(() => {
+              // success
             })
-            .catch((err) => {
-                console.log(err.message);
+            .catch((error) => {
+              // error
+              console.log(error);
             });
-    }else{
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    } else {
       path = dirs.DownloadDir + `/qr_code_${new Date().getTime()}.png`;
-        RNFetchBlob.fs
-            .writeFile(path, data, 'base64')
-            .then((result) => {
-                showToast(
-                    translate('pages.xchat.downloadFile'),
-                    translate('pages.setting.downloadedSuccessfully'),
-                    'positive',
-                );
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+      RNFetchBlob.fs
+        .writeFile(path, data, 'base64')
+        .then((result) => {
+          showToast(
+            translate('pages.xchat.downloadFile'),
+            translate('pages.setting.downloadedSuccessfully'),
+            'positive',
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     // RNFetchBlob.fs.createFile(path,data,'base64').then((result)=>{
@@ -139,11 +125,10 @@ class ChannelInvitation extends Component {
     // }).catch((err)=>{
     //   console.log(err);
     // })
-
   };
 
   render() {
-    const {channel_id, qr_code_data, loading} = this.state;
+    const {qr_code_data, loading} = this.state;
     const {currentChannel, userData} = this.props;
 
     let tmpReferralCode = userData.referral_link;
@@ -156,7 +141,7 @@ class ChannelInvitation extends Component {
     const invitation_url = `${inviteUrlRoot}/invite/${currentChannel.id}/${referralCode}/invite.member`;
     const followCode =
       currentChannel.id + referralCode + String(currentChannel.id).length;
-    const invitation_lp_url = `${inviteUrlRoot}/web/reader/?channel=${currentChannel.id}&referral=${referralCode}`;
+    // const invitation_lp_url = `${inviteUrlRoot}/web/reader/?channel=${currentChannel.id}&referral=${referralCode}`;
 
     return (
       <View
@@ -172,110 +157,53 @@ class ChannelInvitation extends Component {
           // extraScrollHeight={100}
           extraHeight={100}
           behavior={'position'}
-          contentContainerStyle={ChannelInvitationStyles.mainContainer}
+          contentContainerStyle={styles.mainContainer}
           showsVerticalScrollIndicator={false}>
-          <View style={ChannelInvitationStyles.inputesContainer}>
+          <View style={styles.inputesContainer}>
             <RoundedImage
               source={Images.image_app_logo}
-              style={ChannelInvitationStyles.profileImage}
+              style={styles.profileImage}
               isRounded={false}
               resizeMode={'cover'}
               size={'100%'}
             />
-            <Text
-              style={{
-                marginTop: normalize(15),
-                fontFamily: Fonts.regular,
-                fontSize: normalize(11.5),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.similarText}>
               {translate('pages.invitation.findOutAllTheNewWayForFollower')}
             </Text>
 
-            <Text
-              style={{
-                marginTop: normalize(15),
-                fontFamily: Fonts.regular,
-                fontSize: normalize(11.5),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.similarText}>
               {translate('pages.invitation.referralOneField')}{' '}
               <Text
-                style={{textDecorationLine: 'underline'}}
+                style={styles.followCode}
                 onPress={() => this.copyCode(followCode)}>
                 {followCode}
               </Text>
               {'.'}
             </Text>
 
-            <Text
-              style={{
-                marginTop: normalize(25),
-                fontSize: normalize(18),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.reachOutSocialMediaText}>
               {translate('pages.invitation.reachOutSocialMediaText')}
             </Text>
-            <Text
-              style={{
-                marginTop: normalize(15),
-                alignSelf: 'center',
-                fontFamily: Fonts.regular,
-                fontSize: normalize(11.5),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.urlHeadingText}>
               {translate('pages.invitation.invitationToChannel')}
             </Text>
             <UrlField url={invitation_url} />
-            <Text
-              style={{
-                marginTop: normalize(15),
-                alignSelf: 'center',
-                fontFamily: Fonts.regular,
-                fontSize: normalize(11.5),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.urlHeadingText}>
               {translate('pages.invitation.linkViaLp')}
             </Text>
             <UrlField url={invitation_url} />
             {/* <Text
-              style={{
-                marginTop: normalize(15),
-                alignSelf: 'center',
-                fontFamily: Fonts.regular,
-                fontSize: normalize(11.5),
-                fontWeight: '300',
-              }}>
+              style={styles.urlHeadingText}>
               {translate('pages.invitation.followCode')}
             </Text>
             <UrlField url={followCode} /> */}
-            <Text
-              style={{
-                fontFamily: Fonts.regular,
-                fontSize: normalize(9),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.followActionHeadingText}>
               {translate('pages.invitation.copyTextForFollower')}
             </Text>
-            <Text
-              style={{
-                marginTop: normalize(20),
-                alignSelf: 'center',
-                fontFamily: Fonts.regular,
-                fontSize: normalize(11.5),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.qrCodeText}>
               {translate('pages.invitation.qrCode')}
             </Text>
-            <View
-              style={{
-                alignSelf: 'center',
-                padding: 15,
-                backgroundColor: Colors.white,
-                borderColor: Colors.gradient_2,
-                borderWidth: 1,
-                borderRadius: 5,
-              }}>
+            <View style={styles.qrCodeContainer}>
               <QRCode
                 size={120}
                 value={invitation_url}
@@ -283,20 +211,16 @@ class ChannelInvitation extends Component {
                 getRef={(c) => (this.qr_code = c)}
               />
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                marginTop: 10,
-                justifyContent: 'center',
-              }}>
+            <View style={styles.downloadContainer}>
               <Button
                 type={'primary'}
                 title={translate('pages.setting.download')}
                 isRounded={false}
                 onPress={() => {
-                  if(Platform.OS==='android'){
-                    hasStoragePermission() && this.downloadQRCodeImage(qr_code_data);
-                  }else{
+                  if (Platform.OS === 'android') {
+                    hasStoragePermission() &&
+                      this.downloadQRCodeImage(qr_code_data);
+                  } else {
                     this.downloadQRCodeImage(qr_code_data);
                   }
                 }}
@@ -306,7 +230,7 @@ class ChannelInvitation extends Component {
                     name={'download'}
                     color={Colors.white}
                     size={18}
-                    style={{padding: 5}}
+                    style={styles.downloadIcon}
                   />
                 }
               />
@@ -315,12 +239,7 @@ class ChannelInvitation extends Component {
             <UrlField
               url={`<img src="data:image/png;base64,${qr_code_data}">`}
             />
-            <Text
-              style={{
-                fontFamily: Fonts.regular,
-                fontSize: normalize(9),
-                fontWeight: '300',
-              }}>
+            <Text style={styles.followActionHeadingText}>
               {translate('pages.invitation.scanImageForFollower')}
             </Text>
           </View>

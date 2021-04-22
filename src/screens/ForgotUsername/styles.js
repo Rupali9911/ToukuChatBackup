@@ -1,17 +1,21 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 
-export const forgotUserNameStyles = StyleSheet.create({
-  container: {
+export default StyleSheet.create({
+  keyboardScrollContentContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  singleFlex: {
     flex: 1,
   },
-  image: {
-    flex: 1,
-    padding: 10,
+  recoverUsername: {
+    marginVertical: 50,
+    opacity: 0.8,
   },
-  text: {
-    fontSize: 12,
-    padding: 15,
-    textAlign: 'center',
-    color: 'white',
+  contentContainer: {
+    flex: 1,
+    width: Platform.isPad ? '75%' : '100%',
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });

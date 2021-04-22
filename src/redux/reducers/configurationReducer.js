@@ -151,51 +151,6 @@ export const updateUserDisplayName = (data) => {
   return {type: UPDATE_USER_DISPLAY_NAME, payload: data};
 };
 
-// Upload Avatar
-export const uploadAvatar = (data, token) => (dispatch) =>
-  new Promise((resolve, reject) => {
-    dispatch(getUploadAvatarRequest());
-
-    let name = uuid.v4();
-    let formData = new FormData();
-    formData.append('avatar_thumbnail', {
-      uri: data.replace('file://', ''),
-      mineType: 'image/jpeg',
-      fileType: 'image/jpg',
-      type: 'image/jpg',
-      name: name + '.jpg',
-    });
-    formData.append('avatar', {
-      uri: data.replace('file://', ''),
-      mineType: 'image/jpeg',
-      fileType: 'image/jpg',
-      type: 'image/jpg',
-      name: name + '.jpg',
-    });
-
-    console.log('Token and Form Data', token, formData);
-    axios
-      .post(`${apiRoot}/avatar-upload/`, formData, {
-        headers: {
-          'Content-Type':
-            'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
-          'User-Agent': userAgent,
-          Origin: 'touku',
-          Authorization: token,
-        },
-      })
-      .then((resp) => {
-        console.log('Type of response =>', typeof resp); // returns Object
-        dispatch(getUploadAvatarSuccess());
-        resolve(resp);
-      })
-      .catch((err) => {
-        console.log('uploadAvatar API response', err.response);
-        dispatch(getUploadAvatarFailure());
-        reject(err);
-      });
-  });
-
 // Get User Profile
 export const getUserProfile = () => (dispatch) =>
   new Promise(function (resolve, reject) {
