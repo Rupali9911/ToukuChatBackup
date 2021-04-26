@@ -1,4 +1,9 @@
 {
+  "app":{
+    "newVersionAvailable":"Dear User",
+    "updateApp":"For more features and a better user experience, please upgrade this app.",
+    "update":"UPGRADE"
+  },
   "common":{
     "tomorrow":"Tomorrow",
     "yesterday":"Yesterday",
@@ -1677,7 +1682,7 @@
       "GoldCrownText": "Recommended",
       "dontHaveSufficientAmount": "You don't have sufficient amount",
       "exchangesuccessfully": "Exchanged TP Successfully",
-      "minimumAmountOfTp": "You can not exchange less then 5TP",
+      "minimumAmountOfTp": "You can not exchange less then 500TP",
       "noExchageHistory": "No exchange history found",
       "processing": "Processing",
       "bonusUseText1": "* If you do not approve the phone number, it will disappear within 1 month after you get the points (you can set it from the setting → profile column).",

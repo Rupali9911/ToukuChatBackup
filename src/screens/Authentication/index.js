@@ -21,6 +21,7 @@ class Authentication extends Component {
     super();
     this.authenticateUser();
       this.state = {
+        showModal: false
       }
   }
 

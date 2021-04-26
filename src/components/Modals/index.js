@@ -12,6 +12,7 @@ import ShowGalleryModal from './ShowGalleryModal';
 import UpdatePhoneModal from './UpdatePhoneModal';
 import VerifyOtpModal from './VerifyOtpModal';
 import DeleteOptionModal from './DeleteOptionModal';
+import UpdateAppModal from './UpdateAppModal';
 
 export {
   ProfileModal,
@@ -27,5 +28,6 @@ export {
   ShowGalleryModal,
   UpdatePhoneModal,
   VerifyOtpModal,
-  DeleteOptionModal
+  DeleteOptionModal,
+    UpdateAppModal
 };

@@ -109,7 +109,8 @@ export const Images = {
   bitcoin_img: require('../../assets/images/bitcoin_img.png'),
   crown_img: require('../../assets/images/crown.png'),
   banner_img: require('../../assets/images/banner_new.png'),
-  amazon_gift_logo: require('../../assets/images/amazon_gift_logo.png')
+  amazon_gift_logo: require('../../assets/images/amazon_gift_logo.png'),
+    img_upgrade: require('../../assets/images/upgrade.png')
 };
 
 export const Colors = {
@@ -259,6 +260,9 @@ export const xanaAppStore = 'https://apps.apple.com/us/app/id1502362416';
 export const DEEPLINK = 'touku://';
 export const prodInvite = 'touku.net/invite/';
 export const stagInvite = 'touku.angelium.net/invite/';
+export const liveAppLink = 'https://apps.apple.com/us/app/touku/id1496312754';
+
+//https://apps.apple.com/us/app/touku/id1496312754
 
 //export const supportUrl = 'https://touku.angelium.net/#/support?frame=1';
 
@@ -365,7 +369,7 @@ export const SocketEvents = {
   LIKE_OR_UNLIKE_FRIEND_NOTE_COMMENT_DATA: 'like or unlike friend note comment',
   CLEAR_GROUP_CHAT: 'clear group chat from group list',
   UPDATING_USER_TP: 'Updating user tp',
-  //Timeline post 
+  //Timeline post
   LIKE_TIMELINE_POST: 'like timeline post',
   TIMELINE_POST_COMMENT_DATA: 'timeline post comments',
   TIMELINE_POST_COMMENT_DELETE: 'delete timeline post comments'

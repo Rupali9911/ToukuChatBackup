@@ -142,7 +142,7 @@ export default class MentionsInput extends React.Component<Props, State> {
     this.setState({
       mentions,
     });
-    this.props.onTextChange(text);
+     this.props.onTextChange(text);
     setTimeout(() => {
       this.formatMarkdown();
     }, 100);
@@ -283,12 +283,14 @@ export default class MentionsInput extends React.Component<Props, State> {
     let markdown = this.props.value;
     let parseHeadIndex = 0;
     let markdownArray = [];
+    console.log('markdown', markdown)
     if (this.state.mentions.length === 0) {
       markdownArray.push({
         type: 'text',
         data: markdown,
       });
     }
+
     this.state.mentions.map((mention, index) => {
       let match = this.state.matches.find((m) => {
         return (
@@ -318,6 +320,8 @@ export default class MentionsInput extends React.Component<Props, State> {
       }
     });
     markdown = '';
+      console.log('markdownArray', markdownArray)
+      console.log('this.state.mentions', this.state.mentions)
     markdownArray.map((m) => {
       if (m.type === 'text') {
         markdown = markdown + encodeURIComponent(m.data);
@@ -325,6 +329,7 @@ export default class MentionsInput extends React.Component<Props, State> {
         markdown = markdown + m.data;
       }
     });
+      console.log('markdown', markdown)
     this.props.onMarkdownChange(markdown);
   };
 
@@ -364,7 +369,7 @@ export default class MentionsInput extends React.Component<Props, State> {
               placeholder={this.props.placeholder}
               placeholderTextColor={this.props.placeholderTextColor}
               multiline={this.props.multiline}
-              value={decodeURI(this.props.value)}
+              value={this.props.value}
               onChangeText={this.onTextChange}
               onKeyPress={this.handleDelete}
               // keyboardType="twitter"

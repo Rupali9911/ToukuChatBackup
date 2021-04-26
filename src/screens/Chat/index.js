@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, FlatList, Platform} from 'react-native';
+import {View, ImageBackground, FlatList, Platform, SafeAreaView, Linking} from 'react-native';
 import {connect} from 'react-redux';
 import Orientation from 'react-native-orientation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {createFilter} from 'react-native-search-filter';
 import {withNavigationFocus} from 'react-navigation';
 
-import {Images, languageArray, SocketEvents} from '../../constants';
+import {Images, languageArray, SocketEvents, liveAppLink} from '../../constants';
 import {SearchInput} from '../../components/TextInputs';
 import {getAvatar, eventService, realmToPlainObject, getUserName} from '../../utils';
 import {
@@ -178,6 +178,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import BonusModal from "../../components/Modals/BonusModal";
 import { SwipeItem } from '../../components/Swipeable';
 import { isArray } from 'lodash';
+import UpdateAppModal from "../../components/Modals/UpdateAppModal";
+import {minVersion, version} from "../../../package";
 
 let channelId = [];
 let friendId = [];
@@ -207,6 +209,7 @@ class Chat extends Component {
       countChat: 0,
       bonusModal: false,
       bonusXP: 0,
+        updateVersionModal: false
       // sortOptions: [
       //   {
       //     title: translate('pages.xchat.timeReceived'),
@@ -278,9 +281,9 @@ class Chat extends Component {
       console.log('res from configuration', res)
        await AsyncStorage.setItem('is_bonus_opened', JSON.stringify(res.is_bonus_opened));
 
-      if(res && !res.is_bonus_opened){
-        this.checkHasLoginBonus();
-      }
+      // if(res && !res.is_bonus_opened){
+      //   this.checkHasLoginBonus();
+      // }
 
       this.setState({
         sortBy: res.sort_by,
@@ -430,6 +433,11 @@ class Chat extends Component {
       },
     );
 
+      if (version <= minVersion ) {
+          this.setState({updateVersionModal: true})
+      }else {
+          this.setState({updateVersionModal: false})
+      }
   }
 
   componentWillUnmount() {
@@ -1418,13 +1426,13 @@ class Chat extends Component {
               var array = [];
               array = realmToPlainObject(chats);
               // array = chats.toJSON();
-  
+
               if (array.length > 0) {
                 updateChannelLastMsgWithOutCount(item.channel, array[0]);
               } else {
                 updateChannelLastMsgWithOutCount(item.channel, null);
               }
-  
+
               this.props.getLocalFollowingChannels().then(() => {
                 this.props.setCommonChatConversation();
               });
@@ -3369,6 +3377,17 @@ class Chat extends Component {
     this.updateModalVisibility();
   }
 
+    onUpdate= async() =>{
+    if (Platform.OS === 'ios'){
+      const supported = await Linking.canOpenURL(liveAppLink);
+        if (supported) {
+          Linking.openURL(liveAppLink)
+        }
+      } else{
+       console.log('Add live playstore link of app')
+     }
+    }
+
   renderDisplayNameText = (text, message) => {
     if(message, text.includes('{Display Name}')){
       let update_txt = text.replace(/{Display Name}/g,this.props.userConfig.display_name);
@@ -3585,7 +3604,8 @@ class Chat extends Component {
       countChat,
       isDeleteLoading,
       bonusModal,
-      bonusXP
+      bonusXP,
+        updateVersionModal
     } = this.state;
     return (
       // <ImageBackground
@@ -3699,14 +3719,24 @@ class Chat extends Component {
           isSetEmail
         />
 
-        <BonusModal
-          visible={bonusModal}
-          onRequestClose={() => {
-            this.setState({ bonusModal: false })
-          }}
-          bonusXP={bonusXP}
-          registerBonus={true}
-        />
+        {/*<BonusModal*/}
+          {/*visible={bonusModal}*/}
+          {/*onRequestClose={() => {*/}
+            {/*this.setState({ bonusModal: false })*/}
+          {/*}}*/}
+          {/*bonusXP={bonusXP}*/}
+          {/*registerBonus={true}*/}
+        {/*/>*/}
+          {updateVersionModal &&
+          <UpdateAppModal
+              visible={true}
+              onConfirm={this.onUpdate.bind(this)}
+              title= {translate('app.newVersionAvailable')}
+              message={translate('app.updateApp')}
+              isLoading={false}
+              confirmText={translate('app.update')}
+          />
+          }
 
       </View>
       // </ImageBackground>

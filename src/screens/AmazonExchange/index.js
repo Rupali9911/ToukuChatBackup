@@ -38,7 +38,7 @@ class AmazonExchange extends Component {
             orientation: 'PORTRAIT',
             isExchange: false,
             loading: false,
-            tp_point: 5,
+            tp_point: 500,
             point_in_yen: 0,
             showPhoneUpdateModal: false,
             isUpdatePhoneModalVisible: false,
@@ -229,7 +229,7 @@ class AmazonExchange extends Component {
                                     fontSize: normalize(10),
                                     fontWeight: '600',
                                     color: '#ee6f70',
-                                }}>{translate('pages.adWall.firstTimeExchangeText')}</Text>
+                                }}>{'(*' + translate('pages.adWall.minimumAmountOfTp') + ')'}</Text>
                             </View>
                             <Text style={{
                                 fontSize: normalize(15),
@@ -427,7 +427,7 @@ class AmazonExchange extends Component {
                                         title={translate('pages.adWall.confirm')}
                                         onPress={() => {
 
-                                            if(this.props.userData.total_tp<5){
+                                            if(this.props.userData.total_tp<500){
                                                 Toast.show({
                                                     title: 'Touku',
                                                     text: translate(`pages.adWall.dontHaveSufficientAmount`),
@@ -435,7 +435,7 @@ class AmazonExchange extends Component {
                                                 });
                                                 return;
                                             }
-                                            if(this.state.tp_point.length==0 || parseFloat(this.state.tp_point)<5){
+                                            if(this.state.tp_point.length==0 || parseFloat(this.state.tp_point)<500){
                                                 Toast.show({
                                                     title: 'Touku',
                                                     text: translate(`pages.adWall.minimumAmountOfTp`),
