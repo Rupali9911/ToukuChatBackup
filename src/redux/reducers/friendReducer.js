@@ -96,7 +96,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
-        userFriends: action.payload,
+        userFriends: [...action.payload],
       };
 
     case GET_USER_FRIENDS_FAIL:
@@ -707,3 +707,7 @@ export const addFriendByReferralCode = (data) => (dispatch) =>
                 reject(err);
             })
     });
+
+export const updateUserOnlineStatus = (friends) => (dispatch) => {
+  dispatch(getUserFriendsSuccess(friends));
+}

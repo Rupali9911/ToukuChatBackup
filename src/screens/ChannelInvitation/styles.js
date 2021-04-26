@@ -1,14 +1,14 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-import { normalize } from '../../utils';
-const {width, height} = Dimensions.get('window');
+import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Colors, Fonts} from '../../constants';
+import {normalize} from '../../utils';
+const {height} = Dimensions.get('window');
 
-export const ChannelInvitationStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     // flex: 1,
     paddingHorizontal: 15,
     paddingBottom: 50,
-    paddingVertical: 15
+    paddingVertical: 15,
   },
   imageContainer: {
     height: height * 0.22,
@@ -23,7 +23,7 @@ export const ChannelInvitationStyles = StyleSheet.create({
     height: normalize(110),
     width: normalize(110),
     backgroundColor: Colors.gray,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   cameraButton: {
     height: height * 0.03,
@@ -109,5 +109,54 @@ export const ChannelInvitationStyles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingLeft: 10,
     marginBottom: 15,
+  },
+  similarText: {
+    marginTop: normalize(15),
+    fontFamily: Fonts.regular,
+    fontSize: normalize(11.5),
+    fontWeight: '300',
+  },
+  followCode: {
+    textDecorationLine: 'underline',
+  },
+  reachOutSocialMediaText: {
+    marginTop: normalize(25),
+    fontSize: normalize(18),
+    fontWeight: '300',
+  },
+  urlHeadingText: {
+    marginTop: normalize(15),
+    alignSelf: 'center',
+    fontFamily: Fonts.regular,
+    fontSize: normalize(11.5),
+    fontWeight: '300',
+  },
+  followActionHeadingText: {
+    fontFamily: Fonts.regular,
+    fontSize: normalize(9),
+    fontWeight: '300',
+  },
+  qrCodeText: {
+    marginTop: normalize(20),
+    alignSelf: 'center',
+    fontFamily: Fonts.regular,
+    fontSize: normalize(11.5),
+    fontWeight: '300',
+  },
+  qrCodeContainer: {
+    alignSelf: 'center',
+    padding: 15,
+    backgroundColor: Colors.white,
+    borderColor: Colors.gradient_2,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  downloadContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+    justifyContent: 'center',
+  },
+  downloadIcon: {
+    padding: 5,
   },
 });

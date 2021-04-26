@@ -1,29 +1,28 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
   ImageBackground,
-  SafeAreaView,
-  Platform,
   Keyboard,
+  Platform,
+  SafeAreaView,
+  Text,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-import Inputfield from '../../components/InputField';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
-import {Images, Icons} from '../../constants';
 import {BackHeader} from '../../components/Headers';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {forgotUserNameStyles} from './styles';
+import Inputfield from '../../components/InputField';
 import LanguageSelector from '../../components/LanguageSelector';
-import {globalStyles} from '../../styles';
+import Toast from '../../components/Toast';
+import {Images} from '../../constants';
 import {
   forgotUserName,
   recoverUserName,
 } from '../../redux/reducers/forgotPassReducer';
-import Toast from '../../components/Toast';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 class ForgotUserName extends Component {
   constructor(props) {
@@ -77,39 +76,41 @@ class ForgotUserName extends Component {
           //     type: 'primary',
           //   });
           // }
-            if (err.response) {
-                console.log(err.response)
-                if (err.response.request._response) {
-                    console.log(err.response.request._response)
-                    let errMessage = JSON.parse(err.response.request._response)
-                    if (errMessage.message) {
-                        Toast.show({
-                            title: translate('pages.xchat.reconfirmUserName'),
-                            text: errMessage.message.toString().includes('backend.')?translate(errMessage.message.toString()):errMessage.message.toString(),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.non_field_errors) {
-                        let strRes = errMessage.non_field_errors
-                        Toast.show({
-                            title: translate('pages.xchat.reconfirmUserName'),
-                            text: translate(strRes.toString()),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.phone) {
-                        Toast.show({
-                            title: translate('pages.xchat.reconfirmUserName'),
-                            text: translate('pages.register.toastr.phoneNumberIsInvalid'),
-                            type: 'primary',
-                        });
-                    }else if (errMessage.detail) {
-                        Toast.show({
-                            title: translate('pages.xchat.reconfirmUserName'),
-                            text: errMessage.detail.toString(),
-                            type: 'primary',
-                        });
-                    }
-                }
+          if (err.response) {
+            console.log(err.response);
+            if (err.response.request._response) {
+              console.log(err.response.request._response);
+              let errMessage = JSON.parse(err.response.request._response);
+              if (errMessage.message) {
+                Toast.show({
+                  title: translate('pages.xchat.reconfirmUserName'),
+                  text: errMessage.message.toString().includes('backend.')
+                    ? translate(errMessage.message.toString())
+                    : errMessage.message.toString(),
+                  type: 'primary',
+                });
+              } else if (errMessage.non_field_errors) {
+                let strRes = errMessage.non_field_errors;
+                Toast.show({
+                  title: translate('pages.xchat.reconfirmUserName'),
+                  text: translate(strRes.toString()),
+                  type: 'primary',
+                });
+              } else if (errMessage.phone) {
+                Toast.show({
+                  title: translate('pages.xchat.reconfirmUserName'),
+                  text: translate('pages.register.toastr.phoneNumberIsInvalid'),
+                  type: 'primary',
+                });
+              } else if (errMessage.detail) {
+                Toast.show({
+                  title: translate('pages.xchat.reconfirmUserName'),
+                  text: errMessage.detail.toString(),
+                  type: 'primary',
+                });
+              }
             }
+          }
         });
     } else {
       Toast.show({
@@ -123,6 +124,11 @@ class ForgotUserName extends Component {
   render() {
     const {orientation} = this.state;
 
+    const containerPadding = orientation !== 'PORTRAIT' ? 50 : 0;
+    const recoverUsernameFontSize =
+      this.props.selectedLanguageItem.language_name === 'ja' ? 28 : 30;
+    const contentContainerMargin = orientation !== 'PORTRAIT' ? 0 : -100;
+
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -134,36 +140,29 @@ class ForgotUserName extends Component {
           <KeyboardAwareScrollView
             keyboardShouldPersistTaps={'handled'}
             behavior={'position'}
-            contentContainerStyle={{
-              flex: 1,
-              padding: 20,
-            }}
+            contentContainerStyle={styles.keyboardScrollContentContainer}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
-              style={{
-                flex: 1,
-                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-              }}>
+              style={[
+                {
+                  paddingHorizontal: containerPadding,
+                },
+                styles.singleFlex,
+              ]}>
               <Text
                 style={[
                   globalStyles.bigSemiBoldText,
-                  {
-                    fontSize: this.props.selectedLanguageItem.language_name === 'ja' ? 28 : 30,
-                    marginVertical: 50,
-                    opacity: 0.8,
-                  },
+                  styles.recoverUsername,
+                  {fontSize: recoverUsernameFontSize},
                 ]}>
                 {translate('pages.xchat.recoverUsername')}
               </Text>
               <View
-                style={{
-                  flex: 1,
-                  width: Platform.isPad ? '75%' : '100%',
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                  marginTop: orientation != 'PORTRAIT' ? 0 : -100,
-                }}>
+                style={[
+                  {marginTop: contentContainerMargin},
+                  styles.contentContainer,
+                ]}>
                 <Inputfield
                   value={this.state.email}
                   placeholder={translate('common.email')}

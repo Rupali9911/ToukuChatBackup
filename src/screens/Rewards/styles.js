@@ -1,13 +1,13 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet, Dimensions, Platform} from 'react-native';
 import {Images, Colors, Icons, Fonts} from '../../constants';
 const {width, height} = Dimensions.get('window');
 
-export const RewardStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     // flex: 1,
     paddingHorizontal: 15,
     paddingBottom: 50,
-    paddingVertical: 15
+    paddingVertical: 15,
   },
   imageContainer: {
     height: height * 0.22,
@@ -79,5 +79,13 @@ export const RewardStyles = StyleSheet.create({
   },
   frindListContainer: {
     marginVertical: 20,
+  },
+  singleFlex: {
+    flex: 1,
+  },
+  urlImageBackground: {
+    width: '100%',
+    height: 120,
+    marginTop: 10,
   },
 });

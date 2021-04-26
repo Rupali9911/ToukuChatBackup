@@ -1,30 +1,26 @@
-import React, {PureComponent} from 'react';
-import {Dimensions, Text, View} from 'react-native';
+// Library imports
 import NetInfo from '@react-native-community/netinfo';
+import {PureComponent} from 'react';
+
+// Local imports
 import Toast from '../Toast';
-import {Icons} from '../../constants';
-// import { InternetInfoModal } from '../Modals/BottomModals';
 
-const {width} = Dimensions.get('window');
-
-class InternetInfo extends PureComponent {
+/**
+ * Internet connectivity information component
+ */
+export default class InternetInfo extends PureComponent {
   state = {
     isConnected: true,
   };
 
+  // Add event listener for internet connectivity=
   componentDidMount() {
     NetInfo.addEventListener((state) => {
       this.handleConnectivityChange(state.isConnected);
     });
   }
 
-  //   componentWillUnmount() {
-  //     NetInfo.removeEventListener(
-  //       'connectionChange',
-  //       this.handleConnectivityChange,
-  //     );
-  //   }
-
+  // function for handling internet connectivity changes
   handleConnectivityChange = (isConnected) => {
     this.setState({isConnected});
     if (!isConnected) {
@@ -39,5 +35,3 @@ class InternetInfo extends PureComponent {
     return null;
   }
 }
-
-export default InternetInfo;

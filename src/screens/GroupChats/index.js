@@ -1,88 +1,68 @@
-import React, {Component, Fragment} from 'react';
-import {
-  ImageBackground,
-  Dimensions,
-  Platform,
-  PermissionsAndroid,
-} from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
-import moment from 'moment';
-import RNFetchBlob from 'rn-fetch-blob';
+import React, {Component} from 'react';
+import {ImageBackground, PermissionsAndroid, Platform} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-import {isEqual} from 'lodash';
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {
-  Colors,
-  Fonts,
-  Images,
-  Icons,
-  SocketEvents,
-  appleStoreUserId,
-} from '../../constants';
+import Orientation from 'react-native-orientation';
+import uuid from 'react-native-uuid';
+import {connect} from 'react-redux';
+import RNFetchBlob from 'rn-fetch-blob';
 import GroupChatContainer from '../../components/GroupChatContainer';
+import {ChatHeader} from '../../components/Headers';
+import {ListLoader, OpenLoader} from '../../components/Loaders';
 import {
   ConfirmationModal,
-  UploadSelectModal,
+  DeleteOptionModal,
   ShowAttahmentModal,
   ShowGalleryModal,
-  DeleteOptionModal,
 } from '../../components/Modals';
+import Toast from '../../components/Toast';
+import {appleStoreUserId, Icons, Images, SocketEvents} from '../../constants';
+import S3uploadService from '../../helpers/S3uploadService';
+import SingleSocket from '../../helpers/SingleSocket';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
+import {
+  deleteGroup,
+  deleteGroupChat,
+  deleteMultipleGroupMessage,
+  editGroupMessage,
+  getGroupConversation,
+  getGroupDetail,
+  getGroupMembers,
+  getLocalUserGroups,
+  getUserGroups,
+  leaveGroup,
+  markGroupConversationRead,
+  pinGroup,
+  resetGroupConversation,
+  sendGroupMessage,
+  setCurrentGroup,
+  setCurrentGroupDetail,
+  setCurrentGroupMembers,
+  setGroupConversation,
+  unpinGroup,
+  unSendGroupMessage,
+  updateUnreadGroupMsgsCounts,
+} from '../../redux/reducers/groupReducer';
 import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
-import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
-  getGroupConversation,
-  getUserGroups,
-  getGroupDetail,
-  getGroupMembers,
-  getLocalUserGroups,
-  updateUnreadGroupMsgsCounts,
-  setCurrentGroupDetail,
-  setCurrentGroupMembers,
-  setCurrentGroup,
-  deleteGroup,
-  sendGroupMessage,
-  leaveGroup,
-  editGroupMessage,
-  markGroupConversationRead,
-  unSendGroupMessage,
-  setGroupConversation,
-  resetGroupConversation,
-  getGroupConversationRequest,
-  deleteMultipleGroupMessage,
-  pinGroup,
-  unpinGroup,
-  deleteGroupChat,
-} from '../../redux/reducers/groupReducer';
-import Toast from '../../components/Toast';
-import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
-import {eventService, realmToPlainObject, getUserName} from '../../utils';
-import S3uploadService from '../../helpers/S3uploadService';
-import SingleSocket from '../../helpers/SingleSocket';
-
-import {
-  setGroupChatConversation,
-  getGroupChatConversationById,
-  deleteGroupMessageById,
-  updateGroupMessageById,
-  setGroupMessageUnsend,
-  updateUnReadCount,
-  deleteGroupById,
-  removeGroupById,
   deleteAllGroupMessageByGroupId,
-  updateLastMsgGroupsWithoutCount,
+  deleteGroupById,
+  deleteGroupMessageById,
+  getGroupChatConversationById,
+  getGroupChatConversationLengthById,
+  removeGroupById,
   setGroupLastMessageUnsend,
-  updateGroupsWhenPined,
-  updateGroupsWhenUnpined,
+  setGroupMessageUnsend,
+  updateGroupMessageById,
   updateGroupTranslatedMessage,
-  getGroupChatConversationLengthById
+  updateLastMsgGroupsWithoutCount,
+  updateUnReadCount,
 } from '../../storage/Service';
-import uuid from 'react-native-uuid';
+import {globalStyles} from '../../styles';
+import {getUserName, realmToPlainObject} from '../../utils';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -371,12 +351,15 @@ class GroupChats extends Component {
 
   static navigationOptions = ({navigation}) => {
     return {
-      gestureEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
-    }
-  }
+      gesturesEnabled:
+        navigation.state.params && navigation.state.params.isAudioPlaying
+          ? false
+          : true,
+    };
+  };
 
   onPinUnpinGroup = () => {
-    const {userData, currentGroup} = this.props;
+    const {currentGroup} = this.props;
     const data = {};
     if (currentGroup.is_pined) {
       this.props
@@ -391,6 +374,7 @@ class GroupChats extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -410,6 +394,7 @@ class GroupChats extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -420,9 +405,9 @@ class GroupChats extends Component {
   };
 
   onMessageSend = async () => {
-    const {newMessageText, editMessageId, conversation} = this.state;
+    const {newMessageText, editMessageId} = this.state;
     const {userData, currentGroup, currentGroupMembers} = this.props;
-    let splitNewMessageText = newMessageText.split(' ');
+    // let splitNewMessageText = newMessageText.split(' ');
     let newMessageMentions = [];
     let newMessageTextWithMention = newMessageText;
     // const newMessageTextWithMention = splitNewMessageText
@@ -445,16 +430,22 @@ class GroupChats extends Component {
     //   })
     //   .join(' ');
 
-      currentGroupMembers.forEach((groupMember) => {
-        let user_name = getUserName(groupMember.id) || groupMember.display_name || groupMember.username;
-        if (newMessageTextWithMention.includes(`@${user_name}`)) {
-          mention = `~${groupMember.id}~`;
-          newMessageTextWithMention = newMessageTextWithMention.replace(`@${user_name}`,`~${groupMember.id}~`);
-          newMessageMentions = [...newMessageMentions, groupMember.id];
-        }
-      });
+    currentGroupMembers.forEach((groupMember) => {
+      let user_name =
+        getUserName(groupMember.id) ||
+        groupMember.display_name ||
+        groupMember.username;
+      if (newMessageTextWithMention.includes(`@${user_name}`)) {
+        // mention = `~${groupMember.id}~`; // TODO: Cannot find variable
+        newMessageTextWithMention = newMessageTextWithMention.replace(
+          `@${user_name}`,
+          `~${groupMember.id}~`,
+        );
+        newMessageMentions = [...newMessageMentions, groupMember.id];
+      }
+    });
 
-      console.log('mention',newMessageTextWithMention);
+    console.log('mention', newMessageTextWithMention);
     let msgText = newMessageTextWithMention;
     let newMessageTextWithoutMention = newMessageText;
     let isReply = this.state.isReply;
@@ -535,9 +526,9 @@ class GroupChats extends Component {
     }
 
     let mentions = [];
-    newMessageMentions.map(item=>{
-      mentions.push({id:item});
-    })
+    newMessageMentions.map((item) => {
+      mentions.push({id: item});
+    });
 
     let sendmsgdata = {
       sender_id: userData.id,
@@ -671,7 +662,7 @@ class GroupChats extends Component {
       message_body: newMessageText,
     };
     this.props.editGroupMessage(editMessageId, data).then((res) => {
-      if (this.props.currentGroup.last_msg_id == editMessageId) {
+      if (this.props.currentGroup.last_msg_id === editMessageId) {
         updateLastMsgGroupsWithoutCount(
           this.props.currentGroup.group_id,
           sentMessageType,
@@ -679,7 +670,7 @@ class GroupChats extends Component {
           this.props.currentGroup.last_msg_id,
           this.props.currentGroup.timestamp,
         );
-        this.props.getLocalUserGroups().then((res) => {
+        this.props.getLocalUserGroups().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -819,7 +810,11 @@ class GroupChats extends Component {
 
       let singleSocket = SingleSocket.getInstance();
 
-      if(singleSocket.webSocketBridge !== null && singleSocket.webSocketBridge.readyState == singleSocket.webSocketBridge.OPEN){
+      if (
+        singleSocket.webSocketBridge !== null &&
+        singleSocket.webSocketBridge.readyState ===
+          singleSocket.webSocketBridge.OPEN
+      ) {
         singleSocket.sendMessage(
           JSON.stringify({
             type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
@@ -833,19 +828,22 @@ class GroupChats extends Component {
   }
 
   isGroupAdmin = () => {
-    if(this.props.currentGroupAdmins && this.props.currentGroupAdmins.length>0){
+    if (
+      this.props.currentGroupAdmins &&
+      this.props.currentGroupAdmins.length > 0
+    ) {
       let my_group = false;
-      this.props.currentGroupAdmins.map((item)=>{
-        if(item.id == this.props.userData.id){
+      this.props.currentGroupAdmins.map((item) => {
+        if (item.id === this.props.userData.id) {
           my_group = true;
           return;
         }
       });
       return my_group;
-    }else{
+    } else {
       return false;
     }
-  }
+  };
 
   updateUnReadGroupChatCount = async () => {
     updateUnReadCount(this.props.currentGroup.group_id, 0);
@@ -862,8 +860,8 @@ class GroupChats extends Component {
   };
 
   checkEventTypes(message) {
-    const {currentGroup, userData} = this.props;
-    const {conversation} = this.state;
+    const {currentGroup} = this.props;
+    // const {conversation} = this.state;
 
     // console.log('event_msg', JSON.stringify(message));
 
@@ -933,22 +931,28 @@ class GroupChats extends Component {
     // }
 
     //READ_COUNT_IN_GROUP
-    if (message.text.data.type == SocketEvents.READ_COUNT_IN_GROUP) {
-      if (message.text.data.message_details.group_id == currentGroup.group_id) {
+    if (message.text.data.type === SocketEvents.READ_COUNT_IN_GROUP) {
+      if (
+        message.text.data.message_details.group_id === currentGroup.group_id
+      ) {
         // this.getGroupConversation();
       }
     }
 
     //PINED_GROUP
-    if (message.text.data.type == SocketEvents.PINED_GROUP) {
-      if (message.text.data.message_details.group_id == currentGroup.group_id) {
+    if (message.text.data.type === SocketEvents.PINED_GROUP) {
+      if (
+        message.text.data.message_details.group_id === currentGroup.group_id
+      ) {
         // this.getGroupConversation();
       }
     }
 
     //UNPINED_GROUP
-    if (message.text.data.type == SocketEvents.UNPINED_GROUP) {
-      if (message.text.data.message_details.group_id == currentGroup.group_id) {
+    if (message.text.data.type === SocketEvents.UNPINED_GROUP) {
+      if (
+        message.text.data.message_details.group_id === currentGroup.group_id
+      ) {
         // this.getGroupConversation();
       }
     }
@@ -966,20 +970,23 @@ class GroupChats extends Component {
   }
 
   getLocalGroupConversation = () => {
-    let chat = getGroupChatConversationById(this.props.currentGroup.group_id,this.offset);
+    let chat = getGroupChatConversationById(
+      this.props.currentGroup.group_id,
+      this.offset,
+    );
     if (chat) {
       let conversations = [];
       conversations = realmToPlainObject(chat);
       this.props.setGroupConversation(conversations);
     }
-    this.loading=false;
+    this.loading = false;
   };
 
   getGroupConversation = async (msg_id) => {
     await this.props
-      .getGroupConversation(this.props.currentGroup.group_id,msg_id)
+      .getGroupConversation(this.props.currentGroup.group_id, msg_id)
       .then((res) => {
-        if (res.status && res.data.length>0) {
+        if (res.status && res.data.length > 0) {
           // console.log('response', JSON.stringify(res));
           let data = res.data;
           data.sort((a, b) =>
@@ -992,7 +999,7 @@ class GroupChats extends Component {
 
           let chat = getGroupChatConversationById(
             this.props.currentGroup.group_id,
-            this.offset
+            this.offset,
           );
           let conversations = [];
 
@@ -1002,11 +1009,10 @@ class GroupChats extends Component {
           this.props.setGroupConversation(conversations);
           !msg_id && this.markGroupConversationRead();
 
-          if(res.data.length<50){
-            this.setState({isLoadMore:false});
+          if (res.data.length < 50) {
+            this.setState({isLoadMore: false});
           }
-
-        }else{
+        } else {
           this.setState({isLoadMore: false});
         }
       })
@@ -1017,7 +1023,10 @@ class GroupChats extends Component {
 
   getGroupConversationInitial = async () => {
     this.setState({isChatLoading: true});
-    let chat = getGroupChatConversationById(this.props.currentGroup.group_id,this.offset);
+    let chat = getGroupChatConversationById(
+      this.props.currentGroup.group_id,
+      this.offset,
+    );
     if (chat) {
       let conversations = [];
       // chat.map((item, index) => {
@@ -1062,12 +1071,12 @@ class GroupChats extends Component {
               : -1,
           );
 
-          let chat = getGroupChatConversationById(
+          let groupChat = getGroupChatConversationById(
             this.props.currentGroup.group_id,
-            this.offset
+            this.offset,
           );
           let conversations = [];
-          // chat.map((item, index) => {
+          // groupChat.map((item, index) => {
           //   let i = {
           //     msg_id: item.msg_id,
           //     sender_id: item.sender_id,
@@ -1087,7 +1096,7 @@ class GroupChats extends Component {
           //   conversations = [...conversations, i];
           // });
 
-          conversations = realmToPlainObject(chat);
+          conversations = realmToPlainObject(groupChat);
           // conversations = chat.toJSON();
 
           // this.setState({ conversation: conversations });
@@ -1118,8 +1127,10 @@ class GroupChats extends Component {
       .catch((err) => {
         console.log('err_getGroupDetail', err.response.data);
         let response_error_data = err.response.data;
-        if(response_error_data && !response_error_data.status){
-          if(response_error_data.message === 'backend.common.Groupdoesnotexist'){
+        if (response_error_data && !response_error_data.status) {
+          if (
+            response_error_data.message === 'backend.common.Groupdoesnotexist'
+          ) {
             this.deleteLocalGroup(this.props.currentGroup.group_id);
             this.props.getUserGroups();
           }
@@ -1128,7 +1139,7 @@ class GroupChats extends Component {
             text: translate(response_error_data.message),
             type: 'primary',
           });
-        }else{
+        } else {
           Toast.show({
             title: 'Touku',
             text: translate('common.somethingWentWrong'),
@@ -1258,6 +1269,7 @@ class GroupChats extends Component {
         this.toggleLeaveGroupConfirmationModal();
       })
       .catch((err) => {
+        console.error(err);
         Toast.show({
           title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
@@ -1300,6 +1312,7 @@ class GroupChats extends Component {
         this.toggleDeleteGroupConfirmationModal();
       })
       .catch((err) => {
+        console.error(err);
         Toast.show({
           title: 'TOUKU',
           text: translate('common.somethingWentWrong'),
@@ -1325,11 +1338,11 @@ class GroupChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
-    if(this.isGroupAdmin()){
+    if (this.isGroupAdmin()) {
       this.setState({
         showMoreMessageDeleteConfirmationModal: true,
       });
-    }else{
+    } else {
       this.setState({
         showMessageDeleteConfirmationModal: true,
       });
@@ -1357,7 +1370,7 @@ class GroupChats extends Component {
           this.getLocalGroupConversation();
 
           if (
-            this.props.currentGroup.last_msg_id == this.state.selectedMessageId
+            this.props.currentGroup.last_msg_id === this.state.selectedMessageId
           ) {
             let chat = getGroupChatConversationById(
               this.props.currentGroup.group_id,
@@ -1374,7 +1387,7 @@ class GroupChats extends Component {
                 array[0].msg_id,
                 array[0].timestamp,
               );
-              this.props.getLocalUserGroups().then((res) => {
+              this.props.getLocalUserGroups().then(() => {
                 this.props.setCommonChatConversation();
               });
             }
@@ -1389,20 +1402,20 @@ class GroupChats extends Component {
     if (this.state.selectedIds.length > 0) {
       let payload = {
         message_ids: this.state.selectedIds,
-        delete_type: delete_type
+        delete_type: delete_type,
       };
 
-      if(delete_type==='DELETE_FOR_EVERYONE'){
+      if (delete_type === 'DELETE_FOR_EVERYONE') {
         this.setState({isDeleteEveryoneLoading: true});
-      }else{
+      } else {
         this.setState({isDeleteMeLoading: true});
       }
 
-      console.log('payload',payload);
+      console.log('payload', payload);
 
       this.state.selectedIds.map((item) => {
         deleteGroupMessageById(item);
-        if (this.props.currentGroup.last_msg_id == item) {
+        if (this.props.currentGroup.last_msg_id === item) {
           let chat = getGroupChatConversationById(
             this.props.currentGroup.group_id,
           );
@@ -1432,26 +1445,30 @@ class GroupChats extends Component {
       this.getLocalGroupConversation();
       this.setState({isMultiSelect: false, selectedIds: []});
 
-      this.props.deleteMultipleGroupMessage(payload).then((res) => {
-        this.setState({
-          isDeleteEveryoneLoading: false,
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
+      this.props
+        .deleteMultipleGroupMessage(payload)
+        .then((res) => {
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
+          if (res && res.status) {
+          } else {
+            this.getGroupConversation();
+          }
+          // this.getGroupConversation();
+        })
+        .catch((err) => {
+          console.error(err);
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
         });
-        if (res && res.status) {
-        } else {
-          this.getGroupConversation();
-        }
-        // this.getGroupConversation();
-      }).catch((err)=>{
-        this.setState({
-          isDeleteEveryoneLoading: false,
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
-        });
-      });
     }
   };
 
@@ -1465,10 +1482,10 @@ class GroupChats extends Component {
           setGroupMessageUnsend(this.state.selectedMessageId);
           this.getLocalGroupConversation();
           if (
-            this.props.currentGroup.last_msg_id == this.state.selectedMessageId
+            this.props.currentGroup.last_msg_id === this.state.selectedMessageId
           ) {
             setGroupLastMessageUnsend(this.props.currentGroup.group_id);
-            this.props.getLocalUserGroups().then((res) => {
+            this.props.getLocalUserGroups().then(() => {
               this.props.setCommonChatConversation();
             });
           }
@@ -1487,7 +1504,7 @@ class GroupChats extends Component {
       showLeaveGroupConfirmationModal: false,
       showMessageDeleteConfirmationModal: false,
       showMessageUnsendConfirmationModal: false,
-      showMoreMessageDeleteConfirmationModal: false
+      showMoreMessageDeleteConfirmationModal: false,
     });
   };
 
@@ -1499,7 +1516,7 @@ class GroupChats extends Component {
     console.log('payload', payload);
     this.props.translateMessage(payload).then((res) => {
       console.log('res', res);
-      if (res.status == true) {
+      if (res.status === true) {
         this.setState({
           translatedMessageId: message.msg_id,
           translatedMessage: res.data,
@@ -1706,7 +1723,7 @@ class GroupChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'image') {
+      } else if (fileType === 'image') {
         await this.setState(
           {
             uploadFile: source,
@@ -1717,7 +1734,7 @@ class GroupChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'video') {
+      } else if (fileType === 'video') {
         await this.setState(
           {
             uploadFile: source,
@@ -1768,10 +1785,7 @@ class GroupChats extends Component {
       showDeleteGroupConfirmationModal,
       showdeleteObjectConfirmationModal,
       showMessageUnsendConfirmationModal,
-      deletionOptionModal,
       orientation,
-      isMyGroup,
-      conversation,
       isReply,
       repliedMessage,
       showMessageDeleteConfirmationModal,
@@ -1785,20 +1799,20 @@ class GroupChats extends Component {
       openDoc,
       isDeleteMeLoading,
       isDeleteEveryoneLoading,
-      isLoadMore
     } = this.state;
     const {
       chatGroupConversation,
       currentGroup,
       currentGroupDetail,
-      groupLoading,
       currentGroupMembers,
     } = this.props;
 
     let length = 0;
     let chats = [];
-    if(this.props.currentGroup){
-      chats = getGroupChatConversationLengthById(this.props.currentGroup.group_id);
+    if (this.props.currentGroup) {
+      chats = getGroupChatConversationLengthById(
+        this.props.currentGroup.group_id,
+      );
       length = chats.length;
     }
     // console.log('currentGroupDetail', currentGroupDetail);
@@ -1883,31 +1897,31 @@ class GroupChats extends Component {
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
             isChatDisable={currentGroupDetail.is_group_member}
-            isLoadMore = {chatGroupConversation.length<length}
+            isLoadMore={chatGroupConversation.length < length}
             loading={this.loading}
-            onLoadMore = {(message)=>{
-              console.log('msg_id',message.msg_id);
-              if(message && message.msg_id){
-                this.loading=true;
+            onLoadMore={(message) => {
+              console.log('msg_id', message.msg_id);
+              if (message && message.msg_id) {
+                this.loading = true;
                 this.offset = this.offset + 20;
                 this.getLocalGroupConversation();
-                if(length%50==0 && length-this.offset<=10){
+                if (length % 50 === 0 && length - this.offset <= 10) {
                   console.log('api_call');
-                  this.getGroupConversation(chats[chats.length-1].msg_id);
+                  this.getGroupConversation(chats[chats.length - 1].msg_id);
                 }
                 // this.getGroupConversation(message.msg_id);
               }
             }}
-            onMediaPlay = {(isPlay)=>{
-              if(isPlay){
+            onMediaPlay={(isPlay) => {
+              if (isPlay) {
                 console.log('palying media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: true
+                  isAudioPlaying: true,
                 });
-              }else{
+              } else {
                 console.log('pause media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: false
+                  isAudioPlaying: false,
                 });
               }
             }}
@@ -1947,7 +1961,10 @@ class GroupChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelPress.bind(this)}
-          onConfirm={this.onConfirmMultipleMessageDelete.bind(this,'DELETE_FOR_ME')}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(
+            this,
+            'DELETE_FOR_ME',
+          )}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
@@ -2008,7 +2025,7 @@ class GroupChats extends Component {
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
           isDeleteMeLoading={isDeleteMeLoading}
           isDeleteEveryoneLoading={isDeleteEveryoneLoading}
-          />
+        />
 
         {openDoc && <OpenLoader />}
       </ImageBackground>
@@ -2025,7 +2042,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     currentGroupMembers: state.groupReducer.currentGroupMembers,
-    currentGroupAdmins: state.groupReducer.currentGroupAdmins
+    currentGroupAdmins: state.groupReducer.currentGroupAdmins,
   };
 };
 

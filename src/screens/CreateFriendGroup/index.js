@@ -1,26 +1,33 @@
 import React, {Component} from 'react';
-import {View, ImageBackground, Text, FlatList, Dimensions, Image, TextInput} from 'react-native';
-import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-import {createGroupStyles} from './styles';
-import {globalStyles} from '../../styles';
-import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import InputWithTitle from '../../components/TextInputs/InputWithTitle';
-import GroupFriend from '../../components/GroupFriend';
-import {Images, Icons, Colors} from '../../constants';
+import Orientation from 'react-native-orientation';
+import {createFilter} from 'react-native-search-filter';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
-
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getUserFriends} from '../../redux/reducers/friendReducer';
-import {createNewGroup, getUserGroups, setCurrentGroup} from '../../redux/reducers/groupReducer';
+import GroupFriend from '../../components/GroupFriend';
+import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import {ListLoader} from '../../components/Loaders';
 import NoData from '../../components/NoData';
+import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import Toast from '../../components/Toast';
-import {createFilter} from "react-native-search-filter";
-const {width, height} = Dimensions.get('window');
-
+import {Icons, Images} from '../../constants';
+import {getUserFriends} from '../../redux/reducers/friendReducer';
+import {
+  createNewGroup,
+  getUserGroups,
+  setCurrentGroup,
+} from '../../redux/reducers/groupReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 class CreateFriendGroup extends Component {
   constructor(props) {
@@ -32,7 +39,7 @@ class CreateFriendGroup extends Component {
       groupNameErr: null,
       addedFriends: [this.props.currentFriend.user_id],
       recent: [],
-        searchText: '',
+      searchText: '',
     };
   }
 
@@ -49,14 +56,14 @@ class CreateFriendGroup extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
-    this.props.getUserFriends()
+    this.props.getUserFriends();
   }
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
   };
 
-  onCheckRecentPress = (status, item, index) => {
+  onCheckRecentPress = (status, item) => {
     // const recent = this.state.recent.map((recent) =>
     //   recent.user_id === item.user_id ? {...recent, isChecked: status} : recent,
     // );
@@ -64,29 +71,29 @@ class CreateFriendGroup extends Component {
     // this.setState({
     //   recent: recent,
     // });
-      const {addedFriends} = this.state;
-      let tmpFriends = addedFriends
-      if (status === true) {
-          tmpFriends.push(item.user_id);
-      } else {
-          const index = addedFriends.indexOf(item.user_id);
-          if (index > -1) {
-              tmpFriends.splice(index, 1);
-          }
-      }
-
-      this.setState({addedFriends: tmpFriends});
-  };
-
-  onCheckFriendPress = (status, item, index) => {
     const {addedFriends} = this.state;
-    let tmpFriends = addedFriends
+    let tmpFriends = addedFriends;
     if (status === true) {
-        tmpFriends.push(item.user_id);
+      tmpFriends.push(item.user_id);
     } else {
       const index = addedFriends.indexOf(item.user_id);
       if (index > -1) {
-          tmpFriends.splice(index, 1);
+        tmpFriends.splice(index, 1);
+      }
+    }
+
+    this.setState({addedFriends: tmpFriends});
+  };
+
+  onCheckFriendPress = (status, item) => {
+    const {addedFriends} = this.state;
+    let tmpFriends = addedFriends;
+    if (status === true) {
+      tmpFriends.push(item.user_id);
+    } else {
+      const index = addedFriends.indexOf(item.user_id);
+      if (index > -1) {
+        tmpFriends.splice(index, 1);
       }
     }
 
@@ -103,22 +110,24 @@ class CreateFriendGroup extends Component {
   }
 
   renderRecent = () => {
-    const {currentFriend, userFriends} = this.props;
-    const {recent, addedFriends, searchText} = this.state;
-      let itemFriends = userFriends.slice(0, 5)
-      const searchedFriend = itemFriends.filter(
-          createFilter(searchText, ['display_name']),
-      );
+    const {userFriends} = this.props;
+    const {addedFriends, searchText} = this.state;
+    let itemFriends = userFriends.slice(0, 5);
+    const searchedFriend = itemFriends.filter(
+      createFilter(searchText, ['display_name']),
+    );
     return (
       <FlatList
         data={searchedFriend}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={({item, index}) => (
           <GroupFriend
             user={item}
             isCheckBox
             isSelected={addedFriends.includes(item.user_id)}
-            onAddPress={(isAdded) => this.onCheckRecentPress(isAdded, item, index)}
+            onAddPress={(isAdded) =>
+              this.onCheckRecentPress(isAdded, item, index)
+            }
           />
         )}
       />
@@ -126,18 +135,18 @@ class CreateFriendGroup extends Component {
   };
 
   renderFriends = () => {
-    const {friendLoading, currentFriend, userFriends} = this.props;
+    const {friendLoading, userFriends} = this.props;
     const {addedFriends, searchText} = this.state;
-      let itemFriends = userFriends
-      console.log('userFriends.length', userFriends.length)
+    let itemFriends = userFriends;
+    console.log('userFriends.length', userFriends.length);
     // if (userFriends.length > 4) {
-        itemFriends = userFriends.slice(5, userFriends.length)
+    itemFriends = userFriends.slice(5, userFriends.length);
     // }else{
     //     itemFriends = userFriends
     // }
     const searchedFriend = itemFriends.filter(
-          createFilter(searchText, ['display_name']),
-      );
+      createFilter(searchText, ['display_name']),
+    );
 
     if (searchedFriend.length === 0 && friendLoading) {
       return <ListLoader />;
@@ -151,7 +160,9 @@ class CreateFriendGroup extends Component {
               user={item}
               isCheckBox
               isSelected={addedFriends.includes(item.user_id)}
-              onAddPress={(isAdded) => this.onCheckFriendPress(isAdded, item, index)}
+              onAddPress={(isAdded) =>
+                this.onCheckFriendPress(isAdded, item, index)
+              }
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -202,9 +213,10 @@ class CreateFriendGroup extends Component {
           text: translate('pages.xchat.toastr.groupCreateSuccessfully'),
           type: 'positive',
         });
-        this.props.getUserGroups().then((res) => {
-          if (res.conversations) {
-          }
+        this.props.getUserGroups().then(() => {
+          // if (res.conversations) {
+          // Was found with nothing to execute
+          // }
         });
         this.props.setCurrentGroup(res);
         this.props.navigation.goBack();
@@ -225,60 +237,38 @@ class CreateFriendGroup extends Component {
             title={translate('pages.xchat.inviteToGroup')}
           />
           <KeyboardAwareScrollView
-            contentContainerStyle={createGroupStyles.mainContainer}
+            contentContainerStyle={styles.mainContainer}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps
             bounces={false}>
-              <View style={createGroupStyles.searchContainer}>
-                  <Image
-                      source={Icons.icon_search}
-                      style={createGroupStyles.iconSearch}
-                  />
-                  <TextInput
-                      style={[createGroupStyles.inputStyle]}
-                      placeholder={translate('pages.xchat.search')}
-                      placeholderTextColor={'grey'}
-                      onChangeText={(searchText) => this.setState({searchText})}
-                      returnKeyType={'done'}
-                      autoCorrect={false}
-                      autoCapitalize={'none'}
-                      underlineColorAndroid={'transparent'}
-                  />
-              </View>
+            <View style={styles.searchContainer}>
+              <Image source={Icons.icon_search} style={styles.iconSearch} />
+              <TextInput
+                style={[styles.inputStyle]}
+                placeholder={translate('pages.xchat.search')}
+                onChangeText={(searchText) => this.setState({searchText})}
+                returnKeyType={'done'}
+                autoCorrect={false}
+                autoCapitalize={'none'}
+                underlineColorAndroid={'transparent'}
+              />
+            </View>
 
-            <View
-              style={{
-                height: '5%',
-                justifyContent: 'center',
-              }}>
+            <View style={styles.titleHeaderContainer}>
               <Text>{translate('pages.xchat.recentChats')}</Text>
             </View>
-            <View style={{maxHeight: '30%'}}>{this.renderRecent()}</View>
-            <View
-              style={{
-                height: '5%',
-                justifyContent: 'center',
-              }}>
+            <View style={styles.contentContainer}>{this.renderRecent()}</View>
+            <View style={styles.titleHeaderContainer}>
               <Text>{translate('pages.xchat.friends')}</Text>
             </View>
-            <View style={{maxHeight: '30%'}}>{this.renderFriends()}</View>
+            <View style={styles.contentContainer}>{this.renderFriends()}</View>
             <InputWithTitle
               title={translate('pages.xchat.groupName')}
               value={groupName}
-              onChangeText={(groupName) => this.handleGroupName(groupName)}
+              onChangeText={(text) => this.handleGroupName(text)}
             />
             {groupNameErr !== null ? (
-              <Text
-                style={[
-                  globalStyles.smallLightText,
-                  {
-                    color: Colors.danger,
-                    textAlign: 'left',
-                    // marginTop: 10,
-                    // marginStart: 10,
-                    marginBottom: 5,
-                  },
-                ]}>
+              <Text style={[globalStyles.smallLightText, styles.groupName]}>
                 {translate(groupNameErr).replace(
                   '[missing {{field}} value]',
                   translate('pages.xchat.groupName'),
@@ -321,7 +311,7 @@ const mapDispatchToProps = {
   getUserFriends,
   getUserGroups,
   createNewGroup,
-  setCurrentGroup
+  setCurrentGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateFriendGroup);

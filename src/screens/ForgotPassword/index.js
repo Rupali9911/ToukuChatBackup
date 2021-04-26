@@ -1,29 +1,28 @@
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
   ImageBackground,
-  SafeAreaView,
-  Platform,
   Keyboard,
+  Platform,
+  SafeAreaView,
+  Text,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-import Inputfield from '../../components/InputField';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
-import {Images, Icons} from '../../constants';
 import {BackHeader} from '../../components/Headers';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {forgotStyles} from './styles';
+import Inputfield from '../../components/InputField';
 import LanguageSelector from '../../components/LanguageSelector';
-import {globalStyles} from '../../styles';
 import Toast from '../../components/Toast';
+import {Images} from '../../constants';
 import {
   forgotPassword,
   forgotUserName,
 } from '../../redux/reducers/forgotPassReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 class ForgotPassword extends Component {
   constructor(props) {
@@ -103,7 +102,7 @@ class ForgotPassword extends Component {
 
   handleConfirmPassword = (newPassword) => {
     this.setState({newPassword});
-    if (this.state.password != newPassword) {
+    if (this.state.password !== newPassword) {
       if (newPassword !== '') {
         this.setState({
           newPasswordConfirmStatus: 'wrong',
@@ -160,7 +159,9 @@ class ForgotPassword extends Component {
             } else {
               Toast.show({
                 title: translate('common.sendSMS'),
-                text: errMessage.message.toString().includes('backend.')?translate(errMessage.message.toString()):errMessage.message.toString(),
+                text: errMessage.message.toString().includes('backend.')
+                  ? translate(errMessage.message.toString())
+                  : errMessage.message.toString(),
                 type: 'primary',
               });
             }
@@ -185,7 +186,7 @@ class ForgotPassword extends Component {
       passwordErr: null,
       newPasswordErr: null,
     });
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    // let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
@@ -225,7 +226,7 @@ class ForgotPassword extends Component {
         passwordErr: 'pages.register.maxLengthPassword',
       });
     }
-    if (password != newPassword) {
+    if (password !== newPassword) {
       isValid = false;
       this.setState({
         newPasswordConfirmStatus: 'wrong',
@@ -277,7 +278,9 @@ class ForgotPassword extends Component {
                 if (errMessage.message) {
                   Toast.show({
                     title: translate('pages.resetPassword.resetPassword'),
-                    text: errMessage.message.toString().includes('backend.')?translate(errMessage.message.toString()):errMessage.message.toString(),
+                    text: errMessage.message.toString().includes('backend.')
+                      ? translate(errMessage.message.toString())
+                      : errMessage.message.toString(),
                     type: 'primary',
                   });
                 } else if (errMessage.non_field_errors) {
@@ -318,6 +321,9 @@ class ForgotPassword extends Component {
       newPasswordErr,
     } = this.state;
     const {selectedLanguageItem} = this.props;
+
+    const containerPadding = orientation !== 'PORTRAIT' ? 50 : 0;
+
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -329,32 +335,24 @@ class ForgotPassword extends Component {
           <KeyboardAwareScrollView
             keyboardShouldPersistTaps={'handled'}
             behavior={'position'}
-            contentContainerStyle={{padding: 20, flex: Platform.isPad ? 1 : 0}}
+            contentContainerStyle={styles.keyboardScrollContentContainer}
             showsVerticalScrollIndicator={false}>
             <BackHeader onBackPress={() => this.props.navigation.goBack()} />
             <View
-              style={{
-                flex: 1,
-                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-              }}>
+              style={[
+                {
+                  paddingHorizontal: containerPadding,
+                },
+                styles.container,
+              ]}>
               <Text
                 style={[
                   globalStyles.bigSemiBoldText,
-                  {
-                    fontSize: 30,
-                    marginVertical: 50,
-                    opacity: 0.8,
-                  },
+                  styles.resetPasswordText,
                 ]}>
                 {translate('pages.resetPassword.resetPassword')}
               </Text>
-              <View
-                style={{
-                  flex: 1,
-                  width: Platform.isPad ? '75%' : '100%',
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                }}>
+              <View style={styles.subContainer}>
                 <Inputfield
                   isRightSideBtn={true}
                   rightBtnText={translate('common.sms')}
@@ -371,15 +369,7 @@ class ForgotPassword extends Component {
                 />
                 {userNameErr !== null ? (
                   <Text
-                    style={[
-                      globalStyles.smallLightText,
-                      {
-                        textAlign: 'left',
-                        marginTop: -10,
-                        marginStart: 10,
-                        marginBottom: 5,
-                      },
-                    ]}>
+                    style={[globalStyles.smallLightText, styles.usernameText]}>
                     {translate(userNameErr).replace(
                       '[missing {{field}} value]',
                       translate('common.username'),
@@ -388,7 +378,7 @@ class ForgotPassword extends Component {
                 ) : null}
                 <Inputfield
                   onRef={(ref) => {
-                    this.inputs['authCode'] = ref;
+                    this.inputs.authCode = ref;
                   }}
                   placeholder={translate('common.enterYourAuthenticationCode')}
                   value={this.state.authCode}
@@ -400,16 +390,7 @@ class ForgotPassword extends Component {
                   keyboardType={'number-pad'}
                 />
                 {authCodeErr !== null ? (
-                  <Text
-                    style={[
-                      globalStyles.smallLightText,
-                      {
-                        textAlign: 'left',
-                        marginTop: -10,
-                        marginStart: 10,
-                        marginBottom: 5,
-                      },
-                    ]}>
+                  <Text style={[globalStyles.smallLightText, styles.errorText]}>
                     {translate(authCodeErr).replace(
                       '[missing {{field}} value]',
                       translate('common.verificationCode'),
@@ -418,7 +399,7 @@ class ForgotPassword extends Component {
                 ) : null}
                 <Inputfield
                   onRef={(ref) => {
-                    this.inputs['password'] = ref;
+                    this.inputs.password = ref;
                   }}
                   placeholder={translate('pages.setting.newPassword')}
                   value={this.state.password}
@@ -431,16 +412,7 @@ class ForgotPassword extends Component {
                   }}
                 />
                 {passwordErr !== null ? (
-                  <Text
-                    style={[
-                      globalStyles.smallLightText,
-                      {
-                        textAlign: 'left',
-                        marginTop: -10,
-                        marginStart: 10,
-                        marginBottom: 5,
-                      },
-                    ]}>
+                  <Text style={[globalStyles.smallLightText, styles.errorText]}>
                     {passwordErr === 'messages.required'
                       ? translate(passwordErr).replace(
                           '[missing {{field}} value]',
@@ -451,7 +423,7 @@ class ForgotPassword extends Component {
                 ) : null}
                 <Inputfield
                   onRef={(ref) => {
-                    this.inputs['newPassword'] = ref;
+                    this.inputs.newPassword = ref;
                   }}
                   placeholder={translate('pages.setting.confirmPassword')}
                   value={this.state.newPassword}
@@ -463,16 +435,7 @@ class ForgotPassword extends Component {
                   returnKeyType={'done'}
                 />
                 {newPasswordErr !== null ? (
-                  <Text
-                    style={[
-                      globalStyles.smallLightText,
-                      {
-                        textAlign: 'left',
-                        marginTop: -10,
-                        marginStart: 10,
-                        marginBottom: 5,
-                      },
-                    ]}>
+                  <Text style={[globalStyles.smallLightText, styles.errorText]}>
                     {/*{translate(newPasswordErr).replace(*/}
                     {/*'[missing {{field}} value]',*/}
                     {/*translate('pages.resetPassword.repeatPassword'),*/}

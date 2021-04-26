@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { StyleSheet, View } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
-import { ToggleIcon, Time, Scrubber } from './'
+import PropTypes from 'prop-types';
+import React from 'react';
+import {StyleSheet} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {Scrubber, Time, ToggleIcon} from './';
 
 const styles = StyleSheet.create({
   container: {
@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
     height: 35,
     alignSelf: 'stretch',
     // justifyContent: 'flex-end'
-  }
-})
+  },
+});
 
 const ControlBar = (props) => {
   const {
@@ -24,40 +24,46 @@ const ControlBar = (props) => {
     fullscreen,
     theme,
     inlineOnly,
-    hideFullScreenControl
-  } = props
+    hideFullScreenControl,
+  } = props;
 
   return (
-      <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']} style={styles.container}>
-        <Time time={currentTime} theme={theme.seconds} />
-        <Scrubber
-          onSeek={pos => onSeek(pos)}
-          onSeekRelease={pos => onSeekRelease(pos)}
-          progress={progress}
-          theme={{ scrubberThumb: theme.scrubberThumb, scrubberBar: theme.scrubberBar }}
-        />
+    <LinearGradient
+      colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']}
+      style={styles.container}>
+      <Time time={currentTime} theme={theme.seconds} />
+      <Scrubber
+        onSeek={(pos) => onSeek(pos)}
+        onSeekRelease={(pos) => onSeekRelease(pos)}
+        progress={progress}
+        theme={{
+          scrubberThumb: theme.scrubberThumb,
+          scrubberBar: theme.scrubberBar,
+        }}
+      />
+      <ToggleIcon
+        paddingLeft
+        theme={theme.volume}
+        onPress={() => props.toggleMute()}
+        isOn={muted}
+        iconOff="volume-up"
+        iconOn="volume-mute"
+        size={20}
+      />
+      <Time time={duration} theme={theme.duration} />
+      {(!inlineOnly || !hideFullScreenControl) && (
         <ToggleIcon
-          paddingLeft
-          theme={theme.volume}
-          onPress={() => props.toggleMute()}
-          isOn={muted}
-          iconOff="volume-up"
-          iconOn="volume-mute"
-          size={20}
+          paddingRight
+          onPress={() => props.toggleFS()}
+          iconOff="fullscreen"
+          iconOn="fullscreen-exit"
+          isOn={fullscreen}
+          theme={theme.fullscreen}
         />
-        <Time time={duration} theme={theme.duration} />
-        {(!inlineOnly || !hideFullScreenControl) &&
-          <ToggleIcon
-            paddingRight
-            onPress={() => props.toggleFS()}
-            iconOff="fullscreen"
-            iconOn="fullscreen-exit"
-            isOn={fullscreen}
-            theme={theme.fullscreen}
-          />}
-      </LinearGradient>
-  )
-}
+      )}
+    </LinearGradient>
+  );
+};
 
 ControlBar.propTypes = {
   toggleFS: PropTypes.func.isRequired,
@@ -71,7 +77,7 @@ ControlBar.propTypes = {
   progress: PropTypes.number.isRequired,
   currentTime: PropTypes.number.isRequired,
   duration: PropTypes.number.isRequired,
-  theme: PropTypes.object.isRequired
-}
+  theme: PropTypes.object.isRequired,
+};
 
-export { ControlBar }
+export {ControlBar};

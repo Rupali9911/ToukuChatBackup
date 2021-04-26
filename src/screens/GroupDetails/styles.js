@@ -1,8 +1,8 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Images, Colors, Icons, Fonts} from '../../constants';
-const {width, height} = Dimensions.get('window');
+import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Colors, Fonts} from '../../constants';
+const {height} = Dimensions.get('window');
 
-export const groupDetailStyles = StyleSheet.create({
+export default StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 15,
     paddingBottom: 50,
@@ -83,7 +83,51 @@ export const groupDetailStyles = StyleSheet.create({
     height: 18,
     resizeMode: 'contain',
   },
-  frindListContainer: {
+  friendListContainer: {
     paddingHorizontal: 15,
+  },
+  itemContainer: {
+    marginVertical: 5,
+  },
+  loaderContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  gradientContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionContainer: {
+    borderBottomWidth: 4,
+    borderBottomColor: Colors.gradient_2,
+  },
+  searchWrapper: {
+    backgroundColor: Colors.gradient_3,
+    justifyContent: 'center',
+  },
+  aboutContainer: {
+    paddingLeft: 10,
+  },
+  groupContainer: {
+    marginBottom: 10,
+  },
+  editContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  nameStyle: {
+    color: Colors.gradient_2,
+    fontSize: 16,
+    fontFamily: Fonts.regular,
+  },
+  textStyle: {
+    fontSize: 13,
+    fontFamily: Fonts.light,
+  },
+  hyperlinkStyle: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });

@@ -1,35 +1,42 @@
+import axios from 'axios';
 import {
-    client,
-    GET_USER_CONFIG,
-    UPDATE_CHANNEL_MODE,
-    GET_TOUKU_POINTS, apiRoot, userAgent,GET_MAINTENANCE
+  apiRoot,
+  client,
+  GET_TOUKU_POINTS,
+  GET_USER_CONFIG,
+  GET_MAINTENANCE,
+  UPDATE_CHANNEL_MODE,
+  userAgent,
 } from '../../helpers/api';
-import {wSetChannelMode} from '../utility/worker';
-import {UPDATE_CURRENT_FRIEND_BACKGROUND_IMAGE} from "./friendReducer";
-import axios from "axios";
 
 export const SET_USER_CONFIGURATION = 'SET_USER_CONFIGURATION';
-
-export const UPDATE_CHANNEL_MODE_REQUEST = 'UPDATE_CHANNEL_MODE_REQUEST';
-export const UPDATE_CHANNEL_MODE_SUCCESS = 'UPDATE_CHANNEL_MODE_SUCCESS';
-export const UPDATE_CHANNEL_MODE_FAIL = 'UPDATE_CHANNEL_MODE_FAIL';
-export const UPDATE_USER_BACKGROUND_IMAGE = "UPDATE_USER_BACKGROUND_IMAGE";
-export const UPDATE_USER_DISPLAY_NAME = "UPDATE_USER_DISPLAY_NAME";
+export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
 export const GET_UPLOAD_AVATAR_REQUEST = 'GET_UPLOAD_AVATAR_REQUEST';
 export const GET_UPLOAD_AVATAR_SUCCESS = 'GET_UPLOAD_AVATAR_SUCCESS';
 export const GET_UPLOAD_AVATAR_FAIL = 'GET_UPLOAD_AVATAR_FAIL';
-let uuid = require('react-native-uuid');
 
+export const UPDATE_CHANNEL_MODE_REQUEST = 'UPDATE_CHANNEL_MODE_REQUEST';
+export const UPDATE_CHANNEL_MODE_SUCCESS = 'UPDATE_CHANNEL_MODE_SUCCESS';
+export const UPDATE_CHANNEL_MODE_FAIL = 'UPDATE_CHANNEL_MODE_FAIL';
+export const UPDATE_USER_BACKGROUND_IMAGE = 'UPDATE_USER_BACKGROUND_IMAGE';
+export const UPDATE_USER_DISPLAY_NAME = 'UPDATE_USER_DISPLAY_NAME';
+
+const uuid = require('react-native-uuid');
+
+// Reducer initial state
 const initialState = {
   loading: false,
   userConfig: {
-      display_name: '',
-      background_image: ''
+    display_name: '',
+    background_image: '',
   },
 };
 
-export default function (state = initialState, action) {
+/**
+ * Reducer
+ */
+export default (state = initialState, action) => {
   switch (action.type) {
     case SET_USER_CONFIGURATION:
       return {
@@ -44,7 +51,7 @@ export default function (state = initialState, action) {
           ...state.userConfig,
           background_image: action.payload.background_image,
         },
-      }
+      };
     case UPDATE_USER_DISPLAY_NAME:
       return {
         ...state,
@@ -52,7 +59,7 @@ export default function (state = initialState, action) {
           ...state.userConfig,
           display_name: action.payload.display_name,
         },
-      }
+      };
     case UPDATE_CHANNEL_MODE_REQUEST:
       return {
         ...state,
@@ -87,9 +94,12 @@ export default function (state = initialState, action) {
     default:
       return state;
   }
-}
+};
 
-//Update Channel Mode
+/**
+ * Actions
+ */
+
 const updateChannelModeRequest = () => ({
   type: UPDATE_CHANNEL_MODE_REQUEST,
 });
@@ -103,19 +113,28 @@ const updateChannelModeFailure = () => ({
 });
 
 const getUploadAvatarRequest = () => ({
-    type: GET_UPLOAD_AVATAR_REQUEST,
+  type: GET_UPLOAD_AVATAR_REQUEST,
 });
 
 const getUploadAvatarSuccess = () => ({
-    type: GET_UPLOAD_AVATAR_SUCCESS,
+  type: GET_UPLOAD_AVATAR_SUCCESS,
 });
 
 const getUploadAvatarFailure = () => ({
-    type: GET_UPLOAD_AVATAR_FAIL,
+  type: GET_UPLOAD_AVATAR_FAIL,
 });
 
-//Actions
-//Get User Configuration
+// Get User Profile
+const setUserData = (data) => ({
+  type: SET_USER_PROFILE,
+  payload: {
+    data: data,
+  },
+});
+
+// Actions
+
+// Get User Configuration
 const setUserConfig = (data) => ({
   type: SET_USER_CONFIGURATION,
   payload: {
@@ -123,23 +142,84 @@ const setUserConfig = (data) => ({
   },
 });
 
+// Update user background image
 export const updateUserBackgroundImage = (data) => {
-    return {type: UPDATE_USER_BACKGROUND_IMAGE, payload: data};
-}
+  return {type: UPDATE_USER_BACKGROUND_IMAGE, payload: data};
+};
 
+// Update user display name
 export const updateUserDisplayName = (data) => {
   return {type: UPDATE_USER_DISPLAY_NAME, payload: data};
-}
+};
 
-// set channel mode
-export const setChannelMode = (userConfig, channelMode) => (dispatch) =>
+// Get User Profile
+export const getUserProfile = () => (dispatch) =>
   new Promise(function (resolve, reject) {
+    client
+      .get('/profile/')
+      .then((res) => {
+        if (res.id) {
+          if (res.user_type === 'user') {
+            res.user_category = 'anx';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company') {
+            res.user_category = 'anx';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner') {
+            res.user_category = 'anx';
+            res.user_type = 'owner';
+          }
+          // For ANV users
+          if (res.user_type === 'user_anv') {
+            res.user_category = 'anv';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company_anv') {
+            res.user_category = 'anv';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner_anv') {
+            res.user_category = 'anv';
+            res.user_type = 'owner';
+          }
+          // For ANT users
+          if (res.user_type === 'user_ant') {
+            res.user_category = 'ant';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company_ant') {
+            res.user_category = 'ant';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner_ant') {
+            res.user_category = 'ant';
+            res.user_type = 'owner';
+          }
+          // For general users
+          if (res.user_type === 'user_general') {
+            res.user_category = 'general';
+            res.user_type = 'user';
+          } else if (res.user_type === 'company_general') {
+            res.user_category = 'general';
+            res.user_type = 'company';
+          } else if (res.user_type === 'owner_general') {
+            res.user_category = 'general';
+            res.user_type = 'owner';
+          }
+          dispatch(setUserData(res));
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
+// Set channel mode
+export const setChannelMode = (userConfig, channelMode) => (dispatch) =>
+  new Promise(function (resolve) {
     userConfig.channel_mode = channelMode;
     dispatch(setUserConfig(userConfig));
     resolve(userConfig);
   });
 
-//Get User Config
+// Get user config
 export const getUserConfiguration = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
@@ -153,6 +233,7 @@ export const getUserConfiguration = () => (dispatch) =>
       });
   });
 
+// Update channel mode
 export const updateChannelMode = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(updateChannelModeRequest());
@@ -168,10 +249,11 @@ export const updateChannelMode = (data) => (dispatch) =>
       });
   });
 
+// Update configuration
 export const updateConfiguration = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .post(`/xchat/configuration/`, data)
+      .post('/xchat/configuration/', data)
       .then((res) => {
         dispatch(setUserConfig(res));
         resolve(res);
@@ -181,6 +263,7 @@ export const updateConfiguration = (data) => (dispatch) =>
       });
   });
 
+// Get Touku Points
 export const getToukuPoints = (data) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client

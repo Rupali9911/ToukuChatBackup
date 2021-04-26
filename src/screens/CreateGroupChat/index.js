@@ -1,36 +1,38 @@
 import React, {Component} from 'react';
 import {
-  View,
-  ImageBackground,
+  FlatList,
   Image,
-  TouchableOpacity,
+  ImageBackground,
   Text,
   TextInput,
-  FlatList,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import Orientation from 'react-native-orientation';
-import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {createFilter} from 'react-native-search-filter';
 import ImagePicker from 'react-native-image-picker';
-
-import {createGroupStyles} from './styles';
-import {globalStyles} from '../../styles';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Orientation from 'react-native-orientation';
+import {createFilter} from 'react-native-search-filter';
+import {connect} from 'react-redux';
+import Button from '../../components/Button';
+import GroupFriend from '../../components/GroupFriend';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
+import {ListLoader} from '../../components/Loaders';
+import NoData from '../../components/NoData';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
-import GroupFriend from '../../components/GroupFriend';
-import {Images, Icons, Colors} from '../../constants';
-import Button from '../../components/Button';
-import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
+import {Icons, Images} from '../../constants';
 import S3uploadService from '../../helpers/S3uploadService';
-
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
 import {getUserFriends} from '../../redux/reducers/friendReducer';
-import {createNewGroup, getUserGroups, setCurrentGroup} from '../../redux/reducers/groupReducer';
-import {ListLoader} from '../../components/Loaders';
+import {
+  createNewGroup,
+  getUserGroups,
+  setCurrentGroup,
+} from '../../redux/reducers/groupReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {globalStyles} from '../../styles';
 import {getImage} from '../../utils';
+import styles from './styles';
 
 class CreateGroupChat extends Component {
   constructor(props) {
@@ -283,45 +285,35 @@ class CreateGroupChat extends Component {
             // extraScrollHeight={100}
             extraHeight={100}
             behavior={'position'}
-            contentContainerStyle={createGroupStyles.mainContainer}
+            contentContainerStyle={styles.mainContainer}
             showsVerticalScrollIndicator={false}>
-            <View style={createGroupStyles.imageContainer}>
-              <View style={createGroupStyles.imageView}>
+            <View style={styles.imageContainer}>
+              <View style={styles.imageView}>
                 <Image
                   // source={{uri: this.state.groupImagePath.uri}}
                   source={getImage(groupImagePath.uri)}
                   resizeMode={'cover'}
-                  style={createGroupStyles.profileImage}
+                  style={styles.profileImage}
                 />
                 <TouchableOpacity
-                  style={createGroupStyles.cameraButton}
+                  style={styles.cameraButton}
                   onPress={this.chooseFile.bind(this)}>
                   <Image
                     source={Icons.icon_camera}
                     resizeMode={'cover'}
-                    style={createGroupStyles.cameraIcon}
+                    style={styles.cameraIcon}
                   />
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={createGroupStyles.inputesContainer}>
+            <View style={styles.inputesContainer}>
               <InputWithTitle
                 title={translate('pages.xchat.groupName')}
                 value={groupName}
-                onChangeText={(groupName) => this.handleGroupName(groupName)}
+                onChangeText={(text) => this.handleGroupName(text)}
               />
               {groupNameErr !== null ? (
-                <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {
-                      color: Colors.danger,
-                      textAlign: 'left',
-                      marginTop: -10,
-                      marginStart: 10,
-                      marginBottom: 5,
-                    },
-                  ]}>
+                <Text style={[globalStyles.smallLightText, styles.groupName]}>
                   {translate(groupNameErr).replace(
                     '[missing {{field}} value]',
                     translate('pages.xchat.groupName'),
@@ -333,17 +325,14 @@ class CreateGroupChat extends Component {
                 title={translate('pages.xchat.note')}
                 rightTitle={note.length + '/3000'}
                 value={note}
-                onChangeText={(note) => this.setState({note})}
+                onChangeText={(text) => this.setState({note: text})}
                 maxLength={3000}
               />
 
-              <View style={createGroupStyles.searchContainer}>
-                <Image
-                  source={Icons.icon_search}
-                  style={createGroupStyles.iconSearch}
-                />
+              <View style={styles.searchContainer}>
+                <Image source={Icons.icon_search} style={styles.iconSearch} />
                 <TextInput
-                  style={[createGroupStyles.inputStyle]}
+                  style={[styles.inputStyle]}
                   placeholder={translate('pages.xchat.search')}
                   placeholderTextColor={'grey'}
                   onChangeText={(searchText) => this.setState({searchText})}
@@ -355,7 +344,7 @@ class CreateGroupChat extends Component {
               </View>
             </View>
 
-            <View style={createGroupStyles.frindListContainer}>
+            <View style={styles.frindListContainer}>
               {this.renderUserFriends()}
             </View>
             <View>
@@ -400,7 +389,7 @@ const mapDispatchToProps = {
   getUserFriends,
   getUserGroups,
   createNewGroup,
-  setCurrentGroup
+  setCurrentGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGroupChat);

@@ -1,12 +1,10 @@
-import React, {Component, useEffect} from 'react';
-import {
-  SafeAreaView,
-} from 'react-native';
-import {connect} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
+import React, {Component} from 'react';
+import {SafeAreaView} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import {authenticationStyles} from './styles';
+import {connect} from 'react-redux';
 import {store} from '../../redux/store';
+import styles from './styles';
 
 export const translationGetters = {
   en: () => store.getState().languageReducer.en,
@@ -20,8 +18,7 @@ class Authentication extends Component {
   constructor() {
     super();
     this.authenticateUser();
-      this.state = {
-      }
+    this.state = {};
   }
 
   authenticateUser = async () => {
@@ -30,17 +27,17 @@ class Authentication extends Component {
   };
 
   componentDidMount() {
-    setTimeout(()=>{
+    setTimeout(() => {
       SplashScreen.hide();
-    },2000);
+    }, 2000);
   }
 
-    render() {
+  render() {
     return (
       // <ImageBackground
       //   source={Images.image_touku_bg}
       //   style={globalStyles.container}>
-      <SafeAreaView style={authenticationStyles.container}>
+      <SafeAreaView style={styles.container}>
         {/* <ActivityIndicator color={Colors.primary} /> */}
         {/* <Image
           source={Images.image_loading}
@@ -58,8 +55,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {
-
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Authentication);

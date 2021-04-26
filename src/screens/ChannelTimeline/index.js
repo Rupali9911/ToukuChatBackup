@@ -1,17 +1,15 @@
-import React, {Component, Fragment} from 'react';
-import {View, ImageBackground, FlatList, Text, StyleSheet} from 'react-native';
+import React, {Component} from 'react';
+import {ImageBackground, View} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
+import HeaderWithBack from '../../components/Headers/HeaderWithBack';
+import {ListLoader} from '../../components/Loaders';
+import PostCard from '../../components/PostCard';
+import {Images} from '../../constants';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
 // import { createChannelStyles } from './styles';
 import {globalStyles} from '../../styles';
-import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import {Images, Icons, Colors, Fonts} from '../../constants';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getChannelTimeline} from '../../redux/reducers/timelineReducer';
-import PostCard from '../../components/PostCard';
-import {ListLoader} from '../../components/Loaders';
 
 class ChannelTimeline extends Component {
   constructor(props) {
@@ -119,13 +117,6 @@ class ChannelTimeline extends Component {
     );
   }
 }
-
-const createChannelStyles = StyleSheet.create({
-  mainContainer: {
-    paddingBottom: 50,
-    alignItems: 'center',
-  },
-});
 
 const mapStateToProps = (state) => {
   return {

@@ -1,29 +1,23 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Image,
-} from 'react-native';
+import {Image, View} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
-
-import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {Images, Icons, Colors, Fonts} from '../../constants';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import TabBar from '../../components/TabBar';
-import PostCard from '../../components/PostCard';
+import {ListLoader} from '../../components/Loaders';
 import PostChannelCard from '../../components/PostChannelCard';
+import TabBar from '../../components/TabBar';
+import {Icons} from '../../constants';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
 import {
-  getTrendChannel,
   getFollowingChannel,
   getRankingChannel,
-  hidePost,
+  getTrendChannel,
   hideAllPost,
+  hidePost,
   reportPost,
 } from '../../redux/reducers/timelineReducer';
-import LinearGradient from 'react-native-linear-gradient';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import {ListLoader} from '../../components/Loaders';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 // let visibleNewPost = null;
 class Channel extends Component {
@@ -131,7 +125,7 @@ class Channel extends Component {
   pagination = (pageno) => {
     if (this.state.activeTab === 'trend') {
       if (this.props.trendLoadMore) {
-        this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
+        this.pageCount = parseInt(this.pageCount, 10) + parseInt(pageno, 10);
         this.props.getTrendChannel(
           this.props.userData.user_type,
           this.pageCount,
@@ -139,12 +133,12 @@ class Channel extends Component {
       }
     } else if (this.state.activeTab === 'following') {
       if (this.props.followingLoadMore) {
-        this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
+        this.pageCount = parseInt(this.pageCount, 10) + parseInt(pageno, 10);
         this.props.getFollowingChannel(this.pageCount);
       }
     } else if (this.state.activeTab === 'ranking') {
       if (this.props.rankingLoadMore) {
-        this.pageCount = parseInt(this.pageCount) + parseInt(pageno);
+        this.pageCount = parseInt(this.pageCount, 10) + parseInt(pageno, 10);
         this.props.getRankingChannel(
           this.props.userData.user_type,
           this.pageCount,
@@ -169,14 +163,14 @@ class Channel extends Component {
         .then((res) => {
           if (res.status) {
             this.setState({showPostsVisible: false, onRefreshLoad: false});
-            clearInterval(visibleNewPost);
+            // clearInterval(visibleNewPost);
           }
         });
     } else if (activeTab === 'following') {
       this.props.getFollowingChannel(this.pageCount, activeTab).then((res) => {
         if (res.status) {
           this.setState({showPostsVisible: false, onRefreshLoad: false});
-          clearInterval(visibleNewPost);
+          // clearInterval(visibleNewPost);
         }
       });
     } else if (activeTab === 'ranking') {
@@ -189,7 +183,7 @@ class Channel extends Component {
         .then((res) => {
           if (res.status) {
             this.setState({showPostsVisible: false, onRefreshLoad: false});
-            clearInterval(visibleNewPost);
+            // clearInterval(visibleNewPost);
           }
         });
     }
@@ -210,12 +204,12 @@ class Channel extends Component {
       .getTrendChannel(this.props.userData.user_type)
       .then((res) => {
         this.setState({isLoading: false});
-        this.props.getFollowingChannel(this.pageCount).then((res) => {
+        this.props.getFollowingChannel(this.pageCount).then(() => {
           this.setState({isLoading: false});
 
           this.props
             .getRankingChannel(this.props.userData.user_type, this.pageCount)
-            .then((res) => {
+            .then(() => {
               this.setState({isLoading: false});
 
               this.showData();
@@ -247,7 +241,7 @@ class Channel extends Component {
   }
 
   showData() {
-    const {trendChannel, followingChannel, rankingChannel} = this.props;
+    // const {trendChannel, followingChannel, rankingChannel} = this.props;
     // console.log(
     //   'Timeline -> showData -> trendChannel ============>>>>>>>>>>>>>>>',
     //   trendChannel.map((item) => console.log(item.media.audio))
@@ -278,7 +272,7 @@ class Channel extends Component {
   };
 
   hidePost(post) {
-    const {activeTab} = this.state;
+    // const {activeTab} = this.state;
     this.props.hidePost(post.id).then((res) => {
       console.log('Hide post server response', res);
       this.refreshContent();
@@ -286,7 +280,7 @@ class Channel extends Component {
   }
 
   hideAllPost(post) {
-    const {activeTab} = this.state;
+    // const {activeTab} = this.state;
     this.props.hideAllPost(post.channel_id).then((res) => {
       console.log('hideAllPost post server response', res);
       this.refreshContent();
@@ -294,7 +288,7 @@ class Channel extends Component {
   }
 
   reportContent(post) {
-    const {activeTab} = this.state;
+    // const {activeTab} = this.state;
     this.props.reportPost(post.id).then((res) => {
       console.log('reportContent server response', res);
       this.refreshContent();
@@ -330,11 +324,9 @@ class Channel extends Component {
       tabBarItem,
       activeTab,
       menuItems,
-      posts,
       trendChannel,
       followingChannel,
       rankingChannel,
-      showPostsVisible,
     } = this.state;
 
     return (
@@ -347,7 +339,7 @@ class Channel extends Component {
         <View style={globalStyles.container}>
           <TabBar tabBarItem={tabBarItem} activeTab={activeTab} />
           <View
-            style={{flex: 1}}
+            style={styles.container}
             // showsVerticalScrollIndicator={false}
             // onScrollEndDrag={() => this.setState({pageCount: pageCount + 20})}
             // onScrollBeginDrag={() => this.setState({pageCount: pageCount - 20})}

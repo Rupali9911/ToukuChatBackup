@@ -1,41 +1,35 @@
+/* eslint-disable react/no-did-mount-set-state */
 import React, { Component } from 'react';
-import {
-  View,
-  Image,
-} from 'react-native';
+import { Image, View } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
-import { globalStyles } from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import { Images, Icons, Colors, Fonts, SocketEvents } from '../../constants';
-import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
-import TabBar from '../../components/TabBar';
+import { ListLoader } from '../../components/Loaders';
+import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import PostCard from '../../components/PostCard';
+import TabBar from '../../components/TabBar';
+import { Icons, SocketEvents } from '../../constants';
+import { followChannel } from '../../redux/reducers/channelReducer';
+import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
 import {
-  getTrendTimeline,
   getFollowingTimeline,
-  getRankingTimeline,
   getRankingChannelList,
-  hidePost,
+  getRankingTimeline,
+  getTrendTimeline,
   hideAllPost,
+  hidePost,
   reportPost,
+  setActiveTimelineTab,
+  setSpecificPostId,
   updateRankingChannel,
   updateTrendTimeline,
-  setSpecificPostId,
   likeUnlikeTimelinePost,
   updateFollowingTimeline,
   timelinePostComment,
   getPostComments,
   deletePostComment
 } from '../../redux/reducers/timelineReducer';
-import {
-  followChannel
-} from '../../redux/reducers/channelReducer';
-import ConfirmationModal from '../../components/Modals/ConfirmationModal';
-import AsyncStorage from '@react-native-community/async-storage';
-import { resetData } from '../../storage/Service';
-import { ListLoader } from '../../components/Loaders';
-import { setActiveTimelineTab } from '../../redux/reducers/timelineReducer';
+import { globalStyles } from '../../styles';
 import { showToast, eventService } from '../../utils';
 
 class Timeline extends Component {
@@ -46,114 +40,123 @@ class Timeline extends Component {
       orientation: 'PORTRAIT',
       activeTab: 'following',
       isLoading: true,
-      tabBarItem: (this.props.userData.user_type === 'owner' || this.props.userData.user_type === 'company' || this.props.userData.user_type === 'tester') ? [
-        // {
-        //   id: 1,
-        //   title: 'trend',
-        //   icon: Icons.icon_chat,
-        //   action: () => {
-        //     this.setState({activeTab: 'trend'});
-        //     this.props.setActiveTimelineTab('trend');
-        //     this.props
-        //       .getTrendTimeline(this.props.userData.user_type)
-        //       .then((res) => {
-        //         this.setState({isLoading: false});
-        //       })
-        //       .catch((err) => {
-        //         this.setState({isLoading: false});
-        //       });
-        //   },
-        // },
-        {
-          id: 2,
-          title: 'following',
-          icon: Icons.icon_setting,
-          action: () => {
-            this.setState({ activeTab: 'following' });
-            this.props.setActiveTimelineTab('following');
-            this.props
-              .getFollowingTimeline()
-              .then((res) => {
-                this.setState({ isLoading: false });
-              })
-              .catch((err) => {
-                this.setState({ isLoading: false });
-              });
-          },
-        },
-        {
-          id: 3,
-          title: 'ranking',
-          icon: Icons.icon_timeline,
-          action: () => {
-            // this.setState({activeTab: 'ranking'});
-            this.props.setActiveTimelineTab('ranking');
-            // this.props
-            //   .getRankingTimeline(this.props.userData.user_type)
-            //   .then((res) => {
-            //     this.setState({isLoading: false});
-            //   })
-            //   .catch((err) => {
-            //     this.setState({isLoading: false});
-            //   });
-            // this.props.rankingTimeLine && this.props.rankingTimeLine.length===0 && this.props.getRankingChannelList(this.props.rankingTimeLine.length)
-            //   .then((res) => {
-            //     this.setState({ isLoading: false });
-            //     this.showData();
-            //   })
-            //   .catch((err) => {
-            //     this.setState({ isLoading: false });
-            //   });
-          },
-        },
-      ] : [
-          // {
-          //   id: 1,
-          //   title: 'trend',
-          //   icon: Icons.icon_chat,
-          //   action: () => {
-          //     this.setState({activeTab: 'trend'});
-          //     this.props.setActiveTimelineTab('trend');
-          //     this.props
-          //       .getTrendTimeline(this.props.userData.user_type)
-          //       .then((res) => {
-          //         this.setState({isLoading: false});
-          //       })
-          //       .catch((err) => {
-          //         this.setState({isLoading: false});
-          //       });
-          //   },
-          // },
-          {
-            id: 2,
-            title: 'following',
-            icon: Icons.icon_setting,
-            action: () => {
-              this.setState({ activeTab: 'following' });
-              this.props.setActiveTimelineTab('following');
-              this.props
-                .getFollowingTimeline()
-                .then((res) => {
-                  this.setState({ isLoading: false });
-                })
-                .catch((err) => {
-                  this.setState({ isLoading: false });
-                });
+      tabBarItem:
+        this.props.userData.user_type === 'owner' ||
+          this.props.userData.user_type === 'company' ||
+          this.props.userData.user_type === 'tester'
+          ? [
+            // {
+            //   id: 1,
+            //   title: 'trend',
+            //   icon: Icons.icon_chat,
+            //   action: () => {
+            //     this.setState({ activeTab: 'trend' });
+            //     this.props.setActiveTimelineTab('trend');
+            //     this.props
+            //       .getTrendTimeline(this.props.userData.user_type)
+            //       .then((res) => {
+            //         this.setState({ isLoading: false });
+            //       })
+            //       .catch((err) => {
+            //         console.error(err);
+            //         this.setState({ isLoading: false });
+            //       });
+            //   },
+            // },
+            {
+              id: 2,
+              title: 'following',
+              icon: Icons.icon_setting,
+              action: () => {
+                this.setState({ activeTab: 'following' });
+                this.props.setActiveTimelineTab('following');
+                this.props
+                  .getFollowingTimeline()
+                  .then((res) => {
+                    this.setState({ isLoading: false });
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                    this.setState({ isLoading: false });
+                  });
+              },
             },
-          },
-          {
-            id: 3,
-            title: 'ranking',
-            icon: Icons.icon_timeline,
-            action: () => {
-              showToast(
-                'TOUKU',
-                translate('pages.clasrm.comingSoon'),
-                'positive'
-              );
+            {
+              id: 3,
+              title: 'ranking',
+              icon: Icons.icon_timeline,
+              action: () => {
+                // this.setState({activeTab: 'ranking'});
+                this.props.setActiveTimelineTab('ranking');
+                // this.props
+                //   .getRankingTimeline(this.props.userData.user_type)
+                //   .then((res) => {
+                //     this.setState({isLoading: false});
+                //   })
+                //   .catch((err) => {
+                //     this.setState({isLoading: false});
+                //   });
+                // this.props.rankingTimeLine && this.props.rankingTimeLine.length===0 && this.props.getRankingChannelList(this.props.rankingTimeLine.length)
+                //   .then((res) => {
+                //     this.setState({ isLoading: false });
+                //     this.showData();
+                //   })
+                //   .catch((err) => {
+                //     this.setState({ isLoading: false });
+                //   });
+              },
             },
-          },
-        ],
+          ]
+          : [
+            // {
+            //   id: 1,
+            //   title: 'trend',
+            //   icon: Icons.icon_chat,
+            //   action: () => {
+            //     this.setState({ activeTab: 'trend' });
+            //     this.props.setActiveTimelineTab('trend');
+            //     this.props
+            //       .getTrendTimeline(this.props.userData.user_type)
+            //       .then((res) => {
+            //         this.setState({ isLoading: false });
+            //       })
+            //       .catch((err) => {
+            //         console.error(err);
+            //         this.setState({ isLoading: false });
+            //       });
+            //   },
+            // },
+            {
+              id: 2,
+              title: 'following',
+              icon: Icons.icon_setting,
+              action: () => {
+                this.setState({ activeTab: 'following' });
+                this.props.setActiveTimelineTab('following');
+                this.props
+                  .getFollowingTimeline()
+                  .then((res) => {
+                    this.setState({ isLoading: false });
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                    this.setState({ isLoading: false });
+                  });
+              },
+            },
+            {
+              id: 3,
+              title: 'ranking',
+              icon: Icons.icon_timeline,
+              action: () => {
+                showToast(
+                  'TOUKU',
+                  translate('pages.clasrm.comingSoon'),
+                  'positive',
+                );
+              },
+            },
+          ],
       visible: false,
       menuItems: [
         {
@@ -199,8 +202,8 @@ class Timeline extends Component {
     this.setState({ orientation: initial });
 
     this.events = eventService.getMessage().subscribe((message) => {
-          this.checkEventTypes(message);
-      });
+      this.checkEventTypes(message);
+    });
   }
 
   async componentDidMount() {
@@ -225,20 +228,11 @@ class Timeline extends Component {
     //   .then((res) => {
     //     this.setState({isLoading: false});
 
-    //     if(postId && res.status){
-    //       this.specificPosts = res.posts;
-    //     }
-
-    if (postId) {
-      this.props.getTrendTimeline(this.props.userData.user_type, postId)
-        .then((res) => {
-          if (res.status) {
-            this.specificPosts = res.posts;
-          }
-        });
+    if (postId && res.status) {
+      this.specificPosts = res.posts;
     }
 
-    await this.props.getFollowingTimeline().then((res) => {
+    this.props.getFollowingTimeline().then(() => {
       this.setState({ isLoading: false });
       // this.props
       //   .getRankingTimeline(this.props.userData.user_type)
@@ -246,16 +240,14 @@ class Timeline extends Component {
       //     this.setState({isLoading: false});
       //     this.showData();
       //   });
-
-      this.setState({ isLoading: false });
-
-      // if (postId && res.status) {
-      //   this.specificPosts = res.posts;
-      // }
-
-      if (this.props.userData.user_type === 'owner' || this.props.userData.user_type === 'company' || this.props.userData.user_type === 'tester') {
-        this.props.getRankingChannelList(this.props.rankingChannel.length)
-          .then((res) => {
+      if (
+        this.props.userData.user_type === 'owner' ||
+        this.props.userData.user_type === 'company' ||
+        this.props.userData.user_type === 'tester'
+      ) {
+        this.props
+          .getRankingChannelList(this.props.rankingChannel.length)
+          .then(() => {
             this.setState({ isLoading: false });
             this.showData();
           });
@@ -263,21 +255,16 @@ class Timeline extends Component {
         this.setState({ isLoading: false });
         this.showData();
       }
-
-    }).catch((err) => {
-      this.setState({ isLoading: false });
-    });
-    // })
-    // .catch((err) => {
-    //   this.setState({isLoading: false});
-    // });
+    })
+      .catch((err) => {
+        console.error(err);
+        this.setState({ isLoading: false });
+      });
 
     this.focusListener = this.props.navigation.addListener(
       'didBlur',
-      async () =>
-        this.props.setSpecificPostId(null)
+      async () => this.props.setSpecificPostId(null),
     );
-
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -290,7 +277,7 @@ class Timeline extends Component {
     if (nextProps.specificPostId) {
       this.setState({ isLoading: true });
       this.props.getTrendTimeline(this.props.userData.user_type, nextProps.specificPostId)
-      // this.props.getFollowingTimeline(nextProps.specificPostId)
+        // this.props.getFollowingTimeline(nextProps.specificPostId)
         .then((res) => {
           if (res.status) {
             this.specificPosts = res.posts;
@@ -301,7 +288,7 @@ class Timeline extends Component {
   }
 
   checkEventTypes(message) {
-    console.log('event_message',message)
+    console.log('event_message', message)
     switch (message.text.data.type) {
       case SocketEvents.LIKE_TIMELINE_POST:
         this.handlePostLikeUnlike(message);
@@ -316,21 +303,21 @@ class Timeline extends Component {
   }
 
   handlePostLikeUnlike = (message) => {
-    console.log('handlePostLikeUnlike',message);
-    const {followingTimeline} = this.props;
+    console.log('handlePostLikeUnlike', message);
+    const { followingTimeline } = this.props;
     const message_details = message.text.data.message_details;
-    console.log('message_details',message_details);
-    if(followingTimeline && followingTimeline.length>0){
-      let index = followingTimeline.findIndex((value,index)=>{
+    console.log('message_details', message_details);
+    if (followingTimeline && followingTimeline.length > 0) {
+      let index = followingTimeline.findIndex((value, index) => {
         return value.id == message_details.post_id;
       });
-      console.log('index',index);
-      if(index==0 || index>0){
+      console.log('index', index);
+      if (index == 0 || index > 0) {
         let item = followingTimeline[index];
-        if(message_details.user_id == this.props.userData.id){
+        if (message_details.user_id == this.props.userData.id) {
           item.is_liked = message_details.like.like;
         }
-        item.liked_by_count = message_details.like.like?item.liked_by_count+1:item.liked_by_count-1;
+        item.liked_by_count = message_details.like.like ? item.liked_by_count + 1 : item.liked_by_count - 1;
         let array = followingTimeline;
         array.splice(index, 1, item);
         this.props.updateFollowingTimeline(array);
@@ -339,21 +326,21 @@ class Timeline extends Component {
   }
 
   handlePostTimelineComment = (message) => {
-    const {followingTimeline} = this.props;
+    const { followingTimeline } = this.props;
     const message_details = message.text.data.message_details;
-    console.log('message_details',message_details);
-    if(followingTimeline && followingTimeline.length>0){
-      let index = followingTimeline.findIndex((value,index)=>{
+    console.log('message_details', message_details);
+    if (followingTimeline && followingTimeline.length > 0) {
+      let index = followingTimeline.findIndex((value, index) => {
         return value.id == message_details.schedule_post;
       });
-      console.log('index',index);
-      if(index==0 || index>0){
+      console.log('index', index);
+      if (index == 0 || index > 0) {
         let item = followingTimeline[index];
-        let isCommentExists = item.post_comments.findIndex((value,index)=>{
+        let isCommentExists = item.post_comments.findIndex((value, index) => {
           return value.id == message_details.id;
         });
-        if(isCommentExists==-1){
-          item.post_comments.splice(0,0,message_details);
+        if (isCommentExists == -1) {
+          item.post_comments.splice(0, 0, message_details);
           let array = followingTimeline;
           array.splice(index, 1, item);
           this.props.updateFollowingTimeline(array);
@@ -363,21 +350,21 @@ class Timeline extends Component {
   }
 
   handlePostCommentDelete = (message) => {
-    const {followingTimeline} = this.props;
+    const { followingTimeline } = this.props;
     const message_details = message.text.data.message_details;
-    console.log('message_details',message_details);
-    if(followingTimeline && followingTimeline.length>0){
-      let index = followingTimeline.findIndex((value,index)=>{
+    console.log('message_details', message_details);
+    if (followingTimeline && followingTimeline.length > 0) {
+      let index = followingTimeline.findIndex((value, index) => {
         return value.id == message_details.post_id;
       });
-      console.log('index',index);
-      if(index==0 || index>0){
+      console.log('index', index);
+      if (index == 0 || index > 0) {
         let item = followingTimeline[index];
-        let commentIndex = item.post_comments.findIndex((value,index)=>{
+        let commentIndex = item.post_comments.findIndex((value, index) => {
           return value.id == message_details.comment_id;
         });
-        if(commentIndex>-1){
-          item.post_comments.splice(commentIndex,1);
+        if (commentIndex > -1) {
+          item.post_comments.splice(commentIndex, 1);
           let array = followingTimeline;
           array.splice(index, 1, item);
           this.props.updateFollowingTimeline(array);
@@ -387,7 +374,7 @@ class Timeline extends Component {
   }
 
   showData() {
-    const { trendTimline, followingTimeline, rankingTimeLine } = this.props;
+    // const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
   }
 
   _orientationDidChange = (orientation) => {
@@ -418,14 +405,14 @@ class Timeline extends Component {
   }
 
   hideAllPost(post) {
-    const { activeTab } = this.state;
+    // const {activeTab} = this.state;
     this.props.hideAllPost(post.channel_id).then((res) => {
       this.refreshContent();
     });
   }
 
   reportContent(post) {
-    const { activeTab } = this.state;
+    // const {activeTab} = this.state;
     this.props.reportPost(post.id).then((res) => {
       this.refreshContent();
     });
@@ -487,7 +474,7 @@ class Timeline extends Component {
             translate('pages.xchat.toastr.AddedToNewChannel'),
             'positive',
           );
-          if(trendTimline && trendTimline.length>0){
+          if (trendTimline && trendTimline.length > 0) {
             let item = trendTimline[index];
             item.is_following = true;
             let array = trendTimline;
@@ -497,12 +484,9 @@ class Timeline extends Component {
         }
       })
       .catch((err) => {
+        console.error(err);
         onFinish();
-        showToast(
-          'TOUKU',
-          translate('common.somethingWentWrong'),
-          'primary',
-        );
+        showToast('TOUKU', translate('common.somethingWentWrong'), 'primary');
         this.isFollowing = false;
         this.setState({
           isLoading: false,
@@ -510,11 +494,11 @@ class Timeline extends Component {
       });
   };
 
-  likeUnlikePost = (id,action,index) => {
-    const {followingTimeline} = this.props;
-    this.props.likeUnlikeTimelinePost(id,action).then((res)=>{
-      if(res){
-        console.log('response',res);
+  likeUnlikePost = (id, action, index) => {
+    const { followingTimeline } = this.props;
+    this.props.likeUnlikeTimelinePost(id, action).then((res) => {
+      if (res) {
+        console.log('response', res);
         // if(followingTimeline && followingTimeline.length>0){
         //   let item = followingTimeline[index];
         //   item.is_liked = res.like;
@@ -525,18 +509,18 @@ class Timeline extends Component {
         //   this.props.updateFollowingTimeline(array);
         // }
       }
-    }).catch((err)=>{
-      console.log('error',err);
+    }).catch((err) => {
+      console.log('error', err);
     });
   }
 
-  createCommentOnPost = (id,text) => {
-    this.props.timelinePostComment(id,text).then((res)=>{
-      if(res){
-        console.log('response comment',res);
+  createCommentOnPost = (id, text) => {
+    this.props.timelinePostComment(id, text).then((res) => {
+      if (res) {
+        console.log('response comment', res);
       }
-    }).catch((err)=>{
-      console.log('err',err);
+    }).catch((err) => {
+      console.log('err', err);
     });
   }
 
@@ -555,21 +539,14 @@ class Timeline extends Component {
   };
 
   render() {
-    const {
-      tabBarItem,
-      menuItems,
-      posts,
-      orientation,
-      showConfirmation,
-    } = this.state;
+    const { tabBarItem, menuItems, orientation, showConfirmation } = this.state;
     const {
       trendTimline,
       followingTimeline,
-      rankingTimeLine,
       rankingChannel,
       rankingLoadMore,
       loading,
-      activeTab
+      activeTab,
     } = this.props;
 
     let postId = this.props.specificPostId;
@@ -591,7 +568,7 @@ class Timeline extends Component {
           {this.state.isLoading ? (
             <ListLoader justifyContent={'flex-start'} />
           ) : (
-              <View style={{ flex: 1 }}>
+              <View style={globalStyles.container}>
                 {
                   // activeTab === 'trend' ? (
                   //   <PostCard
@@ -617,10 +594,9 @@ class Timeline extends Component {
                       getPostComments={this.props.getPostComments}
                       deleteComment={this.props.deletePostComment}
                     />
+                  ) : loading && rankingChannel.length <= 0 ? (
+                    <ListLoader justifyContent={'flex-start'} />
                   ) : (
-                      loading && rankingChannel.length <= 0 ? (
-                        <ListLoader justifyContent={'flex-start'} />
-                      ) :
                         <PostCard
                           menuItems={menuItems}
                           posts={rankingChannel}
@@ -682,7 +658,7 @@ const mapStateToProps = (state) => {
     rankingLoadMore: state.timelineReducer.rankingLoadMore,
     activeTab: state.timelineReducer.activeTab,
     userData: state.userReducer.userData,
-    specificPostId: state.timelineReducer.specificPostId
+    specificPostId: state.timelineReducer.specificPostId,
   };
 };
 

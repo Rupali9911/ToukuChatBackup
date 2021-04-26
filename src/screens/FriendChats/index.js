@@ -1,73 +1,68 @@
+import moment from 'moment';
 import React, {Component} from 'react';
 import {ImageBackground, PermissionsAndroid, Platform} from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
-import moment from 'moment';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
+import Orientation from 'react-native-orientation';
+// let uuid = require('react-native-uuid')
+import uuid from 'react-native-uuid';
+import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
-
-import {ChatHeader} from '../../components/Headers';
 import ChatContainer from '../../components/ChatContainer';
-import {globalStyles} from '../../styles';
-import {Images, SocketEvents, appleStoreUserId, Icons} from '../../constants';
+import {ChatHeader} from '../../components/Headers';
+import {ListLoader, OpenLoader} from '../../components/Loaders';
 import {
   ConfirmationModal,
-  UploadSelectModal,
+  DeleteOptionModal,
   ShowAttahmentModal,
   ShowGalleryModal,
-  DeleteOptionModal
 } from '../../components/Modals';
-import {ListLoader} from '../../components/Loaders';
-import {UploadLoader} from '../../components/Loaders';
-import {OpenLoader} from '../../components/Loaders';
+import Toast from '../../components/Toast';
+import {appleStoreUserId, Icons, Images, SocketEvents} from '../../constants';
+import S3uploadService from '../../helpers/S3uploadService';
+import {
+  sendFriendRequest,
+  setAcceptedRequest,
+} from '../../redux/reducers/addFriendReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
+import {
+  addNewSendMessage,
+  deleteFriendObject,
+  deleteMultiplePersonalMessage,
+  deletePersonalMessage,
+  editPersonalMessage,
+  getPersonalConversation,
+  getUserFriends,
+  markFriendMsgsRead,
+  pinFriend,
+  resetFriendConversation,
+  sendPersonalMessage,
+  setCurrentFriend,
+  setFriendConversation,
+  setUserFriends,
+  unFriendUser,
+  unpinFriend,
+  unSendPersonalMessage,
+  updateUnreadFriendMsgsCounts,
+} from '../../redux/reducers/friendReducer';
 import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
-import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
-  getPersonalConversation,
-  sendPersonalMessage,
-  unFriendUser,
-  getUserFriends,
-  editPersonalMessage,
-  markFriendMsgsRead,
-  unSendPersonalMessage,
-  deletePersonalMessage,
-  setFriendConversation,
-  addNewSendMessage,
-  resetFriendConversation,
-  updateUnreadFriendMsgsCounts,
-  setUserFriends,
-  deleteMultiplePersonalMessage,
-  pinFriend,
-  unpinFriend,
-  deleteFriendObject,
-  setCurrentFriend,
-} from '../../redux/reducers/friendReducer';
-import {sendFriendRequest,setAcceptedRequest} from '../../redux/reducers/addFriendReducer';
-import Toast from '../../components/Toast';
-import {eventService, realmToPlainObject} from '../../utils';
-import S3uploadService from '../../helpers/S3uploadService';
-import {
-  setFriendChatConversation,
-  getFriendChatConversationById,
-  getFriendChatConversation,
-  updateFriendMessageById,
   deleteFriendMessageById,
+  getFriendChatConversationById,
+  removeUserFriends,
   setFriendMessageUnsend,
   updateAllFriendMessageRead,
-  updateFriendsUnReadCount,
   updateFriendLastMsgWithoutCount,
-  updateUserFriendsWhenPined,
-  updateUserFriendsWhenUnpined,
-  removeUserFriends,
+  updateFriendMessageById,
+  updateFriendsUnReadCount,
   updateFriendTranslatedMessage,
 } from '../../storage/Service';
+import {globalStyles} from '../../styles';
+import {realmToPlainObject} from '../../utils';
 
-// let uuid = require('react-native-uuid')
-import uuid from 'react-native-uuid';
 class FriendChats extends Component {
   constructor(props) {
     super(props);
@@ -248,9 +243,12 @@ class FriendChats extends Component {
 
   static navigationOptions = ({navigation}) => {
     return {
-      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
-    }
-  }
+      gesturesEnabled:
+        navigation.state.params && navigation.state.params.isAudioPlaying
+          ? false
+          : true,
+    };
+  };
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
@@ -274,7 +272,7 @@ class FriendChats extends Component {
   }
 
   onPinUnpinFriend = () => {
-    const {currentFriend, userData} = this.props;
+    const {currentFriend} = this.props;
     const data = {};
     if (currentFriend.is_pined) {
       this.props
@@ -289,6 +287,7 @@ class FriendChats extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -308,6 +307,7 @@ class FriendChats extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -329,7 +329,7 @@ class FriendChats extends Component {
 
     this.props.updateUnreadFriendMsgsCounts(0);
 
-    this.props.setUserFriends().then((res) => {
+    this.props.setUserFriends().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -394,8 +394,7 @@ class FriendChats extends Component {
     if (sentMessageType === 'doc') {
       let file = uploadFile.uri;
       let files = [file];
-      let fileType = uploadFile.type;
-      console.log('file', uploadFile)
+      console.log('file', uploadFile);
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
         uploadFile.type,
@@ -403,9 +402,9 @@ class FriendChats extends Component {
           console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
         },
-          uploadFile.name
+        uploadFile.name,
       );
-      console.log('uploadedApplication', uploadedApplication)
+      console.log('uploadedApplication', uploadedApplication);
       msgText = uploadedApplication;
     }
 
@@ -544,10 +543,12 @@ class FriendChats extends Component {
 
     this.props
       .editPersonalMessage(editMessageId, data)
-      .then((res) => {
+      .then(() => {
         this.getPersonalConversation();
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.error(err);
+      });
     this.setState({
       sendingMedia: false,
     });
@@ -583,20 +584,20 @@ class FriendChats extends Component {
 
   checkEventTypes(message) {
     const {currentFriend, userData} = this.props;
-    const {conversations} = this.state;
+    // const {conversations} = this.state;
 
-    var valueArr = conversations.map(function (item) {
-      return item.id;
-    });
-    var isDuplicate = valueArr.some(function (item, idx) {
-      return valueArr.indexOf(item) != idx;
-    });
+    // var valueArr = conversations.map(function (item) {
+    //   return item.id;
+    // });
+    // var isDuplicate = valueArr.some(function (item, idx) {
+    //   return valueArr.indexOf(item) !== idx;
+    // });
 
     // //New Message in Friend
-    // if (message.text.data.type == SocketEvents.NEW_MESSAGE_IN_FREIND) {
-    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    // if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
+    //   if (message.text.data.message_details.from_user.id === userData.id) {
     //     if (
-    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //       message.text.data.message_details.to_user.id === currentFriend.user_id
     //     ) {
     //       // if (!isDuplicate) {
     //       //   conversations.unshift(message.text.data.message_details);
@@ -607,7 +608,7 @@ class FriendChats extends Component {
     //       this.getLocalFriendConversation();
     //       this.markFriendMsgsRead();
     //     }
-    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //   } else if (message.text.data.message_details.to_user.id === userData.id) {
     //     if (
     //       message.text.data.message_details.from_user.id ==
     //       currentFriend.user_id
@@ -621,16 +622,16 @@ class FriendChats extends Component {
     // }
 
     // Unsend Message in Friend
-    // if (message.text.data.type == SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
-    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    // if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
+    //   if (message.text.data.message_details.from_user.id === userData.id) {
     //     if (
-    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //       message.text.data.message_details.to_user.id === currentFriend.user_id
     //     ) {
     //       // this.getPersonalConversation();
     //       setFriendMessageUnsend(message.text.data.message_details.id);
     //       this.getLocalFriendConversation();
     //     }
-    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //   } else if (message.text.data.message_details.to_user.id === userData.id) {
     //     if (
     //       message.text.data.message_details.from_user.id ==
     //       currentFriend.user_id
@@ -643,10 +644,10 @@ class FriendChats extends Component {
     // }
 
     // DELETE_MESSAGE_IN_FRIEND
-    // if (message.text.data.type == SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
-    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    // if (message.text.data.type === SocketEvents.DELETE_MESSAGE_IN_FRIEND) {
+    //   if (message.text.data.message_details.from_user.id === userData.id) {
     //     if (
-    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //       message.text.data.message_details.to_user.id === currentFriend.user_id
     //     ) {
     //       deleteFriendMessageById(message.text.data.message_details.id);
     //       let chat = getFriendChatConversationById(
@@ -654,7 +655,7 @@ class FriendChats extends Component {
     //       );
     //       this.props.setFriendConversation(chat);
     //     }
-    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //   } else if (message.text.data.message_details.to_user.id === userData.id) {
     //     if (
     //       message.text.data.message_details.from_user.id ==
     //       currentFriend.user_id
@@ -669,10 +670,10 @@ class FriendChats extends Component {
     // }
 
     // MESSAGE_EDITED_IN_FRIEND
-    // if (message.text.data.type == SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
-    //   if (message.text.data.message_details.from_user.id == userData.id) {
+    // if (message.text.data.type === SocketEvents.MESSAGE_EDITED_IN_FRIEND) {
+    //   if (message.text.data.message_details.from_user.id === userData.id) {
     //     if (
-    //       message.text.data.message_details.to_user.id == currentFriend.user_id
+    //       message.text.data.message_details.to_user.id === currentFriend.user_id
     //     ) {
     //       let editMessageId = message.text.data.message_details.id;
     //       let newMessageText = message.text.data.message_details.message_body;
@@ -680,7 +681,7 @@ class FriendChats extends Component {
     //       updateFriendMessageById(editMessageId, newMessageText, messageType);
     //       this.getLocalFriendConversation();
     //     }
-    //   } else if (message.text.data.message_details.to_user.id == userData.id) {
+    //   } else if (message.text.data.message_details.to_user.id === userData.id) {
     //     if (
     //       message.text.data.message_details.from_user.id ==
     //       currentFriend.user_id
@@ -695,24 +696,24 @@ class FriendChats extends Component {
     // }
 
     //READ_ALL_MESSAGE_FRIEND_CHAT
-    if (message.text.data.type == SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
-      if (message.text.data.message_details.read_by == userData.id) {
+    if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
+      if (message.text.data.message_details.read_by === userData.id) {
         // this.getPersonalConversation();
         updateAllFriendMessageRead(message.text.data.message_details.friend_id);
       }
     }
 
     //PINED_FRIEND
-    if (message.text.data.type == SocketEvents.PINED_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
+    if (message.text.data.type === SocketEvents.PINED_FRIEND) {
+      if (message.text.data.message_details.from_user.id === userData.id) {
         if (
-          message.text.data.message_details.to_user.id == currentFriend.user_id
+          message.text.data.message_details.to_user.id === currentFriend.user_id
         ) {
           this.getPersonalConversation();
         }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
+      } else if (message.text.data.message_details.to_user.id === userData.id) {
         if (
-          message.text.data.message_details.from_user.id ==
+          message.text.data.message_details.from_user.id ===
           currentFriend.user_id
         ) {
           this.getPersonalConversation();
@@ -721,16 +722,16 @@ class FriendChats extends Component {
     }
 
     //UNPINED_FRIEND
-    if (message.text.data.type == SocketEvents.UNPINED_FRIEND) {
-      if (message.text.data.message_details.from_user.id == userData.id) {
+    if (message.text.data.type === SocketEvents.UNPINED_FRIEND) {
+      if (message.text.data.message_details.from_user.id === userData.id) {
         if (
-          message.text.data.message_details.to_user.id == currentFriend.user_id
+          message.text.data.message_details.to_user.id === currentFriend.user_id
         ) {
           this.getPersonalConversation();
         }
-      } else if (message.text.data.message_details.to_user.id == userData.id) {
+      } else if (message.text.data.message_details.to_user.id === userData.id) {
         if (
-          message.text.data.message_details.from_user.id ==
+          message.text.data.message_details.from_user.id ===
           currentFriend.user_id
         ) {
           this.getPersonalConversation();
@@ -824,11 +825,11 @@ class FriendChats extends Component {
         if (res.status === true && res.conversation.length > 0) {
           // this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
-          let chat = getFriendChatConversationById(
+          let friendChat = getFriendChatConversationById(
             this.props.currentFriend.friend,
           );
           let conversations = [];
-          conversations = realmToPlainObject(chat);
+          conversations = realmToPlainObject(friendChat);
           // conversations = chat.toJSON();
           // chat.map((item, index) => {
           //   let i = {
@@ -863,15 +864,15 @@ class FriendChats extends Component {
   handleMessage(message) {
     this.setState({newMessageText: message});
     // friend
-    const payload = {
-      type: SocketEvents.FRIEND_TYPING_MESSAGE,
-      data: {
-        sender: this.props.userData.id,
-        receiver: this.props.currentFriend.user_id,
-        chat_type: 'personal',
-        channel_name: '',
-      },
-    };
+    // const payload = {
+    //   type: SocketEvents.FRIEND_TYPING_MESSAGE,
+    //   data: {
+    //     sender: this.props.userData.id,
+    //     receiver: this.props.currentFriend.user_id,
+    //     chat_type: 'personal',
+    //     channel_name: '',
+    //   },
+    // };
   }
 
   onAddFriend = () => {
@@ -966,7 +967,7 @@ class FriendChats extends Component {
         this.toggleDeleteObjectConfirmationModal();
         if (res && res.status) {
           removeUserFriends(currentFriend.user_id);
-          this.props.setUserFriends().then((res) => {
+          this.props.setUserFriends().then(() => {
             this.props.setCommonChatConversation();
           });
           Toast.show({
@@ -998,7 +999,7 @@ class FriendChats extends Component {
 
   onCancelDeleteOption = () => {
     this.toggleMessageDeleteOptionConfirmationModal();
-  }
+  };
 
   onCancelDelete = () => {
     this.toggleMessageDeleteConfirmationModal();
@@ -1012,12 +1013,13 @@ class FriendChats extends Component {
       };
       this.props
         .deletePersonalMessage(this.state.selectedMessageId, payload)
-        .then((res) => {
+        .then(() => {
           deleteFriendMessageById(this.state.selectedMessageId);
           this.getPersonalConversation();
 
           if (
-            this.props.currentFriend.last_msg_id == this.state.selectedMessageId
+            this.props.currentFriend.last_msg_id ===
+            this.state.selectedMessageId
           ) {
             let chat = getFriendChatConversationById(
               this.props.currentFriend.friend,
@@ -1036,7 +1038,7 @@ class FriendChats extends Component {
                   created: array[0].timestamp,
                 },
               );
-              this.props.setUserFriends().then((res) => {
+              this.props.setUserFriends().then(() => {
                 this.props.setCommonChatConversation();
               });
             }
@@ -1050,21 +1052,21 @@ class FriendChats extends Component {
     if (this.state.selectedIds.length > 0) {
       let payload = {
         message_ids: this.state.selectedIds,
-        delete_type: delete_type
+        delete_type: delete_type,
       };
 
-      if(delete_type==='DELETE_FOR_EVERYONE'){
+      if (delete_type === 'DELETE_FOR_EVERYONE') {
         this.setState({isDeleteEveryoneLoading: true});
-      }else{
+      } else {
         this.setState({isDeleteMeLoading: true});
       }
 
-      console.log('payload',payload);
+      console.log('payload', payload);
 
       this.state.selectedIds.map((item) => {
         deleteFriendMessageById(item);
 
-        if (this.props.currentFriend.last_msg_id == item) {
+        if (this.props.currentFriend.last_msg_id === item) {
           let chat = getFriendChatConversationById(
             this.props.currentFriend.friend,
           );
@@ -1079,7 +1081,7 @@ class FriendChats extends Component {
               message_body: array[0].message_body,
               created: array[0].timestamp,
             });
-            this.props.setUserFriends().then((res) => {
+            this.props.setUserFriends().then(() => {
               this.props.setCommonChatConversation();
             });
           }
@@ -1088,26 +1090,30 @@ class FriendChats extends Component {
       this.getLocalFriendConversation();
       this.setState({isMultiSelect: false, selectedIds: []});
 
-      this.props.deleteMultiplePersonalMessage(payload).then((res) => {
-        //console.log(res);
-        this.setState({
-          isDeleteEveryoneLoading: false,
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
+      this.props
+        .deleteMultiplePersonalMessage(payload)
+        .then((res) => {
+          //console.log(res);
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
+          if (res && res.status) {
+          } else {
+            this.getPersonalConversation();
+          }
+        })
+        .catch(() => {
+          console.error(err);
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
         });
-        if (res && res.status) {
-        } else {
-          this.getPersonalConversation();
-        }
-      }).catch((err)=>{
-        this.setState({
-          isDeleteEveryoneLoading: false,
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
-        });
-      });
     }
   };
 
@@ -1125,7 +1131,7 @@ class FriendChats extends Component {
       setFriendMessageUnsend(this.state.selectedMessageId);
       this.props
         .unSendPersonalMessage(this.state.selectedMessageId, payload)
-        .then((res) => {
+        .then(() => {
           // this.getPersonalConversation();
           Toast.show({
             title: 'TOUKU',
@@ -1149,18 +1155,18 @@ class FriendChats extends Component {
     let arr = this.state.selectedIds;
     let isDeleteEveryOption = true;
 
-    chatFriendConversation.map((item)=>{
-      if(arr.includes(item.id+'') && item.from_user.id !== userData.id){
+    chatFriendConversation.map((item) => {
+      if (arr.includes(item.id + '') && item.from_user.id !== userData.id) {
         isDeleteEveryOption = false;
         return;
       }
-    })
+    });
 
-    if(isDeleteEveryOption){
+    if (isDeleteEveryOption) {
       this.setState({
         showMoreMessageDeleteConfirmationModal: true,
       });
-    }else{
+    } else {
       this.setState({
         showMessageDeleteConfirmationModal: true,
       });
@@ -1319,7 +1325,7 @@ class FriendChats extends Component {
       this.setState({
         uploadedFiles: [...this.state.uploadedFiles, ...results],
       });
-      console.log('results', results)
+      console.log('results', results);
       this.toggleAttachmentModal(true);
       // for (const res of results) {
       //   let fileType = res.type.substr(0, res.type.indexOf('/'));
@@ -1460,7 +1466,7 @@ class FriendChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'image') {
+      } else if (fileType === 'image') {
         await this.setState(
           {
             uploadFile: source,
@@ -1471,7 +1477,7 @@ class FriendChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'video') {
+      } else if (fileType === 'video') {
         await this.setState(
           {
             uploadFile: source,
@@ -1501,7 +1507,6 @@ class FriendChats extends Component {
 
   render() {
     const {
-      conversations,
       newMessageText,
       showConfirmationModal,
       showMessageDeleteConfirmationModal,
@@ -1519,8 +1524,8 @@ class FriendChats extends Component {
       isDeleteMeLoading,
       isDeleteEveryoneLoading,
     } = this.state;
-    const {currentFriend, chatsLoading, chatFriendConversation} = this.props;
-   // console.log('currentFriend', currentFriend);
+    const {currentFriend, chatFriendConversation} = this.props;
+    // console.log('currentFriend', currentFriend);
 
     return (
       <ImageBackground
@@ -1591,23 +1596,24 @@ class FriendChats extends Component {
               this.setState({isMultiSelect: false, selectedIds: []});
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
-            showOpenLoader={(isLoading) =>
-            {console.log('showOpenLoader in Friend Chat', isLoading)
-                this.setState({openDoc: isLoading})}}
+            showOpenLoader={(isLoading) => {
+              console.log('showOpenLoader in Friend Chat', isLoading);
+              this.setState({openDoc: isLoading});
+            }}
             isChatDisable={
               currentFriend.friend_status === 'UNFRIEND' ||
               currentFriend.friend_status === 'REQUESTED'
             }
-            onMediaPlay = {(isPlay)=>{
-              if(isPlay){
+            onMediaPlay={(isPlay) => {
+              if (isPlay) {
                 console.log('palying media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: true
+                  isAudioPlaying: true,
                 });
-              }else{
+              } else {
                 console.log('pause media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: false
+                  isAudioPlaying: false,
                 });
               }
             }}
@@ -1637,7 +1643,10 @@ class FriendChats extends Component {
         <ConfirmationModal
           visible={showMessageDeleteConfirmationModal}
           onCancel={this.onCancelDelete.bind(this)}
-          onConfirm={this.onConfirmMultipleMessageDelete.bind(this, 'DELETE_FOR_ME')}
+          onConfirm={this.onConfirmMultipleMessageDelete.bind(
+            this,
+            'DELETE_FOR_ME',
+          )}
           orientation={orientation}
           title={translate('pages.xchat.toastr.areYouSure')}
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
@@ -1698,7 +1707,7 @@ class FriendChats extends Component {
           message={translate('pages.xchat.youWantToDeleteThisMessage')}
           isDeleteMeLoading={isDeleteMeLoading}
           isDeleteEveryoneLoading={isDeleteEveryoneLoading}
-          />
+        />
 
         {openDoc && <OpenLoader />}
       </ImageBackground>
@@ -1714,7 +1723,7 @@ const mapStateToProps = (state) => {
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
-    acceptedRequest: state.addFriendReducer.acceptedRequest
+    acceptedRequest: state.addFriendReducer.acceptedRequest,
   };
 };
 
@@ -1740,7 +1749,7 @@ const mapDispatchToProps = {
   deleteFriendObject,
   setCurrentFriend,
   sendFriendRequest,
-  setAcceptedRequest
+  setAcceptedRequest,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendChats);

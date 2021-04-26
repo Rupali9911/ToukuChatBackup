@@ -1,61 +1,53 @@
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+} from '@invertase/react-native-apple-authentication';
+import AsyncStorage from '@react-native-community/async-storage';
+import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import auth from '@react-native-firebase/auth';
+import KakaoLogins from '@react-native-seoul/kakao-login';
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
+  ActivityIndicator,
   ImageBackground,
-  SafeAreaView,
+  Keyboard,
   NativeModules,
   Platform,
-  Keyboard,
-  ActivityIndicator,
+  SafeAreaView,
+  Text,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
-import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
-import {LoginManager, AccessToken} from 'react-native-fbsdk';
-import LineLogin from 'react-native-line-sdk';
-import auth from '@react-native-firebase/auth';
-import * as RNLocalize from 'react-native-localize';
+import {AccessToken, LoginManager} from 'react-native-fbsdk';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
+import LineLogin from 'react-native-line-sdk';
+import * as RNLocalize from 'react-native-localize';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
-import Inputfield from '../../components/InputField';
-import CheckBox from '../../components/CheckBox';
-import {Colors, Images, Icons, supportUrl, termsUrl} from '../../constants';
 import {BackHeader} from '../../components/Headers';
-import {loginStyles} from './styles';
+import Inputfield from '../../components/InputField';
 import LanguageSelector from '../../components/LanguageSelector';
-import {SocialLogin} from '../LoginSignUp';
-import {globalStyles} from '../../styles';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
-import {
-  getUserProfile,
-  facebookRegister,
-  googleRegister,
-  twitterRegister,
-  lineRegister,
-  kakaoRegister,
-  appleRegister,
-} from '../../redux/reducers/userReducer';
-import {userLogin} from '../../redux/reducers/loginReducer';
 import Toast from '../../components/Toast';
-import AsyncStorage from '@react-native-community/async-storage';
-import KakaoLogins from '@react-native-seoul/kakao-login';
-const {RNTwitterSignIn} = NativeModules;
-
-import appleAuth, {
-  AppleButton,
-  AppleAuthRequestScope,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
-
-import {getSNSCheck} from '../../redux/reducers/loginReducer';
-import {getParamsFromURL} from '../../utils';
-import {store} from '../../redux/store';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {setCurrentChannel} from '../../redux/reducers/channelReducer';
-import NavigationService from '../../navigation/NavigationService';
 import WebViewClass from '../../components/WebView';
+import {Icons, Images, supportUrl} from '../../constants';
+import {setCurrentChannel} from '../../redux/reducers/channelReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {getSNSCheck, userLogin} from '../../redux/reducers/loginReducer';
+import {
+  appleRegister,
+  facebookRegister,
+  getUserProfile,
+  googleRegister,
+  kakaoRegister,
+  lineRegister,
+  twitterRegister,
+} from '../../redux/reducers/userReducer';
+import {globalStyles} from '../../styles';
+import {getParamsFromURL} from '../../utils';
+import {SocialLogin} from '../LoginSignUp';
+import styles from './styles';
+
+const {RNTwitterSignIn} = NativeModules;
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -310,12 +302,12 @@ class Login extends Component {
         );
         this.props
           .facebookRegister(facebookLoginData)
-          .then(async (res) => {
+          .then(async (response) => {
             this.setState({isLoading: false});
-            console.log('JWT TOKEN=> ', JSON.stringify(res));
-            if (res.token) {
-              let status = res.status;
-              let isEmail = res.email_required;
+            console.log('JWT TOKEN=> ', JSON.stringify(response));
+            if (response.token) {
+              let status = response.status;
+              let isEmail = response.email_required;
               if (!status) {
                 if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
@@ -330,7 +322,7 @@ class Login extends Component {
                 });
                 return;
               }
-              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.setItem('userToken', response.token);
               await AsyncStorage.removeItem('socialToken');
               this.props.navigation.navigate('App');
 
@@ -344,10 +336,10 @@ class Login extends Component {
               }
               return;
             }
-            if (res.error) {
+            if (response.error) {
               Toast.show({
                 title: translate('common.loginFailed'),
-                text: translate(res.error.toString()),
+                text: translate(response.error.toString()),
                 type: 'primary',
               });
             }
@@ -420,12 +412,12 @@ class Login extends Component {
         console.log('twitterLoginData', twitterLoginData);
         this.props
           .twitterRegister(twitterLoginData)
-          .then(async (res) => {
+          .then(async (reuslt) => {
             this.setState({isLoading: false});
-            console.log('JWT TOKEN=> ', JSON.stringify(res));
-            if (res.token) {
-              let status = res.status;
-              let isEmail = res.email_required;
+            console.log('JWT TOKEN=> ', JSON.stringify(reuslt));
+            if (reuslt.token) {
+              let status = reuslt.status;
+              let isEmail = reuslt.email_required;
               if (!status) {
                 if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
@@ -440,7 +432,7 @@ class Login extends Component {
                 });
                 return;
               }
-              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.setItem('userToken', reuslt.token);
               await AsyncStorage.removeItem('socialToken');
               this.props.navigation.navigate('App');
 
@@ -454,10 +446,10 @@ class Login extends Component {
               }
               return;
             }
-            if (res.error) {
+            if (reuslt.error) {
               Toast.show({
                 title: translate('common.loginFailed'),
-                text: translate(res.error.toString()),
+                text: translate(reuslt.error.toString()),
                 type: 'primary',
               });
             }
@@ -742,7 +734,7 @@ class Login extends Component {
 
   handleUserName = (username) => {
     this.setState({username});
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    // let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
@@ -773,8 +765,8 @@ class Login extends Component {
   async onLoginPress() {
     Keyboard.dismiss();
     this.setState({userNameErr: null, passwordErr: null});
-    const {username, password, isRememberChecked} = this.state;
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const {username, password} = this.state;
+    // let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     let isValid = true;
 
@@ -807,9 +799,9 @@ class Login extends Component {
         .userLogin(loginData)
         .then((res) => {
           if (res.token) {
-            this.props.getUserProfile().then((res) => {
-              console.log('getUserProfile', res);
-              if (res.id) {
+            this.props.getUserProfile().then((result) => {
+              console.log('getUserProfile', result);
+              if (result.id) {
                 this.props.navigation.navigate('App');
 
                 if (channelData) {
@@ -890,7 +882,7 @@ class Login extends Component {
     });
 
     // 2). if the request was successful, extract the token and nonce
-    const {identityToken, nonce} = appleAuthRequestResponse;
+    const {identityToken} = appleAuthRequestResponse;
 
     console.log('appleAuthRequestResponse', appleAuthRequestResponse);
     // can be null in some scenarios
@@ -966,19 +958,21 @@ class Login extends Component {
 
   render() {
     const {
-      isRememberChecked,
       isCheckLanguages,
       orientation,
-      userNameStatus,
-      passwordStatus,
       userNameErr,
       passwordErr,
-      showSNS,
       isWebViewVisible,
       isLoading,
     } = this.state;
 
     const {selectedLanguageItem} = this.props;
+
+    const containerPaddingHorizontal = orientation !== 'PORTRAIT' ? 50 : 0;
+    const containerPaddingTop =
+      orientation !== 'PORTRAIT' ? 0 : Platform.OS === 'ios' ? 60 : 0;
+    const inputContainerPaddingTop =
+      orientation !== 'PORTRAIT' ? 0 : Platform.OS === 'ios' ? 40 : 0;
 
     return (
       <ImageBackground
@@ -994,8 +988,8 @@ class Login extends Component {
             keyboardShouldPersistTaps={'handled'}
             behavior={'position'}
             contentContainerStyle={[
-              loginStyles.scrollView,
-              {flex: Platform.isPad ? 1 : 0},
+              styles.scrollView,
+              styles.keyboardScrollContentContainer,
             ]}
             showsVerticalScrollIndicator={false}>
             <BackHeader
@@ -1004,36 +998,18 @@ class Login extends Component {
               onLanguageSelectPress={() => this.onLanguageSelectPress()}
             />
             <View
-              style={{
-                flex: 1,
-                width: Platform.isPad ? '75%' : '100%',
-                alignSelf: 'center',
-                justifyContent: 'center',
-                paddingHorizontal: orientation !== 'PORTRAIT' ? 50 : 0,
-                paddingTop:
-                  orientation !== 'PORTRAIT'
-                    ? 0
-                    : Platform.OS === 'ios'
-                    ? 60
-                    : 0,
-              }}>
+              style={[
+                {
+                  paddingHorizontal: containerPaddingHorizontal,
+                  paddingTop: containerPaddingTop,
+                },
+                styles.container,
+              ]}>
               <Text allowFontScaling={false} style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: Platform.isPad ? 'center' : 'flex-start',
-                }}>
-                <View
-                  style={{
-                    paddingTop:
-                      orientation !== 'PORTRAIT'
-                        ? 0
-                        : Platform.OS === 'ios'
-                        ? 40
-                        : 0,
-                  }}>
+              <View style={styles.inputContainer}>
+                <View style={{paddingTop: inputContainerPaddingTop}}>
                   <Inputfield
                     value={this.state.username}
                     placeholder={translate('common.usernameOrEmail')}
@@ -1048,12 +1024,7 @@ class Login extends Component {
                     <Text
                       style={[
                         globalStyles.smallLightText,
-                        {
-                          textAlign: 'left',
-                          marginTop: -10,
-                          marginStart: 10,
-                          marginBottom: 5,
-                        },
+                        styles.usernameOrEmailText,
                       ]}>
                       {translate(userNameErr).replace(
                         '[missing {{field}} value]',
@@ -1063,7 +1034,7 @@ class Login extends Component {
                   ) : null}
                   <Inputfield
                     onRef={(ref) => {
-                      this.inputs['password'] = ref;
+                      this.inputs.password = ref;
                     }}
                     value={this.state.password}
                     placeholder={translate('common.loginPassword')}
@@ -1076,15 +1047,7 @@ class Login extends Component {
                   />
                   {passwordErr !== null ? (
                     <Text
-                      style={[
-                        globalStyles.smallLightText,
-                        {
-                          textAlign: 'left',
-                          marginTop: -10,
-                          marginStart: 10,
-                          marginBottom: 5,
-                        },
-                      ]}>
+                      style={[globalStyles.smallLightText, styles.password]}>
                       {translate(passwordErr).replace(
                         '[missing {{field}} value]',
                         translate('common.password'),
@@ -1094,17 +1057,17 @@ class Login extends Component {
                 </View>
 
                 {/* <TouchableOpacity
-                style={loginStyles.rememberContainer}
-                activeOpacity={1}
-                onPress={() => this.onCheckRememberMe()}>
-                <CheckBox
-                  onCheck={() => this.onCheckRememberMe()}
-                  isChecked={isRememberChecked}
-                />
-                <Text style={globalStyles.smallLightText}>
-                  {translate('pages.login.rememberMe')}
-                </Text>
-              </TouchableOpacity> */}
+                  style={loginStyles.rememberContainer}
+                  activeOpacity={1}
+                  onPress={() => this.onCheckRememberMe()}>
+                  <CheckBox
+                    onCheck={() => this.onCheckRememberMe()}
+                    isChecked={isRememberChecked}
+                  />
+                  <Text style={globalStyles.smallLightText}>
+                    {translate('pages.login.rememberMe')}
+                  </Text>
+                </TouchableOpacity> */}
                 <Button
                   type={'primary'}
                   title={translate('common.login')}
@@ -1116,24 +1079,14 @@ class Login extends Component {
                       : ''
                   }
                 />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginTop: 15,
-                    justifyContent: 'center',
-                    paddingHorizontal: 5,
-                  }}>
+                <View style={styles.supportContainer}>
                   {selectedLanguageItem.language_name === 'ja' ? (
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                      }}>
+                    <View style={styles.supportSubContainer}>
                       <Text
                         numberOfLines={1}
                         style={[
                           globalStyles.smallLightText10,
-                          {textDecorationLine: 'underline'},
+                          styles.underlineText,
                         ]}
                         onPress={() =>
                           this.props.navigation.navigate('ForgotUsername')
@@ -1144,7 +1097,7 @@ class Login extends Component {
                         numberOfLines={1}
                         style={[
                           globalStyles.smallLightText10,
-                          {marginHorizontal: 5},
+                          styles.supportText,
                         ]}>
                         {translate('pages.setting.or').toLowerCase()}
                       </Text>
@@ -1152,7 +1105,7 @@ class Login extends Component {
                         numberOfLines={1}
                         style={[
                           globalStyles.smallLightText10,
-                          {textDecorationLine: 'underline'},
+                          styles.underlineText,
                         ]}
                         onPress={() =>
                           this.props.navigation.navigate('ForgotPassword')
@@ -1164,11 +1117,7 @@ class Login extends Component {
                       </Text>
                     </View>
                   ) : (
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                      }}>
+                    <View style={styles.supportSubContainer}>
                       <Text style={globalStyles.smallLightText}>
                         {translate('pages.xchat.forgot')}
                       </Text>
@@ -1176,7 +1125,7 @@ class Login extends Component {
                         numberOfLines={1}
                         style={[
                           globalStyles.smallLightText,
-                          {textDecorationLine: 'underline'},
+                          styles.underlineText,
                         ]}
                         onPress={() =>
                           this.props.navigation.navigate('ForgotUsername')
@@ -1187,7 +1136,7 @@ class Login extends Component {
                         numberOfLines={1}
                         style={[
                           globalStyles.smallLightText,
-                          {marginHorizontal: 5},
+                          styles.supportText,
                         ]}>
                         {translate('pages.setting.or').toLowerCase()}
                       </Text>
@@ -1195,7 +1144,7 @@ class Login extends Component {
                         numberOfLines={1}
                         style={[
                           globalStyles.smallLightText,
-                          {textDecorationLine: 'underline'},
+                          styles.underlineText,
                         ]}
                         onPress={() =>
                           this.props.navigation.navigate('ForgotPassword')
@@ -1207,18 +1156,12 @@ class Login extends Component {
                 </View>
               </View>
               <View>
-                <View style={{marginTop: 25, alignItems: 'center'}}>
+                <View style={styles.loginWithText}>
                   <Text style={globalStyles.smallLightText}>
                     {translate('pages.welcome.OrLoginWith')}
                   </Text>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginTop: 20,
-                    marginBottom: 10,
-                  }}>
+                <View style={styles.socialLoginContainer}>
                   {/*<SocialLogin*/}
                   {/*IconSrc={Icons.icon_apple}*/}
                   {/*onPress={() => this.appleLogin()}*/}
@@ -1270,12 +1213,9 @@ class Login extends Component {
                 {/*</View>*/}
                 {/*}*/}
               </View>
-              <View style={{alignItems: 'center', marginTop: 10}}>
+              <View style={styles.needSupportContainer}>
                 <Text
-                  style={[
-                    globalStyles.smallLightText,
-                    {textDecorationLine: 'underline'},
-                  ]}
+                  style={[globalStyles.smallLightText, styles.underlineText]}
                   onPress={() => this.onNeedSupportClick()}>
                   {translate('pages.xchat.needSupport')}
                 </Text>
@@ -1291,15 +1231,9 @@ class Login extends Component {
 
             {isLoading && (
               <ActivityIndicator
-                size="large"
-                color="white"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
+                size={'large'}
+                color={'white'}
+                style={styles.loader}
               />
             )}
             <LanguageSelector />

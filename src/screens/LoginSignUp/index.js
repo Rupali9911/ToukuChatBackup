@@ -1,54 +1,49 @@
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+} from '@invertase/react-native-apple-authentication';
+import AsyncStorage from '@react-native-community/async-storage';
+import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import auth from '@react-native-firebase/auth';
+import KakaoLogins from '@react-native-seoul/kakao-login';
 import React, {Component} from 'react';
 import {
-  View,
-  Text,
+  ActivityIndicator,
   Image,
-  TouchableOpacity,
-  ScrollView,
   ImageBackground,
-  SafeAreaView,
   NativeModules,
   Platform,
-  TextInput,
-  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
-import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
-import {LoginManager, AccessToken} from 'react-native-fbsdk';
+import {AccessToken, LoginManager} from 'react-native-fbsdk';
 import LineLogin from 'react-native-line-sdk';
-import auth from '@react-native-firebase/auth';
 import * as RNLocalize from 'react-native-localize';
-import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import Orientation from 'react-native-orientation';
+import {connect} from 'react-redux';
 import Button from '../../components/Button';
-import {Images, Icons, Colors} from '../../constants';
-import {loginSignUpStyles} from './styles';
 import LanguageSelector from '../../components/LanguageSelector';
-import {globalStyles} from '../../styles';
-
-import {
-  facebookRegister,
-  googleRegister,
-  twitterRegister,
-  lineRegister,
-  kakaoRegister,
-  getAccessCodeKakao,
-  appleRegister,
-} from '../../redux/reducers/userReducer';
-import AsyncStorage from '@react-native-community/async-storage';
-const {RNTwitterSignIn} = NativeModules;
-import KakaoLogins from '@react-native-seoul/kakao-login';
-
-import appleAuth, {
-  AppleButton,
-  AppleAuthRequestScope,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
-import {getSNSCheck} from '../../redux/reducers/loginReducer';
-import {getParamsFromURL} from '../../utils';
 import Toast from '../../components/Toast';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {Icons, Images} from '../../constants';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {getSNSCheck} from '../../redux/reducers/loginReducer';
+import {
+  appleRegister,
+  facebookRegister,
+  getAccessCodeKakao,
+  googleRegister,
+  kakaoRegister,
+  lineRegister,
+  twitterRegister,
+} from '../../redux/reducers/userReducer';
+import {globalStyles} from '../../styles';
+import {getParamsFromURL} from '../../utils';
+import styles from './styles';
+
+const {RNTwitterSignIn} = NativeModules;
 
 const TwitterKeys = {
   TWITTER_CONSUMER_KEY: 'BvR9GWViH6r35PXtNHkV5MCxd',
@@ -102,6 +97,9 @@ class LoginSignUp extends Component {
     RNLocalize.removeEventListener('change', this.handleLocalizationChange);
     Orientation.getOrientation((err, orientation) => {
       console.log(`Current Device Orientation: ${orientation}`);
+      if (err) {
+        console.err(err);
+      }
     });
 
     Orientation.removeOrientationListener(this._orientationDidChange);
@@ -272,12 +270,12 @@ class LoginSignUp extends Component {
         );
         this.props
           .facebookRegister(facebookLoginData)
-          .then(async (res) => {
+          .then(async (response) => {
             this.setState({isLoading: false});
-            console.log('JWT TOKEN=> ', JSON.stringify(res));
-            if (res.token) {
-              let status = res.status;
-              let isEmail = res.email_required;
+            console.log('JWT TOKEN=> ', JSON.stringify(response));
+            if (response.token) {
+              let status = response.status;
+              let isEmail = response.email_required;
               if (!status) {
                 if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
@@ -292,15 +290,15 @@ class LoginSignUp extends Component {
                 });
                 return;
               }
-              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.setItem('userToken', response.token);
               await AsyncStorage.removeItem('socialToken');
               this.props.navigation.navigate('App');
               return;
             }
-            if (res.error) {
+            if (response.error) {
               Toast.show({
                 title: 'Login Failed',
-                text: translate(res.error.toString()),
+                text: translate(response.error.toString()),
                 type: 'primary',
               });
             }
@@ -368,12 +366,12 @@ class LoginSignUp extends Component {
         console.log('twitterLoginData==> ', twitterLoginData);
         this.props
           .twitterRegister(twitterLoginData)
-          .then(async (res) => {
+          .then(async (response) => {
             this.setState({isLoading: false});
-            console.log('JWT TOKEN=> ', JSON.stringify(res));
-            if (res.token) {
-              let status = res.status;
-              let isEmail = res.email_required;
+            console.log('JWT TOKEN=> ', JSON.stringify(response));
+            if (response.token) {
+              let status = response.status;
+              let isEmail = response.email_required;
               if (!status) {
                 if (isEmail) {
                   this.props.navigation.navigate('SignUp', {
@@ -388,15 +386,15 @@ class LoginSignUp extends Component {
                 });
                 return;
               }
-              await AsyncStorage.setItem('userToken', res.token);
+              await AsyncStorage.setItem('userToken', response.token);
               await AsyncStorage.removeItem('socialToken');
               this.props.navigation.navigate('App');
               return;
             }
-            if (res.error) {
+            if (response.error) {
               Toast.show({
                 title: 'Login Failed',
-                text: translate(res.error.toString()),
+                text: translate(response.error.toString()),
                 type: 'primary',
               });
             }
@@ -677,7 +675,7 @@ class LoginSignUp extends Component {
     });
 
     // 2). if the request was successful, extract the token and nonce
-    const {identityToken, nonce} = appleAuthRequestResponse;
+    const {identityToken} = appleAuthRequestResponse;
 
     console.log('appleAuthRequestResponse', appleAuthRequestResponse);
     // can be null in some scenarios
@@ -743,8 +741,17 @@ class LoginSignUp extends Component {
   }
 
   render() {
-    const {orientation, showSNS, isLoading} = this.state;
+    const {orientation, isLoading} = this.state;
     const {selectedLanguageItem} = this.props;
+
+    const scrollContentContainerPadding =
+      orientation !== 'PORTRAIT' ? 50 : Platform.OS === 'ios' ? 120 : 90;
+
+    const containerPadding = orientation !== 'PORTRAIT' ? 50 : 0;
+
+    const subContainerMargin =
+      orientation !== 'PORTRAIT' || Platform.isPad ? 0 : 50;
+
     return (
       <ImageBackground
         //source={Images.image_touku_bg}
@@ -755,49 +762,32 @@ class LoginSignUp extends Component {
         resizeMode={'cover'}>
         <SafeAreaView style={globalStyles.safeAreaView}>
           <ScrollView
-            contentContainerStyle={{
-              flex: Platform.isPad ? 1 : 0,
-              padding: 20,
-              paddingTop:
-                orientation != 'PORTRAIT'
-                  ? 50
-                  : Platform.OS === 'ios'
-                  ? 120
-                  : 90,
-            }}
+            contentContainerStyle={[
+              {
+                paddingTop: scrollContentContainerPadding,
+              },
+              styles.scrollContentContainer,
+            ]}
             showsVerticalScrollIndicator={false}>
             <View
-              style={{
-                flex: 1,
-                paddingHorizontal: orientation != 'PORTRAIT' ? 50 : 0,
-                width: Platform.isPad ? '60%' : '100%',
-                alignSelf: 'center',
-              }}>
+              style={[
+                {
+                  paddingHorizontal: containerPadding,
+                },
+                styles.container,
+              ]}>
               <Text style={globalStyles.logoText}>
                 {translate('header.logoTitle')}
               </Text>
               <View
-                style={{
-                  flex: 1,
-                  justifyContent: Platform.isPad ? 'center' : 'flex-start',
-                  alignItems: 'center',
-                  marginTop:
-                    orientation != 'PORTRAIT' || Platform.isPad ? 0 : 50,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginBottom: 25,
-                  }}>
+                style={[{marginTop: subContainerMargin}, styles.subContainer]}>
+                <View style={styles.connectedContainer}>
                   <Text
                     style={[
                       selectedLanguageItem.language_name === 'ja'
                         ? globalStyles.normalLightText
                         : globalStyles.smallLightText,
-                      {
-                        marginEnd: 10,
-                      },
+                      styles.theWorldIsConnectedText,
                     ]}>
                     {translate('pages.welcome.theWorldIsConnected')}
                   </Text>
@@ -806,17 +796,12 @@ class LoginSignUp extends Component {
                       selectedLanguageItem.language_name === 'ja'
                         ? globalStyles.normalLightText
                         : globalStyles.smallLightText,
-                      {
-                        marginTop: -1,
-                      },
+                      styles.connectedByToukuText,
                     ]}>
                     {translate('pages.welcome.connectedByTouku')}
                   </Text>
                 </View>
-                <View
-                  style={{
-                    width: Platform.isPad ? '45%' : '100%',
-                  }}>
+                <View style={styles.loginContainer}>
                   <Button
                     type={'transparent'}
                     title={translate('common.login')}
@@ -840,12 +825,7 @@ class LoginSignUp extends Component {
                 </View>
               </View>
               <View>
-                <View
-                  style={{
-                    marginTop: 30,
-                    marginBottom: 10,
-                    alignItems: 'center',
-                  }}>
+                <View style={styles.loginWithContainer}>
                   <Text
                     style={
                       selectedLanguageItem.language_name === 'ja'
@@ -855,12 +835,7 @@ class LoginSignUp extends Component {
                     {translate('pages.welcome.OrLoginWith')}
                   </Text>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginTop: 10,
-                  }}>
+                <View style={styles.socialLoginContainer}>
                   {/*<SocialLogin*/}
                   {/*IconSrc={Icons.icon_apple}*/}
                   {/*onPress={() => this.appleLogin()}*/}
@@ -939,13 +914,7 @@ class LoginSignUp extends Component {
               <ActivityIndicator
                 size="large"
                 color="white"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
+                style={styles.loader}
               />
             )}
             <LanguageSelector />
@@ -961,10 +930,7 @@ export const SocialLogin = (props) => {
     <TouchableOpacity onPress={props.onPress} activeOpacity={0.6}>
       <Image
         source={props.IconSrc}
-        style={[
-          globalStyles.iconStyle,
-          {marginHorizontal: 5, width: 45, height: 45},
-        ]}
+        style={[globalStyles.iconStyle, styles.socialLoginImage]}
       />
     </TouchableOpacity>
   );

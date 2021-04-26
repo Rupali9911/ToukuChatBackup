@@ -1,29 +1,34 @@
 import React, {Component} from 'react';
-import {View, ViewPropTypes, Text} from 'react-native';
+import {View, ViewPropTypes, Text, StyleSheet} from 'react-native';
 import PropTypes from 'prop-types';
 import Toast from '../../components/Toast';
 import {ProfileModal} from '../../components/Modals';
-import SingleSocket from '../../helpers/SingleSocket';
 
 class Root extends Component {
-
   static toastInstance;
 
   render() {
     return (
-      <View ref={(c) => (this._root = c)} style={{flex: 1}} {...this.props}>
+      <View
+        ref={(c) => (this._root = c)}
+        style={styles.singleFlex}
+        {...this.props}>
         {this.props.children}
 
         <Toast
           ref={(c) => {
             this.toastInstance = c;
-            if (c) Toast.toastInstance = c;
+            if (c) {
+              Toast.toastInstance = c;
+            }
           }}
         />
 
         <ProfileModal
           ref={(c) => {
-            if (c) ProfileModal.userProfleInstance = c;
+            if (c) {
+              ProfileModal.userProfleInstance = c;
+            }
           }}
         />
 
@@ -36,6 +41,12 @@ class Root extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  singleFlex: {
+    flex: 1,
+  },
+});
 
 Root.propTypes = {
   ...ViewPropTypes,

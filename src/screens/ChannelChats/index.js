@@ -1,92 +1,62 @@
-import React, {Component, Fragment} from 'react';
-import {
-  Dimensions,
-  ImageBackground,
-  View,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  Modal,
-  Image,
-  PixelRatio,
-  TouchableOpacity,
-  ActivityIndicator,
-  SafeAreaView,
-} from 'react-native';
-import {connect} from 'react-redux';
-import Orientation from 'react-native-orientation';
+import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
+import React, {Component} from 'react';
+import {PermissionsAndroid, Platform, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
+import Orientation from 'react-native-orientation';
+import uuid from 'react-native-uuid';
+import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
-import {Avatar} from 'react-native-paper';
-import {ChatHeader} from '../../components/Headers';
-import {globalStyles} from '../../styles';
-import {
-  Images,
-  SocketEvents,
-  Fonts,
-  closeBoxImage,
-  openBoxImage,
-  appleStoreUserId,
-} from '../../constants';
 import ChatContainer from '../../components/ChatContainer';
+import {ChatHeader} from '../../components/Headers';
+import {ListLoader, OpenLoader} from '../../components/Loaders';
+import {
+  ConfirmationModal,
+  DeleteOptionModal,
+  ShowAttahmentModal,
+  ShowGalleryModal,
+} from '../../components/Modals';
+import BonusModal from '../../components/Modals/BonusModal';
+import Toast from '../../components/Toast';
+import {appleStoreUserId, openBoxImage} from '../../constants';
+import S3uploadService from '../../helpers/S3uploadService';
+import {
+  addNewSendMessage,
+  assetXPValueOfChannel,
+  checkLoginBonusOfChannel,
+  deleteChannelMessage,
+  deleteMultipleChannelMessage,
+  editChannelMessage,
+  getChannelConversations,
+  getLocalFollowingChannels,
+  getLoginBonusOfChannel,
+  pinChannel,
+  readAllChannelMessages,
+  resetChannelConversation,
+  selectLoginJackpotOfChannel,
+  sendChannelMessage,
+  setChannelConversation,
+  unfollowChannel,
+  unpinChannel,
+} from '../../redux/reducers/channelReducer';
+import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
   translate,
   translateMessage,
 } from '../../redux/reducers/languageReducer';
-import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
 import {
-  getChannelConversations,
-  readAllChannelMessages,
-  sendChannelMessage,
-  editChannelMessage,
-  deleteChannelMessage,
-  resetChannelConversation,
-  setChannelConversation,
-  addNewSendMessage,
-  getLoginBonusOfChannel,
-  checkLoginBonusOfChannel,
-  selectLoginJackpotOfChannel,
-  assetXPValueOfChannel,
-  getLocalFollowingChannels,
-  deleteMultipleChannelMessage,
-  pinChannel,
-  unpinChannel,
-  unfollowChannel
-} from '../../redux/reducers/channelReducer';
-import {ListLoader, UploadLoader, OpenLoader} from '../../components/Loaders';
-import {
-  ConfirmationModal,
-  UploadSelectModal,
-  ShowAttahmentModal,
-  ShowGalleryModal,
-  UpdatePhoneModal,
-  DeleteOptionModal
-} from '../../components/Modals';
-import {eventService, normalize, realmToPlainObject} from '../../utils';
-import Toast from '../../components/Toast';
-import S3uploadService from '../../helpers/S3uploadService';
-import {
-  setChannelChatConversation,
-  getChannelChatConversationById,
-  updateMessageById,
   deleteMessageById,
+  getChannelChatConversationById,
   setMessageUnsend,
-  updateChannelUnReadCountById,
   updateChannelLastMsgWithOutCount,
-  updateChannelsWhenPined,
-  updateChannelsWhenUnpined,
-  updateChannelTranslatedMessage
+  updateChannelTranslatedMessage,
+  updateChannelUnReadCountById,
+  updateMessageById,
 } from '../../storage/Service';
-import uuid from 'react-native-uuid';
-import bonusImage from '../../../assets/images/bonus_bg.png';
-import ChangeEmailModal from "../../components/Modals/ChangeEmailModal";
-import BonusModal from "../../components/Modals/BonusModal";
-import AsyncStorage from "@react-native-community/async-storage";
-
-const dimensions = Dimensions.get('window');
+import {globalStyles} from '../../styles';
+import {realmToPlainObject} from '../../utils';
+import styles from './styles';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -130,7 +100,7 @@ class ChannelChats extends Component {
       openDoc: false,
       isReply: false,
       repliedMessage: null,
-        isRegisterBonus: false,
+      isRegisterBonus: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -220,31 +190,34 @@ class ChannelChats extends Component {
 
   static navigationOptions = ({navigation}) => {
     return {
-      gesturesEnabled: navigation.state.params && navigation.state.params.isAudioPlaying?false:true
-    }
-  }
+      gesturesEnabled:
+        navigation.state.params && navigation.state.params.isAudioPlaying
+          ? false
+          : true,
+    };
+  };
 
   UNSAFE_componentWillMount() {
     const initial = Orientation.getInitialOrientation();
-      this.setState({orientation: initial});
-     // const is_bonus_opened = await AsyncStorage.getItem('is_bonus_opened');
-     // console.log('is_bonus_opened', is_bonus_opened)
-     // if(is_bonus_opened === false){
-     //     this.setState({is_bonus_opened: true, orientation: initial});
-     // }else{
-     //
-     // }
+    this.setState({orientation: initial});
+    // const is_bonus_opened = await AsyncStorage.getItem('is_bonus_opened');
+    // console.log('is_bonus_opened', is_bonus_opened)
+    // if(is_bonus_opened === false){
+    //     this.setState({is_bonus_opened: true, orientation: initial});
+    // }else{
+    //
+    // }
 
-      AsyncStorage.getItem('is_bonus_opened', (errs,result) => {
-          if (!errs) {
-              if (result !== null) {
-                  console.log('is_bonus_opened', result)
-                  if (result === 'false') {
-                      this.setState({isRegisterBonus:true});
-                  }
-              }
+    AsyncStorage.getItem('is_bonus_opened', (errs, result) => {
+      if (!errs) {
+        if (result !== null) {
+          console.log('is_bonus_opened', result);
+          if (result === 'false') {
+            this.setState({isRegisterBonus: true});
           }
-      })
+        }
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -255,7 +228,7 @@ class ChannelChats extends Component {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getChannelConversationsInitial();
 
-    if (this.props.currentChannel.id == 355) {
+    if (this.props.currentChannel.id === 355) {
       this.checkHasLoginBonus();
     }
     // this.getLoginBonus();
@@ -263,7 +236,7 @@ class ChannelChats extends Component {
   }
 
   onPinUnpinChannel = () => {
-    const {currentChannel, userData} = this.props;
+    const {currentChannel} = this.props;
     const data = {};
     if (currentChannel.is_pined) {
       this.props
@@ -278,6 +251,7 @@ class ChannelChats extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -297,6 +271,7 @@ class ChannelChats extends Component {
           }
         })
         .catch((err) => {
+          console.error(err);
           Toast.show({
             title: 'TOUKU',
             text: translate('common.somethingWentWrong'),
@@ -314,7 +289,6 @@ class ChannelChats extends Component {
     });
 
     this.props.readAllChannelMessages(this.props.currentChannel.id);
-
   };
 
   _orientationDidChange = (orientation) => {
@@ -373,7 +347,7 @@ class ChannelChats extends Component {
     if (sentMessageType === 'doc') {
       let file = uploadFile.uri;
       let files = [file];
-      let fileType = uploadFile.type;
+      // let fileType = uploadFile.type;
       const uploadedApplication = await this.S3uploadService.uploadApplicationOnS3Bucket(
         files,
         uploadFile.type,
@@ -381,7 +355,7 @@ class ChannelChats extends Component {
           console.log('progress_bar_percentage', e);
           this.setState({uploadProgress: e.percent});
         },
-          uploadFile.name
+        uploadFile.name,
       );
       msgText = uploadedApplication;
     }
@@ -536,7 +510,9 @@ class ChannelChats extends Component {
       .then((res) => {
         this.getChannelConversations();
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.error(err);
+      });
     this.setState({
       sendingMedia: false,
     });
@@ -621,7 +597,7 @@ class ChannelChats extends Component {
   getLoginBonus = () => {
     this.props
       .getLoginBonusOfChannel()
-      .then(async(res) => {
+      .then(async (res) => {
         console.log('getLoginBonusOfChannel', res);
         if (res) {
           this.setState({bonusXP: res.amount, bonusModal: true});
@@ -662,7 +638,9 @@ class ChannelChats extends Component {
       .then((res) => {
         if (res) {
           console.log('asset_xp', res);
-          if (res && res.data) this.setState({assetXPValue: res.data});
+          if (res && res.data) {
+            this.setState({assetXPValue: res.data});
+          }
         }
       })
       .catch((err) => {
@@ -684,23 +662,23 @@ class ChannelChats extends Component {
 
   getAmountValue = (jackpotData) => {
     var array = [];
-    if (jackpotData.picked_option == 1) {
+    if (jackpotData.picked_option === 1) {
       array = [
-        parseInt(jackpotData.picked_amount),
-        parseInt(jackpotData.missed1_amount),
-        parseInt(jackpotData.missed2_amount),
+        parseInt(jackpotData.picked_amount, 10),
+        parseInt(jackpotData.missed1_amount, 10),
+        parseInt(jackpotData.missed2_amount, 10),
       ];
-    } else if (jackpotData.picked_option == 2) {
+    } else if (jackpotData.picked_option === 2) {
       array = [
-        parseInt(jackpotData.missed1_amount),
-        parseInt(jackpotData.picked_amount),
-        parseInt(jackpotData.missed2_amount),
+        parseInt(jackpotData.missed1_amount, 10),
+        parseInt(jackpotData.picked_amount, 10),
+        parseInt(jackpotData.missed2_amount, 10),
       ];
-    } else if (jackpotData.picked_option == 3) {
+    } else if (jackpotData.picked_option === 3) {
       array = [
-        parseInt(jackpotData.missed1_amount),
-        parseInt(jackpotData.missed2_amount),
-        parseInt(jackpotData.picked_amount),
+        parseInt(jackpotData.missed1_amount, 10),
+        parseInt(jackpotData.missed2_amount, 10),
+        parseInt(jackpotData.picked_amount, 10),
       ];
     }
     return array;
@@ -719,7 +697,7 @@ class ChannelChats extends Component {
 
   getChannelConversations = async (msg_id) => {
     await this.props
-      .getChannelConversations(this.props.currentChannel.id,msg_id)
+      .getChannelConversations(this.props.currentChannel.id, msg_id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           this.setState({conversations: res.conversation});
@@ -733,7 +711,7 @@ class ChannelChats extends Component {
           // conversations = chat.toJSON();
 
           this.props.setChannelConversation(conversations);
-        }else{
+        } else {
           this.setState({isLoadMore: false});
         }
       });
@@ -754,19 +732,22 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
         if (res.status === true) {
-          if(res.conversation.length > 0){
+          if (res.conversation.length > 0) {
             this.setState({conversations: res.conversation});
             // this.props.readAllChannelMessages(this.props.currentChannel.id);
-            let chat = getChannelChatConversationById(
+            let conversation = getChannelChatConversationById(
               this.props.currentChannel.id,
             );
             let conversations = [];
-            let a = Array.from(chat);
+            let a = Array.from(conversation);
             conversations = realmToPlainObject(a);
             // conversations = chat.toJSON();
             this.props.setChannelConversation(conversations);
           }
-          if(res.admin_id.length>0 && res.admin_id.includes(this.props.userData.id)){
+          if (
+            res.admin_id.length > 0 &&
+            res.admin_id.includes(this.props.userData.id)
+          ) {
             this.setState({isAdmin: true});
           }
         }
@@ -954,7 +935,7 @@ class ChannelChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'image') {
+      } else if (fileType === 'image') {
         await this.setState(
           {
             uploadFile: source,
@@ -965,7 +946,7 @@ class ChannelChats extends Component {
             this.onMessageSend();
           },
         );
-      } else if(fileType === 'video') {
+      } else if (fileType === 'video') {
         await this.setState(
           {
             uploadFile: source,
@@ -1009,19 +990,16 @@ class ChannelChats extends Component {
   };
 
   renderConversations() {
-    const {channelLoading, chatConversation,userConfig} = this.props;
+    const {chatConversation, userConfig} = this.props;
     const {
-      conversations,
       newMessageText,
       translatedMessage,
       translatedMessageId,
       orientation,
-      repliedMessage,
       showConfirmationModal,
       showMessageUnSendConfirmationModal,
       showMessageDeleteConfirmationModal,
       showMoreMessageDeleteConfirmationModal,
-      showPhoneUpdateModal,
       uploadFile,
       sendingMedia,
       isChatLoading,
@@ -1029,7 +1007,7 @@ class ChannelChats extends Component {
       isDeleteEveryoneLoading,
       isMultiSelect,
       openDoc,
-      isLoadMore
+      isLoadMore,
     } = this.state;
     if (!this.props.chatConversation) {
       return null;
@@ -1039,7 +1017,7 @@ class ChannelChats extends Component {
       return <ListLoader />;
     } else {
       return (
-        <View style={{flex: 1}}>
+        <View style={styles.container}>
           <ChatContainer
             handleMessage={(message) => this.handleMessage(message)}
             onMessageReply={(id) => this.onReply(id)}
@@ -1078,23 +1056,23 @@ class ChannelChats extends Component {
             }}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
             showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
-            isLoadMore = {isLoadMore}
-            onLoadMore = {(message)=>{
-              console.log('msg_id',message.id);
-              if(message && message.id){
+            isLoadMore={isLoadMore}
+            onLoadMore={(message) => {
+              console.log('msg_id', message.id);
+              if (message && message.id) {
                 this.getChannelConversations(message.id);
               }
             }}
-            onMediaPlay = {(isPlay)=>{
-              if(isPlay){
+            onMediaPlay={(isPlay) => {
+              if (isPlay) {
                 console.log('palying media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: true
+                  isAudioPlaying: true,
                 });
-              }else{
+              } else {
                 console.log('pause media');
                 this.props.navigation.setParams({
-                  isAudioPlaying: false
+                  isAudioPlaying: false,
                 });
               }
             }}
@@ -1212,11 +1190,11 @@ class ChannelChats extends Component {
   };
 
   onDeleteMultipleMessagePressed = () => {
-    if(this.state.isAdmin){
+    if (this.state.isAdmin) {
       this.setState({
         showMoreMessageDeleteConfirmationModal: true,
       });
-    }else{
+    } else {
       this.setState({
         showMessageDeleteConfirmationModal: true,
       });
@@ -1249,7 +1227,7 @@ class ChannelChats extends Component {
       user_id: this.props.userData.id,
     };
     this.props
-      .unfollowChannel(this.props.currentChannel.id,user)
+      .unfollowChannel(this.props.currentChannel.id, user)
       .then(async (res) => {
         console.log('res', res);
         if (res.status === true) {
@@ -1314,23 +1292,23 @@ class ChannelChats extends Component {
     if (this.state.selectedIds.length > 0) {
       let payload = {
         message_ids: this.state.selectedIds,
-        delete_type: delete_type
+        delete_type: delete_type,
       };
 
-      if(delete_type==='DELETE_FOR_EVERYONE'){
+      if (delete_type === 'DELETE_FOR_EVERYONE') {
         this.setState({isDeleteEveryoneLoading: true});
-      }else{
+      } else {
         this.setState({isDeleteMeLoading: true});
       }
 
-      console.log('payload',payload);
+      console.log('payload', payload);
 
       this.state.selectedIds.map((item) => {
         deleteMessageById(item);
 
         if (
           this.props.currentChannel.last_msg &&
-          this.props.currentChannel.last_msg.id == item
+          this.props.currentChannel.last_msg.id === item
         ) {
           let chat = getChannelChatConversationById(
             this.props.currentChannel.id,
@@ -1354,27 +1332,30 @@ class ChannelChats extends Component {
       this.getLocalChannelConversations();
       this.setState({isMultiSelect: false, selectedIds: []});
 
-      this.props.deleteMultipleChannelMessage(payload).then((res) => {
-        //console.log(res);
-        this.setState({
-          isDeleteEveryoneLoading: false, 
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
+      this.props
+        .deleteMultipleChannelMessage(payload)
+        .then((res) => {
+          //console.log(res);
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
+          if (res && res.status) {
+          } else {
+            this.getChannelConversations();
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          this.setState({
+            isDeleteEveryoneLoading: false,
+            isDeleteMeLoading: false,
+            showMessageDeleteConfirmationModal: false,
+            showMoreMessageDeleteConfirmationModal: false,
+          });
         });
-        if (res && res.status) {
-        } else {
-          this.getChannelConversations();
-        }
-      }).catch((err)=>{
-        console.log('err');
-        this.setState({
-          isDeleteEveryoneLoading: false, 
-          isDeleteMeLoading: false,
-          showMessageDeleteConfirmationModal: false,
-          showMoreMessageDeleteConfirmationModal: false
-        });
-      });
     }
   };
 
@@ -1425,14 +1406,7 @@ class ChannelChats extends Component {
 
   render() {
     const {currentChannel} = this.props;
-    const {
-      showPhoneUpdateModal,
-      orientation,
-      isUpdatePhoneModalVisible,
-        bonusModal,
-        bonusXP,
-        isRegisterBonus
-    } = this.state;
+    const {bonusModal, bonusXP, isRegisterBonus} = this.state;
     return (
       <View
         // source={Images.image_home_bg}
@@ -1445,7 +1419,7 @@ class ChannelChats extends Component {
             translate('pages.xchat.followers')
           }
           onBackPress={() => {
-            this.props.navigation.goBack()
+            this.props.navigation.goBack();
           }}
           menuItems={this.state.headerRightIconMenu}
           navigation={this.props.navigation}
@@ -1461,63 +1435,16 @@ class ChannelChats extends Component {
         />
         {this.props.chatConversation && this.renderConversations()}
 
-          <BonusModal
-              visible={bonusModal}
-              onRequestClose={() =>
-                  this.setState({bonusModal: false})
-              }
-              bonusXP={bonusXP}
-              registerBonus={isRegisterBonus}
-          />
+        <BonusModal
+          visible={bonusModal}
+          onRequestClose={() => this.setState({bonusModal: false})}
+          bonusXP={bonusXP}
+          registerBonus={isRegisterBonus}
+        />
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  bonusModalContainer: {
-    flex: 1,
-    backgroundColor: '#00000080',
-    // paddingTop: 40,
-  },
-  bonusBgContainer: {
-    flex: 1,
-    margin: 20,
-    borderRadius: 30,
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  bonusTextHeading: {
-    marginTop: normalize(20),
-    // marginBottom:PixelRatio.getPixelSizeForLayoutSize(10),
-    textAlign: 'center',
-    fontSize: normalize(25),
-    fontWeight: '300',
-    color: '#ffd300',
-    fontFamily: Fonts.regular,
-  },
-  bonusTitleText: {
-    textAlign: 'center',
-    fontSize: normalize(20),
-    fontWeight: '300',
-    color: '#fff',
-    fontFamily: Fonts.beba_regular,
-  },
-  bonusImageContainer: {
-    flex: 1,
-    justifyContent: 'space-evenly',
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  bonusImage: {
-    width: Math.round(dimensions.width / 4),
-    height: Math.round(dimensions.width / 4),
-  },
-  bonusImageZoom: {
-    width: Math.round(dimensions.width / 3),
-    height: Math.round(dimensions.width / 3),
-  },
-});
 
 const mapStateToProps = (state) => {
   return {
@@ -1549,7 +1476,7 @@ const mapDispatchToProps = {
   getLocalFollowingChannels,
   pinChannel,
   unpinChannel,
-  unfollowChannel
+  unfollowChannel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

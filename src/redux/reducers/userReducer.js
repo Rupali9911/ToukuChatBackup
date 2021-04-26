@@ -1,13 +1,15 @@
-import {client, userAgent} from '../../helpers/api';
 import AsyncStorage from '@react-native-community/async-storage';
-import {KAKAO_API_KEY, apiRoot} from '../../helpers/api';
-import Toast from '../../components/Toast';
-import {translate} from './languageReducer';
 import axios from 'axios';
-import { dispatch } from 'rxjs/internal/observable/pairs';
 
+import Toast from '../../components/Toast';
+import {apiRoot, client, KAKAO_API_KEY, userAgent} from '../../helpers/api';
+import {translate} from './languageReducer';
+const uuid = require('react-native-uuid');
+
+/**
+ * Constants
+ */
 export const SET_CURRENT_ROUTE_NAME = 'SET_CURRENT_ROUTE_NAME';
-
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
 
 export const GET_CHANGE_NAME_REQUEST = 'GET_CHANGE_NAME_REQUEST';
@@ -17,16 +19,18 @@ export const GET_CHANGE_NAME_FAIL = 'GET_CHANGE_NAME_FAIL';
 export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
 export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
 export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
-let uuid = require('react-native-uuid');
 
+// Reducer initial state
 const initialState = {
   loading: false,
   userData: {},
   currentRouteName: '',
-
 };
 
-export default function (state = initialState, action) {
+/**
+ * Reducer
+ */
+export default (state = initialState, action) => {
   switch (action.type) {
     case SET_USER_PROFILE:
       return {
@@ -50,7 +54,6 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
       };
-
     case GET_CHANGE_PASSWORD_REQUEST:
       return {
         ...state,
@@ -71,14 +74,15 @@ export default function (state = initialState, action) {
         ...state,
         currentRouteName: action.payload.data,
       };
-
     default:
       return state;
   }
-}
+};
 
-//Actions
-// Set current route name
+/**
+ * Actions
+ */
+
 export const setCurrentRouteData = (data) => ({
   type: SET_CURRENT_ROUTE_NAME,
   payload: {
@@ -86,7 +90,6 @@ export const setCurrentRouteData = (data) => ({
   },
 });
 
-//Get User Profile
 const setUserData = (data) => ({
   type: SET_USER_PROFILE,
   payload: {
@@ -94,7 +97,18 @@ const setUserData = (data) => ({
   },
 });
 
-//Change Name
+const getUploadAvatarRequest = () => ({
+  type: GET_UPLOAD_AVATAR_REQUEST,
+});
+
+const getUploadAvatarSuccess = () => ({
+  type: GET_UPLOAD_AVATAR_SUCCESS,
+});
+
+const getUploadAvatarFailure = () => ({
+  type: GET_UPLOAD_AVATAR_FAIL,
+});
+
 const getChangeNameRequest = () => ({
   type: GET_CHANGE_NAME_REQUEST,
 });
@@ -107,7 +121,6 @@ const getChangeNameFailure = () => ({
   type: GET_CHANGE_NAME_FAIL,
 });
 
-//Change Password
 const getChangePasswordRequest = () => ({
   type: GET_CHANGE_PASSWORD_REQUEST,
 });
@@ -120,10 +133,10 @@ const getChangePasswordFailure = () => ({
   type: GET_CHANGE_PASSWORD_FAIL,
 });
 
-export const facebookRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const facebookRegister = (socialLoginData) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/facebook-login-auth/`, socialLoginData)
+      .post('/xchat/facebook-login-auth/', socialLoginData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
@@ -136,10 +149,10 @@ export const facebookRegister = (socialLoginData) => (dispatch) =>
       });
   });
 
-export const googleRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const googleRegister = (socialLoginData) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/google-login-auth/`, socialLoginData)
+      .post('/xchat/google-login-auth/', socialLoginData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
@@ -152,10 +165,10 @@ export const googleRegister = (socialLoginData) => (dispatch) =>
       });
   });
 
-export const twitterRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const twitterRegister = (socialLoginData) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/twitter-login-auth/`, socialLoginData)
+      .post('/xchat/twitter-login-auth/', socialLoginData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
@@ -168,10 +181,10 @@ export const twitterRegister = (socialLoginData) => (dispatch) =>
       });
   });
 
-export const lineRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const lineRegister = (socialLoginData) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/line-login-auth/`, socialLoginData)
+      .post('/xchat/line-login-auth/', socialLoginData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
@@ -184,10 +197,10 @@ export const lineRegister = (socialLoginData) => (dispatch) =>
       });
   });
 
-export const kakaoRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const kakaoRegister = (socialLoginData) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/kakao-login-auth/`, socialLoginData)
+      .post('/xchat/kakao-login-auth/', socialLoginData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
@@ -200,10 +213,10 @@ export const kakaoRegister = (socialLoginData) => (dispatch) =>
       });
   });
 
-export const appleRegister = (socialLoginData) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const appleRegister = (socialLoginData) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/apple-login-auth/`, socialLoginData)
+      .post('/xchat/apple-login-auth/', socialLoginData)
       .then((res) => {
         if (res.token) {
           AsyncStorage.setItem('socialToken', res.token);
@@ -228,8 +241,8 @@ export const appleRegister = (socialLoginData) => (dispatch) =>
       });
   });
 
-export const getAccessCodeKakao = () => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const getAccessCodeKakao = () => () =>
+  new Promise((resolve, reject) => {
     client
       .get(
         'https://kauth.kakao.com/oauth/authorize?client_id=' +
@@ -250,13 +263,12 @@ export const getAccessCodeKakao = () => (dispatch) =>
 
 export const updateUserProfileImage = (data) => (dispatch) => {
   dispatch(setUserData(data));
-}
+};
 
-//Get User Profile
 export const getUserProfile = () => (dispatch) =>
-  new Promise(function (resolve, reject) {
+  new Promise((resolve, reject) => {
     client
-      .get(`/profile/`)
+      .get('/profile/')
       .then((res) => {
         if (res.id) {
           if (res.user_type === 'user') {
@@ -311,11 +323,55 @@ export const getUserProfile = () => (dispatch) =>
       });
   });
 
+export const uploadAvatar = (data, token) => (dispatch) =>
+  new Promise((resolve, reject) => {
+    dispatch(getUploadAvatarRequest());
+
+    let name = uuid.v4();
+    let formData = new FormData();
+    formData.append('avatar_thumbnail', {
+      uri: data.replace('file://', ''),
+      mineType: 'image/jpeg',
+      fileType: 'image/jpg',
+      type: 'image/jpg',
+      name: name + '.jpg',
+    });
+    formData.append('avatar', {
+      uri: data.replace('file://', ''),
+      mineType: 'image/jpeg',
+      fileType: 'image/jpg',
+      type: 'image/jpg',
+      name: name + '.jpg',
+    });
+
+    console.log('Token and Form Data', token, formData);
+    axios
+      .post(`${apiRoot}/avatar-upload/`, formData, {
+        headers: {
+          'Content-Type':
+            'multipart/form-data; charset=utf-8; boundary=----WebKitFormBoundary3zGb8o6Nkel7zNjl',
+          'User-Agent': userAgent,
+          Origin: 'touku',
+          Authorization: token,
+        },
+      })
+      .then((resp) => {
+        console.log('Type of response =>', typeof resp); // returns Object
+        dispatch(getUploadAvatarSuccess());
+        resolve(resp);
+      })
+      .catch((err) => {
+        console.log('uploadAvatar API response', err.response);
+        dispatch(getUploadAvatarFailure());
+        reject(err);
+      });
+  });
+
 export const changeNameDetails = (data) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+  new Promise((resolve, reject) => {
     dispatch(getChangeNameRequest());
     client
-      .put(`/name_details/`, data)
+      .put('/name_details/', data)
       .then((res) => {
         dispatch(getChangeNameSuccess());
         resolve(res);
@@ -327,10 +383,10 @@ export const changeNameDetails = (data) => (dispatch) =>
   });
 
 export const changePassword = (data) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+  new Promise((resolve, reject) => {
     dispatch(getChangePasswordRequest());
     client
-      .put(`/change-password/`, data)
+      .put('/change-password/', data)
       .then((res) => {
         if (res.status === true) {
           dispatch(getChangePasswordSuccess());
@@ -343,10 +399,10 @@ export const changePassword = (data) => (dispatch) =>
       });
   });
 
-export const changeEmailSendOtp = (data) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const changeEmailSendOtp = (data) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/send-email-otp/`, data)
+      .post('/xchat/send-email-otp/', data)
       .then((res) => {
         resolve(res);
       })
@@ -355,10 +411,10 @@ export const changeEmailSendOtp = (data) => (dispatch) =>
       });
   });
 
-export const changeEmail = (data) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const changeEmail = (data) => () =>
+  new Promise((resolve, reject) => {
     client
-      .post(`/xchat/change-email/`, data)
+      .post('/xchat/change-email/', data)
       .then((res) => {
         resolve(res);
       })
@@ -367,19 +423,18 @@ export const changeEmail = (data) => (dispatch) =>
       });
   });
 
-// set touku points
 export const setToukuPoints = (userData, toukuPoints) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+  new Promise((resolve, reject) => {
     userData.total_tp = toukuPoints;
     dispatch(setUserData(userData));
     resolve(userData);
   });
 
-export const getMissedSocketEventsById = (id) => (dispatch) =>
-  new Promise(function (resolve, reject) {
+export const getMissedSocketEventsById = (id) => () =>
+  new Promise((resolve, reject) => {
     console.log('getMissedSocketEventsById called', id);
     client
-      .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
+      .get(`/xchat/get-missed-socket-events/?socket_event_id=${id}`)
       .then((res) => {
         console.log('res getMissedSocketEventsById', res);
         resolve(res);
@@ -391,10 +446,10 @@ export const getMissedSocketEventsById = (id) => (dispatch) =>
   });
 
 export const getMissedSocketEventsByIdFromApp = (id) =>
-  new Promise(function (resolve, reject) {
+  new Promise((resolve, reject) => {
     console.log('getMissedSocketEventsById called', id);
     client
-      .get(`/xchat/get-missed-socket-events/?socket_event_id=` + id)
+      .get(`/xchat/get-missed-socket-events/?socket_event_id=${id}`)
       .then((res) => {
         console.log('res getMissedSocketEventsById', res);
         resolve(res);
@@ -405,8 +460,8 @@ export const getMissedSocketEventsByIdFromApp = (id) =>
       });
   });
 
-export const getAdWallUniqueUrl = (ad) => (dispatch) =>
-  new Promise(function(resolve, reject) {
+export const getAdWallUniqueUrl = (ad) => () =>
+  new Promise((resolve, reject) => {
     client
       .get(`xchat/get-adwall-unique-url/?ad=${ad}`)
       .then((res) => {
@@ -417,92 +472,92 @@ export const getAdWallUniqueUrl = (ad) => (dispatch) =>
       });
   });
 
-export const requestLoginForm = () => (dispatch) =>
-  new Promise(function (resolve,reject) {
+export const requestLoginForm = () => () =>
+  new Promise((resolve, reject) => {
     client
-    .get(`/request-login-from/`)
-    .then((res)=>{
-      resolve(res);
-    })
-    .catch((err)=>{
-      console.log('err');
-      reject(err);
-    });
+      .get('/request-login-from/')
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err');
+        reject(err);
+      });
   });
 
-export const getExchangeHistory = (offset = 0) => (dispatch) =>
-  new Promise(function (resolve,reject) {
+export const getExchangeHistory = (offset = 0) => () =>
+  new Promise((resolve, reject) => {
     client
-    .get(`xchat/get-amazon-and-btc-history/?limit=${20}&offset=${offset}`)
-    .then((res)=>{
-      resolve(res);
-    })
-    .catch((err)=>{
-      console.log('err');
-      reject(err);
-    });
+      .get(`xchat/get-amazon-and-btc-history/?limit=${20}&offset=${offset}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err');
+        reject(err);
+      });
   });
 
-  export const getAmazonExchangeHistory = (offset = 0) => (dispatch) =>
-  new Promise(function (resolve,reject) {
+export const getAmazonExchangeHistory = (offset = 0) => () =>
+  new Promise((resolve, reject) => {
     client
-    .get(`xchat/get-amazon-history/?limit=${20}&offset=${offset}`)
-    .then((res)=>{
-      resolve(res);
-    })
-    .catch((err)=>{
-      console.log('err');
-      reject(err);
-    });
+      .get(`xchat/get-amazon-history/?limit=${20}&offset=${offset}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err');
+        reject(err);
+      });
   });
 
-  export const getBtcExchangeHistory = (offset = 0) => (dispatch) =>
-  new Promise(function (resolve,reject) {
+export const getBtcExchangeHistory = (offset = 0) => () =>
+  new Promise((resolve, reject) => {
     client
-    .get(`xchat/get-btc-history/?limit=${20}&offset=${offset}`)
-    .then((res)=>{
-      resolve(res);
-    })
-    .catch((err)=>{
-      console.log('err');
-      reject(err);
-    });
+      .get(`xchat/get-btc-history/?limit=${20}&offset=${offset}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err');
+        reject(err);
+      });
   });
 
-export const sendOtpToAddAmount = () => (dispatch) =>
-  new Promise(function (resolve,reject){
+export const sendOtpToAddAmount = () => () =>
+  new Promise((resolve, reject) => {
     client
-    .post(`/xchat/send-otp-to-add-amount/`)
-    .then((res)=>{
-      resolve(res);
-    })
-    .catch((err)=>{
-      console.log('err');
-      reject(err);
-    })
+      .post('/xchat/send-otp-to-add-amount/')
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err');
+        reject(err);
+      });
   });
 
-  export const verifyOtpToAddAmount = (data) => (dispatch) =>
-  new Promise(function (resolve,reject){
+export const verifyOtpToAddAmount = (data) => () =>
+  new Promise((resolve, reject) => {
     client
-    .post(`/xchat/verify-otp-to-add-amount/`,data)
-    .then((res)=>{
-      resolve(res);
-    })
-    .catch((err)=>{
-      console.log('err');
-      reject(err);
-    })
+      .post('/xchat/verify-otp-to-add-amount/', data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        console.log('err');
+        reject(err);
+      });
   });
 
-export const getAnyUserProfile = (id) => (dispatch) =>
-    new Promise(function (resolve,reject) {
-        client
-            .get(`xchat/get-user-profile/?user_id=${id}`)
-            .then((res)=>{
-                resolve(res);
-            })
-            .catch((err)=>{
-                reject(err);
-            });
-    });
+export const getAnyUserProfile = (id) => () =>
+  new Promise((resolve, reject) => {
+    client
+      .get(`xchat/get-user-profile/?user_id=${id}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });

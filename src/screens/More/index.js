@@ -1,40 +1,24 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
-import {
-  View,
-  ScrollView,
-  Linking,
-} from 'react-native';
+import {Linking, ScrollView, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Orientation from 'react-native-orientation';
 import {connect} from 'react-redux';
-
-import {globalStyles} from '../../styles';
 import HomeHeader from '../../components/HomeHeader';
-import {translate, setI18nConfig} from '../../redux/reducers/languageReducer';
-import {getToukuPoints} from '../../redux/reducers/configurationReducer';
-import {setToukuPoints} from '../../redux/reducers/userReducer';
-import {
-  Images,
-  Icons,
-  Colors,
-  supportUrl,
-  xanaUrl,
-  xanaDeepLink,
-  xanaAppStore,
-    faqUrl,
-    faqUrl1
-} from '../../constants';
-import SettingsItem from '../../components/SettingsItem';
-import ProfileModal from '../../components/Modals/ProfileModal';
-import {logout} from '../../redux/reducers';
-import WebViewClass from '../../components/WebView';
-import QRCodeClass from '../../components/QRCode';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
-import AsyncStorage from '@react-native-community/async-storage';
-import {resetData} from '../../storage/Service';
-import LinearGradient from 'react-native-linear-gradient';
+import ProfileModal from '../../components/Modals/ProfileModal';
+import QRCodeClass from '../../components/QRCode';
+import SettingsItem from '../../components/SettingsItem';
+import WebViewClass from '../../components/WebView';
+import {Colors, faqUrl, Icons, supportUrl, xanaUrl} from '../../constants';
 import SingleSocket from '../../helpers/SingleSocket';
-import messaging from '@react-native-firebase/messaging';
-import {eventService} from '../../utils';
+import {logout} from '../../redux/reducers';
+import {getToukuPoints} from '../../redux/reducers/configurationReducer';
+import {setI18nConfig, translate} from '../../redux/reducers/languageReducer';
+import {setToukuPoints} from '../../redux/reducers/userReducer';
+import {resetData} from '../../storage/Service';
+import {globalStyles} from '../../styles';
+import styles from './styles';
 
 class More extends Component {
   constructor(props) {
@@ -136,20 +120,19 @@ class More extends Component {
     //Linking.openURL(supportUrl);
   }
 
-    actionFaq() {
-        Linking.openURL(faqUrl1 + this.props.selectedLanguageItem.language_name);
-    }
+  actionFaq() {
+    Linking.openURL(faqUrl);
+  }
 
   render() {
     const {
       orientation,
       isWebViewVisible,
       isQRVisible,
-      isSupport,
       isLogOutVisible,
       loggingOut,
     } = this.state;
-    const {selectedLanguageItem, navigation} = this.props;
+    const {navigation} = this.props;
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -235,13 +218,13 @@ class More extends Component {
             isCustomerSupport={true}
             onPress={() => this.onNeedSupportClick()}
           />
-            <SettingsItem
-                icon_name={'question'}
-                title={translate('pages.xchat.fqa')}
-                isFontAwesome={true}
-                isFAQ={true}
-                onPress={() => this.actionFaq()}
-            />
+          <SettingsItem
+            icon_name={'question'}
+            title={translate('pages.xchat.fqa')}
+            isFontAwesome={true}
+            isFAQ={true}
+            onPress={() => this.actionFaq()}
+          />
           <SettingsItem
             icon_name={'code-branch'}
             title={translate('pages.setting.version')}
@@ -279,7 +262,7 @@ class More extends Component {
   }
 }
 
-const Section = (props) => {
+const Section = () => {
   return (
     <LinearGradient
       start={{x: 0.03, y: 0.7}}
@@ -290,9 +273,7 @@ const Section = (props) => {
         Colors.header_gradient_2,
         Colors.header_gradient_1,
       ]}
-      style={{
-        height: 27,
-      }}
+      style={styles.gradientContainer}
     />
   );
 
