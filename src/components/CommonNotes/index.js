@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, {Component} from 'react';
 import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
-import {Icons, SocketEvents} from '../../constants';
+import {Icons, SocketEvents, Colors} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
 import {eventService} from '../../utils';
 import Button from '../Button';
@@ -17,6 +17,7 @@ export default class CommonNotes extends Component {
       text: '',
       commentText: '',
       showCommentBoxIndex: -1,
+      addOption: false
     };
   }
 
@@ -63,7 +64,7 @@ export default class CommonNotes extends Component {
   };
 
   render() {
-    const {text} = this.state;
+    const {text,addOption} = this.state;
     const {
       data,
       onPost,

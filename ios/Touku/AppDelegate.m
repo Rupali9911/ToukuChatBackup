@@ -39,17 +39,17 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-// #if DEBUG
-//   InitializeFlipper(application);
-// #endif
-  
+//#if DEBUG
+//  InitializeFlipper(application);
+//#endif
+
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
 
   [[FBSDKApplicationDelegate sharedInstance] application:application
   didFinishLaunchingWithOptions:launchOptions];
-  
+
   [[Twitter sharedInstance] startWithConsumerKey:@"BvR9GWViH6r35PXtNHkV5MCxd" consumerSecret:@"2R6vK7nCsWIYneFgmlvBQUSbajD1djiYMIFLwwElZMYaa3r6Q8"];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
@@ -64,11 +64,11 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];  
   [RNSplashScreen show];
-  
+
    // Define UNUserNotificationCenter
    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
    center.delegate = self;
-  
+
    return YES;
 }
 
@@ -76,7 +76,7 @@
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
-  
+
   BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
   openURL:url
   sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
@@ -84,15 +84,15 @@
 
   BOOL handledT = [[Twitter sharedInstance] application:application openURL:url options:options];
   // Add any custom logic here.
-  
+
    BOOL handledL = [[LineSDKLogin sharedInstance] handleOpenURL:url];
-  
+
   if ([KOSession isKakaoAccountLoginCallback:url]) {
       return [KOSession handleOpenURL:url];
   }
-  
+
   BOOL handleLinking = [RCTLinkingManager application:application openURL:url options:options];
-  
+
   return handled || handledT || handledL || handleLinking;
 }
 
@@ -102,10 +102,10 @@
     if ([KOSession isKakaoAccountLoginCallback:url]) {
         return [KOSession handleOpenURL:url];
     }
-  
+
   BOOL handleLinking = [RCTLinkingManager application:application openURL:url
   sourceApplication:sourceApplication annotation:annotation];
-  
+
     return handleLinking || false;
 }
 
@@ -118,7 +118,7 @@
 //-(void)applicationDidEnterBackground:(UIApplication *)application{
 //  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 //}
-    
+
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {

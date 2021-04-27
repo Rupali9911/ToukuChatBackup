@@ -47,9 +47,11 @@ export default StyleSheet.create({
         backgroundColor: '#fff',
         minHeight: 100,
         justifyContent: 'center',
+        transform: [{rotate: '180deg'}],
     },
     emptyText: {
         alignSelf: 'center',
+        transform: [{rotateY: '180deg'}],
     },
     inputContainer: {
         padding: 10,

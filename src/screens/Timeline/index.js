@@ -31,6 +31,7 @@ import {
 } from '../../redux/reducers/timelineReducer';
 import { globalStyles } from '../../styles';
 import { showToast, eventService } from '../../utils';
+import NavigationService from '../../navigation/NavigationService';
 
 class Timeline extends Component {
   constructor(props) {
@@ -165,6 +166,14 @@ class Timeline extends Component {
           icon: 'bars',
           onPress: (res) => {
             this.hidePost(res);
+          },
+        },
+        {
+          id: 1,
+          title: translate('pages.xchat.unfollow'),
+          icon: 'bars',
+          onPress: (post) => {
+            NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: true})
           },
         },
         // ,
@@ -317,7 +326,7 @@ class Timeline extends Component {
         if (message_details.user_id == this.props.userData.id) {
           item.is_liked = message_details.like.like;
         }
-        item.liked_by_count = message_details.like.like ? item.liked_by_count + 1 : item.liked_by_count - 1;
+        item.liked_by_count = message_details.like_by_count;
         let array = followingTimeline;
         array.splice(index, 1, item);
         this.props.updateFollowingTimeline(array);

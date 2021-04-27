@@ -83,6 +83,7 @@
 	<string>public.app-category.business</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>itms-apps</string>
 		<string>twitter</string>
 		<string>twitterauth</string>
 		<string>lineauth2</string>

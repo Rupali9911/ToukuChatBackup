@@ -7,6 +7,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 10,
   },
   notes: {

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import React, {Component} from 'react';
-import {FlatList, View} from 'react-native';
+import {View, FlatList, Platform, Linking} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Orientation from 'react-native-orientation';
 import {createFilter} from 'react-native-search-filter';
@@ -25,7 +25,7 @@ import EmailConfirmationModal from '../../components/Modals/EmailConfirmationMod
 import PasswordConfirmationModal from '../../components/Modals/PasswordConfirmationModal';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
-import {languageArray, SocketEvents} from '../../constants';
+import {languageArray, SocketEvents, liveAppLink} from '../../constants';
 import BulkSocket from '../../helpers/BulkSocket';
 import SingleSocket from '../../helpers/SingleSocket';
 import NavigationService from '../../navigation/NavigationService';
@@ -169,6 +169,7 @@ import {
 import {globalStyles} from '../../styles';
 import {eventService, getAvatar, realmToPlainObject} from '../../utils';
 import { isArray } from 'lodash';
+import {minVersion, version} from "../../../package";
 
 let channelId = [];
 let friendId = [];
@@ -198,6 +199,7 @@ class Chat extends Component {
       countChat: 0,
       bonusModal: false,
       bonusXP: 0,
+        updateVersionModal: false
       // sortOptions: [
       //   {
       //     title: translate('pages.xchat.timeReceived'),
@@ -274,9 +276,9 @@ class Chat extends Component {
         JSON.stringify(res.is_bonus_opened),
       );
 
-      if (res && !res.is_bonus_opened) {
-        this.checkHasLoginBonus();
-      }
+      // if(res && !res.is_bonus_opened){
+      //   this.checkHasLoginBonus();
+      // }
 
       this.setState({
         sortBy: res.sort_by,
@@ -296,7 +298,7 @@ class Chat extends Component {
       let groupLoadingStatus = true;
       let userLoadingStatus = true;
 
-      this.props.getUserFriends().then((res) => {
+      this.props.getUserFriends().then(() => {
         // this.setCommonConversation();
         userLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
@@ -313,7 +315,7 @@ class Chat extends Component {
         });
       });
 
-      this.props.getUserGroups().then((res) => {
+      this.props.getUserGroups().then(() => {
         // this.setCommonConversation();
         groupLoadingStatus = false;
         this.props.setCommonChatConversation().then(async () => {
@@ -426,6 +428,11 @@ class Chat extends Component {
       },
     );
 
+      if (version <= minVersion ) {
+          this.setState({updateVersionModal: true})
+      }else {
+          this.setState({updateVersionModal: false})
+      }
   }
 
   componentWillUnmount() {
@@ -467,7 +474,7 @@ class Chat extends Component {
     // console.log('invitationCode onfocus', invitationCode)
     if (invitationCode) {
       let data = {invitation_code: invitationCode};
-      this.props.addFriendByReferralCode(data).then((res) => {
+      this.props.addFriendByReferralCode(data).then(() => {
         AsyncStorage.removeItem('invitationCode');
       });
     }
@@ -495,7 +502,7 @@ class Chat extends Component {
   // };
 
   getUserGroups = () => {
-    this.props.getUserGroups().then((res) => {
+    this.props.getUserGroups().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -750,7 +757,7 @@ class Chat extends Component {
           message.text.data.message_details.user_id,
           message.text.data.message_details,
         );
-        this.props.getUserFriends().then((res) => {
+        this.props.getUserFriends().then(() => {
           this.setCommonConversation();
         });
       }
@@ -780,7 +787,7 @@ class Chat extends Component {
             message.text.data.message_details.user_id,
             true,
           );
-          this.props.setUserFriends().then((res) => {
+          this.props.setUserFriends().then(() => {
             this.props.setCommonChatConversation();
           });
         } else if (
@@ -791,7 +798,7 @@ class Chat extends Component {
             message.text.data.message_details.user_id,
             false,
           );
-          this.props.getUserFriends().then((res) => {
+          this.props.getUserFriends().then(() => {
             this.setCommonConversation();
           });
         }
@@ -809,7 +816,7 @@ class Chat extends Component {
       message.text.data.message_details.channel_ids.length > 0
     ) {
       message.text.data.message_details.channel_ids.map(
-        (channelItem, index) => {
+        (channelItem) => {
           let commonData1 = commonData.filter(
             (item) => item.id === channelItem,
           );
@@ -825,7 +832,7 @@ class Chat extends Component {
       message.text.data.message_details.friend_ids &&
       message.text.data.message_details.friend_ids.length > 0
     ) {
-      message.text.data.message_details.friend_ids.map((friendItem, index) => {
+      message.text.data.message_details.friend_ids.map((friendItem) => {
         let commonData2 = commonData.filter(
           (item) => item.friend === friendItem,
         );
@@ -840,7 +847,7 @@ class Chat extends Component {
       message.text.data.message_details.group_ids &&
       message.text.data.message_details.group_ids.length > 0
     ) {
-      message.text.data.message_details.group_ids.map((groupItem, index) => {
+      message.text.data.message_details.group_ids.map((groupItem) => {
         let commonData3 = commonData.filter(
           (item) => item.group_id === groupItem,
         );
@@ -852,7 +859,7 @@ class Chat extends Component {
 
     await this.props.getLocalFollowingChannels();
     await this.props.setUserFriends();
-    this.props.getLocalUserGroups().then((res) => {
+    this.props.getLocalUserGroups().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -875,7 +882,7 @@ class Chat extends Component {
             false,
           );
         }
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -925,7 +932,7 @@ class Chat extends Component {
           //   message.text.data.socket_event_id,
           // );
           // this.getUserFriends();
-          this.props.setUserFriends().then((res) => {
+          this.props.setUserFriends().then(() => {
             this.props.setCommonChatConversation();
           });
         }
@@ -949,7 +956,7 @@ class Chat extends Component {
         //   message.text.data.socket_event_id,
         // );
         // this.getFollowingChannels();
-        this.props.getLocalFollowingChannels().then((res) => {
+        this.props.getLocalFollowingChannels().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -966,7 +973,7 @@ class Chat extends Component {
       );
       if (channel && channel.length > 0) {
         updateReadByChannelId(message.text.data.message_details.channel_id, 0);
-        this.props.getLocalFollowingChannels().then((res) => {
+        this.props.getLocalFollowingChannels().then(() => {
           this.props.setCommonChatConversation();
         });
 
@@ -1003,7 +1010,7 @@ class Chat extends Component {
         // this.props.getMissedSocketEventsById(
         //   message.text.data.socket_event_id,
         // );
-        this.props.getLocalUserGroups().then((res) => {
+        this.props.getLocalUserGroups().then(() => {
           this.props.setCommonChatConversation();
         });
         // this.getUserGroups();
@@ -1095,7 +1102,7 @@ class Chat extends Component {
 
         // updateGroup(message.text.data.message_details).then(() => {
         //   console.log('onNewMessageInGroup -> updateGroup');
-        this.props.getLocalUserGroups().then((res) => {
+        this.props.getLocalUserGroups().then(() => {
           this.props.setCommonChatConversation();
         });
         // });
@@ -1249,7 +1256,7 @@ class Chat extends Component {
             message.text.data.message_details,
             channels[0].unread_msg,
           );
-          this.props.getLocalFollowingChannels().then((res) => {
+          this.props.getLocalFollowingChannels().then(() => {
             this.props.setCommonChatConversation();
           });
 
@@ -1413,13 +1420,13 @@ class Chat extends Component {
               var array = [];
               array = realmToPlainObject(chats);
               // array = chats.toJSON();
-  
+
               if (array.length > 0) {
                 updateChannelLastMsgWithOutCount(item.channel, array[0]);
               } else {
                 updateChannelLastMsgWithOutCount(item.channel, null);
               }
-  
+
               this.props.getLocalFollowingChannels().then(() => {
                 this.props.setCommonChatConversation();
               });
@@ -1518,7 +1525,7 @@ class Chat extends Component {
 
       this.props.updateTrendTimeline(array);
 
-      this.props.getLocalFollowingChannels().then((res) => {
+      this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
     }
@@ -1528,7 +1535,7 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.CREATE_NEW_CHANNEL) {
       setChannels([message.text.data.message_details]);
       // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
-      this.props.getLocalFollowingChannels().then((res) => {
+      this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
     }
@@ -1544,7 +1551,7 @@ class Chat extends Component {
       deleteChannelConversationById(
         message.text.data.message_details.channel_id,
       );
-      this.props.getLocalFollowingChannels().then((res) => {
+      this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
       });
 
@@ -1595,7 +1602,7 @@ class Chat extends Component {
           message.text.data.message_details,
           false,
         );
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
         if (
@@ -1630,7 +1637,7 @@ class Chat extends Component {
           );
         }
         // this.getUserFriends();
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -1646,7 +1653,7 @@ class Chat extends Component {
           user[0].user_id,
           message.text.data.message_details,
         );
-        this.props.getUserFriends().then((res) => {
+        this.props.getUserFriends().then(() => {
           this.setCommonConversation();
         });
       }
@@ -1729,7 +1736,7 @@ class Chat extends Component {
           message.text.data.message_details.to_user.id,
           message.text.data.message_details,
         );
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -1763,7 +1770,7 @@ class Chat extends Component {
           message.text.data.message_details.from_user.id,
           message.text.data.message_details,
         );
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -1805,7 +1812,7 @@ class Chat extends Component {
           deleteFriendMessageById(message.text.data.message_details.id);
           this.getLocalFriendConversation();
         }
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
       } else if (message.text.data.message_details.to_user.id === userData.id) {
@@ -1842,7 +1849,7 @@ class Chat extends Component {
           this.getLocalFriendConversation();
         }
 
-        this.props.setUserFriends().then((res) => {
+        this.props.setUserFriends().then(() => {
           this.props.setCommonChatConversation();
         });
       }
@@ -1879,7 +1886,7 @@ class Chat extends Component {
             } else {
               updateFriendLastMsgWithoutCount(user_id, null);
             }
-            this.props.setUserFriends().then((res) => {
+            this.props.setUserFriends().then(() => {
               this.props.setCommonChatConversation();
             });
           }
@@ -1956,7 +1963,7 @@ class Chat extends Component {
     if (message) {
       // removeUserFriends(message.text.data.message_details.user_id);
       updateFriendStatus(message.text.data.message_details.user_id,message.text.data.message_details.status);
-      this.props.setUserFriends().then((res) => {
+      this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
       if (
@@ -1999,7 +2006,7 @@ class Chat extends Component {
     const {currentFriend} = this.props;
     if (message) {
       removeUserFriends(message.text.data.message_details.user_id);
-      this.props.setUserFriends().then((res) => {
+      this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
       if (
@@ -2034,7 +2041,7 @@ class Chat extends Component {
             array[0].msg_id,
             array[0].timestamp,
           );
-          this.props.getLocalUserGroups().then((res) => {
+          this.props.getLocalUserGroups().then(() => {
             this.props.setCommonChatConversation();
           });
         }
@@ -2090,7 +2097,7 @@ class Chat extends Component {
                 true
               );
             }
-            this.props.getLocalUserGroups().then((res) => {
+            this.props.getLocalUserGroups().then(() => {
               this.props.setCommonChatConversation();
             });
           }
@@ -2136,7 +2143,7 @@ class Chat extends Component {
             reply_to: null,
           };
           setGroups([group]).then(() => {
-            this.props.getLocalUserGroups().then((res) => {
+            this.props.getLocalUserGroups().then(() => {
               this.props.setCommonChatConversation();
             });
           });
@@ -2167,7 +2174,7 @@ class Chat extends Component {
         deleteAllGroupMessageByGroupId(
           message.text.data.message_details.group_id,
         );
-        this.props.getLocalUserGroups().then((res) => {
+        this.props.getLocalUserGroups().then(() => {
           console.log('local groups update');
           this.props.setCommonChatConversation();
         });
@@ -2182,7 +2189,7 @@ class Chat extends Component {
       for (let i of message.text.data.message_details.members_data) {
         if (i.id === userData.id) {
           setGroups([message.text.data.message_details.group_data]);
-          this.props.getLocalUserGroups().then((res) => {
+          this.props.getLocalUserGroups().then(() => {
             this.props.setCommonChatConversation();
           });
           break;
@@ -2296,7 +2303,7 @@ class Chat extends Component {
           this.props.setCurrentGroup(null);
           this.props.setGroupConversation([]);
         }
-        this.props.getLocalUserGroups().then((res) => {
+        this.props.getLocalUserGroups().then(() => {
           console.log('local groups update');
           this.props.setCommonChatConversation();
         });
@@ -2325,7 +2332,7 @@ class Chat extends Component {
             message.text.data.message_details.group_picture,
             message.text.data.message_details.members.length,
           );
-          this.props.getLocalUserGroups().then((res) => {
+          this.props.getLocalUserGroups().then(() => {
             this.props.setCommonChatConversation();
           });
         }
@@ -2497,7 +2504,7 @@ class Chat extends Component {
     currentFriend.is_pined = true;
     this.props.setCurrentFriend(currentFriend);
     updateUserFriendsWhenPined(message.text.data.message_details);
-    this.props.getUserFriends().then((res) => {
+    this.props.getUserFriends().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -2508,7 +2515,7 @@ class Chat extends Component {
     currentFriend.is_pined = false;
     this.props.setCurrentFriend(currentFriend);
     updateUserFriendsWhenUnpined(message.text.data.message_details);
-    this.props.getUserFriends().then((res) => {
+    this.props.getUserFriends().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -2519,7 +2526,7 @@ class Chat extends Component {
     currentGroup.is_pined = true;
     this.props.setCurrentGroup(currentGroup);
     updateGroupsWhenPined(message.text.data.message_details);
-    this.props.getLocalUserGroups().then((res) => {
+    this.props.getLocalUserGroups().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -2530,7 +2537,7 @@ class Chat extends Component {
     currentGroup.is_pined = false;
     this.props.setCurrentGroup(currentGroup);
     updateGroupsWhenUnpined(message.text.data.message_details);
-    this.props.getLocalUserGroups().then((res) => {
+    this.props.getLocalUserGroups().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -2543,7 +2550,7 @@ class Chat extends Component {
     currentChannel.is_pined = true;
     this.props.setCurrentChannel(currentChannel);
     updateChannelsWhenPined(message.text.data.message_details);
-    this.props.getLocalFollowingChannels().then((res) => {
+    this.props.getLocalFollowingChannels().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -2556,7 +2563,7 @@ class Chat extends Component {
     currentChannel.is_pined = false;
     this.props.setCurrentChannel(currentChannel);
     updateChannelsWhenUnpined(message.text.data.message_details);
-    this.props.getLocalFollowingChannels().then((res) => {
+    this.props.getLocalFollowingChannels().then(() => {
       this.props.setCommonChatConversation();
     });
   };
@@ -2587,7 +2594,7 @@ class Chat extends Component {
           message.text.data.message_details.display_name,
           message.text.data.message_details.background_image,
         );
-        this.props.getUserFriends().then((res) => {
+        this.props.getUserFriends().then(() => {
           this.setCommonConversation();
         });
       }
@@ -3166,14 +3173,14 @@ class Chat extends Component {
 
           // channel
           if (deleteObj.channel_ids && deleteObj.channel_ids.length > 0) {
-            deleteObj.channel_ids.map((channelItem, index) => {
+            deleteObj.channel_ids.map((channelItem) => {
               commonData = commonData.filter((item) => item.id !== channelItem);
             });
           }
 
           // friend
           if (deleteObj.friend_ids && deleteObj.friend_ids.length > 0) {
-            deleteObj.friend_ids.map((friendItem, index) => {
+            deleteObj.friend_ids.map((friendItem) => {
               commonData = commonData.filter(
                 (item) => item.friend !== friendItem,
               );
@@ -3182,7 +3189,7 @@ class Chat extends Component {
 
           // group
           if (deleteObj.group_ids && deleteObj.group_ids.length > 0) {
-            deleteObj.group_ids.map((groupItem, index) => {
+            deleteObj.group_ids.map((groupItem) => {
               commonData = commonData.filter(
                 (item) => item.group_id !== groupItem,
               );
@@ -3403,6 +3410,17 @@ class Chat extends Component {
     this.updateModalVisibility();
   };
 
+    onUpdate= async() =>{
+    if (Platform.OS === 'ios'){
+      const supported = await Linking.canOpenURL(liveAppLink);
+        if (supported) {
+          Linking.openURL(liveAppLink)
+        }
+      } else{
+       console.log('Add live playstore link of app')
+     }
+    }
+
   renderDisplayNameText = (text, message) => {
     if(message, text.includes('{Display Name}')){
       let update_txt = text.replace(/{Display Name}/g,this.props.userConfig.display_name);
@@ -3617,6 +3635,7 @@ class Chat extends Component {
       isDeleteLoading,
       bonusModal,
       bonusXP,
+      updateVersionModal
     } = this.state;
     return (
       // <ImageBackground
@@ -3730,14 +3749,25 @@ class Chat extends Component {
           isSetEmail
         />
 
-        <BonusModal
-          visible={bonusModal}
-          onRequestClose={() => {
-            this.setState({bonusModal: false});
-          }}
-          bonusXP={bonusXP}
-          registerBonus={true}
-        />
+        {/*<BonusModal*/}
+          {/*visible={bonusModal}*/}
+          {/*onRequestClose={() => {*/}
+            {/*this.setState({ bonusModal: false })*/}
+          {/*}}*/}
+          {/*bonusXP={bonusXP}*/}
+          {/*registerBonus={true}*/}
+        {/*/>*/}
+          {updateVersionModal &&
+          <UpdateAppModal
+              visible={true}
+              onConfirm={this.onUpdate.bind(this)}
+              title= {translate('app.newVersionAvailable')}
+              message={translate('app.updateApp')}
+              isLoading={false}
+              confirmText={translate('app.update')}
+          />
+          }
+
       </View>
       // </ImageBackground>
     );

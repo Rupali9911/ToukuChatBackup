@@ -311,8 +311,9 @@ export default class PostChannelItem extends Component {
           </HyperLink>
         </View>
 
+        
         {/* Comment below code until not available on production */}
-        {/* <View
+        <View
           style={styles.likeCommentContainer}>
           <View style={styles.likeCommentActionContainer}>
             <TouchableOpacity style={styles.action_icon_container}
@@ -362,7 +363,7 @@ export default class PostChannelItem extends Component {
             }}>
             {post.post_comments && post.post_comments.length} {translate('pages.xchat.comment')}
           </Text>
-        </View>} */}
+        </View>}
 
         <TimelineCommentModal
           autoFocus={this.autoFocus}

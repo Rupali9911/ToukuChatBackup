@@ -159,7 +159,7 @@ export default class PostCardHeader extends Component {
               <Button
                 title={
                   post.is_following
-                    ? translate('pages.xchat.unfollow')
+                    ? translate('pages.xchat.following')
                     : translate('pages.xchat.follow')
                 }
                 type={'primaryNew'}
@@ -177,9 +177,10 @@ export default class PostCardHeader extends Component {
                         this.setState({isLoading: false});
                       },
                     );
-                  }else if(isTimeline){
-                    NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: isTimeline})
                   }
+                  // else if(isTimeline){
+                  //   NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: isTimeline})
+                  // }
                 }}
               />
             </View>

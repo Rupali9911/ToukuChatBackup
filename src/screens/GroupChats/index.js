@@ -1557,6 +1557,7 @@ class GroupChats extends Component {
       mediaType: 'any',
       includeBase64: true,
     }).then(async (images) => {
+      console.log('Images', images)
       this.setState({
         uploadedFiles: [...this.state.uploadedFiles, ...images],
       });

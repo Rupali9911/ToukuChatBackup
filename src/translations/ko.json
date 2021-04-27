@@ -1,4 +1,9 @@
 {
+  "app":{
+    "newVersionAvailable":"새 버전 사용 가능",
+    "updateApp":"앱을 다음 버전으로 업데이트하세요",
+    "update":"최신 정보"
+  },
   "common":{
     "tomorrow":"\ub0b4\uc77c",
     "yesterday":"\uc5b4\uc81c",
@@ -1679,7 +1684,7 @@
       "GoldCrownText": "5 월 공개 예정",
       "dontHaveSufficientAmount": "충분한 양이 없습니다",
       "exchangesuccessfully": "TP를 성공적으로 교환했습니다.",
-      "minimumAmountOfTp": "5TP 이하로 교환 할 수 없습니다.",
+      "minimumAmountOfTp": "500TP 이하로 교환 할 수 없습니다.",
       "noExchageHistory": "교환 내역이 없습니다.",
       "processing": "가공",
       "bonusUseText1": "※ 전화 번호 호를 認證하지 않으면 포인트 취득 후 1 개월 이내에 사라집니다 (설정 → 개인 정보 란에서 설정 가능)",

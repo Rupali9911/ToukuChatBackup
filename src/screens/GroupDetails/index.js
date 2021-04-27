@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import HyperLink from 'react-native-hyperlink';
 import ImagePicker from 'react-native-image-picker';
+import GalleryPicker from 'react-native-image-crop-picker';
+import {FloatingAction} from 'react-native-floating-action';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 import Orientation from 'react-native-orientation';
@@ -24,7 +26,7 @@ import CommonNotes from '../../components/CommonNotes';
 import GroupFriend from '../../components/GroupFriend';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import {ImageLoader, ListLoader} from '../../components/Loaders';
-import {ConfirmationModal} from '../../components/Modals';
+import {ConfirmationModal,ShowGalleryModal} from '../../components/Modals';
 import NoData from '../../components/NoData';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
@@ -88,6 +90,9 @@ class GroupDetails extends Component {
       isLoading: false,
       data: [],
       uploadLoading: false,
+      sendingMedia: false,
+      showGalleryModal: false,
+      uploadedFiles: [],
       memberOption: [
         {
           title: translate('pages.xchat.admin'),
@@ -145,6 +150,29 @@ class GroupDetails extends Component {
 
     this.S3uploadService = new S3uploadService();
     this.isLeaveLoading = false;
+    this.actions = [
+      {
+        text: "",
+        icon: Icons.icon_camera,
+        name: "bt_camera",
+        position: 1,
+        color: '#e26161',
+      },
+      {
+        text: "",
+        icon: Icons.gallery_icon_select,
+        name: "bt_gallery",
+        position: 2,
+        color: '#e26161',
+      },
+      {
+        text: "",
+        icon: Icons.icon_edit_pen,
+        name: "bt_write",
+        position: 3,
+        color: '#e26161',
+      }
+    ];
   }
 
   static navigationOptions = () => {
@@ -739,6 +767,8 @@ class GroupDetails extends Component {
       item.liked_by_count = data.like.like
         ? item.liked_by_count + 1
         : item.liked_by_count - 1;
+
+      console.log('status',data.like.like,item);
       array.splice(index, 1, item);
       this.setState({data: {...this.state.data, results: array}});
     }
@@ -912,6 +942,7 @@ class GroupDetails extends Component {
 
   likeUnlike = (note_id, index) => {
     let data = {note_id: note_id};
+    console.log('api called likeUnlikeGroupNote');
     this.props
       .likeUnlikeGroupNote(data)
       .then((res) => {
@@ -960,6 +991,111 @@ class GroupDetails extends Component {
     }
   };
 
+  //#region gallery modal functions
+  toggleGalleryModal = (status) => {
+    this.setState({
+      showGalleryModal: status,
+    });
+  };
+
+  removeUploadData = (index) => {
+    let newArray = this.state.uploadedFiles.filter((item, itemIndex) => {
+      if (index !== itemIndex) {
+        return item;
+      }
+    });
+    this.setState({
+      uploadedFiles: newArray,
+    });
+  };
+
+  onCameraPress = () => {
+    GalleryPicker.openCamera({
+      includeBase64: true,
+      mediaType: 'photo',
+    }).then((image) => {
+      let source = {uri: 'data:image/jpeg;base64,' + image.data};
+      this.setState({
+        uploadFile: source,
+        sentMessageType: 'image',
+        sendingMedia: true,
+      });
+      // this.onMessageSend();
+    });
+  };
+
+  onGalleryPress = async () => {
+    GalleryPicker.openPicker({
+      multiple: true,
+      maxFiles: 30,
+      mediaType: 'any',
+      includeBase64: true,
+    }).then(async (images) => {
+      console.log('Images', images)
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...images],
+      });
+      // this.toggleSelectModal(false);
+      this.toggleGalleryModal(true);
+    });
+  };
+
+  onUrlUpload = (url) => {
+    this.setState({uploadedFiles: [...this.state.uploadedFiles, url]});
+  };
+
+  uploadAndSend = async () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    // this.toggleGalleryModal(false);
+
+    for (const file of this.state.uploadedFiles) {
+      let fileType = file.mime;
+      if (fileType.includes('image')) {
+        let source = {
+          uri:
+            file.mime === 'image/gif'
+              ? 'data:image/gif;base64,' + file.data
+              : 'data:image/jpeg;base64,' + file.data,
+          type: file.mime,
+          name: file.filename,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'image',
+            sendingMedia: true,
+          },
+          async () => {
+            // await this.onMessageSend();
+          },
+        );
+      } else {
+        let source = {
+          uri: file.path,
+          type: file.mime,
+          name: file.filename,
+          isUrl: file.isUrl,
+        };
+        await this.setState(
+          {
+            uploadFile: source,
+            sentMessageType: 'video',
+            sendingMedia: true,
+          },
+          () => {
+            // this.onMessageSend();
+          },
+        );
+      }
+    }
+    // this.setState({uploadedFiles: []});
+    this.isUploading = false;
+  };
+  //#endregion
+
   render() {
     const {
       isManage,
@@ -975,6 +1111,7 @@ class GroupDetails extends Component {
       showDeleteNoteConfirmationModal,
       uploadLoading,
       deleteLoading,
+      sendingMedia
     } = this.state;
 
     let filePath = {uri: this.props.currentGroupDetail.group_picture};
@@ -1279,6 +1416,35 @@ class GroupDetails extends Component {
             message={translate('pages.xchat.deleteNoteText')}
             isLoading={deleteLoading}
           />
+          {/* <ShowGalleryModal
+            visible={this.state.showGalleryModal}
+            toggleGalleryModal={this.toggleGalleryModal}
+            data={this.state.uploadedFiles}
+            onCancel={() => {
+              this.setState({ uploadedFiles: [] });
+              this.toggleGalleryModal(false);
+            }}
+            onUpload={() => this.uploadAndSend()}
+            isLoading={sendingMedia}
+            removeUploadData={(index) => this.removeUploadData(index)}
+            onGalleryPress={() => this.onGalleryPress()}
+            onUrlDone={this.onUrlUpload}
+          />
+          <FloatingAction
+            visible={this.state.isNotes}
+            actions={this.actions}
+            onPressItem={name => {
+              if(name==='bt_write'){
+                this.setState({
+                  showTextBox: true,
+                })
+              }else if(name==='bt_gallery') {
+                this.toggleGalleryModal(true);
+              } else if(name==='bt_camera'){
+                this.onCameraPress();
+              }
+            }}
+            color={'#e26161'} /> */}
         </View>
         <SafeAreaView />
       </View>

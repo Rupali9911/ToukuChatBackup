@@ -35,7 +35,7 @@ class AmazonExchange extends Component {
       orientation: 'PORTRAIT',
       isExchange: false,
       loading: false,
-      tp_point: 5,
+      tp_point: 500,
       point_in_yen: 0,
       showPhoneUpdateModal: false,
       isUpdatePhoneModalVisible: false,
@@ -218,7 +218,7 @@ class AmazonExchange extends Component {
                   {translate('pages.adWall.miniExchangePoint')}
                 </Text>
                 <Text style={styles.firstTimeExchangeText}>
-                  {translate('pages.adWall.firstTimeExchangeText')}
+                  {'(*' + translate('pages.adWall.minimumAmountOfTp') + ')'}
                 </Text>
               </View>
               <Text style={styles.colon}>:</Text>
@@ -316,7 +316,7 @@ class AmazonExchange extends Component {
                     type={isExchange ? '' : 'translucent'}
                     title={translate('pages.adWall.confirm')}
                     onPress={() => {
-                      if (this.props.userData.total_tp < 5) {
+                      if (this.props.userData.total_tp < 500) {
                         Toast.show({
                           title: 'Touku',
                           text: translate(
@@ -328,7 +328,7 @@ class AmazonExchange extends Component {
                       }
                       if (
                         this.state.tp_point.length === 0 ||
-                        parseFloat(this.state.tp_point) < 5
+                        parseFloat(this.state.tp_point) < 500
                       ) {
                         Toast.show({
                           title: 'Touku',

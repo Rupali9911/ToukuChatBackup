@@ -4,6 +4,7 @@ const {height} = Dimensions.get('window');
 
 export default StyleSheet.create({
   mainContainer: {
+    flexGrow: 1,
     paddingHorizontal: 15,
     paddingBottom: 50,
   },

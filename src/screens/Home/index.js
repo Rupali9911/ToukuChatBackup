@@ -2010,29 +2010,21 @@ class Home extends PureComponent {
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.requestXanaLoginform();
-                    }}>
-                    <View style={styles.recommendedContainers}>
-                      <Image
-                        source={{
-                          uri:
-                            'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png',
-                        }}
-                        style={styles.recommendedPosters}
-                      />
-                      <Text numberOfLines={1} style={styles.recommendedLabels}>
-                        {translate('pages.adWall.OptionalXigolo')}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.navigate('ChannelInfo', {
-                        channelItem: {channel_id: 800},
-                      });
-                    }}>
+                  {/*<TouchableOpacity style={{}}*/}
+                    {/*onPress={() => {*/}
+                      {/*this.requestXanaLoginform();*/}
+                    {/*}}>*/}
+                    {/*<View style={styles.recommendedContainers}>*/}
+                      {/*<Image*/}
+                        {/*source={{ uri: 'https://cdn.angelium.net/touku/assets/images/xigolo_girl.png' }}*/}
+                        {/*style={styles.recommendedPosters}*/}
+                      {/*/>*/}
+                      {/*<Text numberOfLines={1} style={styles.recommendedLabels}>{translate('pages.adWall.OptionalXigolo')}</Text>*/}
+                    {/*</View>*/}
+                  {/*</TouchableOpacity>*/}
+                  <TouchableOpacity style={{}} onPress={() => {
+                    this.props.navigation.navigate('ChannelInfo', { channelItem: { channel_id: 800 } })
+                  }}>
                     <View style={styles.recommendedContainers}>
                       <Image
                         source={{

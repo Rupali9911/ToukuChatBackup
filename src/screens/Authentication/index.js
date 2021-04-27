@@ -18,7 +18,9 @@ class Authentication extends Component {
   constructor() {
     super();
     this.authenticateUser();
-    this.state = {};
+      this.state = {
+        showModal: false
+      }
   }
 
   authenticateUser = async () => {

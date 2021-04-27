@@ -63,6 +63,7 @@ class NoteItem extends Component {
       suggestionDataHeight: 0,
       linkPreview: null
     };
+    this.likeUnlikeApiCallStatus = false;
   }
 
   UNSAFE_componentWillMount() {
@@ -736,7 +737,14 @@ class NoteItem extends Component {
                   <Text
                     style={styles.interactionText}
                     onPress={() => {
-                      onLikeUnlike(item.id, index);
+                      if(!this.likeUnlikeApiCallStatus){
+                        this.likeUnlikeApiCallStatus = true;
+                        onLikeUnlike(item.id, index);
+                        setTimeout(()=>{
+                          this.likeUnlikeApiCallStatus = false;
+                        },2000);
+                      }
+                      
                     }}>
                     {item.is_liked
                       ? translate('pages.xchat.unlike')
