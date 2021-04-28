@@ -1,7 +1,7 @@
 {
   "name": "Touku",
-  "version": "3.4.5",
-  "minVersion": "3.4.4",
+  "version": "3.4.6",
+  "minVersion": "3.4.5",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -51,7 +51,7 @@
     "react-native-haptic-feedback": "^1.11.0",
     "react-native-hyperlink": "0.0.19",
     "react-native-image-crop-picker": "^0.35.1",
-    "react-native-image-picker": "^3.3.2",
+    "react-native-image-picker": "^3.3.4",
     "react-native-image-resizer": "^1.2.3",
     "react-native-image-viewing": "^0.2.0",
     "react-native-image-zoom-viewer": "^3.0.1",
