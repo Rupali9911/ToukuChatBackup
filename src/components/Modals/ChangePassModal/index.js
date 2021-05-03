@@ -150,11 +150,23 @@ class ChangePassModal extends Component {
           }
         })
         .catch((err) => {
-          Toast.show({
-            title: translate('pages.resetPassword.changePassword'),
-            text: 'Invalid current password',
-            type: 'primary',
-          });
+          console.log('Error from Change Password API', err)
+            if (err.response) {
+                console.log('err.response',err.response);
+                if (err.response && err.response.data && err.response.data.message) {
+                        Toast.show({
+                            title: translate('pages.resetPassword.changePassword'),
+                            text: err.response.data.message.includes("backend") ? translate(err.response.data.message.toString()) : err.response.data.message.toString(),
+                            type: 'primary',
+                        });
+                }else{
+                        Toast.show({
+                            title: translate('pages.resetPassword.changePassword'),
+                            text: 'Invalid current password',
+                            type: 'primary',
+                        });
+                }
+            }
         });
     }
   };

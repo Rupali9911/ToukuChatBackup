@@ -1,6 +1,6 @@
 {
   "name": "Touku",
-  "version": "3.4.6",
+  "version": "3.4.7",
   "minVersion": "3.4.5",
   "private": true,
   "scripts": {
@@ -37,6 +37,7 @@
     "moment": "^2.26.0",
     "react": "16.11.0",
     "react-native": "0.62.2",
+    "react-native-appstore-version-checker": "^3.0.0",
     "react-native-aws3": "^0.0.9",
     "react-native-camera": "^3.42.0",
     "react-native-create-thumbnail": "^1.2.2",

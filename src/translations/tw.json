@@ -1,8 +1,8 @@
 {
   "app":{
-    "newVersionAvailable":"新版本可用",
-    "updateApp":"請將該應用更新到下一個版本",
-    "update":"更新"
+    "dearUser":"親愛的用戶",
+    "upgradeApp":"要獲得更多功能和更好的用戶體驗，請升級此應用。",
+    "upgrade":"升級"
   },
   "common":{
     "tomorrow":"明天",

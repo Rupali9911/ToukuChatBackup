@@ -215,6 +215,8 @@ export default class App extends Component {
                 : suffixUrl;
         await AsyncStorage.setItem('invitationCode', invitationCode);
         const userToken = await AsyncStorage.getItem('userToken');
+
+        console.log('invitationCode received via link', invitationCode)
         if (userToken) {
             let route = NavigationService.getCurrentRoute();
             let routeName = route.routeName;

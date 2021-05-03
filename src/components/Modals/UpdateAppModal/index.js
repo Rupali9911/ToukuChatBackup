@@ -14,6 +14,7 @@ import {Colors, Fonts, Images, Icons} from '../../../constants';
 import Button from '../../Button';
 import {translate} from '../../../redux/reducers/languageReducer';
 import {UpdateAppModalStyles as style} from './styles';
+import {normalize} from "../../../utils";
 
 export default class UpdateAppModal extends Component {
     constructor(props) {
@@ -38,18 +39,21 @@ export default class UpdateAppModal extends Component {
                         style={style.bgImage}
                         resizeMode="stretch"/>
                     <View style={style.bgImage}>
+                        <View style={{flex: 1.4}}/>
                     <View style={style.innerContainer}>
-                        <View style={style.detailsAreaView}>
                             <Text style={style.alertTitleTextStyle}>{title}</Text>
                             <Text style={style.alertmessageTextStyel}>
                                 {message ? message : ''}
                             </Text>
+                        <View style={style.singleBtnSubVw}>
                             <Button
                                 title={confirmText?confirmText:translate('pages.xchat.toastr.sure')}
                                 type={'primary'}
                                 onPress={isLoading ? null : onConfirm}
                                 isRounded={false}
                                 loading={isLoading}
+                                fontSize={normalize(12)}
+                                height={37}
                             />
                         </View>
                     </View>

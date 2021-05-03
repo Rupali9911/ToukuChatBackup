@@ -170,6 +170,8 @@ import {globalStyles} from '../../styles';
 import {eventService, getAvatar, realmToPlainObject} from '../../utils';
 import { isArray } from 'lodash';
 import {minVersion, version} from "../../../package";
+import { getAppstoreAppMetadata } from "react-native-appstore-version-checker";
+import  UpdateAppModal from '../../components/Modals/UpdateAppModal'
 
 let channelId = [];
 let friendId = [];
@@ -271,10 +273,10 @@ class Chat extends Component {
     // this.setCommonConversation();
     this.props.getUserConfiguration().then(async (res) => {
       console.log('res from configuration', res);
-      await AsyncStorage.setItem(
-        'is_bonus_opened',
-        JSON.stringify(res.is_bonus_opened),
-      );
+      // await AsyncStorage.setItem(
+      //   'is_bonus_opened',
+      //   JSON.stringify(res.is_bonus_opened),
+      // );
 
       // if(res && !res.is_bonus_opened){
       //   this.checkHasLoginBonus();
@@ -433,6 +435,19 @@ class Chat extends Component {
       }else {
           this.setState({updateVersionModal: false})
       }
+
+      getAppstoreAppMetadata("1496312754") //put any apps id here
+          .then(metadata => {
+              console.log(
+                  "Touku Live version on appstore",
+                  metadata.version,
+                  "published on",
+                  metadata.currentVersionReleaseDate
+              );
+          })
+          .catch(err => {
+              console.log("error occurred", err);
+          });
   }
 
   componentWillUnmount() {
@@ -3761,10 +3776,10 @@ class Chat extends Component {
           <UpdateAppModal
               visible={true}
               onConfirm={this.onUpdate.bind(this)}
-              title= {translate('app.newVersionAvailable')}
-              message={translate('app.updateApp')}
+              title= {translate('app.dearUser')}
+              message={translate('app.upgradeApp')}
               isLoading={false}
-              confirmText={translate('app.update')}
+              confirmText={translate('app.upgrade')}
           />
           }
 

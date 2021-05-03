@@ -119,7 +119,7 @@ client.interceptors.response.use(
     // }
   },
   function (error) {
-    console.log('response_console_from_interceptor_error', error.request);
+    console.log('response_console_from_interceptor_error', error);
     if (error.toString() === 'Error: Network Error') {
       Toast.show({
         title: 'TOUKU',

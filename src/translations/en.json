@@ -1,8 +1,8 @@
 {
   "app":{
-    "newVersionAvailable":"Dear User",
-    "updateApp":"For more features and a better user experience, please upgrade this app.",
-    "update":"UPGRADE"
+    "dearUser":"Dear User",
+    "upgradeApp":"For more features and a better user experience, please upgrade this app.",
+    "upgrade":"UPGRADE"
   },
   "common":{
     "tomorrow":"Tomorrow",
@@ -612,7 +612,7 @@
         "friendRequestRejected":"Friend request rejected",
         "groupNameIsRequired":"Group Name is Required",
         "groupMembersIsRequired":"Group Members are Required",
-        "groupCreateSuccessfully":"Group Create Successfully",
+        "groupCreateSuccessfully":"Group Created Successfully",
         "isRemoved":"is removed!",
         "membersAddSuccessfully":"Added Successfully!",
         "memberIsAdminNow":"{{member}} is admin now",

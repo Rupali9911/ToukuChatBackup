@@ -1,8 +1,8 @@
 {
   "app":{
-    "newVersionAvailable":"新版本可用",
-    "updateApp":"请将该应用更新到下一个版本",
-    "update":"更新"
+    "dearUser":"亲爱的用户",
+    "upgradeApp":"要获得更多功能和更好的用户体验，请升级此应用。",
+    "upgrade":"升级"
   },
   "common":{
     "tomorrow":"明天",

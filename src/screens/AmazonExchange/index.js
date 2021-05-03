@@ -316,6 +316,17 @@ class AmazonExchange extends Component {
                     type={isExchange ? '' : 'translucent'}
                     title={translate('pages.adWall.confirm')}
                     onPress={() => {
+                        if (
+                            this.state.tp_point.length === 0 ||
+                            parseFloat(this.state.tp_point) < 500
+                        ) {
+                            Toast.show({
+                                title: 'Touku',
+                                text: translate('pages.adWall.minimumAmountOfTp'),
+                                type: 'primary',
+                            });
+                            return;
+                        }
                       if (this.props.userData.total_tp < 500) {
                         Toast.show({
                           title: 'Touku',
@@ -326,17 +337,7 @@ class AmazonExchange extends Component {
                         });
                         return;
                       }
-                      if (
-                        this.state.tp_point.length === 0 ||
-                        parseFloat(this.state.tp_point) < 500
-                      ) {
-                        Toast.show({
-                          title: 'Touku',
-                          text: translate('pages.adWall.minimumAmountOfTp'),
-                          type: 'primary',
-                        });
-                        return;
-                      }
+
                       if (
                         parseFloat(this.state.tp_point) >
                         this.props.userData.total_tp

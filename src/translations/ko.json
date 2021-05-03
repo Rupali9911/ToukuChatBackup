@@ -1,8 +1,8 @@
 {
   "app":{
-    "newVersionAvailable":"새 버전 사용 가능",
-    "updateApp":"앱을 다음 버전으로 업데이트하세요",
-    "update":"최신 정보"
+    "dearUser":"친애하는 사용자",
+    "upgradeApp":"더 많은 기능과 더 나은 사용자 경험을 위해이 앱을 업그레이드하십시오.",
+    "upgrade":"업그레이드"
   },
   "common":{
     "tomorrow":"\ub0b4\uc77c",

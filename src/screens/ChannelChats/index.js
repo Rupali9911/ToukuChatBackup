@@ -207,17 +207,17 @@ class ChannelChats extends Component {
     // }else{
     //
     // }
-
-    AsyncStorage.getItem('is_bonus_opened', (errs, result) => {
-      if (!errs) {
-        if (result !== null) {
-          console.log('is_bonus_opened', result);
-          if (result === 'false') {
-            this.setState({isRegisterBonus: true});
-          }
-        }
-      }
-    });
+    //
+    // AsyncStorage.getItem('is_bonus_opened', (errs, result) => {
+    //   if (!errs) {
+    //     if (result !== null) {
+    //       console.log('is_bonus_opened', result);
+    //       if (result === 'false') {
+    //         this.setState({isRegisterBonus: true});
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   componentWillUnmount() {

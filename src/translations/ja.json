@@ -1,8 +1,8 @@
 {
   "app":{
-    "newVersionAvailable":"新しいバージョンが利用可能",
-    "updateApp":"アプリを次のバージョンに更新してください",
-    "update":"更新"
+    "dearUser":"親愛なるユーザーへ",
+    "upgradeApp":"より良い高機能を体験するために\nTOUKUを最新バージョンへ更新ください",
+    "upgrade":"更新する"
   },
   "common": {
     "tomorrow": "明日",

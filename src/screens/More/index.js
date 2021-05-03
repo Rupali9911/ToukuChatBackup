@@ -10,7 +10,7 @@ import ProfileModal from '../../components/Modals/ProfileModal';
 import QRCodeClass from '../../components/QRCode';
 import SettingsItem from '../../components/SettingsItem';
 import WebViewClass from '../../components/WebView';
-import {Colors, faqUrl, Icons, supportUrl, xanaUrl} from '../../constants';
+import {Colors, faqUrl, Icons, supportUrl, xanaUrl, faqUrl1} from '../../constants';
 import SingleSocket from '../../helpers/SingleSocket';
 import {logout} from '../../redux/reducers';
 import {getToukuPoints} from '../../redux/reducers/configurationReducer';
@@ -121,7 +121,9 @@ class More extends Component {
   }
 
   actionFaq() {
-    Linking.openURL(faqUrl);
+    let faqUrlTemp = faqUrl1 + this.props.selectedLanguageItem.language_name
+      console.log('faqUrlTemp', faqUrlTemp)
+    Linking.openURL(faqUrlTemp);
   }
 
   render() {
