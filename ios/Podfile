@@ -49,7 +49,7 @@ def flipper_post_install(installer)
       end
     end
   end
-end`
+end
 
 target 'Touku' do
   # Pods for Touku
