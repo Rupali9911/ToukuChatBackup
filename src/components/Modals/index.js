@@ -13,6 +13,7 @@ import UpdatePhoneModal from './UpdatePhoneModal';
 import VerifyOtpModal from './VerifyOtpModal';
 import DeleteOptionModal from './DeleteOptionModal';
 import UpdateAppModal from './UpdateAppModal';
+import UploadProgressModal from './UploadProgressModal';
 
 export {
   ProfileModal,
@@ -29,5 +30,6 @@ export {
   UpdatePhoneModal,
   VerifyOtpModal,
   DeleteOptionModal,
-  UpdateAppModal
+  UpdateAppModal,
+  UploadProgressModal
 };

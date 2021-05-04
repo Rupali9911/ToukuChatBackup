@@ -25,6 +25,7 @@ import KeyboardStickyView from '../../KeyboardStickyView';
 
 // StyleSheet import
 import styles from './styles';
+import ClickableImage from '../../ClickableImage';
 
 
 export default class TimelineCommentModal extends Component{
@@ -36,6 +37,7 @@ export default class TimelineCommentModal extends Component{
             showDeleteConfirmation: false,
             deleteLoading: false,
             deleteCommentId: null,
+            editCommentId: null,
             addLoading: false
         }
     }
@@ -56,13 +58,20 @@ export default class TimelineCommentModal extends Component{
     }
 
     actionSend = () => {
-        const {post,onAddComment} = this.props;
-        const {comment} = this.state;
+        const {post,onAddComment,onEditComment} = this.props;
+        const {comment, editCommentId} = this.state;
         if (comment.trim().length > 0) {
-            this.setState({ addLoading: true });
-            onAddComment(post.id, comment,() => {
-                this.setState({ addLoading: false, comment: '' });
-            });
+            if(editCommentId){
+                this.setState({ addLoading: true });
+                onEditComment(editCommentId, comment, () => {
+                    this.setState({addLoading: false, comment: '', editCommentId: null});
+                })
+            }else{
+                this.setState({ addLoading: true });
+                onAddComment(post.id, comment,() => {
+                    this.setState({ addLoading: false, comment: '' });
+                });
+            }
         }
     }
 
@@ -96,15 +105,33 @@ export default class TimelineCommentModal extends Component{
                     </Text>
                 </View>
                 {userData.id === item.created_by && (
-                    <FontAwesome5
-                      name={'trash'}
-                      size={14}
-                      color={Colors.black}
-                      style={styles.deleteIcon}
-                      onPress={() => {
-                        this.setState({showDeleteConfirmation: true,deleteCommentId: item.id});
-                      }}
-                    />
+                    <View style={{flexDirection:'row'}}>
+                        <ClickableImage
+                            source={Icons.icon_edit_grad} 
+                            size={normalize(14)}
+                            color={null}
+                            containerStyle={{marginHorizontal: 5}}
+                            onPress={()=>{
+                                this.setState({comment: item.text, editCommentId: item.id});
+                            }}/>
+                        <ClickableImage
+                            source={Icons.icon_delete_grad}
+                            size={normalize(14)}
+                            color={null}
+                            containerStyle={{marginHorizontal: 5}}
+                            onPress={() => {
+                                this.setState({ showDeleteConfirmation: true, deleteCommentId: item.id });
+                            }} />
+                        {/* <FontAwesome5
+                            name={'trash'}
+                            size={14}
+                            color={Colors.black}
+                            style={styles.deleteIcon}
+                            onPress={() => {
+                                this.setState({ showDeleteConfirmation: true, deleteCommentId: item.id });
+                            }}
+                        /> */}
+                    </View>
                 )}
               </View>
           </View>
@@ -151,7 +178,7 @@ export default class TimelineCommentModal extends Component{
                             </View>
                             <FlatList
                                 data={post.post_comments}
-                                extraData={this.state}
+                                extraData={this.props}
                                 renderItem={this.renderCommentItem}
                                 keyboardShouldPersistTaps={'always'}
                                 inverted

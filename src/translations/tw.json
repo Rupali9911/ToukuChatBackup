@@ -1239,7 +1239,8 @@
       "joinThisGroup": "加入這個小組",
       "issueGroupInvitation": "發行組邀請URL",
       "goToGroupChat": "轉到群聊",
-      "searchByQr": "通過二維碼搜索"
+      "searchByQr": "通過二維碼搜索",
+      "noteAdded": "添加了一个注释"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

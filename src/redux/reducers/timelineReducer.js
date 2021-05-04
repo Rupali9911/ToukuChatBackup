@@ -1,5 +1,6 @@
 import {client} from '../../helpers/api';
 import { dispatch } from 'rxjs/internal/observable/pairs';
+import { unionWith } from 'lodash';
 
 export const GET_TREND_TIMELINE_REQUEST = 'GET_TREND_TIMELINE_REQUEST';
 export const GET_TREND_TIMELINE_SUCCESS = 'GET_TREND_TIMELINE_SUCCESS';
@@ -77,9 +78,28 @@ export default function (state = initialState, action) {
       };
 
     case GET_FOLLOWING_TIMELINE_SUCCESS:
+      const {followingTimeline} = state;
+
+      let newFollowingPost = [];
+      if (action.payload.type !== undefined) {
+        newFollowingPost = action.payload.posts;
+      } else {
+        if (followingTimeline.length > 0) {
+          // followingTimeline.map((followingItem) => {
+          //   let list = action.payload.posts.filter((item) => {
+          //     return item.id !== followingItem.id;
+          //   });
+          //   newFollowingPost = [...followingTimeline, ...list];
+          // });
+          newFollowingPost = unionWith(followingTimeline,action.payload.posts,(a,b) => a.id === b.id);
+        } else {
+          newFollowingPost = action.payload.posts;
+        }
+      }
       return {
         ...state,
-        followingTimeline: [...action.payload],
+        followingTimeline: [...newFollowingPost],
+        followingLoadMore: action.payload.load_more,
         loading: false,
       };
 
@@ -202,7 +222,7 @@ export default function (state = initialState, action) {
         if (rankingChannel.length > 0) {
           rankingChannel.map((followingItem) => {
             let list = action.payload.channels.filter((item) => {
-              return item.channel_id != followingItem.channel_id;
+              return item.channel_id !== followingItem.channel_id;
             });
             newRanking = [...rankingChannel, ...list];
           });
@@ -368,7 +388,7 @@ export const setSpecificPostId = (data) => (dispatch) => {
   dispatch(setSpecificId(data));
 }
 
-export const getFollowingTimeline = (postId) => (dispatch) =>
+export const getFollowingTimeline = (postId,reload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getFollowingTimelineRequest());
     console.log('postId',postId);
@@ -376,9 +396,10 @@ export const getFollowingTimeline = (postId) => (dispatch) =>
       .get(`/xchat/timeline-following/?last_id=${postId?postId:0}`)
       .then((res) => {
         if (res.status) {
-          if(!postId){
-            dispatch(getFollowingTimelineSuccess(res.posts));
-          }
+          // if(!postId){
+            const data = {...res, type:reload}
+            dispatch(getFollowingTimelineSuccess(data));
+          // }
         }
         resolve(res);
       })
@@ -661,6 +682,16 @@ export const deletePostComment = (id) => (dispatch) =>
       .then((res)=>{
         resolve(res);
       }).catch((err)=>{
+        reject(err);
+      });
+  });
+
+export const updatePostComment = (id, params) => (dispatch) => 
+  new Promise(function (resolve, reject) {
+    client.patch(`/xchat/timeline-post-comment/${id}/`, params)
+      .then((res) => {
+        resolve(res);
+      }).catch((err) => {
         reject(err);
       });
   });

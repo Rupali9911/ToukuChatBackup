@@ -28,7 +28,7 @@ export default class OpenLoader extends Component {
   }
 
   render() {
-    const {large} = this.props;
+    const {large, hideText} = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.subContainer}>
@@ -36,9 +36,9 @@ export default class OpenLoader extends Component {
             color={Colors.primary}
             size={large ? 'large' : 'small'}
           />
-          <Text style={styles.textStyle}>
+          {!hideText && <Text style={styles.textStyle}>
             {translate('pages.xchat.donloading')}
-          </Text>
+          </Text>}
         </View>
       </View>
     );

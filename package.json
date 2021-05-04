@@ -49,6 +49,7 @@
     "react-native-floating-action": "^1.21.0",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
+    "react-native-grid-list": "^1.1.0",
     "react-native-haptic-feedback": "^1.11.0",
     "react-native-hyperlink": "0.0.19",
     "react-native-image-crop-picker": "^0.35.1",

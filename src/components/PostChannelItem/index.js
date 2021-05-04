@@ -115,6 +115,19 @@ export default class PostChannelItem extends Component {
     })
   }
 
+  onEditComment = (commentId, text, onFinish) => {
+    let params  = {
+      text: text
+    }
+    this.props.editComment(commentId, params).then((res)=>{
+      console.log(res);
+      onFinish();
+    }).catch((err)=>{
+      console.log(err);
+      onFinish();
+    })
+  }
+
   renderCommentItem = ({item}) => {
     const {userData} = this.props;
     return (
@@ -194,7 +207,7 @@ export default class PostChannelItem extends Component {
   }
 
   render() {
-    const { post, index, likeUnlikePost, addComment, getPostComments } = this.props;
+    const { post, isChannelTimeline, index, likeUnlikePost, addComment, getPostComments } = this.props;
     const { page_height, showDeleteConfirmation, deleteLoading } = this.state;
     //  console.log('post', post)
     let newArray = [];
@@ -207,7 +220,7 @@ export default class PostChannelItem extends Component {
         }
         return newArray.push(text);
       });
-     console.log('newArray',newArray);
+    //  console.log('newArray',newArray);
 
     let medias = [];
     post.media.image && post.media.image.map(item => medias.push({ type: 'image', url: item }));
@@ -313,7 +326,7 @@ export default class PostChannelItem extends Component {
 
         
         {/* Comment below code until not available on production */}
-        <View
+        {!isChannelTimeline && <View
           style={styles.likeCommentContainer}>
           <View style={styles.likeCommentActionContainer}>
             <TouchableOpacity style={styles.action_icon_container}
@@ -353,8 +366,8 @@ export default class PostChannelItem extends Component {
               </Text>
             }
           </View>
-        </View>
-        {post.post_comments && post.post_comments.length > 0 && <View
+        </View>}
+        {!isChannelTimeline && post.post_comments && post.post_comments.length > 0 && <View
           style={styles.commentCountContainer}>
           <Text style={styles.countText}
             onPress={()=>{
@@ -372,6 +385,7 @@ export default class PostChannelItem extends Component {
           userData={this.props.userData}
           onAddComment={this.onAddComment}
           onDeleteComment={this.onDeleteComment}
+          onEditComment={this.onEditComment}
           onRequestClose={() => this.setState({ commentModalVisible: false })}
         />
         

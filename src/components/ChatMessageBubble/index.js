@@ -42,6 +42,7 @@ import RoundedImage from '../RoundedImage';
 import ScalableImage from '../ScalableImage';
 import VideoPlayerCustom from '../VideoPlayerCustom';
 import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
+import MediaGridList from '../MediaGridList';
 import styles from './styles';
 
 let borderRadius = 20;
@@ -154,6 +155,10 @@ class ChatMessageBubble extends Component {
       );
     }
   };
+
+  navigateToNotes = () => {
+    NavigationService.navigate('FriendNotes', { isNotes: true });
+  }
 
   renderReplyMessage = (message, isUser) => {
     const {currentChannel, isChannel} = this.props;
@@ -338,7 +343,7 @@ class ChatMessageBubble extends Component {
     } else if (url.indexOf('/timeline-post') > -1) {
       let post_id = url.substring(url.lastIndexOf('/') + 1);
       console.log('post_id', post_id);
-      this.props.setActiveTimelineTab('trend');
+      this.props.setActiveTimelineTab('following');
       this.props.setSpecificPostId(post_id);
       NavigationService.navigate('Timeline');
     } else if (url.indexOf('/#/groups/') > -1) {
@@ -403,6 +408,13 @@ class ChatMessageBubble extends Component {
     }
   }
 
+  renderMemoMedia = (media) => {
+    return (
+      // <MediaGridList media={media} />
+      <></>
+    );
+  }
+
   renderDisplayNameText = (text) => {
     const {isChannel,message, UserDisplayName} = this.props;
     if(isChannel){
@@ -446,7 +458,7 @@ class ChatMessageBubble extends Component {
 
     const imageActionContainer = [
       {
-        paddingHorizontal: message.msg_type === 'image' ? 8 : 10,
+        paddingHorizontal: message.msg_type === 'update' ? 0 : message.msg_type === 'image' ? 8 : 10,
         paddingVertical: message.msg_type === 'image' ? 8 : 10,
       },
       styles.imageActionContainer,
@@ -497,7 +509,7 @@ class ChatMessageBubble extends Component {
                               {
                                 borderRadius,
                                 paddingHorizontal:
-                                  message.msg_type === 'image' ? 8 : 10,
+                                  message.msg_type === 'update' ? 0 : message.msg_type === 'image' ? 8 : 10,
                                 paddingVertical:
                                   message.msg_type === 'image' ? 8 : 10,
                               },
@@ -510,6 +522,7 @@ class ChatMessageBubble extends Component {
                         this.showMenu();
                       }}
                       onPress={() =>
+                        message.msg_type === 'update' ? this.navigateToNotes() : 
                         message.msg_type === 'doc'
                           ? this.onDocumentPress(message.message_body)
                           : message.msg_type === 'image'
@@ -574,41 +587,18 @@ class ChatMessageBubble extends Component {
                       ) : message.msg_type &&
                       message.msg_type === 'update' ? (
                           <View>
-                            <View style={{ paddingHorizontal: 10 }}>
-                              <Text
-                                style={{
-                                  fontFamily: Fonts.regular,
-                                  fontWeight: '300',
-                                  fontSize: 15,
-                                }}
-                                numberOfLines={3}
-                              >
-                                {this.renderMemoText(message).update_text}
-                              </Text>
+                            <View style={styles.noteContainer}>
+                            {message.media && message.media.length > 0 && this.renderMemoMedia(message.media)}
+                                        {this.renderMemoText(message).update_text.length > 0 &&
+                                          <Text style={styles.noteText} numberOfLines={3}>
+                                            {this.renderMemoText(message).update_text}
+                                          </Text>
+                                        }
                             </View>
-                            <View style={{
-                              minWidth: 100,
-                              borderTopWidth: 1,
-                              borderTopColor: '#ccc',
-                              marginVertical: 5
-                            }} />
-                            <TouchableOpacity
-                              style={{
-                                flexDirection: 'row',
-                                paddingHorizontal: 10,
-                                alignItems: 'center',
-                              }}
-                              onPress={() => {
-                                NavigationService.navigate('FriendNotes', { isNotes: true });
-                              }}>
-                              <Text
-                                style={{
-                                  flex: 1,
-                                  color: Colors.black_light,
-                                  fontSize: 13,
-                                  fontFamily: Fonts.regular,
-                                  fontWeight: '600'
-                                }}>
+                            <View style={styles.noteDivider} />
+                            <TouchableOpacity style={styles.noteLink}
+                              onPress={this.navigateToNotes}>
+                              <Text style={styles.noteLinkText}>
                                 {translate('pages.xchat.notes')}
                               </Text>
                               <FontAwesome
@@ -697,6 +687,7 @@ class ChatMessageBubble extends Component {
                         this.showMenu();
                       }}
                       onPress={() =>
+                        message.msg_type === 'update' ? this.navigateToNotes() :
                         message.msg_type === 'doc'
                           ? this.onDocumentPress(message.message_body)
                           : message.msg_type === 'image'
@@ -761,41 +752,18 @@ class ChatMessageBubble extends Component {
                       ) : message.msg_type &&
                       message.msg_type === 'update' ? (
                           <View>
-                            <View style={{ paddingHorizontal: 10 }}>
-                              <Text
-                                style={{
-                                  fontFamily: Fonts.regular,
-                                  fontWeight: '300',
-                                  fontSize: 15,
-                                }}
-                                numberOfLines={3}
-                              >
-                                {this.renderMemoText(message).update_text}
-                              </Text>
+                            <View style={styles.noteContainer}>
+                            {message.media && message.media.length > 0 && this.renderMemoMedia(message.media)}
+                                          {this.renderMemoText(message).update_text.length > 0 &&
+                                            <Text style={styles.noteText} numberOfLines={3}>
+                                              {this.renderMemoText(message).update_text}
+                                            </Text>
+                                          }
                             </View>
-                            <View style={{
-                              minWidth: 100,
-                              borderTopWidth: 1,
-                              borderTopColor: '#ccc',
-                              marginVertical: 5
-                            }} />
-                            <TouchableOpacity
-                              style={{
-                                flexDirection: 'row',
-                                paddingHorizontal: 10,
-                                alignItems: 'center',
-                              }}
-                              onPress={() => {
-                                NavigationService.navigate('FriendNotes', { isNotes: true });
-                              }}>
-                              <Text
-                                style={{
-                                  flex: 1,
-                                  color: Colors.black_light,
-                                  fontSize: 13,
-                                  fontFamily: Fonts.regular,
-                                  fontWeight: '600'
-                                }}>
+                            <View style={styles.noteDivider} />
+                            <TouchableOpacity style={styles.noteLink}
+                              onPress={this.navigateToNotes}>
+                              <Text style={styles.noteLinkText}>
                                 {translate('pages.xchat.notes')}
                               </Text>
                               <FontAwesome

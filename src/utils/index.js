@@ -2,6 +2,7 @@ import {Dimensions, Linking, Platform, PixelRatio, PermissionsAndroid} from 'rea
 import {Images, Icons, prodInvite, stagInvite, Environment, EnvironmentStage} from '../constants';
 import Toast from '../components/Toast';
 import {Subject} from 'rxjs';
+import Realm from 'realm';
 import ImageResizer from 'react-native-image-resizer';
 import { inviteUrlRoot, staging } from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
@@ -222,8 +223,8 @@ export const getUser_ActionFromUpdateText = (text) => {
 }
 
 export const realmToPlainObject = (realmObj) => {
-  let ab = Array.from(realmObj);
-  return JSON.parse(JSON.stringify(ab));
+  // let ab = Array.from(realmObj);
+  return JSON.parse(JSON.stringify(realmObj, Realm.JsonSerializationReplacer));
 }
 
 export function isNumeric(str) {

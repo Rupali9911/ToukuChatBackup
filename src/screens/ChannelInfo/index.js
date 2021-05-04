@@ -476,7 +476,7 @@ class ChannelInfo extends Component {
       },
     ];
 
-    const cahnnel_id = this.props.navigation.state.params
+    const channel_id = this.props.navigation.state.params
       ? this.props.navigation.state.params.channelItem.channel_id
       : this.props.currentChannel.id;
     let tmpReferralCode = userData.referral_link;
@@ -487,7 +487,7 @@ class ChannelInfo extends Component {
     }
 
     const followCode =
-      cahnnel_id + referralCode + String(currentChannel.id).length;
+      channel_id + referralCode + String(channel_id).length;
 
     console.log('current channel', channelData);
     // console.log('currentChannel', currentChannel, '++++++++++++++', channelData)
@@ -516,133 +516,134 @@ class ChannelInfo extends Component {
                 <ImageBackground
                   style={styles.channelCoverContainer}
                   source={getImage(channelData.cover_image)}>
-                  <LinearGradient
+                  {/* <LinearGradient
                     colors={['rgba(255, 98, 165, 0.8)', 'rgba(0,0,0,0)']}
                     start={{x: 0, y: 1}}
                     end={{x: 0, y: 0}}
                     style={styles.gradientBackground}
-                  />
+                  /> */}
 
                   {/* <View
                     style={channelInfoStyles.updateBackgroundContainer}></View> */}
-                  <View style={styles.channelInfoContainer}>
-                    <View
-                      style={[
-                        styles.imageContainer,
-                        styles.channelInfoSubContainer,
-                      ]}>
-                      <View style={styles.imageView}>
-                        {/* <View style={channelInfoStyles.imageView}> */}
-                        {!channelData.channel_picture ? (
-                          <View style={styles.channelPictureContainer}>
-                            <Text
-                              style={[
-                                globalStyles.bigSemiBoldText,
-                                {color: Colors.black},
-                              ]}>
-                              {channelData.name &&
-                                channelData.name.trim().charAt(0).toUpperCase()}
-                              {/* {secondUpperCase} */}
-                            </Text>
-                          </View>
-                        ) : (
-                          <RoundedImage
-                            source={getImage(channelData.channel_picture)}
-                            style={styles.profileImage}
-                            isRounded={false}
-                            resizeMode={'cover'}
-                            size={'100%'}
-                          />
-                        )}
-                        {/* </View> */}
-                      </View>
-                    </View>
-                    <View style={styles.detailView}>
-                      <View
-                        style={styles.changeChannelContainer}
-                        // onPress={() => this.toggleChannelBusinessMenu()}
-                      >
-                        <Text style={styles.channelNameText} numberOfLines={1}>
-                          {channelData.name}
-                        </Text>
-                      </View>
-                      <View
-                        style={styles.changeChannelContainer}
-                        // onPress={() => this.toggleChannelBusinessMenu()}
-                      >
-                        <Text
-                          style={[styles.channelNameText, styles.channelStatus]}
-                          numberOfLines={1}>
-                          {channelData.channel_status
-                            ? channelData.channel_status === ''
-                              ? '-'
-                              : channelData.channel_status
-                            : '-'}
-                        </Text>
-                      </View>
-                      <View
-                        style={styles.changeChannelContainer}
-                        // onPress={() => this.toggleChannelBusinessMenu()}
-                      >
-                        <Text
-                          style={[
-                            styles.channelNameText,
-                            styles.invitationText,
-                          ]}
-                          numberOfLines={1}>
-                          {translate('pages.invitation.referralOneField3')}
-                        </Text>
-                        <Text
-                          style={[styles.channelNameText, styles.followCode]}
-                          numberOfLines={1}
-                          onPress={() => this.copyCode(followCode)}>
-                          {followCode}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.channelInfoDetail}>
-                    <View style={styles.channelDetailStatus}>
-                      {channelCountDetails.map((item, index) => {
-                        //if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
-                        if (
-                          item.title === 'followers' &&
-                          channelData.show_followers
-                        ) {
-                          return null;
-                        } else {
-                          return (
-                            <View key={index} style={styles.detailStatusItem}>
-                              <Text style={styles.detailStatusItemCount}>
-                                {item.count}
-                              </Text>
-                              <Text style={styles.detailStatusItemName}>
-                                {translate(`pages.xchat.${item.title}`)}
-                              </Text>
-                            </View>
-                          );
-                        }
-                      })}
-                    </View>
-                    <View style={styles.channelDetailButton}>
-                      <Button
-                        title={
-                          channelData.is_member
-                            ? translate('pages.xchat.unfollow')
-                            : translate('pages.xchat.follow')
-                        }
-                        type={'transparent'}
-                        height={28}
-                        onPress={() => this.onFollowUnfollow()}
-                        loading={this.isFollowing}
-                        fontType={'normalRegular15Text'}
-                        borderColor={Colors.gradient_3}
-                      />
-                    </View>
-                  </View>
+                  
                 </ImageBackground>
               </LinearGradient>
-
+              <View style={styles.channelInfoContainer}>
+                <View
+                  style={[
+                    styles.imageContainer,
+                    styles.channelInfoSubContainer,
+                  ]}>
+                  <View style={styles.imageView}>
+                    {/* <View style={channelInfoStyles.imageView}> */}
+                    {!channelData.channel_picture ? (
+                      <View style={styles.channelPictureContainer}>
+                        <Text
+                          style={[
+                            globalStyles.bigSemiBoldText,
+                            { color: Colors.black },
+                          ]}>
+                          {channelData.name &&
+                            channelData.name.trim().charAt(0).toUpperCase()}
+                          {/* {secondUpperCase} */}
+                        </Text>
+                      </View>
+                    ) : (
+                        <RoundedImage
+                          source={getImage(channelData.channel_picture)}
+                          style={styles.profileImage}
+                          isRounded={false}
+                          resizeMode={'cover'}
+                          size={'100%'}
+                        />
+                      )}
+                    {/* </View> */}
+                  </View>
+                </View>
+                <View style={styles.detailView}>
+                  <View
+                    style={styles.changeChannelContainer}
+                  // onPress={() => this.toggleChannelBusinessMenu()}
+                  >
+                    <Text style={styles.channelNameText} numberOfLines={1}>
+                      {channelData.name}
+                    </Text>
+                  </View>
+                  <View
+                    style={styles.changeChannelContainer}
+                  // onPress={() => this.toggleChannelBusinessMenu()}
+                  >
+                    <Text
+                      style={[styles.channelNameText, styles.channelStatus]}
+                      numberOfLines={1}>
+                      {channelData.channel_status
+                        ? channelData.channel_status === ''
+                          ? '-'
+                          : channelData.channel_status
+                        : '-'}
+                    </Text>
+                  </View>
+                  <View
+                    style={styles.changeChannelContainer}
+                  // onPress={() => this.toggleChannelBusinessMenu()}
+                  >
+                    <Text
+                      style={[
+                        styles.channelNameText,
+                        styles.invitationText,
+                      ]}
+                      numberOfLines={1}>
+                      {translate('pages.invitation.referralOneField3')}
+                    </Text>
+                    <Text
+                      style={[styles.channelNameText, styles.followCode]}
+                      numberOfLines={1}
+                      onPress={() => this.copyCode(followCode)}>
+                      {followCode}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.channelInfoDetail}>
+                <View style={styles.channelDetailStatus}>
+                  {channelCountDetails.map((item, index) => {
+                    //if (item.title === 'followers' && this.hideFollowers(channelData.admin_details, userData, channelData.show_followers) ){return null} else{
+                    if (
+                      item.title === 'followers' &&
+                      channelData.show_followers
+                    ) {
+                      return null;
+                    } else {
+                      return (
+                        <View key={index} style={styles.detailStatusItem}>
+                          <Text style={styles.detailStatusItemCount}>
+                            {item.count}
+                          </Text>
+                          <Text style={styles.detailStatusItemName}>
+                            {translate(`pages.xchat.${item.title}`)}
+                          </Text>
+                        </View>
+                      );
+                    }
+                  })}
+                </View>
+                <View style={styles.channelDetailButton}>
+                  <Button
+                    title={
+                      channelData.is_member
+                        ? translate('pages.xchat.unfollow')
+                        : translate('pages.xchat.follow')
+                    }
+                    type={'custom'}
+                    height={28}
+                    onPress={() => this.onFollowUnfollow()}
+                    loading={this.isFollowing}
+                    fontType={'normalRegular15Text'}
+                    borderColor={Colors.gradient_3}
+                    colors={['#42424256','#42424256','#42424256']}
+                  />
+                </View>
+              </View>
               <View style={styles.tabBar}>
                 {tabBarItem.map((item, index) => {
                   if (item.title === 'chat' && !channelData.is_member) {

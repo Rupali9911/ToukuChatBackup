@@ -74,8 +74,11 @@ export default class ViewSlider extends Component {
   };
 
   setStep = (step = 1) => {
+
+    let slide_width = this.props.width || width;
+
     const scrollToX =
-      this.slidesCount * width - (this.slidesCount - (step - 1)) * width;
+      this.slidesCount * slide_width - (this.slidesCount - (step - 1)) * slide_width;
 
     setTimeout(() => this.scroll && this.scroll.scrollTo({x: scrollToX}), 50);
   };
@@ -87,8 +90,8 @@ export default class ViewSlider extends Component {
   };
 
   onMomentumScrollEnd = ({nativeEvent}) => {
-    const index = Math.round(nativeEvent.contentOffset.x / width) + 1;
-
+    let slide_width = this.props.width || width;
+    const index = Math.round(nativeEvent.contentOffset.x / slide_width) + 1;
     this.setState({step: index}, this.onScrollCb(index));
   };
 
@@ -126,7 +129,9 @@ export default class ViewSlider extends Component {
               />:<View />}
             {step<this.slidesCount?<FontAwesome name={'angle-right'} size={25} color={'#fff'} 
               style={{ padding: 10, backgroundColor: '#00000040' }} 
-              onPress={()=>{this.setStep(step+1)}}
+              onPress={()=>{
+                this.setStep(step+1)
+              }}
               />:<View />}
           </View>
           : null}

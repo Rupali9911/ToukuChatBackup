@@ -15,6 +15,7 @@ import {
   FriendRequest,
   EventDetail,
   GroupMentions,
+  MediaObject
 } from './Schema';
 
 const DB_SCHEMAS = [
@@ -32,6 +33,7 @@ const DB_SCHEMAS = [
   FriendRequest,
   EventDetail,
   GroupMentions,
+  MediaObject,
 ];
 
 const DB_SCHEMA_VERSION = 1;
@@ -213,6 +215,7 @@ export const setFriendChatConversation = (conversation) => {
               is_read: item.is_read,
               is_unsent: item.is_unsent,
               local_id: item.local_id,
+              media: item.media || [],
               message_body: item.message_body,
               msg_type: item.msg_type,
               reply_to: item.reply_to,
@@ -235,6 +238,7 @@ export const setFriendChatConversation = (conversation) => {
             is_read: item.is_read,
             is_unsent: item.is_unsent,
             local_id: item.local_id,
+            media: item.media || [],
             message_body: item.message_body,
             msg_type: item.msg_type,
             reply_to: item.reply_to,

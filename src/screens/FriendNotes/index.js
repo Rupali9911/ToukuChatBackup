@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { connect } from 'react-redux';
+import ImagePicker from 'react-native-image-crop-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 import styles from './styles';
@@ -17,7 +18,7 @@ import { getImage, eventService, getAvatar, normalize } from '../../utils';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
 import { Images, Icons, Colors, Fonts, SocketEvents } from '../../constants';
 import CommonNotes from '../../components/CommonNotes';
-import { ListLoader, ImageLoader } from '../../components/Loaders';
+import { ListLoader, ImageLoader, OpenLoader } from '../../components/Loaders';
 import { translate, setI18nConfig } from '../../redux/reducers/languageReducer';
 import { getAnyUserProfile } from '../../redux/reducers/userReducer';
 import {
@@ -38,6 +39,7 @@ import ChangeFriendDisplayNameModal from '../../components/Modals/ChangeFriendDi
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import NavigationService from '../../navigation/NavigationService';
+import {FloatingAction} from 'react-native-floating-action';
 
 class FriendNotes extends Component {
   constructor(props) {
@@ -64,6 +66,9 @@ class FriendNotes extends Component {
       otherUserData: null,
       isLoading: true,
       activeIndex: 1,
+      uploadedFiles: [],
+      notesLoading: false,
+      mediaSelectionLoading: false,
       tabBarItem: [
         {
           id: 1,
@@ -81,6 +86,29 @@ class FriendNotes extends Component {
         }
       ],
     };
+    this.actions = [
+      {
+        text: "",
+        icon: Icons.icon_camera,
+        name: "bt_camera",
+        position: 1,
+        color: '#e26161',
+      },
+      {
+        text: "",
+        icon: Icons.gallery_icon_select,
+        name: "bt_gallery",
+        position: 2,
+        color: '#e26161',
+      },
+      {
+        text: "",
+        icon: Icons.icon_edit_pen,
+        name: "bt_write",
+        position: 3,
+        color: '#e26161',
+      }
+    ];
     this.S3uploadService = new S3uploadService();
   }
 
@@ -108,15 +136,19 @@ class FriendNotes extends Component {
           this.setState({ isLoading: false });
         });
     } else {
-      this.setState({ isLoading: false });
+      this.setState({ isLoading: false, notesLoading: true });
       this.props
         .getFriendNotes(this.props.currentFriend.friend)
         .then((res) => {
           this.setState({
             data: res,
+            notesLoading: false
           });
         })
-        .catch((err) => console.log({ err }));
+        .catch((err) => {
+          console.log({ err })
+          this.setState({notesLoading: false});
+        });
     }
   }
 
@@ -393,10 +425,11 @@ class FriendNotes extends Component {
         });
       });
   };
-  onEditNote = (index) => {
+  onEditNote = (index, item) => {
     this.setState({
       editNoteIndex: index,
     });
+    // this.props.navigation.navigate('CreateEditNote',{note: Object.assign({},item)});
   };
   onDeleteNote = (index, item) => {
     const { data } = this.state;
@@ -491,6 +524,47 @@ class FriendNotes extends Component {
     this.setState({ showImage: false });
   }
 
+  onCameraPress = () => {
+    this.setState({mediaSelectionLoading: true});
+    ImagePicker.openCamera({
+      includeBase64: true,
+      mediaType: 'photo',
+    }).then((image) => {
+      let source = {uri: 'data:image/jpeg;base64,' + image.data};
+      this.setState({
+        uploadFile: source,
+        sentMessageType: 'image',
+        sendingMedia: true,
+        mediaSelectionLoading: false
+      });
+      this.props.navigation.navigate('CreateEditNote',{uploadedFiles: [image]});
+      // this.onMessageSend();
+    }).catch((err)=>{
+      this.setState({mediaSelectionLoading: false});
+    });
+  };
+
+  onGalleryPress = async () => {
+    this.setState({mediaSelectionLoading: true});
+    ImagePicker.openPicker({
+      multiple: true,
+      maxFiles: 30,
+      mediaType: 'any',
+      includeBase64: true,
+    }).then(async (images) => {
+      console.log('Images', images)
+      this.setState({
+        uploadedFiles: [...this.state.uploadedFiles, ...images],
+        mediaSelectionLoading: false
+      });
+      this.props.navigation.navigate('CreateEditNote',{uploadedFiles: [...images]});
+      // this.toggleSelectModal(false);
+      // this.toggleGalleryModal(true);
+    }).catch((err)=>{
+      this.setState({mediaSelectionLoading: false});
+    });
+  };
+
   returnBgImage(data) {
     return (
       <ImageLoader
@@ -499,6 +573,7 @@ class FriendNotes extends Component {
       />
     );
   }
+
   render() {
     const {
       orientation,
@@ -509,7 +584,9 @@ class FriendNotes extends Component {
       otherUserData,
       isLoading,
       tabBarItem,
-      activeIndex
+      activeIndex,
+      notesLoading,
+      mediaSelectionLoading
     } = this.state;
     const { currentFriend } = this.props;
     console.log('currentFriend.avatar', currentFriend.background_image);
@@ -537,6 +614,7 @@ class FriendNotes extends Component {
             <KeyboardAwareScrollView
               contentContainerStyle={[styles.mainContainer, styles.container]}
               showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps={'always'}
               extraScrollHeight={100}>
               <View>
                 <LinearGradient
@@ -648,7 +726,9 @@ class FriendNotes extends Component {
                 </View>
                 {otherUserData === null && (
                   <View style={styles.interactionContainer}>
-                    <CommonNotes
+                    {notesLoading ? 
+                      <ListLoader />
+                    : <CommonNotes
                       ref={(common_note) => {
                         this.commonNote = common_note;
                       }}
@@ -673,7 +753,7 @@ class FriendNotes extends Component {
                       showTextBox={this.state.showTextBox}
                       userData={this.props.userData}
                       onExpand={this.onExpand}
-                    />
+                    />}
                   </View>
                 )}
               </View>
@@ -707,6 +787,22 @@ class FriendNotes extends Component {
             onRequestClose={() => this.hideImage(false)}
           />
         </View>
+
+        {/* Comment below code until not available on production */}
+        {/* <FloatingAction
+          actions={this.actions}
+          onPressItem={name => {
+            if (name === 'bt_write') {
+              this.props.navigation.navigate('CreateEditNote',{});
+            } else if (name === 'bt_gallery') {
+              this.onGalleryPress();
+              // this.toggleGalleryModal(true);
+            } else if (name === 'bt_camera') {
+              this.onCameraPress();
+            }
+          }}
+          color={'#e26161'} /> */}
+          {mediaSelectionLoading && <OpenLoader hideText={true}/>}
       </View>
     );
   }

@@ -83,7 +83,10 @@ export const Icons = {
   icon_comment: require('../../assets/icons/Comment/comment.png'),
   icon_comment_black: require('../../assets/icons/Comment/black_comment.png'),
   icon_comment_white: require('../../assets/icons/Comment/white_comment.png'),
-  icon_notes: require('../../assets/icons/notes.png')
+  icon_notes: require('../../assets/icons/notes.png'),
+  icon_camera_outline: require('../../assets/icons/camera_outline.png'),
+  icon_edit_grad: require('../../assets/icons/edit.png'),
+  icon_delete_grad: require('../../assets/icons/delete.png'), 
 };
 
 export const Images = {

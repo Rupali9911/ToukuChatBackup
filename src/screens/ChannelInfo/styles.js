@@ -1,5 +1,6 @@
 import {StyleSheet, Dimensions} from 'react-native';
 import {Images, Colors, Icons, Fonts} from '../../constants';
+import { normalize } from '../../utils';
 const {width, height} = Dimensions.get('window');
 
 export default StyleSheet.create({
@@ -22,6 +23,7 @@ export default StyleSheet.create({
   channelInfoContainer: {
     // flex: 0.25,
     flexDirection: 'row',
+    marginTop: normalize(10),
   },
   imageContainer: {
     // flex: 0.35,
@@ -59,19 +61,20 @@ export default StyleSheet.create({
     // maxWidth: '80%',
     marginRight: 5,
     fontFamily: Fonts.regular,
-    color: Colors.white,
+    color: Colors.black,
     // lineHeight: 29,
   },
   channelInfoDetail: {
     // flex: 0.15,
     flexDirection: 'row',
-    // alignItems: 'center',
-    // paddingVertical: '2%',
+    alignItems: 'center',
+    paddingVertical: normalize(10),
   },
   channelDetailStatus: {
     flex: 0.65,
     flexDirection: 'row',
     paddingHorizontal: '2%',
+    justifyContent: 'space-evenly'
   },
   detailStatusItem: {
     paddingTop: '5%',
@@ -79,13 +82,13 @@ export default StyleSheet.create({
   },
   detailStatusItemCount: {
     alignSelf: 'center',
-    color: Colors.white,
+    color: Colors.black,
     fontFamily: Fonts.regular,
-    fontSize: 14,
+    fontSize: normalize(14),
   },
   detailStatusItemName: {
     alignSelf: 'center',
-    color: Colors.white,
+    color: Colors.black,
     fontSize: 12,
     fontFamily: Fonts.regular,
   },
@@ -158,6 +161,8 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.white,
+    borderColor: '#ccc',
+    borderWidth:1,
   },
   channelStatus: {
     fontSize: 13,
@@ -168,6 +173,7 @@ export default StyleSheet.create({
   followCode: {
     fontSize: 14,
     textDecorationLine: 'underline',
+    color: '#e26161'
   },
   aboutLink: {
     color: 'blue',

@@ -19,7 +19,7 @@ export default function (state = initialState, action) {
       // console.log('data', action.payload);
       return {
         ...state,
-        commonChat: action.payload,
+        commonChat: [...action.payload],
       };
 
     //Get Following Channels

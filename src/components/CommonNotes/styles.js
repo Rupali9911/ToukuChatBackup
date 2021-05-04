@@ -54,4 +54,7 @@ export default StyleSheet.create({
   divider: {
     height: 10,
   },
+  notesList: {
+    paddingBottom: 20
+  }
 });

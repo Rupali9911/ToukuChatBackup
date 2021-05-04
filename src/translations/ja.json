@@ -1240,7 +1240,8 @@
       "joinThisGroup": "このグループに参加する",
       "issueGroupInvitation": "グループ招待URLを発行",
       "goToGroupChat": "グループチャットに移動",
-      "searchByQr": "QRコードで検索"
+      "searchByQr": "QRコードで検索",
+      "noteAdded": "がメモを追加しました"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

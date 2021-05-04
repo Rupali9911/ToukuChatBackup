@@ -65,7 +65,7 @@ export default class PostCard extends Component {
     //     return newArray.push(data.text);
     //   });
 
-    const {menuItems, isTimeline, isChannelTimeline, userData, likeUnlikePost, addComment, getPostComments, deleteComment} = this.props;
+    const {menuItems, isTimeline, isChannelTimeline, userData, likeUnlikePost, addComment, getPostComments, deleteComment, editComment} = this.props;
 
     const container = [
       {
@@ -85,7 +85,16 @@ export default class PostCard extends Component {
           index={index}
           onFollowUnfollowChannel={this.props.onFollowUnfollowChannel}
         />
-        <PostChannelItem post={post} index={index} userData={userData} likeUnlikePost={likeUnlikePost} addComment={addComment} deleteComment={deleteComment} getPostComments={getPostComments}/>
+        <PostChannelItem 
+          post={post} 
+          index={index} 
+          userData={userData} 
+          isChannelTimeline={isChannelTimeline} 
+          likeUnlikePost={likeUnlikePost} 
+          addComment={addComment} 
+          deleteComment={deleteComment} 
+          getPostComments={getPostComments} 
+          editComment={editComment}/>
       </View>
     );
   };
@@ -141,6 +150,7 @@ export default class PostCard extends Component {
       onEndReached,
       isRankedChannel,
       rankingLoadMore,
+      followingLoadMore
     } = this.props;
 
     const listStyle = {
@@ -172,7 +182,11 @@ export default class PostCard extends Component {
             <View style={styles.listFooterComponent}>
               <ActivityIndicator />
             </View>
-          ) : null;
+          ) : followingLoadMore ? 
+              <View style={styles.listFooterComponent}>
+                <ActivityIndicator />
+              </View>
+          : null ;
         }}
         keyExtractor={(_, index) => index.toString()}
       />

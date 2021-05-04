@@ -20,6 +20,7 @@ import GroupDetails from '../screens/GroupDetails';
 import ChannelTimeline from '../screens/ChannelTimeline';
 import GroupInvitation from '../screens/GroupInvitation';
 import JoinGroup from '../screens/JoinGroup';
+import CreateEditNote from '../screens/CreateEditNote';
 import Drawer from './DrawerNavigation';
 import BottomTabs from './BottomTabs';
 import {gestureResponseDistance} from '../constants';
@@ -54,6 +55,7 @@ const AppStack = createStackNavigator(
     FriendNotes: FriendNotes,
     GroupInvitation: GroupInvitation,
     JoinGroup: JoinGroup,
+    CreateEditNote: CreateEditNote,
   },
   {
     //initialRouteName: 'Drawer',

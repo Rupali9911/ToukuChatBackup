@@ -193,4 +193,32 @@ export default StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 5,
   },
+  noteText: {
+    fontFamily: Fonts.regular,
+    fontWeight: '300',
+    fontSize: 15,
+    marginTop: normalize(5)
+  },
+  noteContainer: { 
+    paddingHorizontal: 10, 
+  },
+  noteDivider: {
+    minWidth: 100,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    marginVertical: 5
+  },
+  noteLink: {
+    minWidth: 100,
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+  noteLinkText: {
+    flex: 1,
+    color: Colors.black_light,
+    fontSize: 13,
+    fontFamily: Fonts.regular,
+    fontWeight: '600'
+  }
 });

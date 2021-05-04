@@ -79,7 +79,6 @@ export default class CommonNotes extends Component {
       groupMembers,
       onExpand,
     } = this.props;
-
     return (
       <>
         <View style={styles.container}>
@@ -88,6 +87,7 @@ export default class CommonNotes extends Component {
             <Text style={styles.count}>{data ? data.count : 0}</Text>
           </Text>
 
+          {/* Uncomment below code until not available on production */}
           <TouchableOpacity
             style={styles.addIconActionContainer}
             onPress={() => onAdd()}>
@@ -144,6 +144,8 @@ export default class CommonNotes extends Component {
               keyExtractor={(item, index) => index.toString()}
               data={data.results}
               nestedScrollEnabled={true}
+              style={styles.notesList}
+              keyboardShouldPersistTaps={'always'}
               renderItem={({item, index}) => (
                 <NoteItem
                   onRef={(note) => {

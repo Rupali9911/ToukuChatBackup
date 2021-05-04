@@ -25,8 +25,8 @@ import Button from '../../components/Button';
 import CommonNotes from '../../components/CommonNotes';
 import GroupFriend from '../../components/GroupFriend';
 import HeaderWithBack from '../../components/Headers/HeaderWithBack';
-import {ImageLoader, ListLoader} from '../../components/Loaders';
-import {ConfirmationModal,ShowGalleryModal} from '../../components/Modals';
+import {ImageLoader, ListLoader, OpenLoader} from '../../components/Loaders';
+import {ConfirmationModal,ShowGalleryModal, UploadProgressModal} from '../../components/Modals';
 import NoData from '../../components/NoData';
 import InputWithTitle from '../../components/TextInputs/InputWithTitle';
 import TextAreaWithTitle from '../../components/TextInputs/TextAreaWithTitle';
@@ -62,6 +62,7 @@ import {
 import {globalStyles} from '../../styles';
 import {eventService, getImage, onPressHyperlink} from '../../utils';
 import styles from './styles';
+import { lessThan } from 'react-native-reanimated';
 
 class GroupDetails extends Component {
   constructor(props) {
@@ -92,7 +93,11 @@ class GroupDetails extends Component {
       uploadLoading: false,
       sendingMedia: false,
       showGalleryModal: false,
+      progressModal: false,
+      uploadProgress: 0,
       uploadedFiles: [],
+      notesLoading: false,
+      mediaSelectionLoading: false,
       memberOption: [
         {
           title: translate('pages.xchat.admin'),
@@ -184,9 +189,14 @@ class GroupDetails extends Component {
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getGroupMembers(this.props.currentGroupDetail.id);
+    this.setState({notesLoading: true});
     this.props.getGroupNotes(this.props.currentGroupDetail.id).then((res) => {
       this.setState({
-        data: res,
+        data: res,notesLoading:false
+      });
+    }).catch((err)=>{
+      this.setState({
+        data: [],notesLoading:false
       });
     });
     for (let admin of this.props.currentGroupDetail.admin_details) {
@@ -258,7 +268,6 @@ class GroupDetails extends Component {
           this.hendleDeleteNote(message.text.data.message_details);
           break;
         }
-        this.hendleEditNote(message.text.data.message_details);
         break;
       }
       case SocketEvents.LIKE_OR_UNLIKE_GROUP_NOTE_DATA:
@@ -685,7 +694,9 @@ class GroupDetails extends Component {
     const isNote = data.results.filter((item, index) => {
       return item.id === detail.id;
     });
-    if (isNote.length) {
+    console.log('isNote',isNote);
+    if (isNote.length>0) {
+      this.hendleEditNote(detail);
       return;
     }
 
@@ -727,18 +738,21 @@ class GroupDetails extends Component {
     const {currentGroup} = this.props;
     const {data} = this.state;
 
-    if (detail.group_id !== currentGroup.group_id) {
+    if (detail.group !== currentGroup.group_id) {
       return;
     }
     const noteIndex = data.results.findIndex(
       (item, index) => item.id === detail.id,
     );
-    if (noteIndex === null || noteIndex === 'undefined') {
+    if (noteIndex < 0 ) {
       return;
     }
 
+    console.log('note updating');
+
     let updatedNote = data.results[noteIndex];
     updatedNote.text = detail.text;
+    updatedNote.media = detail.media;
     updatedNote.updated = moment().format();
     const updatedNotesData = [
       ...data.results.slice(0, noteIndex),
@@ -820,7 +834,7 @@ class GroupDetails extends Component {
     this.onDeleteNote(this.state.deleteIndex, this.state.deleteItem);
   };
 
-  onPostNote = (text) => {
+  onPostNote = (text, media_url, media_type) => {
     const {currentGroup} = this.props;
     const {data, editNoteIndex} = this.state;
     if (editNoteIndex !== null) {
@@ -862,6 +876,13 @@ class GroupDetails extends Component {
 
     const payload = {group: currentGroup.group_id, text: text};
 
+    if(media_url && media_url.length>0){
+      payload['media_url'] = media_url;
+    }
+    if(media_type && media_type.length>0){
+      payload['media_type'] = media_type;
+    }
+
     this.props
       .postGroupNotes(payload)
       .then((res) => {
@@ -875,6 +896,11 @@ class GroupDetails extends Component {
                 : [res],
           },
           showTextBox: false,
+          sendingMedia: false,
+          showGalleryModal: false,
+          progressModal: false,
+          uploadProgress: 0,
+          uploadedFiles: []
         });
         Toast.show({
           title: translate('pages.xchat.groupDetails'),
@@ -891,10 +917,11 @@ class GroupDetails extends Component {
         });
       });
   };
-  onEditNote = (index) => {
+  onEditNote = (index, item) => {
     this.setState({
       editNoteIndex: index,
     });
+    // this.props.navigation.navigate('CreateEditNote',{isGroup: true, note: Object.assign({},item)});
   };
   onDeleteNote = (index, item) => {
     const {data} = this.state;
@@ -1010,6 +1037,7 @@ class GroupDetails extends Component {
   };
 
   onCameraPress = () => {
+    this.setState({mediaSelectionLoading: true});
     GalleryPicker.openCamera({
       includeBase64: true,
       mediaType: 'photo',
@@ -1019,12 +1047,18 @@ class GroupDetails extends Component {
         uploadFile: source,
         sentMessageType: 'image',
         sendingMedia: true,
+        mediaSelectionLoading: false
       });
+      this.props.navigation.navigate('CreateEditNote',{isGroup: true, uploadedFiles: [source]});
       // this.onMessageSend();
+    }).catch((err)=>{
+      console.log('camera capture error',err);
+      this.setState({mediaSelectionLoading: false});
     });
   };
 
   onGalleryPress = async () => {
+    this.setState({mediaSelectionLoading: true});
     GalleryPicker.openPicker({
       multiple: true,
       maxFiles: 30,
@@ -1034,9 +1068,14 @@ class GroupDetails extends Component {
       console.log('Images', images)
       this.setState({
         uploadedFiles: [...this.state.uploadedFiles, ...images],
+        mediaSelectionLoading: false
       });
+      this.props.navigation.navigate('CreateEditNote',{isGroup: true, uploadedFiles: [...images]});
       // this.toggleSelectModal(false);
-      this.toggleGalleryModal(true);
+      // this.toggleGalleryModal(true);
+    }).catch((err)=>{
+      console.log('gallery select error',err);
+      this.setState({mediaSelectionLoading: false});
     });
   };
 
@@ -1050,7 +1089,8 @@ class GroupDetails extends Component {
     }
     this.isUploading = true;
     // this.toggleGalleryModal(false);
-
+    this.setState({sendingMedia: true, progressModal: true});
+    let mediaToSend = [];
     for (const file of this.state.uploadedFiles) {
       let fileType = file.mime;
       if (fileType.includes('image')) {
@@ -1062,16 +1102,10 @@ class GroupDetails extends Component {
           type: file.mime,
           name: file.filename,
         };
-        await this.setState(
-          {
-            uploadFile: source,
-            sentMessageType: 'image',
-            sendingMedia: true,
-          },
-          async () => {
-            // await this.onMessageSend();
-          },
-        );
+        mediaToSend.push({
+          source: source,
+          type: 'image'
+        });
       } else {
         let source = {
           uri: file.path,
@@ -1079,21 +1113,75 @@ class GroupDetails extends Component {
           name: file.filename,
           isUrl: file.isUrl,
         };
-        await this.setState(
-          {
-            uploadFile: source,
-            sentMessageType: 'video',
-            sendingMedia: true,
-          },
-          () => {
-            // this.onMessageSend();
-          },
-        );
+        mediaToSend.push({
+          source: source,
+          type: 'video'
+        });
       }
     }
     // this.setState({uploadedFiles: []});
+    this.postNoteWithMedia(mediaToSend);
     this.isUploading = false;
   };
+
+  postNoteWithMedia = async (mediaToSend) => {
+    let images = [];
+    let videos = [];
+    let media_url = [];
+    let media_type = [];
+    if(mediaToSend && mediaToSend.length>0){
+      let index = 0;
+      for(const item of mediaToSend){
+        if (item.type === 'image') {
+          let file = item.source;
+          let files = [file];
+          const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+            files,
+            (e) => {
+              console.log('progress_bar_percentage', e);
+              // this.setState({ uploadProgress: e.percent });
+              this.calculateProgress(mediaToSend.length,index,e.percent);
+            },
+          );
+          media_url.push(uploadedImages.image[0].image);
+          media_type.push('image');
+          // images.push(uploadedImages.image[0].image);
+          // console.log('image_url',uploadedImages.image[0].image);
+        } else if (item.type === 'video') {
+          let file = item.source;
+          let files = [file];
+          if (item.source.isUrl) {
+            videos.push(item.source.uri);
+          } else {
+            const uploadedVideo = await this.S3uploadService.uploadVideoOnS3Bucket(
+              files,
+              item.source.type,
+              (e) => {
+                console.log('progress_bar_percentage', e);
+                // this.setState({ uploadProgress: e.percent });
+                this.calculateProgress(mediaToSend.length,index,e.percent);
+              },
+            );
+            media_url.push(uploadedVideo);
+            media_type.push('video');
+            // videos.push(uploadedVideo);
+          }
+        }
+        index++;
+      }
+      console.log('media_url:',media_url);
+      console.log('media_type:',media_type);
+      this.onPostNote('',media_url,media_type);
+    }
+  }
+
+  calculateProgress = (totalItem,currentIndex,progress) => {
+    let result = 0;
+    let eachTotalPercent = 1/totalItem;
+    result = (currentIndex + progress) * eachTotalPercent;
+    this.setState({uploadProgress: parseFloat(result.toFixed(2))});
+  }
+
   //#endregion
 
   render() {
@@ -1111,7 +1199,9 @@ class GroupDetails extends Component {
       showDeleteNoteConfirmationModal,
       uploadLoading,
       deleteLoading,
-      sendingMedia
+      sendingMedia,
+      notesLoading,
+      mediaSelectionLoading
     } = this.state;
 
     let filePath = {uri: this.props.currentGroupDetail.group_picture};
@@ -1129,6 +1219,7 @@ class GroupDetails extends Component {
             contentContainerStyle={styles.mainContainer}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
+            keyboardShouldPersistTaps={'always'}
             extraScrollHeight={100}>
             <View style={styles.imageContainer}>
               <View style={styles.imageView}>
@@ -1364,6 +1455,9 @@ class GroupDetails extends Component {
                 )}
               </View>
             ) : (
+              notesLoading ? 
+                <ListLoader />
+              :
               <CommonNotes
                 data={this.state.data}
                 onPost={this.onPostNote}
@@ -1416,7 +1510,7 @@ class GroupDetails extends Component {
             message={translate('pages.xchat.deleteNoteText')}
             isLoading={deleteLoading}
           />
-          {/* <ShowGalleryModal
+          <ShowGalleryModal
             visible={this.state.showGalleryModal}
             toggleGalleryModal={this.toggleGalleryModal}
             data={this.state.uploadedFiles}
@@ -1429,17 +1523,20 @@ class GroupDetails extends Component {
             removeUploadData={(index) => this.removeUploadData(index)}
             onGalleryPress={() => this.onGalleryPress()}
             onUrlDone={this.onUrlUpload}
+            progressModalVisible={this.state.progressModal}
+            progress={this.state.uploadProgress}
           />
-          <FloatingAction
+
+          {/* Comment below code until not available on production */}
+          {/* <FloatingAction
             visible={this.state.isNotes}
             actions={this.actions}
             onPressItem={name => {
               if(name==='bt_write'){
-                this.setState({
-                  showTextBox: true,
-                })
+                this.props.navigation.navigate('CreateEditNote',{isGroup: true});
               }else if(name==='bt_gallery') {
-                this.toggleGalleryModal(true);
+                this.onGalleryPress();
+                // this.toggleGalleryModal(true);
               } else if(name==='bt_camera'){
                 this.onCameraPress();
               }
@@ -1447,6 +1544,7 @@ class GroupDetails extends Component {
             color={'#e26161'} /> */}
         </View>
         <SafeAreaView />
+        {mediaSelectionLoading && <OpenLoader hideText={true}/>}
       </View>
     );
   }

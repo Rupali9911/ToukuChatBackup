@@ -108,7 +108,7 @@ import {
   updateUnReadCount,
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
-import {getAvatar, normalize} from '../../utils';
+import {getAvatar, normalize, getUser_ActionFromUpdateText, getUserName} from '../../utils';
 import styles from './styles';
 
 class Home extends PureComponent {
@@ -1404,6 +1404,15 @@ class Home extends PureComponent {
     }
   }
 
+  renderGroupNoteText = (text, item) => {
+    if(item && text.includes('add a memo')){
+      let update_obj = getUser_ActionFromUpdateText(text);
+      let update_by = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || item.sender_display_name || item.sender_username;
+      return `${update_by} ${translate('pages.xchat.noteAdded')}`;
+    }
+    return '';
+  }
+
   renderUserGroups() {
     const {groupLoading} = this.props;
     const {getGroupData} = this.state;
@@ -1435,6 +1444,8 @@ class Home extends PureComponent {
                           ? translate('pages.xchat.document')
                           : item.last_msg.type === 'audio'
                             ? translate('pages.xchat.audio')
+                            : item.last_msg.type === 'update' && item.last_msg.text.includes('add a memo') 
+                            ? this.renderGroupNoteText(item.last_msg.text,item)
                             : ''
                   : item.no_msgs || !item.last_msg_id
                     ? ''
@@ -1467,6 +1478,15 @@ class Home extends PureComponent {
     }
   }
 
+  renderFriendNoteText = (text, item) => {
+    if(item && text.includes('add a memo')){
+      let update_obj = getUser_ActionFromUpdateText(text);
+      let update_by = update_obj.user_id == this.props.userData.id ? translate('pages.xchat.you') : getUserName(update_obj.user_id) || item.display_name || item.username;
+      return `${update_by} ${translate('pages.xchat.noteAdded')}`;
+    }
+    return '';
+  }
+
   renderUserFriends() {
     const {friendLoading} = this.props;
     const {getFriendData} = this.state;
@@ -1494,6 +1514,8 @@ class Home extends PureComponent {
                 ? translate('pages.xchat.document')
                 : item.last_msg_type === 'audio'
                 ? translate('pages.xchat.audio')
+                : item.last_msg_type === 'update' && item.last_msg.includes('add a memo') 
+                ? this.renderFriendNoteText(item.last_msg,item)
                 : ''
               : item.last_msg_id
               ? translate('pages.xchat.messageUnsent')

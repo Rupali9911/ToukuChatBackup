@@ -164,8 +164,14 @@ export default class VideoPlayerCustom extends Component {
   };
 
   render() {
-    const {url} = this.props;
+    const {url,width,height} = this.props;
     const {playing, thumbnailUrl} = this.state;
+
+    let videoIosStyle = {
+      width: width || 260,
+      height: height || 150,
+    }
+
     return (
       <View>
         {url.includes('youtube.com') ? (
@@ -238,7 +244,7 @@ export default class VideoPlayerCustom extends Component {
             controls={true} // Store reference
             // onBuffer={this.onBuffer}                // Callback when remote video is buffering
             // onError={this.videoError}               // Callback when video cannot be loaded
-            style={styles.iOSVideoPlayer}
+            style={videoIosStyle}
             poster={thumbnailUrl}
             resizeMode={'contain'}
           />

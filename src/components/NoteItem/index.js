@@ -2,6 +2,7 @@ import moment from 'moment';
 import React, {Component} from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   Image,
   Linking,
   Text,
@@ -42,7 +43,13 @@ import {ConfirmationModal} from '../Modals';
 import TextAreaWithTitle from '../TextInputs/TextAreaWithTitle';
 import styles from './styles';
 import ScalableImage from '../ScalableImage';
+import ViewSlider from '../ViewSlider';
+import VideoPlayerCustom from '../VideoPlayerCustom';
+import AudioPlayerCustom from '../AudioPlayerCustom';
+import ImageGrid from '../ImageGrid';
+import VideoPreview from '../VideoPreview';
 
+const { width, height } = Dimensions.get('window');
 class NoteItem extends Component {
   constructor(props) {
     super(props);
@@ -54,6 +61,7 @@ class NoteItem extends Component {
       showCommentBox: false,
       commentData: [],
       offset: 0,
+      step: 1,
       commentResult: null,
       showDeleteConfirmationModal: false,
       deleteIndex: null,
@@ -576,10 +584,9 @@ class NoteItem extends Component {
   }
 
   renderLinkPreview = (linkPreview) => {
-    console.log('render linkPreview',linkPreview);
       return linkPreview ? (
         linkPreview.mediaType.includes("video") ?
-          <VideoPreview url={linkPreview.url} /> :
+          <VideoPreview url={linkPreview.url} showLink={true}/> :
           linkPreview.mediaType.includes("image") ?
             <TouchableOpacity
               activeOpacity={0.6}
@@ -636,6 +643,67 @@ class NoteItem extends Component {
       ) : null;
   }
 
+  renderMedia = (media) => {
+    if(!media) return;
+    return (
+      <ViewSlider
+        style={styles.viewSlider}
+        width={width - 50}
+        step={this.state.step}
+        onScroll={(index) => {
+          if (media[this.state.step - 1].media_type == 'audio') {
+            this.audio && this.audio.stopSound();
+          }
+          this.setState({ step: index });
+        }}
+        renderSlides={
+          <>
+            {media.map(item => {
+              return (
+                <>
+                  {item.media_type === 'image' &&
+                    <View style={styles.swipeMediaContainer}
+                      onLayout={(event) => {
+                        let { height } = event.nativeEvent.layout
+                        this.setState({ page_height: height });
+                      }}
+                    >
+                      <ScalableImage src={item.media_url} />
+                    </View>
+                  }
+                  {item.media_type === 'video' &&
+                    <View style={styles.swipeMediaContainer}>
+                      <VideoPlayerCustom
+                        url={item.media_url}
+                        width={width - 50}
+                        height={250} />
+                    </View>
+                  }
+                  {item.media_type === 'audio' &&
+                    <View style={styles.swipeAudioContainer}>
+                      <AudioPlayerCustom
+                        ref={(audio) => this.audio = audio}
+                        onAudioPlayPress={(id) =>
+                          this.setState({
+                            audioPlayingId: id,
+                            perviousPlayingAudioId: this.state.audioPlayingId,
+                          })
+                        }
+                        audioPlayingId={this.state.audioPlayingId}
+                        perviousPlayingAudioId={this.state.perviousPlayingAudioId}
+                        postId={post.id}
+                        url={item.media_url}
+                      />
+                    </View>
+                  }
+                </>
+              );
+            })}
+          </>
+        } />
+    );
+  }
+
   render() {
     const {
       index,
@@ -665,7 +733,6 @@ class NoteItem extends Component {
       suggestionDataHeight,
       linkPreview
     } = this.state;
-
     const contentContainer = [
       {
         borderBottomWidth: item.showComment && commentData.length > 0 ? 0.5 : 0,
@@ -680,6 +747,11 @@ class NoteItem extends Component {
         marginBottom: showCommentBox && !isFriend ? 20 : 0,
       },
     ];
+
+    let medias = [];
+    item.image && item.image.map(item => medias.push({ type: 'image', url: item }));
+    item.video && item.video.map(item => medias.push({ type: 'video', url: item }));
+    item.audio && item.audio.map(item => medias.push({ type: 'audio', url: item }));
 
     return (
       <View style={styles.container}>
@@ -729,6 +801,8 @@ class NoteItem extends Component {
                 )}
               </View>
               <View style={styles.topMargin}>
+                {/* {this.renderMedia(item.media)} */}
+                {/* {item.media && item.media.length<=0 && this.renderLinkPreview(linkPreview)} */}
                 {this.renderLinkPreview(linkPreview)}
                 <Text style={styles.itemText}>{item.text}</Text>
               </View>
@@ -1072,7 +1146,7 @@ class NoteItem extends Component {
         ) : (
           <View style={styles.commentUpdateContainer}>
             <TextAreaWithTitle
-              onChangeText={(txt) => this.setState({txt})}
+              onChangeText={(text) => this.setState({text})}
               value={text}
               rightTitle={`${text.length}/300`}
               maxLength={300}

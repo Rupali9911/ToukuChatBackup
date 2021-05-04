@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {QRreader} from 'react-native-qr-decode-image-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {connect} from 'react-redux';
@@ -85,7 +85,7 @@ class AddFriendByQr extends Component {
     var options = {
       mediaType: 'photo',
     };
-    ImagePicker.launchImageLibrary(options, async (response) => {
+    launchImageLibrary(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
         console.log('response.error', response.error);

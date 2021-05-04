@@ -28,8 +28,21 @@ export const MessageBody = {
     thumbnail: 'string?',
     type: 'string?',
     text: 'string?',
+    media: {
+      type: 'list',
+      objectType: 'media_object',
+      default: []
+    }
   },
 };
+
+export const MediaObject = {
+  name: 'media_object',
+  properties: {
+    media_url: 'string?',
+    media_type: 'string?',
+  },
+}
 
 export const GroupMentions = {
   name: 'group_mentions',
@@ -101,6 +114,11 @@ export const ChatConversationFriend = {
     is_read: 'bool?',
     is_unsent: 'bool?',
     local_id: 'string?',
+    media: {
+      type: 'list',
+      objectType: 'media_object',
+      default: null
+    },
     message_body: 'string?',
     msg_type: 'string?',
     reply_to: {

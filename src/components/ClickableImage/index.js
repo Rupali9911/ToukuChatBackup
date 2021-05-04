@@ -11,9 +11,9 @@ import {Images, Colors} from '../../constants';
  */
 export default class ClickableImage extends Component {
   render() {
-    const {source, size, color, resizeMode, onPress} = this.props;
+    const {source, size, color, resizeMode, onPress, containerStyle} = this.props;
     return (
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity style={containerStyle} onPress={onPress}>
         <Image
           source={source}
           style={{
@@ -37,6 +37,7 @@ ClickableImage.propTypes = {
   color: PropTypes.string,
   resizeMode: PropTypes.string,
   onPress: PropTypes.func,
+  containerStyle: PropTypes.any,
 };
 
 /**
@@ -48,4 +49,5 @@ ClickableImage.defaultProps = {
   color: Colors.white,
   resizeMode: 'contain',
   onPress: null,
+  containerStyle: {},
 };

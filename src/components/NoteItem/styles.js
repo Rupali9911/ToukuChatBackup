@@ -2,7 +2,7 @@ import {Dimensions, Platform, StyleSheet} from 'react-native';
 import {Colors, Fonts} from '../../constants';
 import {normalize} from '../../utils';
 
-const {height} = Dimensions.get('window');
+const {width,height} = Dimensions.get('window');
 
 export default StyleSheet.create({
   textInput: {
@@ -182,7 +182,7 @@ export default StyleSheet.create({
   },
   commentUpdateContainer: {
     borderBottomColor: Colors.black_light,
-    borderBottomWidth: 0.5,
+    // borderBottomWidth: 0.5,
     marginBottom: 10,
     paddingBottom: 2,
   },
@@ -194,5 +194,22 @@ export default StyleSheet.create({
     marginTop: 10,
     height: 30,
     width: '100%',
+  },
+  viewSlider: {
+    width: width - 50
+  },  
+  swipeMediaContainer: {
+    justifyContent: 'center',
+    width: width - 50,
+    alignItems: 'center',
+    height: 250,
+  },
+  swipeAudioContainer: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    width: width - 50,
+    padding: 10,
+    alignItems: 'center',
+    height: 250
   },
 });

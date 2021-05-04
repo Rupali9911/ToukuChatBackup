@@ -186,7 +186,7 @@ export default StyleSheet.create({
     marginTop: -70,
   },
   interactionContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingTop: 10,
     borderTopColor: Colors.light_gray,
     borderTopWidth: 0.3,

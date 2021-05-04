@@ -212,13 +212,16 @@ export default class PostCardHeader extends Component {
               }>
               {menuItems &&
                 menuItems.map((item) => {
+                  if(item.id == 2 && !post.is_following){
+                    return null;
+                  }
                   return (
                     <React.Fragment>
                       <MenuItem
                         onPress={() => {
                           this.hideMenu();
                           setTimeout(() => {
-                            item.onPress(post);
+                            item.onPress(post, index);
                           }, 500);
                         }}>{`${item.title}`}</MenuItem>
                       {/* <Menu.Item

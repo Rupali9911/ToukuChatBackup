@@ -9,7 +9,7 @@ import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import PostCard from '../../components/PostCard';
 import TabBar from '../../components/TabBar';
 import { Icons, SocketEvents } from '../../constants';
-import { followChannel } from '../../redux/reducers/channelReducer';
+import { followChannel, unfollowChannel } from '../../redux/reducers/channelReducer';
 import { setI18nConfig, translate } from '../../redux/reducers/languageReducer';
 import {
   getFollowingTimeline,
@@ -27,7 +27,8 @@ import {
   updateFollowingTimeline,
   timelinePostComment,
   getPostComments,
-  deletePostComment
+  deletePostComment,
+  updatePostComment
 } from '../../redux/reducers/timelineReducer';
 import { globalStyles } from '../../styles';
 import { showToast, eventService } from '../../utils';
@@ -72,7 +73,7 @@ class Timeline extends Component {
                 this.setState({ activeTab: 'following' });
                 this.props.setActiveTimelineTab('following');
                 this.props
-                  .getFollowingTimeline()
+                  .getFollowingTimeline(null, true)
                   .then((res) => {
                     this.setState({ isLoading: false });
                   })
@@ -135,7 +136,7 @@ class Timeline extends Component {
                 this.setState({ activeTab: 'following' });
                 this.props.setActiveTimelineTab('following');
                 this.props
-                  .getFollowingTimeline()
+                  .getFollowingTimeline(null,true)
                   .then((res) => {
                     this.setState({ isLoading: false });
                   })
@@ -169,11 +170,12 @@ class Timeline extends Component {
           },
         },
         {
-          id: 1,
+          id: 2,
           title: translate('pages.xchat.unfollow'),
           icon: 'bars',
-          onPress: (post) => {
-            NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: true})
+          onPress: (post, index) => {
+            // NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: true})
+            this.onFollowUnfollow(post.channel_id,index,post.channel_name,null,post.is_following);
           },
         },
         // ,
@@ -195,9 +197,11 @@ class Timeline extends Component {
         // },
       ],
       showConfirmation: false,
+      showUnfollowConfirmationModal: false,
       currentPost: null,
     };
     this.specificPosts = null;
+    this.isUnfollowing = false;
   }
 
   static navigationOptions = () => {
@@ -237,11 +241,20 @@ class Timeline extends Component {
     //   .then((res) => {
     //     this.setState({isLoading: false});
 
-    if (postId && res.status) {
-      this.specificPosts = res.posts;
+    // if (postId && res.status) {
+    //   this.specificPosts = res.posts;
+    // }
+
+    if (postId) {
+      this.props.getTrendTimeline(this.props.userData.user_type, postId)
+        .then((res) => {
+          if (res.status) {
+            this.specificPosts = res.posts;
+          }
+        });
     }
 
-    this.props.getFollowingTimeline().then(() => {
+    this.props.getFollowingTimeline(null,true).then(() => {
       this.setState({ isLoading: false });
       // this.props
       //   .getRankingTimeline(this.props.userData.user_type)
@@ -280,7 +293,7 @@ class Timeline extends Component {
     if (this.props.specificPostId && !nextProps.specificPostId) {
       this.setState({ isLoading: true });
       // this.props.getTrendTimeline(this.props.userData.user_type)
-      this.props.getFollowingTimeline()
+      this.props.getFollowingTimeline(null, true)
         .then((res) => { this.setState({ isLoading: false }) });
     }
     if (nextProps.specificPostId) {
@@ -350,6 +363,11 @@ class Timeline extends Component {
         });
         if (isCommentExists == -1) {
           item.post_comments.splice(0, 0, message_details);
+          let array = followingTimeline;
+          array.splice(index, 1, item);
+          this.props.updateFollowingTimeline(array);
+        }else{
+          item.post_comments.splice(isCommentExists, 1, message_details);
           let array = followingTimeline;
           array.splice(index, 1, item);
           this.props.updateFollowingTimeline(array);
@@ -434,7 +452,7 @@ class Timeline extends Component {
         this.showData();
       });
     } else if (activeTab === 'following') {
-      this.props.getFollowingTimeline().then((res) => {
+      this.props.getFollowingTimeline(null,true).then((res) => {
         this.showData();
       });
     } else if (activeTab === 'ranking') {
@@ -467,8 +485,14 @@ class Timeline extends Component {
     this.updateModalVisibility();
   }
 
-  onFollowUnfollow = async (channel_id, index, channel_name, onFinish) => {
+  onFollowUnfollow = async (channel_id, index, channel_name, onFinish, isMember) => {
     const { trendTimline } = this.props;
+
+    if(isMember){
+      this.setState({UnfollowChannelId: channel_id, showUnfollowConfirmationModal: true});
+      return;
+    }
+
     let data = {
       channel_id: channel_id,
       user_id: this.props.userData.id,
@@ -500,6 +524,47 @@ class Timeline extends Component {
         this.setState({
           isLoading: false,
         });
+      });
+  };
+
+  toggleConfirmationModal = () => {
+    this.setState((prevState) => ({
+      showUnfollowConfirmationModal: !prevState.showUnfollowConfirmationModal,
+    }));
+  };
+
+  onCancel = () => {
+    this.toggleConfirmationModal();
+  };
+
+  onConfirm = async () => {
+    if (this.isUnfollowing || !this.state.UnfollowChannelId) {
+      return;
+    }
+    this.isUnfollowing = true;
+    let user = {
+      user_id: this.props.userData.id,
+    };
+    this.forceUpdate();
+    this.props.unfollowChannel(this.state.UnfollowChannelId,user)
+      .then(async (res) => {
+        console.log('res', res);
+        if (res.status === true) {
+          await this.toggleConfirmationModal();
+          this.isUnfollowing = false;
+          this.setState({ isLoading: true, UnfollowChannelId: null});
+          this.props.getFollowingTimeline(null, true)
+            .then((res) => { this.setState({ isLoading: false }) });
+        }
+      }).catch((err) => {
+        console.log('ChannelInfo -> onConfirm -> err', err);
+        Toast.show({
+          title: 'TOUKU',
+          text: translate('common.somethingWentWrong'),
+          type: 'primary',
+        });
+        this.isUnfollowing = false;
+        this.toggleConfirmationModal();
       });
   };
 
@@ -548,12 +613,13 @@ class Timeline extends Component {
   };
 
   render() {
-    const { tabBarItem, menuItems, orientation, showConfirmation } = this.state;
+    const { tabBarItem, orientation, showConfirmation, showUnfollowConfirmationModal } = this.state;
     const {
       trendTimline,
       followingTimeline,
       rankingChannel,
       rankingLoadMore,
+      followingLoadMore,
       loading,
       activeTab,
     } = this.props;
@@ -563,8 +629,44 @@ class Timeline extends Component {
       this.specificPosts = null;
     }
 
-    console.log('postId', postId, 'posts', this.specificPosts);
+    menuItems = [
+      {
+        id: 1,
+        title: translate('pages.xchat.hideThisPost'),
+        icon: 'bars',
+        onPress: (res) => {
+          this.hidePost(res);
+        },
+      },
+      {
+        id: 2,
+        title: translate('pages.xchat.unfollow'),
+        icon: 'bars',
+        onPress: (post, index) => {
+          // NavigationService.navigate('ChannelInfo', {channelItem: post, isTimeline: true})
+          this.onFollowUnfollow(post.channel_id,index,post.channel_name,null,post.is_following);
+        },
+      },
+      // ,
+      // {
+      //   id: 1,
+      //   title: translate('pages.xchat.hideAllPost'),
+      //   icon: 'bars',
+      //   onPress: (res) => {
+      //     this.hideAllPost(res);
+      //   },
+      // },
+      // {
+      //   id: 1,
+      //   title: translate('pages.xchat.reportContent'),
+      //   icon: 'bars',
+      //   onPress: (res) => {
+      //     this.reportContent(res);
+      //   },
+      // },
+    ];
 
+    console.log('postId', postId, 'posts', this.state.isLoading);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -602,6 +704,16 @@ class Timeline extends Component {
                       addComment={this.props.timelinePostComment}
                       getPostComments={this.props.getPostComments}
                       deleteComment={this.props.deletePostComment}
+                      editComment={this.props.updatePostComment}
+                      followingLoadMore={followingLoadMore}
+                      onEndReached={()=>{
+                        if (followingLoadMore && !loading) {
+                          console.log('following load_more', followingLoadMore);
+                          let lastPostId = followingTimeline[followingTimeline.length - 1].id;
+                          this.props.getFollowingTimeline(lastPostId)
+                            .then((res) => {  });
+                        }
+                      }}
                     />
                   ) : loading && rankingChannel.length <= 0 ? (
                     <ListLoader justifyContent={'flex-start'} />
@@ -650,6 +762,16 @@ class Timeline extends Component {
           isLoading={loading}
         />
 
+        <ConfirmationModal
+          visible={showUnfollowConfirmationModal}
+          onCancel={this.onCancel.bind(this)}
+          onConfirm={this.onConfirm.bind(this)}
+          orientation={orientation}
+          isLoading={this.isUnfollowing}
+          title={translate('pages.xchat.toastr.areYouSure')}
+          message={translate('pages.xchat.toLeaveThisChannel')}
+        />
+
       </View>
       // </ImageBackground>
     );
@@ -665,6 +787,7 @@ const mapStateToProps = (state) => {
     rankingTimeLine: state.timelineReducer.rankingTimeLine,
     rankingChannel: state.timelineReducer.rankingChannel,
     rankingLoadMore: state.timelineReducer.rankingLoadMore,
+    followingLoadMore: state.timelineReducer.followingLoadMore,
     activeTab: state.timelineReducer.activeTab,
     userData: state.userReducer.userData,
     specificPostId: state.timelineReducer.specificPostId,
@@ -682,13 +805,15 @@ const mapDispatchToProps = {
   setActiveTimelineTab,
   updateRankingChannel,
   followChannel,
+  unfollowChannel,
   updateTrendTimeline,
   setSpecificPostId,
   likeUnlikeTimelinePost,
   updateFollowingTimeline,
   timelinePostComment,
   getPostComments,
-  deletePostComment
+  deletePostComment,
+  updatePostComment
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

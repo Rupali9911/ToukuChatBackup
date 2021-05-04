@@ -1526,7 +1526,6 @@ class FriendChats extends Component {
     } = this.state;
     const {currentFriend, chatFriendConversation} = this.props;
     // console.log('currentFriend', currentFriend);
-
     return (
       <ImageBackground
         source={Images.image_home_bg}

@@ -131,6 +131,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.regular,
     fontWeight: '300',
     fontSize: 15,
+    marginTop: normalize(5)
   },
   divider: {
     borderTopWidth: 1,
@@ -138,6 +139,7 @@ export default StyleSheet.create({
     marginVertical: 5,
   },
   notesContainer: {
+    minWidth: 100,
     flexDirection: 'row',
     paddingHorizontal: 10,
     alignItems: 'center',

@@ -24,6 +24,7 @@ import {
 import Button from '../../Button';
 import VideoThumbnailPlayer from '../../VideoThumbnailPlayer';
 import UploadByUrlModal from '../UploadByUrlModal';
+import UploadProgressModal from '../UploadProgressModal';
 
 // StyleSheet import
 import styles from './styles';
@@ -55,6 +56,8 @@ class ShowGalleryModal extends Component {
       removeUploadData,
       onGalleryPress,
       onUrlDone,
+      progress,
+      progressModalVisible
     } = this.props;
 
     const {uploadByUrlModalVisible} = this.state;
@@ -212,6 +215,10 @@ class ShowGalleryModal extends Component {
             }
             onUrlDone={onUrlDone}
           />
+          <UploadProgressModal 
+            visible={progressModalVisible}
+            progress={progress}
+            title={translate('common.uploadImage')}/>
         </SafeAreaView>
       </Modal>
     );
