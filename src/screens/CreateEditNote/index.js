@@ -568,6 +568,9 @@ class CreateEditNote extends Component {
                   }else if(this.state.text.trim().length > 0){
                     this.forceUpdate();
                     this.onPostNote(this.state.text,null,null);
+                  } else if(this.props.navigation.state.params.note && this.props.navigation.state.params.note.media.length > note_media.length){
+                    this.forceUpdate();
+                    this.onPostNote(this.state.text,null,null);
                   }
                 }}
                 isRounded={false}
