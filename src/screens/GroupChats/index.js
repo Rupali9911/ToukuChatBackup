@@ -26,6 +26,7 @@ import {
   deleteMultipleGroupMessage,
   editGroupMessage,
   getGroupConversation,
+  getUpdatedGroupConversation,
   getGroupDetail,
   getGroupMembers,
   getLocalUserGroups,
@@ -60,6 +61,7 @@ import {
   updateGroupTranslatedMessage,
   updateLastMsgGroupsWithoutCount,
   updateUnReadCount,
+  getGroupChatConversationNextFromId
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {getUserName, realmToPlainObject} from '../../utils';
@@ -804,7 +806,12 @@ class GroupChats extends Component {
     if (this.props.currentGroup) {
       this.getGroupDetail();
       this.getGroupMembers();
-      this.getGroupConversationInitial();
+
+      let msg_id = null;
+      if(this.props.navigation.state.params && this.props.navigation.state.params.msg_id){
+        msg_id = this.props.navigation.state.params.msg_id;
+      }
+      this.getGroupConversationInitial(msg_id);
 
       this.updateUnReadGroupChatCount();
 
@@ -1021,7 +1028,7 @@ class GroupChats extends Component {
       });
   };
 
-  getGroupConversationInitial = async () => {
+  getGroupConversationInitial = async (msg_id) => {
     this.setState({isChatLoading: true});
     let chat = getGroupChatConversationById(
       this.props.currentGroup.group_id,
@@ -1058,7 +1065,7 @@ class GroupChats extends Component {
     }
 
     await this.props
-      .getGroupConversation(this.props.currentGroup.group_id)
+      .getUpdatedGroupConversation(this.props.currentGroup.group_id,msg_id,false,false)
       .then((res) => {
         // console.log('res', res);
         if (res.status) {
@@ -1905,11 +1912,17 @@ class GroupChats extends Component {
               if (message && message.msg_id) {
                 this.loading = true;
                 this.offset = this.offset + 20;
-                this.getLocalGroupConversation();
-                if (length % 50 === 0 && length - this.offset <= 10) {
-                  console.log('api_call');
-                  this.getGroupConversation(chats[chats.length - 1].msg_id);
+                let next_messages = getGroupChatConversationNextFromId(this.props.currentGroup.group_id,message.msg_id);
+                if (next_messages) {
+                  let conversations = [];
+                  conversations = realmToPlainObject(next_messages);
+                  this.props.setGroupConversation([...conversations,...chatGroupConversation]);
                 }
+                // this.getLocalGroupConversation();
+                // if (next_messages.length == 0 && this.props.next) {
+                //   console.log('api_call');
+                //   this.getGroupConversation(chats[chats.length - 1].msg_id);
+                // }
                 // this.getGroupConversation(message.msg_id);
               }
             }}
@@ -2044,11 +2057,14 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     currentGroupMembers: state.groupReducer.currentGroupMembers,
     currentGroupAdmins: state.groupReducer.currentGroupAdmins,
+    next: state.groupReducer.next,
+    previous: state.groupReducer.previous,
   };
 };
 
 const mapDispatchToProps = {
   getGroupConversation,
+  getUpdatedGroupConversation,
   getUserGroups,
   getGroupDetail,
   getGroupMembers,

@@ -9,6 +9,8 @@ export default class ScalableImage extends Component {
     super(props);
     this.state = {
       ratio: 1,
+      img_width: 0,
+      img_height: 0
     };
   }
 
@@ -20,16 +22,19 @@ export default class ScalableImage extends Component {
     Image.getSize(this.props.src, (height, width) => {
       this.setState({
         ratio: height / width,
+        img_width: width,
+        img_height: height
       });
     });
   };
 
   render() {
     const {src, borderRadius, isHyperlink} = this.props;
-    const {ratio} = this.state;
+    const {ratio,img_width,img_height} = this.state;
 
     const container = {
       width: isHyperlink ? WIDTH : '100%',
+      // height: img_height > 500 ? 500 : img_height,
       aspectRatio: ratio || 1,
       borderRadius: borderRadius ? borderRadius : 0,
     };

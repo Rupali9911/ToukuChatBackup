@@ -237,3 +237,11 @@ export const checkDeepLinkUrl = (url) => {
   let checkUrl = staging ? 'touku.angelium.net/' : 'touku.net/';
   return url.includes(checkUrl);
 }
+
+export const isCloseToBottomFlatlist = ({ layoutMeasurement, contentOffset, contentSize }) => {
+  const paddingToBottom = 20;
+  return (
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom
+  );
+};

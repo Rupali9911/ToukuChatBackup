@@ -281,15 +281,26 @@ export default class GroupListItem extends PureComponent {
                       ]}>
                       {getDate(date)}
                     </Text>
-                    {unreadCount !== 0 && unreadCount != null && (
-                      <Badge
-                        style={[
-                          globalStyles.smallLightText,
-                          styles.badgeStyle,
-                        ]}>
-                        {unreadCount}
-                      </Badge>
-                    )}
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
+                      {unreadCount !== 0 && unreadCount != null && (
+                        <Badge
+                          style={[
+                            globalStyles.smallLightText,
+                            styles.badgeStyle,
+                          ]}>
+                          {unreadCount}
+                        </Badge>
+                      )}
+                      {item.is_mentioned && (
+                        <Badge
+                          style={[
+                            globalStyles.smallLightText,
+                            styles.badgeStyle,
+                          ]}>
+                          {'@'}
+                        </Badge>
+                      )}
+                    </View>
                   </View>
                 </View>
               </View>

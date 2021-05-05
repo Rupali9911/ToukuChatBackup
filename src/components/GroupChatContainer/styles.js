@@ -9,7 +9,7 @@ export default StyleSheet.create({
     backgroundColor: Colors.light_pink,
     // marginBottom: isIphoneX() ? 70 : 50,
   },
-  messageAreaScroll: {flexGrow: 1, paddingBottom: 20},
+  // messageAreaScroll: {flexGrow: 1, paddingBottom: 20},
   messageContainer: {
     flex: 1,
     justifyContent: 'flex-end',

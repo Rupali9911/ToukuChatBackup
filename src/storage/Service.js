@@ -425,7 +425,14 @@ export const getGroupChatConversationById = (id,offset) => {
   return realm
     .objects('chat_conversation_group')
     .sorted('timestamp', {ascending: true})
-    .filtered(`group_id == ${id}`).slice(0,offset);
+    .filtered(`group_id == ${id} && msg_id < ${22753}`).slice(0,offset);
+};
+
+export const getGroupChatConversationNextFromId = (id, msg_id) => {
+  return realm
+    .objects('chat_conversation_group')
+    .sorted('timestamp', {ascending: true})
+    .filtered(`group_id == ${id} && msg_id > ${msg_id}`);
 };
 
 export const getGroupChatConversationLengthById = (id) => {
@@ -767,6 +774,9 @@ export const setGroups = async (group) => {
             reply_to: item.reply_to,
             joining_date: item.joining_date,
             is_group_member: item.is_group_member,
+            is_mentioned: item.is_mentioned ? item.is_mentioned : false,
+            mention_msg_id: item.mention_msg_id,
+            unread_msg_id: item.unread_msg_id,
           },
           'modified',
         );
@@ -794,6 +804,9 @@ export const setGroups = async (group) => {
           reply_to: item.reply_to,
           joining_date: item.joining_date,
           is_group_member: item.is_group_member,
+          is_mentioned: item.is_mentioned ? item.is_mentioned : false,
+          mention_msg_id: item.mention_msg_id,
+          unread_msg_id: item.unread_msg_id,
         });
       });
     }

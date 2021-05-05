@@ -43,6 +43,12 @@ class GroupChatContainer extends Component {
     };
   }
 
+  componentDidMount(){
+    // setTimeout(()=>{
+    //   this.scrollView && this.scrollView.scrollToOffset({offset: 130, animated: false});
+    // },50);
+  }
+
   getDate = (date) => {
     const today = new Date();
     const yesterday = new Date();
@@ -310,8 +316,10 @@ class GroupChatContainer extends Component {
               innerRef={(view) => {
                 this.scrollView = view;
               }}
-              onContentSizeChange={() => {
+              onContentSizeChange={(w,h) => {
+
                 if (this.props.translatedMessageId) {
+
                 } else {
                   // messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
                 }
@@ -319,11 +327,20 @@ class GroupChatContainer extends Component {
               // getItemLayout={(data, index) => (
               //   {length: 250, offset: 250 * index, index}
               // )}
+              // initialScrollIndex={4}
+              contentOffset = {{x: 0, y: 0}}
               onScrollBeginDrag={() => {
                 this.closeMenu();
               }}
               onScrollEndDrag={() => {
                 this.closeMenuFalse();
+              }}
+              onScroll={({nativeEvent})=>{
+                console.log('event',nativeEvent);
+                this.setState({contentHeight: nativeEvent.contentSize.height});
+                if(nativeEvent.contentOffset.y < 0 ){
+                  onLoadMore && onLoadMore(messages[0]);
+                }
               }}
               extraData={this.state}
               data={messages}

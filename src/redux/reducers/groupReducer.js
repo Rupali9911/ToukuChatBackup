@@ -33,7 +33,9 @@ const initialState = {
   currentGroupMembers: [],
   chatGroupConversation: [],
   unreadGroupMsgsCounts: 0,
-  currentGroupAdmins: []
+  currentGroupAdmins: [],
+  next: false,
+  previous: false
 };
 
 import {
@@ -121,6 +123,8 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loading: false,
+        next: action.payload.next,
+        previous: action.payload.previous
       };
 
     case GET_GROUP_CONVERSATION_FAIL:
@@ -354,8 +358,9 @@ export const getGroupConversationRequest = () => ({
   type: GET_GROUP_CONVERSATION_REQUEST,
 });
 
-const getGroupConversationSuccess = () => ({
+const getGroupConversationSuccess = (data) => ({
   type: GET_GROUP_CONVERSATION_SUCCESS,
+  payload: data 
 });
 
 const getGroupConversationFailure = () => ({
@@ -398,6 +403,25 @@ export const getGroupConversation = (groupId, msg_id, limit = 50) => (dispatch) 
         //console.log('group-conversation', res);
         setGroupChatConversation(res.data);
         dispatch(getGroupConversationSuccess());
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(getGroupConversationFailure());
+        reject(err);
+      });
+  });
+
+export const getUpdatedGroupConversation = (groupId, msg_id, next, prev, limit = 50) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    dispatch(getGroupConversationRequest());
+    console.log('groupId', groupId);
+    query_parameter = `next=${next}&previous=${prev}&limit=${limit}`;
+    client
+      .get(`/xchat/group-conversation/${groupId}/${msg_id}/?${query_parameter}`)
+      .then((res) => {
+        //console.log('group-conversation', res);
+        setGroupChatConversation(res.data);
+        dispatch(getGroupConversationSuccess(res));
         resolve(res);
       })
       .catch((err) => {

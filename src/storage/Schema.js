@@ -290,6 +290,9 @@ export const Groups = {
     },
     joining_date: 'string?',
     is_group_member: 'bool?',
+    is_mentioned: 'bool?',
+    mention_msg_id: {type: 'int?', default: null},
+    unread_msg_id: {type: 'int?', default: null},
   },
 };
 

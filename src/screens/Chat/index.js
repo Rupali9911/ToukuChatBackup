@@ -2740,9 +2740,11 @@ class Chat extends Component {
     NetInfo.fetch().then((state) => {
       console.log('Is connected?', state.isConnected);
 
+      let msg_id = item.unread_msg_id || item.last_msg_id; 
+
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
-        this.props.navigation.navigate('GroupChats');
+        this.props.navigation.navigate('GroupChats',{msg_id});
       } else {
         Toast.show({
           title: 'TOUKU',
