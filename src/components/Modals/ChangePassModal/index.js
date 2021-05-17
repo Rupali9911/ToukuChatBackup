@@ -223,6 +223,8 @@ class ChangePassModal extends Component {
               {isSetPassword ? null : (
                 <View style={styles.inputContainer}>
                   <TextInput
+                      color={Colors.black}
+                      placeholderTextColor={'gray'}
                     placeholder={translate('pages.setting.oldPassword')}
                     value={oldPassword}
                     onChangeText={(oldPass) => this.handleOldPassword(oldPass)}
