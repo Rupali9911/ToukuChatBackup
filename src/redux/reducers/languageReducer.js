@@ -71,7 +71,7 @@ const initialState = {
     language_id: 2,
     language_name: 'ja',
     icon: Icons.icon_flag_japan,
-    selected: true,
+    selected: false,
   },
   en: require('../../translations/en.json'),
   ja: require('../../translations/ja.json'),

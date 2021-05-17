@@ -107,7 +107,7 @@ export default class TimelineCommentModal extends Component{
                 {userData.id === item.created_by && (
                     <View style={{flexDirection:'row'}}>
                         <ClickableImage
-                            source={Icons.icon_edit_grad} 
+                            source={Icons.icon_edit_grad}
                             size={normalize(14)}
                             color={null}
                             containerStyle={{marginHorizontal: 5}}
@@ -141,7 +141,7 @@ export default class TimelineCommentModal extends Component{
     listEmptyComponent = () => {
         return (
             <View style={styles.emptyViewContainer}>
-                <Text style={styles.emptyText}>{'Be the first to leave a comment'}</Text>
+                <Text style={styles.emptyText}>{translate('pages.xchat.beTheFirstToLeaveComment')}</Text>
             </View>
         );
     }
@@ -236,7 +236,7 @@ TimelineCommentModal.propTypes = {
     onDeleteComment: PropTypes.func,
     onRequestClose: PropTypes.func,
 };
-  
+
 /**
  * TimelineCommentModal default props
  */

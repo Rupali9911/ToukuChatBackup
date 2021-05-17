@@ -1049,7 +1049,7 @@ class GroupDetails extends Component {
         sendingMedia: true,
         mediaSelectionLoading: false
       });
-      this.props.navigation.navigate('CreateEditNote',{isGroup: true, uploadedFiles: [source]});
+      this.props.navigation.navigate('CreateEditNote',{isGroup: true, uploadedFiles: [image]});
       // this.onMessageSend();
     }).catch((err)=>{
       console.log('camera capture error',err);
@@ -1455,7 +1455,7 @@ class GroupDetails extends Component {
                 )}
               </View>
             ) : (
-              notesLoading ? 
+              notesLoading ?
                 <ListLoader />
               :
               <CommonNotes

@@ -1241,7 +1241,8 @@
       "issueGroupInvitation": "이슈 그룹 초대 URL",
       "goToGroupChat": "그룹 채팅으로 이동",
       "searchByQr": "QR 코드로 검색",
-      "noteAdded": " 님이 메모를 추가했습니다."
+      "noteAdded": " 님이 메모를 추가했습니다.",
+      "beTheFirstToLeaveComment": "첫 번째 댓글을 봅시다!"
     },
     "welcome":{
       "theWorldIsConnected":"\uc138\uacc4\uac00 \uc5f0\uacb0\ub418\ub294",

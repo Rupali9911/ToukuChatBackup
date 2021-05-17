@@ -199,6 +199,7 @@ class Timeline extends Component {
       showConfirmation: false,
       showUnfollowConfirmationModal: false,
       currentPost: null,
+        isFetching: false,
     };
     this.specificPosts = null;
     this.isUnfollowing = false;
@@ -271,11 +272,11 @@ class Timeline extends Component {
           .getRankingChannelList(this.props.rankingChannel.length)
           .then(() => {
             this.setState({ isLoading: false });
-            this.showData();
+            // this.showData();
           });
       } else {
         this.setState({ isLoading: false });
-        this.showData();
+        // this.showData();
       }
     })
       .catch((err) => {
@@ -400,9 +401,9 @@ class Timeline extends Component {
     }
   }
 
-  showData() {
-    // const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
-  }
+  // showData() {
+  //   // const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
+  // }
 
   _orientationDidChange = (orientation) => {
     this.setState({ orientation });
@@ -445,21 +446,35 @@ class Timeline extends Component {
     });
   }
 
+  onRefresh= () => {
+    this.setState({
+        isFetching: true
+    })
+    this.refreshContent();
+  }
+
   refreshContent() {
     const { activeTab } = this.state;
     if (activeTab === 'trend') {
       this.props.getTrendTimeline(this.props.userData.user_type).then((res) => {
-        this.showData();
+        // this.showData();
+          this.setState({isFetching: false})
       });
     } else if (activeTab === 'following') {
       this.props.getFollowingTimeline(null,true).then((res) => {
-        this.showData();
+        // this.showData();
+          this.setState({
+              isFetching: false
+          })
       });
     } else if (activeTab === 'ranking') {
       // this.props
       //   .getRankingTimeline(this.props.userData.user_type)
       //   .then((res) => {
-      //     this.showData();
+      //    // this.showData();
+      //   this.setState({
+      //       isFetching: false
+      //   })
       //   });
     }
   }
@@ -613,7 +628,7 @@ class Timeline extends Component {
   };
 
   render() {
-    const { tabBarItem, orientation, showConfirmation, showUnfollowConfirmationModal } = this.state;
+    const { tabBarItem, orientation, showConfirmation, showUnfollowConfirmationModal,isFetching} = this.state;
     const {
       trendTimline,
       followingTimeline,
@@ -691,7 +706,7 @@ class Timeline extends Component {
                   //     // onMomentumScrollBegin={this.onMomentumScrollBegin}
                   //     // onEndReached={this.onEndReached}
                   //   />
-                  // ) : 
+                  // ) :
                   activeTab === 'following' ? (
                     <PostCard
                       menuItems={menuItems}
@@ -714,6 +729,8 @@ class Timeline extends Component {
                             .then((res) => {  });
                         }
                       }}
+                      isFetching={isFetching}
+                      onRefresh={() => this.onRefresh()}
                     />
                   ) : loading && rankingChannel.length <= 0 ? (
                     <ListLoader justifyContent={'flex-start'} />
@@ -731,7 +748,7 @@ class Timeline extends Component {
                               this.props.getRankingChannelList(this.props.rankingChannel.length)
                                 .then((res) => {
                                   this.setState({ isLoading: false });
-                                  this.showData();
+                                  //this.showData();
                                 });
                             }
                           }}
@@ -747,6 +764,8 @@ class Timeline extends Component {
                               type: 'update'
                             });
                           }}
+                          isFetching={isFetching}
+                          onRefresh={() => this.onRefresh()}
                         />
                     )}
               </View>

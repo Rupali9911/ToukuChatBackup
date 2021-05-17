@@ -77,16 +77,13 @@ export const Icons = {
   icon_scan: require('../../assets/icons/scan_qr.png'),
   icon_qr: require('../../assets/icons/qr.png'),
   icon_searchQr: require('../../assets/icons/search_icon.png'),
-  icon_like: require('../../assets/icons/Like/like.png'),
-  icon_like_black: require('../../assets/icons/Like/like_black.png'),
-  icon_like_white: require('../../assets/icons/Like/like_white.png'),
-  icon_comment: require('../../assets/icons/Comment/comment.png'),
-  icon_comment_black: require('../../assets/icons/Comment/black_comment.png'),
-  icon_comment_white: require('../../assets/icons/Comment/white_comment.png'),
+    icon_like_black: require('../../assets/icons/Like/heart_white.png'),
+    icon_like: require('../../assets/icons/Like/heart_red.png'),
+  icon_comment_black: require('../../assets/icons/Comment/comment_new.png'),
   icon_notes: require('../../assets/icons/notes.png'),
   icon_camera_outline: require('../../assets/icons/camera_outline.png'),
   icon_edit_grad: require('../../assets/icons/edit.png'),
-  icon_delete_grad: require('../../assets/icons/delete.png'), 
+  icon_delete_grad: require('../../assets/icons/delete.png'),
 };
 
 export const Images = {
@@ -220,30 +217,35 @@ export const languageArray = [
     language_name: 'en',
     icon: Icons.icon_flag_america,
     language_display: 'English',
+      isSelected:true
   },
   {
     language_id: 2,
     language_name: 'ko',
     icon: Icons.icon_flag_korea,
     language_display: '한국어',
+      isSelected:true
   },
   {
     language_id: 3,
     language_name: 'ja',
     icon: Icons.icon_flag_japan,
     language_display: '日本語',
+      isSelected:true
   },
   {
     language_id: 4,
     language_name: 'tw',
     icon: Icons.icon_flag_taiwan,
     language_display: '中文（繁体）',
+      isSelected:true
   },
   {
     language_id: 5,
     language_name: 'ch',
     icon: Icons.icon_flag_china,
     language_display: '中文（简体）',
+      isSelected:true
   },
 ];
 

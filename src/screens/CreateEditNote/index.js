@@ -43,7 +43,6 @@ class CreateEditNote extends Component {
       orientation: 'PORTRAIT',
       text: this.props.navigation.state.params.note && this.props.navigation.state.params.note.text || '',
       uploadedFiles: this.props.navigation.state.params.uploadedFiles || [],
-      uploadProgress: false,
       progressModalVisible: false,
       uploadProgress: 0,
       note_media: this.props.navigation.state.params.note && this.props.navigation.state.params.note.media || null,
@@ -90,7 +89,7 @@ class CreateEditNote extends Component {
     }).then((image) => {
       let source = {uri: 'data:image/jpeg;base64,' + image.data};
       this.setState({
-        uploadedFiles: [...this.state.uploadedFiles,source],
+        uploadedFiles: [...this.state.uploadedFiles,image],
         uploadFile: source,
         sentMessageType: 'image',
         sendingMedia: true,
@@ -240,7 +239,7 @@ class CreateEditNote extends Component {
         if(media_url && media_url.length>0){
           payload['media_url'] = [,...media_url];
         }
-  
+
         if(media_type && media_type.length>0){
           payload['media_type'] = [,...media_type];
         }
@@ -346,7 +345,7 @@ class CreateEditNote extends Component {
         if(media_url && media_url.length>0){
           payload['media_url'] = [,...media_url];
         }
-  
+
         if(media_type && media_type.length>0){
           payload['media_type'] = [,...media_type];
         }
@@ -425,6 +424,7 @@ class CreateEditNote extends Component {
   }
 
   renderMedia = ({item, index}) => {
+    console.log('renderMedia', item)
     let media_type = '';
     let media_url = '';
     if(item.mime){
@@ -531,7 +531,7 @@ class CreateEditNote extends Component {
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <TouchableOpacity style={{paddingHorizontal:10}} onPress={this.onCameraPress}>
                 <Image
-                  source={Icons.icon_camera_outline} 
+                  source={Icons.icon_camera_outline}
                   style={{
                     width:30,
                     height:30,
@@ -539,7 +539,7 @@ class CreateEditNote extends Component {
               </TouchableOpacity>
               <TouchableOpacity style={{paddingHorizontal:10}} onPress={this.onGalleryPress}>
                 <Image
-                  source={Icons.gallery_icon_select} 
+                  source={Icons.gallery_icon_select}
                   style={{
                     width:30,
                     height:30,
@@ -548,7 +548,7 @@ class CreateEditNote extends Component {
             </View>
 
             <View style={{flex:1}}>
-              <FlatList 
+              <FlatList
                 data={note_media ? [...note_media,...this.state.uploadedFiles] : this.state.uploadedFiles}
                 renderItem={this.renderMedia}
                 numColumns={2}/>
@@ -587,10 +587,10 @@ class CreateEditNote extends Component {
             </View>
           </KeyboardAwareScrollView>
 
-          <UploadProgressModal 
+          <UploadProgressModal
             visible={progressModalVisible}
             progress={uploadProgress}
-            title={translate('common.uploadImage')}/>
+            title={translate('pages.xchat.uploading')}/>
 
       </View>
     );

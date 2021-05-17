@@ -113,6 +113,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.regular,
     fontWeight: '400',
     fontSize: normalize(10),
+      marginTop: 5,
   },
   interactionContainer: {
     flexDirection: 'row',
@@ -197,7 +198,7 @@ export default StyleSheet.create({
   },
   viewSlider: {
     width: width - 50
-  },  
+  },
   swipeMediaContainer: {
     justifyContent: 'center',
     width: width - 50,
