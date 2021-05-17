@@ -510,8 +510,8 @@ class GroupChatMessageBubble extends Component {
 
   renderMemoMedia = (media) => {
     return (
-      // <MediaGridList media={media} />
-      <></>
+      <MediaGridList media={media} />
+      // <></>
     );
   }
 

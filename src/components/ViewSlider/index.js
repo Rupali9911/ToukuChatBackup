@@ -97,6 +97,9 @@ export default class ViewSlider extends Component {
 
   render() {
     const { step } = this.state;
+    this.slidesCount = this.props.hasOwnProperty('renderSlides') ? Object.keys(
+      this.props.renderSlides.props.children,
+    ).length : this.state.slidesCount
     return (
       <View style={[{width, height: this.props.height}, this.props.style]}>
         <ScrollView

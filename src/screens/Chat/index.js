@@ -1156,7 +1156,10 @@ class Chat extends Component {
       let group = realmToPlainObject(a);
       // let group = result.toJSON();
       if (group && group.length > 0) {
-        updateGroupMessageById(message.text.data.message_details.msg_id);
+        updateGroupMessageById(
+          message.text.data.message_details.msg_id,
+          message.text.data.message_details.message_body,
+          );
         console.log('checking group', group);
         if (group[0].last_msg_id === message.text.data.message_details.msg_id) {
           updateLastMsgGroups(
@@ -1741,16 +1744,16 @@ class Chat extends Component {
 
   //Edit Message in Friend
   onEditMessageInFriend(message) {
-    const {currentFriend, userData} = this.props;
+    const {currentFriend, userData, currentRouteName} = this.props;
 
     if (message.text.data.message_details.from_user.id === userData.id) {
       // this.getUserFriends();
       let editMessageId = message.text.data.message_details.id;
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
-      updateFriendMessageById(editMessageId, newMessageText, messageType);
+      updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
       if (
-        this.props.currentRouteName === 'FriendChats' &&
+        (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
         currentFriend &&
         message.text.data.message_details.to_user.id === currentFriend.user_id
       ) {
@@ -1782,9 +1785,9 @@ class Chat extends Component {
       let editMessageId = message.text.data.message_details.id;
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
-      updateFriendMessageById(editMessageId, newMessageText, messageType);
+      updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
       if (
-        this.props.currentRouteName === 'FriendChats' &&
+        (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
         currentFriend &&
         message.text.data.message_details.from_user.id === currentFriend.user_id
       ) {

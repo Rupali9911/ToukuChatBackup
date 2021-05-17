@@ -263,11 +263,11 @@ export const getFriendChatConversationById = (id) => {
     .filtered(`friend == ${id}`);
 };
 
-export const updateFriendMessageById = (id, text, type) => {
+export const updateFriendMessageById = (id, text, type, media) => {
   realm.write(() => {
     realm.create(
       'chat_conversation_friend',
-      {id: id, message_body: text},
+      {id: id, message_body: text, media: media},
       'modified',
     );
   });

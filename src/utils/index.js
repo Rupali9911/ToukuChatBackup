@@ -13,6 +13,8 @@ const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 // based on iphone 5s's scale
 const scale = SCREEN_WIDTH / 320;
 
+export const videoEx = new RegExp(/\.(mp4|mov|wmv|avi|mkv|mpeg-2|webm|flv|flv4|swf)$/); 
+
 export function isPortrait() {
   const dim = Dimensions.get('screen');
   if (dim.height >= dim.width) {

@@ -88,7 +88,7 @@ export default class CommonNotes extends Component {
           </Text>
 
           {/* Uncomment below code until not available on production */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.addIconActionContainer}
             onPress={() => onAdd()}>
             <Image
@@ -96,7 +96,7 @@ export default class CommonNotes extends Component {
               resizeMode={'cover'}
               style={styles.addIcon}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View>
           {showTextBox && (
@@ -141,7 +141,7 @@ export default class CommonNotes extends Component {
           )}
           {data && data.results && data.results.length > 0 ? (
             <FlatList
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item, index) => `${item.id}`}
               data={data.results}
               nestedScrollEnabled={true}
               style={styles.notesList}
