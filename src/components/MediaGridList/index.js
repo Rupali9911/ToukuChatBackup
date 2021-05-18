@@ -18,7 +18,7 @@ import styles from './styles';
 const MediaGridList = (props) => {
     const { media } = props;
     const media_to_show = [...media];
-    media_to_show.length > 6 && media_to_show.splice(6);
+    media_to_show.length > 4 && media_to_show.splice(4);
     return (
         <View style={styles.container}>
             <GridList
@@ -50,9 +50,9 @@ const MediaGridList = (props) => {
                                         </View>
                                     </View>
                                 ) : null}
-                            {media.length > 6 && index == 5 &&
+                            {media.length > 4 && index == 3 &&
                                 <View style={styles.countCounter}>
-                                    <Text style={styles.count}>+{media.length - 6}</Text>
+                                    <Text style={styles.count}>+{media.length - 4}</Text>
                                 </View>
                             }
                         </>
@@ -62,4 +62,4 @@ const MediaGridList = (props) => {
     );
 }
 
-export default MediaGridList;
+export default React.memo(MediaGridList);

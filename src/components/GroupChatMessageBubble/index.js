@@ -212,6 +212,12 @@ class GroupChatMessageBubble extends Component {
     }
   };
 
+  navigateToNotes = () => {
+    NavigationService.navigate('GroupDetails', {
+      isNotes: true,
+    });
+  }
+
   renderReplyMessage = (message) => {
     let replyMessage = message.reply_to;
 
@@ -620,6 +626,7 @@ class GroupChatMessageBubble extends Component {
                           this.showMenu();
                         }}
                         onPress={() =>
+                          message.message_body.type === 'update' ? this.navigateToNotes() :
                           message.message_body.type === 'doc'
                             ? this.onDocumentPress(message.message_body.text)
                             : message.message_body.type === 'image'
@@ -688,11 +695,7 @@ class GroupChatMessageBubble extends Component {
                                       <View style={styles.divider} />
                                       <TouchableOpacity
                                         style={styles.notesContainer}
-                                        onPress={() => {
-                                          NavigationService.navigate('GroupDetails', {
-                                            isNotes: true,
-                                          });
-                                        }}>
+                                        onPress={this.navigateToNotes}>
                                         <Text style={styles.notesText}>
                                           {translate('pages.xchat.notes')}
                                         </Text>
@@ -867,6 +870,7 @@ class GroupChatMessageBubble extends Component {
                             this.showMenu();
                           }}
                           onPress={() =>
+                            message.message_body.type === 'update' ? this.navigateToNotes() :
                             message.message_body.type === 'doc'
                               ? this.onDocumentPress(message.message_body.text)
                               : message.message_body.type === 'image'
@@ -936,11 +940,7 @@ class GroupChatMessageBubble extends Component {
                                 <View style={styles.divider} />
                                 <TouchableOpacity
                                   style={styles.notesContainer}
-                                  onPress={() => {
-                                    NavigationService.navigate('GroupDetails', {
-                                      isNotes: true,
-                                    });
-                                  }}>
+                                  onPress={this.navigateToNotes}>
                                   <Text style={styles.notesText}>
                                     {translate('pages.xchat.notes')}
                                   </Text>

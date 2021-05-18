@@ -857,7 +857,7 @@ class ChatMessageBubble extends Component {
               customComponent={
                 <View style={styles.translateContainer}>
                   <FontAwesome5
-                    style={styles.singleFlex}
+                    // style={styles.singleFlex}
                     name={'reply'}
                     size={20}
                     color={Colors.white}
@@ -897,7 +897,7 @@ class ChatMessageBubble extends Component {
                     name={'pencil-alt'}
                     size={20}
                     color={Colors.white}
-                    style={styles.singleFlex}
+                    // style={styles.singleFlex}
                   />
                   <Text style={styles.iconLabel}>
                     {translate('common.edit')}
@@ -959,7 +959,7 @@ class ChatMessageBubble extends Component {
                     name={'minus-circle'}
                     size={20}
                     color={Colors.white}
-                    style={styles.singleFlex}
+                    // style={styles.singleFlex}
                   />
                   <Text style={styles.iconLabel}>
                     {translate('common.unsend')}
@@ -987,7 +987,7 @@ class ChatMessageBubble extends Component {
                     name={'copy'}
                     size={20}
                     color={Colors.white}
-                    style={styles.singleFlex}
+                    // style={styles.singleFlex}
                   />
                   <Text style={styles.iconLabel}>
                     {translate('common.copy')}
