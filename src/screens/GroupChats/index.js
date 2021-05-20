@@ -573,8 +573,9 @@ class GroupChats extends Component {
       updateGroupMessageById(editMessageId, {
         type: sentMessageType,
         text: msgText,
+        newMessageMentions
       });
-      this.sendEditMessage(msgText, editMessageId, sentMessageType);
+      this.sendEditMessage(msgText, editMessageId, sentMessageType, newMessageMentions);
       return;
     }
     if (isReply) {
@@ -656,10 +657,11 @@ class GroupChats extends Component {
     // });
   };
 
-  sendEditMessage = (newMessageText, editMessageId, sentMessageType) => {
+  sendEditMessage = (newMessageText, editMessageId, sentMessageType, newMessageMentions) => {
     // const {newMessageText, editMessageId,sentMessageType} = this.state;
     const data = {
       message_body: newMessageText,
+      mentions: [...newMessageMentions],
     };
     this.props.editGroupMessage(editMessageId, data).then((res) => {
       if (this.props.currentGroup.last_msg_id === editMessageId) {
@@ -751,9 +753,41 @@ class GroupChats extends Component {
       console.warn(err);
     }
   };
+
+  renderMessageWitMentions = (msg = '',message) => {
+    let splitNewMessageText = msg.split(' ');
+    let newMessageMentions = [];
+    const newMessageTextWithMention = splitNewMessageText
+      .map((text) => {
+        let mention = null;
+        let mentions = message.mentions;
+        mentions &&
+          mentions.forEach((groupMember) => {
+            // console.log('groupMember',groupMember);
+            if (text.includes(`~${groupMember.id}~`)) {
+              mention = `@${
+                getUserName(groupMember.id) ||
+                groupMember.desplay_name ||
+                groupMember.username
+                }`;
+              mention = text.replace(`~${groupMember.id}~`, mention);
+              newMessageMentions = [...newMessageMentions, groupMember.id];
+            }
+          });
+        if (mention) {
+          return mention;
+        } else {
+          return text;
+        }
+      })
+      .join(' ');
+
+    return newMessageTextWithMention;
+  };
+
   onEdit = (message) => {
     this.setState({
-      newMessageText: message.message_body.text,
+      newMessageText: this.renderMessageWitMentions(message.message_body.text,message),
       editMessageId: message.msg_id,
       isEdited: true,
     });

@@ -118,6 +118,7 @@ import {
   getGroupChatConversationById,
   getGroupsById,
   getLocalUserFriend,
+  getLocalUserFriendById,
   getUserFriend,
   handleRequestAccept,
   multipleData,
@@ -790,14 +791,14 @@ class Chat extends Component {
   }
 
   //Set Friend's online status with socket event
-  setFriendsOnlineStatus(message) {
+  async setFriendsOnlineStatus(message) {
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
-      let user = getLocalUserFriend(message.text.data.message_details.user_id);
+      let user = getLocalUserFriendById(message.text.data.message_details.user_id);
 
-      if (user && user.length > 0) {
+      if (user) {
         if (
           message.text.data.message_details.status === 'online' &&
-          !user[0].is_online
+          !user.is_online
         ) {
           updateFriendOnlineStatus(
             message.text.data.message_details.user_id,
@@ -819,7 +820,7 @@ class Chat extends Component {
           });
         } else if (
           message.text.data.message_details.status === 'offline' &&
-          user[0].is_online
+          user.is_online
         ) {
           updateFriendOnlineStatus(
             message.text.data.message_details.user_id,
@@ -1159,6 +1160,7 @@ class Chat extends Component {
         updateGroupMessageById(
           message.text.data.message_details.msg_id,
           message.text.data.message_details.message_body,
+          message.text.data.message_details.mentions
           );
         console.log('checking group', group);
         if (group[0].last_msg_id === message.text.data.message_details.msg_id) {
@@ -1180,6 +1182,7 @@ class Chat extends Component {
         updateGroupMessageById(
           message.text.data.message_details.msg_id,
           message.text.data.message_details.message_body,
+          message.text.data.message_details.mentions
         );
         this.getLocalGroupConversation();
       }

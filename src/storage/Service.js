@@ -435,11 +435,11 @@ export const getGroupChatConversationLengthById = (id) => {
     .filtered(`group_id == ${id}`);
 };
 
-export const updateGroupMessageById = (id, body) => {
+export const updateGroupMessageById = (id, body, mentions = []) => {
   realm.write(() => {
     realm.create(
       'chat_conversation_group',
-      {msg_id: id, message_body: body},
+      {msg_id: id, message_body: body, mentions},
       'modified',
     );
   });
@@ -1018,6 +1018,10 @@ export const getLocalUserFriend = (id) => {
     .sorted('timestamp', {ascending: true})
     .filtered(`user_id == ${id}`);
 };
+
+export const getLocalUserFriendById = (id) => {
+  return realm.objectForPrimaryKey('user_friends',id);
+}
 
 export const getUserFriend = (id) => {
   return realm
