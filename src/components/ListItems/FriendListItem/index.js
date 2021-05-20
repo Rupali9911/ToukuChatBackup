@@ -117,7 +117,7 @@ export default class FriendListItem extends PureComponent {
               <View style={styles.swipeRightButtonContainer}>
                 <SwipeButtonsContainer style={styles.swipeButtonContainer}>
                   <TouchableOpacity
-                    style={styles.swipeButtonActionContainer}
+                    style={styles.pinActionContainer}
                     disabled={isPinUnpinLoading}
                     onPress={() => {
                       this.setState({isPinUnpinLoading: true});
@@ -139,7 +139,7 @@ export default class FriendListItem extends PureComponent {
                 </SwipeButtonsContainer>
                 <SwipeButtonsContainer style={styles.swipeButtonContainer}>
                   <TouchableOpacity
-                    style={styles.swipeButtonActionContainer}
+                    style={styles.deleteActionContainer}
                     onPress={() => onDeleteChat(item.friend)}>
                     {isDeleteLoading ? (
                       <ActivityIndicator color={Colors.white} />

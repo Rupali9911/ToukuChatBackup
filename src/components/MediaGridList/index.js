@@ -8,6 +8,7 @@ import VideoPreview from '../VideoPreview';
 import { Colors } from '../../constants';
 import { normalize } from '../../utils';
 import styles from './styles';
+import { ImageLoader } from '../Loaders';
 
 
 /**
@@ -31,7 +32,7 @@ const MediaGridList = (props) => {
                     return (
                         <>
                             {item.media_type && item.media_type.includes('image') ? (
-                                <Image
+                                <ImageLoader
                                     source={{ uri: item.media_url }}
                                     style={styles.image}
                                     resizeMode={'cover'}
