@@ -573,7 +573,6 @@ class GroupChats extends Component {
       updateGroupMessageById(editMessageId, {
         type: sentMessageType,
         text: msgText,
-        newMessageMentions
       });
       this.sendEditMessage(msgText, editMessageId, sentMessageType, newMessageMentions);
       return;
@@ -659,10 +658,14 @@ class GroupChats extends Component {
 
   sendEditMessage = (newMessageText, editMessageId, sentMessageType, newMessageMentions) => {
     // const {newMessageText, editMessageId,sentMessageType} = this.state;
-    const data = {
+    let data = {
       message_body: newMessageText,
-      mentions: [...newMessageMentions],
     };
+
+    if(newMessageMentions.length>0){
+      data[`mentions`] = [...newMessageMentions];
+    }
+
     this.props.editGroupMessage(editMessageId, data).then((res) => {
       if (this.props.currentGroup.last_msg_id === editMessageId) {
         updateLastMsgGroupsWithoutCount(
