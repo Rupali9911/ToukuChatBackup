@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Dimensions, Image, View, ActivityIndicator} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import {normalize} from '../../utils';
 import styles from './styles';
 
 const WIDTH = Dimensions.get('window').width;
@@ -10,7 +11,7 @@ export default class ScalableImage extends Component {
     super(props);
     this.state = {
       ratio: 1,
-      loading: true
+      loading: true,
     };
   }
 
@@ -28,18 +29,27 @@ export default class ScalableImage extends Component {
 
   onLoadStart = () => {
     this.setState({loading: true});
-  }
+  };
 
   onLoadEnd = () => {
     this.setState({loading: false});
-  }
+  };
 
   render() {
-    const {src, borderRadius, isHyperlink} = this.props;
+    const {src, borderRadius, isHyperlink, isEmotion} = this.props;
     const {ratio} = this.state;
 
+    let width;
+    if (isHyperlink) {
+      width = WIDTH;
+    } else if (isEmotion) {
+      width = isEmotion.type === 'gif' ? normalize(68) : normalize(100);
+    } else {
+      width = '100%';
+    }
+
     const container = {
-      width: isHyperlink ? WIDTH : '100%',
+      width,
       aspectRatio: ratio || 1,
       borderRadius: borderRadius ? borderRadius : 0,
     };
@@ -55,8 +65,12 @@ export default class ScalableImage extends Component {
           resizeMode={FastImage.resizeMode.contain}
         />
         <View style={styles.loaderConatiner}>
-          <ActivityIndicator animating={this.state.loading} size={'small'} color={'#e26161'}/>
-        </View>  
+          <ActivityIndicator
+            animating={this.state.loading}
+            size={'small'}
+            color={'#e26161'}
+          />
+        </View>
       </>
       // <Image
       //   source={{

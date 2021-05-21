@@ -77,13 +77,17 @@ export const Icons = {
   icon_scan: require('../../assets/icons/scan_qr.png'),
   icon_qr: require('../../assets/icons/qr.png'),
   icon_searchQr: require('../../assets/icons/search_icon.png'),
-    icon_like_black: require('../../assets/icons/Like/heart_white.png'),
-    icon_like: require('../../assets/icons/Like/heart_red.png'),
+  icon_like_black: require('../../assets/icons/Like/heart_white.png'),
+  icon_like: require('../../assets/icons/Like/heart_red.png'),
   icon_comment_black: require('../../assets/icons/Comment/comment_new.png'),
   icon_notes: require('../../assets/icons/notes.png'),
   icon_camera_outline: require('../../assets/icons/camera_outline.png'),
   icon_edit_grad: require('../../assets/icons/edit.png'),
   icon_delete_grad: require('../../assets/icons/delete.png'),
+  icon_emoji: require('../../assets/icons/ic_smile.png'),
+  icon_gif: require('../../assets/icons/ic_gif.png'),
+  icon_sticker: require('../../assets/icons/ic_sticker.png'),
+  icon_frequently_used: require('../../assets/icons/ic_frequently_used.png'),
 };
 
 export const Images = {
@@ -110,7 +114,7 @@ export const Images = {
   crown_img: require('../../assets/images/crown.png'),
   banner_img: require('../../assets/images/banner_new.png'),
   amazon_gift_logo: require('../../assets/images/amazon_gift_logo.png'),
-  img_upgrade: require('../../assets/images/upgrade.png')
+  img_upgrade: require('../../assets/images/upgrade.png'),
 };
 
 export const Colors = {
@@ -217,35 +221,35 @@ export const languageArray = [
     language_name: 'en',
     icon: Icons.icon_flag_america,
     language_display: 'English',
-      isSelected:true
+    isSelected: true,
   },
   {
     language_id: 2,
     language_name: 'ko',
     icon: Icons.icon_flag_korea,
     language_display: '한국어',
-      isSelected:true
+    isSelected: true,
   },
   {
     language_id: 3,
     language_name: 'ja',
     icon: Icons.icon_flag_japan,
     language_display: '日本語',
-      isSelected:true
+    isSelected: true,
   },
   {
     language_id: 4,
     language_name: 'tw',
     icon: Icons.icon_flag_taiwan,
     language_display: '中文（繁体）',
-      isSelected:true
+    isSelected: true,
   },
   {
     language_id: 5,
     language_name: 'ch',
     icon: Icons.icon_flag_china,
     language_display: '中文（简体）',
-      isSelected:true
+    isSelected: true,
   },
 ];
 
@@ -253,7 +257,8 @@ export const Environment = 'https://www.touku.net/';
 export const EnvironmentStage = 'https://touku.angelium.net/';
 export const supportUrl = 'https://www.touku.net/#/support?frame=1';
 export const faqUrl = 'https://site.touku.net/';
-export const faqUrl1 = 'https://site.touku.net/how-to-invite-new-user-to-channel-touku/?lang=';
+export const faqUrl1 =
+  'https://site.touku.net/how-to-invite-new-user-to-channel-touku/?lang=';
 export const termsUrl = 'https://touku.net/#/terms?lang=';
 export const registerUrl = 'https://www.touku.net/#/register/';
 export const registerUrlStage = 'https://touku.angelium.net/#/register/';
@@ -377,7 +382,7 @@ export const SocketEvents = {
   //Timeline post
   LIKE_TIMELINE_POST: 'like timeline post',
   TIMELINE_POST_COMMENT_DATA: 'timeline post comments',
-  TIMELINE_POST_COMMENT_DELETE: 'delete timeline post comments'
+  TIMELINE_POST_COMMENT_DELETE: 'delete timeline post comments',
 };
 
 export const NotificationType = {
