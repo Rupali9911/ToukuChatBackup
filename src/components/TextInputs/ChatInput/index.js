@@ -1,6 +1,7 @@
 import React, {Component, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   Platform,
@@ -21,9 +22,11 @@ import {Colors, Icons} from '../../../constants';
 import {isIphoneX, normalize} from '../../../utils';
 import styles from './styles';
 import FastImage from 'react-native-fast-image';
+import stickerPacks from './data.json';
 
 import {addEmotionToFrequentlyUsed} from '../../../redux/reducers/chatReducer';
 import {connect} from 'react-redux';
+import {findIndex} from 'lodash';
 
 // const {height} = Dimensions.get('window');
 
@@ -36,7 +39,7 @@ class ChatInput extends Component {
       suggestionDataHeight: 0,
       mentionUser: [],
       input_focus: false,
-      isExtrasAreaVisible: false,
+      isExtrasAreaVisible: true,
       text: '',
       gifs: [],
       stickers: [],
@@ -358,7 +361,7 @@ class ChatInput extends Component {
                   })
                 }>
                 <Image
-                  source={Icons.icon_sticker}
+                  source={Icons.icon_sticker_pack}
                   style={{width: 20, height: 20, resizeMode: 'contain'}}
                   resizeMode={'contain'}
                 />
@@ -627,13 +630,13 @@ class ChatInput extends Component {
                 },
               ]}>
               <ScrollableTabView
-                initialPage={2}
+                initialPage={3}
                 tabBarPosition={'top'}
                 renderTabBar={({activeTab, goToPage}) => {
                   return (
                     <View
                       style={{
-                        width: Dimensions.get('screen').width / 3,
+                        width: Dimensions.get('screen').width / 4,
                         height: '15%',
                         flexDirection: 'row',
                       }}>
@@ -674,6 +677,12 @@ class ChatInput extends Component {
                         onPress={() => goToPage(2)}
                         activeTab={activeTab}
                         index={2}
+                      />
+                      <TabBarItem
+                        icon={Icons.icon_sticker_pack}
+                        onPress={() => goToPage(3)}
+                        activeTab={activeTab}
+                        index={3}
                       />
                     </View>
                   );
@@ -727,6 +736,9 @@ class ChatInput extends Component {
                     addEmotionToFrequentlyUsed={addEmotionToFrequentlyUsed}
                   />
                 </View>
+                <View tabLabel={'Stickers Pack'}>
+                  <StickerPackSection />
+                </View>
               </ScrollableTabView>
             </View>
           </View>
@@ -736,29 +748,117 @@ class ChatInput extends Component {
   }
 }
 
-function TabBarItem({icon, onPress, index, activeTab}) {
+function StickerPackSection() {
+  const [packs, setPacks] = useState(stickerPacks);
+  const [offset, setOffset] = useState(10);
+
+  async function fetchMoreStickers(item) {
+    try {
+      // Fetch more sticker pack
+      const res = await fetch(
+        `https://api.giphy.com/v1/stickers/packs/${item.id}/stickers?api_key=GdZTjlnqzAXmqxcpFo9Azs8QznTr5vmH&limit=25&offset=${offset}`,
+      );
+
+      // Update offset
+      const currentOffset = offset + 10;
+      setOffset(currentOffset);
+
+      // Resolve incoming data
+      const {data} = await res.json();
+      const images = [];
+      for (const element of data) {
+        images.push(element.images.preview_gif.url);
+      }
+
+      // Get current item
+      const list = item.data;
+      const model = {
+        ...item,
+        data: list.concat(images),
+      };
+      const index = findIndex(packs, {id: item.id});
+      packs.splice(index, 1, model);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={{
-        width: '100%',
-        paddingVertical: '4%',
-        paddingHorizontal: '3%',
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center',
-        borderBottomWidth: activeTab === index ? 1 : 0,
-        borderBottomColor: Colors.dark_pink,
-      }}>
-      <Image
-        source={icon}
-        style={{
-          width: 20,
-          height: 20,
-          resizeMode: 'contain',
-          tintColor: activeTab === index ? Colors.dark_pink : 'gray',
-        }}
+    <FlatList
+      data={packs}
+      keyExtractor={(item) => `pack_${item.id}`}
+      renderItem={({item}) => (
+        <StickerPackItemView
+          item={item}
+          fetchMoreStickers={() => fetchMoreStickers(item)}
+        />
+      )}
+    />
+  );
+}
+
+function StickerPackItemView({item, fetchMoreStickers}) {
+  return (
+    <View style={styles.stickerPackIttemViewContainer}>
+      <View style={styles.stickerPackHeaderContainer}>
+        <Text style={styles.stickerPackTitleText}>{item.title}</Text>
+        {/* <Text
+          onPress={() =>
+            Alert.alert('Download Feature', 'Add Download Feature')
+          }
+          style={styles.stickerPackDownloadText}>
+          Download
+        </Text> */}
+      </View>
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={item.data}
+        keyExtractor={(i) => `${i}`}
+        renderItem={StickerSubItemView}
+        ItemSeparatorComponent={() => (
+          <View style={styles.horizontalListDivider} />
+        )}
+        onScrollEndDrag={fetchMoreStickers}
       />
+    </View>
+  );
+}
+
+function StickerSubItemView({item}) {
+  return (
+    <FastImage
+      resizeMode={FastImage.resizeMode.contain}
+      style={{
+        width: 75,
+        height: 75,
+      }}
+      source={{
+        uri: item,
+        priority: FastImage.priority.high,
+      }}
+    />
+  );
+}
+
+function TabBarItem({icon, onPress, index, activeTab}) {
+  const container = [
+    {
+      borderBottomWidth: activeTab === index ? 1 : 0,
+    },
+    styles.tabBarItemContainer,
+  ];
+
+  const imageStyle = [
+    {
+      tintColor: activeTab === index ? Colors.dark_pink : 'gray',
+    },
+    styles.tabBarImage,
+  ];
+
+  return (
+    <TouchableOpacity onPress={onPress} style={container}>
+      <Image source={icon} style={imageStyle} />
     </TouchableOpacity>
   );
 }
@@ -772,33 +872,20 @@ function FrequentlyUsedList({emotions = [], numOfColumns, onPress}) {
       style={styles.emotionListStyle}
       contentContainerStyle={[
         styles.emotionListContentStyle,
-        emotions.length === 0 && {height: '100%'},
+        emotions.length === 0 && styles.frequentlyUsedListContentContainer,
       ]}
       keyExtractor={(item) => item.url}
       maxToRenderPerBatch={5}
       initialNumToRender={10}
       ItemSeparatorComponent={() => <View style={styles.divider} />}
       ListEmptyComponent={
-        <View
-          style={{
-            width: '100%',
-            height: '100%',
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-          }}>
+        <View style={styles.frequentlyUsedEmptyContainer}>
           <Image
             source={Icons.icon_frequently_used}
-            style={{width: 64, height: 64, tintColor: Colors.gray}}
+            style={styles.frequentlyUsedIcon}
           />
-          <View style={{marginVertical: 6}} />
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: '500',
-              color: Colors.gray_dark,
-              textAlign: 'center',
-            }}>
+          <View style={styles.emptyDivider} />
+          <Text style={styles.frequentlyUsedEmptyText}>
             Select a GIF or a Sticker{'\n'}to use it instantly
           </Text>
         </View>
@@ -855,17 +942,19 @@ function EmotionList({
 }) {
   const [focused, setFocused] = useState(false);
 
+  const textInputStyle = [
+    styles.emotionInputContainer,
+    {
+      fontWeight: focused ? 'normal' : 'bold',
+    },
+  ];
+
   return (
     <>
       <TextInput
         placeholder={searchTitle}
         placeholderTextColor={'gray'}
-        style={[
-          styles.emotionInputContainer,
-          {
-            fontWeight: focused ? 'normal' : 'bold',
-          },
-        ]}
+        style={textInputStyle}
         autoCorrect={false}
         textAlign={focused ? 'left' : 'center'}
         onChangeText={onChangeText}

@@ -13,7 +13,8 @@
       "https://media3.giphy.com/media/7ELa4AJSFpWqrR4wit/giphy-preview.gif?cid=9041a35e3596ed48d467eb2b36254ab8664f12e36d9e31e2&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4788704,
-    "title": "Accessories"
+    "title": "Accessories",
+    "count": 10
   },
   {
     "data": [
@@ -29,7 +30,8 @@
       "https://media3.giphy.com/media/g0yktd62IpPlUIQMQc/giphy-preview.gif?cid=9041a35e0952ed028c1ec754969be4ad0ed9fedaf7e556b2&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4788376,
-    "title": "Effects"
+    "title": "Effects",
+    "count": 10
   },
   {
     "data": [
@@ -45,7 +47,8 @@
       "https://media0.giphy.com/media/l4pSTSLZK4Q9YaPZu/giphy-preview.gif?cid=9041a35e17571c5f09937373aa03adf69ab9cd21c467e651&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4788749,
-    "title": "Masks"
+    "title": "Masks",
+    "count": 10
   },
   {
     "data": [
@@ -61,7 +64,8 @@
       "https://media0.giphy.com/media/xUOwGmJwuswFt0bqX6/giphy-preview.gif?cid=9041a35e27d5f19b2e7c23384b5607cba565d53bcd6fb03b&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4797332,
-    "title": "Word Art"
+    "title": "Word Art",
+    "count": 10
   },
   {
     "data": [
@@ -77,7 +81,8 @@
       "https://media1.giphy.com/media/26xBFnjLoOTYChEKA/giphy-preview.gif?cid=9041a35e25be0492da3926cdc82eb22364bd40e9ebbdc204&rid=giphy-preview.gif&ct=s"
     ],
     "id": 3148,
-    "title": "Giphabet"
+    "title": "Giphabet",
+    "count": 10
   },
   {
     "data": [
@@ -93,7 +98,8 @@
       "https://media0.giphy.com/media/xUn3C3gRNjlEraLdv2/giphy-preview.gif?cid=9041a35e3f4b00a340422890dae349f9bb4f23f58cd24a79&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4797845,
-    "title": "Speech Bubbles"
+    "title": "Speech Bubbles",
+    "count": 10
   },
   {
     "data": [
@@ -109,7 +115,8 @@
       "https://media4.giphy.com/media/l378ByM8eU9wvwjDi/giphy-preview.gif?cid=9041a35e9572cb27e01b3ae55a36986191efdc2f45390f01&rid=giphy-preview.gif&ct=s"
     ],
     "id": 3410,
-    "title": "Party"
+    "title": "Party",
+    "count": 10
   },
   {
     "data": [
@@ -125,7 +132,8 @@
       "https://media0.giphy.com/media/xT9IgrpsPQ6MONfO3C/giphy-preview.gif?cid=9041a35e9462a610bad9b60950b848b9dd3168d5f1e69bbe&rid=giphy-preview.gif&ct=s"
     ],
     "id": 3141,
-    "title": "Weather"
+    "title": "Weather",
+    "count": 10
   },
   {
     "data": [
@@ -141,7 +149,8 @@
       "https://media0.giphy.com/media/3ohhwEbQxOzdjDrD1K/giphy-preview.gif?cid=9041a35e6214283ecbc91d39cf421352e1234ad658dee05d&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4789624,
-    "title": "Objects"
+    "title": "Objects",
+    "count": 10
   },
   {
     "data": [
@@ -157,6 +166,7 @@
       "https://media1.giphy.com/media/3ohhwuYSinXdV6yY0w/giphy-preview.gif?cid=9041a35e8645b3110510eca9e32aff57b8dbbbd0f13e4a4d&rid=giphy-preview.gif&ct=s"
     ],
     "id": 4797121,
-    "title": "Sports"
+    "title": "Sports",
+    "count": 10
   }
 ]

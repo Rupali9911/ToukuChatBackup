@@ -88,6 +88,7 @@ export const Icons = {
   icon_gif: require('../../assets/icons/ic_gif.png'),
   icon_sticker: require('../../assets/icons/ic_sticker.png'),
   icon_frequently_used: require('../../assets/icons/ic_frequently_used.png'),
+  icon_sticker_pack: require('../../assets/icons/ic_sticker_pack.png'),
 };
 
 export const Images = {
