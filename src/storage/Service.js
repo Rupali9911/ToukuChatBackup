@@ -421,19 +421,35 @@ export const getGroupChatConversation = () => {
   return realm.objects('chat_conversation_group');
 };
 
-export const getGroupChatConversationById = (id,offset) => {
+export const getGroupChatConversationById = (id,offset,msg_id) => {
   return realm
     .objects('chat_conversation_group')
     .sorted('timestamp', {ascending: true})
-    .filtered(`group_id == ${id} && msg_id < ${22753}`).slice(0,offset);
+    .filtered(`group_id == ${id} ${msg_id?`&& msg_id <= ${msg_id}`:''}`).slice(0,offset);
 };
 
-export const getGroupChatConversationNextFromId = (id, msg_id) => {
+export const getGroupChatConversationNextFromId = (id, msg_id, isInclusive) => {
   return realm
     .objects('chat_conversation_group')
-    .sorted('timestamp', {ascending: true})
-    .filtered(`group_id == ${id} && msg_id > ${msg_id}`);
+    .sorted('timestamp', true)
+    .filtered(`group_id == ${id} && msg_id ${isInclusive?'>=':'>'} ${msg_id}`);
 };
+
+export const getGroupChatConversationPrevFromId = (id, msg_id) => {
+  return realm
+    .objects('chat_conversation_group')
+    .sorted('timestamp', true)
+    .filtered(`group_id == ${id} && msg_id < ${msg_id}`);
+};
+
+export const getGroupChatConversationByMsgId = (id, msg_id) => {
+  console.log(`group_id == ${id} && msg_id == ${msg_id}`);
+  return realm.objectForPrimaryKey('chat_conversation_group',msg_id);    
+}
+
+export const getGroupChatConversationLatestMsgId = (id) => {
+  return realm.objects('chat_conversation_group').filtered(`group_id == ${id}`).max('msg_id');    
+}
 
 export const getGroupChatConversationLengthById = (id) => {
   return realm
@@ -881,7 +897,32 @@ export const updateLastMsgGroups = (id, message, unreadCount) => {
         mentions: message.mentions.length ? message.mentions : [],
         no_msgs: false,
         unread_msg: unreadCount,
+        timestamp: message.timestamp
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateLastMsgGroupsWithMention = (id, message, unreadCount, mention_msg_id,unread_msg_id,is_mentioned) => {
+  let last_msg = {
+    type: message.message_body.type,
+    text: message.message_body.text,
+  };
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        last_msg: last_msg,
+        last_msg_id: message.msg_id,
+        mentions: message.mentions.length ? message.mentions : [],
+        no_msgs: false,
+        unread_msg: unreadCount,
         timestamp: message.timestamp,
+        mention_msg_id,
+        unread_msg_id,
+        is_mentioned
       },
       'modified',
     );
@@ -937,6 +978,9 @@ export const updateUnReadCount = (id, unreadCount) => {
       {
         group_id: id,
         unread_msg: unreadCount,
+        is_mentioned: false,
+        mention_msg_id: null,
+        unread_msg_id: null,
       },
       'modified',
     );

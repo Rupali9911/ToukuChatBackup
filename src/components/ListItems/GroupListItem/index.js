@@ -102,6 +102,7 @@ export default class GroupListItem extends PureComponent {
       swipeable,
       onDeleteChat,
       onPinUnpinChat,
+      onMentionPress
     } = this.props;
 
     const {
@@ -292,13 +293,16 @@ export default class GroupListItem extends PureComponent {
                         </Badge>
                       )}
                       {item.is_mentioned && (
-                        <Badge
-                          style={[
-                            globalStyles.smallLightText,
-                            styles.badgeStyle,
-                          ]}>
-                          {'@'}
-                        </Badge>
+                        <TouchableOpacity onPress={onMentionPress}>
+                          <Badge
+                            style={[
+                              globalStyles.smallLightText,
+                              styles.badgeStyle,
+                            ]}
+                          >
+                            {'@'}
+                          </Badge>
+                        </TouchableOpacity>
                       )}
                     </View>
                   </View>

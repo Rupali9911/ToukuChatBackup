@@ -292,9 +292,10 @@ export default class ChatInput extends Component {
                   onTextChange={(message) => {
                     if (!message.includes('@')) {
                       this.setState({suggestionData: []});
+                    }else{
+                      this.groupMembersMentions(message);
                     }
                     onChangeText(message);
-                    this.groupMembersMentions(message);
                   }}
                   onMarkdownChange={(markdown) => {}}
                   placeholder={placeholder}

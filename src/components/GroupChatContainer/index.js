@@ -9,27 +9,33 @@ import {
   View,
 } from 'react-native';
 import {
-  KeyboardAwareFlatList,
   KeyboardAwareScrollView,
 } from 'react-native-keyboard-aware-scroll-view';
+import { FlatList } from 'react-native-bidirectional-infinite-scroll';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { FAB } from 'react-native-paper';
 import {connect} from 'react-redux';
 import Menu from '../../components/Menu/Menu';
 import MenuItem from '../../components/Menu/MenuItem';
-import {Colors, Fonts, Icons, Images} from '../../constants';
+import {Colors, Fonts, Icons, Images, SocketEvents} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
-import {getUserName, getUser_ActionFromUpdateText} from '../../utils';
+import {getUserName, getUser_ActionFromUpdateText, eventService} from '../../utils';
 import Button from '../Button';
 import CheckBox from '../CheckBox';
 import GroupChatMessageBox from '../GroupChatMessageBox';
-import {ListLoader} from '../Loaders';
 import NoData from '../NoData';
 import RoundedImage from '../RoundedImage';
 import ChatInput from '../TextInputs/ChatInput';
 import Toast from '../Toast';
 import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
 import styles from './styles';
+import {
+  setActiveTimelineTab,
+  setSpecificPostId,
+} from '../../redux/reducers/timelineReducer';
+import { addFriendByReferralCode } from '../../redux/reducers/friendReducer';
+import { markGroupConversationRead } from '../../redux/reducers/groupReducer';
 
 const {height} = Dimensions.get('window');
 
@@ -40,13 +46,55 @@ class GroupChatContainer extends Component {
       audioPlayingId: null,
       previousPlayingAudioId: null,
       closeMenu: false,
+      isActionButtonVisible: false,
+      unreadMessage: [],
+      unreadMessageCount: 0
     };
+    this._listViewOffset = 0;
   }
 
   componentDidMount(){
-    // setTimeout(()=>{
-    //   this.scrollView && this.scrollView.scrollToOffset({offset: 130, animated: false});
-    // },50);
+    this.events = eventService.getMessage().subscribe((message) => {
+      this.checkEventTypes(message);
+    });
+  }
+
+  checkEventTypes = (message) => {
+    switch (message.text.data.type) {
+      case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
+        
+        break;
+      case SocketEvents.NEW_MESSAGE_IN_GROUP:
+        this.onNewMessageInGroup(message);
+        break;
+    }
+  }
+
+  onNewMessageInGroup = (message) => {
+    if(message.text.data.message_details.group_id == this.props.currentGroup.group_id){
+      
+      if(this._listViewOffset <= 400){
+        setTimeout(()=>{
+          this.scrollListToRecent();
+        },1000);
+      }else{
+        let array = this.state.unreadMessage;
+        let set = new Set(array);
+        set.add(message.text.data.message_details.msg_id);
+        
+        let item = message.text.data.message_details.unread_msg.filter(
+          (msg) => {
+            return msg.user__id === this.props.userData.id;
+          },
+        );
+        console.log('items',[...set]);
+        this.setState({
+          unreadMessage: [...set],
+          unreadMessageCount: item.length > 0 ? item[0].unread_count : 0
+        });
+      }
+
+    }
   }
 
   getDate = (date) => {
@@ -92,63 +140,217 @@ class GroupChatContainer extends Component {
     );
   }
 
-  renderMessage = (messages) => {
-    const {memberCount, groupMembers} = this.props;
-    if (!messages || !messages.length) {
-      return (
-        <NoData
-          title={translate('pages.xchat.startANewConversationHere')}
-          source={Images.image_conversation}
-          imageColor={Colors.primary}
-          imageAvailable
-        />
-      );
-    }
+  markGroupConversationRead() {
+    let data = {group_id: this.props.currentGroup.group_id};
+    this.props.markGroupConversationRead(data);
+  }
 
+  scrollListToRecent = () => {
+    this.scrollView && this.scrollView.scrollToOffset({offset: 10, animated: true});
+  }
+
+  scrollListToEnd = () => {
+    this.scrollView && this.scrollView.scrollToIndex({index: 0, animated: false});
+  }
+
+  renderMessage = ({item,index}) => {
+    const {
+      messages,
+      memberCount,
+      groupMembers,
+      isMultiSelect,
+      onSelect,
+      selectedIds 
+    } = this.props;
+    
     const conversationLength = messages.length;
-    const msg = messages.map((item, index) => {
-      return (
-        <Fragment key={index}>
-          {this.testMethod(messages, index, item, conversationLength)}
-          <GroupChatMessageBox
-            key={item.msg_id}
-            message={item}
-            isUser={item.sender_id === this.props.userData.id}
-            time={new Date(item.timestamp)}
-            isRead={!!(item.read_count && item.read_count > 0)}
-            memberCount={memberCount}
-            onMessageReply={(id) => this.props.onMessageReply(id)}
-            orientation={this.props.orientation}
-            onMessageTranslate={(translatedMsg) =>
-              this.props.onMessageTranslate(translatedMsg)
-            }
-            onMessageTranslateClose={this.props.onMessageTranslateClose}
-            translatedMessage={this.props.translatedMessage}
-            translatedMessageId={this.props.translatedMessageId}
-            onDelete={(id) => this.props.onDelete(id)}
-            onUnSend={(id) => this.props.onUnSendMsg(id)}
-            onEditMessage={(editedMsg) => this.props.onEditMessage(editedMsg)}
-            onDownloadMessage={(downloadedMsg) => {
-              this.props.onDownloadMessage(downloadedMsg);
-            }}
-            audioPlayingId={this.state.audioPlayingId}
-            previousPlayingAudioId={this.state.previousPlayingAudioId}
-            closeMenu={this.state.closeMenu}
-            onAudioPlayPress={(id) => {
-              this.setState({
-                audioPlayingId: id,
-                previousPlayingAudioId: this.state.audioPlayingId,
-              });
-            }}
-            groupMembers={groupMembers}
-            showOpenLoader={this.props.showOpenLoader}
-          />
-        </Fragment>
-      );
-    });
+    let isSelected = selectedIds.includes(item.msg_id + '');
+    
+    const messageBodyContainer = [
+      {marginLeft: isMultiSelect ? -35 : 0},
+      styles.messageBodyContainer,
+    ];
 
-    return <Fragment>{msg.reverse()}</Fragment>;
+    return (
+      <Fragment key={`${item.msg_id}`}>
+        <View style={styles.itemContainer}>
+          {isMultiSelect && !item.is_unsent && (
+            <CheckBox
+              isChecked={isSelected}
+              onCheck={() => onSelect(item.msg_id)}
+            />
+          )}
+          {item.message_body &&
+            item.message_body.type &&
+            item.message_body.type === 'update' &&
+            !item.message_body.text.includes('add a memo') ? (
+              <TouchableOpacity
+                style={messageBodyContainer}
+                onPress={() => {
+                  isMultiSelect &&
+                    !item.is_unsent &&
+                    onSelect(item.msg_id);
+                }}>
+                <Menu
+                  ref={(ref) => {
+                    this[`_menu_${item.msg_id}`] = ref;
+                  }}
+                  style={styles.menuStyle}
+                  tabHeight={110}
+                  headerHeight={80}
+                  button={
+                    <TouchableOpacity
+                      disabled={isMultiSelect}
+                      onLongPress={() => {
+                        this.showMenu(item.msg_id);
+                      }}
+                      style={styles.menuButtonActionStyle}>
+                      <View style={styles.menuButtonActionContainer}>
+                        <Text style={styles.messageDateText}>
+                          {this.renderGroupUpdate(item)}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  }>
+                  <MenuItem
+                    onPress={() => {
+                      this.props.onDelete(item.msg_id);
+                      this.hideMenu(item.msg_id);
+                    }}
+                    customComponent={
+                      <View
+                        style={
+                          styles.menuItemCustomComponentContainer
+                        }>
+                        <FontAwesome5
+                          name={'trash'}
+                          size={20}
+                          color={Colors.white}
+                        />
+                        <Text style={styles.deleteLabel}>
+                          {translate('common.delete')}
+                        </Text>
+                      </View>
+                    }
+                  />
+                </Menu>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.singleFlex}
+                disabled={!isMultiSelect}
+                onPress={() => {
+                  isMultiSelect &&
+                    !item.is_unsent &&
+                    onSelect(item.msg_id);
+                }}>
+                <GroupChatMessageBox
+                  ref={(view) => {
+                    this[`message_box_${item.msg_id}`] = view;
+                  }}
+                  key={item.msg_id}
+                  message={item}
+                  isUser={item.sender_id === this.props.userData.id}
+                  time={new Date(item.created)}
+                  isRead={!!(item.read_count && item.read_count > 0)}
+                  memberCount={memberCount}
+                  onMessageReply={this.props.onMessageReply}
+                  orientation={this.props.orientation}
+                  onMessageTranslate={(msg) =>
+                    this.props.onMessageTranslate(msg,index)
+                  }
+                  onMessageTranslateClose={(msg) => this.props.onMessageTranslateClose(msg,index)}
+                  translatedMessage={this.props.translatedMessage}
+                  translatedMessageId={this.props.translatedMessageId}
+                  onDelete={(id) => this.props.onDelete(id)}
+                  onUnSend={(id) => this.props.onUnSendMsg(id)}
+                  onEditMessage={(msg) =>
+                    this.props.onEditMessage(msg)
+                  }
+                  onDownloadMessage={(msg) => {
+                    this.props.onDownloadMessage(msg);
+                  }}
+                  audioPlayingId={this.state.audioPlayingId}
+                  previousPlayingAudioId={
+                    this.state.previousPlayingAudioId
+                  }
+                  closeMenu={this.state.closeMenu}
+                  onAudioPlayPress={(id) => {
+                    this.setState({
+                      audioPlayingId: id,
+                      previousPlayingAudioId: this.state
+                        .audioPlayingId,
+                    });
+                  }}
+                  onReplyPress={(id) => {
+                    // this.scrollView.scrollToIndex({
+                    //   animated: true,
+                    //   index: this.searchItemIndex(
+                    //     messages,
+                    //     item.msg_id,
+                    //     index,
+                    //   )+10,
+                    // });
+                    let reply_index = this.searchItemIndex(messages,id,index)
+                    console.log('reply_index',reply_index,index);
+                    if(reply_index!==index){
+                      this.scrollView.scrollToIndex({
+                          animated: true,
+                          index: reply_index,
+                        });
+                        this[`message_box_${id}`] &&
+                          this[`message_box_${id}`].callBlinking(id);
+                    }else{
+                      this.props.onReplyPress(id,(conversations)=>{
+                        this.scrollView && this.scrollView.scrollToOffset({offset: 20, animated: false});
+                        setTimeout(()=>{
+                          // this.scrollView && this.scrollView.scrollToOffset({offset: 20, animated: true});
+                          let new_index = this.searchItemIndex(
+                            conversations,
+                            id,
+                            index,
+                          );
+                          this[`message_box_${id}`] &&
+                          this[`message_box_${id}`].callBlinking(id);
+                          this.scrollView && this.scrollView.scrollToIndex({
+                            animated: true,
+                            index: new_index,
+                          });
+                        },500);
+                      })
+                    }
+                  }}
+                  groupMembers={groupMembers}
+                  showOpenLoader={this.props.showOpenLoader}
+                  isMultiSelect={isMultiSelect}
+                  onMediaPlay={this.props.onMediaPlay}
+                  addFriendByReferralCode={this.props.addFriendByReferralCode}
+                  setActiveTimelineTab={this.props.setActiveTimelineTab}
+                  setSpecificPostId={this.props.setSpecificPostId}
+                  userData={this.props.userData}
+                />
+              </TouchableOpacity>
+            )}
+        </View>
+        {this.testMethod(messages, index, item, conversationLength)}
+      </Fragment>
+    );
   };
+
+  keyExtractor = (item, index) => {
+    return `${item.msg_id}`;
+  }
+
+  listEmptyComponent = () => {
+    return <NoData
+      title={translate('pages.xchat.startANewConversationHere')}
+      source={Images.image_conversation}
+      imageColor={Colors.primary}
+      imageAvailable
+      style={{ transform: [{ rotate: '180deg' }] }}
+      textStyle={{ transform: [{ rotateY: '180deg' }] }}
+    />
+  }
 
   renderGroupUpdate = (message) => {
     let update_text = '';
@@ -234,6 +436,63 @@ class GroupChatContainer extends Component {
     this.setState({visible: true});
   };
 
+  _onScroll = (event) => {
+    // Check if the user is scrolling up or down by confronting the new scroll position with your own one
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    // If the user is scrolling down (and the action-button is still visible) hide it
+    // const isActionButtonVisible = direction === 'up'
+    const isActionButtonVisible = currentOffset > 50;
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible })
+    }
+    // Update your scroll position
+    console.log('scroll position',this._listViewOffset);
+    this._listViewOffset = currentOffset
+  }
+  
+  onViewableItemsChanged = ({ viewableItems, changed }) => {
+    // console.log("Visible items are", viewableItems);
+    // console.log("Changed in this iteration", changed);
+    let array = this.state.unreadMessage;
+
+    if(
+      viewableItems.length > 0 &&
+      array.includes(viewableItems[0].item.msg_id)
+    ) {
+      let searchIndex = array.findIndex((_) => _ == viewableItems[0].item.msg_id);
+        if(searchIndex >= 0){
+          array.splice(searchIndex,1);
+          this.setState({unreadMessage: array});
+        }
+    }
+    
+    // console.log('viewableItems[0].index',viewableItems[0].index);
+    // console.log('viewableItems[0].item.msg_id',viewableItems[0].item.msg_id,this.props.currentGroup.last_msg_id);
+    // console.log('this.props.currentGroup.unread_msg',this.props.currentGroup.unread_msg);
+    if (
+      viewableItems.length > 0 &&
+      viewableItems[0].index == 0 &&
+      viewableItems[0].item.msg_id >= this.props.currentGroup.last_msg_id &&
+      this.props.currentGroup.unread_msg > 0
+    ) {
+      this.markGroupConversationRead();
+    }
+
+    // viewableItems.map((item,index)=>{
+    //     let searchIndex = array.findIndex((_) => _ == item.item.msg_id);
+    //     if(searchIndex >= 0){
+    //       array.splice(searchIndex,1);
+    //       this.setState({unreadMessage: array});
+    //     }
+    //     if (this.props.currentGroup.unread_msg>0 && item.item.msg_id == this.props.currentGroup.last_msg_id){
+          
+    //     }
+    // });
+  }
+
   render() {
     const {
       orientation,
@@ -248,24 +507,19 @@ class GroupChatContainer extends Component {
       onGalleryPress,
       onAttachmentPress,
       sendingImage,
-      memberCount,
       groupMembers,
       isMultiSelect,
-      onSelect,
       selectedIds,
       onSelectedCancel,
       onSelectedDelete,
       isChatDisable,
       groupLoading,
       onLoadMore,
-      isLoadMore,
+      onLoadPrevious
     } = this.props;
+    const {isActionButtonVisible,unreadMessage,unreadMessageCount} = this.state;
     // console.log('isChatDisable', isChatDisable);
 
-    const messageBodyContainer = [
-      {marginLeft: isMultiSelect ? -35 : 0},
-      styles.messageBodyContainer,
-    ];
 
     const replyContainer = [
       {
@@ -289,6 +543,7 @@ class GroupChatContainer extends Component {
         onKeyboardWillShow={() => {
           this.keyboardAwareScrollView.scrollToEnd({animated: false});
         }}
+        maintainVisibleContentPosition={{minIndexForVisible: 5}}
         keyboardOpeningTime={1500}
         scrollEnabled={false}
         extraHeight={200}>
@@ -307,212 +562,39 @@ class GroupChatContainer extends Component {
             },
           ]}>
           <Fragment>
-            <KeyboardAwareFlatList
-              enableResetScrollToCoords={false}
+            <FlatList
+              // enableResetScrollToCoords={false}
               contentContainerStyle={[
                 styles.messageAreaScroll,
                 isReply && styles.replyPadding,
               ]}
-              innerRef={(view) => {
+              ref={(view) => {
                 this.scrollView = view;
               }}
-              onContentSizeChange={(w,h) => {
-
-                if (this.props.translatedMessageId) {
-
-                } else {
-                  // messages.length>0 && this.scrollView.scrollToIndex({index:0, animated: false });
-                }
-              }}
-              // getItemLayout={(data, index) => (
-              //   {length: 250, offset: 250 * index, index}
-              // )}
-              // initialScrollIndex={4}
-              contentOffset = {{x: 0, y: 0}}
-              onScrollBeginDrag={() => {
-                this.closeMenu();
-              }}
-              onScrollEndDrag={() => {
-                this.closeMenuFalse();
-              }}
-              onScroll={({nativeEvent})=>{
-                console.log('event',nativeEvent);
-                this.setState({contentHeight: nativeEvent.contentSize.height});
-                if(nativeEvent.contentOffset.y < 0 ){
-                  onLoadMore && onLoadMore(messages[0]);
-                }
-              }}
-              extraData={this.state}
+              onScrollBeginDrag={this.closeMenu}
+              onScrollEndDrag={this.closeMenuFalse}
+              // extraData={this.state}
               data={messages}
               inverted={true}
-              onEndReached={() => {
-                console.log('onEndReached', groupLoading);
-                if (
-                  messages.length > 0 &&
-                  messages.length % 20 === 0 &&
-                  isLoadMore &&
-                  !groupLoading
-                ) {
-                  console.log('load more');
-                  onLoadMore && onLoadMore(messages[messages.length - 1]);
-                }
+              // contentOffset={{x: 0, y: 20}}
+              onScroll={this._onScroll}
+              onStartReached={onLoadMore}
+              onEndReached={onLoadPrevious.bind(null,this._listViewOffset)}
+              onEndReachedThreshold={100}
+              // showDefaultLoadingIndicators={true}
+              // ListFooterComponent={() =>
+              //   isLoadMore ? <ListLoader /> : null
+              // }
+              onViewableItemsChanged={this.onViewableItemsChanged}
+              viewabilityConfig={{
+                itemVisiblePercentThreshold: 50
               }}
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={() =>
-                messages.length % 20 === 0 && isLoadMore ? <ListLoader /> : null
-              }
-              renderItem={({item, index}) => {
-                const conversationLength = messages.length;
-                let isSelected = selectedIds.includes(item.msg_id + '');
-                return (
-                  <Fragment key={`${index}`}>
-                    <View style={styles.itemContainer}>
-                      {isMultiSelect && !item.is_unsent && (
-                        <CheckBox
-                          isChecked={isSelected}
-                          onCheck={() => onSelect(item.msg_id)}
-                        />
-                      )}
-                      {item.message_body &&
-                      item.message_body.type &&
-                      item.message_body.type === 'update' &&
-                      !item.message_body.text.includes('add a memo') ? (
-                        <TouchableOpacity
-                          style={messageBodyContainer}
-                          onPress={() => {
-                            isMultiSelect &&
-                              !item.is_unsent &&
-                              onSelect(item.msg_id);
-                          }}>
-                          <Menu
-                            ref={(ref) => {
-                              this[`_menu_${item.msg_id}`] = ref;
-                            }}
-                            style={styles.menuStyle}
-                            tabHeight={110}
-                            headerHeight={80}
-                            button={
-                              <TouchableOpacity
-                                disabled={isMultiSelect}
-                                onLongPress={() => {
-                                  this.showMenu(item.msg_id);
-                                }}
-                                style={styles.menuButtonActionStyle}>
-                                <View style={styles.menuButtonActionContainer}>
-                                  <Text style={styles.messageDateText}>
-                                    {this.renderGroupUpdate(item)}
-                                  </Text>
-                                </View>
-                              </TouchableOpacity>
-                            }>
-                            <MenuItem
-                              onPress={() => {
-                                this.props.onDelete(item.msg_id);
-                                this.hideMenu(item.msg_id);
-                              }}
-                              customComponent={
-                                <View
-                                  style={
-                                    styles.menuItemCustomComponentContainer
-                                  }>
-                                  <FontAwesome5
-                                    name={'trash'}
-                                    size={20}
-                                    color={Colors.white}
-                                  />
-                                  <Text style={styles.deleteLabel}>
-                                    {translate('common.delete')}
-                                  </Text>
-                                </View>
-                              }
-                            />
-                          </Menu>
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          style={styles.singleFlex}
-                          disabled={!isMultiSelect}
-                          onPress={() => {
-                            isMultiSelect &&
-                              !item.is_unsent &&
-                              onSelect(item.msg_id);
-                          }}>
-                          <GroupChatMessageBox
-                            ref={(view) => {
-                              this[`message_box_${item.msg_id}`] = view;
-                            }}
-                            key={item.msg_id}
-                            message={item}
-                            isUser={item.sender_id === this.props.userData.id}
-                            time={new Date(item.created)}
-                            isRead={!!(item.read_count && item.read_count > 0)}
-                            memberCount={memberCount}
-                            onMessageReply={(id) =>
-                              this.props.onMessageReply(id)
-                            }
-                            orientation={this.props.orientation}
-                            onMessageTranslate={(msg) =>
-                              this.props.onMessageTranslate(msg)
-                            }
-                            onMessageTranslateClose={
-                              this.props.onMessageTranslateClose
-                            }
-                            translatedMessage={this.props.translatedMessage}
-                            translatedMessageId={this.props.translatedMessageId}
-                            onDelete={(id) => this.props.onDelete(id)}
-                            onUnSend={(id) => this.props.onUnSendMsg(id)}
-                            onEditMessage={(msg) =>
-                              this.props.onEditMessage(msg)
-                            }
-                            onDownloadMessage={(msg) => {
-                              this.props.onDownloadMessage(msg);
-                            }}
-                            audioPlayingId={this.state.audioPlayingId}
-                            previousPlayingAudioId={
-                              this.state.previousPlayingAudioId
-                            }
-                            closeMenu={this.state.closeMenu}
-                            onAudioPlayPress={(id) => {
-                              this.setState({
-                                audioPlayingId: id,
-                                previousPlayingAudioId: this.state
-                                  .audioPlayingId,
-                              });
-                            }}
-                            onReplyPress={(id) => {
-                              this.scrollView.scrollToIndex({
-                                animated: true,
-                                index: this.searchItemIndex(
-                                  messages,
-                                  id,
-                                  index,
-                                ),
-                              });
-                              this[`message_box_${id}`] &&
-                                this[`message_box_${id}`].callBlinking(id);
-                            }}
-                            groupMembers={groupMembers}
-                            showOpenLoader={this.props.showOpenLoader}
-                            isMultiSelect={isMultiSelect}
-                            onMediaPlay={this.props.onMediaPlay}
-                          />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                    {this.testMethod(messages, index, item, conversationLength)}
-                  </Fragment>
-                );
-              }}
-              ListEmptyComponent={() => (
-                <NoData
-                  title={translate('pages.xchat.startANewConversationHere')}
-                  source={Images.image_conversation}
-                  imageColor={Colors.primary}
-                  imageAvailable
-                  style={{transform: [{rotate: '180deg'}]}}
-                  textStyle={{transform: [{rotateY: '180deg'}]}}
-                />
-              )}
+              initialNumToRender={15}
+              maxToRenderPerBatch={15}
+              updateCellsBatchingPeriod={60}
+              keyExtractor={this.keyExtractor}
+              renderItem={this.renderMessage}
+              ListEmptyComponent={this.listEmptyComponent}
             />
           </Fragment>
           {/* <ScrollView
@@ -539,6 +621,20 @@ class GroupChatContainer extends Component {
               {this.renderMessage(messages)}
             </View>
           </ScrollView> */}
+
+          <FAB
+            style={styles.fab}
+            animated={false}
+            // icon={() => <FontAwesome5 name="chevron-down" size={25} color={'white'} style={{alignSelf:'center'}}/>}
+            icon={unreadMessage.length>0?null:'chevron-down'}
+            label={unreadMessage.length>0?`+${unreadMessage.length}`:null}
+            color={'white'}
+            visible={isActionButtonVisible}
+            onPress={() => {
+              this.scrollListToRecent();
+            }}
+          />
+
           {isReply ? (
             <View style={replyContainer}>
               <View style={styles.replySubContainer}>
@@ -664,10 +760,14 @@ class GroupChatContainer extends Component {
             onChangeText={(message) => handleMessage(message)}
             onSend={() => {
               if (newMessageText && newMessageText.trim().length > 0) {
-                onMessageSend();
-                messages.length > 0 &&
-                  this.scrollView &&
-                  this.scrollView.scrollToIndex({index: 0, animated: false});
+                onMessageSend(()=>{
+                  setTimeout(()=>{
+                    messages.length > 0 &&
+                    this.scrollView &&
+                    this.scrollView.scrollToIndex({index: 0, animated: false});
+                    console.log('scroll to 0 index done');
+                  },1000);
+                });
               } else {
                 handleMessage('');
               }
@@ -690,9 +790,16 @@ const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
     groupLoading: state.groupReducer.loading,
+    currentGroup: state.groupReducer.currentGroup
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  addFriendByReferralCode,
+  setSpecificPostId,
+  setActiveTimelineTab,
+  markGroupConversationRead,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChatContainer);
+// export default GroupChatContainer;

@@ -25,6 +25,8 @@ export const DELETE_GROUP_MESSAGE = 'DELETE_GROUP_MESSAGE';
 
 export const SET_CURRENT_GROUP_ADMINS = 'SET_CURRENT_GROUP_ADMINS';
 
+export const SET_MESSAGES = 'SET_MESSAGES';
+
 const initialState = {
   loading: false,
   userGroups: [],
@@ -35,7 +37,8 @@ const initialState = {
   unreadGroupMsgsCounts: 0,
   currentGroupAdmins: [],
   next: false,
-  previous: false
+  previous: false,
+  messages: []
 };
 
 import {
@@ -142,7 +145,7 @@ export default function (state = initialState, action) {
     case SET_GROUP_CONVERSATION:
       return {
         ...state,
-        chatGroupConversation: action.payload,
+        chatGroupConversation: [...action.payload],
       };
 
     case RESET_GROUP_CONVERSATION:
@@ -164,9 +167,25 @@ export default function (state = initialState, action) {
         ...state,
         currentGroupAdmins: [...action.payload]
       };
+
+    case SET_MESSAGES:
+      return {
+        ...state,
+        messages: [...action.payload]
+      }
     default:
       return state;
   }
+}
+
+//Testing state
+export const setMessagesState = (data) => ({
+  type: SET_MESSAGES,
+  payload: data
+});
+
+export const setMessages = (data) => (dispatch) => {
+  dispatch(setMessagesState(data));
 }
 
 //Set Current Group data

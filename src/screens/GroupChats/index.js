@@ -61,10 +61,18 @@ import {
   updateGroupTranslatedMessage,
   updateLastMsgGroupsWithoutCount,
   updateUnReadCount,
-  getGroupChatConversationNextFromId
+  getGroupChatConversationNextFromId,
+  getGroupChatConversationPrevFromId,
+  getGroupChatConversationByMsgId,
+  getGroupChatConversationLatestMsgId
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {getUserName, realmToPlainObject} from '../../utils';
+import {
+  setActiveTimelineTab,
+  setSpecificPostId,
+} from '../../redux/reducers/timelineReducer';
+import { addFriendByReferralCode } from '../../redux/reducers/friendReducer';
 
 class GroupChats extends Component {
   constructor(props) {
@@ -97,6 +105,7 @@ class GroupChats extends Component {
       isMultiSelect: false,
       isDeleteMeLoading: false,
       isDeleteEveryoneLoading: false,
+      fetchReplyMessageLaoding: false,
       selectedIds: [],
       openDoc: false,
       isLoadMore: true,
@@ -347,7 +356,7 @@ class GroupChats extends Component {
     this.props.resetGroupConversation();
     this.isUploading = false;
     this.isLeaveLoading = false;
-    this.offset = 20;
+    this.offset = 30;
     this.loading = false;
   }
 
@@ -406,7 +415,7 @@ class GroupChats extends Component {
     }
   };
 
-  onMessageSend = async () => {
+  onMessageSend = async (onSendFinish) => {
     const {newMessageText, editMessageId} = this.state;
     const {userData, currentGroup, currentGroupMembers} = this.props;
     // let splitNewMessageText = newMessageText.split(' ');
@@ -646,7 +655,15 @@ class GroupChats extends Component {
         },
       );
     }
-
+    
+    if(onSendFinish){
+      onSendFinish && onSendFinish();
+    }else{
+      // setTimeout(()=>{
+      //   this.chatContainer.scrollListToRecent();
+      // },1000);
+      
+    }
     // this.setState({
     //   newMessageText: '',
     //   isReply: false,
@@ -811,6 +828,14 @@ class GroupChats extends Component {
       if(this.props.navigation.state.params && this.props.navigation.state.params.msg_id){
         msg_id = this.props.navigation.state.params.msg_id;
       }
+      // msg_id = 22609;
+
+      if(!this.props.currentGroup.is_mentioned && !this.props.currentGroup.unread_msg_id){
+        let latest_msg_id = getGroupChatConversationLatestMsgId(this.props.currentGroup.group_id);
+        // console.log('latest_msg',latest_msg);
+        msg_id = latest_msg_id || msg_id;
+      }
+
       this.getGroupConversationInitial(msg_id);
 
       this.updateUnReadGroupChatCount();
@@ -831,6 +856,7 @@ class GroupChats extends Component {
           }),
         );
       }
+
     }
   }
 
@@ -976,92 +1002,123 @@ class GroupChats extends Component {
     this.props.markGroupConversationRead(data);
   }
 
-  getLocalGroupConversation = () => {
-    let chat = getGroupChatConversationById(
-      this.props.currentGroup.group_id,
-      this.offset,
-    );
-    if (chat) {
-      let conversations = [];
-      conversations = realmToPlainObject(chat);
-      this.props.setGroupConversation(conversations);
-    }
-    this.loading = false;
+  getLocalGroupConversation = (msg_id) => {
+    return new Promise((resolve) => {
+      let chat = getGroupChatConversationById(
+        this.props.currentGroup.group_id,
+        this.offset,
+        msg_id
+      );
+      if (chat && chat.length>0) {
+        let conversations = [];
+        conversations = realmToPlainObject(chat);
+        resolve(conversations);
+      }else{
+        resolve([]);
+      }
+    });
   };
 
-  getGroupConversation = async (msg_id) => {
-    await this.props
-      .getGroupConversation(this.props.currentGroup.group_id, msg_id)
+  getLocalPreviousConversation = (msg_id) => {
+    return new Promise((resolve)=>{
+      let next_messages = getGroupChatConversationPrevFromId(this.props.currentGroup.group_id, msg_id);
+      if (next_messages && next_messages.length > 0) {
+        let conversations = [];
+        conversations = realmToPlainObject(next_messages).slice(0, 30);
+        // setTimeout(()=>{
+          resolve(conversations);
+        // },500);
+      }else {
+        resolve([]);
+      }
+    });
+  }
+
+  getLocalNextConversation = (msg_id,length = 10, isInclusive = false) => {
+    return new Promise((resolve,reject)=>{
+      let next_messages = getGroupChatConversationNextFromId(this.props.currentGroup.group_id, msg_id, isInclusive);
+      if (next_messages && next_messages.length > 0) {
+        let conversations = [];
+        conversations = realmToPlainObject(next_messages).slice(Math.max(0,next_messages.length - length), next_messages.length);
+        resolve(conversations);
+      } else {
+        resolve([]);
+      }
+    });
+  }
+
+  getGroupConversation = (msg_id, next, prev, isReply) => {
+    isReply && this.setState({fetchReplyMessageLaoding: true});
+    return new Promise((resolve,reject)=>{
+      this.props
+      .getUpdatedGroupConversation(this.props.currentGroup.group_id, msg_id, isReply?false:next, prev)
       .then((res) => {
         if (res.status && res.data.length > 0) {
-          // console.log('response', JSON.stringify(res));
-          let data = res.data;
-          data.sort((a, b) =>
-            a.timestamp &&
-            b.timestamp &&
-            new Date(a.timestamp) < new Date(b.timestamp)
-              ? 1
-              : -1,
-          );
-
-          let chat = getGroupChatConversationById(
-            this.props.currentGroup.group_id,
-            this.offset,
-          );
           let conversations = [];
-
-          conversations = realmToPlainObject(chat);
-
+          if(next){
+            let chat = getGroupChatConversationNextFromId(
+              this.props.currentGroup.group_id,
+              msg_id,
+              isReply
+            );
+            if(isReply){
+              let result = realmToPlainObject(chat);
+              conversations = result.slice(Math.max(0,result.length-20),result.length);
+            }else{
+              conversations = realmToPlainObject(chat);
+            }
+          }else if(prev){
+            let chat = getGroupChatConversationPrevFromId(
+              this.props.currentGroup.group_id,
+              msg_id
+            );
+            conversations = realmToPlainObject(chat);
+          } else {
+            let chat = getGroupChatConversationById(
+              this.props.currentGroup.group_id,
+              this.offset,
+              msg_id
+            );
+            conversations = realmToPlainObject(chat);
+          }
           // this.setState({ conversation: conversations });
-          this.props.setGroupConversation(conversations);
+          // this.props.setGroupConversation(conversations);
           !msg_id && this.markGroupConversationRead();
-
+          console.log('api response');
+          resolve(conversations);
           if (res.data.length < 50) {
             this.setState({isLoadMore: false});
           }
         } else {
           this.setState({isLoadMore: false});
+          resolve([]);
         }
       })
       .catch((err) => {
         console.log('GroupChats -> getGroupConversation -> err', err);
+        resolve([]);
       });
+    })
   };
 
   getGroupConversationInitial = async (msg_id) => {
     this.setState({isChatLoading: true});
+    console.log('msg_id', msg_id);
     let chat = getGroupChatConversationById(
       this.props.currentGroup.group_id,
       this.offset,
+      msg_id
     );
-    if (chat) {
+    if (chat && chat.length>0) {
       let conversations = [];
-      // chat.map((item, index) => {
-      //   let i = {
-      //     msg_id: item.msg_id,
-      //     sender_id: item.sender_id,
-      //     group_id: item.group_id,
-      //     sender_username: item.sender_username,
-      //     sender_display_name: item.sender_display_name,
-      //     sender_picture: item.sender_picture,
-      //     message_body: item.message_body,
-      //     is_edited: item.is_edited,
-      //     is_unsent: item.is_unsent,
-      //     timestamp: item.timestamp,
-      //     reply_to: item.reply_to,
-      //     mentions: item.mentions,
-      //     read_count: item.read_count,
-      //     created: item.created,
-      //   };
-      //   conversations = [...conversations, i];
-      // });
-
       conversations = realmToPlainObject(chat);
-      // conversations = chat.toJSON();
-
-      // this.setState({ conversation: conversations });
+      
       this.props.setGroupConversation(conversations);
       // this.setState({isChatLoading: false});
+    }
+
+    if(chat && chat.length>0 && chat[0].msg_id == msg_id){
+      return;
     }
 
     await this.props
@@ -1069,44 +1126,16 @@ class GroupChats extends Component {
       .then((res) => {
         // console.log('res', res);
         if (res.status) {
-          let data = res.data;
-          data.sort((a, b) =>
-            a.timestamp &&
-            b.timestamp &&
-            new Date(a.timestamp) < new Date(b.timestamp)
-              ? 1
-              : -1,
-          );
-
+          
           let groupChat = getGroupChatConversationById(
             this.props.currentGroup.group_id,
             this.offset,
+            msg_id
           );
           let conversations = [];
-          // groupChat.map((item, index) => {
-          //   let i = {
-          //     msg_id: item.msg_id,
-          //     sender_id: item.sender_id,
-          //     group_id: item.group_id,
-          //     sender_username: item.sender_username,
-          //     sender_display_name: item.sender_display_name,
-          //     sender_picture: item.sender_picture,
-          //     message_body: item.message_body,
-          //     is_edited: item.is_edited,
-          //     is_unsent: item.is_unsent,
-          //     timestamp: item.timestamp,
-          //     reply_to: item.reply_to,
-          //     mentions: item.mentions,
-          //     read_count: item.read_count,
-          //     created: item.created,
-          //   };
-          //   conversations = [...conversations, i];
-          // });
 
           conversations = realmToPlainObject(groupChat);
-          // conversations = chat.toJSON();
-
-          // this.setState({ conversation: conversations });
+          
           this.props.setGroupConversation(conversations);
           this.setState({isChatLoading: false});
           this.markGroupConversationRead();
@@ -1184,7 +1213,7 @@ class GroupChats extends Component {
     });
   };
 
-  handleMessage(message) {
+  handleMessage = (message) => {
     this.setState({newMessageText: message});
   }
 
@@ -1515,7 +1544,7 @@ class GroupChats extends Component {
     });
   };
 
-  onMessageTranslate = (message) => {
+  onMessageTranslate = (message, index) => {
     const payload = {
       text: message.message_body.text,
       language: this.props.selectedLanguageItem.language_name,
@@ -1529,18 +1558,27 @@ class GroupChats extends Component {
           translatedMessage: res.data,
         });
         updateGroupTranslatedMessage(message.msg_id, res.data);
-        this.getLocalGroupConversation();
+        message.translated = res.data;
+        let array = this.props.chatGroupConversation;
+        array.splice(index,1,message);
+        this.props.setGroupConversation(array);
+        // this.getLocalGroupConversation();
       }
     });
   };
 
-  onMessageTranslateClose = (id) => {
+  onMessageTranslateClose = (id,index) => {
     this.setState({
       translatedMessageId: null,
       translatedMessage: null,
     });
     updateGroupTranslatedMessage(id, null);
-    this.getLocalGroupConversation();
+    let message = this.props.chatGroupConversation[index];
+    message.translated = null;
+    let array = this.props.chatGroupConversation;
+    array.splice(index, 1, message);
+    this.props.setGroupConversation(array);
+    // this.getLocalGroupConversation();
   };
 
   onCameraPress = () => {
@@ -1786,6 +1824,93 @@ class GroupChats extends Component {
     });
   };
 
+  onLoadMoreMessages = async () => {
+    const {chatGroupConversation} = this.props;
+    let message = chatGroupConversation[0];
+    if (message && message.msg_id && !this.loading) {
+      console.log('next_msg_id', message.msg_id);
+      this.loading = true;
+      // this.offset = this.offset + 20;
+      let next_messages = await this.getLocalNextConversation(message.msg_id);
+      if (next_messages.length > 0) {
+        console.log('next_messages', next_messages.length);
+        this.props.setGroupConversation(next_messages.concat(chatGroupConversation));
+      } else if (this.props.next) {
+        console.log('next api call', this.props.next, message.msg_id);
+        let result = await this.getGroupConversation(message.msg_id, true, false);
+        this.props.setGroupConversation(result.concat(chatGroupConversation));
+      }
+      this.loading = false;
+    }
+  }
+
+  onLoadPreviousMessages = async (currentOffset) => {
+    const {chatGroupConversation} = this.props;
+    console.log('this.loading',this.loading,currentOffset);
+    let message = chatGroupConversation[chatGroupConversation.length-1];
+    if (message && message.msg_id && !this.loading) {
+      console.log('previous_msg_id', message.msg_id,this.props.previous);
+      this.loading = true;
+      // this.offset = this.offset + 20;
+      let next_messages = await this.getLocalPreviousConversation(message.msg_id);
+      if (next_messages.length>0) {
+        console.log('prev_messages',next_messages.length);
+        this.props.setGroupConversation(chatGroupConversation.concat(next_messages));
+      } else if(this.props.previous){
+        console.log('previous api call',this.props.previous,message.msg_id);
+        let result = await this.getGroupConversation(message.msg_id,false,true);
+        this.props.setGroupConversation(chatGroupConversation.concat(result));
+      }
+      this.loading = false;
+    }
+  }
+
+  loadMessagesOnReplyPress = async (id, onFinish) => {
+    const {chatGroupConversation} = this.props;
+    console.log('calling onReplyPress',id);
+    let hasMessages = getGroupChatConversationByMsgId(this.props.currentGroup.group_id, id);
+    console.log('hasMessages',hasMessages);
+    if (hasMessages) {
+      let next_messages = await this.getLocalNextConversation(id,20,true);
+      this.props.setGroupConversation(next_messages);
+      onFinish && onFinish(next_messages);
+    } else {
+      console.log('next api call', this.props.next, id);
+      let result = await this.getGroupConversation(id, true, false, true);
+      this.props.setGroupConversation(result);
+      this.setState({fetchReplyMessageLaoding: false});
+      onFinish && onFinish(result);
+    }
+  }
+
+  onMediaPlay = (isPlay) => {
+    if (isPlay) {
+      console.log('palying media');
+      this.props.navigation.setParams({
+        isAudioPlaying: true,
+      });
+    } else {
+      console.log('pause media');
+      this.props.navigation.setParams({
+        isAudioPlaying: false,
+      });
+    }
+  }
+
+  showOpenLoader = (isLoading) => this.setState({openDoc: isLoading});
+
+  onSelectedCancel = () => {
+    this.setState({isMultiSelect: false, selectedIds: []});
+  }
+
+  onDelete = (id) => {
+    this.setState({
+      isMultiSelect: true,
+      selectedIds: [...this.state.selectedIds, id + ''],
+    });
+    // this.onDeleteMessagePressed(id)
+  }
+ 
   render() {
     const {
       newMessageText,
@@ -1807,6 +1932,7 @@ class GroupChats extends Component {
       openDoc,
       isDeleteMeLoading,
       isDeleteEveryoneLoading,
+      fetchReplyMessageLaoding
     } = this.state;
     const {
       chatGroupConversation,
@@ -1824,7 +1950,7 @@ class GroupChats extends Component {
       length = chats.length;
     }
     // console.log('currentGroupDetail', currentGroupDetail);
-    // console.log('chatGroupConversation', chatGroupConversation);
+    console.log('chatGroupConversation', chatGroupConversation.length);
     // console.log('currentGroupMembers', currentGroupMembers);
     return (
       <ImageBackground
@@ -1864,33 +1990,30 @@ class GroupChats extends Component {
           <ListLoader />
         ) : (
           <GroupChatContainer
+            ref={(view) => {
+              this.chatContainer = view;
+            }}
             memberCount={currentGroupDetail.total_members}
-            handleMessage={(message) => this.handleMessage(message)}
+            handleMessage={this.handleMessage}
             onMessageSend={this.onMessageSend}
-            onMessageReply={(id) => this.onReply(id)}
+            onMessageReply={this.onReply}
             newMessageText={newMessageText}
             messages={chatGroupConversation}
             orientation={orientation}
             repliedMessage={repliedMessage}
             isReply={isReply}
             cancelReply={this.cancelReply.bind(this)}
-            onDelete={(id) => {
-              this.setState({
-                isMultiSelect: true,
-                selectedIds: [...this.state.selectedIds, id + ''],
-              });
-              // this.onDeleteMessagePressed(id)
-            }}
-            onUnSendMsg={(id) => this.onUnsendMessagePressed(id)}
-            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
-            onEditMessage={(msg) => this.onEdit(msg)}
-            onDownloadMessage={(msg) => this.onDownload(msg)}
+            onDelete={this.onDelete}
+            onUnSendMsg={this.onUnsendMessagePressed}
+            onMessageTranslate={this.onMessageTranslate}
+            onEditMessage={this.onEdit}
+            onDownloadMessage={this.onDownload}
             onMessageTranslateClose={this.onMessageTranslateClose}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
-            onCameraPress={() => this.onCameraPress()}
+            onCameraPress={this.onCameraPress}
             onGalleryPress={() => this.toggleGalleryModal(true)}
-            onAttachmentPress={() => this.onAttachmentPress()}
+            onAttachmentPress={this.onAttachmentPress}
             sendingImage={uploadFile}
             currentGroupDetail={currentGroupDetail}
             groupMembers={currentGroupMembers}
@@ -1899,46 +2022,16 @@ class GroupChats extends Component {
             isMultiSelect={isMultiSelect}
             onSelect={this.onSelectChatConversation}
             selectedIds={this.state.selectedIds}
-            onSelectedCancel={() => {
-              this.setState({isMultiSelect: false, selectedIds: []});
-            }}
+            onSelectedCancel={this.onSelectedCancel}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
-            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
+            showOpenLoader={this.showOpenLoader}
             isChatDisable={currentGroupDetail.is_group_member}
             isLoadMore={chatGroupConversation.length < length}
             loading={this.loading}
-            onLoadMore={(message) => {
-              console.log('msg_id', message.msg_id);
-              if (message && message.msg_id) {
-                this.loading = true;
-                this.offset = this.offset + 20;
-                let next_messages = getGroupChatConversationNextFromId(this.props.currentGroup.group_id,message.msg_id);
-                if (next_messages) {
-                  let conversations = [];
-                  conversations = realmToPlainObject(next_messages);
-                  this.props.setGroupConversation([...conversations,...chatGroupConversation]);
-                }
-                // this.getLocalGroupConversation();
-                // if (next_messages.length == 0 && this.props.next) {
-                //   console.log('api_call');
-                //   this.getGroupConversation(chats[chats.length - 1].msg_id);
-                // }
-                // this.getGroupConversation(message.msg_id);
-              }
-            }}
-            onMediaPlay={(isPlay) => {
-              if (isPlay) {
-                console.log('palying media');
-                this.props.navigation.setParams({
-                  isAudioPlaying: true,
-                });
-              } else {
-                console.log('pause media');
-                this.props.navigation.setParams({
-                  isAudioPlaying: false,
-                });
-              }
-            }}
+            onLoadMore={this.onLoadMoreMessages}
+            onLoadPrevious={this.onLoadPreviousMessages}
+            onReplyPress={this.loadMessagesOnReplyPress}
+            onMediaPlay={this.onMediaPlay}
           />
         )}
 
@@ -2042,6 +2135,7 @@ class GroupChats extends Component {
         />
 
         {openDoc && <OpenLoader />}
+        {fetchReplyMessageLaoding && <OpenLoader hideText={true}/>}
       </ImageBackground>
     );
   }
@@ -2087,6 +2181,9 @@ const mapDispatchToProps = {
   pinGroup,
   unpinGroup,
   deleteGroupChat,
+  addFriendByReferralCode,
+  setSpecificPostId,
+  setActiveTimelineTab,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChats);

@@ -160,6 +160,7 @@ import {
   updateLastEventId,
   updateLastMsgGroups,
   updateLastMsgGroupsWithoutCount,
+  updateLastMsgGroupsWithMention,
   updateLastMsgTimestamp,
   updateMessageById,
   updateReadByChannelId,
@@ -1104,6 +1105,9 @@ class Chat extends Component {
         );
 
         let unreadCount = item.length > 0 ? item[0].unread_count : 0;
+        let is_mentioned = item[0].is_mention || group[0].is_mentioned;
+        let mention_msg_id = group[0].mention_msg_id < 0 ? item[0].mention_msg_id : group[0].mention_msg_id;
+        let unread_msg_id = group[0].unread_msg_id < 0 ? message.text.data.message_details.msg_id : group[0].unread_msg_id;
 
         setGroupChatConversation([message.text.data.message_details]);
         if (
@@ -1112,8 +1116,11 @@ class Chat extends Component {
           message.text.data.message_details.group_id === currentGroup.group_id
         ) {
           this.getLocalGroupConversation();
-          this.markGroupMsgsRead();
-          unreadCount = 0;
+          // this.markGroupMsgsRead();
+          // unreadCount = 0;
+          mention_msg_id = -1;
+          unread_msg_id = -1;
+          is_mentioned = false;
           this.SingleSocket.sendMessage(
             JSON.stringify({
               type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
@@ -1125,10 +1132,13 @@ class Chat extends Component {
         }
 
         if (message.text.data.message_details.message_body.type !== 'update') {
-          updateLastMsgGroups(
+          updateLastMsgGroupsWithMention(
             message.text.data.message_details.group_id,
             message.text.data.message_details,
             unreadCount,
+            mention_msg_id,
+            unread_msg_id,
+            is_mentioned
           );
         } else {
           updateLastMsgTimestamp(
@@ -2736,15 +2746,20 @@ class Chat extends Component {
     });
   };
 
-  onOpenGroupChats = (item) => {
+  onOpenGroupChats = (item,mention_press) => {
     NetInfo.fetch().then((state) => {
       console.log('Is connected?', state.isConnected);
 
-      let msg_id = item.unread_msg_id || item.last_msg_id; 
+      let msg_id = item.unread_msg_id > 0 ? item.unread_msg_id : item.last_msg_id; 
+
+      if(mention_press && item.is_mentioned > 0){
+        msg_id = item.mention_msg_id;
+      }
 
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
         this.props.navigation.navigate('GroupChats',{msg_id});
+        // this.props.navigation.navigate('Conversations',{group_id: item.group_id, userData: this.props.userData});
       } else {
         Toast.show({
           title: 'TOUKU',
@@ -3594,7 +3609,7 @@ class Chat extends Component {
                 mentions={item.mentions}
                 date={item.timestamp}
                 image={item.group_picture}
-                onPress={() => this.onOpenGroupChats(item)}
+                onPress={this.onOpenGroupChats.bind(this,item,true)}
                 unreadCount={item.unread_msg}
                 isVisible={isVisible}
                 isUncheck={isUncheck}
@@ -3612,6 +3627,7 @@ class Chat extends Component {
                 onPinUnpinChat={(chatPinStatus, onClose) => {
                   this.onPinUnpinGroup(chatPinStatus, onClose);
                 }}
+                onMentionPress={this.onOpenGroupChats.bind(this,item,true)}
               />
             ) : item.chat === 'channel' ? (
               <ChannelListItem

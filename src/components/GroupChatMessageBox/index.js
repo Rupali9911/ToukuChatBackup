@@ -40,7 +40,8 @@ export default class GroupChatMessageBox extends Component {
       this.isPortrait(this.props.message.message_body);
   }
 
-  callBlinking = () => {
+  callBlinking = (id) => {
+    console.log('blink bubble id',id);
     this.callBlinkAnimation();
     // this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
   };
@@ -257,6 +258,10 @@ export default class GroupChatMessageBox extends Component {
                       showOpenLoader={showOpenLoader}
                       isMultiSelect={isMultiSelect}
                       onMediaPlay={this.props.onMediaPlay}
+                      addFriendByReferralCode={this.props.addFriendByReferralCode}
+                      setActiveTimelineTab={this.props.setActiveTimelineTab}
+                      setSpecificPostId={this.props.setSpecificPostId}
+                      userData={this.props.userData}
                     />
                   </View>
                   <View style={styles.time}>
@@ -329,7 +334,7 @@ export default class GroupChatMessageBox extends Component {
                 }>
                 <GroupChatMessageBubble
                   ref={(view) => {
-                    console.log(`bubble_box_${message.msg_id}`);
+                    // console.log(`bubble_box_${message.msg_id}`);
                     this[`bubble_box_${message.msg_id}`] = view;
                   }}
                   message={message}
@@ -355,6 +360,10 @@ export default class GroupChatMessageBox extends Component {
                   showOpenLoader={showOpenLoader}
                   isMultiSelect={isMultiSelect}
                   onMediaPlay={this.props.onMediaPlay}
+                  addFriendByReferralCode={this.props.addFriendByReferralCode}
+                  setActiveTimelineTab={this.props.setActiveTimelineTab}
+                  setSpecificPostId={this.props.setSpecificPostId}
+                  userData={this.props.userData}
                 />
               </View>
               {/* {message.message_body && message.message_body.type === 'image' ? (

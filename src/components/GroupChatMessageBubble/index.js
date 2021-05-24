@@ -41,7 +41,7 @@ import {
   setActiveTimelineTab,
   setSpecificPostId,
 } from '../../redux/reducers/timelineReducer';
-import { getChannelIdAndReferral, getUserName, normalize } from '../../utils';
+import { getChannelIdAndReferral, getUserName, normalize, checkDeepLinkUrl } from '../../utils';
 import AudioPlayerCustom from '../AudioPlayerCustom';
 import LinkPreviewComponent from '../LinkPreviewComponent';
 import RoundedImage from '../RoundedImage';
@@ -464,13 +464,25 @@ class GroupChatMessageBubble extends Component {
     return newMessageTextWithMention;
   };
 
+  getMentionUserName = (id) => {
+    const { message } = this.props;
+    let name = '';
+    message.mentions && message.mentions.forEach((groupMember) => {
+      if (groupMember.id == id) {
+        name = getUserName(groupMember.id) ||
+          groupMember.desplay_name ||
+          groupMember.username;
+      }
+    });
+    return name;
+  }
+
   renderLinkMedia = (text) => {
     //console.log('renderLinkMedia text', text)
     let arrLinks = linkify().match(text);
     if (arrLinks) {
       return arrLinks.map((item) => {
-        let checkUrl = staging ? EnvironmentStage : Environment;
-        if (checkUrl) {
+        if (checkDeepLinkUrl(item.url)) {
           return null;
         }
         return <LinkPreviewComponent text={item.text} url={item.url} />;
@@ -712,104 +724,58 @@ class GroupChatMessageBubble extends Component {
                                         onMessagePress(message.msg_id);
                                         this.showMenu();
                                       }}>
-                                      {/* <HyperLink
-                                  onPress={(url, text) => hyperlinkPressed(url)}
-                                  onLongPress={() => {
-                                    onMessagePress(message.msg_id);
-                                    this.showMenu();
-                                  }}
-                                  linkStyle={{
-                                    color: Colors.link_color,
-                                    textDecorationLine: 'underline',
-                                  }}
-                                > */}
-                                      {/* <Text
-                              style={{
-                                fontSize: Platform.isPad
-                                  ? normalize(8)
-                                  : normalize(12),
-                                fontFamily: Fonts.regular,
-                                fontWeight: '400',
-                              }}>
-                              {message.message_body.text}
-                            </Text> */}
                                       <ParsedText
                                         style={styles.parsedTextStyle}
                                         parse={
-                                          this.getMentionsPattern() === ''
-                                            ? [
-                                              {
-                                                type: 'url',
-                                                style: {
-                                                  color: Colors.link_color,
-                                                  textDecorationLine: 'underline',
-                                                },
-                                                onPress: this.hyperlinkPressed,
-                                                onLongPress: () => {
-                                                  onMessagePress(message.msg_id);
-                                                  this.showMenu();
-                                                },
+                                          [
+                                            {
+                                              type: 'url',
+                                              style: {
+                                                color: Colors.link_color,
+                                                textDecorationLine: 'underline',
                                               },
-                                            ]
-                                            : [
-                                              {
-                                                type: 'url',
-                                                style: {
-                                                  color: Colors.link_color,
-                                                  textDecorationLine: 'underline',
-                                                },
-                                                onPress: this.hyperlinkPressed,
-                                                onLongPress: () => {
-                                                  onMessagePress(message.msg_id);
-                                                  this.showMenu();
-                                                },
+                                              onPress: this.hyperlinkPressed,
+                                              onLongPress: () => {
+                                                onMessagePress(message.msg_id);
+                                                this.showMenu();
                                               },
-                                              {
-                                                // pattern: /\B\@([\w\-]+)/gim,
-                                                pattern: new RegExp(
-                                                  this.getMentionsPattern(),
-                                                ),
-                                                style: { color: '#E65497' },
-                                              },
-                                            ]
+                                            },
+                                            {
+                                              pattern: /(~[0-9]+~)/gim,
+                                              style: { color: '#E65497' },
+                                              renderText: (matchingString, matches) => {
+                                                let match = matchingString.replace(/~/g, '');
+                                                return `@${this.getMentionUserName(match)}`;
+                                              }
+                                            },
+                                          ]
                                         }
                                         childrenProps={{ allowFontScaling: false }}>
-                                        {this.renderMessageWitMentions(
+                                        {/* {this.renderMessageWitMentions(
                                           message.message_body.text,
-                                        )}
+                                        )} */}
+                                        {message.message_body.text}
                                       </ParsedText>
-                                      {/* </HyperLink> */}
 
                                       {this.renderLinkMedia(message.message_body.text)}
                                     </TouchableOpacity>
                                   ) : (
-                                      // <Text
-                                      //   style={{
-                                      //     fontSize: normalize(12),
-                                      //     fontFamily: Fonts.regular,
-                                      //     fontWeight: '400',
-                                      //   }}>
-                                      //   {message.message_body.text}
-                                      // </Text>
                                       <ParsedText
                                         style={styles.parsedTextStyle}
                                         parse={
-                                          this.getMentionsPattern() === ''
-                                            ? []
-                                            : [
-                                              {
-                                                // pattern: /\B\@([\w\-]+)/gim,
-                                                pattern: new RegExp(
-                                                  this.getMentionsPattern(),
-                                                ),
-                                                style: { color: '#E65497' },
-                                              },
-                                            ]
+                                          [
+                                            {
+                                              pattern: /(~[0-9]+~)/gim,
+                                              style: { color: '#E65497' },
+                                              renderText: (matchingString, matches) => {
+                                                let match = matchingString.replace(/~/g, '');
+                                                return `@${this.getMentionUserName(match)}`;
+                                              }
+                                            },
+                                          ]
                                         }
                                         childrenProps={{ allowFontScaling: false }}>
-                                        {this.renderMessageWitMentions(
-                                          message.message_body.text,
-                                        )}
+                                        {message.message_body.text}
                                       </ParsedText>
                                     )}
                       </TouchableOpacity>
@@ -927,11 +893,11 @@ class GroupChatMessageBubble extends Component {
                               <View>
                                 <View style={styles.memoContainer}>
                                   {message.message_body.media && message.message_body.media.length > 0 && this.renderMemoMedia(message.message_body.media)}
-                                        {this.renderMemoText(message).update_text.length > 0 &&
-                                          <Text style={styles.memotText} numberOfLines={3}>
-                                            {this.renderMemoText(message).update_text}
-                                          </Text>
-                                        }
+                                  {this.renderMemoText(message).update_text.length > 0 &&
+                                    <Text style={styles.memotText} numberOfLines={3}>
+                                      {this.renderMemoText(message).update_text}
+                                    </Text>
+                                  }
                                 </View>
                                 <View style={styles.divider} />
                                 <TouchableOpacity
@@ -986,47 +952,34 @@ class GroupChatMessageBubble extends Component {
                                 <ParsedText
                                   style={styles.urlParsedTextStyle}
                                   parse={
-                                    this.getMentionsPattern() === ''
-                                      ? [
-                                        {
-                                          type: 'url',
-                                          style: {
-                                            color: Colors.link_color,
-                                            textDecorationLine: 'underline',
-                                          },
-                                          onPress: this.hyperlinkPressed,
-                                          onLongPress: () => {
-                                            onMessagePress(message.msg_id);
-                                            this.showMenu();
-                                          },
+                                    [
+                                      {
+                                        type: 'url',
+                                        style: {
+                                          color: Colors.link_color,
+                                          textDecorationLine: 'underline',
                                         },
-                                      ]
-                                      : [
-                                        {
-                                          type: 'url',
-                                          style: {
-                                            color: Colors.link_color,
-                                            textDecorationLine: 'underline',
-                                          },
-                                          onPress: this.hyperlinkPressed,
-                                          onLongPress: () => {
-                                            onMessagePress(message.msg_id);
-                                            this.showMenu();
-                                          },
+                                        onPress: this.hyperlinkPressed,
+                                        onLongPress: () => {
+                                          onMessagePress(message.msg_id);
+                                          this.showMenu();
                                         },
-                                        {
-                                          // pattern: /\B\@([\w\-]+)/gim,
-                                          pattern: new RegExp(
-                                            this.getMentionsPattern(),
-                                          ),
-                                          style: { color: '#E65497' },
-                                        },
-                                      ]
+                                      },
+                                      {
+                                        pattern: /(~[0-9]+~)/gim,
+                                        style: { color: '#E65497' },
+                                        renderText: (matchingString, matches) => {
+                                          let match = matchingString.replace(/~/g, '');
+                                          return `@${this.getMentionUserName(match)}`;
+                                        }
+                                      },
+                                    ]
                                   }
                                   childrenProps={{ allowFontScaling: false }}>
-                                  {this.renderMessageWitMentions(
+                                  {/* {this.renderMessageWitMentions(
                                     message.message_body.text,
-                                  )}
+                                  )} */}
+                                  {message.message_body.text}
                                 </ParsedText>
                                 {/* </HyperLink> */}
 
@@ -1036,32 +989,23 @@ class GroupChatMessageBubble extends Component {
                                         <ParsedText
                                           style={styles.urlParsedTextStyle}
                                           parse={
-                                            this.getMentionsPattern() === ''
-                                              ? []
-                                              : [
-                                                {
-                                                  // pattern: /\B\@([\w\-]+)/gim,
-                                                  pattern: new RegExp(
-                                                    this.getMentionsPattern(),
-                                                  ),
-                                                  style: { color: '#E65497' },
-                                                },
-                                              ]
+                                            [
+                                              {
+                                                pattern: /(~[0-9]+~)/gim,
+                                                style: { color: '#E65497' },
+                                                renderText: (matchingString, matches) => {
+                                                  let match = matchingString.replace(/~/g, '');
+                                                  return `@${this.getMentionUserName(match)}`;
+                                                }
+                                              },
+                                            ]
                                           }
                                           childrenProps={{ allowFontScaling: false }}>
-                                          {this.renderMessageWitMentions(
+                                          {/* {this.renderMessageWitMentions(
                                             message.message_body.text,
-                                          )}
+                                          )} */}
+                                          {message.message_body.text}
                                         </ParsedText>
-                                        // <Text
-                                        //   style={{
-                                        //     color: Colors.black,
-                                        //     fontSize: normalize(12),
-                                        //     fontFamily: Fonts.regular,
-                                        //     fontWeight: '300',
-                                        //   }}>
-                                        //   {message.message_body.text}
-                                        // </Text>
                                       )}
                         </TouchableOpacity>
                       </View>
@@ -1279,19 +1223,21 @@ class GroupChatMessageBubble extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    userData: state.userReducer.userData,
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {
+//     userData: state.userReducer.userData,
+//   };
+// };
 
-const mapDispatchToProps = {
-  addFriendByReferralCode,
-  setSpecificPostId,
-  setActiveTimelineTab,
-};
+// const mapDispatchToProps = {
+//   addFriendByReferralCode,
+//   setSpecificPostId,
+//   setActiveTimelineTab,
+// };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(GroupChatMessageBubble);
+// export default connect(
+//   mapStateToProps,
+//   mapDispatchToProps,
+// )(GroupChatMessageBubble);
+
+export default GroupChatMessageBubble;
