@@ -794,6 +794,7 @@ class GroupChats extends Component {
       editMessageId: message.msg_id,
       isEdited: true,
     });
+
   };
 
   onEditClear = () => {

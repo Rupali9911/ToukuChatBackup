@@ -12,6 +12,7 @@ import {translate} from '../../../redux/reducers/languageReducer';
 import {
   changePassword,
   getUserProfile,
+    changeEmail
 } from '../../../redux/reducers/userReducer';
 import {globalStyles} from '../../../styles';
 import {wait} from '../../../utils';
@@ -129,45 +130,47 @@ class ChangePassModal extends Component {
         password: confirmPassword,
       };
 
-      this.props
-        .changePassword(changePassData)
-        .then((res) => {
-          setTimeout(() => {
-            this.props.onRequestClose();
-          }, 2000);
-          if (res.status === true) {
-            Toast.show({
-              title: translate('pages.resetPassword.changePassword'),
-              text: translate('pages.resetPassword.toastr.passwordUpdated'),
-              type: 'positive',
-            });
-          } else {
-            Toast.show({
-              title: translate('pages.resetPassword.changePassword'),
-              text: 'Invalid current password',
-              type: 'primary',
-            });
-          }
-        })
-        .catch((err) => {
-          console.log('Error from Change Password API', err)
-            if (err.response) {
-                console.log('err.response',err.response);
-                if (err.response && err.response.data && err.response.data.message) {
-                        Toast.show({
-                            title: translate('pages.resetPassword.changePassword'),
-                            text: err.response.data.message.includes("backend") ? translate(err.response.data.message.toString()) : err.response.data.message.toString(),
-                            type: 'primary',
-                        });
-                }else{
-                        Toast.show({
-                            title: translate('pages.resetPassword.changePassword'),
-                            text: 'Invalid current password',
-                            type: 'primary',
-                        });
-                }
-            }
-        });
+      this.props.changeEmail()
+
+      // this.props
+      //   .changeEmail(changePassData)
+      //   .then((res) => {
+      //     setTimeout(() => {
+      //       this.props.onRequestClose();
+      //     }, 2000);
+      //     if (res.status === true) {
+      //       Toast.show({
+      //         title: translate('pages.resetPassword.changePassword'),
+      //         text: translate('pages.resetPassword.toastr.passwordUpdated'),
+      //         type: 'positive',
+      //       });
+      //     } else {
+      //       Toast.show({
+      //         title: translate('pages.resetPassword.changePassword'),
+      //         text: 'Invalid current password',
+      //         type: 'primary',
+      //       });
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log('Error from Change Password API', err)
+      //       if (err.response) {
+      //           console.log('err.response',err.response);
+      //           if (err.response && err.response.data && err.response.data.message) {
+      //                   Toast.show({
+      //                       title: translate('pages.resetPassword.changePassword'),
+      //                       text: err.response.data.message.includes("backend") ? translate(err.response.data.message.toString()) : err.response.data.message.toString(),
+      //                       type: 'primary',
+      //                   });
+      //           }else{
+      //                   Toast.show({
+      //                       title: translate('pages.resetPassword.changePassword'),
+      //                       text: 'Invalid current password',
+      //                       type: 'primary',
+      //                   });
+      //           }
+      //       }
+      //   });
     }
   };
 
@@ -338,6 +341,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     changePassword,
   getUserProfile,
+    changeEmail
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassModal);
