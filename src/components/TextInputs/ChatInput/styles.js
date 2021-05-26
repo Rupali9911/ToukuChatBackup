@@ -164,7 +164,10 @@ export default StyleSheet.create({
     overflow: 'visible',
   },
   attachmentContainer: {
-    width: '10%',
+    width: '13%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 5,
   },
   attachmentActionContainer: {
     width: '100%',

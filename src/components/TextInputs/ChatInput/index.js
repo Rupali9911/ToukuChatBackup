@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+    Keyboard
 } from 'react-native';
 import {
   FlatList,
@@ -39,7 +40,7 @@ class ChatInput extends Component {
       suggestionDataHeight: 0,
       mentionUser: [],
       input_focus: false,
-      isExtrasAreaVisible: true,
+      isExtrasAreaVisible: false,
       text: '',
       gifs: [],
       stickers: [],
@@ -297,9 +298,7 @@ class ChatInput extends Component {
             <View style={styles.attachmentContainer}>
               <TouchableOpacity
                 style={[
-                  styles.chatAttachmentContainer,
                   styles.chatAttachmentButton,
-                  styles.attachmentActionContainer,
                 ]}
                 onPress={() => {
                   this.input_ref && this.input_ref._textInput
@@ -313,6 +312,19 @@ class ChatInput extends Component {
                   color={Colors.gradient_3}
                 />
               </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.chatAttachmentButton}
+                    onPress={() =>{ this.setState({
+                        isExtrasAreaVisible: !this.state.isExtrasAreaVisible,
+                    })
+                        Keyboard.dismiss()
+                    }}>
+                    <Image
+                        source={Icons.icon_sticker_pack}
+                        style={{width: 20, height: 20, resizeMode: 'contain'}}
+                        resizeMode={'contain'}
+                    />
+                </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.chatAttachmentContainer}>
@@ -353,19 +365,6 @@ class ChatInput extends Component {
                   color={'indigo'}
                 /> */}
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.chatAttachmentButton}
-                onPress={() =>
-                  this.setState({
-                    isExtrasAreaVisible: !this.state.isExtrasAreaVisible,
-                  })
-                }>
-                <Image
-                  source={Icons.icon_sticker_pack}
-                  style={{width: 20, height: 20, resizeMode: 'contain'}}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
             </View>
           )}
           <View
@@ -383,7 +382,7 @@ class ChatInput extends Component {
                   maxHeight={50}
                   multiline={true}
                   onFocus={() => {
-                    this.setState({input_focus: true});
+                    this.setState({input_focus: true, isExtrasAreaVisible: false});
                   }}
                   onBlur={() => {
                     this.setState({input_focus: false});
@@ -569,7 +568,7 @@ class ChatInput extends Component {
                 style={styles.textInput}
                 onChangeText={(message) => handleInput(message)}
                 onFocus={(e) => {
-                  this.setState({input_focus: true});
+                  this.setState({input_focus: true, isExtrasAreaVisible: false});
                 }}
                 onBlur={(e) => this.setState({input_focus: false})}
                 onContentSizeChange={({nativeEvent}) => {

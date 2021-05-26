@@ -128,7 +128,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
-  - GTMAppAuth (1.2.2):
+  - GTMAppAuth (1.2.1):
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.5.0)
@@ -815,20 +815,20 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 672fb0ce96fe7f7f31d43672fca62ad2c9c86f7b
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
-  GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
+  GTMAppAuth: 5b53231ef6920f149ab84b2969cb0ab572da3077
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   kakao-login: 7111f3ee3231418c4bcd310d273651a637a46eac
   KakaoOpenSDK: 7a7b728491fc199bf2186fec5bbf2c70ba14f474
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   LineSDK: 5b9aeeb637a9d1005241ba5b28952f8bcf3e4bad
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
-  Permission-Camera: b2e50546c095139bb1264be9c34c796332340d32
+  Permission-Camera: 0d2d15352e9c54c3ea8686c8c21fb1a9edf3431b
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
   QrCode: 61c4c6908ca6e6232efbcd320d9cb1771111aa43
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
-  RCTYouTube: 4509d59a7de050dd0c7c6cb1f427d37678d63b5c
+  RCTYouTube: 7ff7d42f5ed42d185198681e967fd2c2b661375d
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
   React-Core: b12bffb3f567fdf99510acb716ef1abd426e0e05
   React-CoreModules: 4a9b87bbe669d6c3173c0132c3328e3b000783d0
@@ -836,22 +836,22 @@ SPEC CHECKSUMS:
   React-jsi: b6dc94a6a12ff98e8877287a0b7620d365201161
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
-  react-native-camera: cf8a153d33138dcc457172fc3c33fdf4e5d288d2
-  react-native-cameraroll: 60ba0068826eab1c8d43146191bafd4363ea58a7
+  react-native-camera: d145df27a9178041b48b839b80ad79c9ef373fbd
+  react-native-cameraroll: 9d2b7c1707204d2040d2812f960c6cebdbd9f670
   react-native-create-thumbnail: 4c445d78f7fe6537292e169744faff065c4e71f8
-  react-native-document-picker: 4921045c5c6c78243010f784eae0a3f4b2af7799
+  react-native-document-picker: c5752781fbc0c126c627c1549b037c139444a4cf
   react-native-fbsdk: c35d42169e64aaf66f01713c1e18d0674f7f6519
-  react-native-image-picker: 32fbfa63b6eff82b13b037022dc1d25005290e36
-  react-native-image-resizer: a79bcffdef1b52160ff91db0d6fa24816a4ff332
-  react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
-  react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
-  react-native-orientation: f1caf84d65f1a4fd4511a18f2b924e634ad7a628
-  react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
-  react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
+  react-native-image-picker: 4436d2ae609d1fc5b6426133755fc8d468347b61
+  react-native-image-resizer: b53bf95ad880100e20262687e41f76fdbc9df255
+  react-native-keep-awake: eba3137546b10003361b37c761f6c429b59814ae
+  react-native-netinfo: e36c1bb6df27ab84aa933679b3f5bbf9d180b18f
+  react-native-orientation: d4a97266b06ec8d45d74e626656a730ebbebbb6f
+  react-native-safe-area-context: 8260e5157617df4b72865f44006797f895b2ada7
+  react-native-slider: b733e17fdd31186707146debf1f04b5d94aa1a93
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-twitter-signin: 23e7c2a71777f2f124674cb7c372f5360a5aefb9
-  react-native-video: eee541262ada11bc7ffe8ec5508e6a877937c462
-  react-native-webview: 0bacc79175bc44869e4c1a015b9bc21df8cf4feb
+  react-native-video: aa527b0acb37f94c4491e70df0274cb26979405d
+  react-native-webview: a5bae02fab4b01b856bc4d2bc5c8a4966d8a700b
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
@@ -865,9 +865,9 @@ SPEC CHECKSUMS:
   RealmJS: 6eb9fd885c5f3cd609b8b50282a5785cb4b48a18
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAppleAuthentication: 473b2c076f1a48a537610580a168c1fb6d0a90c6
-  RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
-  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPushNotificationIOS: ef00b111c849a9bb5dbc86d40cf91acb8b262772
+  RNCAsyncStorage: 3eea36d9460c5159b592f9ecbe5a77f8aca98006
+  RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
+  RNCPushNotificationIOS: 8025ff0b610d7b28d29ddc1b619cd55814362e4c
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
   RNFBApp: a74d8259d827c8bf55100e759cffa2e50ba6fe30
   RNFBAuth: 8fd5ea881020a13deae2ca3e9810e30d15ce42ac
@@ -877,8 +877,8 @@ SPEC CHECKSUMS:
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNGoogleSignin: ccf71ee4b6cfd324fd788a41e457e2043838c0d9
   RNImageCropPicker: 16951bc02411f50c4d197488ed6406a23dc3b5f1
-  RNLocalize: 49634a6a605dcdeb319e9c42a5c2f1aec508694b
-  RNPermissions: 4c8a37b4dde50f1f152bf8cd08c4a43d2355829e
+  RNLocalize: c388679af021ddd6069c215f7fdd2acf4e77ede5
+  RNPermissions: eb94f9fdc0a8ecd02fcce0676d56ffb1395d41e1
   RNReactNativeDocViewer: 571c6ac38483531b8fb521d02a6ba54652ed10a7
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
@@ -889,7 +889,7 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
-  toolbar-android: 85f3ef4d691469f2d304e7dee4bca013aa1ba1ff
+  toolbar-android: 404f4450b203597e7b417f714ff417bed562a1be
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit5: 64095dfefcf39be2355711ef27112d55e340d90e
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
