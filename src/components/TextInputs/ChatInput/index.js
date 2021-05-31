@@ -40,7 +40,7 @@ class ChatInput extends Component {
       suggestionDataHeight: 0,
       mentionUser: [],
       input_focus: false,
-      isExtrasAreaVisible: false,
+      isExtrasAreaVisible: true,
       text: '',
       gifs: [],
       stickers: [],
@@ -238,6 +238,12 @@ class ChatInput extends Component {
     this.setState({stickerSearch: text}, () => this.fetchStickers());
   }
 
+  hideKeyboard(){
+      this.input_ref && this.input_ref._textInput
+        ? this.input_ref._textInput.blur()
+           : this.input_ref.blur()
+      }
+
   render() {
     const {
       onAttachmentPress,
@@ -252,7 +258,7 @@ class ChatInput extends Component {
       addEmotionToFrequentlyUsed,
       emotions,
     } = this.props;
-    const {input_focus} = this.state;
+    const {input_focus, isExtrasAreaVisible} = this.state;
 
     function handleInput(text) {
       onChangeText(text);
@@ -314,10 +320,18 @@ class ChatInput extends Component {
               </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.chatAttachmentButton}
-                    onPress={() =>{ this.setState({
-                        isExtrasAreaVisible: !this.state.isExtrasAreaVisible,
-                    })
-                        Keyboard.dismiss()
+                    onPress={() =>{
+                        // Keyboard.dismiss(()=> {
+                        //     this.setState({
+                        //         isExtrasAreaVisible: !isExtrasAreaVisible,
+                        //     })
+                        // })
+                        this.hideKeyboard(()=>{
+                          console.log('isExtrasAreaVisible', isExtrasAreaVisible)
+                                this.setState({
+                                    isExtrasAreaVisible: !isExtrasAreaVisible,
+                                })
+                        })
                     }}>
                     <Image
                         source={Icons.icon_sticker_pack}
@@ -618,24 +632,24 @@ class ChatInput extends Component {
           </TouchableOpacity>
           {/* </View> */}
         </LinearGradient>
-        {this.state.isExtrasAreaVisible && (
+        {isExtrasAreaVisible && (
           <View>
             <View
               style={[
                 styles.emotionsContainer,
                 {
-                  height: this.state.isExtrasAreaVisible ? 340 : 0,
+                  height: isExtrasAreaVisible ? 340 : 0,
                   width: '100%',
                 },
               ]}>
               <ScrollableTabView
-                initialPage={3}
+                initialPage={1}
                 tabBarPosition={'top'}
                 renderTabBar={({activeTab, goToPage}) => {
                   return (
                     <View
                       style={{
-                        width: Dimensions.get('screen').width / 4,
+                        width: Dimensions.get('screen').width / 3,
                         height: '15%',
                         flexDirection: 'row',
                       }}>
@@ -677,12 +691,12 @@ class ChatInput extends Component {
                         activeTab={activeTab}
                         index={2}
                       />
-                      <TabBarItem
-                        icon={Icons.icon_sticker_pack}
-                        onPress={() => goToPage(3)}
-                        activeTab={activeTab}
-                        index={3}
-                      />
+                      {/*<TabBarItem*/}
+                        {/*icon={Icons.icon_sticker_pack}*/}
+                        {/*onPress={() => goToPage(3)}*/}
+                        {/*activeTab={activeTab}*/}
+                        {/*index={3}*/}
+                      {/*/>*/}
                     </View>
                   );
                 }}>
@@ -735,9 +749,9 @@ class ChatInput extends Component {
                     addEmotionToFrequentlyUsed={addEmotionToFrequentlyUsed}
                   />
                 </View>
-                <View tabLabel={'Stickers Pack'}>
-                  <StickerPackSection />
-                </View>
+                {/*<View tabLabel={'Stickers Pack'}>*/}
+                  {/*<StickerPackSection />*/}
+                {/*</View>*/}
               </ScrollableTabView>
             </View>
           </View>
