@@ -346,11 +346,11 @@ class CreateEditNote extends Component {
         }
       }else{
         if(media_url && media_url.length>0){
-          payload['media_url'] = [,...media_url];
+          payload['media_url'] = [...media_url];
         }
 
         if(media_type && media_type.length>0){
-          payload['media_type'] = [,...media_type];
+          payload['media_type'] = [...media_type];
         }
       }
 

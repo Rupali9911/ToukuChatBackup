@@ -48,6 +48,7 @@ import VideoPlayerCustom from '../VideoPlayerCustom';
 import AudioPlayerCustom from '../AudioPlayerCustom';
 import ImageGrid from '../ImageGrid';
 import VideoPreview from '../VideoPreview';
+import NormalImage from '../NormalImage';
 
 const { width, height } = Dimensions.get('window');
 class NoteItem extends Component {
@@ -679,7 +680,7 @@ class NoteItem extends Component {
                         this.setState({ page_height: height });
                       }}
                     >
-                      <ScalableImage src={item.media_url} />
+                      <NormalImage src={item.media_url}/>
                     </View>
                   }
                   {item.media_type === 'video' &&

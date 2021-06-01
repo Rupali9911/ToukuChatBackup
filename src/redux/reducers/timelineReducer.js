@@ -9,6 +9,7 @@ export const GET_TREND_TIMELINE_FAIL = 'GET_TREND_TIMELINE_FAIL';
 export const GET_FOLLOWING_TIMELINE_REQUEST = 'GET_FOLLOWING_TIMELINE_REQUEST';
 export const GET_FOLLOWING_TIMELINE_SUCCESS = 'GET_FOLLOWING_TIMELINE_SUCCESS';
 export const GET_FOLLOWING_TIMELINE_FAIL = 'GET_FOLLOWING_TIMELINE_FAIL';
+export const UPDATE_FOLLOWING_TIMELINE_LIST = 'UPDATE_FOLLOWING_TIMELINE_LIST';
 
 export const GET_RANKING_TIMELINE_REQUEST = 'GET_RANKING_TIMELINE_REQUEST';
 export const GET_RANKING_TIMELINE_SUCCESS = 'GET_RANKING_TIMELINE_SUCCESS';
@@ -102,6 +103,12 @@ export default function (state = initialState, action) {
         followingLoadMore: action.payload.load_more,
         loading: false,
       };
+
+    case UPDATE_FOLLOWING_TIMELINE_LIST:
+      return {
+        ...state,
+        followingTimeline: [...action.payload]
+      }
 
     case GET_FOLLOWING_TIMELINE_FAIL:
       return {
@@ -333,6 +340,10 @@ export const updateFollowingTimeline = (data) => (dispatch) => {
   dispatch(getFollowingTimelineSuccess(data));
 }
 
+export const updateFollowingList = (data) => (dispatch) => {
+  dispatch(updateFollowingTimelineList(data));
+}
+
 //
 export const getTrendTimeline = (userType,postId) => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -366,6 +377,11 @@ const getFollowingTimelineSuccess = (data) => ({
   payload: data,
 });
 
+const updateFollowingTimelineList = (data) => ({
+  type: UPDATE_FOLLOWING_TIMELINE_LIST,
+  payload: data
+});
+
 const getFollowingTimelineFailure = () => ({
   type: GET_FOLLOWING_TIMELINE_FAIL,
 });
@@ -396,6 +412,7 @@ export const getFollowingTimeline = (postId,reload) => (dispatch) =>
       .get(`/xchat/timeline-following/?last_id=${postId?postId:0}`)
       .then((res) => {
         if (res.status) {
+          console.log('res',res);
           // if(!postId){
             const data = {...res, type:reload}
             dispatch(getFollowingTimelineSuccess(data));

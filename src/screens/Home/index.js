@@ -234,7 +234,6 @@ class Home extends PureComponent {
 
   friendFilter = () => {
     const {userFriends} = this.props;
-    // console.log('userFriends',userFriends);
     const Friends = userFriends.filter((friend) => friend.friend_status !== 'UNFRIEND')
     const filteredFriends = Friends.filter(
       createFilter(this.state.searchText, ['username']),
@@ -311,12 +310,12 @@ class Home extends PureComponent {
     // }
   }
 
-  componentDidUpdate(nextPorps) {
-    if (nextPorps.followingChannels !== this.props.followingChannels) {
+  componentDidUpdate(nextProps) {
+    if (nextProps.followingChannels !== this.props.followingChannels) {
       this.channelFilter();
-    } else if (nextPorps.userGroups !== this.props.userGroups) {
+    } else if (nextProps.userGroups !== this.props.userGroups) {
       this.groupFilter();
-    } else if (nextPorps.userFriends !== this.props.userFriends) {
+    } else if (nextProps.userFriends !== this.props.userFriends) {
       this.friendFilter();
     }
   }

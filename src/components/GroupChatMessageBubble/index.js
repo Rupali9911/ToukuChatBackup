@@ -41,7 +41,7 @@ import {
   setActiveTimelineTab,
   setSpecificPostId,
 } from '../../redux/reducers/timelineReducer';
-import { getChannelIdAndReferral, getUserName, normalize } from '../../utils';
+import { getChannelIdAndReferral, getUserName, normalize, checkDeepLinkUrl } from '../../utils';
 import AudioPlayerCustom from '../AudioPlayerCustom';
 import LinkPreviewComponent from '../LinkPreviewComponent';
 import RoundedImage from '../RoundedImage';
@@ -475,11 +475,12 @@ class GroupChatMessageBubble extends Component {
     let arrLinks = linkify().match(text);
     if (arrLinks) {
       return arrLinks.map((item) => {
-        let checkUrl = staging ? EnvironmentStage : Environment;
-        if (checkUrl) {
+        if (checkDeepLinkUrl(item.url)) {
           return null;
         }
-        return <LinkPreviewComponent text={item.text} url={item.url} />;
+        return <View style={styles.linkPreviewContainer}>
+            <LinkPreviewComponent text={item.text} url={item.url} />
+        </View>
       });
     }
   };

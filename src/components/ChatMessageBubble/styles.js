@@ -220,5 +220,8 @@ export default StyleSheet.create({
     fontSize: 13,
     fontFamily: Fonts.regular,
     fontWeight: '600'
+  },
+  linkPreviewContainer: {
+    minWidth: normalize(140)
   }
 });

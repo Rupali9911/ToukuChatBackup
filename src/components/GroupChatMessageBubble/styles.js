@@ -189,4 +189,7 @@ export default StyleSheet.create({
     marginLeft: 10,
     color: 'white',
   },
+  linkPreviewContainer: {
+    minWidth: normalize(140)
+  }
 });

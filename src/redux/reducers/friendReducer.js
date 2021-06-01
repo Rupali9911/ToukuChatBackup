@@ -243,7 +243,6 @@ export const setUserFriends = () => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getUserFriendsRequest());
     var result = getLocalUserFriends();
-
     var friends = [];
 
     // result.map((item) => {

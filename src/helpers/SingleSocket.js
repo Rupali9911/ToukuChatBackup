@@ -47,7 +47,7 @@ export default class SingleSocket extends Component {
     this.connectSocket();
   }
 
-  connectSocket() {
+  async connectSocket() {
     if (this.jwt !== '') {
       console.log('webSocketBridge',this.webSocketBridge);
       if(this.webSocketBridge == null){
@@ -132,8 +132,8 @@ export default class SingleSocket extends Component {
     eventService.sendMessage(JSON.parse(e.data));
   }
 
-  checkSocketConnected() {
-    console.log('checking web socket connected',this.webSocketBridge);
+  async checkSocketConnected() {
+    // console.log('checking web socket connected',this.webSocketBridge);
     clearInterval(this.socketChecker);
     if(this.jwt && this.jwt !== ''){
       this.socketChecker = setInterval(() => {

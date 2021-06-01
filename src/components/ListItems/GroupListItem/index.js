@@ -46,7 +46,7 @@ export default class GroupListItem extends PureComponent {
   }
 
   // Format mentions
-  renderMessageWitMentions = (msg) => {
+  renderMessageWithMentions = (msg) => {
     const {mentions} = this.props;
     let splitNewMessageText = msg.split(' ');
     let newMessageMentions = [];
@@ -86,6 +86,43 @@ export default class GroupListItem extends PureComponent {
     this.props.onCheckChange('group', isCheck, item);
   };
 
+  onPinChat = () => {
+    this.setState({isPinUnpinLoading: true});
+    this.props.onPinUnpinChat(item, () => {
+      this.setState({isPinUnpinLoading: false});
+      this.itemRef && this.itemRef.close();
+    });
+  }
+
+  onDeleteChat = () => {
+    console.log('delete chat');
+    this.itemRef && this.itemRef.close();
+    this.props.onDeleteChat(item.group_id);
+  }
+
+  onMovedToOrigin = () => this.setState({isSwipeButtonVisible: false})
+
+  onRightButtonShowed = (swipeItem) => {
+    this.itemRef = swipeItem;
+    this.props.onSwipeButtonShowed(swipeItem);
+    this.setState({isSwipeButtonVisible: true});
+  }
+
+  onGroupPress = () => {
+    const {isVisible,item} = this.props;
+    const {newItem,isSwipeButtonVisible} = this.state;
+    if(isSwipeButtonVisible){
+      this.itemRef && this.itemRef.close();
+    }else if(!isVisible){
+      this.props.onPress();
+    }else {
+      this.manageRecord(
+        item,
+        !newItem.isCheck ? 'check' : 'unCheck',
+      );
+    }
+  }
+
   render() {
     const {
       title,
@@ -100,8 +137,6 @@ export default class GroupListItem extends PureComponent {
       onSwipeButtonShowed,
       onSwipeInitial,
       swipeable,
-      onDeleteChat,
-      onPinUnpinChat,
     } = this.props;
 
     const {
@@ -123,13 +158,7 @@ export default class GroupListItem extends PureComponent {
                   <TouchableOpacity
                     style={styles.pinChatActionContainer}
                     disabled={isPinUnpinLoading}
-                    onPress={() => {
-                      this.setState({isPinUnpinLoading: true});
-                      onPinUnpinChat(item, () => {
-                        this.setState({isPinUnpinLoading: false});
-                        this.itemRef && this.itemRef.close();
-                      });
-                    }}>
+                    onPress={this.onPinChat}>
                     {isPinUnpinLoading ? (
                       <ActivityIndicator color={Colors.white} />
                     ) : (
@@ -144,11 +173,8 @@ export default class GroupListItem extends PureComponent {
                 <SwipeButtonsContainer style={styles.swipeButtonContainer}>
                   <TouchableOpacity
                     style={styles.deleteChatActionContainer}
-                    onPress={() => {
-                      console.log('delete chat');
-                      this.itemRef && this.itemRef.close();
-                      onDeleteChat(item.group_id);
-                    }}>
+                    disabled={isDeleteLoading}
+                    onPress={this.onDeleteChat}>
                     {isDeleteLoading ? (
                       <ActivityIndicator color={Colors.white} />
                     ) : (
@@ -162,46 +188,26 @@ export default class GroupListItem extends PureComponent {
             )
           }
           onSwipeInitial={(swipeItem) => onSwipeInitial(swipeItem)}
-          onMovedToOrigin={() => this.setState({isSwipeButtonVisible: false})}
-          onRightButtonsShowed={(swipeItem) => {
-            this.itemRef = swipeItem;
-            onSwipeButtonShowed(swipeItem);
-            this.setState({isSwipeButtonVisible: true});
-          }}
+          onMovedToOrigin={this.onMovedToOrigin}
+          onRightButtonsShowed={this.onRightButtonShowed}
           disableSwipeIfNoButton>
           <View style={styles.swipeItemContainer}>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={
-                isSwipeButtonVisible
-                  ? () => {
-                      this.itemRef && this.itemRef.close();
-                    }
-                  : !isVisible
-                  ? onPress
-                  : () => {
-                      this.manageRecord(
-                        item,
-                        !newItem.isCheck ? 'check' : 'unCheck',
-                      );
-                    }
-              }
+              onPress={this.onGroupPress}
               style={styles.container}>
               <View style={styles.firstView}>
                 {isVisible && newItem.isCheck === false ? (
                   <TouchableOpacity
                     style={styles.checkBox}
-                    onPress={() => {
-                      // this.setState({isChecked: true});
-                      this.manageRecord(item, 'check');
-                    }}
+                    onPress={this.manageRecord.bind(this,item,'check')}
                   />
                 ) : (
                   isVisible &&
                   newItem.isCheck === true && (
                     <TouchableOpacity
                       style={styles.checkedActionContainer}
-                      onPress={() => this.manageRecord(item, 'unCheck')}>
+                      onPress={this.manageRecord.bind(this,item,'unCheck')}>
                       <LinearGradient
                         start={{x: 0.1, y: 0.7}}
                         end={{x: 0.5, y: 0.2}}
@@ -260,7 +266,7 @@ export default class GroupListItem extends PureComponent {
                         globalStyles.smallNunitoRegularText,
                         styles.descriptionText,
                       ]}>
-                      {this.renderMessageWitMentions(description)}
+                      {this.renderMessageWithMentions(description)}
                     </Text>
                   </View>
                   {isPined ? (

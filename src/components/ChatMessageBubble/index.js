@@ -295,7 +295,9 @@ class ChatMessageBubble extends Component {
         if (checkDeepLinkUrl(item.url)) {
           return null;
         }
-        return <LinkPreviewComponent text={item.text} url={item.url} />;
+        return <View style={styles.linkPreviewContainer}>
+          <LinkPreviewComponent text={item.text} url={item.url} />
+        </View>
       });
     }
   }

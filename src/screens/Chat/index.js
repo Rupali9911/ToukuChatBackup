@@ -167,9 +167,10 @@ import {
   updateUnReadCount,
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
+  getLocalUserFriends,
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
-import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, getUserName} from '../../utils';
+import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, getUserName, wait} from '../../utils';
 import { isArray, isObject } from 'lodash';
 import {minVersion, version} from "../../../package";
 // import { getAppstoreAppMetadata } from "react-native-appstore-version-checker";
@@ -576,6 +577,9 @@ class Chat extends Component {
         this.messageDeleteInFollowingChannel(message);
         break;
       case SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
+        this.multipleMessageDeleteInFollowingChannel(message);
+        break;
+      case SocketEvents.COMPOSE_MESSAGE_DELETE_IN_CHANNEL:
         this.multipleMessageDeleteInFollowingChannel(message);
         break;
       case SocketEvents.UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL:
@@ -1446,10 +1450,7 @@ class Chat extends Component {
 
   multipleMessageDeleteInFollowingChannel(message) {
     const {currentChannel} = this.props;
-    if (
-      message.text.data.type ===
-      SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL
-    ) {
+    if (message) {
       if(isArray(message.text.data.message_details)){
         message.text.data.message_details.map((item) => {
           // if (item.deleted_for.includes(this.props.userData.id)) {
@@ -1483,7 +1484,7 @@ class Chat extends Component {
             }
           // }
         });
-      }else {
+      } else {
         let item = message.text.data.message_details;
         let result = getChannelsById(item.channel);
         let channels = [];
@@ -1905,7 +1906,43 @@ class Chat extends Component {
     if (
       message.text.data.type === SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_FRIEND
     ) {
-      message.text.data.message_details.map((item) => {
+      if(isArray(message.text.data.message_details)){
+        message.text.data.message_details.map((item) => {
+          if (item.deleted_for.includes(userData.id)) {
+            deleteFriendMessageById(item.id);
+  
+            let user_id;
+            if (item.from_user.id === userData.id) {
+              user_id = item.to_user.id;
+            } else if (item.to_user.id === userData.id) {
+              user_id = item.from_user.id;
+            }
+  
+            let users = getLocalUserFriend(user_id);
+            let array = [];
+            array = realmToPlainObject(users);
+            // array = users.toJSON();
+            if (array[0].last_msg_id === item.id) {
+              let chats = getFriendChatConversationById(item.friend);
+              let chats_array = [];
+              chats_array = realmToPlainObject(chats);
+              // chats_array = chats.toJSON();
+              if (chats_array.length > 0) {
+                updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
+              } else {
+                updateFriendLastMsgWithoutCount(user_id, null);
+              }
+              this.props.setUserFriends().then(() => {
+                this.props.setCommonChatConversation();
+              });
+            }
+            if (this.props.currentRouteName === 'FriendChats' && currentFriend) {
+              this.getLocalFriendConversation();
+            }
+          }
+        });
+      }else{
+        const item = message.text.data.message_details;
         if (item.deleted_for.includes(userData.id)) {
           deleteFriendMessageById(item.id);
 
@@ -1938,7 +1975,7 @@ class Chat extends Component {
             this.getLocalFriendConversation();
           }
         }
-      });
+      }
     }
   }
 
@@ -2007,6 +2044,12 @@ class Chat extends Component {
     if (message) {
       // removeUserFriends(message.text.data.message_details.user_id);
       updateFriendStatus(message.text.data.message_details.user_id,message.text.data.message_details.status);
+      let array = this.props.acceptedRequest;
+      const index = array.indexOf(message.text.data.message_details.user_id);
+      if (index > -1) {
+        array.splice(index, 1);
+      }
+      this.props.setAcceptedRequest(array);
       this.props.setUserFriends().then(() => {
         this.props.setCommonChatConversation();
       });
@@ -2046,18 +2089,28 @@ class Chat extends Component {
     }
   };
 
-  deleteFriendObject = (message) => {
+  deleteFriendObject = async (message) => {
     const {currentFriend} = this.props;
     if (message) {
-      removeUserFriends(message.text.data.message_details.user_id);
-      this.props.setUserFriends().then(() => {
-        this.props.setCommonChatConversation();
-      });
-      if (
-        this.props.currentRouteName === 'FriendChats' &&
-        currentFriend &&
-        message.text.data.message_details.user_id === currentFriend.user_id
-      ) {
+      console.log('message',message);
+      let user = getUserFriend(message.text.data.message_details.friend);
+      if(user && user.length>0){
+        let array = this.props.acceptedRequest;
+        const index = array.indexOf(user[0].user_id);
+        if (index > -1) {
+          array.splice(index, 1);
+        }
+        this.props.setAcceptedRequest(array);
+        removeUserFriends(user[0].user_id);
+        this.props.setUserFriends().then(() => {
+          this.props.setCommonChatConversation();
+        });
+        if (
+          this.props.currentRouteName === 'FriendChats' &&
+          currentFriend &&
+          message.text.data.message_details.user_id === currentFriend.user_id
+        ) {
+        }
       }
     }
   };
@@ -3542,6 +3595,184 @@ class Chat extends Component {
     return '';
   }
 
+  getGroupDescription = (item) => {
+    let description = '';
+    description = item.last_msg !== null ?
+      item.last_msg.type === 'text' ?
+        item.last_msg.text :
+        item.last_msg.type === 'image' ?
+          translate('pages.xchat.photo') :
+          item.last_msg.type === 'video' ?
+            translate('pages.xchat.video') :
+            item.last_msg.type === 'doc' ?
+              translate('pages.xchat.document') :
+              item.last_msg.type === 'audio' ?
+                translate('pages.xchat.audio') :
+                item.last_msg.type === 'update' && item.last_msg.text.includes('add a memo') ?
+                  this.renderGroupNoteText(item.last_msg.text, item) : 
+                  '' :
+      item.no_msgs || !item.last_msg_id ? '' :
+        translate('pages.xchat.messageUnsent');
+    return description;
+  }
+
+  onDeleteGroupChat = (id) => {
+    if (id) {
+      groupId = [id];
+      this.setDataToDeleteChat();
+    }
+  }
+
+  getChannelDescription = (item) => {
+    let description = item.subject_message
+      ? item.subject_message
+      : item.last_msg
+        ? item.last_msg.is_unsent
+          ? translate('pages.xchat.messageUnsent')
+          : item.last_msg.msg_type === 'text'
+            ? this.renderDisplayNameText(item.last_msg.message_body, item.last_msg)
+            : item.last_msg.msg_type === 'image'
+              ? translate('pages.xchat.photo')
+              : item.last_msg.msg_type === 'video'
+                ? translate('pages.xchat.video')
+                : item.last_msg.msg_type === 'doc'
+                  ? translate('pages.xchat.document')
+                  : item.last_msg.msg_type === 'audio'
+                    ? translate('pages.xchat.audio')
+                    : ''
+        : '';
+    return description;
+  }
+
+  onDeleteChannelChat = (id) => {
+    if (id) {
+      channelId = [id];
+      this.setDataToDeleteChat();
+    }
+  }
+
+  getFriendDescription = (item) => {
+    let description = item.last_msg
+      ? item.last_msg_type === 'text'
+        ? item.last_msg
+        : item.last_msg_type === 'image'
+          ? translate('pages.xchat.photo')
+          : item.last_msg_type === 'video'
+            ? translate('pages.xchat.video')
+            : item.last_msg_type === 'doc'
+              ? translate('pages.xchat.document')
+              : item.last_msg_type === 'audio'
+                ? translate('pages.xchat.audio')
+                : item.last_msg_type === 'update' && item.last_msg.includes('add a memo')
+                  ? this.renderFriendNoteText(item.last_msg, item)
+                  : ''
+      : item.last_msg_id
+        ? translate('pages.xchat.messageUnsent')
+        : '';
+    return description;
+  }
+
+  onFriendAvatarPress = (item) => {
+    if (item.friend_status !== 'UNFRIEND') {
+      this.onOpenFriendDetails(item);
+    }
+  }
+
+  friendCallTypingStop = (id) => {
+    updateFriendTypingStatus(id, false);
+    this.props.setUserFriends().then(() => {
+      this.props.setCommonChatConversation();
+    });
+  }
+
+  onDeleteFriendChat = (id) => {
+    if (id) {
+      friendId = [id];
+      this.setDataToDeleteChat();
+    }
+  }
+
+  renderCommonItem = ({ item, index }) => {
+    const {isVisible, isUncheck} = this.state;
+    return item.chat === 'group' ? (
+      <GroupListItem
+        key={index + ''}
+        last_msg_id={item.last_msg_id}
+        title={item.group_name}
+        onCheckChange={this.onCheckChange}
+        description={this.getGroupDescription(item)}
+        mentions={item.mentions}
+        date={item.timestamp}
+        image={item.group_picture}
+        onPress={this.onOpenGroupChats.bind(this,item)}
+        unreadCount={item.unread_msg}
+        isVisible={isVisible}
+        isUncheck={isUncheck}
+        item={item}
+        isPined={item.is_pined}
+        swipeable={true}
+        onSwipeButtonShowed={this.onSwipeButtonShowed}
+        onSwipeInitial={this.onSwipeInitial}
+        onDeleteChat={this.onDeleteGroupChat}
+        onPinUnpinChat={this.onPinUnpinGroup}
+      />
+    ) : item.chat === 'channel' ? (
+      <ChannelListItem
+        key={index}
+        last_msg={item.last_msg}
+        title={item.name}
+        onCheckChange={this.onCheckChange}
+        description={this.getChannelDescription(item)}
+        date={item.last_msg ? item.last_msg.created : item.joining_date}
+        image={item.channel_picture}
+        onPress={this.onOpenChannelChats.bind(this,item)}
+        unreadCount={item.unread_msg}
+        isVisible={isVisible}
+        isUncheck={isUncheck}
+        item={item}
+        isPined={item.is_pined}
+        swipeable={true}
+        onSwipeButtonShowed={this.onSwipeButtonShowed}
+        onSwipeInitial={this.onSwipeInitial}
+        onDeleteChat={this.onDeleteChannelChat}
+        onPinUnpinChat={this.onPinUnpinChannel}
+      />
+    ) : (
+          <FriendListItem
+            key={index}
+            last_msg_id={item.last_msg_id}
+            user_id={item.user_id}
+            title={item.display_name}
+            onCheckChange={this.onCheckChange}
+            description={this.getFriendDescription(item)}
+            image={getAvatar(item.profile_picture)}
+            date={item.timestamp}
+            isOnline={item.is_online}
+            onPress={this.onOpenFriendChats.bind(this,item)}
+            onAvtarPress={this.onFriendAvatarPress.bind(this,item)}
+            unreadCount={item.unread_msg}
+            isTyping={item.is_typing}
+            callTypingStop={this.friendCallTypingStop}
+            isVisible={isVisible}
+            isUncheck={isUncheck}
+            item={item}
+            isPined={item.is_pined}
+            swipeable={true}
+            onSwipeButtonShowed={this.onSwipeButtonShowed}
+            onSwipeInitial={this.onSwipeInitial}
+            onDeleteChat={this.onDeleteFriendChat}
+            onPinUnpinChat={this.onPinUnpinFriend}
+          />
+        )
+  }
+
+  listSeparatorComponent = () => <View style={globalStyles.separator} />
+
+  listFooterComponent = () => {
+    const {isLoading} = this.state;
+    return <View>{isLoading && <ListLoader />}</View>
+  }
+
   renderCommonChat = () => {
     const {isLoading, isVisible, isUncheck} = this.state;
     const commonChat = this.props.commonChat;
@@ -3567,166 +3798,14 @@ class Chat extends Component {
     if (conversations.length > 0) {
       return (
         <FlatList
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => `thread_${index}`}
           data={conversations}
-          renderItem={({item, index}) =>
-            item.chat === 'group' ? (
-              <GroupListItem
-                key={index + ''}
-                last_msg_id={item.last_msg_id}
-                title={item.group_name}
-                onCheckChange={this.onCheckChange}
-                description={
-                  item.last_msg !== null
-                    ? item.last_msg.type === 'text'
-                      ? item.last_msg.text
-                      : item.last_msg.type === 'image'
-                      ? translate('pages.xchat.photo')
-                      : item.last_msg.type === 'video'
-                      ? translate('pages.xchat.video')
-                      : item.last_msg.type === 'doc'
-                      ? translate('pages.xchat.document')
-                      : item.last_msg.type === 'audio'
-                      ? translate('pages.xchat.audio')
-                      : item.last_msg.type === 'update' && item.last_msg.text.includes('add a memo') 
-                      ? this.renderGroupNoteText(item.last_msg.text,item)
-                      : ''
-                    : item.no_msgs || !item.last_msg_id
-                    ? ''
-                    : translate('pages.xchat.messageUnsent')
-                }
-                mentions={item.mentions}
-                date={item.timestamp}
-                image={item.group_picture}
-                onPress={() => this.onOpenGroupChats(item)}
-                unreadCount={item.unread_msg}
-                isVisible={isVisible}
-                isUncheck={isUncheck}
-                item={item}
-                isPined={item.is_pined}
-                swipeable={true}
-                onSwipeButtonShowed={this.onSwipeButtonShowed}
-                onSwipeInitial={this.onSwipeInitial}
-                onDeleteChat={(id) => {
-                  if (id) {
-                    groupId = [id];
-                    this.setDataToDeleteChat();
-                  }
-                }}
-                onPinUnpinChat={(chatPinStatus, onClose) => {
-                  this.onPinUnpinGroup(chatPinStatus, onClose);
-                }}
-              />
-            ) : item.chat === 'channel' ? (
-              <ChannelListItem
-                key={index}
-                last_msg={item.last_msg}
-                title={item.name}
-                onCheckChange={this.onCheckChange}
-                description={
-                  item.subject_message
-                    ? item.subject_message
-                    : item.last_msg
-                    ? item.last_msg.is_unsent
-                      ? translate('pages.xchat.messageUnsent')
-                      : item.last_msg.msg_type === 'text'
-                      ? this.renderDisplayNameText(item.last_msg.message_body,item.last_msg)
-                      : item.last_msg.msg_type === 'image'
-                      ? translate('pages.xchat.photo')
-                      : item.last_msg.msg_type === 'video'
-                      ? translate('pages.xchat.video')
-                      : item.last_msg.msg_type === 'doc'
-                      ? translate('pages.xchat.document')
-                      : item.last_msg.msg_type === 'audio'
-                      ? translate('pages.xchat.audio')
-                      : ''
-                    : ''
-                }
-                date={item.last_msg ? item.last_msg.created : item.joining_date}
-                image={item.channel_picture}
-                onPress={() => this.onOpenChannelChats(item)}
-                unreadCount={item.unread_msg}
-                isVisible={isVisible}
-                isUncheck={isUncheck}
-                item={item}
-                isPined={item.is_pined}
-                swipeable={true}
-                onSwipeButtonShowed={this.onSwipeButtonShowed}
-                onSwipeInitial={this.onSwipeInitial}
-                onDeleteChat={(id) => {
-                  if (id) {
-                    channelId = [id];
-                    this.setDataToDeleteChat();
-                  }
-                }}
-                onPinUnpinChat={(chatPinStatus, onClose) => {
-                  this.onPinUnpinChannel(chatPinStatus, onClose);
-                }}
-              />
-            ) : (
-              <FriendListItem
-                key={index}
-                last_msg_id={item.last_msg_id}
-                user_id={item.user_id}
-                title={item.display_name}
-                onCheckChange={this.onCheckChange}
-                description={
-                  item.last_msg
-                    ? item.last_msg_type === 'text'
-                      ? item.last_msg
-                      : item.last_msg_type === 'image'
-                      ? translate('pages.xchat.photo')
-                      : item.last_msg_type === 'video'
-                      ? translate('pages.xchat.video')
-                      : item.last_msg_type === 'doc'
-                      ? translate('pages.xchat.document')
-                      : item.last_msg_type === 'audio'
-                      ? translate('pages.xchat.audio')
-                      : item.last_msg_type === 'update' && item.last_msg.includes('add a memo') 
-                      ? this.renderFriendNoteText(item.last_msg,item)
-                      : ''
-                    : item.last_msg_id
-                    ? translate('pages.xchat.messageUnsent')
-                    : ''
-                }
-                image={getAvatar(item.profile_picture)}
-                date={item.timestamp}
-                isOnline={item.is_online}
-                onPress={() => this.onOpenFriendChats(item)}
-                onAvtarPress={() => {
-                  if (item.friend_status !== 'UNFRIEND') {
-                    this.onOpenFriendDetails(item);
-                  }
-                }}
-                unreadCount={item.unread_msg}
-                isTyping={item.is_typing}
-                callTypingStop={(id) => {
-                  updateFriendTypingStatus(id, false);
-                  this.props.setUserFriends().then(() => {
-                    this.props.setCommonChatConversation();
-                  });
-                }}
-                isVisible={isVisible}
-                isUncheck={isUncheck}
-                item={item}
-                isPined={item.is_pined}
-                swipeable={true}
-                onSwipeButtonShowed={this.onSwipeButtonShowed}
-                onSwipeInitial={this.onSwipeInitial}
-                onDeleteChat={(id) => {
-                  if (id) {
-                    friendId = [id];
-                    this.setDataToDeleteChat();
-                  }
-                }}
-                onPinUnpinChat={(chatPinStatus, onClose) => {
-                  this.onPinUnpinFriend(chatPinStatus, onClose);
-                }}
-              />
-            )
-          }
-          ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
-          ListFooterComponent={() => <View>{isLoading && <ListLoader />}</View>}
+          renderItem={this.renderCommonItem}
+          ItemSeparatorComponent={this.listSeparatorComponent}
+          ListFooterComponent={this.listFooterComponent}
+          initialNumToRender={15}
+          maxToRenderPerBatch={15}
+          updateCellsBatchingPeriod={60}
         />
       );
     } else if (conversations.length === 0 && isLoading) {
