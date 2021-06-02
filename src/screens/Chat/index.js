@@ -1910,14 +1910,14 @@ class Chat extends Component {
         message.text.data.message_details.map((item) => {
           if (item.deleted_for.includes(userData.id)) {
             deleteFriendMessageById(item.id);
-  
+
             let user_id;
             if (item.from_user.id === userData.id) {
               user_id = item.to_user.id;
             } else if (item.to_user.id === userData.id) {
               user_id = item.from_user.id;
             }
-  
+
             let users = getLocalUserFriend(user_id);
             let array = [];
             array = realmToPlainObject(users);
@@ -2063,30 +2063,36 @@ class Chat extends Component {
   };
 
   updateFriendStatus = (message) => {
-    const {currentFriend} = this.props;
-    if (message) {
-      updateFriendStatus(
-        message.text.data.message_details.user_id,
-        message.text.data.message_details.status,
-      );
-      this.props.setUserFriends().then(() => {
-        this.props.setCommonChatConversation();
-      });
-      if (
-        this.props.currentRouteName === 'FriendChats' &&
-        currentFriend &&
-        message.text.data.message_details.user_id === currentFriend.user_id
-      ) {
-        let user = getLocalUserFriend(
-          message.text.data.message_details.user_id,
-        );
-        let users = realmToPlainObject(user);
-        if (users.length > 0) {
-          let item = users[0];
-          this.props.setCurrentFriend(item);
-        }
+      const {currentFriend} = this.props;
+      if (message) {
+          updateFriendStatus(
+              message.text.data.message_details.user_id,
+              message.text.data.message_details.status,
+          );
+          let array = this.props.acceptedRequest;
+          const index = array.indexOf(message.text.data.message_details.user_id);
+          if (index > -1) {
+              array.splice(index, 1);
+          }
+          this.props.setAcceptedRequest(array);
+          this.props.setUserFriends().then(() => {
+              this.props.setCommonChatConversation();
+          });
+          if (
+              this.props.currentRouteName === 'FriendChats' &&
+              currentFriend &&
+              message.text.data.message_details.user_id === currentFriend.user_id
+          ) {
+              let user = getLocalUserFriend(
+                  message.text.data.message_details.user_id,
+              );
+              let users = realmToPlainObject(user);
+              if (users.length > 0) {
+                  let item = users[0];
+                  this.props.setCurrentFriend(item);
+              }
+          }
       }
-    }
   };
 
   deleteFriendObject = async (message) => {
@@ -3609,7 +3615,7 @@ class Chat extends Component {
               item.last_msg.type === 'audio' ?
                 translate('pages.xchat.audio') :
                 item.last_msg.type === 'update' && item.last_msg.text.includes('add a memo') ?
-                  this.renderGroupNoteText(item.last_msg.text, item) : 
+                  this.renderGroupNoteText(item.last_msg.text, item) :
                   '' :
       item.no_msgs || !item.last_msg_id ? '' :
         translate('pages.xchat.messageUnsent');
