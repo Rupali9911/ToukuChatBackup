@@ -47,7 +47,6 @@ export default class ScalableImage extends Component {
     } else {
       width = '100%';
     }
-
     const container = {
       width,
       aspectRatio: ratio || 1,

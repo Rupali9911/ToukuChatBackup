@@ -364,17 +364,22 @@ class FriendChats extends Component {
 
     let imgThumb = '';
     if (sentMessageType === 'image') {
-      let file = uploadFile;
-      let files = [file];
-      const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
-        files,
-        (e) => {
-          console.log('progress_bar_percentage', e);
-          this.setState({uploadProgress: e.percent});
-        },
-      );
-      msgText = uploadedImages.image[0].image;
-      imgThumb = uploadedImages.image[0].thumbnail;
+      if(!uploadFile.isUrl){
+        let file = uploadFile;
+        let files = [file];
+        const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+          files,
+          (e) => {
+            console.log('progress_bar_percentage', e);
+            this.setState({uploadProgress: e.percent});
+          },
+        );
+        msgText = uploadedImages.image[0].image;
+        imgThumb = uploadedImages.image[0].thumbnail;
+      }else{
+        msgText = uploadFile.uri;
+        imgThumb = uploadFile.uri;
+      }
     }
 
     if (sentMessageType === 'audio') {

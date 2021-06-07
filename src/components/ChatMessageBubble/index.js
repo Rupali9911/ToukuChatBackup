@@ -48,6 +48,8 @@ import VideoPlayerCustom from '../VideoPlayerCustom';
 import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
 import MediaGridList from '../MediaGridList';
 import styles from './styles';
+import NormalImage from '../NormalImage';
+import GifImage from '../GifImage';
 
 let borderRadius = 20;
 
@@ -470,9 +472,9 @@ class ChatMessageBubble extends Component {
           message.msg_type === 'update'
             ? 0
             : message.msg_type === 'image'
-            ? 8
+            ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8
             : 10,
-        paddingVertical: message.msg_type === 'image' ? 8 : 10,
+        paddingVertical: message.msg_type === 'image' ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8 : 10,
       },
       styles.imageActionContainer,
     ];
@@ -494,7 +496,7 @@ class ChatMessageBubble extends Component {
                   message.hyperlink ? styles.talkBubbleContainer : {},
                 ]}>
                 <View style={styles.contentContainer}>
-                  {message.hyperlink ? null : (
+                  {message.hyperlink || (message.msg_type === 'image' && message.message_body && message.message_body.includes('.giphy.com/media/')) ? null : (
                     <View
                       style={[
                         styles.talkBubbleAbsoluteLeft,
@@ -518,17 +520,17 @@ class ChatMessageBubble extends Component {
                         message.hyperlink
                           ? styles.hyperlinkMessage
                           : [
-                              styles.imageMessage,
+                            message.message_body && message.message_body.includes('.giphy.com/media/') ? {} : styles.imageMessage,
                               {
                                 borderRadius,
                                 paddingHorizontal:
                                   message.msg_type === 'update'
                                     ? 0
                                     : message.msg_type === 'image'
-                                    ? 8
+                                    ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8
                                     : 10,
                                 paddingVertical:
-                                  message.msg_type === 'image' ? 8 : 10,
+                                  message.msg_type === 'image' ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8 : 10,
                               },
                             ],
                         message.msg_type === 'audio' && styles.audioMessage,
@@ -556,7 +558,12 @@ class ChatMessageBubble extends Component {
                       {message.reply_to &&
                         this.renderReplyMessage(message, false)}
                       {message.message_body && message.msg_type === 'image' ? (
-                        <ScalableImage
+                        message.message_body.includes('.giphy.com/media/') ?
+                        <GifImage src={message.thumbnail === null
+                          ? message.message_body
+                          : message.thumbnail}
+                          isGif={message.message_body.includes('&ct=g')}/>
+                        :<ScalableImage
                           src={
                             message.thumbnail === null
                               ? message.message_body
@@ -669,15 +676,15 @@ class ChatMessageBubble extends Component {
                     ? styles.talkBubbleContainer
                     : {},
                 ]}>
-                {/* {message.msg_type === 'image' ? null :
-                ( */}
+                {message.msg_type === 'image' && message.message_body && message.message_body.includes('.giphy.com/media/') ? null :
+                (
                 <View
                   style={[
                     styles.talkBubbleAbsoluteRight,
                     message.is_unsent && {borderLeftColor: Colors.gray},
                   ]}
                 />
-                {/* )} */}
+                )}
                 {message.is_unsent ? (
                   <View style={[styles.messageUnsentContainer, {borderRadius}]}>
                     <View style={styles.messageUnsentSubContainer}>
@@ -697,7 +704,7 @@ class ChatMessageBubble extends Component {
                       {
                         borderRadius,
                       },
-                      styles.audioMessageStyle,
+                      message.message_body && message.message_body.includes('.giphy.com/media/') ? {} : styles.audioMessageStyle,
                       message.msg_type === 'audio' && styles.audioMessageWidth,
                     ]}>
                     <TouchableOpacity
@@ -725,7 +732,12 @@ class ChatMessageBubble extends Component {
                         message.reply_to &&
                         this.renderReplyMessage(message, true)}
                       {message.message_body && message.msg_type === 'image' ? (
-                        <ScalableImage
+                        message.message_body.includes('.giphy.com/media/') ?
+                        <GifImage src={message.thumbnail === null
+                          ? message.message_body
+                          : message.thumbnail}
+                          isGif={message.message_body.includes('&ct=g')}/>
+                        :<ScalableImage
                           src={
                             message.thumbnail === null
                               ? message.message_body
@@ -733,7 +745,7 @@ class ChatMessageBubble extends Component {
                           }
                           isHyperlink={message.hyperlink}
                           borderRadius={message.hyperlink ? 0 : borderRadius}
-                          isEmotion={true}
+                          // isEmotion={true}
                         />
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />

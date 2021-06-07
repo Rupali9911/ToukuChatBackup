@@ -1,5 +1,6 @@
 import React, {Component, useState} from 'react';
 import {
+  Animated,
   ActivityIndicator,
   Alert,
   Dimensions,
@@ -9,7 +10,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-    Keyboard
+    Keyboard,
+    InteractionManager
 } from 'react-native';
 import {
   FlatList,
@@ -19,8 +21,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MentionsInput from '../../../../LineLibChanges/react-native-mentions-input/index.tsx';
-import {Colors, Icons} from '../../../constants';
-import {isIphoneX, normalize} from '../../../utils';
+import {Colors, Icons, Images} from '../../../constants';
+import {isIphoneX, normalize, wait} from '../../../utils';
 import styles from './styles';
 import FastImage from 'react-native-fast-image';
 import stickerPacks from './data.json';
@@ -28,6 +30,8 @@ import stickerPacks from './data.json';
 import {addEmotionToFrequentlyUsed} from '../../../redux/reducers/chatReducer';
 import {connect} from 'react-redux';
 import {findIndex} from 'lodash';
+import { ListLoader } from '../../Loaders';
+import NormalImage from '../../NormalImage';
 
 // const {height} = Dimensions.get('window');
 
@@ -40,7 +44,8 @@ class ChatInput extends Component {
       suggestionDataHeight: 0,
       mentionUser: [],
       input_focus: false,
-      isExtrasAreaVisible: true,
+      isExtrasAreaVisible: false,
+      extraAreaHeight: new Animated.Value(0),
       text: '',
       gifs: [],
       stickers: [],
@@ -53,6 +58,7 @@ class ChatInput extends Component {
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
     this.oldLineHeight = 0;
+    this.isExtrasAreaVisible = false;
   }
 
   componentDidMount() {
@@ -238,11 +244,34 @@ class ChatInput extends Component {
     this.setState({stickerSearch: text}, () => this.fetchStickers());
   }
 
-  hideKeyboard(){
-      this.input_ref && this.input_ref._textInput
-        ? this.input_ref._textInput.blur()
-           : this.input_ref.blur()
-      }
+  hideKeyboard = async() => {
+    this.input_ref && this.input_ref._textInput
+      ? this.input_ref._textInput.blur()
+      : this.input_ref.blur()
+  }
+
+  showExtraArea = () => {
+    // this.setState({isExtrasAreaVisible: true});
+    this.isExtrasAreaVisible = true;
+    this.forceUpdate();
+    Animated.timing(this.state.extraAreaHeight, {
+      toValue: 340,
+      timing: 50,
+      useNativeDriver: false
+    }).start();
+  }
+
+  hideExtraArea = () => {
+    this.isExtrasAreaVisible = false;
+    this.forceUpdate();
+    Animated.timing(this.state.extraAreaHeight, {
+      toValue: 0,
+      timing: 50,
+      useNativeDriver: false
+    }).start(()=>{
+      // this.forceUpdate();
+    });
+  }
 
   render() {
     const {
@@ -300,13 +329,14 @@ class ChatInput extends Component {
           angleCenter={{x: 0, y: 1}}
           style={[styles.chatInputContainer, styles.inputContainer]}>
           {/* <View style={styles.chatInputContainer}> */}
-          {input_focus ? (
+          {input_focus || this.isExtrasAreaVisible ? (
             <View style={styles.attachmentContainer}>
               <TouchableOpacity
                 style={[
                   styles.chatAttachmentButton,
                 ]}
                 onPress={() => {
+                  this.isExtrasAreaVisible = false;
                   this.input_ref && this.input_ref._textInput
                     ? this.input_ref._textInput.blur()
                     : this.input_ref.blur();
@@ -326,12 +356,17 @@ class ChatInput extends Component {
                         //         isExtrasAreaVisible: !isExtrasAreaVisible,
                         //     })
                         // })
-                        this.hideKeyboard(()=>{
-                          console.log('isExtrasAreaVisible', isExtrasAreaVisible)
-                                this.setState({
-                                    isExtrasAreaVisible: !isExtrasAreaVisible,
-                                })
-                        })
+                        // this.hideKeyboard().then(()=>{
+                          this.showExtraArea();
+                          Keyboard.dismiss();
+                          // console.log('isExtrasAreaVisible', isExtrasAreaVisible)
+                          // wait(100).then(()=>{
+                          //   this.setState({
+                          //     isExtrasAreaVisible: !isExtrasAreaVisible,
+                          //   })
+                          // });
+                                
+                        // });
                     }}>
                     <Image
                         source={Icons.icon_sticker_pack}
@@ -384,7 +419,7 @@ class ChatInput extends Component {
           <View
             style={[
               styles.textInputContainer,
-              input_focus && styles.mentionInpiutContainer,
+              (input_focus || this.isExtrasAreaVisible) && styles.mentionInpiutContainer,
             ]}>
             {this.props.useMentionsFunctionality ? (
               <View>
@@ -413,6 +448,7 @@ class ChatInput extends Component {
                   onMarkdownChange={(markdown) => {}}
                   placeholder={placeholder}
                   placeholderTextColor={'gray'}
+                  autoCorrect={false}
                   mentionStyle={styles.mentionStyle}
                   textInputStyle={styles.textInputStyle}
                   users={this.state.suggestionData}
@@ -448,130 +484,6 @@ class ChatInput extends Component {
                     )
                   }
                 />
-
-                {/* <MentionsTextInput
-                  multiline={true}
-                  textInputStyle={chatInput.textInput}
-                  suggestionsPanelStyle={{
-                    width: '100%',
-                    height: this.suggestionsDataHeight(value),
-                    overflow: 'hidden',
-                    position: 'absolute',
-                    top: -this.suggestionsDataHeight(value),
-                    zIndex: 1,
-                    elevation: 4,
-                  }}
-                  loadingComponent={() => null}
-                  textInputMinHeight={35}
-                  textInputMaxHeight={input_focus?150:35}
-                  trigger={'@'}
-                  triggerLocation={'new-word-only'} // 'new-word-only', 'anywhere'
-                  value={value}
-                  onFocus={(e) => { this.setState({ input_focus: true }) }}
-                  onBlur={(e) => this.setState({ input_focus: false })}
-                  onChangeText={(message) => {
-                    if (!message.includes('@')) {
-                      this.setState({suggestionData: []});
-                    }
-                    onChangeText(message);
-                  }}
-                  placeholder={placeholder}
-                  autoCorrect={false}
-                  triggerCallback={(lastKeyword) => {
-                    console.log(
-                      'ChatInput -> render -> triggerCallback',
-                      lastKeyword,
-                    );
-                    this.groupMembersMentions(lastKeyword);
-                  }}
-                  suggestionsData={suggestionData} // array of objects
-                  keyExtractor={(item, index) => item.id}
-                  renderSuggestionsRow={({item, index}, hidePanel) => {
-                    return (
-                      suggestionData &&
-                      suggestionData.length > 0 && (
-                        <GHTouchableHighlight
-                          key={index + ''}
-                          underlayColor="#FFB582"
-                          onShowUnderlay={() => {
-                            this.setState({highlightItemId: item.id});
-                          }}
-                          onHideUnderlay={() => {
-                            this.setState({highlightItemId: null});
-                          }}
-                          style={{
-                            backgroundColor: index === 0 ? '#FFB582' : 'white',
-                            paddingTop: index === 0 ? 5 : 0,
-                          }}
-                          onPress={() => {
-                            hidePanel();
-                            this.setState({
-                              isMentionsOpen: false,
-                              mentionUser: item,
-                            });
-                            this.props.onSelectMention(
-                              item,
-                              value.split(' ')[value.split(' ').length - 1]
-                                .length,
-                            );
-                          }}>
-                          <View
-                            style={{
-                              height: normalize(22),
-                              justifyContent: 'center',
-                              alignItems: 'flex-start',
-                              width: '100%',
-                              paddingLeft: 5,
-                            }}>
-                            <Text
-                              style={{
-                                fontSize: normalize(11),
-                                paddingHorizontal: 10,
-                                // backgroundColor: '#FFB582',
-                                fontFamily: Fonts.regular,
-                                fontWeight: '400',
-                                color:
-                                  // this.state.highlightItemId === item.id
-                                  //   ? 'white'
-                                  //   :
-                                  index === 0 ? 'white' : 'black',
-                                textAlign: 'center',
-                              }}>
-                              {item.display_name || item.username}
-                            </Text>
-                          </View>
-                        </GHTouchableHighlight>
-                      )
-                    );
-                  }}
-                  suggestionRowHeight={suggestionDataHeight}
-                  horizontal={false}
-                  customOnContentSizeChange={({nativeEvent}) => {
-                    this.forceUpdate();
-                    // if (nativeEvent.contentSize.height != this.lineHeight) {
-                    //   this.lineHeight = nativeEvent.contentSize.height;
-                    //   if (
-                    //     this.lineHeight > 20 &&
-                    //     this.lineHeight > this.oldLineHeight &&
-                    //     this.newHeight <= 200
-                    //   ) {
-                    //     this.newHeight = this.newHeight + 15;
-                    //   }
-                    //   if (
-                    //     this.lineHeight > 20 &&
-                    //     this.lineHeight < this.oldLineHeight
-                    //   ) {
-                    //     this.newHeight = this.newHeight - 15;
-                    //   }
-                    //   if (
-                    //     this.lineHeight <= 20 &&
-                    //     this.lineHeight != this.oldLineHeight
-                    //   ) {
-                    //     this.newHeight = isIphoneX() ? 70 : 50;
-                    //   }
-                    //   this.oldLineHeight = this.lineHeight;
-                    // }
-                  }}></MentionsTextInput> */}
               </View>
             ) : (
               <TextInput
@@ -582,7 +494,9 @@ class ChatInput extends Component {
                 style={styles.textInput}
                 onChangeText={(message) => handleInput(message)}
                 onFocus={(e) => {
-                  this.setState({input_focus: true, isExtrasAreaVisible: false});
+                  this.setState({input_focus: true},()=>{
+                    this.hideExtraArea();
+                  });
                 }}
                 onBlur={(e) => this.setState({input_focus: false})}
                 onContentSizeChange={({nativeEvent}) => {
@@ -632,13 +546,14 @@ class ChatInput extends Component {
           </TouchableOpacity>
           {/* </View> */}
         </LinearGradient>
-        {isExtrasAreaVisible && (
+        {this.isExtrasAreaVisible && (
           <View>
-            <View
+            <Animated.View
               style={[
                 styles.emotionsContainer,
                 {
-                  height: isExtrasAreaVisible ? 340 : 0,
+                  // height: isExtrasAreaVisible ? 340 : 0,
+                  height: this.state.extraAreaHeight,
                   width: '100%',
                 },
               ]}>
@@ -753,7 +668,7 @@ class ChatInput extends Component {
                   {/*<StickerPackSection />*/}
                 {/*</View>*/}
               </ScrollableTabView>
-            </View>
+            </Animated.View>
           </View>
         )}
       </View>
@@ -964,17 +879,19 @@ function EmotionList({
 
   return (
     <>
-      <TextInput
-        placeholder={searchTitle}
-        placeholderTextColor={'gray'}
-        style={textInputStyle}
-        autoCorrect={false}
-        textAlign={focused ? 'left' : 'center'}
-        onChangeText={onChangeText}
-        // clearButtonMode={'while-editing'}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-      />
+        <TextInput
+          placeholder={searchTitle}
+          placeholderTextColor={'gray'}
+          style={textInputStyle}
+          autoCorrect={false}
+          textAlign={'left'}
+          onChangeText={onChangeText}
+          inlineImageLeft={'search_icon'}
+          clearButtonMode={'while-editing'}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+      
       {loading ? (
         <View>
           <ActivityIndicator color={'red'} />
@@ -990,6 +907,7 @@ function EmotionList({
           maxToRenderPerBatch={5}
           initialNumToRender={10}
           ItemSeparatorComponent={() => <View style={styles.divider} />}
+          ListEmptyComponent={() => <ListLoader />}
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
@@ -1007,18 +925,15 @@ function EmotionList({
                   };
                   onPress(model);
                 }}>
-                <FastImage
-                  resizeMode={resizeMode}
+                <NormalImage
+                  src={item.images.preview_gif.url}
                   style={[
                     imageStyle,
                     item.type === 'gif' && {
                       marginEnd: index % 2 === 0 ? 12 : 0,
                     },
                   ]}
-                  source={{
-                    uri: item.images.preview_gif.url,
-                    priority: FastImage.priority.high,
-                  }}
+                  resizeMode={resizeMode}
                 />
               </TouchableOpacity>
             );
