@@ -18,6 +18,11 @@ export const ReplyTo = {
     message: 'string?',
     msg_type: 'string?',
     name: 'string?',
+    mentions: {
+      type: 'list',
+      objectType: 'group_mentions',
+      default: []
+    },
     sender_id: {type: 'int', default: 0},
   },
 };

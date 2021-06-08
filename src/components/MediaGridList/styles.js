@@ -7,11 +7,14 @@ const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
     container: {
         flex: 1,
-        minWidth: 300,
+        minWidth: normalize(210),
     },
     image: {
         width: '100%',
         height: '100%',
+        backgroundColor: '#ccc',
+        borderRadius: 7,
+        overflow: 'hidden'
     },
     videoContainer: {
         width: '100%',

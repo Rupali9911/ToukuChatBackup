@@ -155,8 +155,8 @@ class Login extends Component {
         dev_id: fcmToken ? fcmToken : '',
       };
       console.log('googleLoginData', googleLoginData);
-      this.props
-        .googleRegister(googleLoginData)
+
+      this.props.googleRegister(googleLoginData)
         .then(async (res) => {
           this.setState({isLoading: false});
           console.log('JWT TOKEN=> ', JSON.stringify(res));

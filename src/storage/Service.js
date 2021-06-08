@@ -263,11 +263,11 @@ export const getFriendChatConversationById = (id) => {
     .filtered(`friend == ${id}`);
 };
 
-export const updateFriendMessageById = (id, text, type) => {
+export const updateFriendMessageById = (id, text, type, media) => {
   realm.write(() => {
     realm.create(
       'chat_conversation_friend',
-      {id: id, message_body: text},
+      {id: id, message_body: text, media: media},
       'modified',
     );
   });
@@ -458,11 +458,11 @@ export const getGroupChatConversationLengthById = (id) => {
     .filtered(`group_id == ${id}`);
 };
 
-export const updateGroupMessageById = (id, body) => {
+export const updateGroupMessageById = (id, body, mentions = []) => {
   realm.write(() => {
     realm.create(
       'chat_conversation_group',
-      {msg_id: id, message_body: body},
+      {msg_id: id, message_body: body, mentions},
       'modified',
     );
   });
@@ -929,6 +929,20 @@ export const updateLastMsgGroupsWithMention = (id, message, unreadCount, mention
   });
 };
 
+export const updateGroupsWithMention = (id, mention_msg_id, is_mentioned) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        mention_msg_id,
+        is_mentioned
+      },
+      'modified',
+    );
+  });
+};
+
 export const updateLastMsgGroupsWithoutCount = (
   id,
   type,
@@ -1075,6 +1089,10 @@ export const getLocalUserFriend = (id) => {
     .sorted('timestamp', {ascending: true})
     .filtered(`user_id == ${id}`);
 };
+
+export const getLocalUserFriendById = (id) => {
+  return realm.objectForPrimaryKey('user_friends',id);
+}
 
 export const getUserFriend = (id) => {
   return realm

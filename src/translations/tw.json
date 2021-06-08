@@ -1240,7 +1240,8 @@
       "issueGroupInvitation": "發行組邀請URL",
       "goToGroupChat": "轉到群聊",
       "searchByQr": "通過二維碼搜索",
-      "noteAdded": "添加了一个注释"
+      "noteAdded": "添加了一个注释",
+      "beTheFirstToLeaveComment": "讓我們獲得第一個評論！"
     },
     "welcome":{
       "theWorldIsConnected":"世界相連",

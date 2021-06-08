@@ -43,7 +43,6 @@ class CreateEditNote extends Component {
       orientation: 'PORTRAIT',
       text: this.props.navigation.state.params.note && this.props.navigation.state.params.note.text || '',
       uploadedFiles: this.props.navigation.state.params.uploadedFiles || [],
-      uploadProgress: false,
       progressModalVisible: false,
       uploadProgress: 0,
       note_media: this.props.navigation.state.params.note && this.props.navigation.state.params.note.media || null,
@@ -90,7 +89,7 @@ class CreateEditNote extends Component {
     }).then((image) => {
       let source = {uri: 'data:image/jpeg;base64,' + image.data};
       this.setState({
-        uploadedFiles: [...this.state.uploadedFiles,source],
+        uploadedFiles: [...this.state.uploadedFiles,image],
         uploadFile: source,
         sentMessageType: 'image',
         sendingMedia: true,
@@ -238,14 +237,17 @@ class CreateEditNote extends Component {
         }
       }else{
         if(media_url && media_url.length>0){
-          payload['media_url'] = [,...media_url];
+          payload['media_url'] = [...media_url];
+        }else {
+          payload['media_url'] = [];
         }
-  
         if(media_type && media_type.length>0){
-          payload['media_type'] = [,...media_type];
+          payload['media_type'] = [...media_type];
+        }else{
+          payload['media_type'] = [];
         }
       }
-
+      console.log('payload',payload);
       this.props
         .editGroupNotes(payload)
         .then((res) => {
@@ -346,7 +348,7 @@ class CreateEditNote extends Component {
         if(media_url && media_url.length>0){
           payload['media_url'] = [,...media_url];
         }
-  
+
         if(media_type && media_type.length>0){
           payload['media_type'] = [,...media_type];
         }
@@ -424,7 +426,22 @@ class CreateEditNote extends Component {
     this.setState({uploadProgress: parseFloat(result.toFixed(2))});
   }
 
+  onRemoveMediaClick = (item,index) => {
+    if(item.media_type){
+      let note_media = this.state.note_media.filter((i)=>i.media_url !== item.media_url);
+      this.setState({note_media});
+    }else{
+      if(this.state.note){
+        let i = index - this.state.note_media.length;
+        this.removeUploadData(i);
+      }else {
+        this.removeUploadData(index);
+      }
+    }
+  }
+
   renderMedia = ({item, index}) => {
+    console.log('renderMedia', item)
     let media_type = '';
     let media_url = '';
     if(item.mime){
@@ -439,59 +456,61 @@ class CreateEditNote extends Component {
       media_url = item.media_url;
     }
     return (
-      <View style={{ flex: 1, margin: 5 }}>
+      <View style={styles.mediaItemContainer}>
         <View style={{}}>
           {media_type === 'image' ? (
             <Image
               source={{
                 uri: media_url,
               }}
-              style={{ width: '100%', height: 200 }}
+              style={styles.imageItem}
               resizeMode={'cover'}
             />
           ) : media_type === 'video' ? (
-              <View style={{ width: '100%', height: 200, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center' }}>
+              <View style={styles.itemVideoContainer}>
                 <VideoPreview
                   url={media_url}
                   customImageView
                   hideLink
                 />
-                <View style={{ width: '100%', flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#00000040', position: 'absolute', bottom: 0 }}>
+                <View style={styles.playIconContainer}>
                   <View
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
+                    style={styles.playIcon}>
                     <FontAwesome name="play" size={20} color={Colors.white} />
                   </View>
                 </View>
               </View>
             ) : null}
         </View>
-        <TouchableOpacity style={{ flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#00000040', position: 'absolute', top: 0, right: 0 }}
-          onPress={()=>{
-            if(item.media_type){
-              let note_media = this.state.note_media.filter((i)=>i.media_url !== item.media_url);
-              this.setState({note_media});
-            }else{
-              if(this.state.note){
-                let i = index - this.state.note_media.length;
-                this.removeUploadData(i);
-              }else {
-                this.removeUploadData(index);
-              }
-            }
-          }}>
+        <TouchableOpacity style={styles.removeIconConatiner}
+          onPress={this.onRemoveMediaClick.bind(this,item,index)}>
           <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            style={styles.removeIcon}>
             <FontAwesome name="close" size={20} color={Colors.white} />
           </View>
         </TouchableOpacity>
       </View>
     );
+  }
+
+  onPostClick = () => {
+    if (this.isUploading) {
+      return;
+    }
+    this.isUploading = true;
+    if(this.state.uploadedFiles.length > 0){
+      this.uploadAndSend()
+    }else if(this.state.text.trim().length > 0){
+      this.forceUpdate();
+      this.onPostNote(this.state.text,null,null);
+    } else if(this.props.navigation.state.params.note && this.props.navigation.state.params.note.media.length > this.state.note_media.length){
+      this.forceUpdate();
+      this.onPostNote(this.state.text,null,null);
+    }
+  }
+
+  onCancelClick = () => {
+    this.props.navigation.goBack();
   }
 
   render() {
@@ -528,66 +547,47 @@ class CreateEditNote extends Component {
               placeholder={translate('pages.xchat.addNewNote')}
             />
 
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <TouchableOpacity style={{paddingHorizontal:10}} onPress={this.onCameraPress}>
+            <View style={styles.actionButtonContainer}>
+              <TouchableOpacity style={styles.actionButton} onPress={this.onCameraPress}>
                 <Image
                   source={Icons.icon_camera_outline} 
-                  style={{
-                    width:30,
-                    height:30,
-                  }}/>
+                  style={styles.actionButtonImage}/>
               </TouchableOpacity>
-              <TouchableOpacity style={{paddingHorizontal:10}} onPress={this.onGalleryPress}>
+              <TouchableOpacity style={styles.actionButton} onPress={this.onGalleryPress}>
                 <Image
                   source={Icons.gallery_icon_select} 
-                  style={{
-                    width:30,
-                    height:30,
-                  }}/>
+                  style={styles.actionButtonImage}/>
               </TouchableOpacity>
             </View>
 
-            <View style={{flex:1}}>
+            <View style={styles.mediaContainer}>
               <FlatList 
                 data={note_media ? [...note_media,...this.state.uploadedFiles] : this.state.uploadedFiles}
                 renderItem={this.renderMedia}
                 numColumns={2}/>
             </View>
 
-            <View style={{padding: 10}}>
+            <View style={styles.submitButtonContainer}>
               <Button
                 title={translate('pages.xchat.post')}
                 type={'primary'}
-                onPress={() => {
-                  if (this.isUploading) {
-                    return;
-                  }
-                  this.isUploading = true;
-                  if(this.state.uploadedFiles.length > 0){
-                    this.uploadAndSend()
-                  }else if(this.state.text.trim().length > 0){
-                    this.forceUpdate();
-                    this.onPostNote(this.state.text,null,null);
-                  }
-                }}
+                onPress={this.onPostClick}
                 isRounded={false}
                 loading={this.isUploading}
               />
               <Button
                 title={translate('common.cancel')}
                 type={'secondary'}
-                onPress={() => {
-                  this.props.navigation.goBack()
-                }}
+                onPress={this.onCancelClick}
                 isRounded={false}
               />
             </View>
           </KeyboardAwareScrollView>
 
-          <UploadProgressModal 
+          <UploadProgressModal
             visible={progressModalVisible}
             progress={uploadProgress}
-            title={translate('common.uploadImage')}/>
+            title={translate('pages.xchat.uploading')}/>
 
       </View>
     );

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {
-  ActivityIndicator,
-  FlatList,
-  ImageBackground,
-  Text,
-  View,
+    ActivityIndicator,
+    FlatList,
+    ImageBackground, RefreshControl,
+    Text,
+    View,
 } from 'react-native';
 import {Colors, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
@@ -13,6 +13,7 @@ import PostCardHeader from '../PostCardHeader';
 import PostChannelItem from '../PostChannelItem';
 import PostChannelRankItem from '../PostChannelRankItem';
 import styles from './styles';
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 export default class PostCard extends Component {
   constructor(props) {
@@ -85,15 +86,15 @@ export default class PostCard extends Component {
           index={index}
           onFollowUnfollowChannel={this.props.onFollowUnfollowChannel}
         />
-        <PostChannelItem 
-          post={post} 
-          index={index} 
-          userData={userData} 
-          isChannelTimeline={isChannelTimeline} 
-          likeUnlikePost={likeUnlikePost} 
-          addComment={addComment} 
-          deleteComment={deleteComment} 
-          getPostComments={getPostComments} 
+        <PostChannelItem
+          post={post}
+          index={index}
+          userData={userData}
+          isChannelTimeline={isChannelTimeline}
+          likeUnlikePost={likeUnlikePost}
+          addComment={addComment}
+          deleteComment={deleteComment}
+          getPostComments={getPostComments}
           editComment={editComment}/>
       </View>
     );
@@ -150,7 +151,9 @@ export default class PostCard extends Component {
       onEndReached,
       isRankedChannel,
       rankingLoadMore,
-      followingLoadMore
+      followingLoadMore,
+        isFetching,
+        onRefresh
     } = this.props;
 
     const listStyle = {
@@ -167,7 +170,7 @@ export default class PostCard extends Component {
         onEndReached={onEndReached}
         onMomentumScrollBegin={onMomentumScrollBegin}
         onEndReachedThreshold={0.1}
-        bounces={false}
+        bounces={true}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         windowSize={16}
@@ -182,13 +185,31 @@ export default class PostCard extends Component {
             <View style={styles.listFooterComponent}>
               <ActivityIndicator />
             </View>
-          ) : followingLoadMore ? 
+          ) : followingLoadMore ?
               <View style={styles.listFooterComponent}>
                 <ActivityIndicator />
               </View>
           : null ;
         }}
         keyExtractor={(_, index) => index.toString()}
+        // refreshControl={
+        //     <RefreshControl
+        //         refreshing={isLoading}
+        //         onRefresh={onRefresh}
+        //         tintColor={Colors.primary}
+        //         colors={[Colors.primary]}
+        //     />
+        // }
+        refreshing={isFetching}
+        onRefresh={onRefresh}
+        refreshControl={
+            <RefreshControl
+                refreshing={isFetching}
+                onRefresh={onRefresh}
+                tintColor={Colors.primary}
+                colors={[Colors.primary]}
+            />
+        }
       />
     );
 

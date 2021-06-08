@@ -1241,7 +1241,8 @@
       "issueGroupInvitation": "グループ招待URLを発行",
       "goToGroupChat": "グループチャットに移動",
       "searchByQr": "QRコードで検索",
-      "noteAdded": "がメモを追加しました"
+      "noteAdded": "がメモを追加しました",
+      "beTheFirstToLeaveComment": "コメント1番乗りしましょう！"
     },
     "welcome": {
       "theWorldIsConnected": "世界が繋がる",

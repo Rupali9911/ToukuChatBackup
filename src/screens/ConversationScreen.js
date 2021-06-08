@@ -31,7 +31,7 @@ class Conversations extends React.Component{
             initialMessages.push({
                 id: generateUniqueKey(),
                 msg_id: item.msg_id,
-                text: item.message_body.text,
+                text: (item.message_body && item.message_body.text) || '',
                 isMyMessage: Boolean(getRandomInt(0, 2))
             });
         });
@@ -60,7 +60,7 @@ class Conversations extends React.Component{
             result.map((item)=>{
                 newMessages.push({
                     id: generateUniqueKey(),
-                    text: item.message_body.text,
+                    text: (item.message_body && item.message_body.text) || '',
                     isMyMessage: Boolean(getRandomInt(0, 2)),
                     ...item
                 });
@@ -83,7 +83,7 @@ class Conversations extends React.Component{
             result.map((item)=>{
                 newMessages.push({
                     id: generateUniqueKey(),
-                    text: item.message_body.text,
+                    text: (item.message_body && item.message_body.text) || '',
                     isMyMessage: Boolean(getRandomInt(0, 2)),
                     ...item
                 });

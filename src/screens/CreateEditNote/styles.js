@@ -206,4 +206,62 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  actionButtonContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center'
+  },
+  actionButton: {
+    paddingHorizontal:10
+  },
+  actionButtonImage: {
+    width:30,
+    height:30,
+  },
+  mediaContainer: {
+    flex:1,
+  },
+  submitButtonContainer: {
+    padding: 10
+  },
+  mediaItemContainer: {
+    flex: 1, 
+    margin: 5
+  },
+  imageItem: {
+    width: '100%', 
+    height: 200
+  },
+  itemVideoContainer: {
+    width: '100%', 
+    height: 200, 
+    backgroundColor: 'black', 
+    justifyContent: 'center', 
+    alignItems: 'center'
+  },
+  playIconContainer: { 
+    width: '100%', 
+    flexDirection: 'row', 
+    paddingHorizontal: 10, 
+    paddingVertical: 5, 
+    backgroundColor: '#00000040', 
+    position: 'absolute', 
+    bottom: 0 
+  },
+  playIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeIconConatiner: {
+    flexDirection: 'row', 
+    paddingHorizontal: 10, 
+    paddingVertical: 5, 
+    backgroundColor: '#00000040', 
+    position: 'absolute', 
+    top: 0, 
+    right: 0
+  },
+  removeIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

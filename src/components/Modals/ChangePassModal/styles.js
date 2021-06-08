@@ -53,7 +53,7 @@ export default StyleSheet.create({
   singleFlex: {
     flex: 1,
   },
-  changePassword: {
+  changePassword1: {
     textAlign: 'left',
   },
   oldPassInputContainer: {

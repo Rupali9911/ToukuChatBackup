@@ -118,6 +118,7 @@ import {
   getGroupChatConversationById,
   getGroupsById,
   getLocalUserFriend,
+  getLocalUserFriendById,
   getUserFriend,
   handleRequestAccept,
   multipleData,
@@ -167,6 +168,7 @@ import {
   updateUnReadCount,
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
+  updateGroupsWithMention
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, getUserName} from '../../utils';
@@ -174,6 +176,7 @@ import { isArray, isObject } from 'lodash';
 import {minVersion, version} from "../../../package";
 // import { getAppstoreAppMetadata } from "react-native-appstore-version-checker";
 import  UpdateAppModal from '../../components/Modals/UpdateAppModal'
+import { getRenderMessageData } from '../GroupChats/logic';
 
 let channelId = [];
 let friendId = [];
@@ -791,14 +794,14 @@ class Chat extends Component {
   }
 
   //Set Friend's online status with socket event
-  setFriendsOnlineStatus(message) {
+  async setFriendsOnlineStatus(message) {
     if (message.text.data.type === SocketEvents.USER_ONLINE_STATUS) {
-      let user = getLocalUserFriend(message.text.data.message_details.user_id);
+      let user = getLocalUserFriendById(message.text.data.message_details.user_id);
 
-      if (user && user.length > 0) {
+      if (user) {
         if (
           message.text.data.message_details.status === 'online' &&
-          !user[0].is_online
+          !user.is_online
         ) {
           updateFriendOnlineStatus(
             message.text.data.message_details.user_id,
@@ -820,7 +823,7 @@ class Chat extends Component {
           });
         } else if (
           message.text.data.message_details.status === 'offline' &&
-          user[0].is_online
+          user.is_online
         ) {
           updateFriendOnlineStatus(
             message.text.data.message_details.user_id,
@@ -1166,7 +1169,11 @@ class Chat extends Component {
       let group = realmToPlainObject(a);
       // let group = result.toJSON();
       if (group && group.length > 0) {
-        updateGroupMessageById(message.text.data.message_details.msg_id);
+        updateGroupMessageById(
+          message.text.data.message_details.msg_id,
+          message.text.data.message_details.message_body,
+          message.text.data.message_details.mentions
+          );
         console.log('checking group', group);
         if (group[0].last_msg_id === message.text.data.message_details.msg_id) {
           updateLastMsgGroups(
@@ -1187,6 +1194,7 @@ class Chat extends Component {
         updateGroupMessageById(
           message.text.data.message_details.msg_id,
           message.text.data.message_details.message_body,
+          message.text.data.message_details.mentions
         );
         this.getLocalGroupConversation();
       }
@@ -1751,16 +1759,16 @@ class Chat extends Component {
 
   //Edit Message in Friend
   onEditMessageInFriend(message) {
-    const {currentFriend, userData} = this.props;
+    const {currentFriend, userData, currentRouteName} = this.props;
 
     if (message.text.data.message_details.from_user.id === userData.id) {
       // this.getUserFriends();
       let editMessageId = message.text.data.message_details.id;
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
-      updateFriendMessageById(editMessageId, newMessageText, messageType);
+      updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
       if (
-        this.props.currentRouteName === 'FriendChats' &&
+        (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
         currentFriend &&
         message.text.data.message_details.to_user.id === currentFriend.user_id
       ) {
@@ -1792,9 +1800,9 @@ class Chat extends Component {
       let editMessageId = message.text.data.message_details.id;
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
-      updateFriendMessageById(editMessageId, newMessageText, messageType);
+      updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
       if (
-        this.props.currentRouteName === 'FriendChats' &&
+        (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
         currentFriend &&
         message.text.data.message_details.from_user.id === currentFriend.user_id
       ) {
@@ -2112,6 +2120,11 @@ class Chat extends Component {
     ) {
       if (isArray(message.text.data.message_details)) {
         message.text.data.message_details.map((item) => {
+
+          if(item.user_id && item.user_id !== this.props.userData.id){
+            return;
+          }
+
           deleteGroupMessageById(item.msg_id);
 
           let result = getGroupsById(item.group_id);
@@ -2146,10 +2159,13 @@ class Chat extends Component {
                   true
                 );
               }
-              this.props.getLocalUserGroups().then(() => {
-                this.props.setCommonChatConversation();
-              });
+            } 
+            if(group[0].is_mentioned){
+              updateGroupsWithMention(item.group_id, item.mention_msg_id, item.is_mentioned);
             }
+            this.props.getLocalUserGroups().then(() => {
+              this.props.setCommonChatConversation();
+            });
           }
 
           if (
@@ -2956,7 +2972,9 @@ class Chat extends Component {
       conversations = realmToPlainObject(chat);
       // conversations = chat.toJSON();
 
-      this.props.setGroupConversation(conversations);
+      let renderMessages = getRenderMessageData(conversations,this.props.userData);
+
+      this.props.setGroupConversation(renderMessages);
     }
   };
 

@@ -918,10 +918,10 @@ class GroupDetails extends Component {
       });
   };
   onEditNote = (index, item) => {
-    this.setState({
-      editNoteIndex: index,
-    });
-    // this.props.navigation.navigate('CreateEditNote',{isGroup: true, note: Object.assign({},item)});
+    // this.setState({
+    //   editNoteIndex: index,
+    // });
+    this.props.navigation.navigate('CreateEditNote',{isGroup: true, note: Object.assign({},item)});
   };
   onDeleteNote = (index, item) => {
     const {data} = this.state;
@@ -1049,7 +1049,7 @@ class GroupDetails extends Component {
         sendingMedia: true,
         mediaSelectionLoading: false
       });
-      this.props.navigation.navigate('CreateEditNote',{isGroup: true, uploadedFiles: [source]});
+      this.props.navigation.navigate('CreateEditNote',{isGroup: true, uploadedFiles: [image]});
       // this.onMessageSend();
     }).catch((err)=>{
       console.log('camera capture error',err);
@@ -1455,7 +1455,7 @@ class GroupDetails extends Component {
                 )}
               </View>
             ) : (
-              notesLoading ? 
+              notesLoading ?
                 <ListLoader />
               :
               <CommonNotes
@@ -1528,7 +1528,7 @@ class GroupDetails extends Component {
           />
 
           {/* Comment below code until not available on production */}
-          {/* <FloatingAction
+          <FloatingAction
             visible={this.state.isNotes}
             actions={this.actions}
             onPressItem={name => {
@@ -1541,7 +1541,7 @@ class GroupDetails extends Component {
                 this.onCameraPress();
               }
             }}
-            color={'#e26161'} /> */}
+            color={'#e26161'} />
         </View>
         <SafeAreaView />
         {mediaSelectionLoading && <OpenLoader hideText={true}/>}

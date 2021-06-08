@@ -6,6 +6,16 @@ import {Colors} from '../../../constants';
 import {normalize} from '../../../utils';
 
 /**
+ * Similar styles
+ */
+const actionContainer = {
+  flex: 1,
+  padding: 10,
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+/**
  * StyleSheet for friend list item
  */
 export default StyleSheet.create({
@@ -68,6 +78,14 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+  },
+  pinActionContainer: {
+    ...actionContainer,
+    backgroundColor: '#99B1F9'
+  },  
+  deleteActionContainer: {
+    ...actionContainer,
+    backgroundColor: '#F9354B'
   },
   swipeItemContainer: {
     backgroundColor: '#f2f2f2',

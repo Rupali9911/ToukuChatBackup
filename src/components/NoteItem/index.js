@@ -36,7 +36,7 @@ import {
   likeUnlikeGroupComment,
 } from '../../redux/reducers/groupReducer';
 import {translate} from '../../redux/reducers/languageReducer';
-import {getAvatar, getUserName, normalize} from '../../utils';
+import {getAvatar, getUserName, normalize, videoEx} from '../../utils';
 import Button from '../Button';
 import CommentItem from '../CommentItem';
 import {ConfirmationModal} from '../Modals';
@@ -575,11 +575,22 @@ class NoteItem extends Component {
     let arrLinks = LinkifyIt().match(text);
     if(arrLinks && arrLinks.length>0){
       console.debug('arrLinks',arrLinks[0].url);
-      getLinkPreview(arrLinks[0].url)
+      if(arrLinks[0].url.match(videoEx) != null){
+        this.setState({
+          linkPreview: {
+            contentType: "video/mp4", 
+            favicons: '', 
+            mediaType: "video", 
+            url: arrLinks[0].url
+          }
+        })
+      }else{
+        getLinkPreview(arrLinks[0].url)
         .then(data => {
           console.debug(data);
           this.setState({ linkPreview: data });
         }).catch((err)=>console.debug(err));
+      }
     }
   }
 
@@ -801,9 +812,9 @@ class NoteItem extends Component {
                 )}
               </View>
               <View style={styles.topMargin}>
-                {/* {this.renderMedia(item.media)} */}
-                {/* {item.media && item.media.length<=0 && this.renderLinkPreview(linkPreview)} */}
-                {this.renderLinkPreview(linkPreview)}
+                {this.renderMedia(item.media)}
+                {item.media && item.media.length<=0 && this.renderLinkPreview(linkPreview)}
+                {/* {this.renderLinkPreview(linkPreview)} */}
                 <Text style={styles.itemText}>{item.text}</Text>
               </View>
               <View style={interactionContainer}>
@@ -850,7 +861,7 @@ class NoteItem extends Component {
                     style={styles.rightMargin}
                   />
 
-                  <Text style={styles.countText}>{item.liked_by_count}</Text>
+                  <Text style={styles.countText}>{item.liked_by_count>=0?item.liked_by_count:0}</Text>
 
                   <TouchableOpacity
                     style={styles.interactionContentContainer}

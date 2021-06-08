@@ -91,7 +91,7 @@ class ChangePassModal extends Component {
   }
 
   // When user presses the change password button
-  onChangePasswordPress = () => {
+  onChangePasswordPress(){
     const {isSetPassword} = this.props;
     const {oldPassword, newPassword, confirmPassword} = this.state;
 
@@ -208,7 +208,7 @@ class ChangePassModal extends Component {
               style={styles.header}>
               <View style={styles.singleFlex}>
                 <Text
-                  style={[globalStyles.normalLightText, styles.changePassword]}>
+                  style={[globalStyles.normalLightText, styles.changePassword1]}>
                   {translate('pages.resetPassword.changePassword')}
                 </Text>
               </View>
@@ -223,6 +223,8 @@ class ChangePassModal extends Component {
               {isSetPassword ? null : (
                 <View style={styles.inputContainer}>
                   <TextInput
+                      color={Colors.black}
+                      placeholderTextColor={'gray'}
                     placeholder={translate('pages.setting.oldPassword')}
                     value={oldPassword}
                     onChangeText={(oldPass) => this.handleOldPassword(oldPass)}
@@ -300,7 +302,7 @@ class ChangePassModal extends Component {
               <Button
                 isRounded={false}
                 title={translate('pages.resetPassword.changePasswordButton')}
-                onPress={this.onChangePasswordPress.bind(this)}
+                onPress={() => this.onChangePasswordPress()}
                 loading={loading}
               />
             </View>
@@ -334,7 +336,7 @@ const mapStateToProps = (state) => {
 
 // Actions to be dispatched from redux
 const mapDispatchToProps = {
-  changePassword,
+    changePassword,
   getUserProfile,
 };
 

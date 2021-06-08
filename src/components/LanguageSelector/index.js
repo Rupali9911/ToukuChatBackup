@@ -11,6 +11,12 @@ import {
 } from '../../redux/reducers/languageReducer';
 import styles from './styles';
 
+export const regionLanguage = RNLocalize.getLocales()
+    .map((a) => a.languageCode)
+    .values()
+    .next().value;
+
+
 class LanguageSelector extends Component {
   constructor(props) {
     super(props);
@@ -25,16 +31,18 @@ class LanguageSelector extends Component {
 
   async componentDidMount() {
     RNLocalize.addEventListener('change', this.handleLocalizationChange);
-    await Promise.all(
-      this.state.languages.map((item) => {
-        if (
-          this.props.selectedLanguageItem.language_name === item.language_name
-        ) {
-          this.props.setAppLanguage(item);
-          setI18nConfig(item.language_name);
-        }
-      }),
-    );
+    console.log('LanguageSelector componentDidMount called')
+      if (this.props.selectedLanguageItem.selected === false) {
+          console.log('this.props.selectedLanguageItem.selected is', this.props.selectedLanguageItem.selected)
+          await Promise.all(
+              this.state.languages.map((item) => {
+                  if (regionLanguage === item.language_name) {
+                      this.props.setAppLanguage(item);
+                      setI18nConfig(item.language_name);
+                  }
+              }),
+          );
+      }
   }
 
   componentWillUnmount() {

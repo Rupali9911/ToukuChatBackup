@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import {Dimensions, Image} from 'react-native';
+import {Dimensions, Image, View, ActivityIndicator} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { isEqual } from 'lodash';
+import {normalize} from '../../utils';
+import styles from './styles';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -10,7 +13,8 @@ export default class ScalableImage extends Component {
     this.state = {
       ratio: 1,
       img_width: 0,
-      img_height: 0
+      img_height: 0,
+      loading: true,
     };
   }
 
@@ -28,35 +32,57 @@ export default class ScalableImage extends Component {
     });
   };
 
-  render() {
-    const {src, borderRadius, isHyperlink} = this.props;
-    const {ratio,img_width,img_height} = this.state;
+  onLoadStart = () => {
+    this.setState({loading: true});
+  }
 
+  onLoadEnd = () => {
+    this.setState({loading: false});
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(isEqual(this.props, nextProps) && isEqual(this.state, nextState)){
+      return false;
+    }
+    return true;
+  }
+
+  render() {
+    const {src, borderRadius, isHyperlink, isEmotion} = this.props;
+    const {ratio} = this.state;
+
+    let width;
+    if (isHyperlink) {
+      width = WIDTH;
+    } else if (isEmotion) {
+      width = isEmotion.type === 'gif' ? normalize(68) : normalize(100);
+    } else {
+      width = '100%';
+    }
     const container = {
-      width: isHyperlink ? WIDTH : '100%',
-      // height: img_height > 500 ? 500 : img_height,
+      width,
       aspectRatio: ratio || 1,
       borderRadius: borderRadius ? borderRadius : 0,
     };
     return (
-      <FastImage
-        style={container}
-        source={{
-          uri: src,
-        }}
-        resizeMode={FastImage.resizeMode.contain}
-      />
-      // <Image
-      //   source={{
-      //     uri: src,
-      //   }}
-      //   style={{
-      //     width: '100%',
-      //     aspectRatio: ratio,
-      //     borderRadius: borderRadius ? borderRadius : 0,
-      //   }}
-      //   resizeMode="contain"
-      // />
+      <>
+        <FastImage
+          style={container}
+          source={{
+            uri: src,
+          }}
+          // onLoadStart={this.onLoadStart}
+          onLoadStart={this.onLoadEnd}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+        <View style={styles.loaderConatiner}>
+          <ActivityIndicator
+            animating={this.state.loading}
+            size={'small'}
+            color={'#e26161'}
+          />
+        </View>
+      </>
     );
   }
 }

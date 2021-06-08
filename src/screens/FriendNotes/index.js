@@ -224,6 +224,7 @@ class FriendNotes extends Component {
       let updatedNote = data.results[noteIndex];
       updatedNote.text = detail.text;
       updatedNote.updated = moment().format();
+      updatedNote.media = detail.media;
       const updatedNotesData = [
         ...data.results.slice(0, noteIndex),
         updatedNote,
@@ -426,10 +427,10 @@ class FriendNotes extends Component {
       });
   };
   onEditNote = (index, item) => {
-    this.setState({
-      editNoteIndex: index,
-    });
-    // this.props.navigation.navigate('CreateEditNote',{note: Object.assign({},item)});
+    // this.setState({
+    //   editNoteIndex: index,
+    // });
+    this.props.navigation.navigate('CreateEditNote',{note: Object.assign({},item)});
   };
   onDeleteNote = (index, item) => {
     const { data } = this.state;
@@ -789,7 +790,7 @@ class FriendNotes extends Component {
         </View>
 
         {/* Comment below code until not available on production */}
-        {/* <FloatingAction
+        <FloatingAction
           actions={this.actions}
           onPressItem={name => {
             if (name === 'bt_write') {
@@ -801,7 +802,7 @@ class FriendNotes extends Component {
               this.onCameraPress();
             }
           }}
-          color={'#e26161'} /> */}
+          color={'#e26161'} />
           {mediaSelectionLoading && <OpenLoader hideText={true}/>}
       </View>
     );
