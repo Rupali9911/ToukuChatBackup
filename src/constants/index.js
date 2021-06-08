@@ -310,6 +310,7 @@ export const SocketEvents = {
   DELETE_MULTIPLE_MESSAGE_IN_FOLLOWING_CHANNEL:
     'Delete multiple message in following channel',
   DELETE_MULTIPLE_MESSAGE_IN_THREAD: 'Delete multiple message in thread',
+  COMPOSE_MESSAGE_DELETE_IN_CHANNEL: 'Compose message deleted in following channel',
   UNSENT_MESSAGE_IN_MY_CHANNEL: 'Unsent message in my channel',
   UNSENT_MESSAGE_IN_FOLLOWING_CHANNEL: 'Unsent message in following channel',
   UNSENT_MESSAGE_IN_THREAD: 'Unsent message in thread',
@@ -384,6 +385,7 @@ export const SocketEvents = {
   LIKE_TIMELINE_POST: 'like timeline post',
   TIMELINE_POST_COMMENT_DATA: 'timeline post comments',
   TIMELINE_POST_COMMENT_DELETE: 'delete timeline post comments',
+  TIMELINE_POST_DELETE: 'Delete channel bulk socket',
 };
 
 export const NotificationType = {

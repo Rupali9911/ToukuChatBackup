@@ -37,7 +37,7 @@ export default class BulkSocket extends Component {
     this.connectSocket();
   }
 
-  connectSocket() {
+  async connectSocket() {
     if (this.jwt !== '') {
       if(this.webSocketBridge == null){
         this.webSocketBridge = new WebSocket(
@@ -115,7 +115,7 @@ export default class BulkSocket extends Component {
     eventService.sendMessage(JSON.parse(e.data));
   }
 
-  checkSocketConnected() {
+  async checkSocketConnected() {
     clearInterval(this.socketChecker);
     if (this.jwt && this.jwt !== '') {
       this.socketChecker = setInterval(() => {

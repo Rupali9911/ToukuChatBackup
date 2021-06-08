@@ -35,6 +35,7 @@ class ChangeNameModal extends Component {
     return {
       displayName: this.props.userConfig.display_name,
       displayNameErr: null,
+        loading: false
     };
   }
 
@@ -43,7 +44,8 @@ class ChangeNameModal extends Component {
    * display name button
    */
   onChangePress = () => {
-    const {displayName} = this.state;
+    console.log('onChangePress')
+    const {displayName, loading} = this.state;
     if (displayName.trim() === '') {
       this.setState({
         displayNameErr: 'pages.setting.toastr.enterValidDisplayName',
@@ -52,10 +54,12 @@ class ChangeNameModal extends Component {
       let configuration = {
         display_name: displayName,
       };
+      this.setState({loading: true})
       this.props
         .updateConfiguration(configuration)
         .then((res) => {
           if (res.status === true) {
+              this.setState({loading: false})
             Toast.show({
               title: translate('pages.changeDisplayName'),
               text: translate('pages.setting.toastr.nameUpdatedSuccessfully'),
@@ -65,10 +69,14 @@ class ChangeNameModal extends Component {
               this.props.onRequestClose();
             }, 2000);
 
-            this.props.getUserProfile();
+            //this.props.getUserProfile();
+          }else{
+              this.setState({loading: false})
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log('Error in catch', error)
+            this.setState({loading: false})
           setTimeout(() => {
             this.props.onRequestClose();
           }, 2000);
@@ -102,8 +110,8 @@ class ChangeNameModal extends Component {
   };
 
   render() {
-    const {visible, loading} = this.props;
-    const {displayName, displayNameErr} = this.state;
+    const {visible} = this.props;
+    const {displayName, displayNameErr, loading} = this.state;
     return (
       <Modal
         isVisible={visible}
@@ -142,6 +150,8 @@ class ChangeNameModal extends Component {
             </Text>
             <View style={styles.inputContainer}>
               <TextInput
+                  color={Colors.black}
+                  placeholderTextColor={'gray'}
                 placeholder={translate('common.enterDisplayName')}
                 value={displayName}
                 onChangeText={(name) => this.handleDisplayName(name)}

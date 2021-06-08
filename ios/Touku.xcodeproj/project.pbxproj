@@ -15,7 +15,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		149717F605C84A72897C900E /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23C4F935A6724A5B9AEB335A /* Poppins-Black.ttf */; };
 		16FA8A0862C542FA95886D1B /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 028C3FF996284225975C54DA /* Poppins-Regular.ttf */; };
-		188C3AB0250657F000B46AC9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 188C3AAF250657F000B46AC9 /* GoogleService-Info.plist */; };
+		18A8E5F2265E268000C6FFD4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18A8E5F1265E267F00C6FFD4 /* GoogleService-Info.plist */; };
 		18CA6F6924F6A8AB00E76F3B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186DF23124F67F4700CAAECA /* InfoPlist.strings */; };
 		18DC280024EEC0BF002341DD /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18DC27FE24EEC0BF002341DD /* Info.plist */; };
 		18DC280424EEC0F4002341DD /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DC280124EEC0F4002341DD /* LaunchScreen.xib */; };
@@ -89,7 +89,7 @@
 		186DF22B24F67ED800CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = Touku/ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		186DF23024F67F4700CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		188571DF24A2380E00146462 /* Touku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Touku.entitlements; path = Touku/Touku.entitlements; sourceTree = "<group>"; };
-		188C3AAF250657F000B46AC9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		18A8E5F1265E267F00C6FFD4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		18AA3EBE24F6A55F005594FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		18DC27FE24EEC0BF002341DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Touku/Info.plist; sourceTree = "<group>"; };
 		18DC280224EEC0F4002341DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Touku/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -216,9 +216,9 @@
 		13B07FAE1A68108700A75B9A /* Touku */ = {
 			isa = PBXGroup;
 			children = (
+				18A8E5F1265E267F00C6FFD4 /* GoogleService-Info.plist */,
 				188571DF24A2380E00146462 /* Touku.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
-				188C3AAF250657F000B46AC9 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				88774A6324766CBC0074E14A /* LineLoginManager.h */,
 				88774A6224766CBC0074E14A /* LineLoginManager.m */,
@@ -460,12 +460,12 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = NU3TW5CK58;
+						DevelopmentTeam = 674HB37CYC;
 						ProvisioningStyle = Manual;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = NU3TW5CK58;
+						DevelopmentTeam = 8XG8724LH8;
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Manual;
 					};
@@ -548,13 +548,13 @@
 				2BF9154176944AB6AE627EA4 /* Poppins-SemiBold.ttf in Resources */,
 				913C67BFFB084965AC3B7A7A /* Poppins-Thin.ttf in Resources */,
 				36A3FA6D22734152A3D8E530 /* The-Absolute.otf in Resources */,
-				188C3AB0250657F000B46AC9 /* GoogleService-Info.plist in Resources */,
 				8A9DCD933FBC4BE6A4B01324 /* Arial.ttf in Resources */,
 				610B90F5858948E2B91C20F5 /* BebasNeue-Regular.ttf in Resources */,
 				18DF009E1E974501BF5E2C11 /* NunitoSans-Light.ttf in Resources */,
 				F1146A4875094A8591C5F012 /* NunitoSans-Regular.ttf in Resources */,
 				4309B95F75194CA48C1C8FFB /* NotoSansJP-Light.otf in Resources */,
 				97018706EA574FF482ADF2AE /* arial-mt-light.ttf in Resources */,
+				18A8E5F2265E268000C6FFD4 /* GoogleService-Info.plist in Resources */,
 				72C0C356FD2145CF8E673714 /* arial-mt-medium.ttf in Resources */,
 				96C21D8EF51F4BE5B7F83F7A /* arial.ttf in Resources */,
 				847432C7FC2740F3B266D900 /* ArialMTStd-LightItalic.otf in Resources */,
@@ -995,9 +995,9 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = NU3TW5CK58;
+				DEVELOPMENT_TEAM = 674HB37CYC;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1032,10 +1032,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = NU3TW5CK58;
+				DEVELOPMENT_TEAM = 674HB37CYC;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-line-sdk/ios/**",
@@ -1070,7 +1070,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = NU3TW5CK58;
+				DEVELOPMENT_TEAM = 8XG8724LH8;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1084,7 +1084,7 @@
 				INFOPLIST_FILE = Touku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.5;
+				MARKETING_VERSION = 3.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1092,7 +1092,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.angelium.touku.app;
 				PRODUCT_NAME = TOUKU;
-				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev_21April;
+				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1110,7 +1110,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = NU3TW5CK58;
+				DEVELOPMENT_TEAM = 8XG8724LH8;
 				ENABLE_BITCODE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1120,7 +1120,7 @@
 				INFOPLIST_FILE = Touku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.5;
+				MARKETING_VERSION = 3.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1128,7 +1128,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.angelium.touku.app;
 				PRODUCT_NAME = TOUKU;
-				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev_21April;
+				PROVISIONING_PROFILE_SPECIFIER = Touku_Dev;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

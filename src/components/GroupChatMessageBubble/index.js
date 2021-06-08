@@ -490,8 +490,8 @@ class GroupChatMessageBubble extends Component {
           return null;
         }
         return <View style={styles.linkPreviewContainer}>
-          <LinkPreviewComponent text={item.text} url={item.url} />
-        </View>;
+            <LinkPreviewComponent text={item.text} url={item.url} />
+        </View>
       });
     }
   };

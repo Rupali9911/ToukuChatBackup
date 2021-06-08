@@ -1224,7 +1224,6 @@ export const updateFriendTypingStatus = (id, status) => {
 
 export const removeUserFriends = async (id) => {
   var user = realm.objects('user_friends').filtered(`user_id == ${id}`);
-
   await realm.write(() => {
     realm.delete(user);
   });

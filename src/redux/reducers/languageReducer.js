@@ -65,6 +65,12 @@ export const SET_KOREA_LANGUAGE_BACKEND = 'SET_KOREA_LANGUAGE_BACKEND';
 export const SET_CHINA_LANGUAGE_BACKEND = 'SET_CHINA_LANGUAGE_BACKEND';
 export const SET_TAIWAN_LANGUAGE_BACKEND = 'SET_TAIWAN_LANGUAGE_BACKEND';
 
+
+export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
+export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
+export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
+
+
 const initialState = {
   loading: false,
   selectedLanguageItem: {
@@ -165,7 +171,21 @@ export default function (state = initialState, action) {
         ...state,
         tw: {...state.tw, backend: action.payload.data},
       };
-
+      case GET_CHANGE_PASSWORD_REQUEST:
+          return {
+              ...state,
+              loading: true,
+          };
+      case GET_CHANGE_PASSWORD_SUCCESS:
+          return {
+              ...state,
+              loading: false,
+          };
+      case GET_CHANGE_PASSWORD_FAIL:
+          return {
+              ...state,
+              loading: false,
+          };
     default:
       return state;
   }
@@ -185,6 +205,35 @@ const getLanguagesSuccess = (data) => ({
 const getLanguagesFailure = () => ({
   type: GET_EN_LANGUAGE_FAIL,
 });
+
+const getChangePasswordRequest = () => ({
+    type: GET_CHANGE_PASSWORD_REQUEST,
+});
+
+const getChangePasswordSuccess = () => ({
+    type: GET_CHANGE_PASSWORD_SUCCESS,
+});
+
+const getChangePasswordFailure = () => ({
+    type: GET_CHANGE_PASSWORD_FAIL,
+});
+
+export const changePassword = (data) => (dispatch) =>
+    new Promise((resolve, reject) => {
+        dispatch(getChangePasswordRequest());
+        client
+            .put('/change-password/', data)
+            .then((res) => {
+                if (res.status === true) {
+                    dispatch(getChangePasswordSuccess());
+                }
+                resolve(res);
+            })
+            .catch((err) => {
+                dispatch(getChangePasswordFailure());
+                reject(err);
+            });
+    });
 
 export const getAllLanguages = () => (dispatch) =>
   Promise.all(languageRequests)

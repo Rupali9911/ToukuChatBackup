@@ -29,6 +29,7 @@ import {addFriendByReferralCode} from '../../redux/reducers/friendReducer';
 import {translate} from '../../redux/reducers/languageReducer';
 import {globalStyles} from '../../styles';
 import styles from './styles';
+import ImagePicker from "react-native-image-crop-picker";
 
 class AddFriendByQr extends Component {
   constructor(props) {
@@ -82,25 +83,45 @@ class AddFriendByQr extends Component {
       });
   };
   getRecentMedias = () => {
-    var options = {
-      mediaType: 'photo',
-    };
-    launchImageLibrary(options, async (response) => {
-      if (response.didCancel) {
-      } else if (response.error) {
-        console.log('response.error', response.error);
-      } else {
-        console.log('response from picker', response);
-        QRreader(response.uri)
-          .then((data) => {
-            console.log('response from QRReader', data);
-            this.checkUrlAndNavigate(data);
-          })
-          .catch((err) => {
-            console.log('Error from QRReader', err);
-          });
-      }
-    });
+      ImagePicker.openPicker({
+          multiple: false,
+          maxFiles: 30,
+          mediaType: 'photo',
+          includeBase64: false,
+      }).then(async (image) => {
+          console.log('Image', image)
+          QRreader(image.path)
+              .then((data) => {
+                  console.log('response from QRReader', data);
+                  this.checkUrlAndNavigate(data);
+              })
+              .catch((err) => {
+                  console.log('Error from QRReader', err);
+              });
+      }).catch((err)=>{
+          console.log('Error from ImagePicker.openPicker', err);
+      });
+
+
+    // var options = {
+    //   mediaType: 'photo',
+    // };
+    // launchImageLibrary(options, async (response) => {
+    //   if (response.didCancel) {
+    //   } else if (response.error) {
+    //     console.log('response.error', response.error);
+    //   } else {
+    //     console.log('response from picker', response);
+    //     QRreader(response.uri)
+    //       .then((data) => {
+    //         console.log('response from QRReader', data);
+    //         this.checkUrlAndNavigate(data);
+    //       })
+    //       .catch((err) => {
+    //         console.log('Error from QRReader', err);
+    //       });
+    //   }
+    // });
   };
 
   onSuccess = (e) => {

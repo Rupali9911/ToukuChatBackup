@@ -25,6 +25,7 @@ import {
   updateTrendTimeline,
   likeUnlikeTimelinePost,
   updateFollowingTimeline,
+  updateFollowingList,
   timelinePostComment,
   getPostComments,
   deletePostComment,
@@ -33,6 +34,8 @@ import {
 import { globalStyles } from '../../styles';
 import { showToast, eventService } from '../../utils';
 import NavigationService from '../../navigation/NavigationService';
+import NewTimelinePostBubble from '../../components/NewTimelinePostBubble';
+import { isArray } from 'lodash';
 
 class Timeline extends Component {
   constructor(props) {
@@ -42,6 +45,7 @@ class Timeline extends Component {
       orientation: 'PORTRAIT',
       activeTab: 'following',
       isLoading: true,
+      isNewPost: false,
       tabBarItem:
         this.props.userData.user_type === 'owner' ||
           this.props.userData.user_type === 'company' ||
@@ -199,7 +203,7 @@ class Timeline extends Component {
       showConfirmation: false,
       showUnfollowConfirmationModal: false,
       currentPost: null,
-        isFetching: false,
+      isFetching: false,
     };
     this.specificPosts = null;
     this.isUnfollowing = false;
@@ -322,6 +326,12 @@ class Timeline extends Component {
       case SocketEvents.TIMELINE_POST_COMMENT_DELETE:
         this.handlePostCommentDelete(message);
         break;
+      case SocketEvents.NEW_TIMELINE_BULCK_SOCKET:
+        this.handleNewPost(message);
+        break;
+      case SocketEvents.COMPOSE_MESSAGE_DELETE_IN_CHANNEL:
+        this.handlePostDelete(message);
+        break;
     }
   }
 
@@ -401,6 +411,31 @@ class Timeline extends Component {
     }
   }
 
+  handleNewPost = (message) => {
+    const { activeTab,followingTimeline } = this.props;
+    const message_details = message.text.data.message_details;
+    if(activeTab === 'following'){
+      this.setState({isNewPost: true});
+    }
+  }
+
+  handlePostDelete = (message) => {
+    const { activeTab,followingTimeline } = this.props;
+    const message_details = message.text.data.message_details;
+    if(isArray(message_details)){
+      message_details.map((item)=>{
+        let item_index = followingTimeline.findIndex((_) => _.id == item.schedule_post);
+        console.log('post_index',item_index);
+        if(item_index >= 0){
+          let array = [...followingTimeline];  
+          array.splice(item_index,1);
+          console.log('array',array);
+          this.props.updateFollowingList(array);
+        }
+      });
+    }
+  }
+
   // showData() {
   //   // const {trendTimline, followingTimeline, rankingTimeLine} = this.props;
   // }
@@ -451,6 +486,15 @@ class Timeline extends Component {
         isFetching: true
     })
     this.refreshContent();
+  }
+
+  getNewFollowingTimelinePost = () => {
+    this.setState({isNewPost: false, isFetching: true});
+    this.props.getFollowingTimeline(null,true).then((res) => {
+        this.setState({
+            isFetching: false
+        })
+    });
   }
 
   refreshContent() {
@@ -628,7 +672,7 @@ class Timeline extends Component {
   };
 
   render() {
-    const { tabBarItem, orientation, showConfirmation, showUnfollowConfirmationModal,isFetching} = this.state;
+    const { tabBarItem, orientation, showConfirmation, showUnfollowConfirmationModal,isFetching, isNewPost} = this.state;
     const {
       trendTimline,
       followingTimeline,
@@ -681,7 +725,7 @@ class Timeline extends Component {
       // },
     ];
 
-    console.log('postId', postId, 'posts', this.state.isLoading);
+    console.log('postId', postId, 'posts', followingTimeline.length);
     return (
       // <ImageBackground
       //   source={Images.image_home_bg}
@@ -768,6 +812,7 @@ class Timeline extends Component {
                           onRefresh={() => this.onRefresh()}
                         />
                     )}
+                    <NewTimelinePostBubble visible={isNewPost} onPress={this.getNewFollowingTimelinePost}/>
               </View>
             )}
         </View>
@@ -829,6 +874,7 @@ const mapDispatchToProps = {
   setSpecificPostId,
   likeUnlikeTimelinePost,
   updateFollowingTimeline,
+  updateFollowingList,
   timelinePostComment,
   getPostComments,
   deletePostComment,

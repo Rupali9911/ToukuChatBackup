@@ -8,10 +8,10 @@ import {connect} from 'react-redux';
 
 // Local imports
 import {Colors, Icons} from '../../../constants';
-import {translate} from '../../../redux/reducers/languageReducer';
+import {translate, changePassword} from '../../../redux/reducers/languageReducer';
 import {
-  changePassword,
   getUserProfile,
+    changeEmail
 } from '../../../redux/reducers/userReducer';
 import {globalStyles} from '../../../styles';
 import {wait} from '../../../utils';
@@ -98,25 +98,25 @@ class ChangePassModal extends Component {
     let isValid = true;
 
     if (!isSetPassword && oldPassword.trim() === '') {
-      isValid = false;
-      this.setState({oldPasswordErr: 'messages.required'});
-    }
-    if (newPassword.trim() === '') {
-      isValid = false;
-      this.setState({newPasswordErr: 'messages.required'});
-    }
-    if (confirmPassword.trim() === '') {
-      isValid = false;
-      this.setState({confirmPasswordErr: 'messages.required'});
-    }
-    if (confirmPassword !== newPassword) {
-      isValid = false;
-      Toast.show({
-        title: translate('pages.resetPassword.changePassword'),
-        text: translate('toastr.confirmPasswordDoNotMatch'),
-        type: 'primary',
-      });
-    }
+          isValid = false;
+          this.setState({oldPasswordErr: 'messages.required'});
+      }
+      if (newPassword.trim() === '') {
+          isValid = false;
+          this.setState({newPasswordErr: 'messages.required'});
+      }
+      if (confirmPassword.trim() === '') {
+          isValid = false;
+          this.setState({confirmPasswordErr: 'messages.required'});
+      }
+      if (confirmPassword !== newPassword) {
+          isValid = false;
+          Toast.show({
+              title: translate('pages.resetPassword.changePassword'),
+              text: translate('toastr.confirmPasswordDoNotMatch'),
+              type: 'primary',
+          });
+      }
     if (isValid) {
       this.setState({
         oldPasswordErr: null,
@@ -338,6 +338,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     changePassword,
   getUserProfile,
+    changeEmail
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassModal);

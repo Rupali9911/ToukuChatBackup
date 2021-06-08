@@ -134,6 +134,7 @@ class Home extends PureComponent {
       getChannelData: [],
       getFriendData: [],
       assetXPValue: null,
+        from_user_id: null
     };
     this.SingleSocket = SingleSocket.getInstance();
     this.start = 0;
@@ -234,7 +235,6 @@ class Home extends PureComponent {
 
   friendFilter = () => {
     const {userFriends} = this.props;
-    // console.log('userFriends',userFriends);
     const Friends = userFriends.filter((friend) => friend.friend_status !== 'UNFRIEND')
     const filteredFriends = Friends.filter(
       createFilter(this.state.searchText, ['username']),
@@ -311,12 +311,12 @@ class Home extends PureComponent {
     // }
   }
 
-  componentDidUpdate(nextPorps) {
-    if (nextPorps.followingChannels !== this.props.followingChannels) {
+  componentDidUpdate(nextProps) {
+    if (nextProps.followingChannels !== this.props.followingChannels) {
       this.channelFilter();
-    } else if (nextPorps.userGroups !== this.props.userGroups) {
+    } else if (nextProps.userGroups !== this.props.userGroups) {
       this.groupFilter();
-    } else if (nextPorps.userFriends !== this.props.userFriends) {
+    } else if (nextProps.userFriends !== this.props.userFriends) {
       this.friendFilter();
     }
   }
@@ -455,12 +455,14 @@ class Home extends PureComponent {
 
   setFriendHeaderCount() {
     let counts = 0;
-    for (let friend of this.props.userFriends) {
-      counts = counts + friend.unread_msg;
-    }
-    counts = counts + this.props.acceptedRequest.length;
-    // this.setState({ friendHeaderCounts: counts });
-    return counts;
+      for (let friend of this.props.userFriends) {
+          if(friend.friend_status !== 'UNFRIEND'){
+              counts = counts + friend.unread_msg;
+          }
+      }
+      counts = counts + this.props.acceptedRequest.length;
+      // this.setState({ friendHeaderCounts: counts });
+      return counts;
   }
 
   setGroupHeaderCount() {
@@ -1449,7 +1451,7 @@ class Home extends PureComponent {
                           ? translate('pages.xchat.document')
                           : item.last_msg.type === 'audio'
                             ? translate('pages.xchat.audio')
-                            : item.last_msg.type === 'update' && item.last_msg.text.includes('add a memo') 
+                            : item.last_msg.type === 'update' && item.last_msg.text.includes('add a memo')
                             ? this.renderGroupNoteText(item.last_msg.text,item)
                             : ''
                   : item.no_msgs || !item.last_msg_id
@@ -1521,7 +1523,7 @@ class Home extends PureComponent {
                 ? translate('pages.xchat.document')
                 : item.last_msg_type === 'audio'
                 ? translate('pages.xchat.audio')
-                : item.last_msg_type === 'update' && item.last_msg.includes('add a memo') 
+                : item.last_msg_type === 'update' && item.last_msg.includes('add a memo')
                 ? this.renderFriendNoteText(item.last_msg,item)
                 : ''
               : item.last_msg_id
@@ -1575,6 +1577,7 @@ class Home extends PureComponent {
   }
 
   renderFriendRequestList() {
+    const {from_user_id} = this.state
     const {
       friendRequestLoading,
       friendRequest,
@@ -1600,8 +1603,8 @@ class Home extends PureComponent {
               date={item.created}
               onAcceptPress={() => this.onAcceptPress(item)}
               onRejectPress={() => this.onRejectPress(item)}
-              isRejectLoading={isRejectLoading}
-              isAcceptLoading={isAcceptLoading}
+              isRejectLoading={from_user_id && from_user_id === item.from_user_id ? isRejectLoading : false}
+              isAcceptLoading={from_user_id && from_user_id === item.from_user_id ? isAcceptLoading : false}
             />
           )}
           ItemSeparatorComponent={() => <View style={globalStyles.separator} />}
@@ -1618,6 +1621,7 @@ class Home extends PureComponent {
 
   onAcceptPress = (item) => {
     console.log('onAcceptPress -> onAcceptPress', item);
+    this.setState({from_user_id: item.from_user_id})
     const payload = {
       channel_name: `friend_request_${item.from_user_id}`,
       sender_id: item.from_user_id,
@@ -1632,10 +1636,12 @@ class Home extends PureComponent {
             type: 'positive',
           });
           this.props.getFriendRequest();
+            this.setState({from_user_id: null})
         }
       })
       .catch((err) => {
         console.error('acceptFriendRequst =>', err);
+          this.setState({from_user_id: null})
         Toast.show({
           title: 'TOUKU',
           text: translate('common.somethingWentWrong'),

@@ -41,6 +41,7 @@ import ClickableImage from './components/ClickableImage';
 
 // StyleSheet import
 import styles from './styles';
+import ImagePicker from "react-native-image-picker";
 
 /**
  * User profile component
@@ -109,7 +110,7 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    launchImageLibrary(options, async (response) => {
+      ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
         console.log('response.error', response.error);
@@ -175,11 +176,11 @@ class UserProfile extends Component {
         path: 'images',
       },
     };
-    launchImageLibrary(options, async (response) => {
+      ImagePicker.showImagePicker(options, async (response) => {
       if (response.didCancel) {
       } else if (response.error) {
       } else {
-        // console.log('response data',response);
+         console.log('response data',response);
         this.setState({
           uploadLoading: true,
           backgroundImagePath: response,
@@ -211,7 +212,7 @@ class UserProfile extends Component {
 
   render() {
     const {onRequestClose, userData, userConfig} = this.props;
-    console.log('Props', this.props);
+    //console.log('Props', this.props);
     const {
       isChangePassModalVisible,
       isChangeEmailModalVisible,
