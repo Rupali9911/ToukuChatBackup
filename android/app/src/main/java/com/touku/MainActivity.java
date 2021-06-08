@@ -12,6 +12,11 @@ import org.devio.rn.splashscreen.SplashScreen;
 public class MainActivity extends ReactActivity {
 
     @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Intent intent = new Intent("onConfigurationChanged");
