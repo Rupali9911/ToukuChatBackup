@@ -200,7 +200,7 @@ class ChatInput extends Component {
     //   'suggestionsDataHeight -> suggestionRowHeight',
     //   suggestionRowHeight,
     // );
-    console.log('suggestionRowHeight', suggestionRowHeight);
+    // console.log('suggestionRowHeight', suggestionRowHeight);
     return suggestionRowHeight;
   };
 
@@ -229,7 +229,6 @@ class ChatInput extends Component {
       const resJson = await fetch(
         `${BASE_URL}?api_key=${this.state.API_KEY}&limit=16&rating=g`,
       );
-      console.log('res',resJson);
       if(resJson.ok){
         const res = await resJson.json();
         this.setState({gifs: res.data});
@@ -247,7 +246,6 @@ class ChatInput extends Component {
         const resJson = await fetch(
           `${BASE_URL}?api_key=${this.state.API_KEY}&limit=20&q=${this.state.stickerSearch}`,
         );
-        console.log('res',resJson.ok);
         if(resJson.ok){
           const res = await resJson.json();
           this.setState({stickers: res.data});

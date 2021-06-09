@@ -213,7 +213,7 @@ export default StyleSheet.create({
   emotionListContentStyle: {
     justifyContent: 'space-evenly',
     alignContent: 'space-around',
-    alignItems: 'center',
+    // alignItems: 'center',
     paddingBottom: 50,
   },
   divider: {

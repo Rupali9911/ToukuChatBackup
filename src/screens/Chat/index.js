@@ -170,6 +170,7 @@ import {
   updateUserFriendsWhenUnpined,
   updateGroupsWithMention,
   getLocalUserFriends,
+  getGroupObjectById,
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, getUserName, wait} from '../../utils';
@@ -1157,6 +1158,14 @@ class Chat extends Component {
 
         // updateGroup(message.text.data.message_details).then(() => {
         //   console.log('onNewMessageInGroup -> updateGroup');
+        if(message.text.data.message_details.group_id === currentGroup.group_id){
+          let result = getGroupObjectById(currentGroup.group_id);
+          if(result){
+            let group = realmToPlainObject([result])[0];
+            this.props.setCurrentGroup(group);
+          }
+        }
+        
         this.props.getLocalUserGroups().then(() => {
           this.props.setCommonChatConversation();
         });

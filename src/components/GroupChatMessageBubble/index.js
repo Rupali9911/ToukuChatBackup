@@ -534,7 +534,7 @@ class GroupChatMessageBubble extends Component {
 
   onMessagePress = () => {
     const {message} = this.props;
-    if(message.message_body.type === 'note'){
+    if(message.type === 'note'){
       this.navigateToNotes()
     } else if(message.type === 'doc'){
       this.onDocumentPress(message.text)

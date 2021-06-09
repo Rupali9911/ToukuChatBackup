@@ -148,7 +148,7 @@ class GroupChatContainer extends Component {
   }
 
   scrollListToRecent = () => {
-    this.scrollView && this.scrollView.scrollToOffset({offset: 10, animated: true});
+    this.scrollView && this.scrollView.scrollToOffset({offset: 0, animated: true});
   }
 
   scrollListToEnd = () => {
@@ -395,7 +395,7 @@ class GroupChatContainer extends Component {
     const currentOffset = event.nativeEvent.contentOffset.y
     // If the user is scrolling down (and the action-button is still visible) hide it
     // const isActionButtonVisible = direction === 'up'
-    const isActionButtonVisible = currentOffset > 50;
+    const isActionButtonVisible = currentOffset > 500;
     if (isActionButtonVisible !== this.state.isActionButtonVisible) {
       this.setState({ isActionButtonVisible })
     }
@@ -421,7 +421,7 @@ class GroupChatContainer extends Component {
     }
     
     // console.log('viewableItems[0].index',viewableItems[0].index);
-    // console.log('viewableItems[0].item.msg_id',viewableItems[0].item.msg_id,this.props.currentGroup.last_msg_id);
+    // console.log('viewableItems[0].item.msg_id',viewableItems[0].item.id,this.props.currentGroup.last_msg_id);
     // console.log('this.props.currentGroup.unread_msg',this.props.currentGroup.unread_msg);
     if (
       viewableItems.length > 0 &&

@@ -841,6 +841,10 @@ export const getGroupsById = (id) => {
     .filtered(`group_id == ${id}`);
 };
 
+export const getGroupObjectById = (id) => {
+  return realm.objectForPrimaryKey('groups',parseInt(`${id}`));
+};
+
 export const deleteGroupById = (id) => {
   var message = realm.objects('groups').filtered(`group_id == ${id}`);
 
