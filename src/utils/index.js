@@ -6,7 +6,7 @@ import Realm from 'realm';
 import ImageResizer from 'react-native-image-resizer';
 import { inviteUrlRoot, staging } from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
-import { getLocalUserFriend } from '../storage/Service';
+import { getLocalUserFriend, getLocalUserFriendById } from '../storage/Service';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -193,11 +193,10 @@ export const onPressHyperlink = (url) => {
 
 export const getUserName = (id) => {
   if(id){
-    let users = getLocalUserFriend(id);
+    let users = getLocalUserFriendById(id);
     let user_name = '';
-    if(users && users.length>0){
-      let user = users.toJSON()[0];
-      user_name = user.display_name || user.username;
+    if(users){
+      user_name = users.display_name || users.username;
     }
     return user_name;
   }

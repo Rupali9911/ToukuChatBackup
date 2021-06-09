@@ -1091,7 +1091,7 @@ export const getLocalUserFriend = (id) => {
 };
 
 export const getLocalUserFriendById = (id) => {
-  return realm.objectForPrimaryKey('user_friends',id);
+  return realm.objectForPrimaryKey('user_friends',parseInt(`${id}`));
 }
 
 export const getUserFriend = (id) => {

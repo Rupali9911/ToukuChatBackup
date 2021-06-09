@@ -103,3 +103,12 @@ from this:
            [super displayLayer:layer];
          }
   } 
+
+### Fix Realm same #refID issue use realm version 6.1.2
+- update ./node_modules/realm/lib/extensions.js
+  update line no. 138 to 141 by below code
+  
+  const { name: schemaName, primaryKey } = this.objectSchema();
+  const id = primaryKey 
+      ? serializedPrimaryKeyValue(this[primaryKey])
+       : schemaName + this._objectId(); 
