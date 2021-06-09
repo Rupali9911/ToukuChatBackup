@@ -235,6 +235,13 @@ export default StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
   },
+  frequentUseItemContainerStyle: {
+    width: Dimensions.get('window').width / 3,
+    height: 130,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
   gifsContainerStyle: {
     width: Dimensions.get('window').width / 2,
     height: 130,

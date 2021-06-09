@@ -6,8 +6,9 @@ import YouTube from 'react-native-youtube';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import VideoAndroid from '../Video/components/Video';
 import styles from './styles';
-import { Images } from '../../constants';
+import { Images, Colors } from '../../constants';
 import { isEqual } from 'lodash';
+import { FAB } from 'react-native-paper';
 
 export default class VideoPlayerCustom extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ export default class VideoPlayerCustom extends Component {
       playing: false,
       isFullscreen: false,
       isLoading: false,
+      iosVideoPause: true
     };
   }
 
@@ -84,9 +86,13 @@ export default class VideoPlayerCustom extends Component {
     this.setState({isLoading: false});
   }
 
+  initialIosVideoPlay = () => {
+    this.setState({iosVideoPause: false});
+  }
+
   render() {
     const {url,width,height} = this.props;
-    const {playing, thumbnailUrl, isLoading} = this.state;
+    const {playing, thumbnailUrl, isLoading, iosVideoPause} = this.state;
 
     let videoIosStyle = {
       width: width || 260,
@@ -140,21 +146,32 @@ export default class VideoPlayerCustom extends Component {
             placeholder={Images.image_loader}
           />
         ) : (
-          <VideoIos
-            ref={(ref) => {
-              this.player = ref;
-            }}
-            source={{uri: url}} // Can be a URL or a local file.
-            paused={true}
-            controls={true} // Store reference
-            // onBuffer={this.onBuffer}                // Callback when remote video is buffering
-            // onError={this.videoError}               // Callback when video cannot be loaded
-            style={videoIosStyle}
-            poster={thumbnailUrl}
-            resizeMode={'contain'}
-            onLoadStart={this.onLoadStart}
-            onLoad={this.onLoad}
-          />
+              <View style={styles.videoPlayButtonContainer}>
+                <VideoIos
+                  ref={(ref) => {
+                    this.player = ref;
+                  }}
+                  source={{ uri: url }} // Can be a URL or a local file.
+                  paused={iosVideoPause}
+                  controls={true} 
+                  // Store reference
+                  // onBuffer={this.onBuffer}                // Callback when remote video is buffering
+                  // onError={this.videoError}  
+                  // Callback when video cannot be loaded
+                  pictureInPicture={true}
+                  style={videoIosStyle}
+                  poster={thumbnailUrl}
+                  resizeMode={'contain'}
+                  onLoadStart={this.onLoadStart}
+                  onLoad={this.onLoad}
+                />
+                {iosVideoPause && <FAB
+                  style={styles.videoPlayButton}
+                  icon="play"
+                  color={'#fff'}
+                  onPress={this.initialIosVideoPlay}
+                />}
+              </View>
         )}
         {isLoading && <View style={{position: 'absolute', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
             <ActivityIndicator />

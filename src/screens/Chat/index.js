@@ -1114,8 +1114,8 @@ class Chat extends Component {
 
         let unreadCount = item.length > 0 ? item[0].unread_count : 0;
         let is_mentioned = item[0].is_mention || group[0].is_mentioned;
-        let mention_msg_id = group[0].mention_msg_id < 0 ? item[0].mention_msg_id : group[0].mention_msg_id;
-        let unread_msg_id = group[0].unread_msg_id < 0 ? message.text.data.message_details.msg_id : group[0].unread_msg_id;
+        let mention_msg_id = group[0].mention_msg_id < 0 || group[0].mention_msg_id == null ? item[0].mention_msg_id : group[0].mention_msg_id;
+        let unread_msg_id = group[0].unread_msg_id < 0 || group[0].unread_msg_id == null ? message.text.data.message_details.msg_id : group[0].unread_msg_id;
 
         setGroupChatConversation([message.text.data.message_details]);
         if (
@@ -2830,16 +2830,16 @@ class Chat extends Component {
     });
   };
 
-  onOpenGroupChats = (item,mention_press) => {
+  onOpenGroupChats = (item,mention_press = true) => {
     NetInfo.fetch().then((state) => {
-      console.log('Is connected?', state.isConnected);
+      console.log('onOpenGroupChats_Is connected?', state.isConnected, mention_press);
 
       let msg_id = item.unread_msg_id > 0 ? item.unread_msg_id : item.last_msg_id; 
 
-      if(mention_press && item.is_mentioned > 0){
+      if(mention_press && item.is_mentioned){
         msg_id = item.mention_msg_id;
       }
-
+      
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
         this.props.navigation.navigate('GroupChats',{msg_id});
@@ -3748,7 +3748,7 @@ class Chat extends Component {
         mentions={item.mentions}
         date={item.timestamp}
         image={item.group_picture}
-        onPress={this.onOpenGroupChats.bind(this,item)}
+        onPress={this.onOpenGroupChats.bind(this, item)}
         unreadCount={item.unread_msg}
         isVisible={isVisible}
         isUncheck={isUncheck}

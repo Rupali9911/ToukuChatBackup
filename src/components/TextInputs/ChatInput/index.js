@@ -879,7 +879,7 @@ function FrequentlyUsedList({emotions = [], numOfColumns, onPress}) {
   return (
     <FlatList
       data={emotions}
-      numColumns={2}
+      numColumns={3}
       showsVerticalScrollIndicator={false}
       style={styles.emotionListStyle}
       contentContainerStyle={[
@@ -905,7 +905,7 @@ function FrequentlyUsedList({emotions = [], numOfColumns, onPress}) {
       renderItem={({item, index}) => {
         return (
           <TouchableOpacity
-            style={styles.gifsContainerStyle}
+            style={styles.frequentUseItemContainerStyle}
             activeOpacity={0.8}
             onPress={() => {
               emotions.forEach((value, idx) => {
