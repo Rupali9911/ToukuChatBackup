@@ -56,7 +56,8 @@ class ChatInput extends Component {
       isExtraAreaVisible: false,
       picker_height: new Animated.Value(0),
       selected_medias: [],
-      selectedMediaObject: []
+      selectedMediaObject: [],
+      selectedEmotion: null
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -328,6 +329,27 @@ class ChatInput extends Component {
     }
   }
 
+  addEmotionToFrequentlyUsed = (model) => {
+    const {emotions,addEmotionToFrequentlyUsed} = this.props;
+    if(model){
+      let isModelExist = emotions.findIndex((item)=>item.url === model.url);
+      if(isModelExist<0){
+        addEmotionToFrequentlyUsed(model);
+      }else {
+        emotions.splice(isModelExist,1);
+        emotions.push(model);
+      }
+    }
+  }
+
+  selectEmotion = (emotion) => {
+    this.setState({selectedEmotion: emotion});
+  }
+
+  clearSelection = () => {
+    this.setState({selectedEmotion: null});
+  }
+
   render() {
     const {
       onAttachmentPress,
@@ -343,7 +365,7 @@ class ChatInput extends Component {
       addEmotionToFrequentlyUsed,
       emotions,
     } = this.props;
-    const {input_focus,isExtraAreaVisible,selected_medias} = this.state;
+    const {input_focus,isExtraAreaVisible,selected_medias, selectedEmotion} = this.state;
 
     function handleInput(text) {
       onChangeText(text);
@@ -378,6 +400,36 @@ class ChatInput extends Component {
     ];
     console.log('isExtrasAreaVisible',this.isExtrasAreaVisible);
     return (
+      <>
+      {selectedEmotion && <View style={{backgroundColor: '#00000090', width: '100%', alignItems: 'center', paddingVertical: 5, position: 'absolute',bottom: 340+this.newHeight}}>
+        <View style={styles.frequentUseItemContainerStyle}
+            activeOpacity={0.8}>
+            <FastImage
+              resizeMode={
+                selectedEmotion.type === 'gif'
+                  ? FastImage.resizeMode.cover
+                  : FastImage.resizeMode.contain
+              }
+              style={[
+                selectedEmotion.type === 'gif'
+                  ? styles.gifsImageContainerStyle
+                  : styles.stickerImageStyle,
+                  {alignSelf: 'center'}
+              ]}
+              source={{
+                uri: selectedEmotion.url,
+                priority: FastImage.priority.high,
+              }}
+            />
+          </View>
+          <FontAwesome5
+              name={'times'}
+              size={30}
+              style={{position: 'absolute',right: 10, top: 10}}
+              color={Colors.white}
+              onPress={this.clearSelection}
+            />
+        </View>}
       <View style={container}>
         <LinearGradient
           colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
@@ -398,12 +450,13 @@ class ChatInput extends Component {
                   this.input_ref && this.input_ref._textInput
                     ? this.input_ref._textInput.blur()
                     : this.input_ref.blur();
-                  this.setState({input_focus: false});
+                  this.setState({input_focus: false, selectedEmotion: null});
                   onChangeText('');
                 }}>
                 <FontAwesome5
                   name={'angle-right'}
                   size={30}
+                  style={styles.rightIconStyle}
                   color={Colors.gradient_3}
                 />
               </TouchableOpacity>
@@ -429,7 +482,7 @@ class ChatInput extends Component {
                     }}>
                     <Image
                         source={Icons.icon_sticker_pack}
-                        style={{width: 20, height: 20, resizeMode: 'contain'}}
+                        style={styles.attachmentImage}
                         resizeMode={'contain'}
                     />
                 </TouchableOpacity>
@@ -502,7 +555,7 @@ class ChatInput extends Component {
                   maxHeight={50}
                   multiline={true}
                   onFocus={() => {
-                    this.setState({input_focus: true},()=>{
+                    this.setState({input_focus: true, selectedEmotion: null},()=>{
                       this.hideExtraArea();
                     });
                   }}
@@ -569,7 +622,7 @@ class ChatInput extends Component {
                 style={styles.textInput}
                 onChangeText={(message) => handleInput(message)}
                 onFocus={(e) => {
-                  this.setState({input_focus: true},()=>{
+                  this.setState({input_focus: true, selectedEmotion: null},()=>{
                     this.hideExtraArea();
                   });
                 }}
@@ -616,6 +669,10 @@ class ChatInput extends Component {
               }else if(selected_medias && selected_medias.length>0){
                 onMediaSend(this.state.selectedMediaObject);
                 this.hidePicker();
+              }else if(selectedEmotion){
+                sendEmotion(selectedEmotion);
+                this.addEmotionToFrequentlyUsed(selectedEmotion);
+                this.setState({selectedEmotion: null});
               }
             }}>
             <Image
@@ -710,10 +767,10 @@ class ChatInput extends Component {
               </View> */}
                 <View tabLabel={'Recent'}>
                   <FrequentlyUsedList
-                    addEmotionToFrequentlyUsed={addEmotionToFrequentlyUsed}
+                    addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     emotions={emotions}
                     numOfColumns={2}
-                    onPress={sendEmotion}
+                    onPress={this.selectEmotion}
                   />
                 </View>
                 <View tabLabel={'GIFs'}>
@@ -725,8 +782,8 @@ class ChatInput extends Component {
                     containerStyle={styles.gifsContainerStyle}
                     imageStyle={styles.gifsImageContainerStyle}
                     onChangeText={(text) => this.onGifEdit(text)}
-                    onPress={sendEmotion}
-                    addEmotionToFrequentlyUsed={addEmotionToFrequentlyUsed}
+                    onPress={this.selectEmotion}
+                    addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     loading={this.state.loading}
                   />
                 </View>
@@ -739,8 +796,8 @@ class ChatInput extends Component {
                     containerStyle={styles.stickerContainerStyle}
                     imageStyle={styles.stickerImageStyle}
                     onChangeText={(text) => this.onStickerEdit(text)}
-                    onPress={sendEmotion}
-                    addEmotionToFrequentlyUsed={addEmotionToFrequentlyUsed}
+                    onPress={this.selectEmotion}
+                    addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                   />
                 </View>
                 {/*<View tabLabel={'Stickers Pack'}>*/}
@@ -756,6 +813,7 @@ class ChatInput extends Component {
         :null}
         
       </View>
+      </>
     );
   }
 }
@@ -878,7 +936,7 @@ function TabBarItem({icon, onPress, index, activeTab}) {
 function FrequentlyUsedList({emotions = [], numOfColumns, onPress}) {
   return (
     <FlatList
-      data={emotions}
+      data={emotions.reverse()}
       numColumns={3}
       showsVerticalScrollIndicator={false}
       style={styles.emotionListStyle}
@@ -908,13 +966,13 @@ function FrequentlyUsedList({emotions = [], numOfColumns, onPress}) {
             style={styles.frequentUseItemContainerStyle}
             activeOpacity={0.8}
             onPress={() => {
-              emotions.forEach((value, idx) => {
-                if (value.url === item.url) {
-                  emotions.splice(idx, 1);
-                  emotions.unshift(value);
-                }
-              });
-              onPress(item.url);
+              // emotions.forEach((value, idx) => {
+              //   if (value.url === item.url) {
+              //     emotions.splice(idx, 1);
+              //     emotions.push(value);
+              //   }
+              // });
+              onPress(item);
             }}>
             <FastImage
               resizeMode={
@@ -998,10 +1056,10 @@ function EmotionList({
                 style={containerStyle}
                 activeOpacity={0.8}
                 onPress={() => {
-                  addEmotionToFrequentlyUsed({
-                    url: item.images.original.url,
-                    type: item.type,
-                  });
+                  // addEmotionToFrequentlyUsed({
+                  //   url: item.images.original.url,
+                  //   type: item.type,
+                  // });
                   const model = {
                     url: item.images.original.url,
                     type: item.type,

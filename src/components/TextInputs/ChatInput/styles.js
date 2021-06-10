@@ -164,16 +164,18 @@ export default StyleSheet.create({
     overflow: 'visible',
   },
   attachmentContainer: {
-    width: '13%',
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 5,
+    width: '15%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+    marginRight: 5,
   },
   attachmentActionContainer: {
     width: '100%',
   },
   mentionInpiutContainer: {
-    width: '80%',
+    width: '75%',
   },
   listContainer: {
     alignSelf: 'stretch',
@@ -337,4 +339,7 @@ export default StyleSheet.create({
   horizontalListDivider: {
     marginHorizontal: 8,
   },
+  rightIconStyle: {
+    alignSelf: 'center'
+  }
 });

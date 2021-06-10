@@ -517,7 +517,8 @@ class GroupChatContainer extends Component {
         maintainVisibleContentPosition={{minIndexForVisible: 5}}
         keyboardOpeningTime={1500}
         scrollEnabled={false}
-        extraHeight={200}>
+        extraHeight={200}
+        contentInsetAdjustmentBehavior={'always'}>
         <View
           style={[
             styles.messageAreaContainer,
@@ -532,9 +533,10 @@ class GroupChatContainer extends Component {
                   : height * 0.03,
             },
           ]}>
-          <Fragment>
+          <>
             <FlatList
               // enableResetScrollToCoords={false}
+              style={{flex:1}}
               contentContainerStyle={[
                 styles.messageAreaScroll,
                 isReply && styles.replyPadding,
@@ -567,7 +569,7 @@ class GroupChatContainer extends Component {
               renderItem={this.renderMessage}
               ListEmptyComponent={this.listEmptyComponent}
             />
-          </Fragment>
+          </>
           {/* <ScrollView
             contentContainerStyle={[
               styles.messareAreaScroll,

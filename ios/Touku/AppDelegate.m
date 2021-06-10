@@ -14,7 +14,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
 #import <React/RCTLinkingManager.h>
-
+#import <TSBackgroundFetch/TSBackgroundFetch.h>
 // #if DEBUG
 // #import <FlipperKit/FlipperClient.h>
 // #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
@@ -69,6 +69,9 @@
    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
    center.delegate = self;
 
+  // [REQUIRED] Register BackgroundFetch
+  [[TSBackgroundFetch sharedInstance] didFinishLaunching];
+  
    return YES;
 }
 

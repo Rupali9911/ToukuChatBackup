@@ -6,6 +6,8 @@ import Orientation from 'react-native-orientation';
 import uuid from 'react-native-uuid';
 import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
+import BackgroundFetch from "react-native-background-fetch";
+
 import GroupChatContainer from '../../components/GroupChatContainer';
 import {ChatHeader} from '../../components/Headers';
 import {ListLoader, OpenLoader} from '../../components/Loaders';
@@ -618,10 +620,10 @@ class GroupChats extends Component {
         };
       }
       // this.state.conversation.unshift(msgDataSend);
-      this.props.setGroupConversation([
-        getGroupMessageObject(msgDataSend,this.props.userData),
-        ...this.props.chatGroupConversation,
-      ]);
+      // this.props.setGroupConversation([
+      //   getGroupMessageObject(msgDataSend,this.props.userData),
+      //   ...this.props.chatGroupConversation,
+      // ]);
       this.props.sendGroupMessage(groupMessage);
     } else {
       let groupMessage;
@@ -643,10 +645,10 @@ class GroupChats extends Component {
         };
       }
       // this.state.conversation.unshift(msgDataSend);
-      this.props.setGroupConversation([
-        getGroupMessageObject(msgDataSend,this.props.userData),
-        ...this.props.chatGroupConversation,
-      ]);
+      // this.props.setGroupConversation([
+      //   getGroupMessageObject(msgDataSend,this.props.userData),
+      //   ...this.props.chatGroupConversation,
+      // ]);
       this.props.sendGroupMessage(groupMessage);
     }
     if (uploadFile.uri) {
@@ -859,6 +861,7 @@ class GroupChats extends Component {
     // this.events = eventService.getMessage().subscribe((message) => {
     //   this.checkEventTypes(message);
     // });
+    // this.initBackgroundFetch();
   }
 
   componentWillUnmount() {
@@ -905,6 +908,34 @@ class GroupChats extends Component {
       }
 
     }
+  }
+
+  async initBackgroundFetch() {
+    // BackgroundFetch event handler.
+    const onEvent = async (taskId) => {
+      console.log('[BackgroundFetch] task: ', taskId);
+      // Do your background work...
+      await this.props
+      .getUpdatedGroupConversation(this.props.currentGroup.group_id,22609,false,false)
+      then((res)=>{
+        console.log('api response',res);
+      });
+      // await this.addEvent(taskId);
+      // IMPORTANT:  You must signal to the OS that your task is complete.
+      BackgroundFetch.finish(taskId);
+    }
+
+    // Timeout callback is executed when your Task has exceeded its allowed running-time.
+    // You must stop what you're doing immediately BackgorundFetch.finish(taskId)
+    const onTimeout = async (taskId) => {
+      console.warn('[BackgroundFetch] TIMEOUT task: ', taskId);
+      BackgroundFetch.finish(taskId);
+    }
+
+    // Initialize BackgroundFetch only once when component mounts.
+    let status = await BackgroundFetch.configure({minimumFetchInterval: 15}, onEvent, onTimeout);
+
+    console.log('[BackgroundFetch] configure status: ', status);
   }
 
   isGroupAdmin = () => {
@@ -2036,6 +2067,27 @@ class GroupChats extends Component {
       selectedIds: [...this.state.selectedIds, id + ''],
     });
     // this.onDeleteMessagePressed(id)
+  }
+
+  scrollToLatestMsg = () => {
+    return new Promise(async (resolve,reject)=>{
+      const {chatGroupConversation} = this.props;
+      if(chatGroupConversation.length > 0){
+        if(chatGroupConversation[0].id == this.props.currentGroup.latest_msg_id){
+          resolve();
+        }else {
+          let next_messages = getGroupChatConversationNextFromId(this.props.currentGroup.group_id, chatGroupConversation[0].id, false);
+          if (next_messages && next_messages.length > 0 && next_messages[0].id == this.props.currentGroup.latest_msg_id) {
+            let conversations = [];
+            conversations = realmToPlainObject(next_messages);
+            this.props.setGroupConversation(conversations.concat(chatGroupConversation));
+            resolve();
+          }else if(this.props.next){
+            
+          }
+        }
+      }
+    });
   }
  
   render() {

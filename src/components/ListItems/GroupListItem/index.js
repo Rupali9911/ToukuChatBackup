@@ -292,15 +292,6 @@ export default class GroupListItem extends PureComponent {
                       {getDate(date)}
                     </Text>
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
-                      {unreadCount !== 0 && unreadCount != null && (
-                        <Badge
-                          style={[
-                            globalStyles.smallLightText,
-                            styles.badgeStyle,
-                          ]}>
-                          {unreadCount}
-                        </Badge>
-                      )}
                       {item.is_mentioned && (
                         <TouchableOpacity onPress={onMentionPress}>
                           <Badge
@@ -312,6 +303,15 @@ export default class GroupListItem extends PureComponent {
                             {'@'}
                           </Badge>
                         </TouchableOpacity>
+                      )}
+                      {unreadCount !== 0 && unreadCount != null && (
+                        <Badge
+                          style={[
+                            globalStyles.smallLightText,
+                            styles.badgeStyle,
+                          ]}>
+                          {unreadCount>99 ? '99+' : unreadCount}
+                        </Badge>
                       )}
                     </View>
                   </View>
