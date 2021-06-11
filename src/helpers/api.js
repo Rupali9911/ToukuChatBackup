@@ -9,7 +9,7 @@ import {translate} from '../redux/reducers/languageReducer';
 import NetInfo from '@react-native-community/netinfo';
 
 /* switch this for testing on staging or production */
-export const staging = true ;
+export const staging = false ;
 
 //Staging API URL
 export const apiRootStaging = 'https://touku-api.angelium.net/api';

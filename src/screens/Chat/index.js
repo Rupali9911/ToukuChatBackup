@@ -1252,7 +1252,7 @@ class Chat extends Component {
       ) {
         const messageids = detail.message_ids;
 
-        const message_ids = Object.entries(messageids);
+        const message_ids = messageids ? Object.entries(messageids) : [];
 
         for (const value of message_ids) {
           updateGroupnReadCount(parseInt(value[0], 10), parseInt(value[1], 10));

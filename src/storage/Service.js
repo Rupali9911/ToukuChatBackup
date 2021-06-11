@@ -17,6 +17,7 @@ import {
   GroupMentions,
   MediaObject
 } from './Schema';
+import { isNaN, isNumber } from 'lodash';
 
 const DB_SCHEMAS = [
   ChatConversation,
@@ -361,7 +362,7 @@ export const setGroupChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm
       .objects('chat_conversation_group')
-      .filtered(`msg_id ==${item.msg_id} ${item.local_id?`|| msg_id ==${item.local_id}`:''}`);
+      .filtered(`msg_id ==${item.msg_id} ${isNumber(item.local_id)?`|| msg_id ==${item.local_id}`:''}`);
     if (obj.length > 0) {
       console.log('matching group msg');
       if(item.local_id && obj[0].msg_id == item.local_id){
