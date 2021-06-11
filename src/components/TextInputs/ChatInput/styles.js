@@ -341,5 +341,17 @@ export default StyleSheet.create({
   },
   rightIconStyle: {
     alignSelf: 'center'
+  },
+  selectItemContainer: {
+    backgroundColor: '#00000040', 
+    width: '100%', 
+    alignItems: 'center', 
+    paddingVertical: 5, 
+    position: 'absolute',
+  },
+  closeIconStyle: {
+    position: 'absolute',
+    right: 10, 
+    top: 7
   }
 });

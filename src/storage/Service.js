@@ -361,9 +361,15 @@ export const setGroupChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm
       .objects('chat_conversation_group')
-      .filtered('msg_id =' + item.msg_id);
+      .filtered(`msg_id ==${item.msg_id} ${item.local_id?`|| msg_id ==${item.local_id}`:''}`);
     if (obj.length > 0) {
-      // alert('matching friend');
+      console.log('matching group msg');
+      if(item.local_id && obj[0].msg_id == item.local_id){
+        console.log('remove temp object');
+        realm.write(() => {
+          realm.delete(obj);
+        });
+      }
       realm.write(() => {
         realm.create(
           'chat_conversation_group',
@@ -390,6 +396,7 @@ export const setGroupChatConversation = (conversation) => {
           'modified',
         );
       });
+      console.log('temp object update');
     } else {
       realm.write(() => {
         realm.create('chat_conversation_group', {
@@ -415,6 +422,66 @@ export const setGroupChatConversation = (conversation) => {
       });
     }
   }
+};
+
+export const setSingleGroupChatConversation = (item) => {
+    let returnObject = null;
+    var obj = realm.objectForPrimaryKey('chat_conversation_group',item.msg_id);
+    if (obj) {
+      // alert('matching friend');
+      realm.write(() => {
+        let object = realm.create(
+          'chat_conversation_group',
+          {
+            msg_id: item.msg_id,
+            sender_id: item.sender_id,
+            group_id: item.group_id,
+            sender_username: item.sender_username,
+            sender_display_name: item.sender_display_name,
+            sender_picture: item.sender_picture,
+            message_body: item.message_body,
+            is_edited: item.is_edited,
+            is_unsent: item.is_unsent,
+            timestamp: item.timestamp,
+            reply_to: item.reply_to,
+            mentions: item.mentions
+              ? item.mentions instanceof Array
+                ? item.mentions
+                : [item.mentions]
+              : [],
+            read_count: item.read_count ? item.read_count : 0,
+            created: item.created || item.timestamp,
+          },
+          'modified',
+        );
+        returnObject = object;
+      });
+    } else {
+      realm.write(() => {
+        let object = realm.create('chat_conversation_group', {
+          msg_id: item.msg_id,
+          sender_id: item.sender_id,
+          group_id: item.group_id,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          sender_picture: item.sender_picture,
+          message_body: item.message_body,
+          is_edited: item.is_edited,
+          is_unsent: item.is_unsent,
+          timestamp: item.timestamp,
+          reply_to: item.reply_to,
+          mentions: item.mentions
+            ? item.mentions instanceof Array
+              ? item.mentions
+              : [item.mentions]
+            : [],
+          read_count: item.read_count ? item.read_count : 0,
+          created: item.created || item.timestamp,
+        });
+        returnObject = object;
+      });
+    }
+    return returnObject;
 };
 
 export const getGroupChatConversation = () => {

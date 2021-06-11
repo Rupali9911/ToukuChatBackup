@@ -3,7 +3,8 @@ import {ImageBackground, PermissionsAndroid, Platform} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import Orientation from 'react-native-orientation';
-import uuid from 'react-native-uuid';
+// import uuid from 'react-native-uuid';
+import UUID from '../../uuid-int';
 import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
 import BackgroundFetch from "react-native-background-fetch";
@@ -67,7 +68,9 @@ import {
   getGroupChatConversationNextFromId,
   getGroupChatConversationPrevFromId,
   getGroupChatConversationByMsgId,
-  getGroupChatConversationLatestMsgId
+  getGroupChatConversationLatestMsgId,
+  setGroupChatConversation,
+  setSingleGroupChatConversation
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {getUserName, realmToPlainObject} from '../../utils';
@@ -77,6 +80,10 @@ import {
 } from '../../redux/reducers/timelineReducer';
 import { addFriendByReferralCode } from '../../redux/reducers/friendReducer';
 import { getRenderMessageData, getGroupMessageObject } from './logic';
+
+// number  0 <= id <=511
+const id = 0;
+const generator = UUID(id);
 
 class GroupChats extends Component {
   constructor(props) {
@@ -563,8 +570,8 @@ class GroupChats extends Component {
       },
       is_edited: false,
       is_unsent: false,
-      timestamp: new Date(),
-      created: new Date(new Date()),
+      timestamp: new Date().toISOString(),
+      created: new Date(new Date()).toISOString(),
       reply_to: isReply
         ? {
             display_name: repliedMessage.user_by.name,
@@ -603,7 +610,8 @@ class GroupChats extends Component {
       if (sentMessageType !== 'text') {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: uuid.v4(),
+          local_id: generator.uuid(),
+          // local_id: uuid.v4(),
           mentions: [...newMessageMentions],
           media_url: msgText,
           msg_type: sentMessageType,
@@ -612,7 +620,7 @@ class GroupChats extends Component {
       } else {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: uuid.v4(),
+          local_id: generator.uuid(),
           mentions: [...newMessageMentions],
           message_body: msgText,
           msg_type: sentMessageType,
@@ -624,13 +632,30 @@ class GroupChats extends Component {
       //   getGroupMessageObject(msgDataSend,this.props.userData),
       //   ...this.props.chatGroupConversation,
       // ]);
-      this.props.sendGroupMessage(groupMessage);
+      let newRObject = setSingleGroupChatConversation({
+        msg_id: groupMessage.local_id,
+        local_id: groupMessage.local_id,
+        ...msgDataSend
+      });
+      let Rmsg = getGroupMessageObject(newRObject,this.props.userData);
+      this.props.setGroupConversation([Rmsg].concat(this.props.chatGroupConversation));
+        if(onSendFinish){
+          onSendFinish && onSendFinish();
+        }
+      this.props.sendGroupMessage(groupMessage).then((res)=>{
+        if(res){}
+        else{
+          deleteGroupMessageById(groupMessage.local_id);
+        }
+      }).catch(err => {
+        deleteGroupMessageById(groupMessage.local_id);
+      });;
     } else {
       let groupMessage;
       if (sentMessageType !== 'text') {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: uuid.v4(),
+          local_id: generator.uuid(),
           mentions: [...newMessageMentions],
           media_url: msgText,
           msg_type: sentMessageType,
@@ -638,7 +663,7 @@ class GroupChats extends Component {
       } else {
         groupMessage = {
           group: this.props.currentGroup.group_id,
-          local_id: uuid.v4(),
+          local_id: generator.uuid(),
           mentions: [...newMessageMentions],
           message_body: msgText,
           msg_type: sentMessageType,
@@ -649,7 +674,25 @@ class GroupChats extends Component {
       //   getGroupMessageObject(msgDataSend,this.props.userData),
       //   ...this.props.chatGroupConversation,
       // ]);
-      this.props.sendGroupMessage(groupMessage);
+      let newObject = setSingleGroupChatConversation({
+        msg_id: groupMessage.local_id,
+        local_id: groupMessage.local_id,
+        ...msgDataSend
+      });
+      let msg = getGroupMessageObject(newObject,this.props.userData);
+      this.props.setGroupConversation([msg].concat(this.props.chatGroupConversation));
+        if(onSendFinish){
+          onSendFinish && onSendFinish();
+        }
+      this.props.sendGroupMessage(groupMessage).then((res)=>{
+        if(res){}
+        else{
+          deleteGroupMessageById(groupMessage.local_id);
+        }
+      }).catch(err => {
+        deleteGroupMessageById(groupMessage.local_id);
+      });
+      console.log('creation api call');
     }
     if (uploadFile.uri) {
       this.setState(
@@ -861,7 +904,7 @@ class GroupChats extends Component {
     // this.events = eventService.getMessage().subscribe((message) => {
     //   this.checkEventTypes(message);
     // });
-    // this.initBackgroundFetch();
+    this.initBackgroundFetch();
   }
 
   componentWillUnmount() {
@@ -916,9 +959,9 @@ class GroupChats extends Component {
       console.log('[BackgroundFetch] task: ', taskId);
       // Do your background work...
       await this.props
-      .getUpdatedGroupConversation(this.props.currentGroup.group_id,22609,false,false)
+      .getUpdatedGroupConversation(this.props.currentGroup.group_id,this.props.navigation.state.params.msg_id,false,false)
       then((res)=>{
-        console.log('api response',res);
+        console.log('BackgroundFetch api response',res);
       });
       // await this.addEvent(taskId);
       // IMPORTANT:  You must signal to the OS that your task is complete.

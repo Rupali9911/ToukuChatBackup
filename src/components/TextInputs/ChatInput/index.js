@@ -398,22 +398,19 @@ class ChatInput extends Component {
       },
       styles.rootContainer,
     ];
-    console.log('isExtrasAreaVisible',this.isExtrasAreaVisible);
     return (
       <>
-      {selectedEmotion && <View style={{backgroundColor: '#00000090', width: '100%', alignItems: 'center', paddingVertical: 5, position: 'absolute',bottom: 340+this.newHeight}}>
+      {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: 340+this.newHeight}]}>
         <View style={styles.frequentUseItemContainerStyle}
             activeOpacity={0.8}>
             <FastImage
               resizeMode={
-                selectedEmotion.type === 'gif'
+                selectedEmotion.url.includes('&ct=g')
                   ? FastImage.resizeMode.cover
                   : FastImage.resizeMode.contain
               }
               style={[
-                selectedEmotion.type === 'gif'
-                  ? styles.gifsImageContainerStyle
-                  : styles.stickerImageStyle,
+                   styles.gifsImageContainerStyle,
                   {alignSelf: 'center'}
               ]}
               source={{
@@ -425,7 +422,7 @@ class ChatInput extends Component {
           <FontAwesome5
               name={'times'}
               size={30}
-              style={{position: 'absolute',right: 10, top: 10}}
+              style={styles.closeIconStyle}
               color={Colors.white}
               onPress={this.clearSelection}
             />

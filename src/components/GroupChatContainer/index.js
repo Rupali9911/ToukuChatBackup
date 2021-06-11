@@ -76,9 +76,9 @@ class GroupChatContainer extends Component {
     if(message.text.data.message_details.group_id == this.props.currentGroup.group_id){
       
       if(this._listViewOffset <= 400){
-        setTimeout(()=>{
+        // setTimeout(()=>{
           this.scrollListToRecent();
-        },1000);
+        // },100);
       }else{
         let array = this.state.unreadMessage;
         let set = new Set(array);
@@ -405,7 +405,7 @@ class GroupChatContainer extends Component {
   }
   
   onViewableItemsChanged = ({ viewableItems }) => {
-    // console.log("Visible items are", viewableItems);
+    console.log("Visible items are", viewableItems);
     // console.log("Changed in this iteration", changed);
     let array = this.state.unreadMessage;
     this.viewableItems = viewableItems;
@@ -568,6 +568,7 @@ class GroupChatContainer extends Component {
               keyExtractor={this.keyExtractor}
               renderItem={this.renderMessage}
               ListEmptyComponent={this.listEmptyComponent}
+              // enableAutoscrollToTop={this._listViewOffset<=400}
             />
           </>
           {/* <ScrollView
@@ -719,12 +720,12 @@ class GroupChatContainer extends Component {
             onSend={() => {
               if (newMessageText && newMessageText.trim().length > 0) {
                 onMessageSend(()=>{
-                  setTimeout(()=>{
-                    messages.length > 0 &&
-                    this.scrollView &&
-                    this.scrollView.scrollToIndex({index: 0, animated: false});
-                    console.log('scroll to 0 index done');
-                  },1000);
+                    setTimeout(()=>{
+                      messages.length > 0 &&
+                      this.scrollView &&
+                      this.scrollView.scrollToOffset({offset: 0, animated: false});
+                      console.log('scroll to 0 index done');
+                    },200);
                 });
               } else {
                 handleMessage('');
