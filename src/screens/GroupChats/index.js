@@ -7,7 +7,6 @@ import Orientation from 'react-native-orientation';
 import UUID from '../../uuid-int';
 import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
-import BackgroundFetch from "react-native-background-fetch";
 
 import GroupChatContainer from '../../components/GroupChatContainer';
 import {ChatHeader} from '../../components/Headers';
@@ -904,7 +903,6 @@ class GroupChats extends Component {
     // this.events = eventService.getMessage().subscribe((message) => {
     //   this.checkEventTypes(message);
     // });
-    this.initBackgroundFetch();
   }
 
   componentWillUnmount() {
@@ -951,34 +949,6 @@ class GroupChats extends Component {
       }
 
     }
-  }
-
-  async initBackgroundFetch() {
-    // BackgroundFetch event handler.
-    const onEvent = async (taskId) => {
-      console.log('[BackgroundFetch] task: ', taskId);
-      // Do your background work...
-      await this.props
-      .getUpdatedGroupConversation(this.props.currentGroup.group_id,this.props.navigation.state.params.msg_id,false,false)
-      then((res)=>{
-        console.log('BackgroundFetch api response',res);
-      });
-      // await this.addEvent(taskId);
-      // IMPORTANT:  You must signal to the OS that your task is complete.
-      BackgroundFetch.finish(taskId);
-    }
-
-    // Timeout callback is executed when your Task has exceeded its allowed running-time.
-    // You must stop what you're doing immediately BackgorundFetch.finish(taskId)
-    const onTimeout = async (taskId) => {
-      console.warn('[BackgroundFetch] TIMEOUT task: ', taskId);
-      BackgroundFetch.finish(taskId);
-    }
-
-    // Initialize BackgroundFetch only once when component mounts.
-    let status = await BackgroundFetch.configure({minimumFetchInterval: 15}, onEvent, onTimeout);
-
-    console.log('[BackgroundFetch] configure status: ', status);
   }
 
   isGroupAdmin = () => {

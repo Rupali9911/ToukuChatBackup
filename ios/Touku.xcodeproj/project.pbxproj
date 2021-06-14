@@ -15,7 +15,6 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		149717F605C84A72897C900E /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23C4F935A6724A5B9AEB335A /* Poppins-Black.ttf */; };
 		16FA8A0862C542FA95886D1B /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 028C3FF996284225975C54DA /* Poppins-Regular.ttf */; };
-		18234CDE267206A400177DFD /* RNBackgroundFetch+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 18234CDD267206A400177DFD /* RNBackgroundFetch+AppDelegate.m */; };
 		18A8E5F2265E268000C6FFD4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18A8E5F1265E267F00C6FFD4 /* GoogleService-Info.plist */; };
 		18CA6F6924F6A8AB00E76F3B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186DF23124F67F4700CAAECA /* InfoPlist.strings */; };
 		18DC280024EEC0BF002341DD /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18DC27FE24EEC0BF002341DD /* Info.plist */; };
@@ -87,7 +86,6 @@
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Touku/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Touku/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Touku/main.m; sourceTree = "<group>"; };
-		18234CDD267206A400177DFD /* RNBackgroundFetch+AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RNBackgroundFetch+AppDelegate.m"; path = "../node_modules/react-native-background-fetch/ios/RNBackgroundFetch/RNBackgroundFetch+AppDelegate.m"; sourceTree = "<group>"; };
 		186DF22B24F67ED800CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = Touku/ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		186DF23024F67F4700CAAECA /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		188571DF24A2380E00146462 /* Touku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Touku.entitlements; path = Touku/Touku.entitlements; sourceTree = "<group>"; };
@@ -218,7 +216,6 @@
 		13B07FAE1A68108700A75B9A /* Touku */ = {
 			isa = PBXGroup;
 			children = (
-				18234CDD267206A400177DFD /* RNBackgroundFetch+AppDelegate.m */,
 				18A8E5F1265E267F00C6FFD4 /* GoogleService-Info.plist */,
 				188571DF24A2380E00146462 /* Touku.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -928,7 +925,6 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				88774A6424766CBD0074E14A /* LineLoginManager.m in Sources */,
-				18234CDE267206A400177DFD /* RNBackgroundFetch+AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
