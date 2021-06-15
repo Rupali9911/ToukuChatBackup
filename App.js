@@ -129,7 +129,7 @@ export default class App extends Component {
       let cCount = store.getState().channelReducer.unreadChannelMsgsCounts;
       let frCount = store.getState().addFriendReducer.friendRequest.length;
       let totalCount = fCount + gCount + cCount + frCount;
-      // console.log('_handleAppStateChange', totalCount);
+        console.log('_handleAppStateChange', totalCount);
       PushNotificationIOS.setApplicationIconBadgeNumber(totalCount);
     }
 
