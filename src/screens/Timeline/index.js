@@ -332,8 +332,36 @@ class Timeline extends Component {
       case SocketEvents.COMPOSE_MESSAGE_DELETE_IN_CHANNEL:
         this.handlePostDelete(message);
         break;
+        case SocketEvents.REMOVE_CHANNEL_MEMBER:
+            this.handleFollowUnfollowChannel(message, false)
+            break;
+        case SocketEvents.ADD_CHANNEL_MEMBER:
+            this.handleFollowUnfollowChannel(message, true)
+            break;
     }
   }
+
+    handleFollowUnfollowChannel = (message, isFollow) => {
+        const { rankingChannel } = this.props;
+        const message_details = message.text.data.message_details;
+        console.log('ADD_CHANNEL_MEMBER message_details', message_details, rankingChannel);
+        if (rankingChannel && rankingChannel.length > 0) {
+            let index = rankingChannel.findIndex((value, index) => {
+              let id = isFollow ? message_details.id : message_details.channel_id
+                return value.channel_id == id;
+            });
+            console.log('index', index);
+            if (index == 0 || index > 0) {
+                let item = rankingChannel[index];
+                item.is_following = isFollow ? true : false;
+                let array = rankingChannel;
+                array.splice(index, 1, item);
+                this.props.updateRankingChannel({
+                    channels: array
+                });
+            }
+        }
+    }
 
   handlePostLikeUnlike = (message) => {
     console.log('handlePostLikeUnlike', message);
@@ -427,7 +455,7 @@ class Timeline extends Component {
         let item_index = followingTimeline.findIndex((_) => _.id == item.schedule_post);
         console.log('post_index',item_index);
         if(item_index >= 0){
-          let array = [...followingTimeline];  
+          let array = [...followingTimeline];
           array.splice(item_index,1);
           console.log('array',array);
           this.props.updateFollowingList(array);
@@ -520,6 +548,11 @@ class Timeline extends Component {
       //       isFetching: false
       //   })
       //   });
+        this.props.getRankingChannelList(this.props.rankingChannel.length)
+            .then((res) => {
+                this.setState({ isFetching: false });
+                //this.showData();
+            });
     }
   }
 

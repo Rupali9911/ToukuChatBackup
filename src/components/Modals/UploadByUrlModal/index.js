@@ -11,11 +11,6 @@ import {connect} from 'react-redux';
 import {Colors, Icons} from '../../../constants';
 import {getUrlcontent} from '../../../redux/reducers/groupReducer';
 import {translate} from '../../../redux/reducers/languageReducer';
-import {
-  changeEmail,
-  changeEmailSendOtp,
-  getUserProfile,
-} from '../../../redux/reducers/userReducer';
 import {globalStyles} from '../../../styles';
 import {isValidUrl} from '../../../utils';
 
@@ -209,9 +204,6 @@ const mapStateToProps = (state) => {
 
 // Actions to be dispatched from redux
 const mapDispatchToProps = {
-  changeEmailSendOtp,
-  changeEmail,
-  getUserProfile,
   getUrlcontent,
 };
 

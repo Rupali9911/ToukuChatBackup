@@ -20,6 +20,11 @@ export const GET_CHANGE_PASSWORD_REQUEST = 'GET_CHANGE_PASSWORD_REQUEST';
 export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
 export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
 
+
+export const CHANGE_EMAIL_REQUEST = 'CHANGE_EMAIL_REQUEST';
+export const CHANGE_EMAIL_SUCCESS = 'CHANGE_EMAIL_SUCCESS';
+export const CHANGE_EMAIL_FAIL = 'CHANGE_EMAIL_FAIL';
+
 // Reducer initial state
 const initialState = {
   loading: false,
@@ -69,6 +74,21 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
       };
+      case CHANGE_EMAIL_REQUEST:
+          return {
+              ...state,
+              loading: true,
+          };
+      case CHANGE_EMAIL_SUCCESS:
+          return {
+              ...state,
+              loading: false,
+          };
+      case CHANGE_EMAIL_FAIL:
+          return {
+              ...state,
+              loading: false,
+          };
     case SET_CURRENT_ROUTE_NAME:
       return {
         ...state,
@@ -131,6 +151,18 @@ const getChangePasswordSuccess = () => ({
 
 const getChangePasswordFailure = () => ({
   type: GET_CHANGE_PASSWORD_FAIL,
+});
+
+const changeEmailRequest = () => ({
+    type: CHANGE_EMAIL_REQUEST,
+});
+
+const changeEmailSuccess = () => ({
+    type: CHANGE_EMAIL_SUCCESS,
+});
+
+const changeEmailFailure = () => ({
+    type: CHANGE_EMAIL_FAIL,
 });
 
 export const facebookRegister = (socialLoginData) => () =>
@@ -399,26 +431,19 @@ export const changePassword = (data) => (dispatch) =>
       });
   });
 
-export const changeEmailSendOtp = (data) => () =>
+export const changeEmail = (data) => (dispatch) =>
   new Promise((resolve, reject) => {
-    client
-      .post('/xchat/send-email-otp/', data)
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-
-export const changeEmail = (data) => () =>
-  new Promise((resolve, reject) => {
+      dispatch(changeEmailRequest());
     client
       .post('/xchat/change-email/', data)
       .then((res) => {
+          if (res.status === true){
+              dispatch(changeEmailSuccess())
+          }
         resolve(res);
       })
       .catch((err) => {
+          dispatch(changeEmailFailure())
         reject(err);
       });
   });

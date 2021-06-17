@@ -9,10 +9,6 @@ import {connect} from 'react-redux';
 // Local imports
 import {Colors, Icons} from '../../../constants';
 import {translate, changePassword} from '../../../redux/reducers/languageReducer';
-import {
-  getUserProfile,
-    changeEmail
-} from '../../../redux/reducers/userReducer';
 import {globalStyles} from '../../../styles';
 import {wait} from '../../../utils';
 
@@ -336,9 +332,7 @@ const mapStateToProps = (state) => {
 
 // Actions to be dispatched from redux
 const mapDispatchToProps = {
-    changePassword,
-  getUserProfile,
-    changeEmail
+    changePassword
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassModal);

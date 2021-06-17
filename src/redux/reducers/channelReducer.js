@@ -609,7 +609,6 @@ export const readAllChannelMessages = (id) => (dispatch) =>
 export const unfollowChannel = (id, user) => (dispatch) =>
   new Promise(function (resolve, reject) {
     console.log('id', id, 'user', user);
-
     client
       .patch(`/xchat/unfollow-channel/` + id + '/', user)
       .then((res) => {

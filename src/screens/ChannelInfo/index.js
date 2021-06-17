@@ -35,11 +35,11 @@ import {store} from '../../redux/store';
 import {getChannelsById} from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {
-  eventService,
-  getImage,
-  normalize,
-  onPressHyperlink,
-  wait,
+    eventService,
+    getImage,
+    normalize,
+    onPressHyperlink, realmToPlainObject,
+    wait,
 } from '../../utils';
 import styles from './styles';
 
@@ -111,8 +111,12 @@ class ChannelInfo extends Component {
       let channelObj = getChannelsById(
         this.props.navigation.state.params.channelItem.channel_id,
       );
-      if (channelObj.length > 0) {
-        store.dispatch(setCurrentChannel(channelObj[0]));
+        let channels = [];
+        let a = Array.from(channelObj);
+        channels = realmToPlainObject(a);
+      console.log('channelObj', channels)
+      if (channels.length > 0) {
+        store.dispatch(setCurrentChannel(channels[0]));
         NavigationService.navigate('ChannelChats');
       }
     } else {
@@ -250,6 +254,7 @@ class ChannelInfo extends Component {
     let user = {
       user_id: this.props.userData.id,
     };
+    console.log('this.props.navigation.state.params', this.props.navigation.state.params, this.props.currentChannel)
     this.props
       .unfollowChannel(
         this.props.navigation.state.params
@@ -259,7 +264,6 @@ class ChannelInfo extends Component {
       )
       .then(async (res) => {
         console.log('res', res);
-
         if (res.status === true) {
           await this.toggleConfirmationModal();
           this.isUnfollowing = false;
@@ -525,7 +529,7 @@ class ChannelInfo extends Component {
 
                   {/* <View
                     style={channelInfoStyles.updateBackgroundContainer}></View> */}
-                  
+
                 </ImageBackground>
               </LinearGradient>
               <View style={styles.channelInfoContainer}>

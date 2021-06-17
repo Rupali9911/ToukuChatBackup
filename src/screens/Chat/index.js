@@ -1600,24 +1600,17 @@ class Chat extends Component {
         this.props.setCommonChatConversation();
       });
 
-      let array = this.props.trendTimline;
-      this.props.trendTimline.map((item, index) => {
-        if (item.channel_id === message.text.data.message_details.channel_id) {
-          let changeItem = item;
-          changeItem.is_following = false;
-          array.splice(index, 1, changeItem);
-          return;
-        }
-      });
-
-      this.props.updateTrendTimeline(array);
-
-      // for (let i in this.props.followingChannels) {
-      //   if (message.text.data.message_details.channel_id === i.id) {
-      //     alert('channel unfollowed');
-      //     break;
+      // let array = this.props.trendTimline;
+      // this.props.trendTimline.map((item, index) => {
+      //   if (item.channel_id === message.text.data.message_details.channel_id) {
+      //     let changeItem = item;
+      //     changeItem.is_following = false;
+      //     array.splice(index, 1, changeItem);
+      //     return;
       //   }
-      // }
+      // });
+      //
+      // this.props.updateTrendTimeline(array);
     }
   }
 

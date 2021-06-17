@@ -72,10 +72,11 @@ export default class ChatHeader extends Component {
 
   // Navigation to channel or group profile
   handleChannelOrGroupNav = () => {
-    const {type, navigation} = this.props;
+    const {type, navigation, disableDetails} = this.props;
     if (type === 'channel') {
       navigation.navigate('ChannelInfo');
     } else if (type === 'group') {
+      if (!disableDetails)
       navigation.navigate('GroupDetails');
     }
   };

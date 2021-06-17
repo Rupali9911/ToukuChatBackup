@@ -174,6 +174,7 @@ class Channel extends Component {
         }
       });
     } else if (activeTab === 'ranking') {
+      console.log('Ranking onRefreshChannel called')
       this.props
         .getRankingChannel(
           this.props.userData.user_type,

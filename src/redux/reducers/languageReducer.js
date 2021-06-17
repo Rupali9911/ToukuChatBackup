@@ -71,6 +71,10 @@ export const GET_CHANGE_PASSWORD_SUCCESS = 'GET_CHANGE_PASSWORD_SUCCESS';
 export const GET_CHANGE_PASSWORD_FAIL = 'GET_CHANGE_PASSWORD_FAIL';
 
 
+export const CHANGE_EMAIL_OTP_REQUEST = 'CHANGE_EMAIL_OTP_REQUEST';
+export const CHANGE_EMAIL_OTP_SUCCESS = 'CHANGE_EMAIL_OTP_SUCCESS';
+export const CHANGE_EMAIL_OTP_FAIL = 'CHANGE_EMAIL_OTP_FAIL';
+
 const initialState = {
   loading: false,
   selectedLanguageItem: {
@@ -186,6 +190,21 @@ export default function (state = initialState, action) {
               ...state,
               loading: false,
           };
+      case CHANGE_EMAIL_OTP_REQUEST:
+          return {
+              ...state,
+              loading: true,
+          };
+      case CHANGE_EMAIL_OTP_SUCCESS:
+          return {
+              ...state,
+              loading: false,
+          };
+      case CHANGE_EMAIL_OTP_FAIL:
+          return {
+              ...state,
+              loading: false,
+          };
     default:
       return state;
   }
@@ -218,6 +237,18 @@ const getChangePasswordFailure = () => ({
     type: GET_CHANGE_PASSWORD_FAIL,
 });
 
+const changeEmailOtpRequest = () => ({
+    type: CHANGE_EMAIL_OTP_REQUEST,
+});
+
+const changeEmailOtpSuccess = () => ({
+    type: CHANGE_EMAIL_OTP_SUCCESS,
+});
+
+const changeEmailOtpFailure = () => ({
+    type: CHANGE_EMAIL_OTP_FAIL,
+});
+
 export const changePassword = (data) => (dispatch) =>
     new Promise((resolve, reject) => {
         dispatch(getChangePasswordRequest());
@@ -231,6 +262,23 @@ export const changePassword = (data) => (dispatch) =>
             })
             .catch((err) => {
                 dispatch(getChangePasswordFailure());
+                reject(err);
+            });
+    });
+
+export const changeEmailSendOtp = (data) => (dispatch) =>
+    new Promise((resolve, reject) => {
+        dispatch(changeEmailOtpRequest());
+        client
+            .post('/xchat/send-email-otp/', data)
+            .then((res) => {
+                if (res.status === true) {
+                    dispatch(changeEmailOtpSuccess());
+                }
+                resolve(res);
+            })
+            .catch((err) => {
+                dispatch(changeEmailOtpFailure());
                 reject(err);
             });
     });

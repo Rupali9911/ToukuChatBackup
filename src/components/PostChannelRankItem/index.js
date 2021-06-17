@@ -125,6 +125,7 @@ class PostChannelRankItem extends Component {
       this.props
         .followChannel(data)
         .then((res) => {
+          console.log('Response from followChannel api')
           if (res.status === true) {
             showToast(
               post.channel_name,

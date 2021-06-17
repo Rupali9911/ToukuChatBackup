@@ -11,10 +11,10 @@ import {Colors, Icons} from '../../../constants';
 import {
   setI18nConfig,
   translate,
+    changeEmailSendOtp
 } from '../../../redux/reducers/languageReducer';
 import {
   changeEmail,
-  changeEmailSendOtp,
   getUserProfile,
 } from '../../../redux/reducers/userReducer';
 import {globalStyles} from '../../../styles';
@@ -263,7 +263,7 @@ class ChangeEmailModal extends Component {
   };
 
   render() {
-    const {visible, userData} = this.props;
+    const {visible, userData, loading, loadingUserReducer} = this.props;
     const {
       newEmail,
       oldEmailVerificationCode,
@@ -342,6 +342,7 @@ class ChangeEmailModal extends Component {
                     : translate('common.sendCode')
                 }
                 onPress={() => this.onSendCodePress()}
+                loading={loading}
               />
 
               <View style={styles.inputContainer}>
@@ -441,6 +442,7 @@ class ChangeEmailModal extends Component {
                 title={translate('common.submit')}
                 onPress={this.onSubmitData.bind(this)}
                 disabled={(emailStatus && repeatEmailStatus) === false}
+                loading={loadingUserReducer}
               />
               <Button
                 isRounded={false}
@@ -472,7 +474,8 @@ const mapStateToProps = (state) => {
   return {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
-    loading: state.userReducer.loading,
+    loading: state.languageReducer.loading,
+      loadingUserReducer: state.userReducer.loading,
   };
 };
 

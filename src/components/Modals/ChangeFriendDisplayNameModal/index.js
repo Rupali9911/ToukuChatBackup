@@ -90,7 +90,7 @@ class ChangeFriendDisplayNameModal extends Component {
 
   // Process the display name input field
   handleDisplayName(name) {
-    this.setState({name});
+    this.setState({displayName: name});
     if (name.trim() === '') {
       this.setState({
         displayNameErr: 'pages.setting.toastr.enterValidDisplayName',

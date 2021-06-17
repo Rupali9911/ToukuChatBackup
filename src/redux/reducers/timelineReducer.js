@@ -269,13 +269,13 @@ export default function (state = initialState, action) {
         ...state,
         loading: false,
       };
-    
+
     case SET_ACTIVE_TAB:
       return {
         ...state,
         activeTab: action.payload
       };
-    
+
     case SET_SPECIFIC_POST_ID:
       return {
         ...state,
@@ -452,6 +452,7 @@ export const getRankingTimeline = (userType) => (dispatch) =>
       .get(url)
       .then((res) => {
         if (res.status) {
+            console.log('getRankingTimeline response', res)
           dispatch(getRankingTimelineSuccess(res.posts));
         }
         resolve(res);
@@ -471,6 +472,7 @@ export const getRankingTimeline = (userType) => (dispatch) =>
       .then((res) => {
         if (res.status) {
           const newRes = {...res, type: type};
+            console.log('getRankingChannelList response', res)
           dispatch(getRankingChannelSuccess(newRes));
           // dispatch(getRankingTimelineSuccess(res.channels));
         }
@@ -588,6 +590,7 @@ export const getRankingChannel = (userType, pageCount, type) => (dispatch) =>
       .then((res) => {
         if (res.status) {
           const newRes = {...res, type: type};
+          console.log('getRankingChannel response', res)
           dispatch(getRankingChannelSuccess(newRes));
         }
         resolve(res);
@@ -653,7 +656,7 @@ export const reportPost = (postId) => (dispatch) =>
       });
   });
 
-export const likeUnlikeTimelinePost = (id, action) => (dispatch) => 
+export const likeUnlikeTimelinePost = (id, action) => (dispatch) =>
   new Promise(function (resolve, reject) {
     let data = {
       post_id: id,
@@ -683,7 +686,7 @@ export const timelinePostComment = (id, text) => (dispatch) =>
       })
   });
 
-export const getPostComments = (id) => (dispatch) => 
+export const getPostComments = (id) => (dispatch) =>
   new Promise(function(resolve,reject) {
     client.get(`/xchat/timeline-post-comment-list/?post_id=${id}`)
       .then((res)=>{
@@ -693,7 +696,7 @@ export const getPostComments = (id) => (dispatch) =>
       })
   });
 
-export const deletePostComment = (id) => (dispatch) => 
+export const deletePostComment = (id) => (dispatch) =>
   new Promise(function(resolve, reject){
     client.delete(`/xchat/timeline-post-comment/${id}/`)
       .then((res)=>{
@@ -703,7 +706,7 @@ export const deletePostComment = (id) => (dispatch) =>
       });
   });
 
-export const updatePostComment = (id, params) => (dispatch) => 
+export const updatePostComment = (id, params) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client.patch(`/xchat/timeline-post-comment/${id}/`, params)
       .then((res) => {
