@@ -14,7 +14,6 @@
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
 #import <React/RCTLinkingManager.h>
-
 // #if DEBUG
 // #import <FlipperKit/FlipperClient.h>
 // #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
@@ -68,7 +67,7 @@
    // Define UNUserNotificationCenter
    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
    center.delegate = self;
-
+  
    return YES;
 }
 

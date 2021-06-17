@@ -17,6 +17,7 @@ import {getUserFriendByUserId} from '../../storage/Service';
 import {getAvatar, getUserName, normalize} from '../../utils';
 import GroupChatMessageBubble from '../GroupChatMessageBubble';
 import styles from './styles';
+import { isEqual } from 'lodash';
 
 const {width} = Dimensions.get('window');
 
@@ -35,12 +36,12 @@ export default class GroupChatMessageBox extends Component {
     if (this.props.onRef != null) {
       this.props.onRef(this);
     }
-    this.props.message.msg_type === 'image' &&
-      this.props.message.message_body &&
-      this.isPortrait(this.props.message.message_body);
+    this.props.message.type === 'image' &&
+      this.props.message.text && this.isPortrait(this.props.message.text);
   }
 
-  callBlinking = () => {
+  callBlinking = (id) => {
+    console.log('blink bubble id',id);
     this.callBlinkAnimation();
     // this[`bubble_box_${id}`] && this[`bubble_box_${id}`].callBlinkAnimation();
   };
@@ -119,7 +120,7 @@ export default class GroupChatMessageBox extends Component {
           <TouchableOpacity
             style={styles.translatedMessageIcon}
             onPress={() => {
-              this.props.onMessageTranslateClose(this.props.message.msg_id);
+              this.props.onMessageTranslateClose(this.props.message);
             }}>
             <FontAwesome name="times-circle" color={Colors.gray_dark} />
           </TouchableOpacity>
@@ -128,19 +129,30 @@ export default class GroupChatMessageBox extends Component {
     );
   };
 
+  shouldComponentUpdate(nextProps, nextState){
+    if (
+      !isEqual(this.props.message, nextProps.message) ||
+      !isEqual(this.props.audioPlayingId, nextProps.audioPlayingId) ||
+      !isEqual(this.props.perviousPlayingAudioId, nextProps.perviousPlayingAudioId) ||
+      !isEqual(this.props.isMultiSelect, nextProps.isMultiSelect) ||
+      !isEqual(this.props.isRead, nextProps.isRead)
+    ) {
+      return true;
+    } else if (!isEqual(this.state, nextState)) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {longPressMenu, selectedMessageId} = this.state;
     const {
       message,
-      isUser,
-      time,
       isRead,
       onMessageReply,
       onDelete,
       onUnSend,
       onMessageTranslate,
-      translatedMessage,
-      translatedMessageId,
       onEditMessage,
       onDownloadMessage,
       audioPlayingId,
@@ -153,17 +165,13 @@ export default class GroupChatMessageBox extends Component {
       showOpenLoader,
     } = this.props;
 
-    if (!message.message_body && !message.is_unsent) {
+    if (!message.text && !message.is_unsent) {
       return null;
     }
 
-    if (
-      message.message_body &&
-      message.message_body.text &&
-      !message.message_body.text
-    ) {
-      return null;
-    }
+    // if (!message.text) {
+    //   return null;
+    // }
 
     if (closeMenu) {
       this._closeMenu();
@@ -173,7 +181,7 @@ export default class GroupChatMessageBox extends Component {
       opacity: this.state.animation,
     };
 
-    return !isUser ? (
+    return !message.isMyMessage ? (
       <Animated.View style={[animatedStyle]}>
         <View
           style={[
@@ -181,12 +189,11 @@ export default class GroupChatMessageBox extends Component {
             styles.containerJustification,
             {
               maxWidth:
-                message.message_body && message.message_body.type === 'text'
+                message.type === 'text'
                   ? isMultiSelect
                     ? width * 0.6
                     : width * 0.67
-                  : message.message_body &&
-                    message.message_body.type === 'image'
+                  : message.type === 'image'
                   ? isMultiSelect
                     ? width - 90
                     : width - 50
@@ -208,43 +215,33 @@ export default class GroupChatMessageBox extends Component {
               resizeMode={'cover'}
             /> */}
               <TouchableOpacity
-                onPress={() => {
-                  console.log('message', message);
-                  this.navigateToUserProfile(message.sender_id);
-                }}>
+                onPress={this.navigateToUserProfile.bind(this,message.user_by.id)}>
                 <Image
-                  source={getAvatar(message.sender_picture)}
+                  source={message.user_by.picture}
                   style={styles.senderAvatar}
                 />
               </TouchableOpacity>
               <View>
                 <Text style={styles.senderUsername}>
-                  {getUserName(message.sender_id) ||
-                    message.sender_display_name}
+                  {message.user_by.name}
                 </Text>
                 <View style={styles.chatContentContainer}>
                   <View
                     style={
-                      message.message_body &&
-                      message.message_body.type !== 'image'
+                      message.type !== 'image'
                         ? {}
                         : {maxWidth: width - normalize(80)}
                     }>
                     <GroupChatMessageBubble
                       ref={(view) => {
-                        this[`bubble_box_${message.msg_id}`] = view;
+                        this[`bubble_box_${message.id}`] = view;
                       }}
                       message={message}
-                      isUser={isUser}
                       onMessageReply={onMessageReply}
-                      onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
-                      longPressMenu={longPressMenu}
                       openMenu={this._openMenu}
                       closeMenu={this._closeMenu}
                       selectedMessageId={selectedMessageId}
                       onMessageTranslate={onMessageTranslate}
-                      translatedMessage={translatedMessage}
-                      translatedMessageId={translatedMessageId}
                       onDelete={onDelete}
                       onUnSend={onUnSend}
                       onEditMessage={onEditMessage}
@@ -257,15 +254,17 @@ export default class GroupChatMessageBox extends Component {
                       showOpenLoader={showOpenLoader}
                       isMultiSelect={isMultiSelect}
                       onMediaPlay={this.props.onMediaPlay}
+                      addFriendByReferralCode={this.props.addFriendByReferralCode}
+                      setActiveTimelineTab={this.props.setActiveTimelineTab}
+                      setSpecificPostId={this.props.setSpecificPostId}
+                      userData={this.props.userData}
                     />
                   </View>
                   <View style={styles.time}>
                     {/*<Text style={styles.statusText}>{status}</Text>*/}
-                    <Text style={styles.statusText}>{`${time.getHours()}:${
-                      time.getMinutes() < 10
-                        ? '0' + time.getMinutes()
-                        : time.getMinutes()
-                    }`}</Text>
+                    <Text style={styles.statusText}>
+                      {message.time}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -282,24 +281,23 @@ export default class GroupChatMessageBox extends Component {
             styles.container,
             {
               maxWidth:
-                message.message_body && message.message_body.type === 'text'
+                message.type === 'text'
                   ? isMultiSelect
                     ? width * 0.8
                     : width * 0.9
-                  : message.message_body &&
-                    message.message_body.type === 'image'
+                  : message.type === 'image'
                   ? isMultiSelect
                     ? width - 40
                     : width
                   : width * 0.75,
             },
-            message.message_body && message.message_body.type === 'image'
+            message.type === 'image'
               ? styles.imageContainer
               : styles.ifNotImageContainer,
           ]}>
           <View
             style={[
-              message.message_body && message.message_body.type === 'image'
+              message.type === 'image'
                 ? {}
                 : styles.ifNotImageSubContainer,
             ]}>
@@ -313,36 +311,29 @@ export default class GroupChatMessageBox extends Component {
                   </Text>
                 )}
                 <Text style={styles.statusText}>
-                  {`${time.getHours()}:${
-                    time.getMinutes() < 10
-                      ? '0' + time.getMinutes()
-                      : time.getMinutes()
-                  }`}
+                  {message.time}
                 </Text>
               </View>
               {/* ) : null} */}
               <View
                 style={
-                  message.message_body && message.message_body.type !== 'image'
+                  message.type !== 'image'
                     ? {}
                     : {maxWidth: width - normalize(60)}
                 }>
                 <GroupChatMessageBubble
                   ref={(view) => {
-                    console.log(`bubble_box_${message.msg_id}`);
-                    this[`bubble_box_${message.msg_id}`] = view;
+                    // console.log(`bubble_box_${message.msg_id}`);
+                    this[`bubble_box_${message.id}`] = view;
                   }}
                   message={message}
-                  isUser={isUser}
                   onMessageReply={onMessageReply}
-                  onMessagePress={(msg_id) => this.onMessagePress(msg_id)}
+                  // onMessagePress={this.onMessagePress.bind(this)}
                   longPressMenu={longPressMenu}
                   openMenu={this._openMenu}
                   closeMenu={this._closeMenu}
                   selectedMessageId={selectedMessageId}
                   onMessageTranslate={onMessageTranslate}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
                   onDelete={onDelete}
                   onUnSend={onUnSend}
                   onEditMessage={onEditMessage}
@@ -355,6 +346,10 @@ export default class GroupChatMessageBox extends Component {
                   showOpenLoader={showOpenLoader}
                   isMultiSelect={isMultiSelect}
                   onMediaPlay={this.props.onMediaPlay}
+                  addFriendByReferralCode={this.props.addFriendByReferralCode}
+                  setActiveTimelineTab={this.props.setActiveTimelineTab}
+                  setSpecificPostId={this.props.setSpecificPostId}
+                  userData={this.props.userData}
                 />
               </View>
               {/* {message.message_body && message.message_body.type === 'image' ? (

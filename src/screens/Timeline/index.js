@@ -338,6 +338,9 @@ class Timeline extends Component {
         case SocketEvents.ADD_CHANNEL_MEMBER:
             this.handleFollowUnfollowChannel(message, true)
             break;
+      case SocketEvents.TIMELINE_POST_DELETE:
+      this.handlePostDeleteById(message);
+      break;
     }
   }
 
@@ -363,7 +366,7 @@ class Timeline extends Component {
         }
     }
 
-  handlePostLikeUnlike = (message) => {
+  handlePostLikeUnlike = async (message) => {
     console.log('handlePostLikeUnlike', message);
     const { followingTimeline } = this.props;
     const message_details = message.text.data.message_details;
@@ -386,7 +389,7 @@ class Timeline extends Component {
     }
   }
 
-  handlePostTimelineComment = (message) => {
+  handlePostTimelineComment = async (message) => {
     const { followingTimeline } = this.props;
     const message_details = message.text.data.message_details;
     console.log('message_details', message_details);
@@ -415,7 +418,7 @@ class Timeline extends Component {
     }
   }
 
-  handlePostCommentDelete = (message) => {
+  handlePostCommentDelete = async (message) => {
     const { followingTimeline } = this.props;
     const message_details = message.text.data.message_details;
     console.log('message_details', message_details);
@@ -461,6 +464,21 @@ class Timeline extends Component {
           this.props.updateFollowingList(array);
         }
       });
+    }
+  }
+
+  handlePostDeleteById = (message) => {
+    const { followingTimeline } = this.props;
+    const message_details = message.text.data.message_details;
+    if(message_details){
+        let item_index = followingTimeline.findIndex((_) => _.id == message_details.post_id);
+        console.log('post_index',item_index);
+        if(item_index >= 0){
+          let array = [...followingTimeline];
+          array.splice(item_index,1);
+          console.log('array',array);
+          this.props.updateFollowingList(array);
+        }
     }
   }
 

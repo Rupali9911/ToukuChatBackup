@@ -307,13 +307,22 @@ class FriendNotes extends Component {
       let array = this.state.data.results;
       let item = array.find((e) => e.id === data.note_id);
       let index = array.indexOf(item);
-      if (data.user_id === this.props.userData.id)
-        item['is_liked'] = data.like.like;
-
-      item.liked_by_count = data.like.like
-        ? item.liked_by_count + 1
-        : item.liked_by_count - 1;
-      array.splice(index, 1, item);
+      if (data.user_id === this.props.userData.id){
+        if(item.is_liked !== data.like.like){
+          item['is_liked'] = data.like.like;
+          item.liked_by_count = data.like.like
+            ? item.liked_by_count + 1
+            : item.liked_by_count - 1;
+          array.splice(index, 1, item);
+        }else{
+          return;
+        }
+      }else{
+        item.liked_by_count = data.like.like
+          ? item.liked_by_count + 1
+          : item.liked_by_count - 1;
+        array.splice(index, 1, item);
+      }
       this.setState({ data: { ...this.state.data, results: array } });
     }
   };
@@ -473,20 +482,38 @@ class FriendNotes extends Component {
 
   likeUnlike = (note_id, index) => {
     let data = { note_id: note_id };
+    
+    // update like of note
+    let array = this.state.data.results;
+    let item = array[index];
+    item['is_liked'] = !item.is_liked;
+    item['liked_by_count'] = item.is_liked ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+    array.splice(index, 1, item);
+    this.setState({ data: { ...this.state.data, results: array } });
+
     this.props
       .likeUnlikeNote(data)
       .then((res) => {
         if (res) {
-          // let array = this.state.data.results;
-          // let item = array[index];
-          // item['is_liked'] = res.like;
-          // item['liked_by_count'] = res.like?(item.liked_by_count+1):(item.liked_by_count-1);
-          // array.splice(index,1,item);
-          // this.setState({data: {...this.state.data, results: array}});
+        }else{
+          // if api fail rollback update
+          let array = this.state.data.results;
+          let item = array[index];
+          item['is_liked'] = !item.is_liked;
+          item['liked_by_count'] = item.is_liked ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+          array.splice(index, 1, item);
+          this.setState({ data: { ...this.state.data, results: array } });
         }
       })
       .catch((err) => {
         console.log('err', err);
+        // if api fail rollback update
+        let array = this.state.data.results;
+        let item = array[index];
+        item['is_liked'] = !item.is_liked;
+        item['liked_by_count'] = item.is_liked ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+        array.splice(index, 1, item);
+        this.setState({ data: { ...this.state.data, results: array } });
       });
   };
 

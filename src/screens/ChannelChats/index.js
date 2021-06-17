@@ -318,16 +318,20 @@ class ChannelChats extends Component {
       uploadFile: {uri: null, type: null, name: null},
     });
     if (sentMessageType === 'image') {
-      let file = uploadFile;
-      let files = [file];
-      const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
-        files,
-        (e) => {
-          console.log('progress_bar_percentage', e);
-          this.setState({uploadProgress: e.percent});
-        },
-      );
-      msgText = uploadedImages.image[0].image;
+      if (!uploadFile.isUrl) {
+        let file = uploadFile;
+        let files = [file];
+        const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+          files,
+          (e) => {
+            console.log('progress_bar_percentage', e);
+            this.setState({ uploadProgress: e.percent });
+          },
+        );
+        msgText = uploadedImages.image[0].image;
+      }else{
+        msgText = uploadFile.uri;
+      }
     }
 
     if (sentMessageType === 'audio') {
@@ -474,6 +478,25 @@ class ChannelChats extends Component {
     //   sendingMedia: false,
     //   uploadFile: {uri: null, type: null, name: null},
     // });
+  };
+
+  sendEmotion = async (model) => {
+    const source = {
+      uri: model.url,
+      type: model.type,
+      name: model.name,
+      isUrl: true,
+    };
+    await this.setState(
+      {
+        uploadFile: source,
+        sentMessageType: 'image',
+        sendingMedia: true,
+      },
+      async () => {
+        await this.onMessageSend();
+      },
+    );
   };
 
   onEdit = (message) => {
@@ -1022,6 +1045,7 @@ class ChannelChats extends Component {
             handleMessage={(message) => this.handleMessage(message)}
             onMessageReply={(id) => this.onReply(id)}
             onMessageSend={this.onMessageSend}
+            sendEmotion={this.sendEmotion}
             cancelReply={this.cancelReply.bind(this)}
             newMessageText={newMessageText}
             sendEnable={newMessageText.lenght ? true : false}

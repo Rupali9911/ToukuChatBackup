@@ -24,18 +24,21 @@ export default StyleSheet.create({
   chatInputContainer: {
     // position: 'absolute',
     // bottom: 0,
-    width: '100%',
     // height: '100%',
     // flex: 1,
-    minHeight: isIphoneX() || Platform.isPad ? 70 : 50,
-    maxHeight: 200,
     // backgroundColor: '#FC94B8',
-    flexDirection: 'row',
     // paddingHorizontal: 15,
+    // backgroundColor: 'red',
+    width: '100%',
+    paddingTop: 5,
+    maxHeight: 200,
     paddingLeft: 10,
     paddingRight: 15,
-    paddingTop: 5,
+    flexDirection: 'row',
+    minHeight: isIphoneX() || Platform.isPad ? 70 : 60,
     paddingBottom: isIphoneX() || Platform.isPad ? 20 : 5,
+  },
+  inputContainer: {
     alignItems: 'flex-end',
     overflow: 'visible',
   },
@@ -50,7 +53,8 @@ export default StyleSheet.create({
   },
   chatAttachmentButton: {
     // height: '100%',
-    width: '29%',
+    // width: '29%',
+    flex: 1,
     justifyContent: 'center',
     // alignItems: 'center',
   },
@@ -60,11 +64,18 @@ export default StyleSheet.create({
   },
   textInputContainer: {
     width: '60%',
-    // height: '80%',s
-    justifyContent: 'center',
+    // height: '80%',
+    // justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderWidth: 0.2,
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    borderColor: Colors.gray,
   },
   textInput: {
     // height: '100%',
+    flex: 1,
     borderWidth: 0.2,
     backgroundColor: Colors.white,
     minHeight: 35,
@@ -110,7 +121,7 @@ export default StyleSheet.create({
     fontSize: Platform.isPad ? normalize(5.5) : normalize(11),
     textAlignVertical: 'center',
     lineHeight: 15,
-    width: '100%',
+    width: '90%',
     color: '#000',
   },
   suggestedUserComponentImageStyle: {
@@ -125,8 +136,6 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     height: height / 16,
     flexDirection: 'row',
-    width: '100%',
-    height: '100%',
   },
   mentionStyle: {
     fontWeight: '500',
@@ -155,22 +164,27 @@ export default StyleSheet.create({
   rootContainer: {
     // position: 'absolute',
     // bottom: 0,
-    width: '100%',
     minHeight: isIphoneX() || Platform.isPad ? 70 : 50,
     // height: this.newHeight,
+    width: '100%',
     backgroundColor: Colors.white,
     overflow: 'visible',
   },
-  sendContainer: {
+  attachmentContainer: {
     width: '10%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+    marginRight: 5,
   },
-  sendActionContainer: {
+  attachmentActionContainer: {
     width: '100%',
   },
-  textInputFocusedContainer: {
+  mentionInpiutContainer: {
     width: '80%',
   },
-  suggestedUserContainer: {
+  listContainer: {
     alignSelf: 'stretch',
     backgroundColor: '#fff',
     borderTopLeftRadius: 10,
@@ -182,11 +196,169 @@ export default StyleSheet.create({
     borderColor: 'gray',
     padding: 5,
   },
-  suggestedUserItemActionContainer: {
+  mentionListActionContainer: {
     height: normalize(22),
     justifyContent: 'center',
     alignItems: 'flex-start',
     width: '100%',
     paddingLeft: 5,
   },
+  suggestedContainer: {
+    width: '100%',
+    height: '100%',
+  },
+  emotionInputContainer: {
+    height: 45,
+    color: 'black',
+    marginTop: 12,
+    marginHorizontal: 12,
+    backgroundColor: 'rgba(100, 93, 93, 0.15)',
+    paddingHorizontal: 16,
+    borderRadius: 100,
+  },
+  emotionListStyle: {
+    margin: 12,
+  },
+  emotionListContentStyle: {
+    justifyContent: 'space-evenly',
+    alignContent: 'space-around',
+    // alignItems: 'center',
+    paddingBottom: 50,
+  },
+  divider: {
+    marginVertical: 6,
+  },
+  emotionsContainer: {
+    backgroundColor: Colors.light_pink,
+  },
+  stickerContainerStyle: {
+    width: Dimensions.get('window').width / 4,
+    height: 75,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  stickerImageStyle: {
+    width: '100%',
+    height: 75,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  frequentUseItemContainerStyle: {
+    width: Dimensions.get('window').width / 3,
+    height: 130,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  gifsContainerStyle: {
+    width: Dimensions.get('window').width / 2,
+    height: 130,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  gifsImageContainerStyle: {
+    width: '95%',
+    height: 130,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  emojiTabBarStyle: {
+    marginTop: '3%',
+  },
+  emojiContainerStyle: {
+    height: 300,
+    backgroundColor: Colors.light_pink,
+  },
+  tabBarItemContainer: {
+    width: '100%',
+    paddingVertical: '4%',
+    paddingHorizontal: '3%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    borderBottomColor: Colors.dark_pink,
+  },
+  tabBarImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  frequentlyUsedListContentContainer: {
+    height: '100%',
+  },
+  frequentlyUsedEmptyContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  frequentlyUsedIcon: {
+    width: 64,
+    height: 64,
+    tintColor: Colors.gray,
+  },
+  emptyDivider: {
+    marginVertical: 6,
+  },
+  frequentlyUsedEmptyText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.gray_dark,
+    textAlign: 'center',
+  },
+  stickerPackIttemViewContainer: {
+    padding: 8,
+    margin: 8,
+    borderRadius: 6,
+    backgroundColor: Colors.white,
+  },
+  stickerPackHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  stickerPackTitleText: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginBottom: 6,
+    overflow: 'hidden',
+    // backgroundColor: Colors.pink_chat,
+    alignSelf: 'flex-start',
+    color: Colors.dark_pink,
+  },
+  stickerPackDownloadText: {
+    fontWeight: 'bold',
+    fontSize: 12,
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 6,
+    overflow: 'hidden',
+    textTransform: 'uppercase',
+    backgroundColor: Colors.dark_orange,
+    alignSelf: 'flex-start',
+    color: Colors.white,
+  },
+  horizontalListDivider: {
+    marginHorizontal: 8,
+  },
+  rightIconStyle: {
+    alignSelf: 'center'
+  },
+  selectItemContainer: {
+    backgroundColor: '#00000040', 
+    width: '100%', 
+    alignItems: 'center', 
+    paddingVertical: 5, 
+    position: 'absolute',
+  },
+  closeIconStyle: {
+    position: 'absolute',
+    right: 10, 
+    top: 7
+  }
 });

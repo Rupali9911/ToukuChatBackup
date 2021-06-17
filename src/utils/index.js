@@ -6,7 +6,7 @@ import Realm from 'realm';
 import ImageResizer from 'react-native-image-resizer';
 import { inviteUrlRoot, staging } from '../helpers/api';
 import NavigationService from '../navigation/NavigationService';
-import { getLocalUserFriend } from '../storage/Service';
+import { getLocalUserFriend, getLocalUserFriendById } from '../storage/Service';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -193,11 +193,10 @@ export const onPressHyperlink = (url) => {
 
 export const getUserName = (id) => {
   if(id){
-    let users = getLocalUserFriend(id);
+    let users = getLocalUserFriendById(id);
     let user_name = '';
-    if(users && users.length>0){
-      let user = users.toJSON()[0];
-      user_name = user.display_name || user.username;
+    if(users){
+      user_name = users.display_name || users.username;
     }
     return user_name;
   }
@@ -225,8 +224,8 @@ export const getUser_ActionFromUpdateText = (text) => {
 }
 
 export const realmToPlainObject = (realmObj) => {
-  // let ab = Array.from(realmObj);
-  return JSON.parse(JSON.stringify(realmObj, Realm.JsonSerializationReplacer));
+  let ab = Array.from(realmObj);
+  return JSON.parse(JSON.stringify(ab, Realm.JsonSerializationReplacer));
 }
 
 export function isNumeric(str) {
@@ -239,3 +238,20 @@ export const checkDeepLinkUrl = (url) => {
   let checkUrl = staging ? 'touku.angelium.net/' : 'touku.net/';
   return url.includes(checkUrl);
 }
+
+export const isCloseToBottomFlatlist = ({ layoutMeasurement, contentOffset, contentSize }) => {
+  const paddingToBottom = 20;
+  return (
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom
+  );
+};
+
+// Generate random integer, we will use this to use random message from list of dummy messages.
+export const getRandomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+// Generate unique key for message component of FlatList.
+export const generateUniqueKey = () =>
+  `_${Math.random().toString(36).substr(2, 9)}`;

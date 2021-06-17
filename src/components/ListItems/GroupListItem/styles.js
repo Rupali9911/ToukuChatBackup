@@ -120,5 +120,6 @@ export default StyleSheet.create({
     color: Colors.white,
     fontSize: 12,
     marginTop: 5,
+    marginLeft: 10,
   },
 });

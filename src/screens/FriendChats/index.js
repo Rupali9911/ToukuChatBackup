@@ -154,14 +154,14 @@ class FriendChats extends Component {
                   this.props.navigation.navigate('FriendNotes');
                 },
               },
-                {
-                    id: 7,
-                    title: translate('pages.xchat.unfriend'),
-                    icon: 'user-times',
-                    onPress: () => {
-                        this.toggleConfirmationModal();
-                    },
+              {
+                id: 7,
+                title: translate('pages.xchat.unfriend'),
+                icon: 'user-times',
+                onPress: () => {
+                  this.toggleConfirmationModal();
                 },
+              },
             ]
           : [
               {
@@ -197,14 +197,14 @@ class FriendChats extends Component {
                   this.props.navigation.navigate('FriendNotes');
                 },
               },
-                {
-                    id: 5,
-                    title: translate('pages.xchat.unfriend'),
-                    icon: 'user-times',
-                    onPress: () => {
-                        this.toggleConfirmationModal();
-                    },
+              {
+                id: 5,
+                title: translate('pages.xchat.unfriend'),
+                icon: 'user-times',
+                onPress: () => {
+                  this.toggleConfirmationModal();
                 },
+              },
             ],
       unfriendMenus: [
         {
@@ -364,17 +364,22 @@ class FriendChats extends Component {
 
     let imgThumb = '';
     if (sentMessageType === 'image') {
-      let file = uploadFile;
-      let files = [file];
-      const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
-        files,
-        (e) => {
-          console.log('progress_bar_percentage', e);
-          this.setState({uploadProgress: e.percent});
-        },
-      );
-      msgText = uploadedImages.image[0].image;
-      imgThumb = uploadedImages.image[0].thumbnail;
+      if(!uploadFile.isUrl){
+        let file = uploadFile;
+        let files = [file];
+        const uploadedImages = await this.S3uploadService.uploadImagesOnS3Bucket(
+          files,
+          (e) => {
+            console.log('progress_bar_percentage', e);
+            this.setState({uploadProgress: e.percent});
+          },
+        );
+        msgText = uploadedImages.image[0].image;
+        imgThumb = uploadedImages.image[0].thumbnail;
+      }else{
+        msgText = uploadFile.uri;
+        imgThumb = uploadFile.uri;
+      }
     }
 
     if (sentMessageType === 'audio') {
@@ -815,6 +820,7 @@ class FriendChats extends Component {
       //   };
       //   conversations = [...conversations, i];
       // });
+      console.log('friends_conversations',JSON.stringify(conversations))
       this.props.setFriendConversation(conversations);
       // this.setState({isChatLoading: false});
     }
@@ -1378,6 +1384,25 @@ class FriendChats extends Component {
     });
   };
 
+  sendEmotion = async (model) => {
+    const source = {
+      uri: model.url,
+      type: model.type,
+      name: model.name,
+      isUrl: true,
+    };
+    await this.setState(
+      {
+        uploadFile: source,
+        sentMessageType: 'image',
+        sendingMedia: true,
+      },
+      async () => {
+        await this.onMessageSend();
+      },
+    );
+  };
+
   uploadAndSend = async () => {
     if (this.isUploading) {
       return;
@@ -1560,6 +1585,7 @@ class FriendChats extends Component {
           <ListLoader />
         ) : (
           <ChatContainer
+            sendEmotion={(model) => this.sendEmotion(model)}
             handleMessage={(message) => this.handleMessage(message)}
             onMessageSend={this.onMessageSend}
             onMessageReply={(id) => this.onReply(id)}

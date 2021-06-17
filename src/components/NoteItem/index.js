@@ -70,7 +70,8 @@ class NoteItem extends Component {
       loadComment: false,
       suggestionData: [],
       suggestionDataHeight: 0,
-      linkPreview: null
+      linkPreview: null,
+      disableLikeUnlikeAction: false
     };
     this.likeUnlikeApiCallStatus = false;
   }
@@ -716,6 +717,10 @@ class NoteItem extends Component {
     );
   }
 
+  onLikeUnlikeNotePress = (item,index) => {
+    this.props.onLikeUnlike(item.id, index);
+  }
+
   render() {
     const {
       index,
@@ -814,7 +819,7 @@ class NoteItem extends Component {
               </View>
               <View style={styles.topMargin}>
                 {this.renderMedia(item.media)}
-                {(item.media && item.media.length<=0) && this.renderLinkPreview(linkPreview)}
+                {item.media && item.media.length<=0 && this.renderLinkPreview(linkPreview)}
                 {/* {this.renderLinkPreview(linkPreview)} */}
                 <Text style={styles.itemText}>{item.text}</Text>
               </View>
@@ -822,16 +827,7 @@ class NoteItem extends Component {
                 <View style={styles.interactionContentContainer}>
                   <Text
                     style={styles.interactionText}
-                    onPress={() => {
-                      if(!this.likeUnlikeApiCallStatus){
-                        this.likeUnlikeApiCallStatus = true;
-                        onLikeUnlike(item.id, index);
-                        setTimeout(()=>{
-                          this.likeUnlikeApiCallStatus = false;
-                        },2000);
-                      }
-                      
-                    }}>
+                    onPress={this.onLikeUnlikeNotePress.bind(this,item,index)}>
                     {item.is_liked
                       ? translate('pages.xchat.unlike')
                       : translate('pages.xchat.like')}
@@ -862,7 +858,7 @@ class NoteItem extends Component {
                     style={styles.rightMargin}
                   />
 
-                  <Text style={styles.countText}>{item.liked_by_count}</Text>
+                  <Text style={styles.countText}>{item.liked_by_count>=0?item.liked_by_count:0}</Text>
 
                   <TouchableOpacity
                     style={styles.interactionContentContainer}

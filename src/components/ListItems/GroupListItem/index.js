@@ -137,6 +137,9 @@ export default class GroupListItem extends PureComponent {
       onSwipeButtonShowed,
       onSwipeInitial,
       swipeable,
+      onDeleteChat,
+      onPinUnpinChat,
+      onMentionPress
     } = this.props;
 
     const {
@@ -287,15 +290,29 @@ export default class GroupListItem extends PureComponent {
                       ]}>
                       {getDate(date)}
                     </Text>
-                    {unreadCount !== 0 && unreadCount != null && (
-                      <Badge
-                        style={[
-                          globalStyles.smallLightText,
-                          styles.badgeStyle,
-                        ]}>
-                        {unreadCount}
-                      </Badge>
-                    )}
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
+                      {item.is_mentioned && (
+                        <TouchableOpacity onPress={onMentionPress}>
+                          <Badge
+                            style={[
+                              globalStyles.smallLightText,
+                              styles.badgeStyle,
+                            ]}
+                          >
+                            {'@'}
+                          </Badge>
+                        </TouchableOpacity>
+                      )}
+                      {unreadCount !== 0 && unreadCount != null && (
+                        <Badge
+                          style={[
+                            globalStyles.smallLightText,
+                            styles.badgeStyle,
+                          ]}>
+                          {unreadCount>99 ? '99+' : unreadCount}
+                        </Badge>
+                      )}
+                    </View>
                   </View>
                 </View>
               </View>

@@ -14,6 +14,7 @@ import configurationReducer from './configurationReducer';
 import addFriendReducer from './addFriendReducer';
 import timelineReducer from './timelineReducer';
 import commonReducer from './commonReducer';
+import chatReducer from './chatReducer';
 import {client} from '../../helpers/api';
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
@@ -31,6 +32,7 @@ const allReducers = combineReducers({
   addFriendReducer,
   timelineReducer,
   commonReducer,
+  chatReducer,
 });
 
 export const logout = (data) => (dispatch) =>

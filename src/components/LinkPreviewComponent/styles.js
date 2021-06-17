@@ -1,6 +1,8 @@
-import {Platform, StyleSheet} from 'react-native';
+import {Dimensions, Platform, StyleSheet} from 'react-native';
 import {Colors, Fonts} from '../../constants';
 import {normalize} from '../../utils';
+
+const {width,height} = Dimensions.get('screen');
 
 export default StyleSheet.create({
   container: {

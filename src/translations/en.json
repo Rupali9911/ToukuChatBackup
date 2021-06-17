@@ -176,8 +176,8 @@
     "categories":"Categories",
     "footerContent":"It's Never Too Late to Learn a New Skill! Learn to Code and Join Our 45+ Million Users. Enjoy Extra Quizzes & Projects and Exclusive Content. Practice with Our App. Enrol Today! Collaborative Learning. Level Up Your Skills. Beginner-Friendly. Upgrade Your Career Today.",
     "SomethingWentWrong":"Something went wrong please try after sometime",
-    "likedTheMemo": "{{username}} liked the memo",
-    "commentonMemo": "{{username}} commented on the memo"
+    "likedTheMemo": "{{username}} liked the note",
+    "commentonMemo": "{{username}} commented on the note"
   },
   "messages":{
     "required":"{{field}} is required"

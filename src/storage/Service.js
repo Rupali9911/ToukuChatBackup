@@ -17,6 +17,7 @@ import {
   GroupMentions,
   MediaObject
 } from './Schema';
+import { isNaN, isNumber } from 'lodash';
 
 const DB_SCHEMAS = [
   ChatConversation,
@@ -361,9 +362,14 @@ export const setGroupChatConversation = (conversation) => {
   for (let item of conversation) {
     var obj = realm
       .objects('chat_conversation_group')
-      .filtered('msg_id =' + item.msg_id);
+      .filtered(`msg_id ==${item.msg_id} ${isNumber(item.local_id)?`|| msg_id ==${item.local_id}`:''}`);
     if (obj.length > 0) {
-      // alert('matching friend');
+      if(item.local_id && obj[0].msg_id == item.local_id){
+        console.log('remove temp object');
+        realm.write(() => {
+          realm.delete(obj);
+        });
+      }
       realm.write(() => {
         realm.create(
           'chat_conversation_group',
@@ -417,16 +423,104 @@ export const setGroupChatConversation = (conversation) => {
   }
 };
 
+export const setSingleGroupChatConversation = (item) => {
+    let returnObject = null;
+    var obj = realm.objectForPrimaryKey('chat_conversation_group',item.msg_id);
+    if (obj) {
+      // alert('matching friend');
+      realm.write(() => {
+        let object = realm.create(
+          'chat_conversation_group',
+          {
+            msg_id: item.msg_id,
+            sender_id: item.sender_id,
+            group_id: item.group_id,
+            sender_username: item.sender_username,
+            sender_display_name: item.sender_display_name,
+            sender_picture: item.sender_picture,
+            message_body: item.message_body,
+            is_edited: item.is_edited,
+            is_unsent: item.is_unsent,
+            timestamp: item.timestamp,
+            reply_to: item.reply_to,
+            mentions: item.mentions
+              ? item.mentions instanceof Array
+                ? item.mentions
+                : [item.mentions]
+              : [],
+            read_count: item.read_count ? item.read_count : 0,
+            created: item.created || item.timestamp,
+          },
+          'modified',
+        );
+        returnObject = object;
+      });
+    } else {
+      realm.write(() => {
+        let object = realm.create('chat_conversation_group', {
+          msg_id: item.msg_id,
+          sender_id: item.sender_id,
+          group_id: item.group_id,
+          sender_username: item.sender_username,
+          sender_display_name: item.sender_display_name,
+          sender_picture: item.sender_picture,
+          message_body: item.message_body,
+          is_edited: item.is_edited,
+          is_unsent: item.is_unsent,
+          timestamp: item.timestamp,
+          reply_to: item.reply_to,
+          mentions: item.mentions
+            ? item.mentions instanceof Array
+              ? item.mentions
+              : [item.mentions]
+            : [],
+          read_count: item.read_count ? item.read_count : 0,
+          created: item.created || item.timestamp,
+        });
+        returnObject = object;
+      });
+    }
+    return returnObject;
+};
+
 export const getGroupChatConversation = () => {
   return realm.objects('chat_conversation_group');
 };
 
-export const getGroupChatConversationById = (id,offset) => {
+export const getGroupChatConversationById = (id,offset,msg_id) => {
   return realm
     .objects('chat_conversation_group')
     .sorted('timestamp', {ascending: true})
-    .filtered(`group_id == ${id}`).slice(0,offset);
+    .filtered(`group_id == ${id} ${msg_id?`&& msg_id <= ${msg_id}`:''}`).slice(0,offset);
 };
+
+export const getGroupChatConversationNextFromId = (id, msg_id, isInclusive) => {
+  return realm
+    .objects('chat_conversation_group')
+    .sorted('timestamp', true)
+    .filtered(`group_id == ${id} && msg_id ${isInclusive?'>=':'>'} ${msg_id}`);
+};
+
+export const getGroupChatConversationPrevFromId = (id, msg_id, isInclusive) => {
+  console.log('msg_id',msg_id);
+  return realm
+    .objects('chat_conversation_group')
+    .sorted('timestamp', true)
+    .filtered(`group_id == ${id} && msg_id ${isInclusive?'<=':'<'} ${msg_id}`);
+};
+
+export const getGroupChatConversationByMsgId = (id, msg_id) => {
+  console.log(`group_id == ${id} && msg_id == ${msg_id}`);
+  return realm.objectForPrimaryKey('chat_conversation_group',msg_id);    
+}
+
+export const getGroupChatConversationLatestMsgId = (id) => {
+  return realm.objects('chat_conversation_group').filtered(`group_id == ${id}`).max('msg_id');    
+}
+
+export const getGroupChatConversationOldestMsgId = (id) => {
+  return realm.objects('chat_conversation_group').filtered(`group_id == ${id}`).min('msg_id');    
+}
 
 export const getGroupChatConversationLengthById = (id) => {
   return realm
@@ -767,6 +861,9 @@ export const setGroups = async (group) => {
             reply_to: item.reply_to,
             joining_date: item.joining_date,
             is_group_member: item.is_group_member,
+            is_mentioned: item.is_mentioned ? item.is_mentioned : false,
+            mention_msg_id: item.mention_msg_id,
+            unread_msg_id: item.unread_msg_id,
           },
           'modified',
         );
@@ -794,6 +891,9 @@ export const setGroups = async (group) => {
           reply_to: item.reply_to,
           joining_date: item.joining_date,
           is_group_member: item.is_group_member,
+          is_mentioned: item.is_mentioned ? item.is_mentioned : false,
+          mention_msg_id: item.mention_msg_id,
+          unread_msg_id: item.unread_msg_id,
         });
       });
     }
@@ -810,6 +910,10 @@ export const getGroupsById = (id) => {
     .objects('groups')
     .sorted('timestamp', {ascending: true})
     .filtered(`group_id == ${id}`);
+};
+
+export const getGroupObjectById = (id) => {
+  return realm.objectForPrimaryKey('groups',parseInt(`${id}`));
 };
 
 export const deleteGroupById = (id) => {
@@ -868,7 +972,46 @@ export const updateLastMsgGroups = (id, message, unreadCount) => {
         mentions: message.mentions.length ? message.mentions : [],
         no_msgs: false,
         unread_msg: unreadCount,
+        timestamp: message.timestamp
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateLastMsgGroupsWithMention = (id, message, unreadCount, mention_msg_id,unread_msg_id,is_mentioned) => {
+  let last_msg = {
+    type: message.message_body.type,
+    text: message.message_body.text,
+  };
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        last_msg: last_msg,
+        last_msg_id: message.msg_id,
+        mentions: message.mentions.length ? message.mentions : [],
+        no_msgs: false,
+        unread_msg: unreadCount,
         timestamp: message.timestamp,
+        mention_msg_id,
+        unread_msg_id,
+        is_mentioned
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateGroupsWithMention = (id, mention_msg_id, is_mentioned) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        mention_msg_id,
+        is_mentioned
       },
       'modified',
     );
@@ -924,6 +1067,36 @@ export const updateUnReadCount = (id, unreadCount) => {
       {
         group_id: id,
         unread_msg: unreadCount,
+        is_mentioned: false,
+        mention_msg_id: null,
+        unread_msg_id: null,
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateGroupStoreMsgId = (id, msg_id, current_msg_id) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        store_msg_id: msg_id,
+        latest_sequence_msg_id: current_msg_id
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateGroupInitialOpenStatus = (id, status) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        is_group_open: status
       },
       'modified',
     );
@@ -1020,7 +1193,7 @@ export const getLocalUserFriend = (id) => {
 };
 
 export const getLocalUserFriendById = (id) => {
-  return realm.objectForPrimaryKey('user_friends',id);
+  return realm.objectForPrimaryKey('user_friends',parseInt(`${id}`));
 }
 
 export const getUserFriend = (id) => {

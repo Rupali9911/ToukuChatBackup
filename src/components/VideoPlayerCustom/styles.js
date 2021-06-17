@@ -17,4 +17,12 @@ export default StyleSheet.create({
     width: 260,
     height: 150,
   },
+  videoPlayButtonContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center'
+  },
+  videoPlayButton: {
+    position: 'absolute',
+    backgroundColor: '#e26161'
+  },
 });

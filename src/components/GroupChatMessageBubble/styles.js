@@ -101,7 +101,6 @@ export default StyleSheet.create({
     fontFamily: Fonts.regular,
   },
   messageBodyActionContainer: {
-    flex: 0,
     minHeight: 40,
     backgroundColor: Colors.white,
     justifyContent: 'center',
@@ -127,11 +126,10 @@ export default StyleSheet.create({
   memoContainer: {
     paddingHorizontal: 10,
   },
-  memotText: {
+  memoText: {
     fontFamily: Fonts.regular,
     fontWeight: '300',
-    fontSize: 15,
-    marginTop: normalize(5)
+    fontSize: 15
   },
   divider: {
     borderTopWidth: 1,

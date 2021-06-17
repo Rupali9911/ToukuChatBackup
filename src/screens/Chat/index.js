@@ -161,13 +161,16 @@ import {
   updateLastEventId,
   updateLastMsgGroups,
   updateLastMsgGroupsWithoutCount,
+  updateLastMsgGroupsWithMention,
   updateLastMsgTimestamp,
   updateMessageById,
   updateReadByChannelId,
   updateUnReadCount,
   updateUserFriendsWhenPined,
   updateUserFriendsWhenUnpined,
+  updateGroupsWithMention,
   getLocalUserFriends,
+  getGroupObjectById,
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, getUserName, wait} from '../../utils';
@@ -175,6 +178,7 @@ import { isArray, isObject } from 'lodash';
 import {minVersion, version} from "../../../package";
 // import { getAppstoreAppMetadata } from "react-native-appstore-version-checker";
 import  UpdateAppModal from '../../components/Modals/UpdateAppModal'
+import { getRenderMessageData } from '../GroupChats/logic';
 
 let channelId = [];
 let friendId = [];
@@ -1109,16 +1113,22 @@ class Chat extends Component {
         );
 
         let unreadCount = item.length > 0 ? item[0].unread_count : 0;
+        let is_mentioned = item[0].is_mention || group[0].is_mentioned;
+        let mention_msg_id = group[0].mention_msg_id < 0 || group[0].mention_msg_id == null ? item[0].mention_msg_id : group[0].mention_msg_id;
+        let unread_msg_id = group[0].unread_msg_id < 0 || group[0].unread_msg_id == null ? message.text.data.message_details.msg_id : group[0].unread_msg_id;
 
-        setGroupChatConversation([message.text.data.message_details]);
         if (
             (currentRouteName == 'GroupChats' || currentRouteName == 'GroupDetails' || currentRouteName == 'CreateEditNote') &&
           currentGroup &&
           message.text.data.message_details.group_id === currentGroup.group_id
         ) {
+          setGroupChatConversation([message.text.data.message_details]);
           this.getLocalGroupConversation();
-          this.markGroupMsgsRead();
-          unreadCount = 0;
+          // this.markGroupMsgsRead();
+          // unreadCount = 0;
+          mention_msg_id = -1;
+          unread_msg_id = -1;
+          is_mentioned = false;
           this.SingleSocket.sendMessage(
             JSON.stringify({
               type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
@@ -1130,10 +1140,13 @@ class Chat extends Component {
         }
 
         if (message.text.data.message_details.message_body.type !== 'update') {
-          updateLastMsgGroups(
+          updateLastMsgGroupsWithMention(
             message.text.data.message_details.group_id,
             message.text.data.message_details,
             unreadCount,
+            mention_msg_id,
+            unread_msg_id,
+            is_mentioned
           );
         } else {
           updateLastMsgTimestamp(
@@ -1145,6 +1158,14 @@ class Chat extends Component {
 
         // updateGroup(message.text.data.message_details).then(() => {
         //   console.log('onNewMessageInGroup -> updateGroup');
+        if(message.text.data.message_details.group_id === currentGroup.group_id){
+          let result = getGroupObjectById(currentGroup.group_id);
+          if(result){
+            let group = realmToPlainObject([result])[0];
+            this.props.setCurrentGroup(group);
+          }
+        }
+
         this.props.getLocalUserGroups().then(() => {
           this.props.setCommonChatConversation();
         });
@@ -1231,7 +1252,7 @@ class Chat extends Component {
       ) {
         const messageids = detail.message_ids;
 
-        const message_ids = Object.entries(messageids);
+        const message_ids = messageids ? Object.entries(messageids) : [];
 
         for (const value of message_ids) {
           updateGroupnReadCount(parseInt(value[0], 10), parseInt(value[1], 10));
@@ -1558,17 +1579,17 @@ class Chat extends Component {
       setChannels([message.text.data.message_details]);
       // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
 
-      let array = this.props.trendTimline;
-      this.props.trendTimline.map((item, index) => {
-        if (item.channel_id === message.text.data.message_details.id) {
-          let changeItem = item;
-          changeItem.is_following = true;
-          array.splice(index, 1, changeItem);
-          return;
-        }
-      });
-
-      this.props.updateTrendTimeline(array);
+      // let array = this.props.trendTimline;
+      // this.props.trendTimline.map((item, index) => {
+      //   if (item.channel_id === message.text.data.message_details.id) {
+      //     let changeItem = item;
+      //     changeItem.is_following = true;
+      //     array.splice(index, 1, changeItem);
+      //     return;
+      //   }
+      // });
+      //
+      // this.props.updateTrendTimeline(array);
 
       this.props.getLocalFollowingChannels().then(() => {
         this.props.setCommonChatConversation();
@@ -2160,6 +2181,11 @@ class Chat extends Component {
     ) {
       if (isArray(message.text.data.message_details)) {
         message.text.data.message_details.map((item) => {
+
+          if(item.user_id && item.user_id !== this.props.userData.id){
+            return;
+          }
+
           deleteGroupMessageById(item.msg_id);
 
           let result = getGroupsById(item.group_id);
@@ -2194,10 +2220,13 @@ class Chat extends Component {
                   true
                 );
               }
-              this.props.getLocalUserGroups().then(() => {
-                this.props.setCommonChatConversation();
-              });
             }
+            if(group[0].is_mentioned){
+              updateGroupsWithMention(item.group_id, item.mention_msg_id, item.is_mentioned);
+            }
+            this.props.getLocalUserGroups().then(() => {
+              this.props.setCommonChatConversation();
+            });
           }
 
           if (
@@ -2794,13 +2823,20 @@ class Chat extends Component {
     });
   };
 
-  onOpenGroupChats = (item) => {
+  onOpenGroupChats = (item,mention_press = true) => {
     NetInfo.fetch().then((state) => {
-      console.log('Is connected?', state.isConnected);
+      console.log('onOpenGroupChats_Is connected?', state.isConnected, mention_press);
+
+      let msg_id = item.unread_msg_id > 0 ? item.unread_msg_id : item.last_msg_id;
+
+      if(mention_press && item.is_mentioned){
+        msg_id = item.mention_msg_id;
+      }
 
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
-        this.props.navigation.navigate('GroupChats');
+        this.props.navigation.navigate('GroupChats',{msg_id});
+        // this.props.navigation.navigate('Conversations',{group_id: item.group_id, userData: this.props.userData});
       } else {
         Toast.show({
           title: 'TOUKU',
@@ -2997,7 +3033,9 @@ class Chat extends Component {
       conversations = realmToPlainObject(chat);
       // conversations = chat.toJSON();
 
-      this.props.setGroupConversation(conversations);
+      let renderMessages = getRenderMessageData(conversations,this.props.userData);
+
+      this.props.setGroupConversation(renderMessages);
     }
   };
 
@@ -3703,7 +3741,7 @@ class Chat extends Component {
         mentions={item.mentions}
         date={item.timestamp}
         image={item.group_picture}
-        onPress={this.onOpenGroupChats.bind(this,item)}
+        onPress={this.onOpenGroupChats.bind(this, item)}
         unreadCount={item.unread_msg}
         isVisible={isVisible}
         isUncheck={isUncheck}

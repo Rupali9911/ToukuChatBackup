@@ -1277,12 +1277,17 @@ class Home extends PureComponent {
     });
   };
 
-  onOpenGroupChats = (item) => {
+  onOpenGroupChats = (item,mention_press) => {
     NetInfo.fetch().then((state) => {
       console.log('Is connected?', state.isConnected);
+      let msg_id = item.unread_msg_id > 0 ? item.unread_msg_id : item.last_msg_id; 
+
+      if(mention_press && item.is_mentioned > 0){
+        msg_id = item.mention_msg_id;
+      }
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
-        this.props.navigation.navigate('GroupChats');
+        this.props.navigation.navigate('GroupChats',{msg_id});
       } else {
         Toast.show({
           title: 'TOUKU',
@@ -1461,10 +1466,12 @@ class Home extends PureComponent {
                     : item.joining_date
                   : item.timestamp
               }
+              item={item}
               image={item.group_picture}
-              onPress={() => this.onOpenGroupChats(item)}
+              onPress={this.onOpenGroupChats.bind(this,item,true)}
               unreadCount={item.unread_msg}
               isPined={item.is_pined}
+              onMentionPress={this.onOpenGroupChats.bind(this,item,true)}
             />
           )}
           maxToRenderPerBatch={5}
