@@ -350,6 +350,14 @@ class ChatInput extends Component {
     this.setState({selectedEmotion: null});
   }
 
+  onSelectedEmotionPress = () => {
+    const {sendEmotion} = this.props;
+    const {selectedEmotion} = this.state;
+    sendEmotion(selectedEmotion);
+    this.addEmotionToFrequentlyUsed(selectedEmotion);
+    this.setState({ selectedEmotion: null });
+  }
+
   render() {
     const {
       onAttachmentPress,
@@ -401,8 +409,9 @@ class ChatInput extends Component {
     return (
       <>
       {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: 340+this.newHeight}]}>
-        <View style={styles.frequentUseItemContainerStyle}
-            activeOpacity={0.8}>
+        <TouchableOpacity style={styles.frequentUseItemContainerStyle}
+            activeOpacity={0.8}
+            onPress={this.onSelectedEmotionPress}>
             <FastImage
               resizeMode={
                 selectedEmotion.url.includes('&ct=g')
@@ -418,7 +427,7 @@ class ChatInput extends Component {
                 priority: FastImage.priority.high,
               }}
             />
-          </View>
+          </TouchableOpacity>
           <FontAwesome5
               name={'times'}
               size={30}
@@ -457,7 +466,7 @@ class ChatInput extends Component {
                   color={Colors.gradient_3}
                 />
               </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.chatAttachmentButton}
                     onPress={() =>{
                         // Keyboard.dismiss(()=> {
@@ -482,7 +491,7 @@ class ChatInput extends Component {
                         style={styles.attachmentImage}
                         resizeMode={'contain'}
                     />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
           ) : (
             <View style={styles.chatAttachmentContainer}>
@@ -543,7 +552,6 @@ class ChatInput extends Component {
               (input_focus || this.isExtrasAreaVisible) && styles.mentionInpiutContainer,
             ]}>
             {this.props.useMentionsFunctionality ? (
-              <View>
                 <MentionsInput
                   ref={(input) => {
                     this.input_ref = input;
@@ -609,7 +617,6 @@ class ChatInput extends Component {
                     )
                   }
                 />
-              </View>
             ) : (
               <TextInput
                 ref={(input) => {
@@ -655,6 +662,20 @@ class ChatInput extends Component {
                 autoCorrect={false}
               />
             )}
+             {(input_focus || this.isExtrasAreaVisible) && <View style={styles.attachmentContainer}>
+                <TouchableOpacity
+                  style={styles.chatAttachmentButton}
+                  onPress={() => {
+                    this.showExtraArea();
+                    Keyboard.dismiss();
+                  }}>
+                  <Image
+                    source={Icons.icon_sticker_pack}
+                    style={styles.attachmentImage}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+              </View>}
           </View>
           <TouchableOpacity
             style={styles.sendButoonContainer}

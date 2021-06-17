@@ -159,7 +159,7 @@ export const ChatConversationGroup = {
     },
     is_edited: 'bool?',
     is_unsent: 'bool?',
-    timestamp: 'string?',
+    timestamp: 'date?',
     reply_to: {
       type: 'object?',
       objectType: 'reply_to',
@@ -171,7 +171,7 @@ export const ChatConversationGroup = {
       default: []
     },
     read_count: {type: 'int', default: 0},
-    created: 'string?',
+    created: 'date?',
     translated: 'string?'
   },
 };
@@ -298,6 +298,9 @@ export const Groups = {
     is_mentioned: 'bool?',
     mention_msg_id: {type: 'int?', default: null},
     unread_msg_id: {type: 'int?', default: null},
+    is_group_open: 'bool?',
+    store_msg_id: {type: 'int?', default: null},
+    latest_sequence_msg_id: {type: 'int?', default: null},
   },
 };
 

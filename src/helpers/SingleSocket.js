@@ -5,7 +5,8 @@ import {socketUrl} from './api';
 import {eventService} from '../utils';
 import {
   isEventIdExists,
-  getLastEventId
+  getLastEventId,
+  updateLastEventId
 } from '../storage/Service';
 import {
   getMissedSocketEventsByIdFromApp
@@ -58,6 +59,22 @@ export default class SingleSocket extends Component {
         this.webSocketBridge.onopen = (e) => {
           console.log('socket opened');
           this.checkSocketConnected();
+          if (isEventIdExists()) {
+            let idObj = getLastEventId()
+            console.log('getLastEventId', idObj)
+            if (idObj.length > 0) {
+                getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id).then(
+                  (res) => {
+                    if (res && res.data && res.data.length > 0) {
+                      res.data.map((item) => {
+                        updateLastEventId(res.socket_event_id);
+                        eventService.sendMessage({data: item});
+                      });
+                    }
+                  },
+                );
+            }
+          }
         };
         this.webSocketBridge.onmessage = (e) => {
           this.onNewMessage(e);
@@ -87,7 +104,16 @@ export default class SingleSocket extends Component {
                 let idObj = getLastEventId()
                 console.log('getLastEventId', idObj)
                 if (idObj.length > 0) {
-                    getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id);
+                    getMissedSocketEventsByIdFromApp(idObj[0].socket_event_id).then(
+                      (res) => {
+                        if (res && res.data && res.data.length > 0) {
+                          res.data.map((item) => {
+                            updateLastEventId(res.socket_event_id);
+                            eventService.sendMessage({data: item});
+                          });
+                        }
+                      },
+                    );
                 }
               }
             };

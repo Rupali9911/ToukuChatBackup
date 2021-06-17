@@ -49,7 +49,8 @@ class GroupChatContainer extends Component {
       closeMenu: false,
       isActionButtonVisible: false,
       unreadMessage: [],
-      unreadMessageCount: 0
+      unreadMessageCount: 0,
+      scrollLoading: false
     };
     this._listViewOffset = 0;
     this.viewableItems = [];
@@ -59,6 +60,10 @@ class GroupChatContainer extends Component {
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
     });
+  }
+
+  componentWillUnmount(){
+    this.events.unsubscribe();
   }
 
   checkEventTypes = (message) => {
@@ -76,9 +81,9 @@ class GroupChatContainer extends Component {
     if(message.text.data.message_details.group_id == this.props.currentGroup.group_id){
       
       if(this._listViewOffset <= 400){
-        // setTimeout(()=>{
+        setTimeout(()=>{
           this.scrollListToRecent();
-        // },100);
+        },100);
       }else{
         let array = this.state.unreadMessage;
         let set = new Set(array);
@@ -126,7 +131,7 @@ class GroupChatContainer extends Component {
           new Date(item.timestamp).getDate() !==
             new Date(messages[index + 1].timestamp).getDate()) ||
         index === conversationLength - 1 ? (
-          item.message_body == null ? null : (
+          item.text == null ? null : (
             <Fragment>
               <View style={styles.messageDateContainer}>
                 <View style={styles.messageDate}>
@@ -387,7 +392,13 @@ class GroupChatContainer extends Component {
   };
 
   onArrowClick = () => {
-    this.scrollListToRecent();
+    this.setState({scrollLoading: true});
+    this.props.onScrollToLatestClick().then(()=>{
+      this.setState({scrollLoading: false},()=>{
+        console.log('scroll to recent');
+        this.scrollListToEnd();
+      });
+    });
   }
 
   _onScroll = (event) => {
@@ -400,12 +411,12 @@ class GroupChatContainer extends Component {
       this.setState({ isActionButtonVisible })
     }
     // Update your scroll position
-    // console.log('scroll position',this._listViewOffset);
+    console.log('scroll position',this._listViewOffset);
     this._listViewOffset = currentOffset
   }
   
-  onViewableItemsChanged = ({ viewableItems }) => {
-    console.log("Visible items are", viewableItems);
+  onViewableItemsChanged = ({ viewableItems, changed }) => {
+    // console.log("Visible items are", viewableItems);
     // console.log("Changed in this iteration", changed);
     let array = this.state.unreadMessage;
     this.viewableItems = viewableItems;
@@ -494,7 +505,7 @@ class GroupChatContainer extends Component {
       sendEmotion
     } = this.props;
     const {isActionButtonVisible,unreadMessage} = this.state;
-    // console.log('isChatDisable', isChatDisable);
+    // console.log('messages[0]', messages[0]);
 
 
     const replyContainer = [
@@ -548,8 +559,10 @@ class GroupChatContainer extends Component {
               onScrollEndDrag={this.closeMenuFalse}
               // extraData={this.state}
               data={messages}
+              extraData={this.props}
               inverted={true}
               // contentOffset={{x: 0, y: 20}}
+              scrollEnabled={!this.state.scrollLoading}
               onScroll={this._onScroll}
               onStartReached={onLoadMore}
               onEndReached={onLoadPrevious.bind(null,this._listViewOffset)}
@@ -599,10 +612,12 @@ class GroupChatContainer extends Component {
           <FAB
             style={styles.fab}
             animated={false}
+            loading={this.state.scrollLoading}
             // icon={() => <FontAwesome5 name="chevron-down" size={25} color={'white'} style={{alignSelf:'center'}}/>}
             icon={unreadMessage.length>0?null:'chevron-down'}
             label={unreadMessage.length>0?`+${unreadMessage.length}`:null}
             color={'white'}
+            // visible={messages.length>0 && (this.props.currentGroup.last_msg_id !== messages[0].id || isActionButtonVisible)}
             visible={isActionButtonVisible}
             onPress={this.onArrowClick}
           />

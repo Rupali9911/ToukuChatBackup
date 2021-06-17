@@ -775,15 +775,21 @@ class GroupDetails extends Component {
       let item = array.find((e) => e.id === data.note_id);
       let index = array.indexOf(item);
       if (data.user_id === this.props.userData.id) {
-        item.is_liked = data.like.like;
-      }
-
-      item.liked_by_count = data.like.like
+        if(item.is_liked !== data.like.like){
+          item.is_liked = data.like.like;
+          item.liked_by_count = data.like.like
+            ? item.liked_by_count + 1
+            : item.liked_by_count - 1;
+          array.splice(index, 1, item);
+        }else{
+          return;
+        }
+      }else{
+        item.liked_by_count = data.like.like
         ? item.liked_by_count + 1
         : item.liked_by_count - 1;
-
-      console.log('status',data.like.like,item);
-      array.splice(index, 1, item);
+        array.splice(index, 1, item);
+      }
       this.setState({data: {...this.state.data, results: array}});
     }
   };
@@ -969,21 +975,38 @@ class GroupDetails extends Component {
 
   likeUnlike = (note_id, index) => {
     let data = {note_id: note_id};
-    console.log('api called likeUnlikeGroupNote');
+
+    // update like of note
+    let array = this.state.data.results;
+    let item = array[index];
+    item['is_liked'] = !item.is_liked;
+    item['liked_by_count'] = item.is_liked ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+    array.splice(index, 1, item);
+    this.setState({ data: { ...this.state.data, results: array } });
+
     this.props
       .likeUnlikeGroupNote(data)
       .then((res) => {
         if (res) {
-          // let array = this.state.data.results;
-          // let item = array[index];
-          // item['is_liked'] = res.like;
-          // item['liked_by_count'] = res.like?(item.liked_by_count+1):(item.liked_by_count-1);
-          // array.splice(index,1,item);
-          // this.setState({data: {...this.state.data, results: array}});
+        }else{
+          // if api fail rollback update
+          let array = this.state.data.results;
+          let item = array[index];
+          item['is_liked'] = !item.is_liked;
+          item['liked_by_count'] = item.is_liked ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+          array.splice(index, 1, item);
+          this.setState({ data: { ...this.state.data, results: array } });
         }
       })
       .catch((err) => {
         console.log('err', err);
+        // if api fail rollback update
+        let array = this.state.data.results;
+        let item = array[index];
+        item['is_liked'] = !item.is_liked;
+        item['liked_by_count'] = item.is_liked ? (item.liked_by_count + 1) : (item.liked_by_count - 1);
+        array.splice(index, 1, item);
+        this.setState({ data: { ...this.state.data, results: array } });
       });
   };
 

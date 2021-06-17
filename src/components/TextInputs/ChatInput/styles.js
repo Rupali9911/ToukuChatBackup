@@ -65,10 +65,17 @@ export default StyleSheet.create({
   textInputContainer: {
     width: '60%',
     // height: '80%',
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderWidth: 0.2,
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    borderColor: Colors.gray,
   },
   textInput: {
     // height: '100%',
+    flex: 1,
     borderWidth: 0.2,
     backgroundColor: Colors.white,
     minHeight: 35,
@@ -114,7 +121,7 @@ export default StyleSheet.create({
     fontSize: Platform.isPad ? normalize(5.5) : normalize(11),
     textAlignVertical: 'center',
     lineHeight: 15,
-    width: '100%',
+    width: '90%',
     color: '#000',
   },
   suggestedUserComponentImageStyle: {
@@ -164,7 +171,7 @@ export default StyleSheet.create({
     overflow: 'visible',
   },
   attachmentContainer: {
-    width: '15%',
+    width: '10%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -175,7 +182,7 @@ export default StyleSheet.create({
     width: '100%',
   },
   mentionInpiutContainer: {
-    width: '75%',
+    width: '80%',
   },
   listContainer: {
     alignSelf: 'stretch',

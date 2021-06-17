@@ -7,6 +7,7 @@ import Orientation from 'react-native-orientation';
 import UUID from '../../uuid-int';
 import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
+import RnBgTask from 'react-native-bg-thread';
 
 import GroupChatContainer from '../../components/GroupChatContainer';
 import {ChatHeader} from '../../components/Headers';
@@ -68,11 +69,15 @@ import {
   getGroupChatConversationPrevFromId,
   getGroupChatConversationByMsgId,
   getGroupChatConversationLatestMsgId,
+  getGroupChatConversationOldestMsgId,
   setGroupChatConversation,
-  setSingleGroupChatConversation
+  setSingleGroupChatConversation,
+  updateGroupStoreMsgId,
+  getGroupObjectById,
+  updateGroupInitialOpenStatus
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
-import {getUserName, realmToPlainObject} from '../../utils';
+import {getUserName, realmToPlainObject, eventService} from '../../utils';
 import {
   setActiveTimelineTab,
   setSpecificPostId,
@@ -929,7 +934,7 @@ class GroupChats extends Component {
 
       this.getGroupConversationInitial(msg_id);
 
-      this.updateUnReadGroupChatCount();
+      this.updateUnReadGroupChatCount(); 
 
       let singleSocket = SingleSocket.getInstance();
 
@@ -949,6 +954,68 @@ class GroupChats extends Component {
       }
 
     }
+  }
+
+  onNewMessageInGroup = (message) => {
+    if(message.text.data.message_details.group_id == this.props.currentGroup.group_id){
+      if (
+        this.props.chatGroupConversation.length > 0 &&
+        this.props.chatGroupConversation[0].msg_id === message.text.data.message_details.local_id
+      ) {
+
+      } else if (
+        this.props.chatGroupConversation.length > 0 &&
+        this.props.chatGroupConversation[0].msg_id === message.text.data.message_details.msg_id
+      ) {
+
+      } else {
+        let msg = getGroupMessageObject(message.text.data.message_details, this.props.userData);
+        // this.props.setGroupConversation([msg].concat(this.props.chatGroupConversation));
+      }
+    }
+  }
+
+  fetchMessagesinBackground = (next, previous, group_id) => {
+    if(next){
+      let latest_msg_id = getGroupChatConversationLatestMsgId(group_id);
+      this.fetchNext(latest_msg_id, group_id);
+    }
+    if(previous){
+      let oldest_msg_id = getGroupChatConversationOldestMsgId(group_id);
+      this.fetchPrevious(oldest_msg_id, group_id);
+    }
+  }
+
+  fetchPrevious = (msg_id, group_id) => {
+    console.log('bg_thread_previous_msg_id',msg_id);
+    this.props
+      .getUpdatedGroupConversation(group_id,msg_id,false,true)
+      .then((res) => {
+        console.log('loop',res.status,res.previous,this.props.currentRouteName, group_id, this.props.currentGroup.group_id);
+        if (res.status && res.previous && this.props.currentRouteName === 'GroupChats' && group_id == this.props.currentGroup.group_id) {
+          let oldest_msg_id = getGroupChatConversationOldestMsgId(this.props.currentGroup.group_id);
+          this.fetchPrevious(oldest_msg_id, group_id);
+        }
+      })
+      .catch((err) => {
+        console.log('GroupChats -> getGroupConversation -> err', err);
+      });
+  }
+
+  fetchNext = (msg_id, group_id) => {
+    console.log('bg_thread_next_msg_id',msg_id);
+    this.props
+      .getUpdatedGroupConversation(group_id,msg_id,true,false)
+      .then((res) => {
+        console.log('bg_thread_next_res',res);
+        if (res.status && res.next && this.props.currentRouteName === 'GroupChats' && group_id == this.props.currentGroup.group_id) {
+          let latest_msg_id = getGroupChatConversationLatestMsgId(group_id);
+          this.fetchPrevious(latest_msg_id, group_id);
+        }
+      })
+      .catch((err) => {
+        console.log('GroupChats -> getGroupConversation -> err', err);
+      });
   }
 
   isGroupAdmin = () => {
@@ -1139,7 +1206,7 @@ class GroupChats extends Component {
     });
   }
 
-  getGroupConversation = (id, next, prev, isReply) => {
+  getGroupConversation = (id, next, prev, isReply, returnAll) => {
     isReply && this.setState({fetchReplyMessageLaoding: true});
     let msg_id = id || this.props.currentGroup.last_msg_id;
     return new Promise((resolve,reject)=>{
@@ -1169,7 +1236,7 @@ class GroupChats extends Component {
           } else {
             let chat = getGroupChatConversationById(
               this.props.currentGroup.group_id,
-              this.offset,
+              returnAll?res.data.length:this.offset,
               msg_id
             );
             conversations = realmToPlainObject(chat);
@@ -1203,7 +1270,7 @@ class GroupChats extends Component {
       this.offset,
       msg_id
     );
-    if (chat && chat.length>0) {
+    if (chat && chat.length>0 && !this.props.currentGroup.is_mentioned) {
       let conversations = [];
       conversations = realmToPlainObject(chat);
       
@@ -1215,9 +1282,12 @@ class GroupChats extends Component {
       // this.setState({isChatLoading: false});
     }
 
-    if(chat && chat.length>0 && chat[0].msg_id == msg_id){
-      return;
-    }
+    // if(chat && chat.length>20 && chat[0].msg_id == msg_id){
+    //   RnBgTask.runInBackground_withPriority("MIN", () => {
+    //     this.fetchMessagesinBackground(true, true);
+    //   });
+    //   return;
+    // }
 
     await this.props
       .getUpdatedGroupConversation(this.props.currentGroup.group_id,msg_id,false,false)
@@ -1225,20 +1295,29 @@ class GroupChats extends Component {
         // console.log('res', res);
         if (res.status) {
           
-          let groupChat = getGroupChatConversationById(
-            this.props.currentGroup.group_id,
-            this.offset,
-            msg_id
-          );
-          let conversations = [];
+          if (this.props.chatGroupConversation && this.props.chatGroupConversation.length <= 20) {
+            let groupChat = getGroupChatConversationById(
+              this.props.currentGroup.group_id,
+              this.offset,
+              msg_id
+            );
+            let conversations = [];
 
-          conversations = realmToPlainObject(groupChat);
-          
-          const render_messages = getRenderMessageData(conversations,this.props.userData);
-          // this.props.setGroupConversation(conversations);
-          this.props.setGroupConversation(render_messages);
+            conversations = realmToPlainObject(groupChat);
+
+            const render_messages = getRenderMessageData(conversations, this.props.userData);
+            // this.props.setGroupConversation(conversations);
+            this.props.setGroupConversation(render_messages);
+          }
           this.setState({isChatLoading: false});
           this.markGroupConversationRead();
+
+          RnBgTask.runInBackground_withPriority("MIN", () => {
+            this.fetchMessagesinBackground(res.next, res.previous, this.props.currentGroup.group_id);
+          });
+
+          updateGroupInitialOpenStatus(this.props.currentGroup.group_id, true);
+
         }
       })
       .catch((err) => {
@@ -2018,18 +2097,29 @@ class GroupChats extends Component {
     const {chatGroupConversation} = this.props;
     console.log('this.loading',this.loading,currentOffset);
     let message = chatGroupConversation[chatGroupConversation.length-1];
+    let groupObject = getGroupObjectById(this.props.currentGroup.group_id);
     if (message && message.id && !this.loading) {
       console.log('previous_msg_id', message.id,this.props.previous);
       this.loading = true;
       // this.offset = this.offset + 20;
       let next_messages = await this.getLocalPreviousConversation(message.id);
-      if (next_messages.length>0) {
+      if (next_messages.length>0 && !groupObject.store_msg_id) {
         const render_messages = getRenderMessageData(next_messages,this.props.userData);
         this.props.setGroupConversation(chatGroupConversation.concat(render_messages));
       } else if(this.props.previous){
-        console.log('previous api call',this.props.previous,message.id);
-        let result = await this.getGroupConversation(message.id,false,true);
-        this.props.setGroupConversation(chatGroupConversation.concat(result));
+        if(groupObject.store_msg_id){
+          let result = await this.getGroupConversation(groupObject.store_msg_id,false,true);
+          if(result.length>0 && result[result.length-1].id <= groupObject.latest_sequence_msg_id){
+            updateGroupStoreMsgId(null, null);
+          }else{
+            updateGroupStoreMsgId(result[result.length-1].id, groupObject.latest_sequence_msg_id);
+          }
+          this.props.setGroupConversation(chatGroupConversation.concat(result));
+        }else{
+          console.log('previous api call',this.props.previous,message.id);
+          let result = await this.getGroupConversation(message.id,false,true);
+          this.props.setGroupConversation(chatGroupConversation.concat(result));
+        }
       }
       this.loading = false;
     }
@@ -2086,17 +2176,25 @@ class GroupChats extends Component {
     return new Promise(async (resolve,reject)=>{
       const {chatGroupConversation} = this.props;
       if(chatGroupConversation.length > 0){
-        if(chatGroupConversation[0].id == this.props.currentGroup.latest_msg_id){
+        if(chatGroupConversation[0].id == this.props.currentGroup.last_msg_id){
           resolve();
         }else {
-          let next_messages = getGroupChatConversationNextFromId(this.props.currentGroup.group_id, chatGroupConversation[0].id, false);
-          if (next_messages && next_messages.length > 0 && next_messages[0].id == this.props.currentGroup.latest_msg_id) {
+          let next_messages = getGroupChatConversationPrevFromId(this.props.currentGroup.group_id, this.props.currentGroup.last_msg_id, true).slice(0, 30);
+          console.log('next_messages_length',next_messages.length,next_messages[0].msg_id);
+          if (next_messages && next_messages.length > 0 && next_messages[0].msg_id == this.props.currentGroup.last_msg_id) {
             let conversations = [];
-            conversations = realmToPlainObject(next_messages);
-            this.props.setGroupConversation(conversations.concat(chatGroupConversation));
+            conversations = getRenderMessageData(realmToPlainObject(next_messages),this.props.userData);
+            this.props.setGroupConversation(conversations);
             resolve();
           }else if(this.props.next){
-            
+            let result = await this.getGroupConversation(this.props.currentGroup.last_msg_id,false,false,false,true);
+            if(result.length>0){
+              updateGroupStoreMsgId(this.props.currentGroup.group_id,result[result.length - 1].id,chatGroupConversation[0].id);
+            }
+            this.props.setGroupConversation(result);
+            resolve();
+          }else {
+            resolve();
           }
         }
       }
@@ -2228,6 +2326,7 @@ class GroupChats extends Component {
             onLoadPrevious={this.onLoadPreviousMessages}
             onReplyPress={this.loadMessagesOnReplyPress}
             onMediaPlay={this.onMediaPlay}
+            onScrollToLatestClick={this.scrollToLatestMsg}
           />
         )}
 
@@ -2355,6 +2454,7 @@ const mapStateToProps = (state) => {
     currentGroupAdmins: state.groupReducer.currentGroupAdmins,
     next: state.groupReducer.next,
     previous: state.groupReducer.previous,
+    currentRouteName: state.userReducer.currentRouteName,
   };
 };
 

@@ -56,7 +56,6 @@ export default class GroupListItem extends PureComponent {
         mentions &&
           mentions.length &&
           mentions.forEach((mentionUser) => {
-            console.log('mentionUser:---',mentionUser,', text:---',text);
             if (text.includes(`~${mentionUser.id}~`)) {
               mention = `@${
                 getUserName(mentionUser.id) ||

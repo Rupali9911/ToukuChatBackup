@@ -1117,12 +1117,12 @@ class Chat extends Component {
         let mention_msg_id = group[0].mention_msg_id < 0 || group[0].mention_msg_id == null ? item[0].mention_msg_id : group[0].mention_msg_id;
         let unread_msg_id = group[0].unread_msg_id < 0 || group[0].unread_msg_id == null ? message.text.data.message_details.msg_id : group[0].unread_msg_id;
 
-        setGroupChatConversation([message.text.data.message_details]);
         if (
             (currentRouteName == 'GroupChats' || currentRouteName == 'GroupDetails' || currentRouteName == 'CreateEditNote') &&
           currentGroup &&
           message.text.data.message_details.group_id === currentGroup.group_id
         ) {
+          setGroupChatConversation([message.text.data.message_details]);
           this.getLocalGroupConversation();
           // this.markGroupMsgsRead();
           // unreadCount = 0;

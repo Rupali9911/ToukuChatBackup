@@ -134,7 +134,7 @@ export const getMessageType = (message) => {
 
 export const getTime = (message) => {
     let time = '';
-    let date = new Date(message.created);
+    let date = message.created ? new Date(message.created) : new Date(message.timestamp);
     time = `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}`
     return time;
 }

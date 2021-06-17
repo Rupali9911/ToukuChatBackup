@@ -364,7 +364,6 @@ export const setGroupChatConversation = (conversation) => {
       .objects('chat_conversation_group')
       .filtered(`msg_id ==${item.msg_id} ${isNumber(item.local_id)?`|| msg_id ==${item.local_id}`:''}`);
     if (obj.length > 0) {
-      console.log('matching group msg');
       if(item.local_id && obj[0].msg_id == item.local_id){
         console.log('remove temp object');
         realm.write(() => {
@@ -397,7 +396,6 @@ export const setGroupChatConversation = (conversation) => {
           'modified',
         );
       });
-      console.log('temp object update');
     } else {
       realm.write(() => {
         realm.create('chat_conversation_group', {
@@ -503,11 +501,12 @@ export const getGroupChatConversationNextFromId = (id, msg_id, isInclusive) => {
     .filtered(`group_id == ${id} && msg_id ${isInclusive?'>=':'>'} ${msg_id}`);
 };
 
-export const getGroupChatConversationPrevFromId = (id, msg_id) => {
+export const getGroupChatConversationPrevFromId = (id, msg_id, isInclusive) => {
+  console.log('msg_id',msg_id);
   return realm
     .objects('chat_conversation_group')
     .sorted('timestamp', true)
-    .filtered(`group_id == ${id} && msg_id < ${msg_id}`);
+    .filtered(`group_id == ${id} && msg_id ${isInclusive?'<=':'<'} ${msg_id}`);
 };
 
 export const getGroupChatConversationByMsgId = (id, msg_id) => {
@@ -517,6 +516,10 @@ export const getGroupChatConversationByMsgId = (id, msg_id) => {
 
 export const getGroupChatConversationLatestMsgId = (id) => {
   return realm.objects('chat_conversation_group').filtered(`group_id == ${id}`).max('msg_id');    
+}
+
+export const getGroupChatConversationOldestMsgId = (id) => {
+  return realm.objects('chat_conversation_group').filtered(`group_id == ${id}`).min('msg_id');    
 }
 
 export const getGroupChatConversationLengthById = (id) => {
@@ -1067,6 +1070,33 @@ export const updateUnReadCount = (id, unreadCount) => {
         is_mentioned: false,
         mention_msg_id: null,
         unread_msg_id: null,
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateGroupStoreMsgId = (id, msg_id, current_msg_id) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        store_msg_id: msg_id,
+        latest_sequence_msg_id: current_msg_id
+      },
+      'modified',
+    );
+  });
+};
+
+export const updateGroupInitialOpenStatus = (id, status) => {
+  realm.write(() => {
+    realm.create(
+      'groups',
+      {
+        group_id: id,
+        is_group_open: status
       },
       'modified',
     );

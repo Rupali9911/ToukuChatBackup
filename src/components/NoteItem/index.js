@@ -70,7 +70,8 @@ class NoteItem extends Component {
       loadComment: false,
       suggestionData: [],
       suggestionDataHeight: 0,
-      linkPreview: null
+      linkPreview: null,
+      disableLikeUnlikeAction: false
     };
     this.likeUnlikeApiCallStatus = false;
   }
@@ -716,6 +717,10 @@ class NoteItem extends Component {
     );
   }
 
+  onLikeUnlikeNotePress = (item,index) => {
+    this.props.onLikeUnlike(item.id, index);
+  }
+
   render() {
     const {
       index,
@@ -822,16 +827,7 @@ class NoteItem extends Component {
                 <View style={styles.interactionContentContainer}>
                   <Text
                     style={styles.interactionText}
-                    onPress={() => {
-                      if(!this.likeUnlikeApiCallStatus){
-                        this.likeUnlikeApiCallStatus = true;
-                        onLikeUnlike(item.id, index);
-                        setTimeout(()=>{
-                          this.likeUnlikeApiCallStatus = false;
-                        },2000);
-                      }
-                      
-                    }}>
+                    onPress={this.onLikeUnlikeNotePress.bind(this,item,index)}>
                     {item.is_liked
                       ? translate('pages.xchat.unlike')
                       : translate('pages.xchat.like')}
