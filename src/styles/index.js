@@ -73,7 +73,7 @@ export const globalStyles = StyleSheet.create({
     fontSize: 15,
     fontFamily: Fonts.regular,
     color: Colors.white,
-    textAlign: 'center',
+    textAlign: 'right',
   },
   smallNunitoRegularFW300Text: {
     fontSize: Platform.isPad ? normalize(8) : 15,

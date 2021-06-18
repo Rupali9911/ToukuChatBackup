@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import React, {Component} from 'react';
-import {View, FlatList, Platform, Linking} from 'react-native';
+import {View, FlatList, Platform, Linking, RefreshControl} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Orientation from 'react-native-orientation';
 import {createFilter} from 'react-native-search-filter';
@@ -25,7 +25,7 @@ import EmailConfirmationModal from '../../components/Modals/EmailConfirmationMod
 import PasswordConfirmationModal from '../../components/Modals/PasswordConfirmationModal';
 import NoData from '../../components/NoData';
 import Toast from '../../components/Toast';
-import {languageArray, SocketEvents, liveAppLink} from '../../constants';
+import {languageArray, SocketEvents, liveAppLink, Colors} from '../../constants';
 import BulkSocket from '../../helpers/BulkSocket';
 import SingleSocket from '../../helpers/SingleSocket';
 import NavigationService from '../../navigation/NavigationService';
@@ -178,7 +178,7 @@ import { isArray, isObject } from 'lodash';
 import {minVersion, version} from "../../../package";
 // import { getAppstoreAppMetadata } from "react-native-appstore-version-checker";
 import  UpdateAppModal from '../../components/Modals/UpdateAppModal'
-import { getRenderMessageData } from '../GroupChats/logic';
+import { getRenderMessageData, getGroupMessageObject } from '../GroupChats/logic';
 
 let channelId = [];
 let friendId = [];
@@ -208,7 +208,8 @@ class Chat extends Component {
       countChat: 0,
       bonusModal: false,
       bonusXP: 0,
-        updateVersionModal: false
+      updateVersionModal: false,
+      refreshLoading: false,
       // sortOptions: [
       //   {
       //     title: translate('pages.xchat.timeReceived'),
@@ -1037,6 +1038,7 @@ class Chat extends Component {
 
   //Mark as Read Group Chat
   readAllMessageGroupChat(message) {
+    const {currentGroup} = this.props;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT) {
       let unread_counts = 0;
       let result = getGroupsById(message.text.data.message_details.group_id);
@@ -1057,6 +1059,15 @@ class Chat extends Component {
         // this.props.getMissedSocketEventsById(
         //   message.text.data.socket_event_id,
         // );
+
+        if(currentGroup && message.text.data.message_details.group_id === currentGroup.group_id){
+          let result = getGroupObjectById(currentGroup.group_id);
+          if(result){
+            let group = realmToPlainObject([result])[0];
+            this.props.setCurrentGroup(group);
+          }
+        }
+
         this.props.getLocalUserGroups().then(() => {
           this.props.setCommonChatConversation();
         });
@@ -1123,7 +1134,17 @@ class Chat extends Component {
           message.text.data.message_details.group_id === currentGroup.group_id
         ) {
           setGroupChatConversation([message.text.data.message_details]);
-          this.getLocalGroupConversation();
+          let itemIndex = this.props.chatGroupConversation.findIndex((_)=>_.id == message.text.data.message_details.local_id);
+          let updateItem = getGroupMessageObject(message.text.data.message_details, this.props.userData);
+          if(itemIndex >= 0){
+            let array = [...this.props.chatGroupConversation];
+            array.splice(itemIndex,1,updateItem);
+            this.props.setGroupConversation(array);
+          }else{
+            let array = [...this.props.chatGroupConversation];
+            this.props.setGroupConversation([updateItem].concat(array));
+          }
+          // this.getLocalGroupConversation();
           // this.markGroupMsgsRead();
           // unreadCount = 0;
           mention_msg_id = -1;
@@ -2836,7 +2857,7 @@ class Chat extends Component {
       if (state.isConnected) {
         this.props.setCurrentGroup(item);
         this.props.navigation.navigate('GroupChats',{msg_id});
-        // this.props.navigation.navigate('Conversations',{group_id: item.group_id, userData: this.props.userData});
+        // this.props.navigation.navigate('Conversations',{group_id: item.group_id, userData: this.props.userData, msg_id});
       } else {
         Toast.show({
           title: 'TOUKU',
@@ -3810,6 +3831,19 @@ class Chat extends Component {
     return <View>{isLoading && <ListLoader />}</View>
   }
 
+  onRefresh = () => {
+    this.setState({refreshLoading: true});
+    Promise.all([
+      this.props.getUserFriends(),
+      this.props.getUserGroups(),
+      this.props.getFollowingChannels()
+    ]).then(()=>{
+      this.setState({refreshLoading: false});
+    }).catch(()=>{
+      this.setState({refreshLoading: false});
+    });
+  }
+
   renderCommonChat = () => {
     const {isLoading, isVisible, isUncheck} = this.state;
     const commonChat = this.props.commonChat;
@@ -3837,6 +3871,7 @@ class Chat extends Component {
         <FlatList
           keyExtractor={(item, index) => `thread_${index}`}
           data={conversations}
+          scrollEnabled={conversations.length > 0 ? true : false}
           renderItem={this.renderCommonItem}
           ItemSeparatorComponent={this.listSeparatorComponent}
           ListFooterComponent={this.listFooterComponent}
@@ -3920,7 +3955,15 @@ class Chat extends Component {
         <View style={globalStyles.container}>
           <KeyboardAwareScrollView
             enableOnAndroid={true}
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                enabled={true}
+                refreshing={this.state.refreshLoading}
+                onRefresh={this.onRefresh}
+                tintColor={Colors.primary}
+                colors={[Colors.primary]}
+              />}>
             {this.renderCommonChat()}
           </KeyboardAwareScrollView>
         </View>
@@ -4025,6 +4068,7 @@ const mapStateToProps = (state) => {
     currentRouteName: state.userReducer.currentRouteName,
     trendTimline: state.timelineReducer.trendTimline,
     acceptedRequest: state.addFriendReducer.acceptedRequest,
+    chatGroupConversation: state.groupReducer.chatGroupConversation,
   };
 };
 

@@ -275,12 +275,12 @@ export default class FriendListItem extends PureComponent {
                       acceptedRequest > 0) && (
                       <Badge
                         style={[
-                          globalStyles.smallLightText,
+                          // globalStyles.smallLightText,
                           styles.badgeStyle,
                         ]}>
                         {acceptedRequest
-                          ? unreadCount + acceptedRequest
-                          : unreadCount}
+                          ? (unreadCount + acceptedRequest) > 99 ? '99+' : (unreadCount + acceptedRequest)
+                          : unreadCount>99 ? '99+' : unreadCount}
                       </Badge>
                     )}
                   </View>

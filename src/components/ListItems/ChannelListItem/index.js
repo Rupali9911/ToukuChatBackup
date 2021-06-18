@@ -258,10 +258,10 @@ export default class ChannelListItem extends PureComponent {
                     {unreadCount !== 0 && unreadCount != null && (
                       <Badge
                         style={[
-                          globalStyles.smallLightText,
+                          // globalStyles.smallLightText,
                           styles.badgeStyle,
                         ]}>
-                        {unreadCount}
+                        {unreadCount>99 ? '99+' : unreadCount}
                       </Badge>
                     )}
                   </View>

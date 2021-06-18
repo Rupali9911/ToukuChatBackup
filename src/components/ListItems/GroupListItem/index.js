@@ -306,7 +306,7 @@ export default class GroupListItem extends PureComponent {
                       {unreadCount !== 0 && unreadCount != null && (
                         <Badge
                           style={[
-                            globalStyles.smallLightText,
+                            // globalStyles.smallLightText,
                             styles.badgeStyle,
                           ]}>
                           {unreadCount>99 ? '99+' : unreadCount}

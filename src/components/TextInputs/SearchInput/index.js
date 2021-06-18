@@ -50,7 +50,7 @@ export default class SearchInput extends Component {
   // }
 
   // Focus on text input
-  focus() {
+  focus = () => {
     this.textInput.focus();
   }
 
@@ -109,7 +109,7 @@ export default class SearchInput extends Component {
                 onSubmitEditing={onSubmitEditing}
                 returnKeyType={'done'}
                 autoCorrect={false}
-                onFocus={() => this.focus()}
+                onFocus={this.focus}
                 // onBlur={() => this.onBlur()}
                 autoCapitalize={'none'}
                 underlineColorAndroid={'transparent'}
@@ -133,7 +133,7 @@ export default class SearchInput extends Component {
                 style={styles.iconRightContainer}
                 onPress={this._openMenu}
                 hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-                <Image source={Icons.man_plus_icon} style={styles.iconRight} />
+                <Image source={Icons.man_plus_icon} style={styles.iconRight} resizeMode={'contain'}/>
               </TouchableOpacity>
             }>
             <Menu.Item

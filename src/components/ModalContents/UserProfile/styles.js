@@ -78,7 +78,7 @@ export default StyleSheet.create({
     height: 150,
   },
   singleFlex: {
-    flex: 1,
+    flex: 1
   },
   closeIconPadding: {
     padding: 10,

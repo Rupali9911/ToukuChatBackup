@@ -7,6 +7,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
+  FlatList,
 } from 'react-native';
 import {
   KeyboardAwareFlatList,
@@ -264,7 +266,7 @@ class ChatContainer extends Component {
     ];
 
     return (
-      <KeyboardAwareScrollView
+      <View
         style={styles.singleFlex}
         contentContainerStyle={styles.singleFlex}
         showsVerticalScrollIndicator={false}
@@ -295,7 +297,7 @@ class ChatContainer extends Component {
             },
           ]}>
           <>
-            <KeyboardAwareFlatList
+            <FlatList
               // style={{flexGrow:1}}
               enableResetScrollToCoords={false}
               contentContainerStyle={[
@@ -733,7 +735,7 @@ class ChatContainer extends Component {
             sendingImage={sendingImage}
           />
         )}
-      </KeyboardAwareScrollView>
+      </View>
     );
   }
 }

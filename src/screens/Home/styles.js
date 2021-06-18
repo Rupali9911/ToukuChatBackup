@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Platform} from 'react-native';
 import {Colors, Fonts} from '../../constants';
 import {normalize} from '../../utils';
 
@@ -152,4 +152,9 @@ export default StyleSheet.create({
   flexDisplay: {
     display: 'flex',
   },
+  badgeStyle: {
+    backgroundColor: Colors.green,
+    color: Colors.white,
+    fontSize: Platform.isPad ? normalize(6) : normalize(9),
+  }
 });

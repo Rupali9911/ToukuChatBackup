@@ -30,7 +30,7 @@ export default StyleSheet.create({
     borderRadius: 5,
   },
   txtLanguage: {
-    fontFamily: Fonts.light,
+    // fontFamily: Fonts.light,
     color: Colors.dark_orange,
     fontSize: 13,
     fontWeight: '500',
