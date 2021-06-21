@@ -36,6 +36,7 @@ import {
 import messaging from '@react-native-firebase/messaging';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './src/helpers/LocalNotification/NotifService';
+import PushNotification from 'react-native-push-notification';
 import {setCurrentChannel} from './src/redux/reducers/channelReducer';
 import {
   setCurrentFriend,
@@ -120,17 +121,22 @@ export default class App extends Component {
   }
 
   _handleAppStateChange = async (nextAppState) => {
-    // console.log('nextAppState', nextAppState);
+     console.log('nextAppState', nextAppState);
     const {appState} = this.state;
     this.setState({appState: nextAppState});
-    if (nextAppState === 'inactive') {
+    if (nextAppState === 'inactive' || nextAppState === 'background') {
       let fCount = store.getState().friendReducer.unreadFriendMsgsCounts;
       let gCount = store.getState().groupReducer.unreadGroupMsgsCounts;
       let cCount = store.getState().channelReducer.unreadChannelMsgsCounts;
       let frCount = store.getState().addFriendReducer.friendRequest.length;
       let totalCount = fCount + gCount + cCount + frCount;
         console.log('_handleAppStateChange', totalCount);
-      PushNotificationIOS.setApplicationIconBadgeNumber(totalCount);
+        if (Platform.OS === 'ios'){
+            PushNotificationIOS.setApplicationIconBadgeNumber(totalCount);
+        } else{
+            console.log('_handleAppStateChange', totalCount );
+            PushNotification.setApplicationIconBadgeNumber(totalCount);
+        }
     }
 
     if (

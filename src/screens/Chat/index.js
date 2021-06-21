@@ -1158,7 +1158,7 @@ class Chat extends Component {
 
         // updateGroup(message.text.data.message_details).then(() => {
         //   console.log('onNewMessageInGroup -> updateGroup');
-        if(message.text.data.message_details.group_id === currentGroup.group_id){
+        if(currentGroup && message.text.data.message_details.group_id === currentGroup.group_id){
           let result = getGroupObjectById(currentGroup.group_id);
           if(result){
             let group = realmToPlainObject([result])[0];
