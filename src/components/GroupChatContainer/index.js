@@ -411,7 +411,7 @@ class GroupChatContainer extends Component {
       this.setState({ isActionButtonVisible })
     }
     // Update your scroll position
-    console.log('scroll position',this._listViewOffset);
+    // console.log('scroll position',this._listViewOffset);
     this._listViewOffset = currentOffset
   }
   

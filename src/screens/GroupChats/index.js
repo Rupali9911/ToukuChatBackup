@@ -462,9 +462,9 @@ class GroupChats extends Component {
         getUserName(groupMember.id) ||
         groupMember.display_name ||
         groupMember.username;
-      if (newMessageTextWithMention.includes(`@${user_name}`)) {
+      if (newMessageTextWithMention.includes(`@${user_name} `)) {
         // mention = `~${groupMember.id}~`; // TODO: Cannot find variable
-        newMessageTextWithMention = newMessageTextWithMention.replace(
+        newMessageTextWithMention = newMessageTextWithMention.replaceAll(
           `@${user_name}`,
           `~${groupMember.id}~`,
         );
@@ -1318,6 +1318,15 @@ class GroupChats extends Component {
 
           updateGroupInitialOpenStatus(this.props.currentGroup.group_id, true);
 
+          this.getLocalNextConversation(msg_id,5).then((result)=>{
+            if(result && result.length>0){
+              const render_messages = getRenderMessageData(result,this.props.userData);
+              setTimeout(()=>{
+                this.props.setGroupConversation(render_messages.concat(this.props.chatGroupConversation));
+              },500);
+            }
+          });
+
         }
       })
       .catch((err) => {
@@ -2093,7 +2102,7 @@ class GroupChats extends Component {
     }
   }
 
-  onLoadPreviousMessages = async (currentOffset) => {
+  onLoadPreviousMessages = (currentOffset) => new Promise(async (resolve, reject)=>{
     const {chatGroupConversation} = this.props;
     console.log('this.loading',this.loading,currentOffset);
     let message = chatGroupConversation[chatGroupConversation.length-1];
@@ -2123,7 +2132,11 @@ class GroupChats extends Component {
       }
       this.loading = false;
     }
-  }
+    console.log('resolve');
+    setTimeout(()=>{
+      resolve();
+    },500);
+  });
 
   loadMessagesOnReplyPress = async (id, onFinish) => {
     const {chatGroupConversation} = this.props;

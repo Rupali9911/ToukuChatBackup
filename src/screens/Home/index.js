@@ -2154,11 +2154,7 @@ const DropdownHeader = ({title, listcounts, badgeCount, isCollapsed, icon}) => {
       <View style={styles.dropdownHeaderContainer}>
         {badgeCount > 0 ? (
           <Badge
-            style={{
-              backgroundColor: Colors.green,
-              color: Colors.white,
-              fontSize: Platform.isPad ? normalize(6) : normalize(9),
-            }}>
+            style={styles.badgeStyle}>
             {badgeCount > 99 ? '99+' : badgeCount}
           </Badge>
         ) : null}

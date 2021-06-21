@@ -22,7 +22,7 @@ class Conversations extends React.Component{
     }
 
     async componentDidMount(){
-        let chats = getGroupChatConversationById(this.state.group_id,20,22737);
+        let chats = getGroupChatConversationById(this.state.group_id,20,this.props.navigation.state.params.msg_id);
         let result = realmToPlainObject(chats);
 
         let initialMessages = [];

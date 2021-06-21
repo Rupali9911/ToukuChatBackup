@@ -43,7 +43,7 @@ export default StyleSheet.create({
   iconRight: {
     height: 25,
     width: 25,
-    resizeMode: 'center',
+    resizeMode: 'contain',
   },
   iconSearch: {
     width: Platform.isPad ? 20 : 15,

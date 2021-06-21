@@ -18,7 +18,7 @@ import styles from '../styles';
  * @prop {func} onEditIconPress - function when edit icon is clicked
  * @returns JSX
  */
-const ProfileItem = ({title, value, editable, onEditIconPress}) => {
+const ProfileItem = ({title, value, editable, onEditIconPress, isPassword}) => {
   return (
     <View style={styles.inputTextContainer}>
       <View style={styles.singleFlex}>
@@ -35,6 +35,7 @@ const ProfileItem = ({title, value, editable, onEditIconPress}) => {
             globalStyles.smallRegularText,
             styles.textNormal,
             styles.itemLabel,
+              isPassword ? {top: 8} : {top: 5},
           ]}>
           {value}
         </Text>

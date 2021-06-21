@@ -318,6 +318,7 @@ class UserProfile extends Component {
             value={'*********'}
             editable={true}
             onEditIconPress={() => this.onShowChangePassModal()}
+            isPassword={true}
           />
 
           <ProfileItem

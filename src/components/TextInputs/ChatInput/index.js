@@ -57,7 +57,8 @@ class ChatInput extends Component {
       picker_height: new Animated.Value(0),
       selected_medias: [],
       selectedMediaObject: [],
-      selectedEmotion: null
+      selectedEmotion: null,
+      activeEmotionView: false
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -288,12 +289,12 @@ class ChatInput extends Component {
       : this.input_ref.blur()
   }
 
-  showExtraArea = () => {
+  showExtraArea = (value) => {
     // this.setState({isExtrasAreaVisible: true});
     this.isExtrasAreaVisible = true;
     this.forceUpdate();
     Animated.timing(this.state.extraAreaHeight, {
-      toValue: 340,
+      toValue: value,
       timing: 500,
       useNativeDriver: false
     }).start();
@@ -626,11 +627,15 @@ class ChatInput extends Component {
                 style={styles.textInput}
                 onChangeText={(message) => handleInput(message)}
                 onFocus={(e) => {
-                  this.setState({input_focus: true, selectedEmotion: null},()=>{
-                    this.hideExtraArea();
+                  this.showExtraArea(300);
+                  this.setState({input_focus: true, selectedEmotion: null, activeEmotionView: false},()=>{
+                    // this.hideExtraArea();
                   });
                 }}
-                onBlur={(e) => this.setState({input_focus: false})}
+                onBlur={(e) => {
+                  !this.state.activeEmotionView && this.hideExtraArea();
+                  this.setState({input_focus: false})
+                }}
                 onContentSizeChange={({nativeEvent}) => {
                   if (nativeEvent.contentSize.height !== this.lineHeight) {
                     this.lineHeight = nativeEvent.contentSize.height;
@@ -666,7 +671,8 @@ class ChatInput extends Component {
                 <TouchableOpacity
                   style={styles.chatAttachmentButton}
                   onPress={() => {
-                    this.showExtraArea();
+                    this.setState({activeEmotionView: true});
+                    this.showExtraArea(300);
                     Keyboard.dismiss();
                   }}>
                   <Image
@@ -803,6 +809,12 @@ class ChatInput extends Component {
                     onPress={this.selectEmotion}
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     loading={this.state.loading}
+                    onFocus={()=>{
+                      this.showExtraArea(450);
+                    }}
+                    onBlur={()=>{
+                      this.showExtraArea(300);
+                    }}
                   />
                 </View>
                 <View tabLabel={'Stickers'}>
@@ -1027,6 +1039,8 @@ function EmotionList({
   onPress,
   addEmotionToFrequentlyUsed,
   loading,
+  onFocus,
+  onBlur
 }) {
   const [focused, setFocused] = useState(false);
 
@@ -1048,8 +1062,14 @@ function EmotionList({
           onChangeText={onChangeText}
           inlineImageLeft={'search_icon'}
           clearButtonMode={'while-editing'}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onFocus={() => {
+            onFocus();
+            setFocused(true)
+          }}
+          onBlur={() => {
+            onBlur();
+            setFocused(false)
+          }}
         />
       
       {loading ? (
