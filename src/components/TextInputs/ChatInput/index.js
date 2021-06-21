@@ -45,6 +45,7 @@ class ChatInput extends Component {
       input_focus: false,
       isExtrasAreaVisible: false,
       extraAreaHeight: new Animated.Value(0),
+      previewHeight: 0,
       text: '',
       gifs: [],
       stickers: [],
@@ -216,6 +217,13 @@ class ChatInput extends Component {
         if(resJson.ok){
           const res = await resJson.json();
           this.setState({gifs: res.data});
+          let preloadGifs = [];
+          res.data.map((item)=>{
+            preloadGifs.push({
+              uri: item.images.original.url
+            });
+          });
+          FastImage.preload(preloadGifs);
         }
       } else {
         this.fetchTrendingGifs();
@@ -234,6 +242,13 @@ class ChatInput extends Component {
       if(resJson.ok){
         const res = await resJson.json();
         this.setState({gifs: res.data});
+        let preloadGifs = [];
+          res.data.map((item)=>{
+            preloadGifs.push({
+              uri: item.images.original.url
+            });
+          });
+          FastImage.preload(preloadGifs);
       }
     } catch (err) {
       console.error(err);
@@ -251,6 +266,13 @@ class ChatInput extends Component {
         if(resJson.ok){
           const res = await resJson.json();
           this.setState({stickers: res.data});
+          let preloadGifs = [];
+          res.data.map((item)=>{
+            preloadGifs.push({
+              uri: item.images.original.url
+            });
+          });
+          FastImage.preload(preloadGifs);
         }
       } else {
         this.fetchTrendingStickers();
@@ -269,6 +291,13 @@ class ChatInput extends Component {
       if(resJson.ok){
         const res = await resJson.json();
         this.setState({stickers: res.data});
+        let preloadGifs = [];
+          res.data.map((item)=>{
+            preloadGifs.push({
+              uri: item.images.original.url
+            });
+          });
+          FastImage.preload(preloadGifs);
       }
     } catch (err) {
       console.error(err);
@@ -294,10 +323,12 @@ class ChatInput extends Component {
     this.isExtrasAreaVisible = true;
     this.forceUpdate();
     Animated.timing(this.state.extraAreaHeight, {
-      toValue: value,
+      toValue: normalize(value),
       timing: 500,
       useNativeDriver: false
-    }).start();
+    }).start(()=>{
+      this.setState({previewHeight: normalize(value)});
+    });
   }
 
   hideExtraArea = () => {
@@ -407,9 +438,10 @@ class ChatInput extends Component {
       },
       styles.rootContainer,
     ];
+
     return (
       <>
-      {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: 340+this.newHeight}]}>
+      {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: this.state.previewHeight+this.newHeight}]}>
         <TouchableOpacity style={styles.frequentUseItemContainerStyle}
             activeOpacity={0.8}
             onPress={this.onSelectedEmotionPress}>
@@ -627,7 +659,7 @@ class ChatInput extends Component {
                 style={styles.textInput}
                 onChangeText={(message) => handleInput(message)}
                 onFocus={(e) => {
-                  this.showExtraArea(300);
+                  this.showExtraArea(230);
                   this.setState({input_focus: true, selectedEmotion: null, activeEmotionView: false},()=>{
                     // this.hideExtraArea();
                   });
@@ -672,7 +704,7 @@ class ChatInput extends Component {
                   style={styles.chatAttachmentButton}
                   onPress={() => {
                     this.setState({activeEmotionView: true});
-                    this.showExtraArea(300);
+                    this.showExtraArea(230);
                     Keyboard.dismiss();
                   }}>
                   <Image
@@ -725,7 +757,7 @@ class ChatInput extends Component {
                     <View
                       style={{
                         width: Dimensions.get('screen').width / 3,
-                        height: '15%',
+                        height: normalize(35),
                         flexDirection: 'row',
                       }}>
                       {/* <TouchableOpacity
@@ -750,19 +782,34 @@ class ChatInput extends Component {
                     </TouchableOpacity> */}
                       <TabBarItem
                         icon={Icons.icon_frequently_used}
-                        onPress={() => goToPage(0)}
+                        onPress={() => {
+                          goToPage(0);
+                          this.setState({ activeEmotionView: true });
+                          this.showExtraArea(230);
+                          Keyboard.dismiss();
+                        }}
                         activeTab={activeTab}
                         index={0}
                       />
                       <TabBarItem
                         icon={Icons.icon_gif}
-                        onPress={() => goToPage(1)}
+                        onPress={() => {
+                          goToPage(1);
+                          this.setState({ activeEmotionView: true });
+                          this.showExtraArea(230);
+                          Keyboard.dismiss();
+                        }}
                         activeTab={activeTab}
                         index={1}
                       />
                       <TabBarItem
                         icon={Icons.icon_sticker}
-                        onPress={() => goToPage(2)}
+                        onPress={() => {
+                          goToPage(2);
+                          this.setState({ activeEmotionView: true });
+                          this.showExtraArea(230);
+                          Keyboard.dismiss();
+                        }}
                         activeTab={activeTab}
                         index={2}
                       />
@@ -810,10 +857,10 @@ class ChatInput extends Component {
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     loading={this.state.loading}
                     onFocus={()=>{
-                      this.showExtraArea(450);
+                      this.showExtraArea(315);
                     }}
                     onBlur={()=>{
-                      this.showExtraArea(300);
+                      this.showExtraArea(230);
                     }}
                   />
                 </View>
@@ -828,6 +875,12 @@ class ChatInput extends Component {
                     onChangeText={(text) => this.onStickerEdit(text)}
                     onPress={this.selectEmotion}
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+                    onFocus={()=>{
+                      this.showExtraArea(450);
+                    }}
+                    onBlur={()=>{
+                      this.showExtraArea(300);
+                    }}
                   />
                 </View>
                 {/*<View tabLabel={'Stickers Pack'}>*/}

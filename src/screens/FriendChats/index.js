@@ -820,7 +820,7 @@ class FriendChats extends Component {
       //   };
       //   conversations = [...conversations, i];
       // });
-      console.log('friends_conversations',JSON.stringify(conversations))
+      // console.log('friends_conversations',JSON.stringify(conversations))
       this.props.setFriendConversation(conversations);
       // this.setState({isChatLoading: false});
     }
