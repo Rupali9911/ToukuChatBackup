@@ -616,6 +616,7 @@ export const sendGroupMessage = (message) => (dispatch) =>
     client
       .post(`/xchat/send-group-message/`, message)
       .then((res) => {
+        console.log('new message res', res);
         resolve(res);
       })
       .catch((err) => {

@@ -72,6 +72,7 @@ class GroupChatContainer extends Component {
         
         break;
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
+        console.log('new message');
         this.onNewMessageInGroup(message);
         break;
     }
@@ -153,7 +154,8 @@ class GroupChatContainer extends Component {
   }
 
   scrollListToRecent = () => {
-    this.scrollView && this.scrollView.scrollToOffset({offset: 0, animated: true});
+    console.log('scroll to recent',this._listViewOffset);
+    this.scrollView && this.scrollView.scrollToOffset({offset: 0, animated: false});
   }
 
   scrollListToEnd = () => {
@@ -340,7 +342,7 @@ class GroupChatContainer extends Component {
     );
   };
 
-  keyExtractor = (item) => {
+  keyExtractor = (item, index) => {
     return `${item.id}`;
   }
 
@@ -518,7 +520,8 @@ class GroupChatContainer extends Component {
       styles.replyContainer,
     ];
     return (
-      <KeyboardAwareScrollView
+      <View
+        style={styles.singleFlex}
         contentContainerStyle={styles.singleFlex}
         showsVerticalScrollIndicator={false}
         bounces={false}
@@ -559,7 +562,7 @@ class GroupChatContainer extends Component {
               onScrollEndDrag={this.closeMenuFalse}
               // extraData={this.state}
               data={messages}
-              extraData={this.props}
+              extraData={this.state}
               inverted={true}
               // contentOffset={{x: 0, y: 20}}
               scrollEnabled={!this.state.scrollLoading}
@@ -756,7 +759,7 @@ class GroupChatContainer extends Component {
             sendingImage={sendingImage}
           />
         )}
-      </KeyboardAwareScrollView>
+      </View>
     );
   }
 }

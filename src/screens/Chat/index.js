@@ -1144,7 +1144,7 @@ class Chat extends Component {
             let array = [...this.props.chatGroupConversation];
             this.props.setGroupConversation([updateItem].concat(array));
           }
-          // this.getLocalGroupConversation();
+          // this.getLocalGroupConversation(message.text.data.message_details.msg_id);
           // this.markGroupMsgsRead();
           // unreadCount = 0;
           mention_msg_id = -1;
@@ -1225,12 +1225,22 @@ class Chat extends Component {
         currentGroup &&
         message.text.data.message_details.group_id === currentGroup.group_id
       ) {
-        updateGroupMessageById(
-          message.text.data.message_details.msg_id,
-          message.text.data.message_details.message_body,
-          message.text.data.message_details.mentions
-        );
-        this.getLocalGroupConversation();
+        // updateGroupMessageById(
+        //   message.text.data.message_details.msg_id,
+        //   message.text.data.message_details.message_body,
+        //   message.text.data.message_details.mentions
+        // );
+
+        let array = Object.assign([], this.props.chatGroupConversation);
+        let itemIndex = array.findIndex((_) => _.id == message.text.data.message_details.msg_id);
+
+        if (itemIndex >= 0) {
+          let updateItem = getGroupMessageObject(message.text.data.message_details,this.props.userData);
+          array.splice(itemIndex, 1, updateItem);
+        }
+
+        this.props.setGroupConversation(array);
+        // this.getLocalGroupConversation();
       }
     }
   }
@@ -1256,7 +1266,18 @@ class Chat extends Component {
         currentGroup &&
         message.text.data.message_details.group_id === currentGroup.group_id
       ) {
-        this.getLocalGroupConversation();
+        let array = Object.assign([], this.props.chatGroupConversation);
+        let itemIndex = array.findIndex((_) => _.id == message.text.data.message_details.msg_id);
+        console.log('itemIndex',itemIndex);
+        if (itemIndex >= 0) {
+          let updateItem = Object.assign({},array[itemIndex]);
+          updateItem.is_unsent = true;
+          updateItem.text = '';
+          console.log('updateItem',updateItem);
+          array.splice(itemIndex, 1, updateItem);
+        }
+        this.props.setGroupConversation(array);
+        // this.getLocalGroupConversation();
       }
     }
   }
@@ -1272,13 +1293,23 @@ class Chat extends Component {
         currentGroup.group_id === detail.group_id
       ) {
         const messageids = detail.message_ids;
-
         const message_ids = messageids ? Object.entries(messageids) : [];
+
+        let array = Object.assign([],this.props.chatGroupConversation);
 
         for (const value of message_ids) {
           updateGroupnReadCount(parseInt(value[0], 10), parseInt(value[1], 10));
+
+          let itemIndex = array.findIndex((_)=>_.id==value[0]);
+
+          if(itemIndex>=0){
+            let updateItem = array[itemIndex];
+            updateItem.read_count = parseInt(value[1], 10);
+            array.splice(itemIndex,1,updateItem);
+          }
         }
-        this.getLocalGroupConversation();
+        this.props.setGroupConversation(array);
+        // this.getLocalGroupConversation();
       }
     }
   }
@@ -2200,6 +2231,7 @@ class Chat extends Component {
     if (
       message.text.data.type === SocketEvents.DELETE_MULTIPLE_MESSAGE_IN_GROUP
     ) {
+      let chatArray = Object.assign([], this.props.chatGroupConversation);
       if (isArray(message.text.data.message_details)) {
         message.text.data.message_details.map((item) => {
 
@@ -2212,6 +2244,12 @@ class Chat extends Component {
           let result = getGroupsById(item.group_id);
           let group = realmToPlainObject(result);
           // let group = result.toJSON();
+
+          let itemIndex = chatArray.findIndex((_) => _.id == item.msg_id);
+
+          if (itemIndex >= 0) {
+            chatArray.splice(itemIndex, 1);
+          }
 
           if (group && group.length > 0) {
             let chat = getGroupChatConversationById(item.group_id);
@@ -2249,15 +2287,15 @@ class Chat extends Component {
               this.props.setCommonChatConversation();
             });
           }
-
-          if (
-            (currentRouteName === 'GroupChats' || currentRouteName == 'GroupDetails') &&
-            currentGroup &&
-            item.group_id === currentGroup.group_id
-          ) {
-            this.getLocalGroupConversation();
-          }
         });
+        if (
+          (currentRouteName === 'GroupChats' || currentRouteName == 'GroupDetails') &&
+          currentGroup &&
+          message.text.data.message_details.length>0 && message.text.data.message_details[0].group_id === currentGroup.group_id
+        ) {
+          this.props.setGroupConversation(chatArray);
+          // this.getLocalGroupConversation();
+        }
       }else {
         let item = message.text.data.message_details;
         deleteGroupMessageById(item.msg_id);
@@ -2265,6 +2303,12 @@ class Chat extends Component {
         let result = getGroupsById(item.group_id);
         let group = realmToPlainObject(result);
         // let group = result.toJSON();
+
+        let itemIndex = chatArray.findIndex((_) => _.id == item.msg_id);
+
+        if (itemIndex >= 0) {
+          chatArray.splice(itemIndex, 1);
+        }
 
         if (group && group.length > 0) {
           let chat = getGroupChatConversationById(item.group_id);
@@ -2304,7 +2348,8 @@ class Chat extends Component {
           currentGroup &&
           item.group_id === currentGroup.group_id
         ) {
-          this.getLocalGroupConversation();
+          this.props.setGroupConversation(chatArray);
+          // this.getLocalGroupConversation();
         }
       }
     }
@@ -3027,36 +3072,23 @@ class Chat extends Component {
       });
   }
 
-  getLocalGroupConversation = () => {
-    let chat = getGroupChatConversationById(this.props.currentGroup.group_id);
-    if (chat) {
-      let conversations = [];
-      // chat.map((item, index) => {
-      //   let i = {
-      //     msg_id: item.msg_id,
-      //     sender_id: item.sender_id,
-      //     group_id: item.group_id,
-      //     sender_username: item.sender_username,
-      //     sender_display_name: item.sender_display_name,
-      //     sender_picture: item.sender_picture,
-      //     message_body: item.message_body,
-      //     is_edited: item.is_edited,
-      //     is_unsent: item.is_unsent,
-      //     timestamp: item.timestamp,
-      //     reply_to: item.reply_to,
-      //     mentions: item.mentions,
-      //     read_count: item.read_count,
-      //     created: item.created,
-      //   };
-      //   conversations = [...conversations, i];
-      // });
-
-      conversations = realmToPlainObject(chat);
-      // conversations = chat.toJSON();
-
-      let renderMessages = getRenderMessageData(conversations,this.props.userData);
-
-      this.props.setGroupConversation(renderMessages);
+  getLocalGroupConversation = (msg_id) => {
+    if(msg_id){
+      let chat = getGroupChatConversationById(this.props.currentGroup.group_id,30,msg_id);
+      if (chat) {
+        let conversations = [];
+        conversations = realmToPlainObject(chat);
+        let renderMessages = getRenderMessageData(conversations,this.props.userData);
+        this.props.setGroupConversation(renderMessages);
+      }
+    }else{
+      let chat = getGroupChatConversationById(this.props.currentGroup.group_id,30);
+      if (chat) {
+        let conversations = [];
+        conversations = realmToPlainObject(chat);
+        let renderMessages = getRenderMessageData(conversations,this.props.userData);
+        this.props.setGroupConversation(renderMessages);
+      }
     }
   };
 

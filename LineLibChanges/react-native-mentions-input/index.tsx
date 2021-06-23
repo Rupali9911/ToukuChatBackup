@@ -377,6 +377,7 @@ export default class MentionsInput extends React.Component<Props, State> {
               onSelectionChange={this.onSelectionChange}
               onFocus={this.props.onFocus}
               onBlur={this.props.onBlur}
+              autoCorrect={false}
             />
             {this.renderRightComponent()}
           </View>

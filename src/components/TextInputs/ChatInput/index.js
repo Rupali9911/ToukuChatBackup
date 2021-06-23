@@ -46,6 +46,7 @@ class ChatInput extends Component {
       isExtrasAreaVisible: false,
       extraAreaHeight: new Animated.Value(0),
       previewHeight: 0,
+      keyboardHeight: 0,
       text: '',
       gifs: [],
       stickers: [],
@@ -73,6 +74,34 @@ class ChatInput extends Component {
     }
     this.fetchTrendingGifs();
     this.fetchTrendingStickers();
+
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+
+  }
+
+  componentWillUnmount(){
+    this.keyboardDidShowListener && this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener && this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = (e) => {
+    console.log('keyboardHeight',e.endCoordinates.height);
+    this.setState({
+      keyboardHeight: e.endCoordinates.height,
+      normalHeight: Dimensions.get('window').height,
+      shortHeight: Dimensions.get('window').height - e.endCoordinates.height,
+    });
+    if(this.state.activeEmotionView){
+      this.showExtraArea(e.endCoordinates.height+105);
+    }else{
+      this.showExtraArea(e.endCoordinates.height);
+    }
+    
+  }
+
+  _keyboardDidHide = () => {
+
   }
 
   showPicker = () => {
@@ -323,11 +352,11 @@ class ChatInput extends Component {
     this.isExtrasAreaVisible = true;
     this.forceUpdate();
     Animated.timing(this.state.extraAreaHeight, {
-      toValue: normalize(value),
-      timing: 500,
+      toValue: value,
+      timing: 100,
       useNativeDriver: false
     }).start(()=>{
-      this.setState({previewHeight: normalize(value)});
+      this.setState({previewHeight: value});
     });
   }
 
@@ -593,12 +622,14 @@ class ChatInput extends Component {
                   maxHeight={50}
                   multiline={true}
                   onFocus={() => {
-                    this.setState({input_focus: true, selectedEmotion: null},()=>{
-                      this.hideExtraArea();
+                    // this.showExtraArea(230);
+                    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false }, () => {
+                      // this.hideExtraArea();
                     });
                   }}
                   onBlur={() => {
-                    this.setState({input_focus: false});
+                    !this.state.activeEmotionView && this.hideExtraArea();
+                    this.setState({ input_focus: false })
                     this.input_ref && this.input_ref.hideSuggestionPanel();
                   }}
                   onTextChange={(message) => {
@@ -609,7 +640,7 @@ class ChatInput extends Component {
                     }
                     console.log(message);
                     handleInput(message);
-                    this.groupMembersMentions(message);
+                    // this.groupMembersMentions(message);
                   }}
                   onMarkdownChange={(markdown) => {}}
                   placeholder={placeholder}
@@ -659,7 +690,7 @@ class ChatInput extends Component {
                 style={styles.textInput}
                 onChangeText={(message) => handleInput(message)}
                 onFocus={(e) => {
-                  this.showExtraArea(230);
+                  // this.showExtraArea(230);
                   this.setState({input_focus: true, selectedEmotion: null, activeEmotionView: false},()=>{
                     // this.hideExtraArea();
                   });
@@ -704,7 +735,7 @@ class ChatInput extends Component {
                   style={styles.chatAttachmentButton}
                   onPress={() => {
                     this.setState({activeEmotionView: true});
-                    this.showExtraArea(230);
+                    this.showExtraArea(this.state.keyboardHeight);
                     Keyboard.dismiss();
                   }}>
                   <Image
@@ -785,7 +816,7 @@ class ChatInput extends Component {
                         onPress={() => {
                           goToPage(0);
                           this.setState({ activeEmotionView: true });
-                          this.showExtraArea(230);
+                          this.showExtraArea(this.state.keyboardHeight);
                           Keyboard.dismiss();
                         }}
                         activeTab={activeTab}
@@ -796,7 +827,7 @@ class ChatInput extends Component {
                         onPress={() => {
                           goToPage(1);
                           this.setState({ activeEmotionView: true });
-                          this.showExtraArea(230);
+                          this.showExtraArea(this.state.keyboardHeight);
                           Keyboard.dismiss();
                         }}
                         activeTab={activeTab}
@@ -807,7 +838,7 @@ class ChatInput extends Component {
                         onPress={() => {
                           goToPage(2);
                           this.setState({ activeEmotionView: true });
-                          this.showExtraArea(230);
+                          this.showExtraArea(this.state.keyboardHeight);
                           Keyboard.dismiss();
                         }}
                         activeTab={activeTab}
@@ -857,10 +888,10 @@ class ChatInput extends Component {
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     loading={this.state.loading}
                     onFocus={()=>{
-                      this.showExtraArea(315);
+                      // this.showExtraArea(this.state.keyboardHeight + 100);
                     }}
                     onBlur={()=>{
-                      this.showExtraArea(230);
+                      this.showExtraArea(this.state.keyboardHeight);
                     }}
                   />
                 </View>
@@ -876,7 +907,7 @@ class ChatInput extends Component {
                     onPress={this.selectEmotion}
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     onFocus={()=>{
-                      this.showExtraArea(450);
+                      // this.showExtraArea(450);
                     }}
                     onBlur={()=>{
                       this.showExtraArea(300);

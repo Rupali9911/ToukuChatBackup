@@ -636,16 +636,17 @@ class GroupChats extends Component {
       //   getGroupMessageObject(msgDataSend,this.props.userData),
       //   ...this.props.chatGroupConversation,
       // ]);
-      let newRObject = setSingleGroupChatConversation({
-        msg_id: groupMessage.local_id,
-        local_id: groupMessage.local_id,
-        ...msgDataSend
-      });
-      let Rmsg = getGroupMessageObject(newRObject,this.props.userData);
-      this.props.setGroupConversation([Rmsg].concat(this.props.chatGroupConversation));
-        if(onSendFinish){
-          onSendFinish && onSendFinish();
-        }
+      
+      // let newRObject = setSingleGroupChatConversation({
+      //   msg_id: groupMessage.local_id,
+      //   local_id: groupMessage.local_id,
+      //   ...msgDataSend
+      // });
+      // let Rmsg = getGroupMessageObject(newRObject,this.props.userData);
+      // this.props.setGroupConversation([Rmsg].concat(this.props.chatGroupConversation));
+      //   if(onSendFinish){
+      //     onSendFinish && onSendFinish();
+      //   }
       this.props.sendGroupMessage(groupMessage).then((res)=>{
         if(res){}
         else{
@@ -678,16 +679,17 @@ class GroupChats extends Component {
       //   getGroupMessageObject(msgDataSend,this.props.userData),
       //   ...this.props.chatGroupConversation,
       // ]);
-      let newObject = setSingleGroupChatConversation({
-        msg_id: groupMessage.local_id,
-        local_id: groupMessage.local_id,
-        ...msgDataSend
-      });
-      let msg = getGroupMessageObject(newObject,this.props.userData);
-      this.props.setGroupConversation([msg].concat(this.props.chatGroupConversation));
-        if(onSendFinish){
-          onSendFinish && onSendFinish();
-        }
+
+      // let newObject = setSingleGroupChatConversation({
+      //   msg_id: groupMessage.local_id,
+      //   local_id: groupMessage.local_id,
+      //   ...msgDataSend
+      // });
+      // let msg = getGroupMessageObject(newObject,this.props.userData);
+      // this.props.setGroupConversation([msg].concat(this.props.chatGroupConversation));
+      //   if(onSendFinish){
+      //     onSendFinish && onSendFinish();
+      //   }
       this.props.sendGroupMessage(groupMessage).then((res)=>{
         if(res){}
         else{
@@ -1007,10 +1009,10 @@ class GroupChats extends Component {
     this.props
       .getUpdatedGroupConversation(group_id,msg_id,true,false)
       .then((res) => {
-        console.log('bg_thread_next_res',res);
+        console.log('bg_thread_next_res',res.status, res.next, this.props.currentRouteName,group_id,this.props.currentGroup.group_id);
         if (res.status && res.next && this.props.currentRouteName === 'GroupChats' && group_id == this.props.currentGroup.group_id) {
           let latest_msg_id = getGroupChatConversationLatestMsgId(group_id);
-          this.fetchPrevious(latest_msg_id, group_id);
+          this.fetchNext(latest_msg_id, group_id);
         }
       })
       .catch((err) => {
@@ -2085,7 +2087,7 @@ class GroupChats extends Component {
     const {chatGroupConversation} = this.props;
     let message = chatGroupConversation[0];
     if (message && message.id && !this.loading) {
-      console.log('next_msg_id', message.id);
+      console.log('next_msg_id', message.id,this.props.next);
       this.loading = true;
       // this.offset = this.offset + 20;
       let next_messages = await this.getLocalNextConversation(message.id);
