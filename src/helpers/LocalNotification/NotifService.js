@@ -11,7 +11,7 @@ export default class NotifService {
     // Clear badge number at start
     PushNotification.getApplicationIconBadgeNumber(function (number) {
       console.log('getApplicationIconBadgeNumber', number)
-        PushNotification.setApplicationIconBadgeNumber(100);
+        PushNotification.setApplicationIconBadgeNumber(0);
     });
 
     PushNotification.getChannels(function(channels) {

@@ -61,6 +61,7 @@ import {eventService} from './src/utils';
 import { setSpecificId, setActiveTab } from './src/redux/reducers/timelineReducer';
 import {getMaintenance} from './src/redux/reducers/configurationReducer';
 
+
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
 

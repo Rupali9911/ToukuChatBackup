@@ -183,8 +183,10 @@ class AddFriendByQr extends Component {
     ) {
       NavigationService.popToTop();
     }
+    console.log('data', data)
+      let channelId = data && data.id ? {'channel_id': data.id} : null
     this.props.setCurrentChannel(data);
-    NavigationService.navigate('ChannelInfo');
+    NavigationService.navigate('ChannelInfo', channelId ? { channelItem: channelId } : null);
   };
 
   addFriendFromUrl(invitationCode) {
