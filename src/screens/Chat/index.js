@@ -443,12 +443,6 @@ class Chat extends Component {
       },
     );
 
-      if (version <= minVersion ) {
-          this.setState({updateVersionModal: true})
-      }else {
-          this.setState({updateVersionModal: false})
-      }
-
       // getAppstoreAppMetadata("1496312754") //put any apps id here
       //     .then(metadata => {
       //         console.log(
@@ -556,7 +550,7 @@ class Chat extends Component {
     }
     switch (message.text.data.type) {
       case SocketEvents.SOCKET_CONNECTED:
-        this.onSocketConnected();
+        this.onSocketConnected(message);
         break;
       case SocketEvents.USER_ONLINE_STATUS:
         this.setFriendsOnlineStatus(message);
@@ -744,9 +738,15 @@ class Chat extends Component {
     }
   }
 
-  onSocketConnected = () => {
-    console.log('Action on socket connection');
-
+  onSocketConnected = (message) => {
+    if (message && message.text && message.text.data && message.text.data.message_details && message.text.data.message_details.minimum_app_version) {
+        console.log('Action on socket connection', message.text.data.message_details);
+        if (version <= message.text.data.message_details.minimum_app_version ) {
+            this.setState({updateVersionModal: true})
+        }else {
+            this.setState({updateVersionModal: false})
+        }
+    }
   }
 
   updateChannelDetail(message) {
