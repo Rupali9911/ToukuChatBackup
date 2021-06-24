@@ -229,6 +229,40 @@ class ChatContainer extends Component {
     }
   };
 
+  onEndReached = () => {
+    const {isChannel, friendLoading, isLoadMore, channelLoading, messages, onLoadMore} = this.props;
+    if (isChannel) {
+      if (
+        messages.length > 0 &&
+        messages.length % 30 === 0 &&
+        isLoadMore &&
+        !channelLoading
+      ) {
+        console.log('load more');
+        onLoadMore && onLoadMore(messages[messages.length - 1]);
+      }
+    } else {
+      if (isLoadMore && !friendLoading) {
+        onLoadMore && onLoadMore(messages[messages.length - 1]);
+      }
+    }
+  }
+
+  listFooterComponent = () => {
+    const {channelLoading,friendLoading,isChannel} = this.props;
+    if(isChannel && channelLoading){
+      return <ListLoader />
+    }else if(friendLoading){
+      return <ListLoader />
+    }
+    return null;
+  }
+
+  shouldComponentUpdate(){
+    console.log('component update');
+    return true;
+  }
+
   render() {
     const {
       orientation,
@@ -245,6 +279,7 @@ class ChatContainer extends Component {
       sendingImage,
       currentChannel,
       channelLoading,
+      friendLoading,
       sendEnable,
       isMultiSelect,
       onSelect,
@@ -327,21 +362,9 @@ class ChatContainer extends Component {
               }}
               data={messages}
               inverted={true}
-              onEndReached={() => {
-                if (
-                  messages.length > 0 &&
-                  messages.length % 30 === 0 &&
-                  isLoadMore &&
-                  !channelLoading
-                ) {
-                  console.log('load more');
-                  onLoadMore && onLoadMore(messages[messages.length - 1]);
-                }
-              }}
+              onEndReached={this.onEndReached}
               onEndReachedThreshold={0.1}
-              ListFooterComponent={() =>
-                channelLoading ? <ListLoader /> : null
-              }
+              ListFooterComponent={this.listFooterComponent}
               renderItem={({item, index}) => {
                 this.getDate = (date) => {
                   const today = new Date();
@@ -746,6 +769,7 @@ const mapStateToProps = (state) => {
     currentChannel: state.channelReducer.currentChannel,
     currentFriend: state.friendReducer.currentFriend,
     channelLoading: state.channelReducer.loading,
+    friendLoading: state.friendReducer.loading
   };
 };
 

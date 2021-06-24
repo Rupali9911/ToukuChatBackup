@@ -410,11 +410,17 @@ const getPersonalConversationFailure = () => ({
   type: GET_PERSONAL_CONVERSATION_FAIL,
 });
 
-export const getPersonalConversation = (friend) => (dispatch) =>
+export const getPersonalConversation = (friend, id) => (dispatch) =>
   new Promise(function (resolve, reject) {
     dispatch(getPersonalConversationRequest());
+
+    let params = '';
+    if(id){
+      params = `?limit=50&msg_id=${id}`;
+    }
+
     client
-      .get(`/xchat/personal-conversation/${friend}/`)
+      .get(`/xchat/personal-conversation/${friend}/${params}`)
       .then((res) => {
         setFriendChatConversation(res.conversation);
         dispatch(getPersonalConversationSuccess());

@@ -1024,7 +1024,8 @@ export const updateLastMsgGroupsWithoutCount = (
   text,
   last_msg_id,
   timestamp,
-  no_msgs = false
+  no_msgs = false,
+  mentions = []
 ) => {
   let last_msg = {
     type: type,
@@ -1039,6 +1040,7 @@ export const updateLastMsgGroupsWithoutCount = (
         last_msg_id: last_msg_id,
         no_msgs: no_msgs,
         timestamp: timestamp,
+        mentions: mentions
       },
       'modified',
     );

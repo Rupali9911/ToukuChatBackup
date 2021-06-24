@@ -7,6 +7,7 @@ import Orientation from 'react-native-orientation';
 import {createFilter} from 'react-native-search-filter';
 import {withNavigationFocus} from 'react-navigation';
 import {connect} from 'react-redux';
+import RnBgTask from 'react-native-bg-thread';
 
 import HomeHeader from '../../components/HomeHeader';
 import {
@@ -242,9 +243,13 @@ class Chat extends Component {
     const initial = Orientation.getInitialOrientation();
     this.setState({orientation: initial});
     // await eventService.subscribe();
-    this.events = eventService.getMessage().subscribe((message) => {
-      this.checkEventTypes(message);
-    });
+    // RnBgTask.runInBackground_withPriority('NORMAL', () => {
+      this.events = eventService.getMessage().subscribe((message) => {
+        // RnBgTask.runInBackground_withPriority("MIN", () => {
+        this.checkEventTypes(message);
+        // });
+      });
+    // });
 
     let isSocketCalled = false;
 
@@ -1127,20 +1132,20 @@ class Chat extends Component {
         let is_mentioned = item[0].is_mention || group[0].is_mentioned;
         let mention_msg_id = group[0].mention_msg_id < 0 || group[0].mention_msg_id == null ? item[0].mention_msg_id : group[0].mention_msg_id;
         let unread_msg_id = group[0].unread_msg_id < 0 || group[0].unread_msg_id == null ? message.text.data.message_details.msg_id : group[0].unread_msg_id;
-
+        
         if (
-            (currentRouteName == 'GroupChats' || currentRouteName == 'GroupDetails' || currentRouteName == 'CreateEditNote') &&
+          (currentRouteName == 'GroupChats' || currentRouteName == 'GroupDetails' || currentRouteName == 'CreateEditNote') &&
           currentGroup &&
           message.text.data.message_details.group_id === currentGroup.group_id
         ) {
           setGroupChatConversation([message.text.data.message_details]);
-          let itemIndex = this.props.chatGroupConversation.findIndex((_)=>_.id == message.text.data.message_details.local_id);
+          let itemIndex = this.props.chatGroupConversation.findIndex((_) => _.id == message.text.data.message_details.local_id);
           let updateItem = getGroupMessageObject(message.text.data.message_details, this.props.userData);
-          if(itemIndex >= 0){
+          if (itemIndex >= 0) {
             let array = [...this.props.chatGroupConversation];
-            array.splice(itemIndex,1,updateItem);
+            array.splice(itemIndex, 1, updateItem);
             this.props.setGroupConversation(array);
-          }else{
+          } else {
             let array = [...this.props.chatGroupConversation];
             this.props.setGroupConversation([updateItem].concat(array));
           }
@@ -1303,7 +1308,7 @@ class Chat extends Component {
           let itemIndex = array.findIndex((_)=>_.id==value[0]);
 
           if(itemIndex>=0){
-            let updateItem = array[itemIndex];
+            let updateItem = Object.assign({},array[itemIndex]);
             updateItem.read_count = parseInt(value[1], 10);
             array.splice(itemIndex,1,updateItem);
           }
@@ -2256,18 +2261,22 @@ class Chat extends Component {
             let array = realmToPlainObject(chat);
             // let array = chat.toJSON();
 
+            let lastMsgArray = array.filter((_)=>_.message_body.type!=='update');
+
             if (group[0].last_msg_id === item.msg_id) {
-              if (array && array.length > 0) {
+              if (lastMsgArray && lastMsgArray.length > 0) {
                 updateLastMsgGroupsWithoutCount(
                   item.group_id,
-                  array[0].message_body && array[0].message_body.type
-                    ? array[0].message_body.type
-                    : array[0].message_body,
-                  array[0].message_body && array[0].message_body.text
-                    ? array[0].message_body.text
-                    : array[0].message_body,
-                  array[0].msg_id,
-                  array[0].timestamp,
+                  lastMsgArray[0].message_body && lastMsgArray[0].message_body.type
+                    ? lastMsgArray[0].message_body.type
+                    : lastMsgArray[0].message_body,
+                    lastMsgArray[0].message_body && lastMsgArray[0].message_body.text
+                    ? lastMsgArray[0].message_body.text
+                    : lastMsgArray[0].message_body,
+                    lastMsgArray[0].msg_id,
+                    lastMsgArray[0].timestamp,
+                  false,
+                  lastMsgArray[0].mentions,
                 );
               } else {
                 updateLastMsgGroupsWithoutCount(

@@ -251,7 +251,7 @@ export const ChannelLastConversation = {
     //   objectType: 'reply_to',
     //   default: null,
     // },
-    reply_to: 'int?',
+    reply_to: {type: 'int?', default: null},
     schedule_post: 'int?',
     subchat: 'int?',
     thumbnail: 'string?',

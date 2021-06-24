@@ -94,6 +94,7 @@ class FriendChats extends Component {
       isDeleteEveryoneLoading: false,
       selectedIds: [],
       openDoc: false,
+      isLoadMore: false,
       headerRightIconMenu:
         this.props.userData.id === appleStoreUserId
           ? [
@@ -745,9 +746,9 @@ class FriendChats extends Component {
     }
   }
 
-  getPersonalConversation = async () => {
+  getPersonalConversation = async (id) => {
     await this.props
-      .getPersonalConversation(this.props.currentFriend.friend)
+      .getPersonalConversation(this.props.currentFriend.friend, id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
           // this.setState({ conversations: res.conversation });
@@ -757,28 +758,15 @@ class FriendChats extends Component {
           );
           let conversations = [];
           conversations = realmToPlainObject(chat);
-          // conversations = chat.toJSON();
-          // chat.map((item, index) => {
-          //   let i = {
-          //     created: item.created,
-          //     deleted_for: item.deleted_for,
-          //     friend: item.friend,
-          //     from_user: item.from_user,
-          //     id: item.id,
-          //     is_edited: item.is_edited,
-          //     is_read: item.is_read,
-          //     is_unsent: item.is_unsent,
-          //     local_id: item.local_id,
-          //     message_body: item.message_body,
-          //     msg_type: item.msg_type,
-          //     reply_to: item.reply_to,
-          //     thumbnail: item.thumbnail,
-          //     to_user: item.to_user,
-          //     updated: item.updated,
-          //   };
-          //   conversations = [...conversations, i];
-          // });
+          
           this.props.setFriendConversation(conversations);
+          if(res.conversation.length>=50){
+            this.setState({isLoadMore: true});
+          }else{
+            this.setState({isLoadMore: false});
+          }
+        }else{
+          this.setState({isLoadMore: false});
         }
       });
   };
@@ -799,27 +787,6 @@ class FriendChats extends Component {
     if (chat.length) {
       let conversations = [];
       conversations = realmToPlainObject(chat);
-      // conversations = chat.toJSON();
-      // chat.map((item, index) => {
-      //   let i = {
-      //     created: item.created,
-      //     deleted_for: item.deleted_for,
-      //     friend: item.friend,
-      //     from_user: item.from_user,
-      //     id: item.id,
-      //     is_edited: item.is_edited,
-      //     is_read: item.is_read,
-      //     is_unsent: item.is_unsent,
-      //     local_id: item.local_id,
-      //     message_body: item.message_body,
-      //     msg_type: item.msg_type,
-      //     reply_to: item.reply_to,
-      //     thumbnail: item.thumbnail,
-      //     to_user: item.to_user,
-      //     updated: item.updated,
-      //   };
-      //   conversations = [...conversations, i];
-      // });
       // console.log('friends_conversations',JSON.stringify(conversations))
       this.props.setFriendConversation(conversations);
       // this.setState({isChatLoading: false});
@@ -836,28 +803,15 @@ class FriendChats extends Component {
           );
           let conversations = [];
           conversations = realmToPlainObject(friendChat);
-          // conversations = chat.toJSON();
-          // chat.map((item, index) => {
-          //   let i = {
-          //     created: item.created,
-          //     deleted_for: item.deleted_for,
-          //     friend: item.friend,
-          //     from_user: item.from_user,
-          //     id: item.id,
-          //     is_edited: item.is_edited,
-          //     is_read: item.is_read,
-          //     is_unsent: item.is_unsent,
-          //     local_id: item.local_id,
-          //     message_body: item.message_body,
-          //     msg_type: item.msg_type,
-          //     reply_to: item.reply_to,
-          //     thumbnail: item.thumbnail,
-          //     to_user: item.to_user,
-          //     updated: item.updated,
-          //   };
-          //   conversations = [...conversations, i];
-          // });
+          
           this.props.setFriendConversation(conversations);
+          if(res.conversation.length>=50){
+            this.setState({isLoadMore: true});
+          } else {
+            this.setState({isLoadMore: false});
+          }
+        }else{
+          this.setState({isLoadMore: false});
         }
         this.setState({isChatLoading: false});
       });
@@ -1530,6 +1484,13 @@ class FriendChats extends Component {
     });
   };
 
+  onLoadMoreMessages = (message) => {
+    console.log('load more messages friend chats');
+    if(message && message.id){
+      this.getPersonalConversation(message.id);
+    }
+  }
+
   render() {
     const {
       newMessageText,
@@ -1548,6 +1509,7 @@ class FriendChats extends Component {
       openDoc,
       isDeleteMeLoading,
       isDeleteEveryoneLoading,
+      isLoadMore
     } = this.state;
     const {currentFriend, chatFriendConversation} = this.props;
     // console.log('currentFriend', currentFriend);
@@ -1642,6 +1604,8 @@ class FriendChats extends Component {
                 });
               }
             }}
+            isLoadMore={isLoadMore}
+            onLoadMore={this.onLoadMoreMessages}
           />
         )}
 
