@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import OpenFile from 'react-native-doc-viewer';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -50,6 +51,9 @@ import MediaGridList from '../MediaGridList';
 import styles from './styles';
 import NormalImage from '../NormalImage';
 import GifImage from '../GifImage';
+import {
+  realm
+} from '../../storage/Service';
 
 let borderRadius = 20;
 
@@ -64,6 +68,7 @@ class ChatMessageBubble extends Component {
     this.state = {
       showImage: false,
       images: null,
+      // message: this.props.message
     };
     // this.eventEmitter = new NativeEventEmitter(
     //   NativeModules.RNReactNativeDocViewer,
@@ -77,7 +82,7 @@ class ChatMessageBubble extends Component {
     // });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // download progress
     // this.eventEmitter.addListener('RNDownloaderProgress', (Event) => {
     //   if (Event.progress === 100 && !downloaded) {
@@ -89,10 +94,26 @@ class ChatMessageBubble extends Component {
     //     this.props.showOpenLoader(false);
     //   }
     // });
+
+      // if(this.props.isFriend){
+      //   this.resultObject = realm.objectForPrimaryKey(
+      //     'chat_conversation_friend',
+      //     this.props.message.id
+      //   );
+      //   if(this.resultObject){
+      //     this.resultObject.addListener((chat,changes)=>{
+      //       // console.log('chat changes',changes,chat);
+      //       this.setState({message: chat});
+      //     });
+      //   }
+      // }
   }
 
   componentWillUnmount() {
     //this.eventEmitter.removeListener();
+    // this.resultObject && this.resultObject.removeListener((chat,changes)=>{
+    //   console.log('chat changes',changes,chat);
+    // });
   }
 
   onCopy = (message) => {
@@ -441,6 +462,48 @@ class ChatMessageBubble extends Component {
     }
   };
 
+  onMessageLongPress = () => {
+    const {message, onMessagePress} = this.props;
+    console.log('On Long Press tapped');
+    onMessagePress(message.id);
+    this.showMenu();
+  }
+
+  onMessageClick = () => {
+    const {message} = this.props;
+    if(message.msg_type === 'update') {
+      this.navigateToNotes()
+    }
+    else if (message.msg_type === 'doc') {
+      this.onDocumentPress(message.message_body)
+    }
+    // else if (message.msg_type === 'image'){
+    //   if(message.hyperlink){
+    //     this.checkUrlAndNavigate(message.hyperlink)
+    //   }else{
+    //     this.onImagePress(
+    //       message.thumbnail === ''
+    //         ? message.message_body
+    //         : message.thumbnail,
+    //     );
+    //   }
+    // }
+  }
+
+  menuRef = (ref) => {
+    this._menu = ref;
+  }
+
+  onAudioPlay = () => {
+    this.props.onMediaPlay &&
+      this.props.onMediaPlay(true);
+  }
+
+  onAudioPause = () => {
+    this.props.onMediaPlay &&
+      this.props.onMediaPlay(false);
+  }
+
   render() {
     const {
       message,
@@ -474,9 +537,9 @@ class ChatMessageBubble extends Component {
           message.msg_type === 'update'
             ? 0
             : message.msg_type === 'image'
-            ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8
+            ? message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? 0 : 8
             : 10,
-        paddingVertical: message.msg_type === 'image' ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8 : 10,
+        paddingVertical: message.msg_type === 'image' ? message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? 0 : 8 : 10,
       },
       styles.imageActionContainer,
     ];
@@ -484,9 +547,7 @@ class ChatMessageBubble extends Component {
     return (
       <View>
         <Menu
-          ref={(ref) => {
-            this._menu = ref;
-          }}
+          ref={this.menuRef}
           style={styles.menuContainer}
           tabHeight={110}
           headerHeight={80}
@@ -498,7 +559,7 @@ class ChatMessageBubble extends Component {
                   message.hyperlink ? styles.talkBubbleContainer : {},
                 ]}>
                 <View style={styles.contentContainer}>
-                  {message.hyperlink || (message.msg_type === 'image' && message.message_body && message.message_body.includes('.giphy.com/media/')) ? null : (
+                  {message.hyperlink || (message.msg_type === 'image' && message.message_body && message.message_body.includes('.giphy.com/media/')) && message.reply_to == null ? null : (
                     <View
                       style={[
                         styles.talkBubbleAbsoluteLeft,
@@ -522,73 +583,59 @@ class ChatMessageBubble extends Component {
                         message.hyperlink
                           ? styles.hyperlinkMessage
                           : [
-                            message.message_body && message.message_body.includes('.giphy.com/media/') ? {} : styles.imageMessage,
+                            message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? {} : styles.imageMessage,
                               {
                                 borderRadius,
                                 paddingHorizontal:
                                   message.msg_type === 'update'
                                     ? 0
                                     : message.msg_type === 'image'
-                                    ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8
+                                    ? message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? 0 : 8
                                     : 10,
                                 paddingVertical:
-                                  message.msg_type === 'image' ? message.message_body && message.message_body.includes('.giphy.com/media/') ? 0 : 8 : 10,
+                                  message.msg_type === 'image' ? message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? 0 : 8 : 10,
                               },
                             ],
                         message.msg_type === 'audio' && styles.audioMessage,
                       ]}
-                      onLongPress={() => {
-                        console.log('On LOng Press tapped');
-                        onMessagePress(message.id);
-                        this.showMenu();
-                      }}
-                      onPress={() =>
-                        message.msg_type === 'update'
-                          ? this.navigateToNotes()
-                          : message.msg_type === 'doc'
-                          ? this.onDocumentPress(message.message_body)
-                          : message.msg_type === 'image'
-                          ? message.hyperlink
-                            ? this.checkUrlAndNavigate(message.hyperlink)
-                            : this.onImagePress(
-                                message.thumbnail === ''
-                                  ? message.message_body
-                                  : message.thumbnail,
-                              )
-                          : null
-                      }>
+                      onLongPress={this.onMessageLongPress}
+                      onPress={this.onMessageClick}>
                       {message.reply_to &&
                         this.renderReplyMessage(message, false)}
                       {message.message_body && message.msg_type === 'image' ? (
-                        message.message_body.includes('.giphy.com/media/') ?
-                        <GifImage src={message.thumbnail === null
-                          ? message.message_body
-                          : message.thumbnail}
-                          isGif={message.message_body.includes('&ct=g')}/>
-                        :<ScalableImage
-                          src={
-                            message.thumbnail === null
-                              ? message.message_body
-                              : message.thumbnail
-                          }
-                          isHyperlink={message.hyperlink}
-                          borderRadius={message.hyperlink ? 0 : borderRadius}
-                        />
+                          <TouchableOpacity
+                            activeOpacity={0.8}
+                            onLongPress={this.onMessageLongPress}
+                            onPress={this.onImagePress.bind(this,
+                              message.thumbnail === ''
+                                ? message.message_body
+                                : message.thumbnail,
+                            )
+                            }>
+                            {message.message_body.includes('.giphy.com/media/') ?
+                              <GifImage src={message.thumbnail === null
+                                ? message.message_body
+                                : message.thumbnail}
+                                isGif={message.message_body.includes('&ct=g')} />
+                              : <ScalableImage
+                                src={
+                                  message.thumbnail === null
+                                    ? message.message_body
+                                    : message.thumbnail
+                                }
+                                isHyperlink={message.hyperlink}
+                                borderRadius={message.hyperlink ? 0 : borderRadius}
+                              />}
+                          </TouchableOpacity>
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
                       ) : message.msg_type === 'audio' ? (
                         <AudioPlayerCustom
                           audioPlayingId={audioPlayingId}
                           perviousPlayingAudioId={perviousPlayingAudioId}
-                          onAudioPlayPress={(id) => onAudioPlayPress(id)}
-                          onPlay={() => {
-                            this.props.onMediaPlay &&
-                              this.props.onMediaPlay(true);
-                          }}
-                          onPause={() => {
-                            this.props.onMediaPlay &&
-                              this.props.onMediaPlay(false);
-                          }}
+                          onAudioPlayPress={onAudioPlayPress}
+                          onPlay={this.onAudioPlay}
+                          onPause={this.onAudioPause}
                           postId={message.id}
                           url={message.message_body}
                           isSmall={true}
@@ -641,18 +688,10 @@ class ChatMessageBubble extends Component {
                       ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
                           // onPress={() => this.openUrl(message.message_body)}
-                          onLongPress={(id) => {
-                            onMessagePress(message.id);
-                            this.showMenu();
-                          }}>
+                          onLongPress={this.onMessageLongPress}>
                           <HyperLink
-                            onPress={(url, text) => {
-                              this.hyperlinkPressed(url);
-                            }}
-                            onLongPress={() => {
-                              onMessagePress(message.id);
-                              this.showMenu();
-                            }}
+                            onPress={this.hyperlinkPressed}
+                            onLongPress={this.onMessageLongPress}
                             linkStyle={styles.linkStyle}>
                             <Text style={styles.messageBody}>
                               {this.renderDisplayNameText(message.message_body)}
@@ -678,7 +717,7 @@ class ChatMessageBubble extends Component {
                     ? styles.talkBubbleContainer
                     : {},
                 ]}>
-                {message.msg_type === 'image' && message.message_body && message.message_body.includes('.giphy.com/media/') ? null :
+                {message.msg_type === 'image' && message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? null :
                 (
                 <View
                   style={[
@@ -706,64 +745,53 @@ class ChatMessageBubble extends Component {
                       {
                         borderRadius,
                       },
-                      message.message_body && message.message_body.includes('.giphy.com/media/') ? {} : styles.audioMessageStyle,
+                      message.message_body && message.message_body.includes('.giphy.com/media/') && message.reply_to == null ? {} : styles.audioMessageStyle,
                       message.msg_type === 'audio' && styles.audioMessageWidth,
                     ]}>
                     <TouchableOpacity
                       disabled={isMultiSelect}
                       style={imageActionContainer}
-                      onLongPress={() => {
-                        onMessagePress(message.id);
-                        this.showMenu();
-                      }}
-                      onPress={() =>
-                        message.msg_type === 'update'
-                          ? this.navigateToNotes()
-                          : message.msg_type === 'doc'
-                          ? this.onDocumentPress(message.message_body)
-                          : message.msg_type === 'image'
-                          ? this.onImagePress(
-                              message.thumbnail === ''
-                                ? message.message_body
-                                : message.thumbnail,
-                            )
-                          : null
-                      }
+                      onLongPress={this.onMessageLongPress}
+                      onPress={this.onMessageClick}
                       activeOpacity={0.8}>
                       {message.reply_to &&
                         message.reply_to &&
                         this.renderReplyMessage(message, true)}
                       {message.message_body && message.msg_type === 'image' ? (
-                        message.message_body.includes('.giphy.com/media/') ?
-                        <GifImage src={message.thumbnail === null
-                          ? message.message_body
-                          : message.thumbnail}
-                          isGif={message.message_body.includes('&ct=g')}/>
-                        :<ScalableImage
-                          src={
-                            message.thumbnail === null
-                              ? message.message_body
-                              : message.thumbnail
-                          }
-                          isHyperlink={message.hyperlink}
-                          borderRadius={message.hyperlink ? 0 : borderRadius}
-                          // isEmotion={true}
-                        />
+                            <TouchableOpacity
+                              activeOpacity={0.8}
+                              onLongPress={this.onMessageLongPress}
+                              onPress={this.onImagePress.bind(this,
+                                      message.thumbnail === ''
+                                        ? message.message_body
+                                        : message.thumbnail,
+                                    )
+                              }>
+                              {message.message_body.includes('.giphy.com/media/') ?
+                                <GifImage src={message.thumbnail === null
+                                  ? message.message_body
+                                  : message.thumbnail}
+                                  isGif={message.message_body.includes('&ct=g')} />
+                                : <ScalableImage
+                                  src={
+                                    message.thumbnail === null
+                                      ? message.message_body
+                                      : message.thumbnail
+                                  }
+                                  isHyperlink={message.hyperlink}
+                                  borderRadius={message.hyperlink ? 0 : borderRadius}
+                                // isEmotion={true}
+                                />}
+                            </TouchableOpacity>
                       ) : message.msg_type === 'video' ? (
                         <VideoPlayerCustom url={message.message_body} />
                       ) : message.msg_type === 'audio' ? (
                         <AudioPlayerCustom
                           audioPlayingId={audioPlayingId}
                           perviousPlayingAudioId={perviousPlayingAudioId}
-                          onAudioPlayPress={(id) => onAudioPlayPress(id)}
-                          onPlay={() => {
-                            this.props.onMediaPlay &&
-                              this.props.onMediaPlay(true);
-                          }}
-                          onPause={() => {
-                            this.props.onMediaPlay &&
-                              this.props.onMediaPlay(false);
-                          }}
+                          onAudioPlayPress={onAudioPlayPress}
+                          onPlay={this.onAudioPlay}
+                          onPause={this.onAudioPause}
                           postId={message.id}
                           url={message.message_body}
                           isSmall={true}
@@ -816,18 +844,10 @@ class ChatMessageBubble extends Component {
                       ) : this.isContainUrl(message.message_body) ? (
                         <TouchableOpacity
                           // onPress={() => this.openUrl(message.message_body)}
-                          onLongPress={(id) => {
-                            onMessagePress(message.id);
-                            this.showMenu();
-                          }}>
+                          onLongPress={this.onMessageLongPress}>
                           <HyperLink
-                            onPress={(url, text) => {
-                              this.hyperlinkPressed(url);
-                            }}
-                            onLongPress={() => {
-                              onMessagePress(message.id);
-                              this.showMenu();
-                            }}
+                            onPress={this.hyperlinkPressed}
+                            onLongPress={this.onMessageLongPress}
                             linkStyle={styles.linkStyle}>
                             <Text style={styles.hyperlinkText}>
                               {message.message_body}

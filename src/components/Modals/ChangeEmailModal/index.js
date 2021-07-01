@@ -11,10 +11,10 @@ import {Colors, Icons} from '../../../constants';
 import {
   setI18nConfig,
   translate,
-    changeEmailSendOtp
+  changeEmailSendOtp,
+  changeEmail,
 } from '../../../redux/reducers/languageReducer';
 import {
-  changeEmail,
   getUserProfile,
 } from '../../../redux/reducers/userReducer';
 import {globalStyles} from '../../../styles';
@@ -347,7 +347,7 @@ class ChangeEmailModal extends Component {
 
               <View style={styles.inputContainer}>
                 <TextInput
-                    color={Colors.black}
+                    // color={Colors.black}
                   placeholder={translate('common.oldEmailVerificationCode')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
@@ -411,7 +411,7 @@ class ChangeEmailModal extends Component {
                 {/*) : null}*/}
 
                 <TextInput
-                    color={Colors.black}
+                    // color={Colors.black}
                   placeholder={translate('common.enterNewEmail')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
@@ -424,7 +424,7 @@ class ChangeEmailModal extends Component {
               </View>
               <View style={styles.inputContainer}>
                 <TextInput
-                    color={Colors.black}
+                    // color={Colors.black}
                   placeholder={translate('pages.xchat.reEnterNewEmailAddress')}
                   placeholderTextColor={'gray'}
                   style={{color: '#000'}}
@@ -475,7 +475,7 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     userData: state.userReducer.userData,
     loading: state.languageReducer.loading,
-      loadingUserReducer: state.userReducer.loading,
+    loadingUserReducer: state.userReducer.loading,
   };
 };
 

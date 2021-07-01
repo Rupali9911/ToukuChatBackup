@@ -6,8 +6,10 @@ import {
 import { realmToPlainObject } from '../../utils';
 
 export const SET_COMMON_CHAT = 'SET_COMMON_CHAT';
-
 export const GET_COMMON_CHAT = 'GET_COMMON_CHAT';
+export const UPDATE_COMMON_CHAT = 'UPDATE_COMMON_CHAT';
+export const DELETE_COMMON_CHAT = 'DELETE_COMMON_CHAT';
+export const ADD_COMMON_CHAT = 'ADD_COMMON_CHAT';
 
 const initialState = {
   commonChat: [],
@@ -25,6 +27,79 @@ export default function (state = initialState, action) {
     //Get Following Channels
     case GET_COMMON_CHAT:
       return state;
+    case UPDATE_COMMON_CHAT: 
+      let currentThread = state.commonChat.slice();
+      let index = currentThread.findIndex((_item)=>{
+        if(action.payload.chat === 'group'){
+          return _item.group_id == action.payload.group_id; 
+        }else if(action.payload.chat === 'channel') {
+          return _item.id == action.payload.id;
+        } else {
+          return _item.user_id == action.payload.user_id;
+        }
+      });
+      console.log('item_index',index);
+      if(index>=0){
+        currentThread.splice(index,1,action.payload);
+        return {
+          ...state,
+          commonChat: currentThread
+        }
+      }else {
+        if(action.payload.chat === 'group' && !action.payload.no_msgs){
+          currentThread.splice(0,0,action.payload);
+        }else if(action.payload.chat === 'channel' && action.payload.last_msg!==null){
+          currentThread.splice(0,0,action.payload);
+        }else if(action.payload.chat == undefined && action.payload.last_msg_id!==null){
+          currentThread.splice(0,0,action.payload);
+        }
+        return {
+          ...state,
+          commonChat: currentThread
+        }
+      }
+      
+    case DELETE_COMMON_CHAT:
+      return {
+        ...state,
+        commonChat: state.commonChat.filter((_)=>{
+          if(action.payload.chat === 'group'){
+            return _.group_id !== action.payload.id 
+          }else if(action.payload.chat === 'channel') {
+            return _.id == action.payload.id;
+          } else {
+            return _.user_id == action.payload.user_id;
+          }
+        })
+      }
+
+    case ADD_COMMON_CHAT:
+      let newList = state.commonChat.slice();
+      let _index = newList.findIndex((_item)=>{
+        if(action.payload.chat === 'group'){
+          return _item.group_id == action.payload.group_id 
+        }else if(action.payload.chat === 'channel') {
+          return _item.id == action.payload.id;
+        } else {
+          return _item.user_id == action.payload.user_id;
+        }
+      });
+      if(_index<0){
+        if(action.payload.chat === 'group' && !action.payload.no_msgs){
+          newList.splice(0,0,action.payload);
+        }else if(action.payload.chat === 'channel' && action.payload.last_msg!==null){
+          newList.splice(0,0,action.payload);
+        }else if(action.payload.chat == undefined && action.payload.last_msg_id!==null){
+          newList.splice(0,0,action.payload);
+        }
+        return {
+          ...state,
+          commonChat: newList
+        }
+      }else {
+        return state;
+      }
+
     default:
       return state;
   }
@@ -38,6 +113,21 @@ export const setCommonChat = (data) => ({
 export const getCommonChat = () => ({
   type: GET_COMMON_CHAT,
 });
+
+export const updateCommonChat = (data) => ({
+  type: UPDATE_COMMON_CHAT,
+  payload: data,
+})
+
+export const deleteCommonChatItem = (data) => ({
+  type: DELETE_COMMON_CHAT,
+  payload: data,
+})
+
+export const addCommonChatItem = (data) => ({
+  type: ADD_COMMON_CHAT,
+  payload: data,
+})
 
 export const setCommonChatConversation = () => (dispatch) =>
   new Promise(function (resolve, reject) {

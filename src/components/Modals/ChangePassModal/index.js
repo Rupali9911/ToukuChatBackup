@@ -219,7 +219,7 @@ class ChangePassModal extends Component {
               {isSetPassword ? null : (
                 <View style={styles.inputContainer}>
                   <TextInput
-                      color={Colors.black}
+                      style={{color: Colors.black}}
                       placeholderTextColor={'gray'}
                     placeholder={translate('pages.setting.oldPassword')}
                     value={oldPassword}
@@ -244,7 +244,7 @@ class ChangePassModal extends Component {
 
               <View style={styles.inputContainer}>
                 <TextInput
-                    color={Colors.black}
+                  style={{color: Colors.black}}
                   ref={(ref) => {
                     this.inputs.newpassword = ref;
                   }}
@@ -271,7 +271,8 @@ class ChangePassModal extends Component {
 
               <View style={styles.inputContainer}>
                 <TextInput
-                    color={Colors.black}
+                    // color={Colors.black}
+                  style={{color: Colors.black}}
                   ref={(ref) => {
                     this.inputs.confirmpassword = ref;
                   }}
@@ -293,7 +294,7 @@ class ChangePassModal extends Component {
                     translate('pages.setting.confirmPassword'),
                   )}
                 </Text>
-              )}
+              )} 
 
               <Button
                 isRounded={false}

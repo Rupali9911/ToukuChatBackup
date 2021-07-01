@@ -119,6 +119,16 @@ export default class ChatMessageBox extends Component {
       </View>
     );
   };
+
+  onAvatarPress = () => {
+    const {isChannel} = this.props;
+    if (isChannel) {
+      NavigationService.navigate('ChannelInfo');
+    } else {
+      NavigationService.navigate('FriendNotes');
+    }
+  }
+
   render() {
     const {longPressMenu, selectedMessageId} = this.state;
     const {
@@ -193,13 +203,7 @@ export default class ChatMessageBox extends Component {
             /> */}
               <View>
                 <TouchableOpacity
-                  onPress={() => {
-                    if (isChannel) {
-                      NavigationService.navigate('ChannelInfo');
-                    } else {
-                      NavigationService.navigate('FriendNotes');
-                    }
-                  }}>
+                  onPress={this.onAvatarPress}>
                   {isChannel &&
                   (currentChannel.channel_picture == null ||
                     currentChannel.channel_picture === '') ? (
@@ -256,7 +260,7 @@ export default class ChatMessageBox extends Component {
                     message={message}
                     isUser={isUser}
                     onMessageReply={onMessageReply}
-                    onMessagePress={(id) => this.onMessagePress(id)}
+                    onMessagePress={this.onMessagePress}
                     longPressMenu={longPressMenu}
                     openMenu={this._openMenu}
                     closeMenu={this._closeMenu}
@@ -351,7 +355,7 @@ export default class ChatMessageBox extends Component {
                   message={message}
                   isUser={isUser}
                   onMessageReply={onMessageReply}
-                  onMessagePress={(id) => this.onMessagePress(id)}
+                  onMessagePress={this.onMessagePress}
                   longPressMenu={longPressMenu}
                   openMenu={this._openMenu}
                   closeMenu={this._closeMenu}

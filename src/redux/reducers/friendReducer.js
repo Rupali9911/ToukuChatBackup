@@ -38,6 +38,13 @@ export const UNFRIEND = 'UNFRIEND';
 export const UNFRIEND_SUCCESS = 'UNFRIEND_SUCCESS';
 export const UNFRIEND_FAIL = 'UNFRIEND_FAIL';
 
+export const UPDATE_FRIEND_CONVERSATION = 'UPDATE_FRIEND_CONVERSATION';
+export const ADD_NEW_FRIEND_CONVERSATION = 'ADD_NEW_FRIEND_CONVERSATION';
+
+export const ADD_NEW_FRIEND = 'ADD_NEW_FRIEND';
+export const UPDATE_FRIEND = 'UPDATE_FRIEND';
+export const DELETE_FRIEND = 'DELETE_FRIEND';
+
 const initialState = {
   loading: false,
   userFriends: [],
@@ -169,6 +176,62 @@ export default function (state = initialState, action) {
           (item) => item.id !== action.payload,
         ),
       };
+    case UPDATE_FRIEND_CONVERSATION: 
+      let currentArray = state.chatFriendConversation.slice();
+      let index = currentArray.findIndex((_)=>_.id==action.payload.id)
+      currentArray.splice(index,1,action.payload)
+      return {
+        ...state,
+        chatFriendConversation: currentArray
+      }
+
+    case ADD_NEW_FRIEND_CONVERSATION:
+      let newArray = state.chatFriendConversation;
+      let _index = newArray.findIndex((_)=>_.id==action.payload.id)
+      if(_index<0){
+        newArray.splice(0, 0, action.payload);
+        return {
+          ...state,
+          chatFriendConversation: newArray
+        }
+      }else {
+        return state;
+      }
+
+    case ADD_NEW_FRIEND: 
+      let friendList = state.userFriends.slice();
+      let friendIndex = friendList.findIndex((_) => _.user_id == action.payload.user_id);  
+
+      if(friendIndex<0){
+        friendList.splice(0,0,action.payload);
+        return {
+          ...state,
+          userFriends: friendList
+        }
+      }else{
+        return state;
+      }  
+
+    case UPDATE_FRIEND:
+      let friend_list = state.userFriends.slice();
+      let friend_index = friend_list.findIndex((_) => _.user_id == action.payload.user_id);
+
+      if (friendIndex < 0) {
+        return state;
+      } else {
+        friend_list.splice(friend_index, 1, action.payload);
+        return {
+          ...state,
+          userFriends: friend_list
+        }
+      }
+
+    case DELETE_FRIEND:
+      return {
+        ...state,
+        userFriends: state.userFriends.filter((_)=>_.user_id!==action.payload)
+      }
+
     default:
       return state;
   }
@@ -234,9 +297,34 @@ export const addNewSendMessage = (data) => ({
   payload: data,
 });
 
-const deleteMessage = (data) => ({
+export const deleteMessage = (data) => ({
   type: Delete_Message,
   payload: data,
+});
+
+export const updateFriendConversation = (data) => ({
+  type: UPDATE_FRIEND_CONVERSATION,
+  payload: data
+});
+
+export const addNewFriendConversation = (data) => ({
+  type: ADD_NEW_FRIEND_CONVERSATION,
+  payload: data
+});
+
+export const addNewFriend = (data) => ({
+  type: ADD_NEW_FRIEND,
+  payload: data
+});
+
+export const updateFriend = (data) => ({
+  type: UPDATE_FRIEND,
+  payload: data
+});
+
+export const deleteFriend = (data) => ({
+  type: DELETE_FRIEND,
+  payload: data
 });
 
 export const setUserFriends = () => (dispatch) =>

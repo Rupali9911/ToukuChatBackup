@@ -978,6 +978,7 @@ class SignUp extends Component {
                     this.password.focus();
                   }}
                   status={this.state.emailStatus}
+                  numberOfLines={1}
                 />
               )}
               <Inputfield

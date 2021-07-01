@@ -35,8 +35,8 @@ export default StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 15,
     flexDirection: 'row',
-    minHeight: isIphoneX() || Platform.isPad ? 70 : 60,
-    paddingBottom: isIphoneX() || Platform.isPad ? 20 : 5,
+    minHeight: isIphoneX() || Platform.isPad ? 70 : 55,
+    paddingBottom: isIphoneX() || Platform.isPad ? 20 : 10,
   },
   inputContainer: {
     alignItems: 'flex-end',
@@ -230,6 +230,7 @@ export default StyleSheet.create({
   },
   emotionsContainer: {
     backgroundColor: Colors.light_pink,
+    width: '100%'
   },
   stickerContainerStyle: {
     width: Dimensions.get('window').width / 4,

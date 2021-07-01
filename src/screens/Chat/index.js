@@ -49,11 +49,20 @@ import {
   setCurrentChannel,
   unpinChannel,
   updateCurrentChannel,
+  updateChannelMessage,
+  addNewSendMessage,
+  deleteChannelMessageFromList,
+  updateFollowingChannel,
+  addFollowingChannel,
+  deleteFollowingChannel
 } from '../../redux/reducers/channelReducer';
 import {
   setCommonChatConversation,
   setDeleteChat,
-  setCommonChat
+  setCommonChat,
+  updateCommonChat,
+  addCommonChatItem,
+  deleteCommonChatItem
 } from '../../redux/reducers/commonReducer';
 import {
   getUserConfiguration,
@@ -75,7 +84,13 @@ import {
   updateCurrentFriendBackgroundImage,
   updateCurrentFriendDisplayName,
   updateUnreadFriendMsgsCounts,
-  updateUserOnlineStatus
+  updateUserOnlineStatus,
+  updateFriendConversation,
+  addNewFriendConversation,
+  deleteMessage,
+  updateFriend,
+  addNewFriend,
+  deleteFriend
 } from '../../redux/reducers/friendReducer';
 import {
   deleteChat,
@@ -91,6 +106,9 @@ import {
   setGroupConversation,
   unpinGroup,
   updateUnreadGroupMsgsCounts,
+  addNewGroup,
+  updateGroup,
+  deleteGroupItem
 } from '../../redux/reducers/groupReducer';
 import {
   setAppLanguage,
@@ -172,9 +190,13 @@ import {
   updateGroupsWithMention,
   getLocalUserFriends,
   getGroupObjectById,
+  setNewFriendChatConversation,
+  setChannelChatSingleConversation,
+  setSingleChannel,
+  setSingleGroup,
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
-import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, getUserName, wait} from '../../utils';
+import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, realmToPlainSingleObject, getUserName, wait} from '../../utils';
 import { isArray, isObject } from 'lodash';
 import {minVersion, version} from "../../../package";
 // import { getAppstoreAppMetadata } from "react-native-appstore-version-checker";
@@ -756,13 +778,16 @@ class Chat extends Component {
     );
     const {currentChannel} = this.props;
     if (message.text.data.type === SocketEvents.UPDATE_CHANNEL_DETAIL) {
-      updateChannelDetails(
+      let updatedChannel = updateChannelDetails(
         message.text.data.message_details.id,
         message.text.data.message_details,
       );
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
-      });
+
+      this.updateFollowingChannelList(updatedChannel);
+
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
 
       if (
         this.props.currentRouteName === 'ChannelChats' ||
@@ -784,13 +809,14 @@ class Chat extends Component {
       // }
       let user = getLocalUserFriend(message.text.data.message_details.user_id);
       if (user && user.length > 0) {
-        updateFriendAvtar(
+        let updatedFriend = updateFriendAvtar(
           message.text.data.message_details.user_id,
           message.text.data.message_details,
         );
-        this.props.getUserFriends().then(() => {
-          this.setCommonConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.getUserFriends().then(() => {
+        //   this.setCommonConversation();
+        // });
       }
       if (currentFriend.user_id === message.text.data.message_details.user_id) {
         this.props.updateCurrentFriendAvtar(message.text.data.message_details);
@@ -948,7 +974,7 @@ class Chat extends Component {
     let detail = message.text.data.message_details;
     if (message.text.data.type === SocketEvents.READ_ALL_MESSAGE_FRIEND_CHAT) {
       let unread_counts = 0;
-      let user = getLocalUserFriend(
+      let user = getUserFriend(
         message.text.data.message_details.friend_id,
       );
       if (
@@ -956,8 +982,11 @@ class Chat extends Component {
         currentFriend.friend === message.text.data.message_details.friend_id &&
         currentFriend.user_id === message.text.data.message_details.read_by
       ) {
-        updateAllFriendMessageRead(currentFriend.friend);
-        this.getLocalFriendConversation();
+        let updateObjects = updateAllFriendMessageRead(currentFriend.friend);
+        updateObjects.map((_item)=>{
+          this.props.updateFriendConversation(realmToPlainSingleObject(_item));
+        });
+        // this.getLocalFriendConversation();
       }
       if (user && user.length > 0) {
         let array = this.props.acceptedRequest;
@@ -977,7 +1006,7 @@ class Chat extends Component {
           // unread_counts =
           //   unread_counts + message.text.data.message_details.read_count;
 
-          updateFriendsUnReadCount(detail.friend_id, 0);
+          let updatedFriend = updateFriendsUnReadCount(detail.friend_id, 0);
 
           this.props.updateUnreadFriendMsgsCounts(unread_counts);
 
@@ -985,9 +1014,12 @@ class Chat extends Component {
           //   message.text.data.socket_event_id,
           // );
           // this.getUserFriends();
-          this.props.setUserFriends().then(() => {
-            this.props.setCommonChatConversation();
-          });
+          console.log('updatedFriend',updatedFriend);
+          this.updateUserFriendList(updatedFriend);
+
+          // this.props.setUserFriends().then(() => {
+          //   this.props.setCommonChatConversation();
+          // });
         }
       }
     }
@@ -1001,7 +1033,7 @@ class Chat extends Component {
       if (channel && channel.length > 0) {
         // followingChannels[i].unread_msg =
         //   message.text.data.message_details.read_count;
-        updateChannelUnReadCountById(
+        let updatedChannel = updateChannelUnReadCountById(
           message.text.data.message_details.channel_id,
           0,
         );
@@ -1009,9 +1041,10 @@ class Chat extends Component {
         //   message.text.data.socket_event_id,
         // );
         // this.getFollowingChannels();
-        this.props.getLocalFollowingChannels().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateFollowingChannelList(updatedChannel);
+        // this.props.getLocalFollowingChannels().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
       }
     }
   }
@@ -1025,17 +1058,21 @@ class Chat extends Component {
         message.text.data.message_details.channel_id,
       );
       if (channel && channel.length > 0) {
-        updateReadByChannelId(message.text.data.message_details.channel_id, 0);
-        this.props.getLocalFollowingChannels().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        let updatedMessages = updateReadByChannelId(message.text.data.message_details.channel_id, 0);
+        
+        // this.props.getLocalFollowingChannels().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
 
         if (
           this.props.currentRouteName === 'ChannelChats' &&
           currentChannel &&
           message.text.data.message_details.channel_id === currentChannel.id
         ) {
-          this.getLocalChannelConversations();
+          updatedMessages.map((_item)=>{
+            this.props.updateChannelMessage(realmToPlainSingleObject(_item));
+          });
+          // this.getLocalChannelConversations();
         }
       }
     }
@@ -1057,7 +1094,7 @@ class Chat extends Component {
         // unread_counts =
         //   unread_counts + message.text.data.message_details.read_count;
 
-        updateUnReadCount(message.text.data.message_details.group_id, 0);
+        let updatedGroup = updateUnReadCount(message.text.data.message_details.group_id, 0);
 
         this.props.updateUnreadGroupMsgsCounts(unread_counts);
 
@@ -1073,9 +1110,10 @@ class Chat extends Component {
           }
         }
 
-        this.props.getLocalUserGroups().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateUserGroupList(updatedGroup);
+        // this.props.getLocalUserGroups().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
         // this.getUserGroups();
       }
     }
@@ -1165,8 +1203,9 @@ class Chat extends Component {
           );
         }
 
+        let updatedGroup = null;
         if (message.text.data.message_details.message_body.type !== 'update') {
-          updateLastMsgGroupsWithMention(
+          updatedGroup = updateLastMsgGroupsWithMention(
             message.text.data.message_details.group_id,
             message.text.data.message_details,
             unreadCount,
@@ -1175,7 +1214,7 @@ class Chat extends Component {
             is_mentioned
           );
         } else {
-          updateLastMsgTimestamp(
+          updatedGroup = updateLastMsgTimestamp(
             message.text.data.message_details.group_id,
             message.text.data.message_details.timestamp,
             unreadCount,
@@ -1192,9 +1231,10 @@ class Chat extends Component {
           }
         }
 
-        this.props.getLocalUserGroups().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateUserGroupList(updatedGroup);
+        // this.props.getLocalUserGroups().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
         // });
       }
     }
@@ -1215,15 +1255,16 @@ class Chat extends Component {
           );
         console.log('checking group', group);
         if (group[0].last_msg_id === message.text.data.message_details.msg_id) {
-          updateLastMsgGroups(
+          let updatedGroup = updateLastMsgGroups(
             message.text.data.message_details.group_id,
             message.text.data.message_details,
             group[0].unread_msg,
           );
+          this.updateUserGroupList(updatedGroup);
         }
-        this.props.getLocalUserGroups().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        // this.props.getLocalUserGroups().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
       }
       if (
         (currentRouteName === 'GroupChats' || currentRouteName == 'GroupDetails' || currentRouteName == 'CreateEditNote') &&
@@ -1260,11 +1301,12 @@ class Chat extends Component {
       if (group && group.length > 0) {
         setGroupMessageUnsend(message.text.data.message_details.msg_id);
         if (group[0].last_msg_id === message.text.data.message_details.msg_id) {
-          setGroupLastMessageUnsend(message.text.data.message_details.group_id);
+          let updatedGroup = setGroupLastMessageUnsend(message.text.data.message_details.group_id);
+          this.updateUserGroupList(updatedGroup);
         }
-        this.props.getLocalUserGroups().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        // this.props.getLocalUserGroups().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
       }
       if (
         this.props.currentRouteName === 'GroupChats' &&
@@ -1340,29 +1382,35 @@ class Chat extends Component {
           result.map((item) => {
             channels.push(item);
           });
-          setChannelChatConversation([message.text.data.message_details]);
+          let _newMessage = setChannelChatSingleConversation(message.text.data.message_details);
           if (
             this.props.currentRouteName === 'ChannelChats' &&
             currentChannel &&
             message.text.data.message_details.channel === currentChannel.id
           ) {
+            // if(_newMessage){
+            //   this.props.addNewSendMessage(realmToPlainSingleObject(_newMessage));
+            // }
             this.getLocalChannelConversations();
-            updateChannelLastMsg(
+            let updatedChannel = updateChannelLastMsg(
               message.text.data.message_details.channel,
               message.text.data.message_details,
               channels[0].unread_msg,
             );
             this.markChannelMsgsRead();
+            this.updateFollowingChannelList(updatedChannel);
           } else {
-            updateChannelLastMsg(
+            let updatedChannel = updateChannelLastMsg(
               message.text.data.message_details.channel,
               message.text.data.message_details,
               channels[0].unread_msg + 1,
             );
+            this.updateFollowingChannelList(updatedChannel);
           }
-          this.props.getLocalFollowingChannels().then(() => {
-            this.props.setCommonChatConversation();
-          });
+          // this.props.getLocalFollowingChannels().then(() => {
+          //   this.props.setCommonChatConversation();
+          // });
+
         } else if (
           message.text.data.message_details.from_user.id === userData.id
         ) {
@@ -1376,21 +1424,27 @@ class Chat extends Component {
           result.map((item) => {
             channels.push(item);
           });
-          setChannelChatConversation([message.text.data.message_details]);
-          updateChannelLastMsg(
+          let _newMessage = setChannelChatSingleConversation(message.text.data.message_details);
+          let updatedChannel = updateChannelLastMsg(
             message.text.data.message_details.channel,
             message.text.data.message_details,
             channels[0].unread_msg,
           );
-          this.props.getLocalFollowingChannels().then(() => {
-            this.props.setCommonChatConversation();
-          });
+
+          this.updateFollowingChannelList(updatedChannel);
+
+          // this.props.getLocalFollowingChannels().then(() => {
+          //   this.props.setCommonChatConversation();
+          // });
 
           if (
             this.props.currentRouteName === 'ChannelChats' &&
             currentChannel &&
             message.text.data.message_details.channel === currentChannel.id
           ) {
+            // if(_newMessage){
+            //   this.props.addNewSendMessage(realmToPlainSingleObject(_newMessage));
+            // }
             this.getLocalChannelConversations();
           }
         }
@@ -1420,6 +1474,7 @@ class Chat extends Component {
       ) {
         return;
       }
+      let updatedChannel = null;
       for (let item of message.text.data.message_details) {
         let channel = getChannelsById(item.channel);
         if (channel && channel.length > 0) {
@@ -1429,7 +1484,7 @@ class Chat extends Component {
             channels.push(data);
           });
           setChannelChatConversation([item]);
-          updateChannelLastMsg(item.channel, item, channels[0].unread_msg + 1);
+          updatedChannel = updateChannelLastMsg(item.channel, item, channels[0].unread_msg + 1);
         }
         if (
           this.props.currentRouteName === 'ChannelChats' &&
@@ -1439,9 +1494,10 @@ class Chat extends Component {
           this.getLocalChannelConversations();
         }
       }
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      this.updateFollowingChannelList(updatedChannel);
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
     }
   }
 
@@ -1458,30 +1514,38 @@ class Chat extends Component {
         result.map((item) => {
           channels.push(item);
         });
-        updateMessageById(
+        let updatedMessage = updateMessageById(
           message.text.data.message_details.id,
           message.text.data.message_details.message_body,
+          message.text.data.message_details.msg_type
         );
         if (channels[0].last_msg.id === message.text.data.message_details.id) {
-          updateChannelLastMsgWithOutCount(
+          let updatedChannel = updateChannelLastMsgWithOutCount(
             message.text.data.message_details.channel,
             message.text.data.message_details,
           );
+
+          this.updateFollowingChannelList(updatedChannel);
         }
-        this.props.getLocalFollowingChannels().then(() => {
-          this.props.setCommonChatConversation();
-        });
-      }
-      if (
-        this.props.currentRouteName === 'ChannelChats' &&
-        currentChannel &&
-        message.text.data.message_details.channel === currentChannel.id
-      ) {
-        let editMessageId = message.text.data.message_details.id;
-        let msgText = message.text.data.message_details.message_body;
-        let msgType = message.text.data.message_details.msg_type;
-        updateMessageById(editMessageId, msgText, msgType);
-        this.getLocalChannelConversations();
+        // this.props.getLocalFollowingChannels().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
+        if (
+          this.props.currentRouteName === 'ChannelChats' &&
+          currentChannel &&
+          message.text.data.message_details.channel === currentChannel.id
+        ) {
+          // let editMessageId = message.text.data.message_details.id;
+          // let msgText = message.text.data.message_details.message_body;
+          // let msgType = message.text.data.message_details.msg_type;
+          // updateMessageById(editMessageId, msgText, msgType);
+
+          if(updatedMessage){
+            this.props.updateChannelMessage(realmToPlainSingleObject(updatedMessage));
+          }
+
+          // this.getLocalChannelConversations();
+        }
       }
     }
   }
@@ -1507,14 +1571,15 @@ class Chat extends Component {
           array = [...array, chat];
         }
         console.log('updated_last_messgae', JSON.stringify(array[0]));
-        updateChannelLastMsgWithOutCount(
+        let updatedChannel = updateChannelLastMsgWithOutCount(
           message.text.data.message_details.channel,
           array[0],
         );
+        this.updateFollowingChannelList(updatedChannel);
       }
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
     }
 
     if (
@@ -1530,6 +1595,7 @@ class Chat extends Component {
     const {currentChannel} = this.props;
     if (message) {
       if(isArray(message.text.data.message_details)){
+        let updatedChannel = null;
         message.text.data.message_details.map((item) => {
           // if (item.deleted_for.includes(this.props.userData.id)) {
             let result = getChannelsById(item.channel);
@@ -1545,23 +1611,25 @@ class Chat extends Component {
               // array = chats.toJSON();
 
               if (array.length > 0) {
-                updateChannelLastMsgWithOutCount(item.channel, array[0]);
+                updatedChannel = updateChannelLastMsgWithOutCount(item.channel, array[0]);
               } else {
-                updateChannelLastMsgWithOutCount(item.channel, null);
+                updatedChannel = updateChannelLastMsgWithOutCount(item.channel, null);
               }
 
-              this.props.getLocalFollowingChannels().then(() => {
-                this.props.setCommonChatConversation();
-              });
+              // this.props.getLocalFollowingChannels().then(() => {
+              //   this.props.setCommonChatConversation();
+              // });
             }
             if (currentChannel && item.channel == currentChannel.id) {
-              let chat = getChannelChatConversationById(currentChannel.id);
-              let conversations = realmToPlainObject(chat);
+              // let chat = getChannelChatConversationById(currentChannel.id);
+              // let conversations = realmToPlainObject(chat);
               // this.props.setChannelConversation(chat.toJSON());
-              this.props.setChannelConversation(conversations);
+              // this.props.setChannelConversation(conversations);
+              this.props.deleteChannelMessageFromList(item.id);
             }
           // }
         });
+        this.updateFollowingChannelList(updatedChannel);
       } else {
         let item = message.text.data.message_details;
         let result = getChannelsById(item.channel);
@@ -1585,9 +1653,10 @@ class Chat extends Component {
           });
         }
         if (currentChannel && item.channel == currentChannel.id) {
-          let chat = getChannelChatConversationById(currentChannel.id);
-          let conversations = realmToPlainObject(chat);
-          this.props.setChannelConversation(conversations);
+          // let chat = getChannelChatConversationById(currentChannel.id);
+          // let conversations = realmToPlainObject(chat);
+          // this.props.setChannelConversation(conversations);
+          this.props.deleteChannelMessageFromList(item.id);
         }
       }
     }
@@ -1604,7 +1673,7 @@ class Chat extends Component {
       result.map((item) => {
         channels.push(item);
       });
-      setMessageUnsend(message.text.data.message_details.id);
+      let unsentMessage = setMessageUnsend(message.text.data.message_details.id);
       if (channels[0].last_msg.id === message.text.data.message_details.id) {
         let chats = getChannelChatConversationById(
           message.text.data.message_details.channel,
@@ -1613,27 +1682,32 @@ class Chat extends Component {
         for (let chat of chats) {
           array = [...array, chat];
         }
-        updateChannelLastMsgWithOutCount(
+        let updatedChannel = updateChannelLastMsgWithOutCount(
           message.text.data.message_details.channel,
           array[0],
         );
+        this.updateFollowingChannelList(updatedChannel);
       }
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
       if (
         this.props.currentRouteName === 'ChannelChats' &&
         currentChannel &&
         message.text.data.message_details.channel === currentChannel.id
       ) {
-        this.getLocalChannelConversations();
+        if(unsentMessage){
+          console.log('unsentMessage',unsentMessage);
+          this.props.updateChannelMessage(realmToPlainSingleObject(unsentMessage));
+        }
+        // this.getLocalChannelConversations();
       }
     }
   }
 
   onAddChannelMemmber(message) {
     if (message.text.data.type === SocketEvents.ADD_CHANNEL_MEMBER) {
-      setChannels([message.text.data.message_details]);
+      let newChannel = setSingleChannel(message.text.data.message_details);
       // updateChannelUnReadCountById(message.text.data.message_details.id, 1);
 
       // let array = this.props.trendTimline;
@@ -1648,9 +1722,14 @@ class Chat extends Component {
       //
       // this.props.updateTrendTimeline(array);
 
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      if(newChannel){
+        this.props.addFollowingChannel(realmToPlainSingleObject(newChannel));
+        this.props.addCommonChatItem(realmToPlainSingleObject(newChannel));
+      }
+
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
     }
   }
 
@@ -1674,9 +1753,16 @@ class Chat extends Component {
       deleteChannelConversationById(
         message.text.data.message_details.channel_id,
       );
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
+
+      this.props.deleteFollowingChannel(message.text.data.message_details.channel_id);
+      this.props.deleteCommonChatItem({
+        chat: 'channel',
+        id: message.text.data.message_details.channel_id
       });
+
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
 
       // let array = this.props.trendTimline;
       // this.props.trendTimline.map((item, index) => {
@@ -1698,10 +1784,13 @@ class Chat extends Component {
         SocketEvents.MEMBER_REMOVED_FROM_CHANNEL_COUNT &&
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
-      updateChannelTotalMember(message.text.data.message_details.channel_id);
-      this.props.getLocalFollowingChannels().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      let updatedChannel = updateChannelTotalMember(message.text.data.message_details.channel_id);
+      
+      this.updateFollowingChannelList(updatedChannel);
+
+      // this.props.getLocalFollowingChannels().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
     }
   }
 
@@ -1712,50 +1801,58 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.NEW_MESSAGE_IN_FREIND) {
       if (message.text.data.message_details.from_user.id === userData.id) {
         // this.getUserFriends();
-        setFriendChatConversation([message.text.data.message_details]);
-        updateFriendLastMsg(
+        let _newMessage = setNewFriendChatConversation(message.text.data.message_details);
+        let updatedFriend = updateFriendLastMsg(
           message.text.data.message_details.to_user.id,
           message.text.data.message_details,
           false,
         );
-        this.props.setUserFriends().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.setUserFriends().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
         if (
           (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote')  &&
           currentFriend &&
           message.text.data.message_details.to_user.id === currentFriend.user_id
         ) {
+          // if(_newMessage){
+          //   this.props.addNewFriendConversation(realmToPlainSingleObject(_newMessage));
+          // }
           this.getLocalFriendConversation();
           this.markFriendMsgsRead();
         }
       } else if (message.text.data.message_details.to_user.id === userData.id) {
-        setFriendChatConversation([message.text.data.message_details]);
-
+        let _newMessage = setNewFriendChatConversation(message.text.data.message_details);
+        let updatedFriend = null;
         if (
           (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
           currentFriend &&
           message.text.data.message_details.from_user.id ===
             currentFriend.user_id
         ) {
+          // if(_newMessage){
+          //   this.props.addNewFriendConversation(realmToPlainSingleObject(_newMessage));
+          // }
           this.getLocalFriendConversation();
-          updateFriendLastMsg(
+          updatedFriend = updateFriendLastMsg(
             message.text.data.message_details.from_user.id,
             message.text.data.message_details,
             false,
           );
           this.markFriendMsgsRead();
         } else {
-          updateFriendLastMsg(
+          updatedFriend = updateFriendLastMsg(
             message.text.data.message_details.from_user.id,
             message.text.data.message_details,
             true,
           );
         }
         // this.getUserFriends();
-        this.props.setUserFriends().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.setUserFriends().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
       }
     }
   }
@@ -1765,13 +1862,14 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.FRIEND_DISPLAY_NAME_DATA) {
       let user = getUserFriend(message.text.data.message_details.friend_id);
       if (user && user.length > 0) {
-        updateFriendDisplayName(
+        let updatedFriend = updateFriendDisplayName(
           user[0].user_id,
           message.text.data.message_details,
         );
-        this.props.getUserFriends().then(() => {
-          this.setCommonConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.getUserFriends().then(() => {
+        //   this.setCommonConversation();
+        // });
       }
       if (
         currentFriend.friend === message.text.data.message_details.friend_id
@@ -1826,13 +1924,16 @@ class Chat extends Component {
       let editMessageId = message.text.data.message_details.id;
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
-      updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
+      let updateMessage = updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
       if (
         (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
         currentFriend &&
         message.text.data.message_details.to_user.id === currentFriend.user_id
       ) {
-        this.getLocalFriendConversation();
+        if(updateMessage){
+          this.props.updateFriendConversation(realmToPlainSingleObject(updateMessage));
+        }
+        // this.getLocalFriendConversation();
       }
       let users = getLocalUserFriend(
         message.text.data.message_details.to_user.id,
@@ -1848,25 +1949,29 @@ class Chat extends Component {
         array.length > 0 &&
         array[0].last_msg_id === message.text.data.message_details.id
       ) {
-        updateFriendLastMsgWithoutCount(
+        let updatedFriend = updateFriendLastMsgWithoutCount(
           message.text.data.message_details.to_user.id,
           message.text.data.message_details,
         );
-        this.props.setUserFriends().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.setUserFriends().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
       }
     } else if (message.text.data.message_details.to_user.id === userData.id) {
       let editMessageId = message.text.data.message_details.id;
       let newMessageText = message.text.data.message_details.message_body;
       let messageType = message.text.data.message_details.msg_type;
-      updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
+      let updateMessage = updateFriendMessageById(editMessageId, newMessageText, messageType, message.text.data.message_details.media);
       if (
         (currentRouteName == 'FriendChats' || currentRouteName == 'FriendNotes' || currentRouteName == 'CreateEditNote') &&
         currentFriend &&
         message.text.data.message_details.from_user.id === currentFriend.user_id
       ) {
-        this.getLocalFriendConversation();
+        if(updateMessage){
+          this.props.updateFriendConversation(realmToPlainSingleObject(updateMessage));
+        }
+        // this.getLocalFriendConversation();
       }
       let users = getLocalUserFriend(
         message.text.data.message_details.from_user.id,
@@ -1882,13 +1987,14 @@ class Chat extends Component {
         array.length > 0 &&
         array[0].last_msg_id === message.text.data.message_details.id
       ) {
-        updateFriendLastMsgWithoutCount(
+        let updatedFriend = updateFriendLastMsgWithoutCount(
           message.text.data.message_details.from_user.id,
           message.text.data.message_details,
         );
-        this.props.setUserFriends().then(() => {
-          this.props.setCommonChatConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.setUserFriends().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
       }
     }
   }
@@ -1998,17 +2104,21 @@ class Chat extends Component {
               let chats_array = [];
               chats_array = realmToPlainObject(chats);
               // chats_array = chats.toJSON();
+              let updatedFriend = null;
               if (chats_array.length > 0) {
-                updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
+                updatedFriend = updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
               } else {
-                updateFriendLastMsgWithoutCount(user_id, null);
+                updatedFriend = updateFriendLastMsgWithoutCount(user_id, null);
               }
-              this.props.setUserFriends().then(() => {
-                this.props.setCommonChatConversation();
-              });
+
+              this.updateUserFriendList(updatedFriend);
+              // this.props.setUserFriends().then(() => {
+              //   this.props.setCommonChatConversation();
+              // });
             }
             if (this.props.currentRouteName === 'FriendChats' && currentFriend) {
-              this.getLocalFriendConversation();
+              this.props.deleteMessage(item.id);
+              // this.getLocalFriendConversation();
             }
           }
         });
@@ -2033,17 +2143,20 @@ class Chat extends Component {
             let chats_array = [];
             chats_array = realmToPlainObject(chats);
             // chats_array = chats.toJSON();
+            let updatedFriend = null;
             if (chats_array.length > 0) {
-              updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
+              updatedFriend = updateFriendLastMsgWithoutCount(user_id, chats_array[0]);
             } else {
-              updateFriendLastMsgWithoutCount(user_id, null);
+              updatedFriend = updateFriendLastMsgWithoutCount(user_id, null);
             }
-            this.props.setUserFriends().then(() => {
-              this.props.setCommonChatConversation();
-            });
+            this.updateUserFriendList(updatedFriend);
+            // this.props.setUserFriends().then(() => {
+            //   this.props.setCommonChatConversation();
+            // });
           }
           if (this.props.currentRouteName === 'FriendChats' && currentFriend) {
-            this.getLocalFriendConversation();
+            this.props.deleteMessage(item.id);
+            // this.getLocalFriendConversation();
           }
         }
       }
@@ -2057,7 +2170,7 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.UNSENT_MESSAGE_IN_FRIEND) {
       if (message.text.data.message_details.from_user.id === userData.id) {
         // this.getUserFriends();
-        setFriendMessageUnsend(message.text.data.message_details.id);
+        let unsentMessage = setFriendMessageUnsend(message.text.data.message_details.id);
         let users = getLocalUserFriend(
           message.text.data.message_details.to_user.id,
         );
@@ -2066,20 +2179,24 @@ class Chat extends Component {
           array = [...array, u];
         }
         if (array[0].last_msg_id === message.text.data.message_details.id) {
-          updateFriendLastMsgWithoutCount(
+          let updatedFriend = updateFriendLastMsgWithoutCount(
             message.text.data.message_details.to_user.id,
             message.text.data.message_details,
           );
+          this.updateUserFriendList(updatedFriend);
         }
         if (
           this.props.currentRouteName === 'FriendChats' &&
           currentFriend &&
           message.text.data.message_details.to_user.id === currentFriend.user_id
         ) {
-          this.getLocalFriendConversation();
+          if(unsentMessage){
+            this.props.updateFriendConversation(realmToPlainSingleObject(unsentMessage));
+          }
+          // this.getLocalFriendConversation();
         }
       } else if (message.text.data.message_details.to_user.id === userData.id) {
-        setFriendMessageUnsend(message.text.data.message_details.id);
+        let unsentMessage = setFriendMessageUnsend(message.text.data.message_details.id);
         let users = getLocalUserFriend(
           message.text.data.message_details.from_user.id,
         );
@@ -2089,10 +2206,11 @@ class Chat extends Component {
         }
 
         if (array[0].last_msg_id === message.text.data.message_details.id) {
-          updateFriendLastMsgWithoutCount(
+          let updatedFriend = updateFriendLastMsgWithoutCount(
             message.text.data.message_details.from_user.id,
             message.text.data.message_details,
           );
+          this.updateUserFriendList(updatedFriend);
         }
 
         if (
@@ -2101,12 +2219,15 @@ class Chat extends Component {
           message.text.data.message_details.from_user.id ===
             currentFriend.user_id
         ) {
-          this.getLocalFriendConversation();
+          if(unsentMessage){
+            this.props.updateFriendConversation(realmToPlainSingleObject(unsentMessage));
+          }
+          // this.getLocalFriendConversation();
         }
       }
-      this.props.setUserFriends().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      // this.props.setUserFriends().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
     }
   }
 
@@ -2114,16 +2235,17 @@ class Chat extends Component {
     const {currentFriend} = this.props;
     if (message) {
       // removeUserFriends(message.text.data.message_details.user_id);
-      updateFriendStatus(message.text.data.message_details.user_id,message.text.data.message_details.status);
+      let updatedFriend = updateFriendStatus(message.text.data.message_details.user_id,message.text.data.message_details.status);
       let array = this.props.acceptedRequest;
       const index = array.indexOf(message.text.data.message_details.user_id);
       if (index > -1) {
         array.splice(index, 1);
       }
       this.props.setAcceptedRequest(array);
-      this.props.setUserFriends().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      this.updateUserFriendList(updatedFriend);
+      // this.props.setUserFriends().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
       if (
         this.props.currentRouteName === 'FriendChats' &&
         currentFriend &&
@@ -2136,7 +2258,7 @@ class Chat extends Component {
   updateFriendStatus = (message) => {
       const {currentFriend} = this.props;
       if (message) {
-          updateFriendStatus(
+          let updatedFriend = updateFriendStatus(
               message.text.data.message_details.user_id,
               message.text.data.message_details.status,
           );
@@ -2146,9 +2268,10 @@ class Chat extends Component {
               array.splice(index, 1);
           }
           this.props.setAcceptedRequest(array);
-          this.props.setUserFriends().then(() => {
-              this.props.setCommonChatConversation();
-          });
+          this.updateUserFriendList(updatedFriend);
+          // this.props.setUserFriends().then(() => {
+          //     this.props.setCommonChatConversation();
+          // });
           if (
               this.props.currentRouteName === 'FriendChats' &&
               currentFriend &&
@@ -2179,9 +2302,14 @@ class Chat extends Component {
         }
         this.props.setAcceptedRequest(array);
         removeUserFriends(user[0].user_id);
-        this.props.setUserFriends().then(() => {
-          this.props.setCommonChatConversation();
+        this.props.deleteFriend(user[0].user_id);
+        this.props.deleteCommonChatItem({
+          chat: 'Friend',
+          id: user[0].user_id
         });
+        // this.props.setUserFriends().then(() => {
+        //   this.props.setCommonChatConversation();
+        // });
         if (
           this.props.currentRouteName === 'FriendChats' &&
           currentFriend &&
@@ -2208,16 +2336,18 @@ class Chat extends Component {
         // let array = chat.toJSON();
 
         if (array && array.length > 0) {
-          updateLastMsgGroupsWithoutCount(
+          let updatedGroup = updateLastMsgGroupsWithoutCount(
             message.text.data.message_details.group_id,
             array[0].message_body.type,
             array[0].message_body.text,
             array[0].msg_id,
             array[0].timestamp,
           );
-          this.props.getLocalUserGroups().then(() => {
-            this.props.setCommonChatConversation();
-          });
+
+          this.updateUserGroupList(updatedGroup);
+          // this.props.getLocalUserGroups().then(() => {
+          //   this.props.setCommonChatConversation();
+          // });
         }
       }
 
@@ -2260,12 +2390,18 @@ class Chat extends Component {
             let chat = getGroupChatConversationById(item.group_id);
             let array = realmToPlainObject(chat);
             // let array = chat.toJSON();
-
-            let lastMsgArray = array.filter((_)=>_.message_body.type!=='update');
+            console.log('array',array);
+            let lastMsgArray = array.filter((_)=>{
+              if(_.message_body){
+                return _.message_body.type!=='update';
+              }else{
+                return true;
+              }
+            });
 
             if (group[0].last_msg_id === item.msg_id) {
               if (lastMsgArray && lastMsgArray.length > 0) {
-                updateLastMsgGroupsWithoutCount(
+                let updatedGroup = updateLastMsgGroupsWithoutCount(
                   item.group_id,
                   lastMsgArray[0].message_body && lastMsgArray[0].message_body.type
                     ? lastMsgArray[0].message_body.type
@@ -2278,8 +2414,9 @@ class Chat extends Component {
                   false,
                   lastMsgArray[0].mentions,
                 );
+                this.updateUserGroupList(updatedGroup);
               } else {
-                updateLastMsgGroupsWithoutCount(
+                let updatedGroup = updateLastMsgGroupsWithoutCount(
                   item.group_id,
                   null,
                   null,
@@ -2287,14 +2424,16 @@ class Chat extends Component {
                   group[0].timestamp,
                   true
                 );
+                this.updateUserGroupList(updatedGroup);
               }
             }
             if(group[0].is_mentioned){
-              updateGroupsWithMention(item.group_id, item.mention_msg_id, item.is_mentioned);
+              let updatedGroup = updateGroupsWithMention(item.group_id, item.mention_msg_id, item.is_mentioned);
+              this.updateUserGroupList(updatedGroup);
             }
-            this.props.getLocalUserGroups().then(() => {
-              this.props.setCommonChatConversation();
-            });
+            // this.props.getLocalUserGroups().then(() => {
+            //   this.props.setCommonChatConversation();
+            // });
           }
         });
         if (
@@ -2325,8 +2464,9 @@ class Chat extends Component {
           // let array = chat.toJSON();
 
           if (group[0].last_msg_id === item.msg_id) {
+            let updatedGroup = null;
             if (array && array.length > 0) {
-              updateLastMsgGroupsWithoutCount(
+              updatedGroup = updateLastMsgGroupsWithoutCount(
                 item.group_id,
                 array[0].message_body && array[0].message_body.type
                   ? array[0].message_body.type
@@ -2337,8 +2477,9 @@ class Chat extends Component {
                 array[0].msg_id,
                 array[0].timestamp,
               );
+
             } else {
-              updateLastMsgGroupsWithoutCount(
+              updatedGroup = updateLastMsgGroupsWithoutCount(
                 item.group_id,
                 null,
                 null,
@@ -2347,9 +2488,10 @@ class Chat extends Component {
                 true
               );
             }
-            this.props.getLocalUserGroups().then(() => {
-              this.props.setCommonChatConversation();
-            });
+            this.updateUserGroupList(updatedGroup);
+            // this.props.getLocalUserGroups().then(() => {
+            //   this.props.setCommonChatConversation();
+            // });
           }
         }
         if (
@@ -2392,11 +2534,15 @@ class Chat extends Component {
             mentions: [],
             reply_to: null,
           };
-          setGroups([group]).then(() => {
-            this.props.getLocalUserGroups().then(() => {
-              this.props.setCommonChatConversation();
-            });
-          });
+          // setGroups([group]).then(() => {
+          //   this.props.getLocalUserGroups().then(() => {
+          //     this.props.setCommonChatConversation();
+          //   });
+          // });
+
+          let newGroup = setSingleGroup(group);
+          this.props.addNewGroup(realmToPlainSingleObject(newGroup));
+          this.props.addCommonChatItem(realmToPlainSingleObject(newGroup));
           break;
         }
       }
@@ -2424,10 +2570,17 @@ class Chat extends Component {
         deleteAllGroupMessageByGroupId(
           message.text.data.message_details.group_id,
         );
-        this.props.getLocalUserGroups().then(() => {
-          console.log('local groups update');
-          this.props.setCommonChatConversation();
+
+        this.props.deleteGroupItem(message.text.data.message_details.group_id);
+        this.props.deleteCommonChatItem({
+          chat: 'group',
+          id: message.text.data.message_details.group_id
         });
+
+        // this.props.getLocalUserGroups().then(() => {
+        //   console.log('local groups update');
+        //   this.props.setCommonChatConversation();
+        // });
       }
     }
   }
@@ -2438,10 +2591,12 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.ADD_GROUP_MEMBER) {
       for (let i of message.text.data.message_details.members_data) {
         if (i.id === userData.id) {
-          setGroups([message.text.data.message_details.group_data]);
-          this.props.getLocalUserGroups().then(() => {
-            this.props.setCommonChatConversation();
-          });
+          // setGroups([message.text.data.message_details.group_data]);
+          let newGroup = setSingleGroup(message.text.data.message_details.group_data);
+          this.props.addCommonChatItem(realmToPlainSingleObject(newGroup));
+          // this.props.getLocalUserGroups().then(() => {
+          //   this.props.setCommonChatConversation();
+          // });
           break;
         }
       }
@@ -2499,7 +2654,7 @@ class Chat extends Component {
       // let group = result.toJSON();
       if (group && group.length > 0) {
         if (user_delete.length > 0) {
-          removeGroupById(message.text.data.message_details.group_id);
+          let updatedGroup = removeGroupById(message.text.data.message_details.group_id);
         }
 
         if (
@@ -2553,10 +2708,17 @@ class Chat extends Component {
           this.props.setCurrentGroup(null);
           this.props.setGroupConversation([]);
         }
-        this.props.getLocalUserGroups().then(() => {
-          console.log('local groups update');
-          this.props.setCommonChatConversation();
-        });
+
+        this.props.deleteGroupItem(message.text.data.message_details.group_id);
+        this.props.deleteCommonChatItem({
+          chat: 'group',
+          id: message.text.data.message_details.group_id
+        })
+
+        // this.props.getLocalUserGroups().then(() => {
+        //   console.log('local groups update');
+        //   this.props.setCommonChatConversation();
+        // });
       } else {
         if (
           (this.props.currentRouteName === 'GroupChats' ||
@@ -2576,15 +2738,16 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.EDIT_GROUP_DETAIL) {
       for (let i of userGroups) {
         if (i.group_id === message.text.data.message_details.id) {
-          UpdateGroupDetail(
+          let updatedGroup = UpdateGroupDetail(
             message.text.data.message_details.id,
             message.text.data.message_details.name,
             message.text.data.message_details.group_picture,
             message.text.data.message_details.members.length,
           );
-          this.props.getLocalUserGroups().then(() => {
-            this.props.setCommonChatConversation();
-          });
+          this.updateUserGroupList(updatedGroup);
+          // this.props.getLocalUserGroups().then(() => {
+          //   this.props.setCommonChatConversation();
+          // });
         }
       }
       if (
@@ -2625,7 +2788,7 @@ class Chat extends Component {
       }
       deleteFriendRequest(messageDetail.conversation.user_id);
       this.props.setFriendRequest();
-      handleRequestAccept(messageDetail.conversation, messageDetail.invitation);
+      let updatedFriend = handleRequestAccept(messageDetail.conversation, messageDetail.invitation);
 
       let array = this.props.acceptedRequest;
 
@@ -2634,9 +2797,10 @@ class Chat extends Component {
         this.props.setAcceptedRequest(array);
       }
 
-      this.props.setUserFriends().then(() => {
-        this.props.setCommonChatConversation();
-      });
+      this.updateUserFriendList(updatedFriend);
+      // this.props.setUserFriends().then(() => {
+      //   this.props.setCommonChatConversation();
+      // });
       if (
         this.props.currentRouteName === 'FriendChats' &&
         this.props.currentFriend &&
@@ -2753,10 +2917,11 @@ class Chat extends Component {
     const currentFriend = JSON.parse(JSON.stringify(this.props.currentFriend));
     currentFriend.is_pined = true;
     this.props.setCurrentFriend(currentFriend);
-    updateUserFriendsWhenPined(message.text.data.message_details);
-    this.props.getUserFriends().then(() => {
-      this.props.setCommonChatConversation();
-    });
+    let updatedFriend = updateUserFriendsWhenPined(message.text.data.message_details);
+    this.updateUserFriendList(updatedFriend);
+    // this.props.getUserFriends().then(() => {
+    //   this.props.setCommonChatConversation();
+    // });
   };
 
   onUnpinFriend = (message) => {
@@ -2764,10 +2929,11 @@ class Chat extends Component {
     const currentFriend = JSON.parse(JSON.stringify(this.props.currentFriend));
     currentFriend.is_pined = false;
     this.props.setCurrentFriend(currentFriend);
-    updateUserFriendsWhenUnpined(message.text.data.message_details);
-    this.props.getUserFriends().then(() => {
-      this.props.setCommonChatConversation();
-    });
+    let updatedFriend = updateUserFriendsWhenUnpined(message.text.data.message_details);
+    this.updateUserFriendList(updatedFriend);
+    // this.props.getUserFriends().then(() => {
+    //   this.props.setCommonChatConversation();
+    // });
   };
 
   onPinGroup = (message) => {
@@ -2775,10 +2941,11 @@ class Chat extends Component {
     const currentGroup = JSON.parse(JSON.stringify(this.props.currentGroup));
     currentGroup.is_pined = true;
     this.props.setCurrentGroup(currentGroup);
-    updateGroupsWhenPined(message.text.data.message_details);
-    this.props.getLocalUserGroups().then(() => {
-      this.props.setCommonChatConversation();
-    });
+    let updatedGroup = updateGroupsWhenPined(message.text.data.message_details);
+    this.updateUserGroupList(updatedGroup);
+    // this.props.getLocalUserGroups().then(() => {
+    //   this.props.setCommonChatConversation();
+    // });
   };
 
   onUnpinGroup = (message) => {
@@ -2786,10 +2953,11 @@ class Chat extends Component {
     const currentGroup = JSON.parse(JSON.stringify(this.props.currentGroup));
     currentGroup.is_pined = false;
     this.props.setCurrentGroup(currentGroup);
-    updateGroupsWhenUnpined(message.text.data.message_details);
-    this.props.getLocalUserGroups().then(() => {
-      this.props.setCommonChatConversation();
-    });
+    let updatedGroup = updateGroupsWhenUnpined(message.text.data.message_details);
+    this.updateUserGroupList(updatedGroup);
+    // this.props.getLocalUserGroups().then(() => {
+    //   this.props.setCommonChatConversation();
+    // });
   };
 
   onPinChannel = (message) => {
@@ -2799,10 +2967,11 @@ class Chat extends Component {
     );
     currentChannel.is_pined = true;
     this.props.setCurrentChannel(currentChannel);
-    updateChannelsWhenPined(message.text.data.message_details);
-    this.props.getLocalFollowingChannels().then(() => {
-      this.props.setCommonChatConversation();
-    });
+    let updatedChannel = updateChannelsWhenPined(message.text.data.message_details);
+    this.updateFollowingChannelList(updatedChannel);
+    // this.props.getLocalFollowingChannels().then(() => {
+    //   this.props.setCommonChatConversation();
+    // });
   };
 
   onUnpinChannel = (message) => {
@@ -2812,10 +2981,11 @@ class Chat extends Component {
     );
     currentChannel.is_pined = false;
     this.props.setCurrentChannel(currentChannel);
-    updateChannelsWhenUnpined(message.text.data.message_details);
-    this.props.getLocalFollowingChannels().then(() => {
-      this.props.setCommonChatConversation();
-    });
+    let updatedChannel = updateChannelsWhenUnpined(message.text.data.message_details);
+    this.updateFollowingChannelList(updatedChannel);
+    // this.props.getLocalFollowingChannels().then(() => {
+    //   this.props.setCommonChatConversation();
+    // });
   };
 
   onUpdateUserTP = (message) => {
@@ -2839,14 +3009,15 @@ class Chat extends Component {
     if (message.text.data.type === SocketEvents.UPDATE_USER_PROFILE) {
       let user = getLocalUserFriend(message.text.data.message_details.user);
       if (user && user.length > 0) {
-        updateFriendProfileData(
+        let updatedFriend = updateFriendProfileData(
           message.text.data.message_details.user,
           message.text.data.message_details.display_name,
           message.text.data.message_details.background_image,
         );
-        this.props.getUserFriends().then(() => {
-          this.setCommonConversation();
-        });
+        this.updateUserFriendList(updatedFriend);
+        // this.props.getUserFriends().then(() => {
+        //   this.setCommonConversation();
+        // });
       }
       if (currentFriend.user_id === message.text.data.message_details.user) {
         if (message.text.data.message_details.background_image) {
@@ -2964,6 +3135,30 @@ class Chat extends Component {
       this.props.setChannelConversation(conversations);
     }
   };
+
+  updateFollowingChannelList = (updatedChannel) => {
+    if(updatedChannel){
+      let _updateChannel = realmToPlainSingleObject(updatedChannel);
+      this.props.updateFollowingChannel(_updateChannel);
+      this.props.updateCommonChat(_updateChannel);
+    }
+  }
+
+  updateUserFriendList = (updatedFriend) => {
+    if(updatedFriend){
+      let _updatedFriend = realmToPlainSingleObject(updatedFriend);
+      this.props.updateFriend(_updatedFriend);
+      this.props.updateCommonChat(_updatedFriend);
+    }
+  }
+
+  updateUserGroupList = (updatedGroup) => {
+    if(updatedGroup){
+      let _updatedGroup = realmToPlainSingleObject(updatedGroup);
+      this.props.updateGroup(_updatedGroup);
+      this.props.updateCommonChat(_updatedGroup);
+    }
+  }
 
   // async getCommonChat() {
   //   const {
@@ -3880,6 +4075,7 @@ class Chat extends Component {
       this.props.getFollowingChannels()
     ]).then(()=>{
       this.setState({refreshLoading: false});
+      this.props.setCommonChatConversation();
     }).catch(()=>{
       this.setState({refreshLoading: false});
     });
@@ -4110,6 +4306,7 @@ const mapStateToProps = (state) => {
     trendTimline: state.timelineReducer.trendTimline,
     acceptedRequest: state.addFriendReducer.acceptedRequest,
     chatGroupConversation: state.groupReducer.chatGroupConversation,
+    chatFriendConversation: state.friendReducer.chatFriendConversation,
   };
 };
 
@@ -4170,7 +4367,25 @@ const mapDispatchToProps = {
   updateTrendTimeline,
   setAcceptedRequest,
   updateUserOnlineStatus,
-  setCommonChat
+  setCommonChat,
+  updateFriendConversation,
+  addNewFriendConversation,
+  deleteMessage,
+  updateChannelMessage,
+  addNewSendMessage,
+  deleteChannelMessageFromList,
+  updateFollowingChannel,
+  updateCommonChat,
+  addCommonChatItem,
+  deleteCommonChatItem,
+  addFollowingChannel,
+  deleteFollowingChannel,
+  updateFriend,
+  addNewFriend,
+  deleteFriend,
+  addNewGroup,
+  updateGroup,
+  deleteGroupItem
 };
 
 export default connect(

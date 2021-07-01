@@ -353,6 +353,10 @@ export default class MentionsInput extends React.Component<Props, State> {
     this.setState({isSuggestionsOpen:false});
   }
 
+  clear = () => {
+    this._textInput.clear();
+  }
+
   render() {
     return (
       <View>

@@ -295,8 +295,8 @@ class ChannelChats extends Component {
     this.setState({orientation});
   };
 
-  onMessageSend = async () => {
-    const {newMessageText, editMessageId, isReply} = this.state;
+  onMessageSend = async (newMessageText = '') => {
+    const { editMessageId, isReply} = this.state;
     const {userData, currentChannel} = this.props;
 
     let msgText = newMessageText;

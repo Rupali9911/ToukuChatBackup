@@ -59,9 +59,11 @@ import {
   updateFriendMessageById,
   updateFriendsUnReadCount,
   updateFriendTranslatedMessage,
+  realm,
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {realmToPlainObject} from '../../utils';
+import { isEqual } from 'lodash';
 
 class FriendChats extends Component {
   constructor(props) {
@@ -70,6 +72,7 @@ class FriendChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
+      chatFriendConversation: [],
       selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
@@ -262,14 +265,49 @@ class FriendChats extends Component {
 
   componentWillUnmount() {
     // this.events.unsubscribe();
+    console.log('component unmount')
+    // this.resultList && this.resultList.removeAllListeners();
+    this.resultList && this.resultList.removeListener(this.handleDbChanges);
+    // this.resultList = null;
   }
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
     this.getPersonalConversationInitial();
+
+    // this.resultList = realm.objects('chat_conversation_friend')
+    // .sorted('created', {ascending: true})
+    // .filtered(`friend == ${this.props.currentFriend.friend}`);
+    // if(this.resultList){
+    //   this.resultList.addListener(this.handleDbChanges);
+    // }
+    // this.setState({chatFriendConversation: this.resultList.toJSON()});
     // this.markFriendMsgsRead();
     this.updateUnReadFriendChatCount();
     // alert(JSON.stringify(this.props.userData));
+  }
+
+  handleDbChanges = (list, changes)=>{
+    changes.deletions.forEach((index) => {
+      // You cannot directly access deleted objects,
+      // but you can update a UI list, etc. based on the index.
+      console.log(`Looks like #${index} has left the realm.`);
+      this.props.setFriendConversation(list.toJSON());
+    });
+    // Handle newly added message objects
+    changes.insertions.forEach((index) => {
+      const insertedMessage = list[index];
+      console.log(`new friend msg!`,index);
+      this.props.setFriendConversation(list.toJSON());
+      // this.setState({chatFriendConversation: list.toJSON()});
+    });
+    // Handle message objects that were modified
+    changes.modifications.forEach((index) => {
+      const modifiedMessage = list[index];
+      console.log(`Hey ${modifiedMessage.id}, you look different!`);
+      // this.props.chatFriendConversation.splice(index,1,modifiedMessage);
+      this.props.setFriendConversation(list.toJSON());
+    });
   }
 
   onPinUnpinFriend = () => {
@@ -339,8 +377,8 @@ class FriendChats extends Component {
     this.setState({orientation});
   };
 
-  onMessageSend = async () => {
-    const {newMessageText, editMessageId} = this.state;
+  onMessageSend = async (newMessageText='') => {
+    const { editMessageId} = this.state;
     const {currentFriend, userData} = this.props;
 
     let msgText = newMessageText;
@@ -492,7 +530,7 @@ class FriendChats extends Component {
         to_user: this.props.currentFriend.user_id,
         reply_to: repliedMessage.id,
       };
-      // this.state.conversations.unshift(sendmsgdata);
+      this.state.conversations.unshift(sendmsgdata);
       this.props.setFriendConversation([
         sendmsgdata,
         ...this.props.chatFriendConversation,
@@ -506,7 +544,7 @@ class FriendChats extends Component {
         msg_type: sentMessageType,
         to_user: this.props.currentFriend.user_id,
       };
-      // this.state.conversations.unshift(sendmsgdata);
+      this.state.conversations.unshift(sendmsgdata);
       this.props.setFriendConversation([
         sendmsgdata,
         ...this.props.chatFriendConversation,
@@ -1103,9 +1141,13 @@ class FriendChats extends Component {
   };
 
   onDeletePressed = (messageId) => {
+    // this.setState({
+    //   showMessageDeleteConfirmationModal: true,
+    //   selectedMessageId: messageId,
+    // });
     this.setState({
-      showMessageDeleteConfirmationModal: true,
-      selectedMessageId: messageId,
+      isMultiSelect: true,
+      selectedIds: [...this.state.selectedIds, messageId + ''],
     });
   };
 
@@ -1132,6 +1174,29 @@ class FriendChats extends Component {
       });
     }
   };
+
+  onSelectedCancel = () => {
+    this.setState({isMultiSelect: false, selectedIds: []});
+  }
+
+  showOpenLoader = (isLoading) => {
+    console.log('showOpenLoader in Friend Chat', isLoading);
+    this.setState({openDoc: isLoading});
+  }
+
+  onMediaPlay = (isPlay) => {
+    if (isPlay) {
+      console.log('palying media');
+      this.props.navigation.setParams({
+        isAudioPlaying: true,
+      });
+    } else {
+      console.log('pause media');
+      this.props.navigation.setParams({
+        isAudioPlaying: false,
+      });
+    }
+  }
 
   onUnSendPressed = (messageId) => {
     this.setState({
@@ -1491,6 +1556,21 @@ class FriendChats extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      !isEqual(this.props.currentFriend, nextProps.currentFriend) ||
+      !isEqual(this.props.chatFriendConversation, nextProps.chatFriendConversation) ||
+      !isEqual(this.props.unFriendLoading, nextProps.unFriendLoading) ||
+      !isEqual(this.props.userData, nextProps.userData) ||
+      !isEqual(this.props.selectedLanguageItem, nextProps.selectedLanguageItem)
+    ) {
+      return true;
+    } else if (!isEqual(this.state, nextState)) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {
       newMessageText,
@@ -1509,9 +1589,12 @@ class FriendChats extends Component {
       openDoc,
       isDeleteMeLoading,
       isDeleteEveryoneLoading,
-      isLoadMore
+      isLoadMore,
     } = this.state;
-    const {currentFriend, chatFriendConversation} = this.props;
+    const {
+      currentFriend, 
+      chatFriendConversation
+    } = this.props;
     // console.log('currentFriend', currentFriend);
     return (
       <ImageBackground
@@ -1547,10 +1630,10 @@ class FriendChats extends Component {
           <ListLoader />
         ) : (
           <ChatContainer
-            sendEmotion={(model) => this.sendEmotion(model)}
-            handleMessage={(message) => this.handleMessage(message)}
+            sendEmotion={this.sendEmotion}
+            handleMessage={this.handleMessage}
             onMessageSend={this.onMessageSend}
-            onMessageReply={(id) => this.onReply(id)}
+            onMessageReply={this.onReply}
             newMessageText={newMessageText}
             sendEnable={newMessageText.lenght ? true : false}
             messages={chatFriendConversation}
@@ -1558,52 +1641,29 @@ class FriendChats extends Component {
             repliedMessage={this.state.repliedMessage}
             isReply={this.state.isReply}
             cancelReply={this.cancelReply}
-            onDelete={(id) => {
-              this.setState({
-                isMultiSelect: true,
-                selectedIds: [...this.state.selectedIds, id + ''],
-              });
-              // this.onDeletePressed(id)
-            }}
-            onUnSendMsg={(id) => this.onUnSendPressed(id)}
-            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onDelete={this.onDeletePressed}
+            onUnSendMsg={this.onUnSendPressed}
+            onMessageTranslate={this.onMessageTranslate}
             onMessageTranslateClose={this.onMessageTranslateClose}
-            onEditMessage={(msg) => this.onEdit(msg)}
-            onDownloadMessage={(msg) => this.onDownload(msg)}
+            onEditMessage={this.onEdit}
+            onDownloadMessage={this.onDownload}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
-            onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.toggleGalleryModal(true)}
-            onAttachmentPress={() => this.onAttachmentPress()}
+            onCameraPress={this.onCameraPress}
+            onGalleryPress={this.toggleGalleryModal}
+            onAttachmentPress={this.onAttachmentPress}
             sendingImage={uploadFile}
             isMultiSelect={isMultiSelect}
             onSelect={this.onSelectChatConversation}
             selectedIds={this.state.selectedIds}
-            onSelectedCancel={() => {
-              this.setState({isMultiSelect: false, selectedIds: []});
-            }}
+            onSelectedCancel={this.onSelectedCancel}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
-            showOpenLoader={(isLoading) => {
-              console.log('showOpenLoader in Friend Chat', isLoading);
-              this.setState({openDoc: isLoading});
-            }}
+            showOpenLoader={this.showOpenLoader}
             isChatDisable={
               currentFriend.friend_status === 'UNFRIEND' ||
               currentFriend.friend_status === 'REQUESTED'
             }
-            onMediaPlay={(isPlay) => {
-              if (isPlay) {
-                console.log('palying media');
-                this.props.navigation.setParams({
-                  isAudioPlaying: true,
-                });
-              } else {
-                console.log('pause media');
-                this.props.navigation.setParams({
-                  isAudioPlaying: false,
-                });
-              }
-            }}
+            onMediaPlay={this.onMediaPlay}
             isLoadMore={isLoadMore}
             onLoadMore={this.onLoadMoreMessages}
           />

@@ -86,7 +86,7 @@ export default class GroupListItem extends PureComponent {
     this.props.onCheckChange('group', isCheck, item);
   };
 
-  onPinChat = () => {
+  onPinChat = (item) => {
     this.setState({isPinUnpinLoading: true});
     this.props.onPinUnpinChat(item, () => {
       this.setState({isPinUnpinLoading: false});
@@ -94,7 +94,7 @@ export default class GroupListItem extends PureComponent {
     });
   }
 
-  onDeleteChat = () => {
+  onDeleteChat = (item) => {
     console.log('delete chat');
     this.itemRef && this.itemRef.close();
     this.props.onDeleteChat(item.group_id);
@@ -161,7 +161,7 @@ export default class GroupListItem extends PureComponent {
                   <TouchableOpacity
                     style={styles.pinChatActionContainer}
                     disabled={isPinUnpinLoading}
-                    onPress={this.onPinChat}>
+                    onPress={this.onPinChat.bind(this,item)}>
                     {isPinUnpinLoading ? (
                       <ActivityIndicator color={Colors.white} />
                     ) : (
@@ -177,7 +177,7 @@ export default class GroupListItem extends PureComponent {
                   <TouchableOpacity
                     style={styles.deleteChatActionContainer}
                     disabled={isDeleteLoading}
-                    onPress={this.onDeleteChat}>
+                    onPress={this.onDeleteChat.bind(this,item)}>
                     {isDeleteLoading ? (
                       <ActivityIndicator color={Colors.white} />
                     ) : (
@@ -295,7 +295,7 @@ export default class GroupListItem extends PureComponent {
                         <TouchableOpacity onPress={onMentionPress}>
                           <Badge
                             style={[
-                              globalStyles.smallLightText,
+                              // globalStyles.smallLightText,
                               styles.badgeStyle,
                             ]}
                           >

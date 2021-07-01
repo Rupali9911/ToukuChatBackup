@@ -161,7 +161,7 @@ export default class VerificationInputField extends Component {
           onBlur={() => this.onBlur()}
           numberOfLines={numberOfLines}
           autoCapitalize={'none'}
-          color={Colors.black}
+          // color={Colors.black}
         />
         {isRightSideBtn ? (
           <TouchableOpacity

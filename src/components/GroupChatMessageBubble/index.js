@@ -81,9 +81,9 @@ class GroupChatMessageBubble extends Component {
         this.props.message.type === 'note'
           ? 0
           : this.props.message.type === 'image'
-            ? this.props.message.text.includes('.giphy.com/media/') ? 0 : 8
+            ? this.props.message.text.includes('.giphy.com/media/') && this.props.message.reply_to == null ? 0 : 8
             : 10,
-      paddingVertical: this.props.message.type === 'image' ? this.props.message.text.includes('.giphy.com/media/') ? 0 : 8 : 10,
+      paddingVertical: this.props.message.type === 'image' ? this.props.message.text.includes('.giphy.com/media/') && this.props.message.reply_to == null ? 0 : 8 : 10,
     };
 
     this.memoTextStyle = [
@@ -538,9 +538,10 @@ class GroupChatMessageBubble extends Component {
       this.navigateToNotes()
     } else if(message.type === 'doc'){
       this.onDocumentPress(message.text)
-    }else if(message.type === 'image'){
-      this.onImagePress(message.text)
     }
+    // else if(message.type === 'image'){
+    //   this.onImagePress(message.text)
+    // }
   }
 
   onMessageLongPress = () => {
@@ -645,7 +646,7 @@ class GroupChatMessageBubble extends Component {
           button={
             <View style={styles.talkBubble}>
               <View style={!message.isMyMessage?styles.menuButtonContentContainer:{}}>
-                {!message.text.includes('.giphy.com/media/') ? !message.isMyMessage ? <View
+                {message.text.includes('.giphy.com/media/') && message.reply_to == null ? null : !message.isMyMessage ? <View
                   style={[
                     styles.talkBubbleAbsoluteLeft,
                     message.is_unsent && { borderRightColor: Colors.gray },
@@ -656,7 +657,7 @@ class GroupChatMessageBubble extends Component {
                       styles.talkBubbleAbsoluteRight,
                       message.is_unsent && { borderLeftColor: Colors.gray },
                     ]}
-                  /> : null}
+                  />}
                 {message.is_unsent ? (
                   <View
                     activeOpacity={0.8}
@@ -670,11 +671,11 @@ class GroupChatMessageBubble extends Component {
                       disabled={isMultiSelect}
                       activeOpacity={0.8}
                       style={[
-                        !message.text.includes('.giphy.com/media/') && styles.messageBodyActionContainer,
+                        message.text.includes('.giphy.com/media/') && message.reply_to == null ? {} : styles.messageBodyActionContainer,
                         this.messageBodyActionContainer,
                         message.type === 'audio' &&
                         styles.replyAudioMessageWidth,
-                        !message.text.includes('.giphy.com/media/') && { backgroundColor: message.isMyMessage ? Colors.pink_chat : Colors.white }
+                        message.text.includes('.giphy.com/media/') && message.reply_to == null ? {} : { backgroundColor: message.isMyMessage ? Colors.pink_chat : Colors.white }
                       ]}
                       onLongPress={this.onMessageLongPress}
                       onPress={this.onMessagePress}>
@@ -683,12 +684,17 @@ class GroupChatMessageBubble extends Component {
                         // message.reply_to.constructor === Object &&
                         this.renderReplyMessage(message)}
                       {message.type === 'image' && message.text !== null ? (
-                        message.text.includes('.giphy.com/media/') ?
-                        <GifImage src={message.text} isGif={message.text.includes('&ct=g')}/>
-                        : <ScalableImage
-                          src={message.text}
-                          borderRadius={borderRadius}
-                        />
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onLongPress={this.onMessageLongPress}
+                          onPress={this.onImagePress.bind(this,message.text)}>
+                          {message.text.includes('.giphy.com/media/') ?
+                            <GifImage src={message.text} isGif={message.text.includes('&ct=g')} />
+                            : <ScalableImage
+                              src={message.text}
+                              borderRadius={borderRadius}
+                            />}
+                        </TouchableOpacity>
                       ) : message.type === 'video' ? (
                         <VideoPlayerCustom url={message.text} />
                       ) : message.type === 'audio' ? (

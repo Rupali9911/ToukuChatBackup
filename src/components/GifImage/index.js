@@ -39,14 +39,18 @@ export default class GifImage extends Component {
   }
 
   render() {
-    const {src,isGif} = this.props;
+    const {src,isGif,borderRadius} = this.props;
     const container = [styles.container, isGif ? {
       aspectRatio: this.state.ratio,
       maxWidth: normalize(200),
     } : {
       height: normalize(150),
       width: normalize(150)
-    }]
+    },
+    {
+      borderRadius: borderRadius ? borderRadius : 10,
+    }
+  ]
     return (
       <>
         <FastImage

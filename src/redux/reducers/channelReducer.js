@@ -44,6 +44,11 @@ export const SET_CHANNEL_CONVERSATION = 'SET_CHANNEL_CONVERSATION';
 export const RESET_CHANNEL_CONVERSATION = 'RESET_CHANNEL_CONVERSATION';
 export const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE';
 export const Delete_Message = 'Delete_Message';
+export const UPDATE_CHANNEL_CONVERSATION = 'UPDATE_CHANNEL_CONVERSATION';
+
+export const UPDATE_FOLLOWING_CHANNEL = 'UPDATE_CHANNEL';
+export const ADD_FOLLOWING_CHANNEL = 'ADD_FOLLOWING_CHANNEL';
+export const DELETE_FOLLOWING_CHANNEL = 'DELETE_FOLLOWING_CHANNEL';
 
 const initialState = {
   loading: false,
@@ -200,10 +205,17 @@ export default function (state = initialState, action) {
         chatConversation: [],
       };
     case ADD_NEW_MESSAGE:
-      return {
-        ...state,
-        chatConversation: [action.payload, ...state.chatConversation],
-      };
+      let _newArray = state.chatConversation.slice();
+      let _index = _newArray.findIndex((_)=>_.id==action.payload.id)
+      if(_index<0){
+        _newArray.splice(0, 0, action.payload);
+        return {
+          ...state,
+          chatConversation: _newArray
+        }
+      }else {
+        return state;
+      }
     case Delete_Message:
       return {
         ...state,
@@ -211,6 +223,44 @@ export default function (state = initialState, action) {
           (item) => item.id !== action.payload,
         ),
       };
+    case UPDATE_CHANNEL_CONVERSATION:
+      let currentArray = state.chatConversation.slice();
+      let index = currentArray.findIndex((_)=>_.id==action.payload.id)
+      currentArray.splice(index,1,action.payload);
+      return {
+        ...state,
+        chatConversation: currentArray
+      }
+
+    case UPDATE_FOLLOWING_CHANNEL:
+      let newList = state.followingChannels.slice();
+      let updateIndex = newList.findIndex((_)=>_.id==action.payload.id)
+      newList.splice(updateIndex,1,action.payload);
+      return {
+        ...state,
+        followingChannels: newList
+      }
+
+    case ADD_FOLLOWING_CHANNEL:
+      let newChannelList = state.followingChannels.slice();
+      let addIndex = newChannelList.findIndex((_)=>_.id==action.payload.id)
+      if(addIndex<0){
+        newChannelList.splice(0,0,action.payload)
+        return {
+          ...state,
+          followingChannels: newChannelList
+        }
+      }else{
+        return state;
+      }
+      
+    case DELETE_FOLLOWING_CHANNEL:
+      let new_list = state.followingChannels.slice();
+      return {
+        ...state,
+        followingChannels: new_list.filter((_) => _.id !== action.payload)
+      }
+
     default:
       return state;
   }
@@ -261,6 +311,21 @@ const getMoreFollowingChannelsSuccess = (data) => ({
 const getFollowingChannelsFailure = () => ({
   type: GET_FOLLOWING_CHANNELS_FAIL,
 });
+
+export const updateFollowingChannel = (data) => ({
+  type: UPDATE_FOLLOWING_CHANNEL,
+  payload: data
+});
+
+export const addFollowingChannel = (data) => ({
+  type: UPDATE_FOLLOWING_CHANNEL,
+  payload: data
+});
+
+export const deleteFollowingChannel = (data) => ({
+  type: DELETE_FOLLOWING_CHANNEL,
+  payload: data
+})
 
 export const getLocalFollowingChannels = () => (dispatch) =>
   new Promise(function (resolve, reject) {
@@ -567,7 +632,17 @@ export const addNewSendMessage = (data) => ({
   payload: data,
 });
 
-const deleteMessage = (data) => ({
+export const deleteMessage = (data) => ({
+  type: Delete_Message,
+  payload: data,
+});
+
+export const updateChannelMessage = (data) => ({
+  type: UPDATE_CHANNEL_CONVERSATION,
+  payload: data,
+});
+
+export const deleteChannelMessageFromList = (data) => ({
   type: Delete_Message,
   payload: data,
 });

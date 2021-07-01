@@ -120,7 +120,7 @@ export default class TimelineCommentModal extends Component{
                             color={null}
                             containerStyle={{marginHorizontal: 5}}
                             onPress={() => {
-                                this.setState({ showDeleteConfirmation: true, deleteCommentId: item.id });
+                                this.setState({ showDeleteConfirmation: true, deleteCommentId: item.id, comment: '' });
                             }} />
                         {/* <FontAwesome5
                             name={'trash'}

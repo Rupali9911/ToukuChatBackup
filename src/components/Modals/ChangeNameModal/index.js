@@ -150,8 +150,8 @@ class ChangeNameModal extends Component {
             </Text>
             <View style={styles.inputContainer}>
               <TextInput
-                  color={Colors.black}
-                  placeholderTextColor={'gray'}
+                // color={Colors.black}
+                placeholderTextColor={'gray'}
                 placeholder={translate('common.enterDisplayName')}
                 value={displayName}
                 onChangeText={(name) => this.handleDisplayName(name)}

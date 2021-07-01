@@ -2,7 +2,7 @@
 import {Platform, StyleSheet} from 'react-native';
 
 // Locals imports
-import {Colors} from '../../../constants';
+import {Colors, Fonts} from '../../../constants';
 import {normalize} from '../../../utils';
 
 /**
@@ -119,6 +119,7 @@ export default StyleSheet.create({
     backgroundColor: Colors.green,
     color: Colors.white,
     fontSize: 12,
+    fontFamily: Fonts.regular,
     marginTop: 5,
   },
 });

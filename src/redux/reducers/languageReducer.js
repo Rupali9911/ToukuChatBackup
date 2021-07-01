@@ -75,6 +75,10 @@ export const CHANGE_EMAIL_OTP_REQUEST = 'CHANGE_EMAIL_OTP_REQUEST';
 export const CHANGE_EMAIL_OTP_SUCCESS = 'CHANGE_EMAIL_OTP_SUCCESS';
 export const CHANGE_EMAIL_OTP_FAIL = 'CHANGE_EMAIL_OTP_FAIL';
 
+export const CHANGE_EMAIL_REQUEST = 'CHANGE_EMAIL_REQUEST';
+export const CHANGE_EMAIL_SUCCESS = 'CHANGE_EMAIL_SUCCESS';
+export const CHANGE_EMAIL_FAIL = 'CHANGE_EMAIL_FAIL';
+
 const initialState = {
   loading: false,
   selectedLanguageItem: {
@@ -205,6 +209,21 @@ export default function (state = initialState, action) {
               ...state,
               loading: false,
           };
+    case CHANGE_EMAIL_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case CHANGE_EMAIL_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case CHANGE_EMAIL_FAIL:
+      return {
+        ...state,
+        loading: false,
+      };
     default:
       return state;
   }
@@ -249,6 +268,18 @@ const changeEmailOtpFailure = () => ({
     type: CHANGE_EMAIL_OTP_FAIL,
 });
 
+const changeEmailRequest = () => ({
+  type: CHANGE_EMAIL_REQUEST,
+});
+
+const changeEmailSuccess = () => ({
+  type: CHANGE_EMAIL_SUCCESS,
+});
+
+const changeEmailFailure = () => ({
+  type: CHANGE_EMAIL_FAIL,
+});
+
 export const changePassword = (data) => (dispatch) =>
     new Promise((resolve, reject) => {
         dispatch(getChangePasswordRequest());
@@ -282,6 +313,23 @@ export const changeEmailSendOtp = (data) => (dispatch) =>
                 reject(err);
             });
     });
+
+export const changeEmail = (data) => (dispatch) =>
+  new Promise((resolve, reject) => {
+    dispatch(changeEmailRequest());
+    client
+      .post('/xchat/change-email/', data)
+      .then((res) => {
+        if (res.status === true) {
+          dispatch(changeEmailSuccess())
+        }
+        resolve(res);
+      })
+      .catch((err) => {
+        dispatch(changeEmailFailure())
+        reject(err);
+      });
+  });
 
 export const getAllLanguages = () => (dispatch) =>
   Promise.all(languageRequests)

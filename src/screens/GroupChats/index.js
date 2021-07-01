@@ -431,8 +431,8 @@ class GroupChats extends Component {
     }
   };
 
-  onMessageSend = async (onSendFinish,totalMedia,currentSendIndex) => {
-    const {newMessageText, editMessageId} = this.state;
+  onMessageSend = async (newMessageText = '',onSendFinish,totalMedia,currentSendIndex) => {
+    const {editMessageId} = this.state;
     const {userData, currentGroup, currentGroupMembers} = this.props;
     // let splitNewMessageText = newMessageText.split(' ');
     let newMessageMentions = [];
@@ -1887,7 +1887,7 @@ class GroupChats extends Component {
             sendingMedia: true,
           },
           async () => {
-            await this.onMessageSend(null,media.length,index);
+            await this.onMessageSend('',null,media.length,index);
           },
         );
       } else {
@@ -1903,7 +1903,7 @@ class GroupChats extends Component {
             sendingMedia: true,
           },
           () => {
-            this.onMessageSend(null,media.length,index);
+            this.onMessageSend('',null,media.length,index);
           },
         );
       }

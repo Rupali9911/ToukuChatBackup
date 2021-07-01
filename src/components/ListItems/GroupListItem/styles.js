@@ -2,7 +2,7 @@
 import {Platform, StyleSheet} from 'react-native';
 
 // Local imports
-import {Colors} from '../../../constants';
+import {Colors, Fonts} from '../../../constants';
 import {normalize} from '../../../utils';
 
 /**
@@ -119,6 +119,8 @@ export default StyleSheet.create({
     backgroundColor: Colors.green,
     color: Colors.white,
     fontSize: 12,
+    fontFamily: Fonts.regular,
+    lineHeight: Platform.OS == 'ios'?18:15,
     marginTop: 5,
     marginLeft: 10,
   },

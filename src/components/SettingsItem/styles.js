@@ -74,7 +74,9 @@ export default StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 23 : getStatusBarHeight() + 23,
   },
   menuContentStyle: {
-    backgroundColor: 'transparent',
+    // backgroundColor: 'transparent',
+    backgroundColor: Colors.dark_orange,
+    marginTop: 9
   },
   selectedLanguage: {
     width: 105,

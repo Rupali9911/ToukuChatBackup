@@ -27,6 +27,10 @@ export const SET_CURRENT_GROUP_ADMINS = 'SET_CURRENT_GROUP_ADMINS';
 
 export const SET_MESSAGES = 'SET_MESSAGES';
 
+export const ADD_NEW_GROUP = 'ADD_NEW_GROUP';
+export const UPDATE_GROUP = 'UPDATE_GROUP';
+export const DELETE_GROUP = 'DELETE_GROUP';
+
 const initialState = {
   loading: false,
   userGroups: [],
@@ -173,6 +177,40 @@ export default function (state = initialState, action) {
         ...state,
         messages: [...action.payload]
       }
+    case ADD_NEW_GROUP:
+      let groupList = state.userGroups.slice();
+      let groupIndex = groupList.findIndex((_)=>_.group_id==action.payload.group_id);
+
+      if(groupIndex<0){
+        groupList.splice(0,0,action.payload);
+        return {
+          ...state,
+          userGroups: groupList
+        }
+      }else{
+        return state;
+      }
+
+    case UPDATE_GROUP:
+      let group_list = state.userGroups.slice();
+      let group_index = group_list.findIndex((_) => _.group_id == action.payload.group_id);
+
+      if (group_index < 0) {
+        return state;
+      } else {
+        group_list.splice(group_index, 1, action.payload);
+        return {
+          ...state,
+          userGroups: group_list
+        }
+      }
+
+    case DELETE_GROUP:
+      return {
+        ...state,
+        userFriends: state.userGroups.filter((_)=>_.group_id!==action.payload)
+      }
+
     default:
       return state;
   }
@@ -245,6 +283,21 @@ const deleteMessage = (data) => ({
 
 const setCurrentGroupAdminsState = (data) => ({
   type: SET_CURRENT_GROUP_ADMINS,
+  payload: data,
+});
+
+export const addNewGroup = (data) => ({
+  type: ADD_NEW_GROUP,
+  payload: data,
+});
+
+export const updateGroup = (data) => ({
+  type: UPDATE_GROUP,
+  payload: data,
+});
+
+export const deleteGroupItem = (data) => ({
+  type: DELETE_GROUP,
   payload: data,
 });
 

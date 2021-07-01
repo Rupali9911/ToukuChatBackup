@@ -29,7 +29,7 @@ import stickerPacks from './data.json';
 
 import {addEmotionToFrequentlyUsed} from '../../../redux/reducers/chatReducer';
 import {connect} from 'react-redux';
-import {findIndex} from 'lodash';
+import {findIndex, isEqual} from 'lodash';
 import { ListLoader } from '../../Loaders';
 import NormalImage from '../../NormalImage';
 import MediaPickerList from '../../MediaPicker';
@@ -60,7 +60,8 @@ class ChatInput extends Component {
       selected_medias: [],
       selectedMediaObject: [],
       selectedEmotion: null,
-      activeEmotionView: false
+      activeEmotionView: false,
+      value: ''
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
@@ -75,8 +76,8 @@ class ChatInput extends Component {
     this.fetchTrendingGifs();
     this.fetchTrendingStickers();
 
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+    // this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    // this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
 
   }
 
@@ -333,11 +334,11 @@ class ChatInput extends Component {
     }
   }
 
-  onGifEdit(newTerm) {
+  onGifEdit = (newTerm) => {
     this.setState({term: newTerm}, () => this.fetchGifs());
   }
 
-  onStickerEdit(text) {
+  onStickerEdit = (text) => {
     this.setState({stickerSearch: text}, () => this.fetchStickers());
   }
 
@@ -419,6 +420,241 @@ class ChatInput extends Component {
     this.setState({ selectedEmotion: null });
   }
 
+  handleInput = (text) => {
+    this.setState({value: text});
+    // this.props.onChangeText(text);
+  }
+
+  resetInput = () => {
+    this.hideExtraArea();
+    this.input_ref && this.input_ref._textInput
+      ? this.input_ref._textInput.blur()
+      : this.input_ref.blur();
+    this.setState({input_focus: false, selectedEmotion: null});
+    this.props.onChangeText('');
+  }
+
+  onSubmit = () => {
+    const {value,selected_medias,selectedEmotion} = this.state;
+    const {sendingImage, onSend, onMediaSend, sendEmotion} = this.props;
+    console.log('======');
+    this.input_ref.clear();
+    if (value) {
+      value || sendingImage.uri ? onSend(value) : null;
+    } else if (selected_medias && selected_medias.length > 0) {
+      onMediaSend(this.state.selectedMediaObject);
+      this.hidePicker();
+    } else if (selectedEmotion) {
+      sendEmotion(selectedEmotion);
+      this.addEmotionToFrequentlyUsed(selectedEmotion);
+      this.setState({ selectedEmotion: null });
+    }
+    // console.log('clear text');
+    // this.input_ref.clear();
+    this.setState({value: ''});
+  }
+
+  showEmotionView = () => {
+    this.setState({activeEmotionView: true});
+    this.showExtraArea(this.state.keyboardHeight);
+    Keyboard.dismiss();
+  }
+
+  onTextInputContentSizeChange = ({nativeEvent}) => {
+    if (nativeEvent.contentSize.height !== this.lineHeight) {
+      this.lineHeight = nativeEvent.contentSize.height;
+      if (
+        this.lineHeight > 20 &&
+        this.lineHeight > this.oldLineHeight &&
+        this.newHeight <= 200
+      ) {
+        this.newHeight = this.newHeight + 15;
+      }
+      if (
+        this.lineHeight > 20 &&
+        this.lineHeight < this.oldLineHeight
+      ) {
+        this.newHeight = this.newHeight - 15;
+      }
+      if (
+        isIphoneX() || Platform.isPad
+          ? this.lineHeight <= 70
+          : this.lineHeight <= 50
+      ) {
+        this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
+      }
+      this.oldLineHeight = this.lineHeight;
+    }
+  }
+
+  onTextInputFocus = () => {
+    // this.showExtraArea(230);
+    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false }, () => {
+      // this.hideExtraArea();
+    });
+  }
+
+  onTextInputBlur = () => {
+    !this.state.activeEmotionView && this.hideExtraArea();
+    this.setState({input_focus: false})
+  }
+
+  onMentionTextInputFocus = () => {
+    // this.showExtraArea(230);
+    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false }, () => {
+      // this.hideExtraArea();
+    });
+  }
+
+  onMentionTextInputBlur = () => {
+    !this.state.activeEmotionView && this.hideExtraArea();
+    this.setState({ input_focus: false })
+    this.input_ref && this.input_ref.hideSuggestionPanel();
+  }
+
+  onMentionTextChange = (message) => {
+    if (!message.includes('@')) {
+      this.setState({suggestionData: []});
+    }else{
+      this.groupMembersMentions(message);
+    }
+    console.log(message);
+    this.handleInput(message);
+    // this.groupMembersMentions(message);
+  }
+
+  suggestedUsersComponent = (users, addMentions) => {
+    return (
+      users.length > 0 && (
+        <View
+          style={[
+            {
+              top: -this.suggestionsDataHeight(users),
+              height: this.suggestionsDataHeight(users),
+            },
+            styles.listContainer,
+          ]}>
+          <FlatList
+            scrollEnabled={true}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={false}
+            keyboardShouldPersistTaps={'always'}
+            horizontal={this.props.horizontal}
+            ListEmptyComponent={this.props.loadingComponent}
+            enableEmptySections={true}
+            data={users}
+            keyExtractor={this.props.keyExtractor}
+            renderItem={({ item, idx }) => (
+              <ListRenderItem
+                item={item}
+                idx={idx}
+                addMentions={addMentions}
+              />
+            )}
+          />
+        </View>
+      )
+    );
+  }
+
+  onRenderScrollTabBar = ({activeTab, goToPage}) => {
+    return (
+      <View
+        style={{
+          width: Dimensions.get('screen').width / 3,
+          height: normalize(35),
+          flexDirection: 'row',
+        }}>
+        <TabBarItem
+          icon={Icons.icon_frequently_used}
+          onPress={() => {
+            goToPage(0);
+            this.setState({ activeEmotionView: true });
+            this.showExtraArea(this.state.keyboardHeight);
+            Keyboard.dismiss();
+          }}
+          activeTab={activeTab}
+          index={0}
+        />
+        <TabBarItem
+          icon={Icons.icon_gif}
+          onPress={() => {
+            goToPage(1);
+            this.setState({ activeEmotionView: true });
+            this.showExtraArea(this.state.keyboardHeight);
+            Keyboard.dismiss();
+          }}
+          activeTab={activeTab}
+          index={1}
+        />
+        <TabBarItem
+          icon={Icons.icon_sticker}
+          onPress={() => {
+            goToPage(2);
+            this.setState({ activeEmotionView: true });
+            this.showExtraArea(this.state.keyboardHeight);
+            Keyboard.dismiss();
+          }}
+          activeTab={activeTab}
+          index={2}
+        />
+        {/*<TabBarItem*/}
+          {/*icon={Icons.icon_sticker_pack}*/}
+          {/*onPress={() => goToPage(3)}*/}
+          {/*activeTab={activeTab}*/}
+          {/*index={3}*/}
+        {/*/>*/}
+      </View>
+    );
+  }
+
+  onEmotionSearchFocus = () => {
+    // this.showExtraArea(this.state.keyboardHeight + 100);
+  }
+
+  onEmotionSearchBlur = ()=>{
+    this.showExtraArea(this.state.keyboardHeight);
+  }
+
+  onGalleryPress = () => {
+    const {onGalleryPress} = this.props;
+    // this.setState({isExtraAreaVisible: true});
+    if (this.props.onMediaSend) {
+      if (isExtraAreaVisible) {
+        this.hidePicker();
+      } else {
+        this.showPicker();
+      }
+    } else {
+      onGalleryPress();
+    }
+    // onGalleryPress();
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps && nextProps.value){
+      this.setState({value: nextProps.value});
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    console.log('call for update');
+    if (
+      !isEqual(this.props.value, nextProps.value) ||
+      !isEqual(this.props.placeholder, nextProps.placeholder) ||
+      !isEqual(this.props.groupMembers, nextProps.groupMembers) ||
+      !isEqual(this.props.currentUserData, nextProps.currentUserData) ||
+      !isEqual(this.props.sendingImage, nextProps.sendingImage)
+    ) {
+      console.log('props re-render');
+      return true;
+    } else if (!isEqual(this.state, nextState)) {
+      console.log('state re-render');
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {
       onAttachmentPress,
@@ -427,34 +663,14 @@ class ChatInput extends Component {
       onChangeText,
       onSend,
       onMediaSend,
-      value,
+      // value,
       placeholder,
       sendingImage,
       sendEmotion,
       addEmotionToFrequentlyUsed,
       emotions,
     } = this.props;
-    const {input_focus,isExtraAreaVisible,selected_medias, selectedEmotion} = this.state;
-
-    function handleInput(text) {
-      onChangeText(text);
-    }
-
-    
-    // let groupMembersLength;
-    // let suggestionRowHeight;
-    // if (groupMembers) {
-    //   groupMembersLength = this.groupMembersMentions(value).length;
-    //   console.log('render -> groupMembersLength', groupMembersLength);
-    //   suggestionRowHeight =
-    //     groupMembersLength < 2
-    //       ? 35
-    //       : groupMembersLength < 3
-    //       ? 70
-    //       : groupMembersLength < 4
-    //       ? 105
-    //       : 140;
-    // }
+    const {input_focus,isExtraAreaVisible,selected_medias, selectedEmotion, value} = this.state;
 
     if (value.length === 0) {
       this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
@@ -513,14 +729,7 @@ class ChatInput extends Component {
                 style={[
                   styles.chatAttachmentButton,
                 ]}
-                onPress={() => {
-                  this.hideExtraArea();
-                  this.input_ref && this.input_ref._textInput
-                    ? this.input_ref._textInput.blur()
-                    : this.input_ref.blur();
-                  this.setState({input_focus: false, selectedEmotion: null});
-                  onChangeText('');
-                }}>
+                onPress={this.resetInput}>
                 <FontAwesome5
                   name={'angle-right'}
                   size={30}
@@ -528,38 +737,12 @@ class ChatInput extends Component {
                   color={Colors.gradient_3}
                 />
               </TouchableOpacity>
-                {/* <TouchableOpacity
-                    style={styles.chatAttachmentButton}
-                    onPress={() =>{
-                        // Keyboard.dismiss(()=> {
-                        //     this.setState({
-                        //         isExtrasAreaVisible: !isExtrasAreaVisible,
-                        //     })
-                        // })
-                        // this.hideKeyboard().then(()=>{
-                          this.showExtraArea();
-                          Keyboard.dismiss();
-                          // console.log('isExtrasAreaVisible', isExtrasAreaVisible)
-                          // wait(100).then(()=>{
-                          //   this.setState({
-                          //     isExtrasAreaVisible: !isExtrasAreaVisible,
-                          //   })
-                          // });
-                                
-                        // });
-                    }}>
-                    <Image
-                        source={Icons.icon_sticker_pack}
-                        style={styles.attachmentImage}
-                        resizeMode={'contain'}
-                    />
-                </TouchableOpacity> */}
             </View>
           ) : (
             <View style={styles.chatAttachmentContainer}>
               <TouchableOpacity
                 style={styles.chatAttachmentButton}
-                onPress={() => onAttachmentPress()}>
+                onPress={onAttachmentPress}>
                 {/* <FontAwesome5
                   name={'plus'}
                   size={height * 0.03}
@@ -573,7 +756,7 @@ class ChatInput extends Component {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.chatAttachmentButton}
-                onPress={() => onCameraPress()}>
+                onPress={onCameraPress}>
                 <Image
                   source={Icons.icon_camera_grad}
                   style={styles.attachmentImage}
@@ -582,19 +765,7 @@ class ChatInput extends Component {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.chatAttachmentButton}
-                onPress={() => {
-                  // this.setState({isExtraAreaVisible: true});
-                  if(this.props.onMediaSend){
-                    if(isExtraAreaVisible){
-                      this.hidePicker();
-                    }else{
-                      this.showPicker();
-                    }
-                  }else{
-                    onGalleryPress();
-                  }
-                  // onGalleryPress();
-                }}>
+                onPress={this.onGalleryPress}>
                 <Image
                   source={Icons.gallery_icon_select}
                   style={styles.attachmentImage}
@@ -621,27 +792,9 @@ class ChatInput extends Component {
                   value={value}
                   maxHeight={50}
                   multiline={true}
-                  onFocus={() => {
-                    // this.showExtraArea(230);
-                    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false }, () => {
-                      // this.hideExtraArea();
-                    });
-                  }}
-                  onBlur={() => {
-                    !this.state.activeEmotionView && this.hideExtraArea();
-                    this.setState({ input_focus: false })
-                    this.input_ref && this.input_ref.hideSuggestionPanel();
-                  }}
-                  onTextChange={(message) => {
-                    if (!message.includes('@')) {
-                      this.setState({suggestionData: []});
-                    }else{
-                      this.groupMembersMentions(message);
-                    }
-                    console.log(message);
-                    handleInput(message);
-                    // this.groupMembersMentions(message);
-                  }}
+                  onFocus={this.onMentionTextInputFocus}
+                  onBlur={this.onMentionTextInputBlur}
+                  onTextChange={this.onMentionTextChange}
                   onMarkdownChange={(markdown) => {}}
                   placeholder={placeholder}
                   placeholderTextColor={'gray'}
@@ -649,37 +802,7 @@ class ChatInput extends Component {
                   mentionStyle={styles.mentionStyle}
                   textInputStyle={styles.textInputStyle}
                   users={this.state.suggestionData}
-                  suggestedUsersComponent={(users, addMentions) =>
-                    users.length > 0 && (
-                      <View
-                        style={[
-                          {
-                            top: -this.suggestionsDataHeight(users),
-                            height: this.suggestionsDataHeight(users),
-                          },
-                          styles.listContainer,
-                        ]}>
-                        <FlatList
-                          scrollEnabled={true}
-                          showsVerticalScrollIndicator={false}
-                          nestedScrollEnabled={false}
-                          keyboardShouldPersistTaps={'always'}
-                          horizontal={this.props.horizontal}
-                          ListEmptyComponent={this.props.loadingComponent}
-                          enableEmptySections={true}
-                          data={users}
-                          keyExtractor={this.props.keyExtractor}
-                          renderItem={({item, idx}) => (
-                            <ListRenderItem
-                              item={item}
-                              idx={idx}
-                              addMentions={addMentions}
-                            />
-                          )}
-                        />
-                      </View>
-                    )
-                  }
+                  suggestedUsersComponent={this.suggestedUsersComponent}
                 />
             ) : (
               <TextInput
@@ -688,43 +811,10 @@ class ChatInput extends Component {
                 }}
                 multiline={true}
                 style={styles.textInput}
-                onChangeText={(message) => handleInput(message)}
-                onFocus={(e) => {
-                  // this.showExtraArea(230);
-                  this.setState({input_focus: true, selectedEmotion: null, activeEmotionView: false},()=>{
-                    // this.hideExtraArea();
-                  });
-                }}
-                onBlur={(e) => {
-                  !this.state.activeEmotionView && this.hideExtraArea();
-                  this.setState({input_focus: false})
-                }}
-                onContentSizeChange={({nativeEvent}) => {
-                  if (nativeEvent.contentSize.height !== this.lineHeight) {
-                    this.lineHeight = nativeEvent.contentSize.height;
-                    if (
-                      this.lineHeight > 20 &&
-                      this.lineHeight > this.oldLineHeight &&
-                      this.newHeight <= 200
-                    ) {
-                      this.newHeight = this.newHeight + 15;
-                    }
-                    if (
-                      this.lineHeight > 20 &&
-                      this.lineHeight < this.oldLineHeight
-                    ) {
-                      this.newHeight = this.newHeight - 15;
-                    }
-                    if (
-                      isIphoneX() || Platform.isPad
-                        ? this.lineHeight <= 70
-                        : this.lineHeight <= 50
-                    ) {
-                      this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
-                    }
-                    this.oldLineHeight = this.lineHeight;
-                  }
-                }}
+                onChangeText={this.handleInput}
+                onFocus={this.onTextInputFocus}
+                onBlur={this.onTextInputBlur}
+                onContentSizeChange={this.onTextInputContentSizeChange}
                 value={value}
                 placeholder={placeholder}
                 autoCorrect={false}
@@ -733,11 +823,7 @@ class ChatInput extends Component {
              {(input_focus || this.isExtrasAreaVisible) && <View style={styles.attachmentContainer}>
                 <TouchableOpacity
                   style={styles.chatAttachmentButton}
-                  onPress={() => {
-                    this.setState({activeEmotionView: true});
-                    this.showExtraArea(this.state.keyboardHeight);
-                    Keyboard.dismiss();
-                  }}>
+                  onPress={this.showEmotionView}>
                   <Image
                     source={Icons.icon_sticker_pack}
                     style={styles.attachmentImage}
@@ -749,19 +835,7 @@ class ChatInput extends Component {
           <TouchableOpacity
             style={styles.sendButoonContainer}
             activeOpacity={value || sendingImage.uri ? 0 : 1}
-            onPress={() => {
-              console.log('======');
-              if(value){
-                value || sendingImage.uri ? onSend() : null;
-              }else if(selected_medias && selected_medias.length>0){
-                onMediaSend(this.state.selectedMediaObject);
-                this.hidePicker();
-              }else if(selectedEmotion){
-                sendEmotion(selectedEmotion);
-                this.addEmotionToFrequentlyUsed(selectedEmotion);
-                this.setState({selectedEmotion: null});
-              }
-            }}>
+            onPress={this.onSubmit}>
             <Image
               source={Icons.icon_send_button}
               style={styles.sandButtonImage}
@@ -777,82 +851,12 @@ class ChatInput extends Component {
                 {
                   // height: isExtrasAreaVisible ? 340 : 0,
                   height: this.state.extraAreaHeight,
-                  width: '100%',
                 },
               ]}>
               <ScrollableTabView
                 initialPage={1}
                 tabBarPosition={'top'}
-                renderTabBar={({activeTab, goToPage}) => {
-                  return (
-                    <View
-                      style={{
-                        width: Dimensions.get('screen').width / 3,
-                        height: normalize(35),
-                        flexDirection: 'row',
-                      }}>
-                      {/* <TouchableOpacity
-                      onPress={() => props.goToPage(0)}
-                      style={{
-                        paddingVertical: '4%',
-                        paddingHorizontal: '3%',
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Image
-                        source={Icons.icon_emoji}
-                        style={{
-                          width: 20,
-                          height: 20,
-                          resizeMode: 'contain',
-                          tintColor:
-                            props.activeTab === 0 ? Colors.dark_pink : 'gray',
-                        }}
-                      />
-                    </TouchableOpacity> */}
-                      <TabBarItem
-                        icon={Icons.icon_frequently_used}
-                        onPress={() => {
-                          goToPage(0);
-                          this.setState({ activeEmotionView: true });
-                          this.showExtraArea(this.state.keyboardHeight);
-                          Keyboard.dismiss();
-                        }}
-                        activeTab={activeTab}
-                        index={0}
-                      />
-                      <TabBarItem
-                        icon={Icons.icon_gif}
-                        onPress={() => {
-                          goToPage(1);
-                          this.setState({ activeEmotionView: true });
-                          this.showExtraArea(this.state.keyboardHeight);
-                          Keyboard.dismiss();
-                        }}
-                        activeTab={activeTab}
-                        index={1}
-                      />
-                      <TabBarItem
-                        icon={Icons.icon_sticker}
-                        onPress={() => {
-                          goToPage(2);
-                          this.setState({ activeEmotionView: true });
-                          this.showExtraArea(this.state.keyboardHeight);
-                          Keyboard.dismiss();
-                        }}
-                        activeTab={activeTab}
-                        index={2}
-                      />
-                      {/*<TabBarItem*/}
-                        {/*icon={Icons.icon_sticker_pack}*/}
-                        {/*onPress={() => goToPage(3)}*/}
-                        {/*activeTab={activeTab}*/}
-                        {/*index={3}*/}
-                      {/*/>*/}
-                    </View>
-                  );
-                }}>
+                renderTabBar={this.onRenderScrollTabBar}>
                 {/* <View tabLabel={'Emojis'} style={{height: '100%'}}>
                 <EmojiBoard
                   showBoard={isExtrasAreaVisible}
@@ -883,16 +887,12 @@ class ChatInput extends Component {
                     numOfColumns={2}
                     containerStyle={styles.gifsContainerStyle}
                     imageStyle={styles.gifsImageContainerStyle}
-                    onChangeText={(text) => this.onGifEdit(text)}
+                    onChangeText={this.onGifEdit}
                     onPress={this.selectEmotion}
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
                     loading={this.state.loading}
-                    onFocus={()=>{
-                      // this.showExtraArea(this.state.keyboardHeight + 100);
-                    }}
-                    onBlur={()=>{
-                      this.showExtraArea(this.state.keyboardHeight);
-                    }}
+                    onFocus={this.onEmotionSearchFocus}
+                    onBlur={this.onEmotionSearchBlur}
                   />
                 </View>
                 <View tabLabel={'Stickers'}>
@@ -903,15 +903,11 @@ class ChatInput extends Component {
                     numOfColumns={4}
                     containerStyle={styles.stickerContainerStyle}
                     imageStyle={styles.stickerImageStyle}
-                    onChangeText={(text) => this.onStickerEdit(text)}
+                    onChangeText={this.onStickerEdit}
                     onPress={this.selectEmotion}
                     addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
-                    onFocus={()=>{
-                      // this.showExtraArea(450);
-                    }}
-                    onBlur={()=>{
-                      this.showExtraArea(300);
-                    }}
+                    onFocus={this.onEmotionSearchFocus}
+                    onBlur={this.onEmotionSearchBlur}
                   />
                 </View>
                 {/*<View tabLabel={'Stickers Pack'}>*/}

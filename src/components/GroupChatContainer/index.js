@@ -204,6 +204,7 @@ class GroupChatContainer extends Component {
         this.scrollView.scrollToIndex({
           animated: true,
           index: reply_index,
+          viewPosition: 0.5
         });
         InteractionManager.runAfterInteractions(()=>{
           this[`message_box_${id}`] &&
@@ -225,6 +226,7 @@ class GroupChatContainer extends Component {
             this.scrollView && this.scrollView.scrollToIndex({
               animated: true,
               index: new_index,
+              viewPosition: 0.5
             });
           }, 500);
         })
@@ -731,13 +733,13 @@ class GroupChatContainer extends Component {
         ) : isChatDisable === false ? null : (
           <ChatInput
             sendEmotion = {sendEmotion}
-            onAttachmentPress={() => onAttachmentPress()}
-            onCameraPress={() => onCameraPress()}
-            onGalleryPress={() => onGalleryPress()}
-            onChangeText={(message) => handleMessage(message)}
-            onSend={() => {
+            onAttachmentPress={onAttachmentPress}
+            onCameraPress={onCameraPress}
+            onGalleryPress={onGalleryPress}
+            onChangeText={handleMessage}
+            onSend={async (newMessageText) => {
               if (newMessageText && newMessageText.trim().length > 0) {
-                onMessageSend(()=>{
+                onMessageSend(newMessageText,()=>{
                     setTimeout(()=>{
                       messages.length > 0 &&
                       this.scrollView &&
