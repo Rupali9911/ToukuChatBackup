@@ -797,7 +797,7 @@ class FriendChats extends Component {
           );
           let conversations = [];
           conversations = realmToPlainObject(chat);
-          
+
           this.props.setFriendConversation(conversations);
           if(res.conversation.length>=50){
             this.setState({isLoadMore: true});
@@ -842,7 +842,7 @@ class FriendChats extends Component {
           );
           let conversations = [];
           conversations = realmToPlainObject(friendChat);
-          
+
           this.props.setFriendConversation(conversations);
           if(res.conversation.length>=50){
             this.setState({isLoadMore: true});
@@ -1593,7 +1593,7 @@ class FriendChats extends Component {
       isLoadMore,
     } = this.state;
     const {
-      currentFriend, 
+      currentFriend,
       chatFriendConversation
     } = this.props;
     // console.log('currentFriend', currentFriend);
