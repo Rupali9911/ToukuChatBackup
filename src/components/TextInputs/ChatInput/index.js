@@ -820,7 +820,7 @@ class ChatInput extends Component {
                 autoCorrect={false}
               />
             )}
-             {(input_focus || this.isExtrasAreaVisible) && <View style={styles.attachmentContainer}>
+             {(input_focus || this.isExtrasAreaVisible) && <View style={styles.stickerContainer}>
                 <TouchableOpacity
                   style={styles.chatAttachmentButton}
                   onPress={this.showEmotionView}>

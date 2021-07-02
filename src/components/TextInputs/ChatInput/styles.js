@@ -361,5 +361,13 @@ export default StyleSheet.create({
     position: 'absolute',
     right: 10, 
     top: 7
-  }
+  },
+  stickerContainer: {
+    width: '10%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // marginBottom: 5,
+    marginRight: 5,
+  },
 });

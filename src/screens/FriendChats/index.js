@@ -549,6 +549,7 @@ class FriendChats extends Component {
         sendmsgdata,
         ...this.props.chatFriendConversation,
       ]);
+      console.log('data',data);
       this.props.sendPersonalMessage(data);
     }
     if (uploadFile.uri) {
@@ -859,7 +860,7 @@ class FriendChats extends Component {
     this.props.markFriendMsgsRead(this.props.currentFriend.friend);
   }
 
-  handleMessage(message) {
+  handleMessage = (message) => {
     this.setState({newMessageText: message});
     // friend
     // const payload = {
@@ -1650,7 +1651,7 @@ class FriendChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={this.onCameraPress}
-            onGalleryPress={this.toggleGalleryModal}
+            onGalleryPress={this.toggleGalleryModal.bind(this,true)}
             onAttachmentPress={this.onAttachmentPress}
             sendingImage={uploadFile}
             isMultiSelect={isMultiSelect}

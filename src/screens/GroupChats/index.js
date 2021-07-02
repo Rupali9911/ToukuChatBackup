@@ -631,6 +631,7 @@ class GroupChats extends Component {
           reply_to: repliedMessage.id,
         };
       }
+      console.log('groupMessage',groupMessage);
       // this.state.conversation.unshift(msgDataSend);
       // this.props.setGroupConversation([
       //   getGroupMessageObject(msgDataSend,this.props.userData),
@@ -674,6 +675,7 @@ class GroupChats extends Component {
           msg_type: sentMessageType,
         };
       }
+      console.log('groupMessage',groupMessage);
       // this.state.conversation.unshift(msgDataSend);
       // this.props.setGroupConversation([
       //   getGroupMessageObject(msgDataSend,this.props.userData),
@@ -2322,7 +2324,7 @@ class GroupChats extends Component {
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             onCameraPress={this.onCameraPress}
-            onGalleryPress={() => this.toggleGalleryModal(true)}
+            onGalleryPress={this.toggleGalleryModal.bind(this,true)}
             onAttachmentPress={this.onAttachmentPress}
             sendingImage={uploadFile}
             currentGroupDetail={currentGroupDetail}

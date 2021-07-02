@@ -109,7 +109,8 @@ class ChatContainer extends Component {
     });
   }
 
-  onReplyPress = (id) => {
+  onReplyPress = (index,id) => {
+    const {messages} = this.props;
     this.scrollView.scrollToIndex({
       animated: true,
       index: this.searchItemIndex(
@@ -245,7 +246,7 @@ class ChatContainer extends Component {
                 // closeMenu={this.state.closeMenu}
                 perviousPlayingAudioId={this.state.perviousPlayingAudioId}
                 onAudioPlayPress={this.onAudioPlayPress}
-                onReplyPress={this.onReplyPress}
+                onReplyPress={this.onReplyPress.bind(this,index)}
                 showOpenLoader={this.props.showOpenLoader}
                 isMultiSelect={isMultiSelect}
                 isChatDisable={isChatDisable}
