@@ -98,7 +98,7 @@ class ChatInput extends Component {
     }else{
       this.showExtraArea(e.endCoordinates.height);
     }
-    
+
   }
 
   _keyboardDidHide = () => {
@@ -124,7 +124,7 @@ class ChatInput extends Component {
     }).start(()=>{
       this.setState({
         isExtraAreaVisible: false,
-        selected_medias: [], 
+        selected_medias: [],
         selectedMediaObject: []
       });
     });
@@ -644,8 +644,15 @@ class ChatInput extends Component {
       !isEqual(this.props.placeholder, nextProps.placeholder) ||
       !isEqual(this.props.groupMembers, nextProps.groupMembers) ||
       !isEqual(this.props.currentUserData, nextProps.currentUserData) ||
-      !isEqual(this.props.sendingImage, nextProps.sendingImage)
+      !isEqual(this.props.sendingImage, nextProps.sendingImage) ||
+        !isEqual(this.props.hideStickerView, nextProps.hideStickerView)
     ) {
+      if (!isEqual(this.props.hideStickerView, nextProps.hideStickerView)) {
+        if (this.isExtrasAreaVisible) {
+            this.resetInput()
+        }
+          return false;
+      }
       console.log('props re-render');
       return true;
     } else if (!isEqual(this.state, nextState)) {
@@ -669,6 +676,7 @@ class ChatInput extends Component {
       sendEmotion,
       addEmotionToFrequentlyUsed,
       emotions,
+        hideStickerView
     } = this.props;
     const {input_focus,isExtraAreaVisible,selected_medias, selectedEmotion, value} = this.state;
 
@@ -921,7 +929,7 @@ class ChatInput extends Component {
           <MediaPickerList onSelect={this.onSelectMedia} selectedMedia={selected_medias}/>
         </Animated.View>
         :null}
-        
+
       </View>
       </>
     );
@@ -1151,7 +1159,7 @@ function EmotionList({
             setFocused(false)
           }}
         />
-      
+
       {loading ? (
         <View>
           <ActivityIndicator color={'red'} />

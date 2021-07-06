@@ -50,7 +50,8 @@ class GroupChatContainer extends Component {
       isActionButtonVisible: false,
       unreadMessage: [],
       unreadMessageCount: 0,
-      scrollLoading: false
+      scrollLoading: false,
+        hideStickerView: false
     };
     this._listViewOffset = 0;
     this.viewableItems = [];
@@ -69,7 +70,7 @@ class GroupChatContainer extends Component {
   checkEventTypes = (message) => {
     switch (message.text.data.type) {
       case SocketEvents.READ_ALL_MESSAGE_GROUP_CHAT:
-        
+
         break;
       case SocketEvents.NEW_MESSAGE_IN_GROUP:
         console.log('new message');
@@ -80,7 +81,7 @@ class GroupChatContainer extends Component {
 
   onNewMessageInGroup = (message) => {
     if(message.text.data.message_details.group_id == this.props.currentGroup.group_id){
-      
+
       if(this._listViewOffset <= 400){
         setTimeout(()=>{
           this.scrollListToRecent();
@@ -89,7 +90,7 @@ class GroupChatContainer extends Component {
         let array = this.state.unreadMessage;
         let set = new Set(array);
         set.add(message.text.data.message_details.msg_id);
-        
+
         let item = message.text.data.message_details.unread_msg.filter(
           (msg) => {
             return msg.user__id === this.props.userData.id;
@@ -210,7 +211,7 @@ class GroupChatContainer extends Component {
           this[`message_box_${id}`] &&
           this[`message_box_${id}`].callBlinking(id);
         });
-        
+
       } else {
         this.props.onReplyPress(id, (conversations) => {
           this.scrollView && this.scrollView.scrollToOffset({ offset: 20, animated: false });
@@ -240,12 +241,12 @@ class GroupChatContainer extends Component {
       groupMembers,
       isMultiSelect,
       onSelect,
-      selectedIds 
+      selectedIds
     } = this.props;
-    
+
     const conversationLength = messages.length;
     let isSelected = selectedIds.includes(item.id + '');
-    
+
     const messageBodyContainer = [
       {marginLeft: isMultiSelect ? -35 : 0},
       styles.messageBodyContainer,
@@ -317,7 +318,7 @@ class GroupChatContainer extends Component {
                   onMessageReply={this.props.onMessageReply}
                   orientation={this.props.orientation}
                   onMessageTranslate={this.props.onMessageTranslate.bind(null,index)}
-                  onMessageTranslateClose={this.props.onMessageTranslateClose.bind(null,index)}                  
+                  onMessageTranslateClose={this.props.onMessageTranslateClose.bind(null,index)}
                   onDelete={this.props.onDelete}
                   onUnSend={this.props.onUnSendMsg}
                   onEditMessage={this.props.onEditMessage}
@@ -418,7 +419,7 @@ class GroupChatContainer extends Component {
     // console.log('scroll position',this._listViewOffset);
     this._listViewOffset = currentOffset
   }
-  
+
   onViewableItemsChanged = ({ viewableItems, changed }) => {
     // console.log("Visible items are", viewableItems);
     // console.log("Changed in this iteration", changed);
@@ -434,7 +435,7 @@ class GroupChatContainer extends Component {
           this.setState({unreadMessage: array});
         }
     }
-    
+
     // console.log('viewableItems[0].index',viewableItems[0].index);
     // console.log('viewableItems[0].item.msg_id',viewableItems[0].item.id,this.props.currentGroup.last_msg_id);
     // console.log('this.props.currentGroup.unread_msg',this.props.currentGroup.unread_msg);
@@ -454,7 +455,7 @@ class GroupChatContainer extends Component {
     //       this.setState({unreadMessage: array});
     //     }
     //     if (this.props.currentGroup.unread_msg>0 && item.item.msg_id == this.props.currentGroup.last_msg_id){
-          
+
     //     }
     // });
   }
@@ -508,7 +509,7 @@ class GroupChatContainer extends Component {
       onLoadPrevious,
       sendEmotion
     } = this.props;
-    const {isActionButtonVisible,unreadMessage} = this.state;
+    const {isActionButtonVisible,unreadMessage, hideStickerView} = this.state;
     // console.log('messages[0]', messages[0]);
 
 
@@ -534,7 +535,12 @@ class GroupChatContainer extends Component {
         keyboardOpeningTime={1500}
         scrollEnabled={false}
         extraHeight={200}
-        contentInsetAdjustmentBehavior={'always'}>
+        contentInsetAdjustmentBehavior={'always'}
+        onStartShouldSetResponder={() => {
+            console.log('onStartShouldSetResponder called')
+                this.setState({hideStickerView: !hideStickerView})
+        }}
+      >
         <View
           style={[
             styles.messageAreaContainer,
@@ -759,6 +765,7 @@ class GroupChatContainer extends Component {
             onSelectMention={this.props.onSelectMention}
             placeholder={translate('pages.xchat.enterMessage')}
             sendingImage={sendingImage}
+            hideStickerView={hideStickerView}
           />
         )}
       </View>

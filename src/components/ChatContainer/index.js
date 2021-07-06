@@ -47,6 +47,7 @@ class ChatContainer extends Component {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
       closeMenu: false,
+        hideStickerView: false
     };
   }
 
@@ -462,6 +463,7 @@ class ChatContainer extends Component {
       isLoadMore,
       sendEmotion,
     } = this.props;
+    const{hideStickerView} = this.state
 
     const replayContainer = [
       {
@@ -487,6 +489,12 @@ class ChatContainer extends Component {
         // keyboardOpeningTime={1500}
         // scrollEnabled={false}
         // extraHeight={200}
+        onStartShouldSetResponder={() => {
+          if (!isChatDisable){
+            console.log('onStartShouldSetResponder called')
+              this.setState({hideStickerView: !hideStickerView})
+          }
+        }}
         >
         <View
           style={[
@@ -670,6 +678,7 @@ class ChatContainer extends Component {
             sendEnable={sendEnable}
             placeholder={translate('pages.xchat.enterMessage')}
             sendingImage={sendingImage}
+            hideStickerView={hideStickerView}
           />
         )}
       </View>
