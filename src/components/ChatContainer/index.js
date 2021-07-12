@@ -71,23 +71,6 @@ class ChatContainer extends Component {
     return moment(msgDate).format('MM/DD');
   };
 
-  getDate = (date) => {
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate()) {
-      return translate('common.today');
-    }
-    if (
-      yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth()
-    ) {
-      return translate('common.yesterday');
-    }
-    return moment(msgDate).format('MM/DD');
-  };
-
   onItemPress = (item) => {
     const {isMultiSelect,onSelect} = this.props;
     isMultiSelect && !item.is_unsent && onSelect(item.id);

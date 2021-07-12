@@ -429,6 +429,11 @@ class FriendChats extends Component {
       }
     }
 
+      if (sentMessageType === 'sticker') {
+        msgText = uploadFile.uri;
+        imgThumb = uploadFile.uri;
+      }
+
     if (sentMessageType === 'audio') {
       let file = uploadFile;
       let files = [file];
@@ -1422,6 +1427,7 @@ class FriendChats extends Component {
       {
         uploadFile: source,
         sentMessageType: 'image',
+        //sentMessageType: 'sticker',
         sendingMedia: true,
       },
       async () => {
@@ -1573,7 +1579,7 @@ class FriendChats extends Component {
         this.props.setFriendConversation(messages);
         resolve(messages);
       }else{
-        
+
       }
     });
   }

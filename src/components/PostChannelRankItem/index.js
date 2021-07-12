@@ -152,6 +152,7 @@ class PostChannelRankItem extends Component {
 
   renderChannelDetail = () => {
     const {post, userData} = this.props;
+    console.log('post', post)
     let tmpReferralCode = userData.referral_link;
     const arrLink = tmpReferralCode.split('/');
     let referralCode = '';
@@ -165,7 +166,7 @@ class PostChannelRankItem extends Component {
       {
         id: 1,
         title: 'posts',
-        count: post.post || 0,
+        count: post.posts || 0,
       },
       {
         id: 2,
