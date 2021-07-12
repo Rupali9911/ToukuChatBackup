@@ -634,6 +634,7 @@ class GroupChatMessageBubble extends Component {
     if (!message.text && !message.is_unsent) {
       return null;
     }
+    console.log('message',message)
     return (
       <View>
         <Menu

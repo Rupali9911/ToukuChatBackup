@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Dimensions,
   Image,
@@ -16,12 +16,12 @@ import { FlatList } from 'react-native-bidirectional-infinite-scroll';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { FAB } from 'react-native-paper';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
-import {Colors, Fonts, Icons, Images, SocketEvents} from '../../constants';
-import {translate} from '../../redux/reducers/languageReducer';
-import {getUserName, getUser_ActionFromUpdateText, eventService} from '../../utils';
+import { Colors, Fonts, Icons, Images, SocketEvents } from '../../constants';
+import { translate } from '../../redux/reducers/languageReducer';
+import { getUserName, getUser_ActionFromUpdateText, eventService } from '../../utils';
 import Button from '../Button';
 import CheckBox from '../CheckBox';
 import GroupChatMessageBox from '../GroupChatMessageBox';
@@ -37,8 +37,10 @@ import {
 } from '../../redux/reducers/timelineReducer';
 import { addFriendByReferralCode } from '../../redux/reducers/friendReducer';
 import { markGroupConversationRead } from '../../redux/reducers/groupReducer';
+import {addEmotionToFrequentlyUsed} from '../../redux/reducers/chatReducer';
+import ParsedText from 'react-native-parsed-text';
 
-const {height} = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 class GroupChatContainer extends Component {
   constructor(props) {
@@ -57,13 +59,13 @@ class GroupChatContainer extends Component {
     this.viewableItems = [];
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.events = eventService.getMessage().subscribe((message) => {
       this.checkEventTypes(message);
     });
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.events.unsubscribe();
   }
 
@@ -85,8 +87,8 @@ class GroupChatContainer extends Component {
       if(this._listViewOffset <= 400){
         setTimeout(()=>{
           this.scrollListToRecent();
-        },100);
-      }else{
+        }, 100);
+      } else {
         let array = this.state.unreadMessage;
         let set = new Set(array);
         set.add(message.text.data.message_details.msg_id);
@@ -96,7 +98,7 @@ class GroupChatContainer extends Component {
             return msg.user__id === this.props.userData.id;
           },
         );
-        console.log('items',[...set]);
+        console.log('items', [...set]);
         this.setState({
           unreadMessage: [...set],
           unreadMessageCount: item.length > 0 ? item[0].unread_count : 0
@@ -131,41 +133,41 @@ class GroupChatContainer extends Component {
       <>
         {(messages[index + 1] &&
           new Date(item.timestamp).getDate() !==
-            new Date(messages[index + 1].timestamp).getDate()) ||
-        index === conversationLength - 1 ? (
-          item.text == null ? null : (
-            <Fragment>
-              <View style={styles.messageDateContainer}>
-                <View style={styles.messageDate}>
-                  <Text style={styles.messageDateText}>
-                    {this.getDate(item.timestamp)}
-                  </Text>
+          new Date(messages[index + 1].timestamp).getDate()) ||
+          index === conversationLength - 1 ? (
+            item.text == null ? null : (
+              <Fragment>
+                <View style={styles.messageDateContainer}>
+                  <View style={styles.messageDate}>
+                    <Text style={styles.messageDateText}>
+                      {this.getDate(item.timestamp)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </Fragment>
-          )
-        ) : null}
+              </Fragment>
+            )
+          ) : null}
       </>
     );
   }
 
   markGroupConversationRead() {
-    let data = {group_id: this.props.currentGroup.group_id};
+    let data = { group_id: this.props.currentGroup.group_id };
     this.props.markGroupConversationRead(data);
   }
 
   scrollListToRecent = () => {
-    console.log('scroll to recent',this._listViewOffset);
-    this.scrollView && this.scrollView.scrollToOffset({offset: 0, animated: false});
+    console.log('scroll to recent', this._listViewOffset);
+    this.scrollView && this.scrollView.scrollToOffset({ offset: 0, animated: false });
   }
 
   scrollListToEnd = () => {
-    this.scrollView && this.scrollView.scrollToIndex({index: 0, animated: false});
+    this.scrollView && this.scrollView.scrollToIndex({ index: 0, animated: false });
   }
 
   onMessagePress = (item) => {
-    const {isMultiSelect,onSelect} = this.props;
-    if(isMultiSelect && !item.is_unsent){
+    const { isMultiSelect, onSelect } = this.props;
+    if (isMultiSelect && !item.is_unsent) {
       onSelect(item.id);
     }
   }
@@ -193,12 +195,12 @@ class GroupChatContainer extends Component {
     //   )+10,
     // });
 
-    let findIndex = this.viewableItems.findIndex((item)=>item.item.id==id);
+    let findIndex = this.viewableItems.findIndex((item) => item.item.id == id);
 
-    if(findIndex>=0){
+    if (findIndex >= 0) {
       this[`message_box_${id}`] &&
         this[`message_box_${id}`].callBlinking(id);
-    }else {
+    } else {
       let reply_index = this.searchItemIndex(this.props.messages, id, index)
       console.log('reply_index', reply_index, index);
       if (reply_index !== index) {
@@ -207,9 +209,9 @@ class GroupChatContainer extends Component {
           index: reply_index,
           viewPosition: 0.5
         });
-        InteractionManager.runAfterInteractions(()=>{
+        InteractionManager.runAfterInteractions(() => {
           this[`message_box_${id}`] &&
-          this[`message_box_${id}`].callBlinking(id);
+            this[`message_box_${id}`].callBlinking(id);
         });
 
       } else {
@@ -222,12 +224,14 @@ class GroupChatContainer extends Component {
               id,
               index,
             );
-            this[`message_box_${id}`] &&
-              this[`message_box_${id}`].callBlinking(id);
             this.scrollView && this.scrollView.scrollToIndex({
               animated: true,
               index: new_index,
               viewPosition: 0.5
+            });
+            InteractionManager.runAfterInteractions(() => {
+              this[`message_box_${id}`] &&
+                this[`message_box_${id}`].callBlinking(id);
             });
           }, 500);
         })
@@ -235,7 +239,7 @@ class GroupChatContainer extends Component {
     }
   }
 
-  renderMessage = ({item,index}) => {
+  renderMessage = ({ item, index }) => {
     const {
       messages,
       groupMembers,
@@ -248,7 +252,7 @@ class GroupChatContainer extends Component {
     let isSelected = selectedIds.includes(item.id + '');
 
     const messageBodyContainer = [
-      {marginLeft: isMultiSelect ? -35 : 0},
+      { marginLeft: isMultiSelect ? -35 : 0 },
       styles.messageBodyContainer,
     ];
     return (
@@ -257,57 +261,57 @@ class GroupChatContainer extends Component {
           {isMultiSelect && !item.is_unsent && (
             <CheckBox
               isChecked={isSelected}
-              onCheck={onSelect.bind(null,item.id)}
+              onCheck={onSelect.bind(null, item.id)}
             />
           )}
           {item.type === 'update' ? (
-              <TouchableOpacity
-                style={messageBodyContainer}
-                onPress={this.onMessagePress.bind(this,item)}>
-                <Menu
-                  ref={(ref) => {
-                    this[`_menu_${item.id}`] = ref;
-                  }}
-                  style={styles.menuStyle}
-                  tabHeight={110}
-                  headerHeight={80}
-                  button={
-                    <TouchableOpacity
-                      disabled={isMultiSelect}
-                      onLongPress={this.showMenu.bind(this,item.id)}
-                      style={styles.menuButtonActionStyle}>
-                      <View style={styles.menuButtonActionContainer}>
-                        <Text style={styles.messageDateText}>
-                          {item.text}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  }>
-                  <MenuItem
-                    onPress={this.onMenuDeletePress.bind(this,item)}
-                    customComponent={
-                      <View
-                        style={
-                          styles.menuItemCustomComponentContainer
-                        }>
-                        <FontAwesome5
-                          name={'trash'}
-                          size={20}
-                          color={Colors.white}
-                        />
-                        <Text style={styles.deleteLabel}>
-                          {translate('common.delete')}
-                        </Text>
-                      </View>
-                    }
-                  />
-                </Menu>
-              </TouchableOpacity>
-            ) : (
+            <TouchableOpacity
+              style={messageBodyContainer}
+              onPress={this.onMessagePress.bind(this, item)}>
+              <Menu
+                ref={(ref) => {
+                  this[`_menu_${item.id}`] = ref;
+                }}
+                style={styles.menuStyle}
+                tabHeight={110}
+                headerHeight={80}
+                button={
+                  <TouchableOpacity
+                    disabled={isMultiSelect}
+                    onLongPress={this.showMenu.bind(this, item.id)}
+                    style={styles.menuButtonActionStyle}>
+                    <View style={styles.menuButtonActionContainer}>
+                      <Text style={styles.messageDateText}>
+                        {item.text}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                }>
+                <MenuItem
+                  onPress={this.onMenuDeletePress.bind(this, item)}
+                  customComponent={
+                    <View
+                      style={
+                        styles.menuItemCustomComponentContainer
+                      }>
+                      <FontAwesome5
+                        name={'trash'}
+                        size={20}
+                        color={Colors.white}
+                      />
+                      <Text style={styles.deleteLabel}>
+                        {translate('common.delete')}
+                      </Text>
+                    </View>
+                  }
+                />
+              </Menu>
+            </TouchableOpacity>
+          ) : (
               <TouchableOpacity
                 style={styles.singleFlex}
                 disabled={!isMultiSelect}
-                onPress={this.onMessagePress.bind(this,item)}>
+                onPress={this.onMessagePress.bind(this, item)}>
                 <GroupChatMessageBox
                   ref={(view) => {
                     this[`message_box_${item.id}`] = view;
@@ -327,7 +331,7 @@ class GroupChatContainer extends Component {
                   previousPlayingAudioId={this.state.previousPlayingAudioId}
                   closeMenu={this.state.closeMenu}
                   onAudioPlayPress={this.onAudioPlayPress.bind(this)}
-                  onReplyPress={this.onReplyPress.bind(this,index)}
+                  onReplyPress={this.onReplyPress.bind(this, index)}
                   groupMembers={groupMembers}
                   showOpenLoader={this.props.showOpenLoader}
                   isMultiSelect={isMultiSelect}
@@ -388,18 +392,18 @@ class GroupChatContainer extends Component {
 
   hideMenu = (id) => {
     this[`_menu_${id}`] && this[`_menu_${id}`].hide();
-    this.setState({visible: false});
+    this.setState({ visible: false });
   };
 
   showMenu = (id) => {
     this[`_menu_${id}`] && this[`_menu_${id}`].show();
-    this.setState({visible: true});
+    this.setState({ visible: true });
   };
 
   onArrowClick = () => {
-    this.setState({scrollLoading: true});
-    this.props.onScrollToLatestClick().then(()=>{
-      this.setState({scrollLoading: false},()=>{
+    this.setState({ scrollLoading: true });
+    this.props.onScrollToLatestClick().then(() => {
+      this.setState({ scrollLoading: false }, () => {
         console.log('scroll to recent');
         this.scrollListToEnd();
       });
@@ -425,15 +429,15 @@ class GroupChatContainer extends Component {
     // console.log("Changed in this iteration", changed);
     let array = this.state.unreadMessage;
     this.viewableItems = viewableItems;
-    if(
+    if (
       viewableItems.length > 0 &&
       array.includes(viewableItems[0].item.id)
     ) {
       let searchIndex = array.findIndex((_) => _ == viewableItems[0].item.id);
-        if(searchIndex >= 0){
-          array.splice(searchIndex,1);
-          this.setState({unreadMessage: array});
-        }
+      if (searchIndex >= 0) {
+        array.splice(searchIndex, 1);
+        this.setState({ unreadMessage: array });
+      }
     }
 
     // console.log('viewableItems[0].index',viewableItems[0].index);
@@ -461,7 +465,7 @@ class GroupChatContainer extends Component {
   }
 
   onKeyboardWillShow = () => {
-    this.keyboardAwareScrollView && this.keyboardAwareScrollView.scrollToEnd({animated: false});
+    this.keyboardAwareScrollView && this.keyboardAwareScrollView.scrollToEnd({ animated: false });
   }
 
   onScrollViewref = (view) => {
@@ -478,6 +482,34 @@ class GroupChatContainer extends Component {
         text: translate('pages.xchat.invalidMsgDelete'),
         type: 'primary',
       });
+    }
+  }
+
+  getMentionUserName = (message, id) => {
+    let name = '';
+    message.mentions && message.mentions.forEach((groupMember) => {
+      if (groupMember.id == id) {
+        name = getUserName(groupMember.id) ||
+          groupMember.desplay_name ||
+          groupMember.username;
+      }
+    });
+    return name;
+  }
+
+  onSend = async (newMessageText) => {
+    const {onMessageSend, messages, handleMessage} = this.props;
+    if (newMessageText && newMessageText.trim().length > 0) {
+      onMessageSend(newMessageText, () => {
+        setTimeout(() => {
+          messages.length > 0 &&
+            this.scrollView &&
+            this.scrollView.scrollToOffset({ offset: 0, animated: false });
+          console.log('scroll to 0 index done');
+        }, 200);
+      });
+    } else {
+      handleMessage('');
     }
   }
 
@@ -531,7 +563,7 @@ class GroupChatContainer extends Component {
         ref={this.onScrollViewref}
         keyboardShouldPersistTaps={'always'}
         onKeyboardWillShow={this.onKeyboardWillShow}
-        maintainVisibleContentPosition={{minIndexForVisible: 5}}
+        maintainVisibleContentPosition={{ minIndexForVisible: 5 }}
         keyboardOpeningTime={1500}
         scrollEnabled={false}
         extraHeight={200}
@@ -551,14 +583,14 @@ class GroupChatContainer extends Component {
                     ? 0
                     : height * 0.05
                   : orientation === 'PORTRAIT'
-                  ? 0
-                  : height * 0.03,
+                    ? 0
+                    : height * 0.03,
             },
           ]}>
           <>
             <FlatList
               // enableResetScrollToCoords={false}
-              style={{flex:1}}
+              style={{ flex: 1 }}
               contentContainerStyle={[
                 styles.messageAreaScroll,
                 isReply && styles.replyPadding,
@@ -576,7 +608,7 @@ class GroupChatContainer extends Component {
               scrollEnabled={!this.state.scrollLoading}
               onScroll={this._onScroll}
               onStartReached={onLoadMore}
-              onEndReached={onLoadPrevious.bind(null,this._listViewOffset)}
+              onEndReached={onLoadPrevious.bind(null, this._listViewOffset)}
               onEndReachedThreshold={100}
               // showDefaultLoadingIndicators={true}
               // ListFooterComponent={() =>
@@ -592,7 +624,7 @@ class GroupChatContainer extends Component {
               keyExtractor={this.keyExtractor}
               renderItem={this.renderMessage}
               ListEmptyComponent={this.listEmptyComponent}
-              // enableAutoscrollToTop={this._listViewOffset<=400}
+            // enableAutoscrollToTop={this._listViewOffset<=400}
             />
           </>
           {/* <ScrollView
@@ -625,8 +657,8 @@ class GroupChatContainer extends Component {
             animated={false}
             loading={this.state.scrollLoading}
             // icon={() => <FontAwesome5 name="chevron-down" size={25} color={'white'} style={{alignSelf:'center'}}/>}
-            icon={unreadMessage.length>0?null:'chevron-down'}
-            label={unreadMessage.length>0?`+${unreadMessage.length}`:null}
+            icon={unreadMessage.length > 0 ? null : 'chevron-down'}
+            label={unreadMessage.length > 0 ? `+${unreadMessage.length}` : null}
             color={'white'}
             // visible={messages.length>0 && (this.props.currentGroup.last_msg_id !== messages[0].id || isActionButtonVisible)}
             visible={isActionButtonVisible}
@@ -654,58 +686,82 @@ class GroupChatContainer extends Component {
               </View>
               <View style={styles.repliedMessageContainer}>
                 {repliedMessage.type === 'image' &&
-                repliedMessage.text !== null ? (
-                  <RoundedImage
-                    source={{url: repliedMessage.text}}
-                    isRounded={false}
-                    size={50}
-                  />
-                ) : repliedMessage.type === 'video' ? (
-                  <VideoThumbnailPlayer
-                    url={repliedMessage.text}
-                    showPlayButton
-                  />
-                ) : repliedMessage.type === 'audio' ? (
-                  <Fragment>
-                    <Text style={styles.mediaMessage}>
-                      {repliedMessage.text
-                        .split('/')
-                        .pop()
-                        .split('%2F')
-                        .pop()}
-                    </Text>
-                    <View style={styles.mediaContainer}>
-                      <FontAwesome
-                        name={'volume-up'}
-                        size={15}
-                        color={Colors.black_light}
-                      />
-                      <Text style={styles.mediaLabel}>Audio</Text>
-                    </View>
-                  </Fragment>
-                ) : repliedMessage.type === 'doc' ? (
-                  <Fragment>
-                    <Text style={styles.mediaMessage}>
-                      {repliedMessage.text
-                        .split('/')
-                        .pop()
-                        .split('%2F')
-                        .pop()}
-                    </Text>
-                    <View style={styles.mediaContainer}>
-                      <FontAwesome
-                        name={'file-o'}
-                        size={15}
-                        color={Colors.black_light}
-                      />
-                      <Text style={styles.mediaLabel}>File</Text>
-                    </View>
-                  </Fragment>
-                ) : (
-                  <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
-                    {repliedMessage.text}
-                  </Text>
-                )}
+                  repliedMessage.text !== null ? (
+                    <RoundedImage
+                      source={{ url: repliedMessage.text }}
+                      isRounded={false}
+                      size={50}
+                    />
+                  ) : repliedMessage.type === 'video' ? (
+                    <VideoThumbnailPlayer
+                      url={repliedMessage.text}
+                      showPlayButton
+                    />
+                  ) : repliedMessage.type === 'audio' ? (
+                    <Fragment>
+                      <Text style={styles.mediaMessage}>
+                        {repliedMessage.text
+                          .split('/')
+                          .pop()
+                          .split('%2F')
+                          .pop()}
+                      </Text>
+                      <View style={styles.mediaContainer}>
+                        <FontAwesome
+                          name={'volume-up'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text style={styles.mediaLabel}>Audio</Text>
+                      </View>
+                    </Fragment>
+                  ) : repliedMessage.type === 'doc' ? (
+                    <Fragment>
+                      <Text style={styles.mediaMessage}>
+                        {repliedMessage.text
+                          .split('/')
+                          .pop()
+                          .split('%2F')
+                          .pop()}
+                      </Text>
+                      <View style={styles.mediaContainer}>
+                        <FontAwesome
+                          name={'file-o'}
+                          size={15}
+                          color={Colors.black_light}
+                        />
+                        <Text style={styles.mediaLabel}>File</Text>
+                      </View>
+                    </Fragment>
+                  ) : (
+                          <ParsedText
+                            style={{ fontFamily: Fonts.regular }}
+                            parse={
+                              [
+                                {
+                                  pattern: /(https?:\/\/|www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.(xn--)?[a-z0-9-]{2,20}\b([-a-zA-Z0-9@:%_\+\[\],.~#?&\/=]*[-a-zA-Z0-9@:%_\+\]~#?&\/=])*/i,
+                                  style: {
+                                    color: Colors.link_color,
+                                    textDecorationLine: 'underline',
+                                  },
+                                },
+                                {
+                                  pattern: /(~[0-9]+~)/gim,
+                                  style: { color: '#E65497' },
+                                  renderText: (matchingString, matches) => {
+                                    let match = matchingString.replace(/~/g, '');
+                                    return `@${this.getMentionUserName(repliedMessage,match)}`;
+                                  }
+                                },
+                              ]
+                            }
+                            childrenProps={{ allowFontScaling: false }}>
+                            {repliedMessage.text}
+                          </ParsedText>
+                          // <Text numberOfLines={2} style={{fontFamily: Fonts.regular}}>
+                          //   {repliedMessage.text}
+                          // </Text>
+                        )}
               </View>
             </View>
           ) : null}
@@ -738,25 +794,12 @@ class GroupChatContainer extends Component {
           </View>
         ) : isChatDisable === false ? null : (
           <ChatInput
-            sendEmotion = {sendEmotion}
+            sendEmotion={sendEmotion}
             onAttachmentPress={onAttachmentPress}
             onCameraPress={onCameraPress}
             onGalleryPress={onGalleryPress}
             onChangeText={handleMessage}
-            onSend={async (newMessageText) => {
-              if (newMessageText && newMessageText.trim().length > 0) {
-                onMessageSend(newMessageText,()=>{
-                    setTimeout(()=>{
-                      messages.length > 0 &&
-                      this.scrollView &&
-                      this.scrollView.scrollToOffset({offset: 0, animated: false});
-                      console.log('scroll to 0 index done');
-                    },200);
-                });
-              } else {
-                handleMessage('');
-              }
-            }}
+            onSend={this.onSend}
             onMediaSend={this.props.onMediaSend}
             value={newMessageText}
             groupMembers={groupMembers}
@@ -766,6 +809,8 @@ class GroupChatContainer extends Component {
             placeholder={translate('pages.xchat.enterMessage')}
             sendingImage={sendingImage}
             hideStickerView={hideStickerView}
+            emotions={this.props.emotions}
+            addEmotionToFrequentlyUsed={this.props.addEmotionToFrequentlyUsed}
           />
         )}
       </View>
@@ -777,7 +822,8 @@ const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
     groupLoading: state.groupReducer.loading,
-    currentGroup: state.groupReducer.currentGroup
+    currentGroup: state.groupReducer.currentGroup,
+    emotions: state.chatReducer.emotions,
   };
 };
 
@@ -786,6 +832,7 @@ const mapDispatchToProps = {
   setSpecificPostId,
   setActiveTimelineTab,
   markGroupConversationRead,
+  addEmotionToFrequentlyUsed
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChatContainer);

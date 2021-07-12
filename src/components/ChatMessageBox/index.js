@@ -16,6 +16,7 @@ import {globalStyles} from '../../styles';
 import {getAvatar, normalize} from '../../utils';
 import ChatMessageBubble from '../ChatMessageBubble';
 import styles from './styles';
+import { realm } from '../../storage/Service';
 
 const {width} = Dimensions.get('window');
 
@@ -27,6 +28,7 @@ export default class ChatMessageBox extends Component {
       selectedMessageId: null,
       isPortrait: false,
       animation: new Animated.Value(1),
+      message: this.props.message
     };
   }
 
@@ -37,6 +39,30 @@ export default class ChatMessageBox extends Component {
     this.props.message.msg_type === 'image' &&
       this.props.message.message_body &&
       this.isPortrait(this.props.message.message_body);
+
+      if(!this.props.isChannel && this.props.message.id){
+        this.resultObject = realm.objectForPrimaryKey(
+          'chat_conversation_friend',
+          this.props.message.id
+        );
+        if(this.resultObject){
+          this.resultObject.addListener((chat,changes)=>{
+            // console.log('chat changes',changes,chat);
+            this.setState({message: chat});
+          });
+        }
+      }else if(this.props.message.id && this.props.isChannel){
+        this.resultObject = realm.objectForPrimaryKey(
+          'chat_conversation',
+          this.props.message.id
+        );
+        if(this.resultObject){
+          this.resultObject.addListener((chat,changes)=>{
+            // console.log('chat changes',changes,chat);
+            this.setState({message: chat});
+          });
+        }
+      }
   }
 
   callBlinking = (id) => {
@@ -130,9 +156,9 @@ export default class ChatMessageBox extends Component {
   }
 
   render() {
-    const {longPressMenu, selectedMessageId} = this.state;
+    const {longPressMenu, selectedMessageId, message} = this.state;
     const {
-      message,
+      // message,
       isUser,
       time,
       is_read,
@@ -330,7 +356,7 @@ export default class ChatMessageBox extends Component {
               <View style={styles.row}>
                 {/* {message.msg_type !== 'image' ? ( */}
                 <View style={styles.readContainer}>
-                  {is_read && (
+                  {message.is_read && (
                     <Text style={styles.statusText}>
                       {translate('pages.xchat.read')}
                     </Text>

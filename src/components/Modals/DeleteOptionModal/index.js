@@ -11,11 +11,27 @@ import Button from '../../Button';
 
 // StyleSheet import
 import styles from './styles';
+import { isEqual } from 'lodash';
 
 /**
  * Delete option modal component
  */
 export default class DeleteOptionModal extends Component {
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(
+      !isEqual(this.props.visible, nextProps.visible) ||
+      !isEqual(this.props.title, nextProps.title) ||
+      !isEqual(this.props.confirmText, nextProps.confirmText) ||
+      !isEqual(this.props.cancelText, nextProps.cancelText) ||
+      !isEqual(this.props.isDeleteMeLoading, nextProps.isDeleteMeLoading) ||
+      !isEqual(this.props.isDeleteEveryoneLoading, nextProps.isDeleteEveryoneLoading)
+    ){
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {
       visible,

@@ -9,6 +9,8 @@ import { MessageBubble } from './MessageBubble';
 // import { ScrollView } from '@stream-io/flat-list-mvcp';
 import {setMessages} from '../redux/reducers/groupReducer';
 import {connect} from 'react-redux';
+import { TextInput } from 'react-native-paper';
+import ChatInput from '../components/TextInputs/ChatInput';
 
 class Conversations extends React.Component{
     
@@ -117,7 +119,7 @@ class Conversations extends React.Component{
             return null;
         }
         return(
-            <SafeAreaView style={styles.safeArea}>
+            <View style={styles.safeArea}>
                 <View style={styles.header}>
                     <Text style={styles.headerTitle}>Chat between two users</Text>
                 </View>
@@ -128,7 +130,19 @@ class Conversations extends React.Component{
                     onStartReached={this.loadMoreRecentMessages}
                     renderItem={MessageBubble}
                 />
-            </SafeAreaView>
+                <ChatInput
+                    // sendEmotion={sendEmotion}
+                    // onAttachmentPress={onAttachmentPress}
+                    // onCameraPress={onCameraPress}
+                    // onGalleryPress={onGalleryPress}
+                    onChangeText={()=>{}}
+                    // onSend={this.onSend}
+                    // value={newMessageText}
+                    // sendEnable={sendEnable}
+                    placeholder={'pages.xchat.enterMessage'}
+                    sendingImage={{uri: null, type: null, name: null}}
+                />
+            </View>
             // <View style={{flex:1}}>
             //     <SafeAreaView style={{flex:1}}>
             //         <FlatList

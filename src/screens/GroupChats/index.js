@@ -31,6 +31,7 @@ import {
   editGroupMessage,
   getGroupConversation,
   getUpdatedGroupConversation,
+  getUpdatedGroupConversationInBg,
   getGroupDetail,
   getGroupMembers,
   getLocalUserGroups,
@@ -77,7 +78,7 @@ import {
   updateGroupInitialOpenStatus
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
-import {getUserName, realmToPlainObject, eventService} from '../../utils';
+import {getUserName, realmToPlainObject, eventService, realmToPlainSingleObject} from '../../utils';
 import {
   setActiveTimelineTab,
   setSpecificPostId,
@@ -431,6 +432,12 @@ class GroupChats extends Component {
     }
   };
 
+  onMessageSendInBg = (newMessageText,onSendFinish,totalMedia,currentSendIndex) => {
+    RnBgTask.runInBackground_withPriority("MIN", () => {
+      this.onMessageSend(newMessageText,onSendFinish,totalMedia,currentSendIndex);
+    });
+  }
+
   onMessageSend = async (newMessageText = '',onSendFinish,totalMedia,currentSendIndex) => {
     const {editMessageId} = this.state;
     const {userData, currentGroup, currentGroupMembers} = this.props;
@@ -781,19 +788,19 @@ class GroupChats extends Component {
       }
     }
 
-    let fileName = message.message_body.text
+    let fileName = message.text
       .split('/')
       .pop()
       .split('%2F')
       .pop();
     if (
-      message.message_body.type === 'image' &&
+      message.type === 'image' &&
       fileName.lastIndexOf('.') === -1
     ) {
       fileName = `${fileName}.jpg`;
     }
     if (
-      message.message_body.type === 'video' &&
+      message.type === 'video' &&
       fileName.lastIndexOf('.') === -1
     ) {
       fileName = `${fileName}.mp4`;
@@ -804,7 +811,7 @@ class GroupChats extends Component {
       path: `${dirs.DownloadDir}/${fileName}`,
       fileCache: true,
     })
-      .fetch('GET', message.message_body.text, {})
+      .fetch('GET', message.text, {})
       .then((res) => {
         if (Platform.OS === 'ios') {
           RNFetchBlob.ios.openDocument(res.data);
@@ -871,7 +878,7 @@ class GroupChats extends Component {
 
   onEdit = (message) => {
     this.setState({
-      newMessageText: message.text,
+      newMessageText: this.renderMessageWitMentions(message.text,message)+ ' ',
       editMessageId: message.id,
       isEdited: true,
     });
@@ -936,7 +943,14 @@ class GroupChats extends Component {
         msg_id = latest_msg_id || msg_id;
       }
 
-      this.getGroupConversationInitial(msg_id);
+      if(msg_id){
+        this.getGroupConversationInitial(msg_id);
+      }else{
+        let result = getGroupObjectById(this.props.currentGroup.group_id);
+        let group = realmToPlainSingleObject(result);
+        this.props.setCurrentGroup(group);
+        this.getGroupConversationInitial(group.last_msg_id);
+      }
 
       this.updateUnReadGroupChatCount(); 
 
@@ -993,7 +1007,7 @@ class GroupChats extends Component {
   fetchPrevious = (msg_id, group_id) => {
     console.log('bg_thread_previous_msg_id',msg_id);
     this.props
-      .getUpdatedGroupConversation(group_id,msg_id,false,true)
+      .getUpdatedGroupConversationInBg(group_id,msg_id,false,true)
       .then((res) => {
         console.log('loop',res.status,res.previous,this.props.currentRouteName, group_id, this.props.currentGroup.group_id);
         if (res.status && res.previous && this.props.currentRouteName === 'GroupChats' && group_id == this.props.currentGroup.group_id) {
@@ -1009,7 +1023,7 @@ class GroupChats extends Component {
   fetchNext = (msg_id, group_id) => {
     console.log('bg_thread_next_msg_id',msg_id);
     this.props
-      .getUpdatedGroupConversation(group_id,msg_id,true,false)
+      .getUpdatedGroupConversationInBg(group_id,msg_id,true,false)
       .then((res) => {
         console.log('bg_thread_next_res',res.status, res.next, this.props.currentRouteName,group_id,this.props.currentGroup.group_id);
         if (res.status && res.next && this.props.currentRouteName === 'GroupChats' && group_id == this.props.currentGroup.group_id) {
@@ -1335,6 +1349,7 @@ class GroupChats extends Component {
       })
       .catch((err) => {
         console.log('GroupChats -> getGroupConversation -> err', err);
+        this.setState({isChatLoading: false});
       });
   };
 
@@ -2218,6 +2233,10 @@ class GroupChats extends Component {
       }
     });
   }
+
+  shouldComponentUpdate(nextProps, nextState){
+    return true;
+  }
  
   render() {
     const {
@@ -2305,7 +2324,7 @@ class GroupChats extends Component {
             }}
             memberCount={currentGroupDetail.total_members}
             handleMessage={this.handleMessage}
-            onMessageSend={this.onMessageSend}
+            onMessageSend={this.onMessageSendInBg}
             // onMediaSend={this.onMediaSend}
             sendEmotion={this.sendEmotion}
             onMessageReply={this.onReply}
@@ -2479,6 +2498,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getGroupConversation,
   getUpdatedGroupConversation,
+  getUpdatedGroupConversationInBg,
   getUserGroups,
   getGroupDetail,
   getGroupMembers,

@@ -68,7 +68,7 @@ class ChatMessageBubble extends Component {
     this.state = {
       showImage: false,
       images: null,
-      // message: this.props.message
+      message: this.props.message
     };
     // this.eventEmitter = new NativeEventEmitter(
     //   NativeModules.RNReactNativeDocViewer,
@@ -95,18 +95,29 @@ class ChatMessageBubble extends Component {
     //   }
     // });
 
-      // if(this.props.isFriend){
-      //   this.resultObject = realm.objectForPrimaryKey(
-      //     'chat_conversation_friend',
-      //     this.props.message.id
-      //   );
-      //   if(this.resultObject){
-      //     this.resultObject.addListener((chat,changes)=>{
-      //       // console.log('chat changes',changes,chat);
-      //       this.setState({message: chat});
-      //     });
-      //   }
-      // }
+    if(!this.props.isChannel && this.props.message.id){
+      this.resultObject = realm.objectForPrimaryKey(
+        'chat_conversation_friend',
+        this.props.message.id
+      );
+      if(this.resultObject){
+        this.resultObject.addListener((chat,changes)=>{
+          // console.log('chat changes',changes,chat);
+          this.setState({message: chat});
+        });
+      }
+    }else if(this.props.message.id && this.props.isChannel){
+      this.resultObject = realm.objectForPrimaryKey(
+        'chat_conversation',
+        this.props.message.id
+      );
+      if(this.resultObject){
+        this.resultObject.addListener((chat,changes)=>{
+          // console.log('chat changes',changes,chat);
+          this.setState({message: chat});
+        });
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -470,7 +481,7 @@ class ChatMessageBubble extends Component {
   }
 
   onMessageClick = () => {
-    const {message} = this.props;
+    const {message} = this.state;
     if(message.msg_type === 'update') {
       this.navigateToNotes()
     }
@@ -506,7 +517,7 @@ class ChatMessageBubble extends Component {
 
   render() {
     const {
-      message,
+      // message,
       isUser,
       onMessageReply,
       onMessagePress,
@@ -521,7 +532,7 @@ class ChatMessageBubble extends Component {
       onAudioPlayPress,
       isMultiSelect,
     } = this.props;
-    const {showImage, images} = this.state;
+    const {showImage, images, message} = this.state;
     const msgTime = new Date(message.created);
     const isEditable = new Date(msgTime);
 

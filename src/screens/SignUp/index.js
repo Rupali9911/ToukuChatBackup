@@ -968,7 +968,7 @@ class SignUp extends Component {
                 <Inputfield
                   value={this.state.email}
                   placeholder={
-                    translate('common.email') + ' ' + '(example@gmail.com)'
+                    translate('common.email') + ' ' + '(example@gmail.com)asdasd ad asdada sdadadad asdasadad'
                   }
                   placeholderTextColor="#D3D3D3"
                   returnKeyType={'next'}

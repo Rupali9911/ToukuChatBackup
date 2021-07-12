@@ -1,5 +1,5 @@
 // Library imports
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 // Local imports
 import { Colors, Fonts } from '../../../constants';
@@ -22,7 +22,7 @@ export default StyleSheet.create({
     },
     commentConatiner: {
         width: '100%',
-        maxHeight: normalize(200),
+        maxHeight: Platform.OS === 'ios' ? normalize(200) : normalize(150),
         backgroundColor: '#fff',
     },
     countContainer: {
@@ -126,5 +126,8 @@ export default StyleSheet.create({
     },
     deleteIcon: {
         marginLeft: 5,
+    },
+    stickyViewAndroidContainer: {
+        flex: 1
     }
 });

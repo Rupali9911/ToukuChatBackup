@@ -12,11 +12,27 @@ import Button from '../../Button';
 
 // StyleSheet import
 import styles from './styles';
+import { isEqual } from 'lodash';
 
 /**
  * Confirmation modal component
  */
 export default class ConfirmationModal extends Component {
+  
+  shouldComponentUpdate(nextProps,nextState){
+    if (
+      !isEqual(this.props.visible, nextProps.visible) ||
+      !isEqual(this.props.title, nextProps.title) ||
+      !isEqual(this.props.confirmText, nextProps.confirmText) ||
+      !isEqual(this.props.cancelText, nextProps.cancelText) ||
+      !isEqual(this.props.message, nextProps.message) ||
+      !isEqual(this.props.isLoading, nextProps.isLoading)
+      ) {
+        return true;
+    }
+    return false;
+  }
+
   render() {
     const {
       visible,

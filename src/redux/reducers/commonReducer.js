@@ -66,10 +66,11 @@ export default function (state = initialState, action) {
           if(action.payload.chat === 'group'){
             return _.group_id !== action.payload.id 
           }else if(action.payload.chat === 'channel') {
-            return _.id == action.payload.id;
-          } else {
-            return _.user_id == action.payload.user_id;
+            return _.id !== action.payload.id;
+          } else if(action.payload.chat === 'friend'){
+            return _.user_id !== action.payload.user_id;
           }
+          return true;
         })
       }
 

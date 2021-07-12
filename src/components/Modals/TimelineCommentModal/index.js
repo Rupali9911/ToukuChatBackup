@@ -8,7 +8,8 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -26,7 +27,25 @@ import KeyboardStickyView from '../../KeyboardStickyView';
 // StyleSheet import
 import styles from './styles';
 import ClickableImage from '../../ClickableImage';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+
+const CommentInputContainer = (props) => {
+    return(
+        Platform.OS=='ios' ? 
+        <KeyboardStickyView style={styles.stickyViewContainer}>
+            {props.children}
+        </KeyboardStickyView> : 
+        <KeyboardAwareScrollView 
+            style={styles.stickyViewAndroidContainer} 
+            contentContainerStyle={styles.stickyViewAndroidContainer}
+            keyboardShouldPersistTaps={'always'}>
+            <KeyboardStickyView style={styles.stickyViewContainer}>
+                {props.children}
+            </KeyboardStickyView>
+        </KeyboardAwareScrollView>
+    );
+}
 
 export default class TimelineCommentModal extends Component{
 
@@ -157,59 +176,59 @@ export default class TimelineCommentModal extends Component{
                 >
                 <View style={styles.container}>
                     <TouchableOpacity style={styles.NonViewContainer} onPress={onRequestClose} />
-                    <KeyboardStickyView style={styles.stickyViewContainer}>
-                        <View style={styles.commentConatiner}>
-                            <View style={styles.countContainer}>
-                                {post.liked_by_count > 0 &&
-                                    <Text style={styles.countText}>
-                                        {post.liked_by_count} {translate('pages.xchat.like')}
+                        <CommentInputContainer>
+                            <View style={styles.commentConatiner}>
+                                <View style={styles.countContainer}>
+                                    {post.liked_by_count > 0 &&
+                                        <Text style={styles.countText}>
+                                            {post.liked_by_count} {translate('pages.xchat.like')}
+                                        </Text>
+                                    }
+                                    {(post.post_comments && post.post_comments.length > 0) &&
+                                        <Text style={styles.countText}>
+                                            {post.post_comments && post.post_comments.length} {translate('pages.xchat.comment')}
+                                        </Text>
+                                    }
+                                </View>
+                                <View style={styles.titleContainer}>
+                                    <Text style={styles.title}>
+                                        {translate('pages.xchat.comment')}
                                     </Text>
-                                }
-                                {(post.post_comments && post.post_comments.length > 0) &&
-                                    <Text style={styles.countText}>
-                                        {post.post_comments && post.post_comments.length} {translate('pages.xchat.comment')}
-                                    </Text>
-                                }
-                            </View>
-                            <View style={styles.titleContainer}>
-                                <Text style={styles.title}>
-                                    {translate('pages.xchat.comment')}
-                                </Text>
-                            </View>
-                            <FlatList
-                                data={post.post_comments}
-                                extraData={this.props}
-                                renderItem={this.renderCommentItem}
-                                keyboardShouldPersistTaps={'always'}
-                                inverted
-                                ListEmptyComponent={this.listEmptyComponent}
-                            />
-                        </View>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                autoFocus={autoFocus}
-                                keyboardType='twitter'
-                                style={styles.inputStyle}
-                                textAlignVertical={'center'}
-                                placeholder={translate('pages.xchat.enterComment')}
-                                multiline
-                                onChangeText={(text) => this.setState({ comment: text })}
-                                value={comment}
-                            />
-                            <TouchableOpacity
-                                style={styles.sendButoonContainer}
-                                activeOpacity={addLoading ? 0 : 1}
-                                disabled={addLoading}
-                                onPress={this.actionSend}>
-                                <Image
-                                    source={Icons.icon_send_button}
-                                    style={[styles.sendButtonImage]}
-                                    resizeMode={'contain'}
+                                </View>
+                                <FlatList
+                                    data={post.post_comments}
+                                    extraData={this.props}
+                                    renderItem={this.renderCommentItem}
+                                    keyboardShouldPersistTaps={'always'}
+                                    inverted
+                                    ListEmptyComponent={this.listEmptyComponent}
                                 />
-                            </TouchableOpacity>
-                        </View>
-                        <SafeAreaView style={styles.safeAreaView} />
-                    </KeyboardStickyView>
+                            </View>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    autoFocus={autoFocus}
+                                    keyboardType='twitter'
+                                    style={styles.inputStyle}
+                                    textAlignVertical={'center'}
+                                    placeholder={translate('pages.xchat.enterComment')}
+                                    multiline
+                                    onChangeText={(text) => this.setState({ comment: text })}
+                                    value={comment}
+                                />
+                                <TouchableOpacity
+                                    style={styles.sendButoonContainer}
+                                    activeOpacity={addLoading ? 0 : 1}
+                                    disabled={addLoading}
+                                    onPress={this.actionSend}>
+                                    <Image
+                                        source={Icons.icon_send_button}
+                                        style={[styles.sendButtonImage]}
+                                        resizeMode={'contain'}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            <SafeAreaView style={styles.safeAreaView} />
+                            </CommentInputContainer>
                     <ConfirmationModal
                         visible={showDeleteConfirmation}
                         onCancel={this.actionCancel.bind(this)}

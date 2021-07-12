@@ -405,6 +405,15 @@ export const getFriendChatConversationById = (id) => {
     .filtered(`friend == ${id}`);
 };
 
+export const getFriendChatConversationByMsgId = (id, msg_id, limit = 50) => {
+  let filter = `friend == ${id}`;
+  filter = msg_id ? `${filter} && id >= ${msg_id}` : filter;
+  return realm
+    .objects('chat_conversation_friend')
+    .sorted('created',false)
+    .filtered(filter).slice(0,limit).reverse();
+};
+
 export const updateFriendMessageById = (id, text, type, media) => {
   let returnObject = null;
   realm.write(() => {
@@ -1141,7 +1150,7 @@ export const setGroups = async (group) => {
 };
 
 export const setSingleGroup = async (item) => {
-  let updateGroup = null;
+  let updatedGroup = null;
     var obj = realm.objects('groups').filtered('group_id=' + item.group_id);
     if (obj.length > 0) {
       //console.log('setGroups -> obj', obj);
@@ -1204,7 +1213,7 @@ export const setSingleGroup = async (item) => {
           mention_msg_id: item.mention_msg_id,
           unread_msg_id: item.unread_msg_id,
         });
-        updateGroup = object;
+        updatedGroup = object;
       });
     }
     return updatedGroup;
@@ -1375,13 +1384,14 @@ export const updateLastMsgGroupsWithoutCount = (
   return updatedGroup;
 };
 
-export const updateLastMsgTimestamp = (id, timestamp, unreadCount) => {
+export const updateLastMsgTimestamp = (id, timestamp, unreadCount, message) => {
   let updatedGroup = null;
   realm.write(() => {
     let object = realm.create(
       'groups',
       {
         group_id: id,
+        last_msg_id: message.msg_id,
         timestamp: timestamp,
         no_msgs: false,
         unread_msg: unreadCount,

@@ -502,6 +502,21 @@ export const getUpdatedGroupConversation = (groupId, msg_id, next, prev, limit =
       });
   });
 
+export const getUpdatedGroupConversationInBg = (groupId, msg_id, next, prev, limit = 50) => (dispatch) =>
+  new Promise(function (resolve, reject) {
+    console.log('groupId', groupId);
+    query_parameter = `next=${next}&previous=${prev}&limit=${limit}`;
+    client
+      .get(`/xchat/group-conversation/${groupId}/${msg_id}/?${query_parameter}`)
+      .then((res) => {
+        setGroupChatConversation(res.data);
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
 //Delete Group
 export const deleteGroup = (groupId) => (dispatch) =>
   new Promise(function (resolve, reject) {

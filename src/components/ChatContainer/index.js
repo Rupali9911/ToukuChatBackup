@@ -9,6 +9,7 @@ import {
   View,
   ScrollView,
   FlatList,
+  InteractionManager,
 } from 'react-native';
 import {
   KeyboardAwareFlatList,
@@ -19,6 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
 import {Colors, Fonts, Icons, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
+import {addEmotionToFrequentlyUsed} from '../../redux/reducers/chatReducer';
 import Button from '../Button';
 import ChatMessageBox from '../ChatMessageBox';
 import CheckBox from '../CheckBox';
@@ -37,6 +39,7 @@ import {
   normalize,
 } from '../../../src/utils';
 import { isEqual } from 'lodash';
+import RnBgTask from 'react-native-bg-thread';
 
 const {height} = Dimensions.get('window');
 
@@ -101,6 +104,7 @@ class ChatContainer extends Component {
 
   chatBoxRef = (item, view) => {
     this[`message_box_${item.id}`] = view;
+    // console.log('ref__',this[`message_box_${item.id}`] && this[`message_box_${item.id}`].callBlinking);
   }
 
   onAudioPlayPress = (id) => {
@@ -112,17 +116,44 @@ class ChatContainer extends Component {
 
   onReplyPress = (index,id) => {
     const {messages} = this.props;
-    this.scrollView.scrollToIndex({
-      animated: true,
-      index: this.searchItemIndex(
-        messages,
-        id,
-        index,
-      ),
-      viewPosition: 0.5
-    });
-    this[`message_box_${id}`] &&
-      this[`message_box_${id}`].callBlinking(id);
+    try{
+      let searchIndex = this.searchItemIndex(messages,id,index);
+      console.log('searchIndex',searchIndex, index, id);
+      if(searchIndex >= 0 && searchIndex !== index && (searchIndex - index) < 70){
+        this.scrollView.scrollToIndex({
+          animated: true,
+          index: searchIndex,
+          viewPosition: 0.5
+        });
+        InteractionManager.runAfterInteractions(()=>{
+          console.log('ref_',this[`message_box_${id}`]);
+          this[`message_box_${id}`] &&
+          this[`message_box_${id}`].callBlinking(id);
+        });
+      } else {
+        // RnBgTask.runInBackground_withPriority("MIN", () => {
+        //   this.props.onReplyPress(id).then((result)=>{
+        //     setTimeout(() => {
+        //       // this.scrollView && this.scrollView.scrollToOffset({offset: 20, animated: true});
+        //       let searchIndex = this.searchItemIndex(result,id,index);
+        //       // this.scrollView && this.scrollView.scrollToIndex({
+        //       //   animated: true,
+        //       //   index: result.length - 1,
+        //       //   viewPosition: 0.5
+        //       // });
+        //       this.scrollView && this.scrollView.scrollToEnd({animated: true});
+        //       setTimeout(() => {
+        //         console.log('ref_',this[`message_box_${id}`]);
+        //         this[`message_box_${id}`] &&
+        //         this[`message_box_${id}`].callBlinking(id);
+        //       },2000);
+        //     }, 500);
+        //   });
+        // });
+      }
+    }catch(err){
+      console.log('error on replay click', err);
+    }
   }
 
   renderMessageItem = ({item, index}) => {
@@ -361,6 +392,22 @@ class ChatContainer extends Component {
     }
   };
 
+  onScroll = (event) => {
+    const offset = event.nativeEvent.contentOffset.y;
+    const visibleLength = event.nativeEvent.layoutMeasurement.height;
+    const contentLength = event.nativeEvent.contentSize.height;
+
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtStart = offset < 100;
+    // const isScrollAtEnd = contentLength - visibleLength - offset < onEndReachedThreshold;
+
+    if(isScrollAtStart){
+      console.log('isScrollAtStart');
+      this.props.onScrollToStart && this.props.onScrollToStart();
+    }
+
+  }
+
   onEndReached = () => {
     const {isChannel, friendLoading, isLoadMore, channelLoading, messages, onLoadMore} = this.props;
     if (isChannel) {
@@ -378,6 +425,13 @@ class ChatContainer extends Component {
         onLoadMore && onLoadMore(messages[messages.length - 1]);
       }
     }
+  }
+
+  onScrollToIndexFailed = (info) => {
+    console.log('onScrollToIndexFailed_info',info);
+    let offset = info.averageItemLength * info.index;
+    console.log('onScrollToIndexFailed_info',offset);
+    this.scrollView.scrollToOffset({offset: offset, animated: true});
   }
 
   listFooterComponent = () => {
@@ -405,6 +459,10 @@ class ChatContainer extends Component {
     this.scrollView = view;
   }
 
+  listKeyExtractor = (item, index) => {
+    return `_${item.id}`;
+  }
+
   onScrollBeginDrag = () => {
     this.closeMenu();
   }
@@ -424,6 +482,8 @@ class ChatContainer extends Component {
       handleMessage('');
     }
   }
+
+
 
   shouldComponentUpdate(nextProps, nextState){
     if(!isEqual(nextProps,this.props)){
@@ -516,7 +576,7 @@ class ChatContainer extends Component {
               enableResetScrollToCoords={false}
               contentContainerStyle={[
                 styles.messareAreaScroll,
-                isReply && styles.keyboardFlatlistContentContainer,
+                // isReply && styles.keyboardFlatlistContentContainer,
               ]}
               ref={this.listRef}
               // onContentSizeChange={() => {
@@ -528,11 +588,13 @@ class ChatContainer extends Component {
               // getItemLayout={(data, index) => (
               //   {length: 250, offset: 250 * index, index}
               // )}
+              onScrollToIndexFailed={this.onScrollToIndexFailed}
               automaticallyAdjustContentInsets
               contentInsetAdjustmentBehavior={'automatic'}
               decelerationRate={'normal'}
               // onScrollBeginDrag={this.onScrollBeginDrag}
               // onScrollEndDrag={this.onScrollEndDrag}
+              // onScroll={this.onScroll}
               data={messages}
               inverted={true}
               onEndReached={this.onEndReached}
@@ -540,6 +602,7 @@ class ChatContainer extends Component {
               ListFooterComponent={this.listFooterComponent}
               renderItem={this.renderMessageItem}
               ListEmptyComponent={this.listEmptyComponent}
+              keyExtractor={this.listKeyExtractor}
             />
           </>
           {isReply ? (
@@ -679,6 +742,8 @@ class ChatContainer extends Component {
             placeholder={translate('pages.xchat.enterMessage')}
             sendingImage={sendingImage}
             hideStickerView={hideStickerView}
+            emotions={this.props.emotions}
+            addEmotionToFrequentlyUsed={this.props.addEmotionToFrequentlyUsed}
           />
         )}
       </View>
@@ -692,10 +757,13 @@ const mapStateToProps = (state) => {
     currentChannel: state.channelReducer.currentChannel,
     currentFriend: state.friendReducer.currentFriend,
     channelLoading: state.channelReducer.loading,
-    friendLoading: state.friendReducer.loading
+    friendLoading: state.friendReducer.loading,
+    emotions: state.chatReducer.emotions,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  addEmotionToFrequentlyUsed,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatContainer);

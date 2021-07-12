@@ -25,6 +25,7 @@ import Button from '../../Button';
 
 // StyleSheet imports
 import styles from './styles';
+import { isEqual } from 'lodash';
 
 /**
  * Show attachmenmt modal comoponent
@@ -39,6 +40,17 @@ class ShowAttahmentModal extends Component {
   send = async (type) => {
     this.props.onSelect(type);
   };
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(
+      !isEqual(this.props.visible, nextProps.visible) ||
+      !isEqual(this.props.data, nextProps.data) ||
+      !isEqual(this.props.isLoading, nextProps.isLoading)
+    ){
+      return true;
+    }
+    return false;
+  }
 
   render() {
     const {

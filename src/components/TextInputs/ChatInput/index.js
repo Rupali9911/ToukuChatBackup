@@ -352,6 +352,7 @@ class ChatInput extends Component {
     // this.setState({isExtrasAreaVisible: true});
     this.isExtrasAreaVisible = true;
     this.forceUpdate();
+    // this.setState({extraAreaHeight: new Animated.Value(value), previewHeight: value});
     Animated.timing(this.state.extraAreaHeight, {
       toValue: value,
       timing: 100,
@@ -435,23 +436,28 @@ class ChatInput extends Component {
   }
 
   onSubmit = () => {
-    const {value,selected_medias,selectedEmotion} = this.state;
-    const {sendingImage, onSend, onMediaSend, sendEmotion} = this.props;
-    console.log('======');
-    this.input_ref.clear();
-    if (value) {
-      value || sendingImage.uri ? onSend(value) : null;
-    } else if (selected_medias && selected_medias.length > 0) {
-      onMediaSend(this.state.selectedMediaObject);
-      this.hidePicker();
-    } else if (selectedEmotion) {
-      sendEmotion(selectedEmotion);
-      this.addEmotionToFrequentlyUsed(selectedEmotion);
-      this.setState({ selectedEmotion: null });
-    }
-    // console.log('clear text');
-    // this.input_ref.clear();
-    this.setState({value: ''});
+    requestAnimationFrame(()=>{
+      const {value,selected_medias,selectedEmotion} = this.state;
+      const {sendingImage, onSend, onMediaSend, sendEmotion} = this.props;
+      console.log('======');
+      if (value) {
+        this.input_ref.clear();
+        value || sendingImage.uri ? onSend(value) : null;
+        // this.setState({value: ''},()=>{
+        //   value || sendingImage.uri ? onSend(value) : null;
+        // })
+      } else if (selected_medias && selected_medias.length > 0) {
+        onMediaSend(this.state.selectedMediaObject);
+        this.hidePicker();
+      } else if (selectedEmotion) {
+        sendEmotion(selectedEmotion);
+        this.addEmotionToFrequentlyUsed(selectedEmotion);
+        this.setState({ selectedEmotion: null });
+      }
+      // console.log('clear text');
+      // this.input_ref.clear();
+      this.setState({value: ''});
+    })
   }
 
   showEmotionView = () => {
@@ -662,6 +668,10 @@ class ChatInput extends Component {
     return false;
   }
 
+  componentDidUpdate(){
+    console.log('this.state.value',this.state.value);
+  }
+
   render() {
     const {
       onAttachmentPress,
@@ -823,7 +833,7 @@ class ChatInput extends Component {
                 onFocus={this.onTextInputFocus}
                 onBlur={this.onTextInputBlur}
                 onContentSizeChange={this.onTextInputContentSizeChange}
-                value={value}
+                defaultValue={value}
                 placeholder={placeholder}
                 autoCorrect={false}
               />
@@ -1236,14 +1246,15 @@ function ListRenderItem({item, idx, addMentions}) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    emotions: state.chatReducer.emotions,
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {
+//     emotions: state.chatReducer.emotions,
+//   };
+// };
 
-const mapDispatchToProps = {
-  addEmotionToFrequentlyUsed,
-};
+// const mapDispatchToProps = {
+//   addEmotionToFrequentlyUsed,
+// };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatInput);
+// export default connect(mapStateToProps, mapDispatchToProps)(ChatInput);
+export default ChatInput;

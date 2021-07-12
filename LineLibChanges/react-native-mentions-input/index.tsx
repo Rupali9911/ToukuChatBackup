@@ -354,6 +354,7 @@ export default class MentionsInput extends React.Component<Props, State> {
   }
 
   clear = () => {
+    console.log('input clear');
     this._textInput.clear();
   }
 

@@ -106,7 +106,7 @@ export const ChatConversationFriend = {
   name: 'chat_conversation_friend',
   primaryKey: 'id',
   properties: {
-    created: 'string?',
+    created: 'date?',
     deleted_for: 'int?[]',
     friend: {type: 'int', default: 0},
     from_user: {
@@ -137,7 +137,7 @@ export const ChatConversationFriend = {
       objectType: 'conversation_user',
       default: null,
     },
-    updated: 'string?',
+    updated: 'date?',
     translated: 'string?'
   },
 };

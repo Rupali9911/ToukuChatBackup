@@ -764,7 +764,7 @@ class Chat extends Component {
     if (message && message.text && message.text.data && message.text.data.message_details && message.text.data.message_details.minimum_app_version) {
         console.log('Action on socket connection', message.text.data.message_details);
         if (version <= message.text.data.message_details.minimum_app_version ) {
-            this.setState({updateVersionModal: true})
+            // this.setState({updateVersionModal: true})
         }else {
             this.setState({updateVersionModal: false})
         }
@@ -983,9 +983,9 @@ class Chat extends Component {
         currentFriend.user_id === message.text.data.message_details.read_by
       ) {
         let updateObjects = updateAllFriendMessageRead(currentFriend.friend);
-        updateObjects.map((_item)=>{
-          this.props.updateFriendConversation(realmToPlainSingleObject(_item));
-        });
+        // updateObjects.map((_item)=>{
+        //   this.props.updateFriendConversation(realmToPlainSingleObject(_item));
+        // });
         // this.getLocalFriendConversation();
       }
       if (user && user.length > 0) {
@@ -1193,14 +1193,17 @@ class Chat extends Component {
           mention_msg_id = -1;
           unread_msg_id = -1;
           is_mentioned = false;
-          this.SingleSocket.sendMessage(
-            JSON.stringify({
-              type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
-              data: {
-                group_id: this.props.currentGroup.group_id,
-              },
-            }),
-          );
+
+          if (message.text.data.message_details.sender_id !== this.props.userData.id) {
+            this.SingleSocket.sendMessage(
+              JSON.stringify({
+                type: SocketEvents.UPDATE_READ_COUNT_IN_GROUP,
+                data: {
+                  group_id: this.props.currentGroup.group_id,
+                },
+              }),
+            );
+          }
         }
 
         let updatedGroup = null;
@@ -1218,6 +1221,7 @@ class Chat extends Component {
             message.text.data.message_details.group_id,
             message.text.data.message_details.timestamp,
             unreadCount,
+            message.text.data.message_details
           );
         }
 

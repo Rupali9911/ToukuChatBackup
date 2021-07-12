@@ -131,6 +131,7 @@ class FollowChannel extends Component {
           type: 'primary',
         });
       } else {
+        console.log('data',data);
         this.props
           .followChannel(data)
           .then((res) => {

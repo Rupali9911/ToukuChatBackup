@@ -28,6 +28,7 @@ import UploadProgressModal from '../UploadProgressModal';
 
 // StyleSheet import
 import styles from './styles';
+import { isEqual } from 'lodash';
 
 /**
  * Show gallery modal component
@@ -45,6 +46,21 @@ class ShowGalleryModal extends Component {
   send = async (type) => {
     this.props.onSelect(type);
   };
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(
+      !isEqual(this.props.visible, nextProps.visible) ||
+      !isEqual(this.props.data, nextProps.data) ||
+      !isEqual(this.props.isLoading, nextProps.isLoading) ||
+      !isEqual(this.props.progress, nextProps.progress) ||
+      !isEqual(this.props.progressModalVisible, nextProps.progressModalVisible)
+    ){
+      return true;
+    } else if(!isEqual(this.state.uploadByUrlModalVisible, nextState.uploadByUrlModalVisible)){
+      return true;
+    }
+    return false;
+  }
 
   render() {
     const {

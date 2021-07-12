@@ -8,6 +8,7 @@ import Orientation from 'react-native-orientation';
 import uuid from 'react-native-uuid';
 import {connect} from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
+import RnBgTask from 'react-native-bg-thread';
 import ChatContainer from '../../components/ChatContainer';
 import {ChatHeader} from '../../components/Headers';
 import {ListLoader, OpenLoader} from '../../components/Loaders';
@@ -52,6 +53,7 @@ import {
 import {
   deleteFriendMessageById,
   getFriendChatConversationById,
+  getFriendChatConversationByMsgId,
   removeUserFriends,
   setFriendMessageUnsend,
   updateAllFriendMessageRead,
@@ -377,6 +379,12 @@ class FriendChats extends Component {
     this.setState({orientation});
   };
 
+  onMessageSendInBg = (newMessageText) => {
+    RnBgTask.runInBackground_withPriority("MIN", () => {
+      this.onMessageSend(newMessageText);
+    });
+  }
+
   onMessageSend = async (newMessageText='') => {
     const { editMessageId} = this.state;
     const {currentFriend, userData} = this.props;
@@ -549,7 +557,6 @@ class FriendChats extends Component {
         sendmsgdata,
         ...this.props.chatFriendConversation,
       ]);
-      console.log('data',data);
       this.props.sendPersonalMessage(data);
     }
     if (uploadFile.uri) {
@@ -1557,6 +1564,40 @@ class FriendChats extends Component {
     }
   }
 
+  onReplyPress = (id) => {
+    return new Promise((resolve, reject)=>{
+      let result = getFriendChatConversationByMsgId(this.props.currentFriend.friend, id);
+      let messages = realmToPlainObject(result);
+      console.log('messages',messages);
+      if(messages && messages.length > 0 && messages[messages.length-1].id == id){
+        this.props.setFriendConversation(messages);
+        resolve(messages);
+      }else{
+        
+      }
+    });
+  }
+
+  onScrollToStart = () => {
+    let result = getFriendChatConversationById(this.props.currentFriend.friend);
+    let chats = realmToPlainObject(result);
+    this.props.setFriendConversation(chats);
+  }
+
+  onBackPress = () => {
+    this.props.navigation.goBack()
+  }
+
+  onCloseGalleyModal = () => {
+    this.setState({uploadedFiles: []});
+    this.toggleGalleryModal(false);
+  }
+
+  onCloseAttachmentModal = () => {
+    this.setState({uploadedFiles: []});
+    this.toggleAttachmentModal(false);
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     if (
       !isEqual(this.props.currentFriend, nextProps.currentFriend) ||
@@ -1596,7 +1637,7 @@ class FriendChats extends Component {
       currentFriend,
       chatFriendConversation
     } = this.props;
-    // console.log('currentFriend', currentFriend);
+    console.log('FriendChats : re-render');
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1612,7 +1653,7 @@ class FriendChats extends Component {
           }
           type={'friend'}
           image={currentFriend.profile_picture}
-          onBackPress={() => this.props.navigation.goBack()}
+          onBackPress={this.onBackPress}
           menuItems={
             currentFriend.friend_status === 'UNFRIEND'
               ? this.state.unfriendMenus
@@ -1633,10 +1674,10 @@ class FriendChats extends Component {
           <ChatContainer
             sendEmotion={this.sendEmotion}
             handleMessage={this.handleMessage}
-            onMessageSend={this.onMessageSend}
+            onMessageSend={this.onMessageSendInBg}
             onMessageReply={this.onReply}
             newMessageText={newMessageText}
-            sendEnable={newMessageText.lenght ? true : false}
+            sendEnable={newMessageText.length ? true : false}
             messages={chatFriendConversation}
             orientation={this.state.orientation}
             repliedMessage={this.state.repliedMessage}
@@ -1667,6 +1708,8 @@ class FriendChats extends Component {
             onMediaPlay={this.onMediaPlay}
             isLoadMore={isLoadMore}
             onLoadMore={this.onLoadMoreMessages}
+            onReplyPress={this.onReplyPress}
+            onScrollToStart={this.onScrollToStart}
           />
         )}
 
@@ -1722,14 +1765,11 @@ class FriendChats extends Component {
           visible={this.state.showGalleryModal}
           toggleGalleryModal={this.toggleGalleryModal}
           data={this.state.uploadedFiles}
-          onCancel={() => {
-            this.setState({uploadedFiles: []});
-            this.toggleGalleryModal(false);
-          }}
-          onUpload={() => this.uploadAndSend()}
+          onCancel={this.onCloseGalleyModal}
+          onUpload={this.uploadAndSend}
           isLoading={sendingMedia}
-          removeUploadData={(index) => this.removeUploadData(index)}
-          onGalleryPress={() => this.onGalleryPress()}
+          removeUploadData={this.removeUploadData}
+          onGalleryPress={this.onGalleryPress}
           onUrlDone={this.onUrlUpload}
         />
 
@@ -1737,14 +1777,11 @@ class FriendChats extends Component {
           visible={this.state.showAttachmentModal}
           toggleAttachmentModal={this.toggleAttachmentModal}
           data={this.state.uploadedFiles}
-          onCancel={() => {
-            this.setState({uploadedFiles: []});
-            this.toggleAttachmentModal(false);
-          }}
-          onUpload={() => this.uploadAndSendAttachment()}
+          onCancel={this.onCloseAttachmentModal}
+          onUpload={this.uploadAndSendAttachment}
           isLoading={sendingMedia}
-          removeUploadData={(index) => this.removeUploadData(index)}
-          onAttachmentPress={() => this.onAttachmentPress()}
+          removeUploadData={this.removeUploadData}
+          onAttachmentPress={this.onAttachmentPress}
         />
         {/* {sendingMedia && <UploadLoader />} */}
 

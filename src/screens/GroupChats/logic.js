@@ -24,7 +24,7 @@ export const getGroupMessageObject = (message, userData) => {
         id: message.sender_id
     };
     result['mentions'] = message.mentions;
-    result['reply_to'] = message.reply_to;
+    result['reply_to'] = message.reply_to && message.reply_to.message ? message.reply_to : null;
     result['media'] = getNoteMedia(message);
     result['translated'] = message.translated;
     result['read_count'] = message.read_count;
