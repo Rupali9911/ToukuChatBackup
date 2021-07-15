@@ -533,6 +533,9 @@ class ChatInput extends Component {
     return (
       users.length > 0 && (
         <View
+          ref={(view) => {
+            this.suggestion_panel = view;
+          }}
           style={[
             {
               top: -this.suggestionsDataHeight(users),
@@ -654,7 +657,7 @@ class ChatInput extends Component {
         !isEqual(this.props.hideStickerView, nextProps.hideStickerView)
     ) {
       if (!isEqual(this.props.hideStickerView, nextProps.hideStickerView)) {
-        if (this.isExtrasAreaVisible) {
+        if (this.isExtrasAreaVisible && !this.suggestion_panel) {
             this.resetInput()
         }
           return false;

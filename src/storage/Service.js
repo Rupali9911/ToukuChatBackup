@@ -206,6 +206,29 @@ export const getChannelChatConversationById = (id) => {
     .filtered(`channel == ${id}`);
 };
 
+export const getChannelChatConversationByMsgId = (id, msg_id, limit = 50, isInclusive = true) => {
+  let filter = `channel == ${id}`;
+  filter = msg_id ? `${filter} && id ${isInclusive?'>=':'>'} ${msg_id}` : filter;
+  return realm
+    .objects('chat_conversation')
+    .sorted('created',false)
+    .filtered(filter).slice(0,limit).reverse();
+};
+
+export const getChannelChatPreviousConversationFromMsgId = (id, msg_id, limit = 50, isInclusive = false) => {
+  let filter = `channel == ${id}`;
+  filter = msg_id ? `${filter} && id ${isInclusive?'<=':'<'} ${msg_id}` : filter;
+  return realm
+    .objects('chat_conversation')
+    .sorted('created',true)
+    .filtered(filter).slice(0,limit);
+};
+
+export const getChannelChatConversationOldestMsgId = (id) => {
+  let filter = `channel == ${id}`;
+  return realm.objects('chat_conversation').filtered(filter).min('id');
+};
+
 export const updateMessageById = (id, text, type) => {
   let returnObject = null
   realm.write(() => {
@@ -405,13 +428,27 @@ export const getFriendChatConversationById = (id) => {
     .filtered(`friend == ${id}`);
 };
 
-export const getFriendChatConversationByMsgId = (id, msg_id, limit = 50) => {
+export const getFriendChatConversationByMsgId = (id, msg_id, limit = 50, isInclusive = true) => {
   let filter = `friend == ${id}`;
-  filter = msg_id ? `${filter} && id >= ${msg_id}` : filter;
+  filter = msg_id ? `${filter} && id ${isInclusive?'>=':'>'} ${msg_id}` : filter;
   return realm
     .objects('chat_conversation_friend')
     .sorted('created',false)
     .filtered(filter).slice(0,limit).reverse();
+};
+
+export const getFriendChatPreviousConversationFromMsgId = (id, msg_id, limit = 50, isInclusive = false) => {
+  let filter = `friend == ${id}`;
+  filter = msg_id ? `${filter} && id ${isInclusive?'<=':'<'} ${msg_id}` : filter;
+  return realm
+    .objects('chat_conversation_friend')
+    .sorted('created',true)
+    .filtered(filter).slice(0,limit);
+};
+
+export const getFriendChatConversationOldestMsgId = (id) => {
+  let filter = `friend == ${id}`;
+  return realm.objects('chat_conversation_friend').filtered(filter).min('id');
 };
 
 export const updateFriendMessageById = (id, text, type, media) => {

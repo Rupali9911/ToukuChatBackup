@@ -13,7 +13,7 @@ import {Colors} from '../../constants';
 import NavigationService from '../../navigation/NavigationService';
 import {translate} from '../../redux/reducers/languageReducer';
 import {globalStyles} from '../../styles';
-import {getAvatar, normalize} from '../../utils';
+import {getAvatar, normalize, realmToPlainSingleObject} from '../../utils';
 import ChatMessageBubble from '../ChatMessageBubble';
 import styles from './styles';
 import { realm } from '../../storage/Service';
@@ -28,7 +28,8 @@ export default class ChatMessageBox extends Component {
       selectedMessageId: null,
       isPortrait: false,
       animation: new Animated.Value(1),
-      message: this.props.message
+      // message: this.props.message,
+      replyLoading: false
     };
   }
 
@@ -40,29 +41,29 @@ export default class ChatMessageBox extends Component {
       this.props.message.message_body &&
       this.isPortrait(this.props.message.message_body);
 
-      if(!this.props.isChannel && this.props.message.id){
-        this.resultObject = realm.objectForPrimaryKey(
-          'chat_conversation_friend',
-          this.props.message.id
-        );
-        if(this.resultObject){
-          this.resultObject.addListener((chat,changes)=>{
-            // console.log('chat changes',changes,chat);
-            this.setState({message: chat});
-          });
-        }
-      }else if(this.props.message.id && this.props.isChannel){
-        this.resultObject = realm.objectForPrimaryKey(
-          'chat_conversation',
-          this.props.message.id
-        );
-        if(this.resultObject){
-          this.resultObject.addListener((chat,changes)=>{
-            // console.log('chat changes',changes,chat);
-            this.setState({message: chat});
-          });
-        }
-      }
+      // if(!this.props.isChannel && this.props.message.id){
+      //   this.resultObject = realm.objectForPrimaryKey(
+      //     'chat_conversation_friend',
+      //     this.props.message.id
+      //   );
+      //   if(this.resultObject){
+      //     this.resultObject.addListener((chat,changes)=>{
+      //       // console.log('chat changes',changes,chat);
+      //       this.setState({message: realmToPlainSingleObject(chat)});
+      //     });
+      //   }
+      // }else if(this.props.message.id && this.props.isChannel){
+      //   this.resultObject = realm.objectForPrimaryKey(
+      //     'chat_conversation',
+      //     this.props.message.id
+      //   );
+      //   if(this.resultObject){
+      //     this.resultObject.addListener((chat,changes)=>{
+      //       // console.log('chat changes',changes,chat);
+      //       this.setState({message: realmToPlainSingleObject(chat)});
+      //     });
+      //   }
+      // }
   }
 
   callBlinking = (id) => {
@@ -96,6 +97,14 @@ export default class ChatMessageBox extends Component {
     this.startAnimation();
     console.log('animation start');
   };
+
+  showLoading = () => {
+    this.setState({replyLoading: true});
+  }
+
+  hideLoading = () => {
+    this.setState({replyLoading: false});
+  }
 
   _openMenu = () => this.setState({longPressMenu: true});
 
@@ -156,9 +165,9 @@ export default class ChatMessageBox extends Component {
   }
 
   render() {
-    const {longPressMenu, selectedMessageId, message} = this.state;
+    const {longPressMenu, selectedMessageId, replyLoading} = this.state;
     const {
-      // message,
+      message,
       isUser,
       time,
       is_read,
@@ -308,6 +317,7 @@ export default class ChatMessageBox extends Component {
                     currentChannel={currentChannel}
                     onMediaPlay={this.props.onMediaPlay}
                     UserDisplayName={UserDisplayName}
+                    replyLoading={replyLoading}
                   />
                 </View>
                 <View style={styles.statusContainer}>
@@ -403,6 +413,7 @@ export default class ChatMessageBox extends Component {
                   currentChannel={currentChannel}
                   onMediaPlay={this.props.onMediaPlay}
                   UserDisplayName={UserDisplayName}
+                  replyLoading={replyLoading}
                 />
                 </View>
                 {/* {message.msg_type === 'image' ? (

@@ -85,6 +85,7 @@ import {
 } from '../../redux/reducers/timelineReducer';
 import { addFriendByReferralCode } from '../../redux/reducers/friendReducer';
 import { getRenderMessageData, getGroupMessageObject } from './logic';
+import { isEqual } from 'lodash';
 
 // number  0 <= id <=511
 const id = 0;
@@ -1474,7 +1475,7 @@ class GroupChats extends Component {
   };
 
   onSelectChatConversation = (id) => {
-    let array = this.state.selectedIds;
+    let array = this.state.selectedIds.slice();
     if (this.state.selectedIds.includes(id + '')) {
       let index = array.indexOf(id + '');
       array.splice(index, 1);
@@ -1882,6 +1883,11 @@ class GroupChats extends Component {
     });
   };
 
+  onCancelGalleryModal = () => {
+    this.setState({uploadedFiles: []});
+    this.toggleGalleryModal(false);
+  }
+
   onMediaSend = async (media) => {
     if (this.isUploading) {
       return;
@@ -2013,6 +2019,11 @@ class GroupChats extends Component {
       showAttachmentModal: status,
     });
   };
+
+  onCancelAttachmentModal = () => {
+    this.setState({uploadedFiles: []});
+    this.toggleAttachmentModal(false);
+  }
 
   uploadAndSendAttachment = async () => {
     if (this.isUploading) {
@@ -2234,8 +2245,33 @@ class GroupChats extends Component {
     });
   }
 
+  onBackPress = () => {
+    this.props.navigation.goBack()
+  };
+
+  listContainerRef = (container) => {
+    this.chatContainer = container;
+  }
+
   shouldComponentUpdate(nextProps, nextState){
-    return true;
+    if (
+      !isEqual(this.props.currentGroup, nextProps.currentGroup) ||
+      !isEqual(this.props.chatGroupConversation, nextProps.chatGroupConversation) ||
+      !isEqual(this.props.currentGroupDetail, nextProps.currentGroupDetail) ||
+      !isEqual(this.props.currentGroupMembers, nextProps.currentGroupMembers) ||
+      !isEqual(this.props.groupLoading, nextProps.groupLoading) ||
+      !isEqual(this.props.currentGroupAdmins, nextProps.currentGroupAdmins) ||
+      !isEqual(this.props.next, nextProps.next) ||
+      !isEqual(this.props.previous, nextProps.previous) ||
+      !isEqual(this.props.currentRouteName, nextProps.currentRouteName) ||
+      !isEqual(this.props.userData, nextProps.userData) ||
+      !isEqual(this.props.selectedLanguageItem, nextProps.selectedLanguageItem)
+    ) {
+      return true;
+    } else if (!isEqual(this.state, nextState)) {
+      return true;
+    }
+    return false;
   }
  
   render() {
@@ -2292,7 +2328,7 @@ class GroupChats extends Component {
             ' ' +
             translate('pages.xchat.members')
           }
-          onBackPress={() => this.props.navigation.goBack()}
+          onBackPress={this.onBackPress}
           menuItems={
             currentGroupDetail.is_group_member === false
               ? this.state.headerRightIconMenuIsRemoveGroup
@@ -2319,9 +2355,7 @@ class GroupChats extends Component {
           <ListLoader />
         ) : (
           <GroupChatContainer
-            ref={(view) => {
-              this.chatContainer = view;
-            }}
+            ref={this.listContainerRef}
             memberCount={currentGroupDetail.total_members}
             handleMessage={this.handleMessage}
             onMessageSend={this.onMessageSendInBg}
@@ -2429,14 +2463,11 @@ class GroupChats extends Component {
           visible={this.state.showGalleryModal}
           toggleGalleryModal={this.toggleGalleryModal}
           data={this.state.uploadedFiles}
-          onCancel={() => {
-            this.setState({uploadedFiles: []});
-            this.toggleGalleryModal(false);
-          }}
-          onUpload={() => this.uploadAndSend()}
+          onCancel={this.onCancelGalleryModal}
+          onUpload={this.uploadAndSend}
           isLoading={sendingMedia}
-          removeUploadData={(index) => this.removeUploadData(index)}
-          onGalleryPress={() => this.onGalleryPress()}
+          removeUploadData={this.removeUploadData}
+          onGalleryPress={this.onGalleryPress}
           onUrlDone={this.onUrlUpload}
         />
 
@@ -2444,14 +2475,11 @@ class GroupChats extends Component {
           visible={this.state.showAttachmentModal}
           toggleAttachmentModal={this.toggleAttachmentModal}
           data={this.state.uploadedFiles}
-          onCancel={() => {
-            this.setState({uploadedFiles: []});
-            this.toggleAttachmentModal(false);
-          }}
-          onUpload={() => this.uploadAndSendAttachment()}
+          onCancel={this.onCancelAttachmentModal}
+          onUpload={this.uploadAndSendAttachment}
           isLoading={sendingMedia}
-          removeUploadData={(index) => this.removeUploadData(index)}
-          onAttachmentPress={() => this.onAttachmentPress()}
+          removeUploadData={this.removeUploadData}
+          onAttachmentPress={this.onAttachmentPress}
         />
         {/* {sendingMedia && <UploadLoader />} */}
 

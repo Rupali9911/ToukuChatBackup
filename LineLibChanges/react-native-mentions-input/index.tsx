@@ -243,6 +243,7 @@ export default class MentionsInput extends React.Component<Props, State> {
         match.index + match[0].length,
         this.props.value.length
       );
+      console.log('text',text,user);
     mentions.push({
       user: {
         ...user,

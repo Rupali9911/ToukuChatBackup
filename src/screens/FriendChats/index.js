@@ -54,6 +54,8 @@ import {
   deleteFriendMessageById,
   getFriendChatConversationById,
   getFriendChatConversationByMsgId,
+  getFriendChatPreviousConversationFromMsgId,
+  getFriendChatConversationOldestMsgId,
   removeUserFriends,
   setFriendMessageUnsend,
   updateAllFriendMessageRead,
@@ -379,13 +381,13 @@ class FriendChats extends Component {
     this.setState({orientation});
   };
 
-  onMessageSendInBg = (newMessageText) => {
+  onMessageSendInBg = (newMessageText, finishSending) => {
     RnBgTask.runInBackground_withPriority("MIN", () => {
-      this.onMessageSend(newMessageText);
+      this.onMessageSend(newMessageText,finishSending);
     });
   }
 
-  onMessageSend = async (newMessageText='') => {
+  onMessageSend = async (newMessageText='',finishSending) => {
     const { editMessageId} = this.state;
     const {currentFriend, userData} = this.props;
 
@@ -578,7 +580,8 @@ class FriendChats extends Component {
         },
       );
     }
-
+    finishSending && finishSending();
+    this.chatContainerRef && this.chatContainerRef.scrollToTop();
     // this.setState({
     //   newMessageText: '',
     //   isReply: false,
@@ -811,13 +814,13 @@ class FriendChats extends Component {
           conversations = realmToPlainObject(chat);
 
           this.props.setFriendConversation(conversations);
-          if(res.conversation.length>=50){
-            this.setState({isLoadMore: true});
-          }else{
-            this.setState({isLoadMore: false});
-          }
+          // if(res.conversation.length>=50){
+          //   this.setState({isLoadMore: true});
+          // }else{
+          //   this.setState({isLoadMore: false});
+          // }
         }else{
-          this.setState({isLoadMore: false});
+          // this.setState({isLoadMore: false});
         }
       });
   };
@@ -858,6 +861,9 @@ class FriendChats extends Component {
           this.props.setFriendConversation(conversations);
           if(res.conversation.length>=50){
             this.setState({isLoadMore: true});
+            RnBgTask.runInBackground_withPriority("MIN", () => {
+              this.fetchMessagesinBackground(this.props.currentFriend.friend);
+            });
           } else {
             this.setState({isLoadMore: false});
           }
@@ -867,6 +873,29 @@ class FriendChats extends Component {
         this.setState({isChatLoading: false});
       });
   };
+
+  fetchMessagesinBackground = (friend) => {
+      let oldest_msg_id = getFriendChatConversationOldestMsgId(friend);
+      this.fetchPrevious(oldest_msg_id, friend);
+  }
+
+  fetchPrevious = (msg_id, friend) => {
+    console.log('bg_thread_previous_msg_id',msg_id);
+    this.props
+      .getPersonalConversation(this.props.currentFriend.friend, msg_id)
+      .then((res) => {
+        console.log('loop',res.status,res.conversation.length,this.props.currentRouteName, friend, this.props.currentFriend.friend);
+        if (res.status && res.conversation.length>=50 && this.props.currentRouteName === 'FriendChats' && friend == this.props.currentFriend.friend) {
+          let oldest_msg_id = getFriendChatConversationOldestMsgId(friend);
+          if(oldest_msg_id !== msg_id){
+            this.fetchPrevious(oldest_msg_id, friend);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log('FriendChats -> getFriendConversation -> err', err);
+      });
+  }
 
   markFriendMsgsRead() {
     this.props.markFriendMsgsRead(this.props.currentFriend.friend);
@@ -917,7 +946,8 @@ class FriendChats extends Component {
   };
 
   onSelectChatConversation = (id) => {
-    let array = this.state.selectedIds;
+    console.log('id',id);
+    let array = this.state.selectedIds.slice();
     if (this.state.selectedIds.includes(id + '')) {
       let index = array.indexOf(id + '');
       array.splice(index, 1);
@@ -1565,8 +1595,16 @@ class FriendChats extends Component {
 
   onLoadMoreMessages = (message) => {
     console.log('load more messages friend chats');
+    const {chatFriendConversation} = this.props;
     if(message && message.id){
-      this.getPersonalConversation(message.id);
+      let result = getFriendChatPreviousConversationFromMsgId(this.props.currentFriend.friend, message.id);
+      // console.log('result',message.id,result);
+      let chats = realmToPlainObject(result);
+      if(chats.length>0){
+        this.props.setFriendConversation(chatFriendConversation.concat(chats));
+      }else if(chatFriendConversation.length>0 && chatFriendConversation.length % 50 === 0){
+        this.getPersonalConversation(message.id);
+      }
     }
   }
 
@@ -1579,15 +1617,30 @@ class FriendChats extends Component {
         this.props.setFriendConversation(messages);
         resolve(messages);
       }else{
-
+        let dataInterval = setInterval(()=>{
+          let result = getFriendChatConversationByMsgId(this.props.currentFriend.friend, id);
+          let messages = realmToPlainObject(result);
+          if (messages && messages.length > 0 && messages[messages.length - 1].id == id) {
+            clearInterval(dataInterval);
+            this.props.setFriendConversation(messages);
+            resolve(messages);
+          }
+        },1000);
       }
     });
   }
 
   onScrollToStart = () => {
-    let result = getFriendChatConversationById(this.props.currentFriend.friend);
-    let chats = realmToPlainObject(result);
-    this.props.setFriendConversation(chats);
+    const {chatFriendConversation} = this.props;
+    // let result = getFriendChatConversationById(this.props.currentFriend.friend);
+    if(chatFriendConversation.length>0 && chatFriendConversation[0].id){
+      console.log(chatFriendConversation[0].id);
+      let result = getFriendChatConversationByMsgId(this.props.currentFriend.friend, chatFriendConversation[0].id, 30, false);
+      let chats = realmToPlainObject(result);
+      console.log('chats',chats);
+      this.props.setFriendConversation(chats.concat(chatFriendConversation));
+    }
+    
   }
 
   onBackPress = () => {
@@ -1604,7 +1657,12 @@ class FriendChats extends Component {
     this.toggleAttachmentModal(false);
   }
 
+  containerRef = (container) => {
+    this.chatContainerRef = container;
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
+    console.log('length',this.state.selectedIds.length,nextState.selectedIds.length);
     if (
       !isEqual(this.props.currentFriend, nextProps.currentFriend) ||
       !isEqual(this.props.chatFriendConversation, nextProps.chatFriendConversation) ||
@@ -1643,7 +1701,7 @@ class FriendChats extends Component {
       currentFriend,
       chatFriendConversation
     } = this.props;
-    console.log('FriendChats : re-render');
+    console.log('FriendChats : re-render',isLoadMore);
     return (
       <ImageBackground
         source={Images.image_home_bg}
@@ -1678,6 +1736,7 @@ class FriendChats extends Component {
           <ListLoader />
         ) : (
           <ChatContainer
+            ref={this.containerRef}
             sendEmotion={this.sendEmotion}
             handleMessage={this.handleMessage}
             onMessageSend={this.onMessageSendInBg}
@@ -1817,6 +1876,7 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
     acceptedRequest: state.addFriendReducer.acceptedRequest,
+    currentRouteName: state.userReducer.currentRouteName,
   };
 };
 

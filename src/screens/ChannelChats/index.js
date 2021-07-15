@@ -48,6 +48,9 @@ import {
 import {
   deleteMessageById,
   getChannelChatConversationById,
+  getChannelChatConversationByMsgId,
+  getChannelChatPreviousConversationFromMsgId,
+  getChannelChatConversationOldestMsgId,
   setMessageUnsend,
   updateChannelLastMsgWithOutCount,
   updateChannelTranslatedMessage,
@@ -57,6 +60,8 @@ import {
 import {globalStyles} from '../../styles';
 import {realmToPlainObject} from '../../utils';
 import styles from './styles';
+import RnBgTask from 'react-native-bg-thread';
+import { isEqual } from 'lodash';
 
 class ChannelChats extends Component {
   constructor(props) {
@@ -65,7 +70,7 @@ class ChannelChats extends Component {
       orientation: 'PORTRAIT',
       newMessageText: '',
       conversations: [],
-      isLoadMore: true,
+      isLoadMore: false,
       selectedMessageId: null,
       translatedMessage: null,
       translatedMessageId: null,
@@ -470,6 +475,8 @@ class ChannelChats extends Component {
         },
       );
     }
+
+    this.chatContainerRef && this.chatContainerRef.scrollToTop();
     // this.setState({
     //   newMessageText: '',
     //   repliedMessage: null,
@@ -734,8 +741,13 @@ class ChannelChats extends Component {
           // conversations = chat.toJSON();
 
           this.props.setChannelConversation(conversations);
+          // if(res.conversation.length>=30){
+          //   this.setState({isLoadMore: true});  
+          // }else{
+          //   this.setState({isLoadMore: false});
+          // }
         } else {
-          this.setState({isLoadMore: false});
+          // this.setState({isLoadMore: false});
         }
       });
   };
@@ -766,6 +778,18 @@ class ChannelChats extends Component {
             conversations = realmToPlainObject(a);
             // conversations = chat.toJSON();
             this.props.setChannelConversation(conversations);
+            if(res.conversation.length>=30){
+              this.setState({isLoadMore: true});
+              RnBgTask.runInBackground_withPriority("MIN", () => {
+                this.fetchMessagesinBackground(this.props.currentChannel.id);
+              });
+            }else{
+              console.log('isLoadMore set false');
+              this.setState({isLoadMore: false});
+            }
+          }else{
+            console.log('isLoadMore set false');
+            this.setState({isLoadMore: false});
           }
           if (
             res.admin_id.length > 0 &&
@@ -777,6 +801,29 @@ class ChannelChats extends Component {
         this.setState({isChatLoading: false});
       });
   };
+
+  fetchMessagesinBackground = (channel_id) => {
+    let oldest_msg_id = getChannelChatConversationOldestMsgId(channel_id);
+    this.fetchPrevious(oldest_msg_id, channel_id);
+  }
+
+  fetchPrevious = (msg_id, channel_id) => {
+    console.log('bg_thread_previous_msg_id', msg_id);
+    this.props
+      .getChannelConversations(channel_id, msg_id)
+      .then((res) => {
+        console.log('loop', res.status, res.conversation.length, this.props.currentRouteName, channel_id, this.props.currentChannel.id);
+        if (res.status && res.conversation.length >= 50 && this.props.currentRouteName === 'ChannelChats' && channel_id == this.props.currentChannel.id) {
+          let oldest_msg_id = getChannelChatConversationOldestMsgId(channel_id);
+          if (oldest_msg_id !== msg_id) {
+            this.fetchPrevious(oldest_msg_id, channel_id);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log('ChannelChats -> getChannelConversation -> err', err);
+      });
+  }
 
   handleMessage(message) {
     this.setState({newMessageText: message});
@@ -870,6 +917,11 @@ class ChannelChats extends Component {
     });
   };
 
+  onCancelGalleryModal = () => {
+    this.setState({uploadedFiles: []});
+    this.toggleGalleryModal(false);
+  }
+
   uploadAndSend = async () => {
     if (this.isUploading) {
       return;
@@ -926,6 +978,11 @@ class ChannelChats extends Component {
       showAttachmentModal: status,
     });
   };
+
+  onCancelAttachmentModal = () => {
+    this.setState({uploadedFiles: []});
+    this.toggleAttachmentModal(false);
+  }
 
   uploadAndSendAttachment = async () => {
     if (this.isUploading) {
@@ -997,6 +1054,35 @@ class ChannelChats extends Component {
     });
   };
 
+  onLoadMoreMessages = (message) => {
+    console.log('msg_id', message.id);
+    const {chatConversation} = this.props;
+    if (message && message.id) {
+      let result = getChannelChatPreviousConversationFromMsgId(this.props.currentChannel.id, message.id);
+      // console.log('result',message.id,result);
+      let chats = realmToPlainObject(result);
+      if (chats.length > 0) {
+        this.props.setChannelConversation(chatConversation.concat(chats));
+      } else if(chatConversation.length>0 && chatConversation.length % 30 === 0){
+        this.getChannelConversations(message.id);
+      }
+    }
+  }
+
+  onMediaPlay = (isPlay) => {
+    if (isPlay) {
+      console.log('palying media');
+      this.props.navigation.setParams({
+        isAudioPlaying: true,
+      });
+    } else {
+      console.log('pause media');
+      this.props.navigation.setParams({
+        isAudioPlaying: false,
+      });
+    }
+  }
+
   onReply = (messageId) => {
     // const { conversations } = this.state;
     const {chatConversation} = this.props;
@@ -1011,6 +1097,40 @@ class ChannelChats extends Component {
       repliedMessage: repliedMessage,
     });
   };
+
+  onReplyPress = (id) => {
+    return new Promise((resolve, reject)=>{
+      let result = getChannelChatConversationByMsgId(this.props.currentChannel.id, id);
+      let messages = realmToPlainObject(result);
+      if(messages && messages.length > 0 && messages[messages.length-1].id == id){
+        this.props.setChannelConversation(messages);
+        resolve(messages);
+      }else{
+        let dataInterval = setInterval(()=>{
+          let result = getChannelChatConversationByMsgId(this.props.currentChannel.id, id);
+          let messages = realmToPlainObject(result);
+          if (messages && messages.length > 0 && messages[messages.length - 1].id == id) {
+            clearInterval(dataInterval);
+            this.props.setChannelConversation(messages);
+            resolve(messages);
+          }
+        },1000);
+      }
+    });
+  }
+
+  onScrollToStart = () => {
+    const {chatConversation} = this.props;
+    if(chatConversation.length>0 && chatConversation[0].id){
+      let result = getChannelChatConversationByMsgId(this.props.currentChannel.id, chatConversation[0].id, 30, false);
+      let chats = realmToPlainObject(result);
+      this.props.setChannelConversation(chats.concat(chatConversation));
+    }
+  }
+
+  containerRef = (container) => {
+    this.chatContainerRef = container;
+  }
 
   renderConversations() {
     const {chatConversation, userConfig} = this.props;
@@ -1035,72 +1155,49 @@ class ChannelChats extends Component {
     if (!this.props.chatConversation) {
       return null;
     }
-
     if (isChatLoading && this.props.chatConversation.length <= 0) {
       return <ListLoader />;
     } else {
       return (
         <View style={styles.container}>
           <ChatContainer
-            handleMessage={(message) => this.handleMessage(message)}
-            onMessageReply={(id) => this.onReply(id)}
+            ref={this.containerRef}
+            handleMessage={this.handleMessage}
+            onMessageReply={this.onReply}
             onMessageSend={this.onMessageSend}
             sendEmotion={this.sendEmotion}
             cancelReply={this.cancelReply.bind(this)}
             newMessageText={newMessageText}
-            sendEnable={newMessageText.lenght ? true : false}
+            sendEnable={newMessageText.length ? true : false}
             messages={chatConversation}
             orientation={orientation}
             repliedMessage={this.state.repliedMessage}
             isReply={this.state.isReply}
-            onDelete={(id) => {
-              this.setState({
-                isMultiSelect: true,
-                selectedIds: [...this.state.selectedIds, id + ''],
-              });
-              // this.onDeletePressed(id)
-            }}
-            onUnSendMsg={(id) => this.onUnSendPressed(id)}
-            onMessageTranslate={(msg) => this.onMessageTranslate(msg)}
+            onDelete={this.onDeletePressed}
+            onUnSendMsg={this.onUnSendPressed}
+            onMessageTranslate={this.onMessageTranslate}
             onMessageTranslateClose={this.onMessageTranslateClose}
             translatedMessage={translatedMessage}
             translatedMessageId={translatedMessageId}
             isChannel={true}
-            onEditMessage={(msg) => this.onEdit(msg)}
-            onDownloadMessage={(msg) => this.onDownload(msg)}
-            onCameraPress={() => this.onCameraPress()}
-            onGalleryPress={() => this.toggleGalleryModal(true)}
-            onAttachmentPress={() => this.onAttachmentPress()}
+            onEditMessage={this.onEdit}
+            onDownloadMessage={this.onDownload}
+            onCameraPress={this.onCameraPress}
+            onGalleryPress={this.toggleGalleryModal.bind(this,true)}
+            onAttachmentPress={this.onAttachmentPress}
             sendingImage={uploadFile}
             isMultiSelect={isMultiSelect}
             onSelect={this.onSelectChatConversation}
             selectedIds={this.state.selectedIds}
-            onSelectedCancel={() => {
-              this.setState({isMultiSelect: false, selectedIds: []});
-            }}
+            onSelectedCancel={this.onSelectedCancel}
             onSelectedDelete={this.onDeleteMultipleMessagePressed}
-            showOpenLoader={(isLoading) => this.setState({openDoc: isLoading})}
+            showOpenLoader={this.showOpenLoader}
             isLoadMore={isLoadMore}
-            onLoadMore={(message) => {
-              console.log('msg_id', message.id);
-              if (message && message.id) {
-                this.getChannelConversations(message.id);
-              }
-            }}
-            onMediaPlay={(isPlay) => {
-              if (isPlay) {
-                console.log('palying media');
-                this.props.navigation.setParams({
-                  isAudioPlaying: true,
-                });
-              } else {
-                console.log('pause media');
-                this.props.navigation.setParams({
-                  isAudioPlaying: false,
-                });
-              }
-            }}
+            onLoadMore={this.onLoadMoreMessages}
+            onMediaPlay={this.onMediaPlay}
             UserDisplayName={userConfig.display_name}
+            onReplyPress={this.onReplyPress}
+            onScrollToStart={this.onScrollToStart}
           />
 
           <ConfirmationModal
@@ -1141,14 +1238,11 @@ class ChannelChats extends Component {
             visible={this.state.showGalleryModal}
             toggleGalleryModal={this.toggleGalleryModal}
             data={this.state.uploadedFiles}
-            onCancel={() => {
-              this.setState({uploadedFiles: []});
-              this.toggleGalleryModal(false);
-            }}
-            onUpload={() => this.uploadAndSend()}
+            onCancel={this.onCancelGalleryModal}
+            onUpload={this.uploadAndSend}
             isLoading={sendingMedia}
-            removeUploadData={(index) => this.removeUploadData(index)}
-            onGalleryPress={() => this.onGalleryPress()}
+            removeUploadData={this.removeUploadData}
+            onGalleryPress={this.onGalleryPress}
             onUrlDone={this.onUrlUpload}
           />
 
@@ -1156,14 +1250,11 @@ class ChannelChats extends Component {
             visible={this.state.showAttachmentModal}
             toggleAttachmentModal={this.toggleAttachmentModal}
             data={this.state.uploadedFiles}
-            onCancel={() => {
-              this.setState({uploadedFiles: []});
-              this.toggleAttachmentModal(false);
-            }}
-            onUpload={() => this.uploadAndSendAttachment()}
+            onCancel={this.onCancelAttachmentModal}
+            onUpload={this.uploadAndSendAttachment}
             isLoading={sendingMedia}
-            removeUploadData={(index) => this.removeUploadData(index)}
-            onAttachmentPress={() => this.onAttachmentPress()}
+            removeUploadData={this.removeUploadData}
+            onAttachmentPress={this.onAttachmentPress}
           />
           {/* {sendingMedia && <UploadLoader />} */}
 
@@ -1203,7 +1294,8 @@ class ChannelChats extends Component {
   };
 
   onSelectChatConversation = (id) => {
-    let array = this.state.selectedIds;
+    console.log('id',id);
+    let array = this.state.selectedIds.slice();
     if (this.state.selectedIds.includes(id + '')) {
       let index = array.indexOf(id + '');
       array.splice(index, 1);
@@ -1212,6 +1304,10 @@ class ChannelChats extends Component {
     }
     this.setState({selectedIds: array});
   };
+
+  onSelectedCancel = () => {
+    this.setState({isMultiSelect: false, selectedIds: []});
+  }
 
   onDeleteMultipleMessagePressed = () => {
     if (this.state.isAdmin) {
@@ -1224,6 +1320,10 @@ class ChannelChats extends Component {
       });
     }
   };
+
+  showOpenLoader = (isLoading) => {
+    this.setState({openDoc: isLoading});
+  }
 
   onCancel = () => {
     this.setState({
@@ -1280,9 +1380,13 @@ class ChannelChats extends Component {
   };
 
   onDeletePressed = (messageId) => {
+    // this.setState({
+    //   showMessageDeleteConfirmationModal: true,
+    //   selectedMessageId: messageId,
+    // });
     this.setState({
-      showMessageDeleteConfirmationModal: true,
-      selectedMessageId: messageId,
+      isMultiSelect: true,
+      selectedIds: [...this.state.selectedIds, messageId + ''],
     });
   };
 
@@ -1428,9 +1532,34 @@ class ChannelChats extends Component {
     this.getLocalChannelConversations();
   };
 
+  onBackPress = () => {
+    this.props.navigation.goBack();
+  }
+
+  onRequestBonusModalClose = () => {
+    this.setState({bonusModal: false});
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if (
+      !isEqual(this.props.currentChannel, nextProps.currentChannel) ||
+      !isEqual(this.props.chatConversation, nextProps.chatConversation) ||
+      !isEqual(this.props.channelLoading, nextProps.channelLoading) ||
+      !isEqual(this.props.userData, nextProps.userData) ||
+      !isEqual(this.props.userConfig, nextProps.userConfig) ||
+      !isEqual(this.props.selectedLanguageItem, nextProps.selectedLanguageItem)
+    ) {
+      return true;
+    } else if (!isEqual(this.state, nextState)) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {currentChannel} = this.props;
     const {bonusModal, bonusXP, isRegisterBonus} = this.state;
+    console.log('isLoadMore',this.state.isLoadMore);
     return (
       <View
         // source={Images.image_home_bg}
@@ -1442,9 +1571,7 @@ class ChannelChats extends Component {
             ' ' +
             translate('pages.xchat.followers')
           }
-          onBackPress={() => {
-            this.props.navigation.goBack();
-          }}
+          onBackPress={this.onBackPress}
           menuItems={this.state.headerRightIconMenu}
           navigation={this.props.navigation}
           image={currentChannel.channel_picture}
@@ -1461,7 +1588,7 @@ class ChannelChats extends Component {
 
         <BonusModal
           visible={bonusModal}
-          onRequestClose={() => this.setState({bonusModal: false})}
+          onRequestClose={this.onRequestBonusModalClose}
           bonusXP={bonusXP}
           registerBonus={isRegisterBonus}
         />
@@ -1478,6 +1605,7 @@ const mapStateToProps = (state) => {
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatConversation: state.channelReducer.chatConversation,
     userConfig: state.configurationReducer.userConfig,
+    currentRouteName: state.userReducer.currentRouteName,
   };
 };
 

@@ -43,6 +43,8 @@ import RnBgTask from 'react-native-bg-thread';
 
 const {height} = Dimensions.get('window');
 
+const AUTOSCROLLTOTOPTHRESHOLD = 300;
+
 class ChatContainer extends Component {
   constructor(props) {
     super(props);
@@ -50,22 +52,21 @@ class ChatContainer extends Component {
       audioPlayingId: null,
       perviousPlayingAudioId: null,
       closeMenu: false,
-        hideStickerView: false
+      hideStickerView: false,
+      isRepling: false
     };
+    this.listCurrentOffset = 0
   }
 
   getDate = (date) => {
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    const msgDate = new Date(date);
-    if (today.getDate() === msgDate.getDate()) {
+    const today = moment();
+    const yesterday = moment();
+    yesterday.subtract(1,'day');
+    const msgDate = moment(date);
+    if (today.isSame(msgDate, 'day')) {
       return translate('common.today');
     }
-    if (
-      yesterday.getDate() === msgDate.getDate() &&
-      yesterday.getMonth() === msgDate.getMonth()
-    ) {
+    if (yesterday.isSame(msgDate, 'day')) {
       return translate('common.yesterday');
     }
     return moment(msgDate).format('MM/DD');
@@ -99,6 +100,7 @@ class ChatContainer extends Component {
 
   onReplyPress = (index,id) => {
     const {messages} = this.props;
+    this.setState({isRepling: true});
     try{
       let searchIndex = this.searchItemIndex(messages,id,index);
       console.log('searchIndex',searchIndex, index, id);
@@ -109,33 +111,38 @@ class ChatContainer extends Component {
           viewPosition: 0.5
         });
         InteractionManager.runAfterInteractions(()=>{
-          console.log('ref_',this[`message_box_${id}`]);
+          // console.log('ref_',this[`message_box_${id}`]);
           this[`message_box_${id}`] &&
           this[`message_box_${id}`].callBlinking(id);
+          this.setState({isRepling: false});
         });
       } else {
-        // RnBgTask.runInBackground_withPriority("MIN", () => {
-        //   this.props.onReplyPress(id).then((result)=>{
-        //     setTimeout(() => {
-        //       // this.scrollView && this.scrollView.scrollToOffset({offset: 20, animated: true});
-        //       let searchIndex = this.searchItemIndex(result,id,index);
-        //       // this.scrollView && this.scrollView.scrollToIndex({
-        //       //   animated: true,
-        //       //   index: result.length - 1,
-        //       //   viewPosition: 0.5
-        //       // });
-        //       this.scrollView && this.scrollView.scrollToEnd({animated: true});
-        //       setTimeout(() => {
-        //         console.log('ref_',this[`message_box_${id}`]);
-        //         this[`message_box_${id}`] &&
-        //         this[`message_box_${id}`].callBlinking(id);
-        //       },2000);
-        //     }, 500);
-        //   });
-        // });
+        this[`message_box_${messages[index].id}`] && this[`message_box_${messages[index].id}`].showLoading();
+        RnBgTask.runInBackground_withPriority("MIN", () => {
+          this.props.onReplyPress(id).then((result)=>{
+            setTimeout(() => {
+              // this.scrollView && this.scrollView.scrollToOffset({offset: 20, animated: true});
+              let searchIndex = this.searchItemIndex(result,id,index);
+              // this.scrollView && this.scrollView.scrollToIndex({
+              //   animated: true,
+              //   index: result.length - 1,
+              //   viewPosition: 0.5
+              // });
+              this.scrollView && this.scrollView.scrollToEnd({animated: true});
+              this[`message_box_${messages[index].id}`] && this[`message_box_${messages[index].id}`].hideLoading();
+              setTimeout(() => {
+                // console.log('ref_',this[`message_box_${id}`]);
+                this[`message_box_${id}`] &&
+                this[`message_box_${id}`].callBlinking(id);
+                this.setState({isRepling: false});
+              },2000);
+            }, 500);
+          });
+        });
       }
     }catch(err){
       console.log('error on replay click', err);
+      this.setState({isRepling: false});
     }
   }
 
@@ -380,11 +387,13 @@ class ChatContainer extends Component {
     const visibleLength = event.nativeEvent.layoutMeasurement.height;
     const contentLength = event.nativeEvent.contentSize.height;
 
+    this.listCurrentOffset = offset;
+
     // Check if scroll has reached either start of end of list.
-    const isScrollAtStart = offset < 100;
+    const isScrollAtStart = offset < 50;
     // const isScrollAtEnd = contentLength - visibleLength - offset < onEndReachedThreshold;
 
-    if(isScrollAtStart){
+    if(isScrollAtStart && !this.state.isRepling){
       console.log('isScrollAtStart');
       this.props.onScrollToStart && this.props.onScrollToStart();
     }
@@ -394,10 +403,7 @@ class ChatContainer extends Component {
   onEndReached = () => {
     const {isChannel, friendLoading, isLoadMore, channelLoading, messages, onLoadMore} = this.props;
     if (isChannel) {
-      if (
-        messages.length > 0 &&
-        messages.length % 30 === 0 &&
-        isLoadMore &&
+      if (isLoadMore &&
         !channelLoading
       ) {
         console.log('load more');
@@ -457,19 +463,52 @@ class ChatContainer extends Component {
   onSend = (newMessageText) => {
     const {onMessageSend, handleMessage, messages} = this.props;
     if (newMessageText && newMessageText.trim().length > 0) {
-      onMessageSend(newMessageText);
-      messages.length > 0 &&
-        this.scrollView &&
-        this.scrollView.scrollToIndex({index: 0, animated: false});
+      onMessageSend(newMessageText,()=>{
+        if(this.listCurrentOffset > AUTOSCROLLTOTOPTHRESHOLD){
+          setTimeout(()=>{
+            messages.length > 0 &&
+            this.scrollView &&
+            this.scrollView.scrollToIndex({index: 0, animated: true});
+          },100);
+        }
+      });
     } else {
       handleMessage('');
     }
   }
 
-
+  scrollToTop = () => {
+    const {messages} = this.props;
+    if(this.listCurrentOffset > AUTOSCROLLTOTOPTHRESHOLD){
+      setTimeout(()=>{
+        messages.length > 0 &&
+        this.scrollView &&
+        this.scrollView.scrollToIndex({index: 0, animated: true});
+      },100);
+    }
+  }
 
   shouldComponentUpdate(nextProps, nextState){
-    if(!isEqual(nextProps,this.props)){
+    if(
+      !isEqual(nextProps.newMessageText,this.props.newMessageText) ||
+      !isEqual(nextProps.sendEnable,this.props.sendEnable) ||
+      !isEqual(nextProps.messages,this.props.messages) ||
+      !isEqual(nextProps.orientation,this.props.orientation) ||
+      !isEqual(nextProps.repliedMessage,this.props.repliedMessage) ||
+      !isEqual(nextProps.isReply,this.props.isReply) ||
+      !isEqual(nextProps.isMultiSelect,this.props.isMultiSelect) ||
+      !isEqual(nextProps.selectedIds,this.props.selectedIds) ||
+      !isEqual(nextProps.isLoadMore,this.props.isLoadMore) ||
+      !isEqual(nextProps.UserDisplayName,this.props.UserDisplayName) ||
+      !isEqual(nextProps.userData,this.props.userData) ||
+      !isEqual(nextProps.currentChannel,this.props.currentChannel) ||
+      !isEqual(nextProps.currentFriend,this.props.currentFriend) ||
+      !isEqual(nextProps.channelLoading,this.props.channelLoading) ||
+      !isEqual(nextProps.friendLoading,this.props.friendLoading) ||
+      !isEqual(nextProps.emotions,this.props.emotions) ||
+      !isEqual(nextProps.sendingImage,this.props.sendingImage)
+      ){
+      console.log('re-render by props');
       return true;
     }else if(!isEqual(nextState,this.state)){
       return true;
@@ -515,6 +554,7 @@ class ChatContainer extends Component {
       styles.replayContainer,
     ];
 
+    console.log('messages length',messages.length);
     return (
       <View
         style={styles.singleFlex}
@@ -577,7 +617,7 @@ class ChatContainer extends Component {
               decelerationRate={'normal'}
               // onScrollBeginDrag={this.onScrollBeginDrag}
               // onScrollEndDrag={this.onScrollEndDrag}
-              // onScroll={this.onScroll}
+              onScroll={this.onScroll}
               data={messages}
               inverted={true}
               onEndReached={this.onEndReached}
@@ -586,6 +626,10 @@ class ChatContainer extends Component {
               renderItem={this.renderMessageItem}
               ListEmptyComponent={this.listEmptyComponent}
               keyExtractor={this.listKeyExtractor}
+              maintainVisibleContentPosition={{
+                autoscrollToTopThreshold: AUTOSCROLLTOTOPTHRESHOLD,
+                minIndexForVisible: 1,
+              }}
             />
           </>
           {isReply ? (
@@ -749,4 +793,4 @@ const mapDispatchToProps = {
   addEmotionToFrequentlyUsed,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatContainer);
+export default connect(mapStateToProps, mapDispatchToProps, null, {forwardRef: true})(ChatContainer);

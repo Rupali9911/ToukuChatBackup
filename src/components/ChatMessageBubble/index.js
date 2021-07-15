@@ -40,6 +40,7 @@ import {
   checkDeepLinkUrl,
   getChannelIdAndReferral,
   getUserName,
+  realmToPlainSingleObject,
 } from '../../utils';
 import AudioPlayerCustom from '../AudioPlayerCustom';
 import LinkPreviewComponent from '../LinkPreviewComponent';
@@ -54,6 +55,7 @@ import GifImage from '../GifImage';
 import {
   realm
 } from '../../storage/Service';
+import { OpenLoader } from '../Loaders';
 
 let borderRadius = 20;
 
@@ -68,7 +70,7 @@ class ChatMessageBubble extends Component {
     this.state = {
       showImage: false,
       images: null,
-      message: this.props.message
+      // message: this.props.message
     };
     // this.eventEmitter = new NativeEventEmitter(
     //   NativeModules.RNReactNativeDocViewer,
@@ -95,29 +97,29 @@ class ChatMessageBubble extends Component {
     //   }
     // });
 
-    if(!this.props.isChannel && this.props.message.id){
-      this.resultObject = realm.objectForPrimaryKey(
-        'chat_conversation_friend',
-        this.props.message.id
-      );
-      if(this.resultObject){
-        this.resultObject.addListener((chat,changes)=>{
-          // console.log('chat changes',changes,chat);
-          this.setState({message: chat});
-        });
-      }
-    }else if(this.props.message.id && this.props.isChannel){
-      this.resultObject = realm.objectForPrimaryKey(
-        'chat_conversation',
-        this.props.message.id
-      );
-      if(this.resultObject){
-        this.resultObject.addListener((chat,changes)=>{
-          // console.log('chat changes',changes,chat);
-          this.setState({message: chat});
-        });
-      }
-    }
+    // if(!this.props.isChannel && this.props.message.id){
+    //   this.resultObject = realm.objectForPrimaryKey(
+    //     'chat_conversation_friend',
+    //     this.props.message.id
+    //   );
+    //   if(this.resultObject){
+    //     this.resultObject.addListener((chat,changes)=>{
+    //       // console.log('chat changes',changes,chat);
+    //       this.setState({message: realmToPlainSingleObject(chat)});
+    //     });
+    //   }
+    // }else if(this.props.message.id && this.props.isChannel){
+    //   this.resultObject = realm.objectForPrimaryKey(
+    //     'chat_conversation',
+    //     this.props.message.id
+    //   );
+    //   if(this.resultObject){
+    //     this.resultObject.addListener((chat,changes)=>{
+    //       // console.log('chat changes',changes,chat);
+    //       this.setState({message: realmToPlainSingleObject(chat)});
+    //     });
+    //   }
+    // }
   }
 
   componentWillUnmount() {
@@ -199,7 +201,7 @@ class ChatMessageBubble extends Component {
   };
 
   renderReplyMessage = (message, isUser) => {
-    const {currentChannel, isChannel} = this.props;
+    const {currentChannel, isChannel, replyLoading} = this.props;
     let replyMessage = message.reply_to;
     // console.log('replyMessage', message)
 
@@ -319,6 +321,7 @@ class ChatMessageBubble extends Component {
                 </Text> */}
               </View>
             </View>
+            {replyLoading?<OpenLoader hideText/>:null}
           </TouchableOpacity>
           <Divider />
         </>
@@ -481,12 +484,14 @@ class ChatMessageBubble extends Component {
   }
 
   onMessageClick = () => {
-    const {message} = this.state;
-    if(message.msg_type === 'update') {
-      this.navigateToNotes()
-    }
-    else if (message.msg_type === 'doc') {
-      this.onDocumentPress(message.message_body)
+    const {message} = this.props;
+    if(message){
+      if(message.msg_type === 'update') {
+        this.navigateToNotes()
+      }
+      else if (message.msg_type === 'doc') {
+        this.onDocumentPress(message.message_body)
+      }
     }
     // else if (message.msg_type === 'image'){
     //   if(message.hyperlink){
@@ -517,7 +522,7 @@ class ChatMessageBubble extends Component {
 
   render() {
     const {
-      // message,
+      message,
       isUser,
       onMessageReply,
       onMessagePress,
@@ -532,7 +537,7 @@ class ChatMessageBubble extends Component {
       onAudioPlayPress,
       isMultiSelect,
     } = this.props;
-    const {showImage, images, message} = this.state;
+    const {showImage, images} = this.state;
     const msgTime = new Date(message.created);
     const isEditable = new Date(msgTime);
 

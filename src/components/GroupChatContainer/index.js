@@ -624,7 +624,8 @@ class GroupChatContainer extends Component {
               keyExtractor={this.keyExtractor}
               renderItem={this.renderMessage}
               ListEmptyComponent={this.listEmptyComponent}
-            // enableAutoscrollToTop={this._listViewOffset<=400}
+              enableAutoscrollToTop={true}
+              autoscrollToTopThreshold={300}
             />
           </>
           {/* <ScrollView

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import React, {Component} from 'react';
-import {View, FlatList, Platform, Linking, RefreshControl} from 'react-native';
+import {View, FlatList, Platform, Linking, RefreshControl, InteractionManager} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Orientation from 'react-native-orientation';
 import {createFilter} from 'react-native-search-filter';
@@ -267,9 +267,9 @@ class Chat extends Component {
     // await eventService.subscribe();
     // RnBgTask.runInBackground_withPriority('NORMAL', () => {
       this.events = eventService.getMessage().subscribe((message) => {
-        // RnBgTask.runInBackground_withPriority("MIN", () => {
-        this.checkEventTypes(message);
-        // });
+        RnBgTask.runInBackground_withPriority("MIN", () => {
+          this.checkEventTypes(message);
+        });
       });
     // });
 
@@ -986,7 +986,7 @@ class Chat extends Component {
         // updateObjects.map((_item)=>{
         //   this.props.updateFriendConversation(realmToPlainSingleObject(_item));
         // });
-        // this.getLocalFriendConversation();
+        this.getLocalFriendConversation();
       }
       if (user && user.length > 0) {
         let array = this.props.acceptedRequest;
@@ -1072,7 +1072,7 @@ class Chat extends Component {
           updatedMessages.map((_item)=>{
             this.props.updateChannelMessage(realmToPlainSingleObject(_item));
           });
-          // this.getLocalChannelConversations();
+          this.getLocalChannelConversations();
         }
       }
     }
@@ -1548,7 +1548,7 @@ class Chat extends Component {
             this.props.updateChannelMessage(realmToPlainSingleObject(updatedMessage));
           }
 
-          // this.getLocalChannelConversations();
+          this.getLocalChannelConversations();
         }
       }
     }
@@ -1704,7 +1704,7 @@ class Chat extends Component {
           console.log('unsentMessage',unsentMessage);
           this.props.updateChannelMessage(realmToPlainSingleObject(unsentMessage));
         }
-        // this.getLocalChannelConversations();
+        this.getLocalChannelConversations();
       }
     }
   }
@@ -1754,6 +1754,7 @@ class Chat extends Component {
       message.text.data.message_details.user_id === this.props.userData.id
     ) {
       deleteChannelById(message.text.data.message_details.channel_id);
+      
       deleteChannelConversationById(
         message.text.data.message_details.channel_id,
       );
@@ -1937,7 +1938,7 @@ class Chat extends Component {
         if(updateMessage){
           this.props.updateFriendConversation(realmToPlainSingleObject(updateMessage));
         }
-        // this.getLocalFriendConversation();
+        this.getLocalFriendConversation();
       }
       let users = getLocalUserFriend(
         message.text.data.message_details.to_user.id,
@@ -1975,7 +1976,7 @@ class Chat extends Component {
         if(updateMessage){
           this.props.updateFriendConversation(realmToPlainSingleObject(updateMessage));
         }
-        // this.getLocalFriendConversation();
+        this.getLocalFriendConversation();
       }
       let users = getLocalUserFriend(
         message.text.data.message_details.from_user.id,
@@ -2197,7 +2198,7 @@ class Chat extends Component {
           if(unsentMessage){
             this.props.updateFriendConversation(realmToPlainSingleObject(unsentMessage));
           }
-          // this.getLocalFriendConversation();
+          this.getLocalFriendConversation();
         }
       } else if (message.text.data.message_details.to_user.id === userData.id) {
         let unsentMessage = setFriendMessageUnsend(message.text.data.message_details.id);
@@ -2226,7 +2227,7 @@ class Chat extends Component {
           if(unsentMessage){
             this.props.updateFriendConversation(realmToPlainSingleObject(unsentMessage));
           }
-          // this.getLocalFriendConversation();
+          this.getLocalFriendConversation();
         }
       }
       // this.props.setUserFriends().then(() => {

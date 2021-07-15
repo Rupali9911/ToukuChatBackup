@@ -208,6 +208,7 @@ export default function (state = initialState, action) {
       let _newArray = state.chatConversation.slice();
       let _index = _newArray.findIndex((_)=>_.id==action.payload.id)
       if(_index<0){
+        console.log('new channel msg added');
         _newArray.splice(0, 0, action.payload);
         return {
           ...state,
@@ -703,11 +704,11 @@ export const followChannel = (data) => (dispatch) =>
       .post(`/xchat/check-user-in-channel/`, data)
       .then((res) => {
         resolve(res);
-        dispatch(getChannelConversations(data.channel_id, 30))
-          .then((res) => {
-            dispatch(readAllChannelMessages(data.channel_id));
-          })
-          .catch(() => {});
+        // dispatch(getChannelConversations(data.channel_id, 30))
+        //   .then((res) => {
+        //     dispatch(readAllChannelMessages(data.channel_id));
+        //   })
+        //   .catch(() => {});
       })
       .catch((err) => {
         reject(err);
