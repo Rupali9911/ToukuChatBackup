@@ -1958,8 +1958,8 @@ class GroupChats extends Component {
     await this.setState(
       {
         uploadFile: source,
-        // sentMessageType: 'image',
-        sentMessageType: model.type,
+        sentMessageType: 'image',
+        // sentMessageType: model.type,
         sendingMedia: true,
       },
       async () => {

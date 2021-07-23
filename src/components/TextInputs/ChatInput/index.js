@@ -440,7 +440,7 @@ class ChatInput extends Component {
     const {selectedEmotion} = this.state;
     sendEmotion(selectedEmotion);
     this.addEmotionToFrequentlyUsed(selectedEmotion);
-    this.setState({ selectedEmotion: null });
+    this.setState({ selectedEmotion: null, searchEmotion: false });
   }
 
   handleInput = (text) => {
