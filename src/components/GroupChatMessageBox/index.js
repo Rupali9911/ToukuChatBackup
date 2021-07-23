@@ -173,9 +173,9 @@ export default class GroupChatMessageBox extends Component {
     //   return null;
     // }
 
-    if (closeMenu) {
-      this._closeMenu();
-    }
+    // if (closeMenu) {
+    //   this._closeMenu();
+    // }
 
     const animatedStyle = {
       opacity: this.state.animation,

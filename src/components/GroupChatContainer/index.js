@@ -39,6 +39,7 @@ import { addFriendByReferralCode } from '../../redux/reducers/friendReducer';
 import { markGroupConversationRead } from '../../redux/reducers/groupReducer';
 import {addEmotionToFrequentlyUsed} from '../../redux/reducers/chatReducer';
 import ParsedText from 'react-native-parsed-text';
+import { isEqual } from 'lodash';
 
 const { height } = Dimensions.get('window');
 
@@ -158,7 +159,9 @@ class GroupChatContainer extends Component {
 
   scrollListToRecent = () => {
     console.log('scroll to recent', this._listViewOffset);
-    this.scrollView && this.scrollView.scrollToOffset({ offset: 0, animated: false });
+    setTimeout(()=>{
+      this.scrollView && this.scrollView.scrollToOffset({ offset: this.chat_input.getHeight(), animated: true });
+    },100);
   }
 
   scrollListToEnd = () => {
@@ -203,17 +206,18 @@ class GroupChatContainer extends Component {
     } else {
       let reply_index = this.searchItemIndex(this.props.messages, id, index)
       console.log('reply_index', reply_index, index);
-      if (reply_index !== index) {
+      if (reply_index !== index && (reply_index - index) < 70) {
         this.scrollView.scrollToIndex({
           animated: true,
           index: reply_index,
           viewPosition: 0.5
         });
-        InteractionManager.runAfterInteractions(() => {
-          this[`message_box_${id}`] &&
-            this[`message_box_${id}`].callBlinking(id);
-        });
-
+        setTimeout(()=>{
+          InteractionManager.runAfterInteractions(() => {
+            this[`message_box_${id}`] &&
+              this[`message_box_${id}`].callBlinking(id);
+          });
+        },1000);
       } else {
         this.props.onReplyPress(id, (conversations) => {
           this.scrollView && this.scrollView.scrollToOffset({ offset: 20, animated: false });
@@ -500,22 +504,56 @@ class GroupChatContainer extends Component {
   onSend = async (newMessageText) => {
     const {onMessageSend, messages, handleMessage} = this.props;
     if (newMessageText && newMessageText.trim().length > 0) {
-      onMessageSend(newMessageText, () => {
-        setTimeout(() => {
-          messages.length > 0 &&
-            this.scrollView &&
-            this.scrollView.scrollToOffset({ offset: 0, animated: false });
-          console.log('scroll to 0 index done');
-        }, 200);
-      });
+      onMessageSend(newMessageText, 
+      //   () => {
+      //   setTimeout(() => {
+      //     messages.length > 0 &&
+      //       this.scrollView &&
+      //       this.scrollView.scrollToOffset({ offset: 0, animated: false });
+      //     console.log('scroll to 0 index done');
+      //   }, 200);
+      // }
+      );
     } else {
       handleMessage('');
     }
   }
 
-  // shouldComponentUpdate(){
-  //   return false;
-  // }
+  onStartShouldSetResponder = (event) => {
+    const { hideStickerView } = this.state;
+    // console.log('onStartShouldSetResponder called')
+    // this.setState({ hideStickerView: !hideStickerView })
+    this.chat_input && this.chat_input.hideStickerView();
+  }
+
+  chatInputRefs = (chat_input) => {
+    this.chat_input = chat_input;
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(
+      !isEqual(this.props.orientation, nextProps.orientation) ||
+      !isEqual(this.props.isReply, nextProps.isReply) ||
+      !isEqual(this.props.messages, nextProps.messages) ||
+      !isEqual(this.props.repliedMessage, nextProps.repliedMessage) ||
+      !isEqual(this.props.newMessageText, nextProps.newMessageText) ||
+      !isEqual(this.props.sendingImage, nextProps.sendingImage) ||
+      !isEqual(this.props.groupMembers, nextProps.groupMembers) ||
+      !isEqual(this.props.isMultiSelect, nextProps.isMultiSelect) ||
+      !isEqual(this.props.selectedIds, nextProps.selectedIds) || 
+      !isEqual(this.props.isChatDisable, nextProps.isChatDisable) || 
+      !isEqual(this.props.userData, nextProps.userData) || 
+      !isEqual(this.props.currentGroup, nextProps.currentGroup) || 
+      !isEqual(this.props.emotions, nextProps.emotions)
+    ){
+      console.log('re-render by props');
+      return true;
+    } else if(!isEqual(this.state, nextState)){
+      console.log('re-render by state');
+      return true;
+    }
+    return false;
+  }
 
   render() {
     const {
@@ -568,10 +606,7 @@ class GroupChatContainer extends Component {
         scrollEnabled={false}
         extraHeight={200}
         contentInsetAdjustmentBehavior={'always'}
-        onStartShouldSetResponder={() => {
-            console.log('onStartShouldSetResponder called')
-                this.setState({hideStickerView: !hideStickerView})
-        }}
+        onStartShouldSetResponder={this.onStartShouldSetResponder}
       >
         <View
           style={[
@@ -598,8 +633,8 @@ class GroupChatContainer extends Component {
               ref={(view) => {
                 this.scrollView = view;
               }}
-              onScrollBeginDrag={this.closeMenu}
-              onScrollEndDrag={this.closeMenuFalse}
+              // onScrollBeginDrag={this.closeMenu}
+              // onScrollEndDrag={this.closeMenuFalse}
               // extraData={this.state}
               data={messages}
               extraData={this.state}
@@ -624,8 +659,8 @@ class GroupChatContainer extends Component {
               keyExtractor={this.keyExtractor}
               renderItem={this.renderMessage}
               ListEmptyComponent={this.listEmptyComponent}
-              enableAutoscrollToTop={true}
-              autoscrollToTopThreshold={300}
+              // enableAutoscrollToTop={true}
+              // autoscrollToTopThreshold={300}
             />
           </>
           {/* <ScrollView
@@ -795,6 +830,7 @@ class GroupChatContainer extends Component {
           </View>
         ) : isChatDisable === false ? null : (
           <ChatInput
+            ref={this.chatInputRefs}
             sendEmotion={sendEmotion}
             onAttachmentPress={onAttachmentPress}
             onCameraPress={onCameraPress}
@@ -822,7 +858,7 @@ class GroupChatContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     userData: state.userReducer.userData,
-    groupLoading: state.groupReducer.loading,
+    // groupLoading: state.groupReducer.loading,
     currentGroup: state.groupReducer.currentGroup,
     emotions: state.chatReducer.emotions,
   };
@@ -836,5 +872,5 @@ const mapDispatchToProps = {
   addEmotionToFrequentlyUsed
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupChatContainer);
+export default connect(mapStateToProps, mapDispatchToProps, null, {forwardRef: true})(GroupChatContainer);
 // export default GroupChatContainer;

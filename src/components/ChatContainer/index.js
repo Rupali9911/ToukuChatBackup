@@ -21,6 +21,11 @@ import {connect} from 'react-redux';
 import {Colors, Fonts, Icons, Images} from '../../constants';
 import {translate} from '../../redux/reducers/languageReducer';
 import {addEmotionToFrequentlyUsed} from '../../redux/reducers/chatReducer';
+import {addFriendByReferralCode} from '../../redux/reducers/friendReducer';
+import {
+  setActiveTimelineTab,
+  setSpecificPostId,
+} from '../../redux/reducers/timelineReducer';
 import Button from '../Button';
 import ChatMessageBox from '../ChatMessageBox';
 import CheckBox from '../CheckBox';
@@ -32,6 +37,7 @@ import RoundedImage from '../RoundedImage';
 import ChatInput from '../TextInputs/ChatInput';
 import Toast from '../Toast';
 import VideoThumbnailPlayer from '../VideoThumbnailPlayer';
+import ChatUpdateInfo from '../ChatUpdateInfo';
 import styles from './styles';
 import {
   getUserName,
@@ -55,7 +61,8 @@ class ChatContainer extends Component {
       hideStickerView: false,
       isRepling: false
     };
-    this.listCurrentOffset = 0
+    this.listCurrentOffset = 0;
+    this.enableAutoScroll = true;
   }
 
   getDate = (date) => {
@@ -169,67 +176,14 @@ class ChatContainer extends Component {
           {item.msg_type &&
           item.msg_type === 'update' &&
           !item.message_body.includes('add a memo') ? (
-            <TouchableOpacity
-              style={{
-                width: '100%',
-                marginLeft: isMultiSelect ? -35 : 0,
-              }}
-              onPress={this.onItemPress.bind(this,item)}>
-              <Menu
-                ref={this.infoMenuRef.bind(this, item)}
-                style={{
-                  marginTop: 15,
-                  marginLeft: 20,
-                  backgroundColor: Colors.gradient_3,
-                  opacity: 0.9,
-                }}
-                tabHeight={110}
-                headerHeight={80}
-                button={
-                  <TouchableOpacity
-                    disabled={isMultiSelect}
-                    onLongPress={this.showMenu.bind(this,item.id)}
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      marginBottom: 5,
-                    }}>
-                    <View
-                      style={{
-                        maxWidth: '90%',
-                        backgroundColor: Colors.update_bg,
-                        padding: normalize(5),
-                        paddingHorizontal: normalize(8),
-                        borderRadius: 12,
-                      }}>
-                      <Text style={[styles.messageDateText]}>
-                        {this.renderUpdate(item)}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                }>
-                <MenuItem
-                  onPress={this.onInfoDelete.bind(this,item)}
-                  customComponent={
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        margin: 15,
-                      }}>
-                      <FontAwesome5
-                        name={'trash'}
-                        size={20}
-                        color={Colors.white}
-                      />
-                      <Text style={{marginLeft: 10, color: '#fff'}}>
-                        {translate('common.delete')}
-                      </Text>
-                    </View>
-                  }
-                />
-              </Menu>
-            </TouchableOpacity>
+              <ChatUpdateInfo
+                isMultiSelect={isMultiSelect}
+                text={this.renderUpdate(item)}
+                onItemPress={this.onItemPress.bind(this, item)}
+                infoMenuRef={this.infoMenuRef.bind(this, item)}
+                showMenu={this.showMenu.bind(this, item.id)}
+                onInfoDelete={this.onInfoDelete.bind(this, item)}
+              />
           ) : (
             <TouchableOpacity
               style={styles.singleFlex}
@@ -274,6 +228,10 @@ class ChatContainer extends Component {
                 isChatDisable={isChatDisable}
                 onMediaPlay={this.props.onMediaPlay}
                 UserDisplayName={this.props.UserDisplayName}
+                userData={this.props.userData}
+                addFriendByReferralCode={this.props.addFriendByReferralCode}
+                setSpecificPostId={this.props.setSpecificPostId}
+                setActiveTimelineTab={this.props.setActiveTimelineTab}
               />
             </TouchableOpacity>
           )}
@@ -392,7 +350,7 @@ class ChatContainer extends Component {
     // Check if scroll has reached either start of end of list.
     const isScrollAtStart = offset < 50;
     // const isScrollAtEnd = contentLength - visibleLength - offset < onEndReachedThreshold;
-
+    console.log('this.listCurrentOffset',this.listCurrentOffset);
     if(isScrollAtStart && !this.state.isRepling){
       console.log('isScrollAtStart');
       this.props.onScrollToStart && this.props.onScrollToStart();
@@ -403,14 +361,12 @@ class ChatContainer extends Component {
   onEndReached = () => {
     const {isChannel, friendLoading, isLoadMore, channelLoading, messages, onLoadMore} = this.props;
     if (isChannel) {
-      if (isLoadMore &&
-        !channelLoading
-      ) {
+      if (!channelLoading) {
         console.log('load more');
         onLoadMore && onLoadMore(messages[messages.length - 1]);
       }
     } else {
-      if (isLoadMore && !friendLoading) {
+      if (!friendLoading) {
         onLoadMore && onLoadMore(messages[messages.length - 1]);
       }
     }
@@ -479,13 +435,42 @@ class ChatContainer extends Component {
 
   scrollToTop = () => {
     const {messages} = this.props;
-    if(this.listCurrentOffset > AUTOSCROLLTOTOPTHRESHOLD){
+    console.log('height',this.chat_input.getHeight());
+    // if(this.listCurrentOffset > AUTOSCROLLTOTOPTHRESHOLD){
       setTimeout(()=>{
         messages.length > 0 &&
         this.scrollView &&
-        this.scrollView.scrollToIndex({index: 0, animated: true});
+        // this.scrollView.scrollToIndex({index: 0, animated: true});
+        this.scrollView.scrollToOffset({offset: this.chat_input.getHeight(), animated: true});
       },100);
+    // }
+  }
+
+  onStartShouldSetResponder = (event) => {
+    const {isChatDisable} = this.props;
+    const {hideStickerView} = this.state;
+    if (!isChatDisable){
+      console.log('onStartShouldSetResponder called');
+        // this.setState({hideStickerView: !hideStickerView})
+        this.chat_input && this.chat_input.hideStickerView();
     }
+  }
+
+  onDeletePress = () => {
+    const {selectedIds, onSelectedDelete} = this.props;
+    if (selectedIds.length) {
+      onSelectedDelete();
+    } else {
+      Toast.show({
+        title: translate('pages.xchat.touku'),
+        text: translate('pages.xchat.invalidMsgDelete'),
+        type: 'primary',
+      });
+    }
+  }
+
+  chatInputRefs = (chat_input) => {
+    this.chat_input = chat_input;
   }
 
   shouldComponentUpdate(nextProps, nextState){
@@ -509,6 +494,7 @@ class ChatContainer extends Component {
       !isEqual(nextProps.sendingImage,this.props.sendingImage)
       ){
       console.log('re-render by props');
+      this.enableAutoScroll = (nextProps.messages.length - this.props.messages.length) < 5; 
       return true;
     }else if(!isEqual(nextState,this.state)){
       return true;
@@ -572,12 +558,7 @@ class ChatContainer extends Component {
         // keyboardOpeningTime={1500}
         // scrollEnabled={false}
         // extraHeight={200}
-        onStartShouldSetResponder={() => {
-          if (!isChatDisable){
-            console.log('onStartShouldSetResponder called')
-              this.setState({hideStickerView: !hideStickerView})
-          }
-        }}
+        onStartShouldSetResponder={this.onStartShouldSetResponder}
         >
         <View
           style={[
@@ -595,7 +576,7 @@ class ChatContainer extends Component {
           ]}>
           <>
             <FlatList
-              // style={{flexGrow:1}}
+              // style={{backgroundColor: 'red'}}
               enableResetScrollToCoords={false}
               contentContainerStyle={[
                 styles.messareAreaScroll,
@@ -626,8 +607,9 @@ class ChatContainer extends Component {
               renderItem={this.renderMessageItem}
               ListEmptyComponent={this.listEmptyComponent}
               keyExtractor={this.listKeyExtractor}
+              initialNumToRender={15}
               maintainVisibleContentPosition={{
-                autoscrollToTopThreshold: AUTOSCROLLTOTOPTHRESHOLD,
+                // autoscrollToTopThreshold: this.enableAutoScroll?AUTOSCROLLTOTOPTHRESHOLD:undefined,
                 minIndexForVisible: 1,
               }}
             />
@@ -739,17 +721,7 @@ class ChatContainer extends Component {
                   translate('common.delete') +
                   (selectedIds.length ? ` (${selectedIds.length})` : '')
                 }
-                onPress={() => {
-                  if (selectedIds.length) {
-                    onSelectedDelete();
-                  } else {
-                    Toast.show({
-                      title: translate('pages.xchat.touku'),
-                      text: translate('pages.xchat.invalidMsgDelete'),
-                      type: 'primary',
-                    });
-                  }
-                }}
+                onPress={this.onDeletePress}
                 isRounded={true}
                 fontType={'smallRegularText'}
                 height={40}
@@ -758,6 +730,7 @@ class ChatContainer extends Component {
           </View>
         ) : isChatDisable ? null : (
           <ChatInput
+            ref={this.chatInputRefs}
             sendEmotion={sendEmotion}
             onAttachmentPress={onAttachmentPress}
             onCameraPress={onCameraPress}
@@ -791,6 +764,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   addEmotionToFrequentlyUsed,
+  addFriendByReferralCode,
+  setSpecificPostId,
+  setActiveTimelineTab,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {forwardRef: true})(ChatContainer);

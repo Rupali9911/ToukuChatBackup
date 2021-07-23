@@ -203,7 +203,16 @@ export const getChannelChatConversationById = (id) => {
   return realm
     .objects('chat_conversation')
     .sorted('created', {ascending: true})
-    .filtered(`channel == ${id}`);
+    .filtered(`channel == ${id}`).slice(0,30);
+};
+
+export const getChannelChatNextConversationByMsgId = (id, msg_id, isInclusive = true) => {
+  let filter = `channel == ${id}`;
+  filter = msg_id ? `${filter} && id ${isInclusive?'>=':'>'} ${msg_id}` : filter;
+  return realm
+    .objects('chat_conversation')
+    .sorted('created',true)
+    .filtered(filter);
 };
 
 export const getChannelChatConversationByMsgId = (id, msg_id, limit = 50, isInclusive = true) => {
@@ -380,7 +389,7 @@ export const setNewFriendChatConversation = (item) => {
             local_id: item.local_id,
             media: item.media || [],
             message_body: item.message_body,
-            msg_type: item.msg_type,
+            msg_type: (item.msg_type === 'sticker' || item.msg_type === 'gif') ? 'image' : item.msg_type,
             reply_to: item.reply_to,
             thumbnail: item.thumbnail,
             to_user: item.to_user,
@@ -404,7 +413,7 @@ export const setNewFriendChatConversation = (item) => {
           local_id: item.local_id,
           media: item.media || [],
           message_body: item.message_body,
-          msg_type: item.msg_type,
+          msg_type: (item.msg_type === 'sticker' || item.msg_type === 'gif') ? 'image' : item.msg_type,
           reply_to: item.reply_to,
           thumbnail: item.thumbnail,
           to_user: item.to_user,
@@ -435,6 +444,15 @@ export const getFriendChatConversationByMsgId = (id, msg_id, limit = 50, isInclu
     .objects('chat_conversation_friend')
     .sorted('created',false)
     .filtered(filter).slice(0,limit).reverse();
+};
+
+export const getFriendChatNextConversationByMsgId = (id, msg_id, isInclusive = true) => {
+  let filter = `friend == ${id}`;
+  filter = msg_id ? `${filter} && id ${isInclusive?'>=':'>'} ${msg_id}` : filter;
+  return realm
+    .objects('chat_conversation_friend')
+    .sorted('created',true)
+    .filtered(filter);
 };
 
 export const getFriendChatPreviousConversationFromMsgId = (id, msg_id, limit = 50, isInclusive = false) => {
@@ -935,6 +953,10 @@ export const getChannelsById = (id) => {
     .filtered(`id == ${id}`);
 };
 
+export const getChannelsUnreadCount = () => {
+  return realm.objects('channels').sum('unread_msg');
+};
+
 export const updateChannelLastMsgWithOutCount = (id, message) => {
   console.log('last_msg_update');
   let returnObject = null;
@@ -1271,6 +1293,10 @@ export const getGroupObjectById = (id) => {
   return realm.objectForPrimaryKey('groups',parseInt(`${id}`));
 };
 
+export const getGroupsUnreadCount = () => {
+  return realm.objects('groups').sum('unread_msg');
+};
+
 export const deleteGroupById = (id) => {
   var message = realm.objects('groups').filtered(`group_id == ${id}`);
 
@@ -1581,6 +1607,10 @@ export const getLocalUserFriend = (id) => {
 export const getLocalUserFriendById = (id) => {
   return realm.objectForPrimaryKey('user_friends',parseInt(`${id}`));
 }
+
+export const getUserFriendsUnreadCount = () => {
+  return realm.objects('user_friends').sum('unread_msg');
+};
 
 export const getUserFriend = (id) => {
   return realm

@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import {Colors} from '../../constants';
 import {isIphoneX} from '../../utils';
 import styles from './styles';
+import { isEqual } from 'lodash';
 
 class TabBarComp extends Component {
   state = {
@@ -51,17 +52,29 @@ class TabBarComp extends Component {
   }
 
   keyboardWillShow = (event) => {
-    Platform.OS === 'android' &&
-      this.setState({
-        isVisible: false,
-      });
+    Platform.OS === 'android' && this.setState({isVisible: false});
   };
 
   keyboardWillHide = (event) => {
-    this.setState({
-      isVisible: true,
-    });
+    Platform.OS === 'android' && this.setState({isVisible: true});
   };
+
+  shouldComponentUpdate(nextProps, nextState){
+    if (
+      !isEqual(this.props.renderIcon, nextProps.renderIcon) ||
+      !isEqual(this.props.activeTintColor, nextProps.activeTintColor) ||
+      !isEqual(this.props.inactiveTintColor, nextProps.inactiveTintColor) ||
+      !isEqual(this.props.getAccessibilityLabel, nextProps.getAccessibilityLabel) ||
+      !isEqual(this.props.navigation, nextProps.navigation) ||
+      !isEqual(this.props.userData, nextProps.userData) ||
+      !isEqual(this.props.selectedLanguageItem, nextProps.selectedLanguageItem)
+    ) {
+      return true;
+    } else if(!isEqual(this.state,nextState)) {
+      return true;
+    }
+    return false;
+  }
 
   render() {
     console.log('dimen.height', isIphoneX());

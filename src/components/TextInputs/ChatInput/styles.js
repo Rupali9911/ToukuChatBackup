@@ -208,16 +208,21 @@ export default StyleSheet.create({
     height: '100%',
   },
   emotionInputContainer: {
-    height: 45,
+    flex:1,
+    height: Platform.select({ios: normalize(25)}),
     color: 'black',
-    marginTop: 12,
     marginHorizontal: 12,
     backgroundColor: 'rgba(100, 93, 93, 0.15)',
     paddingHorizontal: 16,
     borderRadius: 100,
+    marginBottom: 5,
   },
   emotionListStyle: {
     margin: 12,
+  },
+  searchEmotionListStyle: {
+    margin: 12,
+    backgroundColor: Colors.light_pink
   },
   emotionListContentStyle: {
     justifyContent: 'space-evenly',
@@ -225,12 +230,19 @@ export default StyleSheet.create({
     // alignItems: 'center',
     paddingBottom: 50,
   },
+  searchEmotionListContentStyle: {
+    justifyContent: 'space-evenly',
+    alignContent: 'space-around',
+  },
   divider: {
     marginVertical: 6,
   },
+  horizontalDivider: {
+    marginRight: 6,
+  },
   emotionsContainer: {
     backgroundColor: Colors.light_pink,
-    width: '100%'
+    width: '100%',
   },
   stickerContainerStyle: {
     width: Dimensions.get('window').width / 4,
@@ -245,12 +257,26 @@ export default StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
   },
+  searchImageStyle: {
+    width: 100,
+    height: 75,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  searchContainerStyle: {
+    width: Dimensions.get('window').width / 4,
+    height: 75,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
   frequentUseItemContainerStyle: {
     width: Dimensions.get('window').width / 3,
     height: 130,
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
+    zIndex: 1
   },
   gifsContainerStyle: {
     width: Dimensions.get('window').width / 2,
@@ -272,12 +298,16 @@ export default StyleSheet.create({
     height: 300,
     backgroundColor: Colors.light_pink,
   },
+  searchItemContainer: {
+    flex: 0.5,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
   tabBarItemContainer: {
-    width: '100%',
+    width: normalize(70),
     paddingVertical: '4%',
     paddingHorizontal: '3%',
     justifyContent: 'center',
-    alignContent: 'center',
     alignItems: 'center',
     borderBottomColor: Colors.dark_pink,
   },
@@ -355,7 +385,7 @@ export default StyleSheet.create({
     width: '100%', 
     alignItems: 'center', 
     paddingVertical: 5, 
-    position: 'absolute',
+    position: 'absolute'
   },
   closeIconStyle: {
     position: 'absolute',

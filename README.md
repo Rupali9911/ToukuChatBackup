@@ -112,3 +112,7 @@ from this:
   const id = primaryKey 
       ? serializedPrimaryKeyValue(this[primaryKey])
        : schemaName + this._objectId(); 
+
+
+### Fix SafeArea issue in chatInput
+- copy KeyboardAccessoryView.js from ./LineLibChanges/react-native-ui-lib/KeyboardAccessoryView.js and replace with ./node_modules/react-native-ui-lib/lib/components/Keyboard/KeyboardInput/KeyboardAccessoryView.js

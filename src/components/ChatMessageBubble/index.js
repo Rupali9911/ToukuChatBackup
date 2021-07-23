@@ -1,5 +1,5 @@
 import linkify from 'linkify-it';
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   Clipboard,
   Linking,
@@ -56,6 +56,7 @@ import {
   realm
 } from '../../storage/Service';
 import { OpenLoader } from '../Loaders';
+import { isEqual } from 'lodash';
 
 let borderRadius = 20;
 
@@ -64,7 +65,7 @@ const options = {
   ignoreAndroidSystemSettings: false,
 };
 
-class ChatMessageBubble extends Component {
+class ChatMessageBubble extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -520,6 +521,74 @@ class ChatMessageBubble extends Component {
       this.props.onMediaPlay(false);
   }
 
+  onMessage_Translate = (message) => {
+    this.props.onMessageTranslate(message);
+    // closeMenu();
+    this.hideMenu();
+  }
+
+  onReply_Press = () => {
+    const {selectedMessageId} = this.props;
+    console.log('selectedMessageId', selectedMessageId);
+    this.props.onMessageReply(selectedMessageId);
+    // closeMenu();
+    this.hideMenu();
+  }
+
+  onEdit_Press = (message) => {
+    this.props.onEditMessage(message);
+    // closeMenu();
+    this.hideMenu();
+  }
+
+  onDelete_Press = () => {
+    const {selectedMessageId} = this.props;
+    this.props.onDelete(selectedMessageId);
+    // closeMenu();
+    this.hideMenu();
+  }
+
+  onUnsend_Press = () => {
+    const {selectedMessageId} = this.props;
+    this.hideMenu();
+    setTimeout(() => {
+      this.props.onUnSend(selectedMessageId);
+    }, 500);
+
+    // closeMenu();
+  }
+
+  onCopy_Press = () => {
+    const {message} = this.props;
+    this.onCopy(message.message_body);
+    // closeMenu();
+    this.hideMenu();
+  }
+
+  onDownload_Press = () => {
+    const {message, onDownloadMessage} = this.props;
+    onDownloadMessage(message);
+    // closeMenu();
+    this.hideMenu();
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(
+      !isEqual(this.props.message, nextProps.message) ||
+      !isEqual(this.props.isUser, nextProps.isUser) ||
+      !isEqual(this.props.selectedMessageId, nextProps.selectedMessageId) ||
+      !isEqual(this.props.audioPlayingId, nextProps.audioPlayingId) ||
+      !isEqual(this.props.perviousPlayingAudioId, nextProps.perviousPlayingAudioId) ||
+      !isEqual(this.props.isMultiSelect, nextProps.isMultiSelect) ||
+      !isEqual(this.props.userData, nextProps.userData) 
+      ){
+        return true;
+    } else if (!isEqual(this.state, nextState)){
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {
       message,
@@ -892,11 +961,7 @@ class ChatMessageBubble extends Component {
               //     color={Colors.white}
               //   />
               // )}
-              onPress={() => {
-                onMessageTranslate(message);
-                // closeMenu();
-                this.hideMenu();
-              }}
+              onPress={this.onMessage_Translate.bind(this, message)}
               customComponent={
                 <View style={styles.translateContainer}>
                   <FontAwesome5
@@ -923,13 +988,7 @@ class ChatMessageBubble extends Component {
               //     color={Colors.white}
               //   />
               // )}
-              onPress={() => {
-                console.log('selectedMessageId', selectedMessageId);
-
-                onMessageReply(selectedMessageId);
-                // closeMenu();
-                this.hideMenu();
-              }}
+              onPress={this.onReply_Press}
               customComponent={
                 <View style={styles.translateContainer}>
                   <FontAwesome5
@@ -960,11 +1019,7 @@ class ChatMessageBubble extends Component {
                 //     color={Colors.white}
                 //   />
                 // )}
-                onPress={() => {
-                  onEditMessage(message);
-                  // closeMenu();
-                  this.hideMenu();
-                }}
+                onPress={this.onEdit_Press.bind(this, message)}
                 // title={translate('common.edit')}
                 // titleStyle={{marginLeft: -25, color: Colors.white}}
                 customComponent={
@@ -986,11 +1041,7 @@ class ChatMessageBubble extends Component {
             // icon={() => (
             //   <FontAwesome name={'trash'} size={20} color={Colors.white} />
             // )}
-            onPress={() => {
-              onDelete(selectedMessageId);
-              // closeMenu();
-              this.hideMenu();
-            }}
+            onPress={this.onDelete_Press}
             // title={translate('common.delete')}
             // titleStyle={{marginLeft: -25, color: Colors.white}}
             customComponent={
@@ -1016,15 +1067,7 @@ class ChatMessageBubble extends Component {
               //     color={Colors.white}
               //   />
               // )}
-              onPress={() => {
-                this.hideMenu();
-
-                setTimeout(() => {
-                  onUnSend(selectedMessageId);
-                }, 500);
-
-                // closeMenu();
-              }}
+              onPress={this.onUnsend_Press}
               // title={translate('common.unsend')}
               // titleStyle={{marginLeft: -25, color: Colors.white}}
               customComponent={
@@ -1047,11 +1090,7 @@ class ChatMessageBubble extends Component {
               // icon={() => (
               //   <FontAwesome5 name={'copy'} size={20} color={Colors.white} />
               // )}
-              onPress={() => {
-                this.onCopy(message.message_body);
-                // closeMenu();
-                this.hideMenu();
-              }}
+              onPress={this.onCopy_Press}
               // title={translate('common.copy')}
               // titleStyle={{marginLeft: -25, color: Colors.white}}
               customComponent={
@@ -1074,11 +1113,7 @@ class ChatMessageBubble extends Component {
               // icon={() => (
               //   <FontAwesome name={'download'} size={20} color={Colors.white} />
               // )}
-              onPress={() => {
-                onDownloadMessage(message);
-                // closeMenu();
-                this.hideMenu();
-              }}
+              onPress={this.onDownload_Press}
               // title={translate('pages.setting.download')}
               // titleStyle={{marginLeft: -25, color: Colors.white}}
               customComponent={
@@ -1104,7 +1139,7 @@ class ChatMessageBubble extends Component {
           images={images}
           imageIndex={0}
           visible={showImage}
-          onRequestClose={() => this.hideImage(false)}
+          onRequestClose={this.hideImage.bind(this, false)}
         />
       </View>
     );
@@ -1123,4 +1158,5 @@ const mapDispatchToProps = {
   setActiveTimelineTab,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);
+// export default connect(mapStateToProps, mapDispatchToProps)(ChatMessageBubble);
+export default ChatMessageBubble;

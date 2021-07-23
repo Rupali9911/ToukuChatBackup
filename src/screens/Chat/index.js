@@ -54,7 +54,8 @@ import {
   deleteChannelMessageFromList,
   updateFollowingChannel,
   addFollowingChannel,
-  deleteFollowingChannel
+  deleteFollowingChannel,
+  updateUnreadChannelMsgsCounts
 } from '../../redux/reducers/channelReducer';
 import {
   setCommonChatConversation,
@@ -132,8 +133,10 @@ import {
   deleteGroupMessageById,
   deleteMessageById,
   getChannelChatConversationById,
+  getChannelChatNextConversationByMsgId,
   getChannelsById,
   getFriendChatConversationById,
+  getFriendChatNextConversationByMsgId,
   getGroupChatConversationById,
   getGroupsById,
   getLocalUserFriend,
@@ -194,6 +197,9 @@ import {
   setChannelChatSingleConversation,
   setSingleChannel,
   setSingleGroup,
+  getUserFriendsUnreadCount,
+  getGroupsUnreadCount,
+  getChannelsUnreadCount
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
 import {eventService, getAvatar, getUser_ActionFromUpdateText, realmToPlainObject, realmToPlainSingleObject, getUserName, wait} from '../../utils';
@@ -1069,9 +1075,9 @@ class Chat extends Component {
           currentChannel &&
           message.text.data.message_details.channel_id === currentChannel.id
         ) {
-          updatedMessages.map((_item)=>{
-            this.props.updateChannelMessage(realmToPlainSingleObject(_item));
-          });
+          // updatedMessages.map((_item)=>{
+          //   this.props.updateChannelMessage(realmToPlainSingleObject(_item));
+          // });
           this.getLocalChannelConversations();
         }
       }
@@ -1348,18 +1354,20 @@ class Chat extends Component {
 
         let array = Object.assign([],this.props.chatGroupConversation);
 
-        for (const value of message_ids) {
-          updateGroupnReadCount(parseInt(value[0], 10), parseInt(value[1], 10));
-
-          let itemIndex = array.findIndex((_)=>_.id==value[0]);
-
-          if(itemIndex>=0){
-            let updateItem = Object.assign({},array[itemIndex]);
-            updateItem.read_count = parseInt(value[1], 10);
-            array.splice(itemIndex,1,updateItem);
+        RnBgTask.runInBackground_withPriority('MIN',()=>{
+          for (const value of message_ids) {
+            updateGroupnReadCount(parseInt(value[0], 10), parseInt(value[1], 10));
+  
+            let itemIndex = array.findIndex((_)=>_.id==value[0]);
+  
+            if(itemIndex>=0){
+              let updateItem = Object.assign({},array[itemIndex]);
+              updateItem.read_count = parseInt(value[1], 10);
+              array.splice(itemIndex,1,updateItem);
+            }
           }
-        }
-        this.props.setGroupConversation(array);
+          this.props.setGroupConversation(array);
+        });
         // this.getLocalGroupConversation();
       }
     }
@@ -1891,32 +1899,23 @@ class Chat extends Component {
   };
 
   getLocalFriendConversation = () => {
-    let chat = getFriendChatConversationById(this.props.currentFriend.friend);
-    if (chat.length) {
-      let conversations = [];
-      conversations = realmToPlainObject(chat);
-      // conversations = chat.toJSON();
-      // chat.map((item, index) => {
-      //   let i = {
-      //     created: item.created,
-      //     deleted_for: item.deleted_for,
-      //     friend: item.friend,
-      //     from_user: item.from_user,
-      //     id: item.id,
-      //     is_edited: item.is_edited,
-      //     is_read: item.is_read,
-      //     is_unsent: item.is_unsent,
-      //     local_id: item.local_id,
-      //     message_body: item.message_body,
-      //     msg_type: item.msg_type,
-      //     reply_to: item.reply_to,
-      //     thumbnail: item.thumbnail,
-      //     to_user: item.to_user,
-      //     updated: item.updated,
-      //   };
-      //   conversations = [...conversations, i];
-      // });
-      this.props.setFriendConversation(conversations);
+    const {chatFriendConversation} = this.props;
+
+    if (chatFriendConversation.length > 0) {
+      let list_last_msg_id = chatFriendConversation[chatFriendConversation.length-1].id;
+      let chat = getFriendChatNextConversationByMsgId(this.props.currentFriend.friend, list_last_msg_id);
+      if (chat.length) {
+        let conversations = [];
+        conversations = realmToPlainObject(chat);
+        this.props.setFriendConversation(conversations);
+      }
+    } else {
+      let chat = getFriendChatConversationById(this.props.currentFriend.friend);
+      if (chat.length) {
+        let conversations = [];
+        conversations = realmToPlainObject(chat);
+        this.props.setFriendConversation(conversations);
+      }
     }
   };
 
@@ -3132,12 +3131,24 @@ class Chat extends Component {
   };
 
   getLocalChannelConversations = () => {
-    let chat = getChannelChatConversationById(this.props.currentChannel.id);
-    if (chat.length) {
-      let conversations = [];
-      conversations = realmToPlainObject(chat);
-      // conversations = chat.toJSON();
-      this.props.setChannelConversation(conversations);
+    const {chatConversation} = this.props;
+    if(chatConversation.length>0){
+      list_last_msg_id = chatConversation[chatConversation.length-1].id;
+      let result = getChannelChatNextConversationByMsgId(this.props.currentChannel.id,list_last_msg_id);
+      if (result.length) {
+        let conversations = [];
+        conversations = realmToPlainObject(result);
+        // conversations = chat.toJSON();
+        this.props.setChannelConversation(conversations);
+      }
+    }else{
+      let chat = getChannelChatConversationById(this.props.currentChannel.id);
+      if (chat.length) {
+        let conversations = [];
+        conversations = realmToPlainObject(chat);
+        // conversations = chat.toJSON();
+        this.props.setChannelConversation(conversations);
+      }
     }
   };
 
@@ -3146,6 +3157,8 @@ class Chat extends Component {
       let _updateChannel = realmToPlainSingleObject(updatedChannel);
       this.props.updateFollowingChannel(_updateChannel);
       this.props.updateCommonChat(_updateChannel);
+      let unReadCount = getChannelsUnreadCount();
+      this.props.updateUnreadChannelMsgsCounts(unReadCount);
     }
   }
 
@@ -3154,6 +3167,8 @@ class Chat extends Component {
       let _updatedFriend = realmToPlainSingleObject(updatedFriend);
       this.props.updateFriend(_updatedFriend);
       this.props.updateCommonChat(_updatedFriend);
+      let unReadCount = getUserFriendsUnreadCount();
+      this.props.updateUnreadFriendMsgsCounts(unReadCount);
     }
   }
 
@@ -3162,6 +3177,8 @@ class Chat extends Component {
       let _updatedGroup = realmToPlainSingleObject(updatedGroup);
       this.props.updateGroup(_updatedGroup);
       this.props.updateCommonChat(_updatedGroup);
+      let unReadCount = getGroupsUnreadCount();
+      this.props.updateUnreadGroupMsgsCounts(unReadCount);
     }
   }
 
@@ -4312,6 +4329,7 @@ const mapStateToProps = (state) => {
     acceptedRequest: state.addFriendReducer.acceptedRequest,
     chatGroupConversation: state.groupReducer.chatGroupConversation,
     chatFriendConversation: state.friendReducer.chatFriendConversation,
+    chatConversation: state.channelReducer.chatConversation,
   };
 };
 
@@ -4335,6 +4353,7 @@ const mapDispatchToProps = {
   getMissedSocketEventsById,
   updateUnreadFriendMsgsCounts,
   updateUnreadGroupMsgsCounts,
+  updateUnreadChannelMsgsCounts,
   getLocalUserGroups,
   getLocalFollowingChannels,
   setUserFriends,

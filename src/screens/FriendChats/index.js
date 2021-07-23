@@ -287,7 +287,9 @@ class FriendChats extends Component {
     // }
     // this.setState({chatFriendConversation: this.resultList.toJSON()});
     // this.markFriendMsgsRead();
-    this.updateUnReadFriendChatCount();
+    if (this.props.currentFriend.unread_msg > 0) {
+      this.updateUnReadFriendChatCount();
+    }
     // alert(JSON.stringify(this.props.userData));
   }
 
@@ -436,6 +438,11 @@ class FriendChats extends Component {
         imgThumb = uploadFile.uri;
       }
 
+      if (sentMessageType === 'gif') {
+        msgText = uploadFile.uri;
+        imgThumb = uploadFile.uri;
+      }
+
     if (sentMessageType === 'audio') {
       let file = uploadFile;
       let files = [file];
@@ -522,7 +529,7 @@ class FriendChats extends Component {
       local_id: uuid.v4(),
       created: moment().format(),
       updated: moment().format(),
-      msg_type: sentMessageType,
+      msg_type: (sentMessageType === 'sticker' || sentMessageType === 'gif') ? 'image' : sentMessageType,
       is_read: false,
       is_unsent: false,
       is_edited: false,
@@ -814,13 +821,13 @@ class FriendChats extends Component {
           conversations = realmToPlainObject(chat);
 
           this.props.setFriendConversation(conversations);
-          // if(res.conversation.length>=50){
-          //   this.setState({isLoadMore: true});
-          // }else{
-          //   this.setState({isLoadMore: false});
-          // }
+          if(res.conversation.length>=50){
+            this.setState({isLoadMore: true});
+          }else{
+            this.setState({isLoadMore: false});
+          }
         }else{
-          // this.setState({isLoadMore: false});
+          this.setState({isLoadMore: false});
         }
       });
   };
@@ -837,6 +844,7 @@ class FriendChats extends Component {
 
   getPersonalConversationInitial = async () => {
     this.setState({isChatLoading: true});
+    let callApi = true;
     let chat = getFriendChatConversationById(this.props.currentFriend.friend);
     if (chat.length) {
       let conversations = [];
@@ -844,11 +852,16 @@ class FriendChats extends Component {
       // console.log('friends_conversations',JSON.stringify(conversations))
       this.props.setFriendConversation(conversations);
       // this.setState({isChatLoading: false});
+      if(this.props.currentFriend.last_msg_id && this.props.currentFriend.last_msg_id <= conversations[0].id){
+        callApi = false;
+      }
     }
 
-    await this.props
+    if(callApi){
+      await this.props
       .getPersonalConversation(this.props.currentFriend.friend)
       .then((res) => {
+        let isLoadMore = false;
         if (res.status === true && res.conversation.length > 0) {
           // this.setState({ conversations: res.conversation });
           this.markFriendMsgsRead();
@@ -860,18 +873,25 @@ class FriendChats extends Component {
 
           this.props.setFriendConversation(conversations);
           if(res.conversation.length>=50){
-            this.setState({isLoadMore: true});
+            isLoadMore = true;
             RnBgTask.runInBackground_withPriority("MIN", () => {
               this.fetchMessagesinBackground(this.props.currentFriend.friend);
             });
           } else {
-            this.setState({isLoadMore: false});
+            isLoadMore = false;
           }
         }else{
-          this.setState({isLoadMore: false});
+          isLoadMore = false;
         }
-        this.setState({isChatLoading: false});
+        this.setState({isChatLoading: false, isLoadMore});
       });
+    }else{
+      setTimeout(()=>{
+        RnBgTask.runInBackground_withPriority("MIN", () => {
+          this.fetchMessagesinBackground(this.props.currentFriend.friend);
+        });
+      },3000);
+    }
   };
 
   fetchMessagesinBackground = (friend) => {
@@ -1456,8 +1476,8 @@ class FriendChats extends Component {
     await this.setState(
       {
         uploadFile: source,
-        sentMessageType: 'image',
-        //sentMessageType: 'sticker',
+        // sentMessageType: 'image',
+        sentMessageType: model.type,
         sendingMedia: true,
       },
       async () => {
@@ -1596,13 +1616,14 @@ class FriendChats extends Component {
   onLoadMoreMessages = (message) => {
     console.log('load more messages friend chats');
     const {chatFriendConversation} = this.props;
+    const {isLoadMore} = this.state;
     if(message && message.id){
       let result = getFriendChatPreviousConversationFromMsgId(this.props.currentFriend.friend, message.id);
       // console.log('result',message.id,result);
       let chats = realmToPlainObject(result);
       if(chats.length>0){
         this.props.setFriendConversation(chatFriendConversation.concat(chats));
-      }else if(chatFriendConversation.length>0 && chatFriendConversation.length % 50 === 0){
+      }else if(chatFriendConversation.length>0 && isLoadMore){
         this.getPersonalConversation(message.id);
       }
     }
@@ -1662,7 +1683,6 @@ class FriendChats extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('length',this.state.selectedIds.length,nextState.selectedIds.length);
     if (
       !isEqual(this.props.currentFriend, nextProps.currentFriend) ||
       !isEqual(this.props.chatFriendConversation, nextProps.chatFriendConversation) ||
@@ -1670,8 +1690,10 @@ class FriendChats extends Component {
       !isEqual(this.props.userData, nextProps.userData) ||
       !isEqual(this.props.selectedLanguageItem, nextProps.selectedLanguageItem)
     ) {
+      console.log('props----');
       return true;
     } else if (!isEqual(this.state, nextState)) {
+      console.log('state----');
       return true;
     }
     return false;
@@ -1870,8 +1892,8 @@ class FriendChats extends Component {
 const mapStateToProps = (state) => {
   return {
     currentFriend: state.friendReducer.currentFriend,
-    chatsLoading: state.friendReducer.loading,
-    unFriendLoading: state.friendReducer.loading,
+    // chatsLoading: state.friendReducer.loading,
+    unFriendLoading: state.friendReducer.unFriendLoading,
     userData: state.userReducer.userData,
     selectedLanguageItem: state.languageReducer.selectedLanguageItem,
     chatFriendConversation: state.friendReducer.chatFriendConversation,

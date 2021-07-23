@@ -39,8 +39,10 @@ import {
   setChannelConversation,
   unfollowChannel,
   unpinChannel,
+  updateFollowingChannel,
+  updateUnreadChannelMsgsCounts
 } from '../../redux/reducers/channelReducer';
-import {setCommonChatConversation} from '../../redux/reducers/commonReducer';
+import {setCommonChatConversation,updateCommonChat} from '../../redux/reducers/commonReducer';
 import {
   translate,
   translateMessage,
@@ -56,9 +58,10 @@ import {
   updateChannelTranslatedMessage,
   updateChannelUnReadCountById,
   updateMessageById,
+  getChannelsUnreadCount
 } from '../../storage/Service';
 import {globalStyles} from '../../styles';
-import {realmToPlainObject} from '../../utils';
+import {realmToPlainObject, realmToPlainSingleObject} from '../../utils';
 import styles from './styles';
 import RnBgTask from 'react-native-bg-thread';
 import { isEqual } from 'lodash';
@@ -231,13 +234,16 @@ class ChannelChats extends Component {
 
   componentDidMount() {
     Orientation.addOrientationListener(this._orientationDidChange);
+    console.log('componentDidMount Chats')
     this.getChannelConversationsInitial();
 
     if (this.props.currentChannel.id === 355) {
       this.checkHasLoginBonus();
     }
     // this.getLoginBonus();
-    this.updateUnReadChannelCount();
+    if(this.props.currentChannel.unread_msg>0){
+      this.updateUnReadChannelCount();
+    }
   }
 
   onPinUnpinChannel = () => {
@@ -287,14 +293,28 @@ class ChannelChats extends Component {
   };
 
   updateUnReadChannelCount = () => {
-    updateChannelUnReadCountById(this.props.currentChannel.id, 0);
+    return new Promise((resolve,reject)=>{
+      let updatedChannel = updateChannelUnReadCountById(this.props.currentChannel.id, 0);
 
-    this.props.getLocalFollowingChannels().then((res) => {
-      this.props.setCommonChatConversation();
+      // this.props.getLocalFollowingChannels().then((res) => {
+      //   this.props.setCommonChatConversation();
+      // });
+  
+      this.updateFollowingChannelList(updatedChannel);
+  
+      this.props.readAllChannelMessages(this.props.currentChannel.id);
     });
-
-    this.props.readAllChannelMessages(this.props.currentChannel.id);
   };
+
+  updateFollowingChannelList = (updatedChannel) => {
+    if(updatedChannel){
+      let _updateChannel = realmToPlainSingleObject(updatedChannel);
+      this.props.updateFollowingChannel(_updateChannel);
+      this.props.updateCommonChat(_updateChannel);
+      let unReadCount = getChannelsUnreadCount();
+      this.props.updateUnreadChannelMsgsCounts(unReadCount);
+    }
+  }
 
   _orientationDidChange = (orientation) => {
     this.setState({orientation});
@@ -337,6 +357,16 @@ class ChannelChats extends Component {
       }else{
         msgText = uploadFile.uri;
       }
+    }
+
+    if (sentMessageType === 'sticker') {
+      msgText = uploadFile.uri;
+      imgThumb = uploadFile.uri;
+    }
+
+    if (sentMessageType === 'gif') {
+      msgText = uploadFile.uri;
+      imgThumb = uploadFile.uri;
     }
 
     if (sentMessageType === 'audio') {
@@ -410,7 +440,7 @@ class ChannelChats extends Component {
         : null,
       created: moment().format(),
       updated: moment().format(),
-      msg_type: sentMessageType,
+      msg_type: (sentMessageType === 'sticker' || sentMessageType === 'gif') ? 'image' : sentMessageType,
       message_body: msgText,
       mutlilanguage_message_body: {},
       hyperlink: null,
@@ -497,7 +527,8 @@ class ChannelChats extends Component {
     await this.setState(
       {
         uploadFile: source,
-        sentMessageType: 'image',
+        // sentMessageType: 'image',
+        sentMessageType: model.type,
         sendingMedia: true,
       },
       async () => {
@@ -730,7 +761,7 @@ class ChannelChats extends Component {
       .getChannelConversations(this.props.currentChannel.id, msg_id)
       .then((res) => {
         if (res.status === true && res.conversation.length > 0) {
-          this.setState({conversations: res.conversation});
+          // this.setState({conversations: res.conversation});
           // this.props.readAllChannelMessages(this.props.currentChannel.id);
           let chat = getChannelChatConversationById(
             this.props.currentChannel.id,
@@ -741,13 +772,13 @@ class ChannelChats extends Component {
           // conversations = chat.toJSON();
 
           this.props.setChannelConversation(conversations);
-          // if(res.conversation.length>=30){
-          //   this.setState({isLoadMore: true});  
-          // }else{
-          //   this.setState({isLoadMore: false});
-          // }
+          if(res.conversation.length>=30){
+            this.setState({isLoadMore: true});  
+          }else{
+            this.setState({isLoadMore: false});
+          }
         } else {
-          // this.setState({isLoadMore: false});
+          this.setState({isLoadMore: false});
         }
       });
   };
@@ -755,6 +786,7 @@ class ChannelChats extends Component {
   getChannelConversationsInitial = async () => {
     this.setState({isChatLoading: true});
     let chat = getChannelChatConversationById(this.props.currentChannel.id);
+    let callApi = true;
     if (chat) {
       let conversations = [];
       let a = Array.from(chat);
@@ -762,13 +794,19 @@ class ChannelChats extends Component {
       // conversations = chat.toJSON();
       this.props.setChannelConversation(conversations);
       // this.setState({isChatLoading: false});
+      if(this.props.currentChannel.last_msg && conversations.length>0 && this.props.currentChannel.last_msg.id <= conversations[0].id){
+        callApi = false;
+      }
     }
-    await this.props
+    if(callApi){
+      await this.props
       .getChannelConversations(this.props.currentChannel.id)
       .then((res) => {
+        let isLoadMore = false;
+        let isAdmin = false;
         if (res.status === true) {
           if (res.conversation.length > 0) {
-            this.setState({conversations: res.conversation});
+            // this.setState({conversations: res.conversation});
             // this.props.readAllChannelMessages(this.props.currentChannel.id);
             let conversation = getChannelChatConversationById(
               this.props.currentChannel.id,
@@ -777,29 +815,38 @@ class ChannelChats extends Component {
             let a = Array.from(conversation);
             conversations = realmToPlainObject(a);
             // conversations = chat.toJSON();
+            console.log('length',conversation.length);
             this.props.setChannelConversation(conversations);
             if(res.conversation.length>=30){
-              this.setState({isLoadMore: true});
+              isLoadMore = true;
               RnBgTask.runInBackground_withPriority("MIN", () => {
                 this.fetchMessagesinBackground(this.props.currentChannel.id);
               });
             }else{
               console.log('isLoadMore set false');
-              this.setState({isLoadMore: false});
+              isLoadMore = false;
             }
           }else{
             console.log('isLoadMore set false');
-            this.setState({isLoadMore: false});
+            isLoadMore = false;
           }
           if (
             res.admin_id.length > 0 &&
             res.admin_id.includes(this.props.userData.id)
           ) {
-            this.setState({isAdmin: true});
+            isAdmin = true;
           }
         }
-        this.setState({isChatLoading: false});
+        this.setState({isChatLoading: false, isLoadMore, isAdmin});
       });
+    }else{
+      setTimeout(()=>{
+        RnBgTask.runInBackground_withPriority("MIN", () => {
+          this.fetchMessagesinBackground(this.props.currentChannel.id);
+        });
+      },3000);
+    }
+    
   };
 
   fetchMessagesinBackground = (channel_id) => {
@@ -825,7 +872,7 @@ class ChannelChats extends Component {
       });
   }
 
-  handleMessage(message) {
+  handleMessage = (message) => {
     this.setState({newMessageText: message});
   }
 
@@ -1057,13 +1104,14 @@ class ChannelChats extends Component {
   onLoadMoreMessages = (message) => {
     console.log('msg_id', message.id);
     const {chatConversation} = this.props;
+    const {isLoadMore} = this.state;
     if (message && message.id) {
       let result = getChannelChatPreviousConversationFromMsgId(this.props.currentChannel.id, message.id);
       // console.log('result',message.id,result);
       let chats = realmToPlainObject(result);
       if (chats.length > 0) {
         this.props.setChannelConversation(chatConversation.concat(chats));
-      } else if(chatConversation.length>0 && chatConversation.length % 30 === 0){
+      } else if(chatConversation.length>0 && isLoadMore){
         this.getChannelConversations(message.id);
       }
     }
@@ -1544,7 +1592,7 @@ class ChannelChats extends Component {
     if (
       !isEqual(this.props.currentChannel, nextProps.currentChannel) ||
       !isEqual(this.props.chatConversation, nextProps.chatConversation) ||
-      !isEqual(this.props.channelLoading, nextProps.channelLoading) ||
+      // !isEqual(this.props.channelLoading, nextProps.channelLoading) ||
       !isEqual(this.props.userData, nextProps.userData) ||
       !isEqual(this.props.userConfig, nextProps.userConfig) ||
       !isEqual(this.props.selectedLanguageItem, nextProps.selectedLanguageItem)
@@ -1629,6 +1677,9 @@ const mapDispatchToProps = {
   pinChannel,
   unpinChannel,
   unfollowChannel,
+  updateFollowingChannel,
+  updateUnreadChannelMsgsCounts,
+  updateCommonChat
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChannelChats);

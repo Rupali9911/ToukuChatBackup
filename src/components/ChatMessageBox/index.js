@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Animated,
   Dimensions,
@@ -9,16 +9,17 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Colors} from '../../constants';
+import { Colors } from '../../constants';
 import NavigationService from '../../navigation/NavigationService';
-import {translate} from '../../redux/reducers/languageReducer';
-import {globalStyles} from '../../styles';
-import {getAvatar, normalize, realmToPlainSingleObject} from '../../utils';
+import { translate } from '../../redux/reducers/languageReducer';
+import { globalStyles } from '../../styles';
+import { getAvatar, normalize, realmToPlainSingleObject } from '../../utils';
 import ChatMessageBubble from '../ChatMessageBubble';
 import styles from './styles';
 import { realm } from '../../storage/Service';
+import { isEqual } from 'lodash';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default class ChatMessageBox extends Component {
   constructor(props) {
@@ -41,29 +42,29 @@ export default class ChatMessageBox extends Component {
       this.props.message.message_body &&
       this.isPortrait(this.props.message.message_body);
 
-      // if(!this.props.isChannel && this.props.message.id){
-      //   this.resultObject = realm.objectForPrimaryKey(
-      //     'chat_conversation_friend',
-      //     this.props.message.id
-      //   );
-      //   if(this.resultObject){
-      //     this.resultObject.addListener((chat,changes)=>{
-      //       // console.log('chat changes',changes,chat);
-      //       this.setState({message: realmToPlainSingleObject(chat)});
-      //     });
-      //   }
-      // }else if(this.props.message.id && this.props.isChannel){
-      //   this.resultObject = realm.objectForPrimaryKey(
-      //     'chat_conversation',
-      //     this.props.message.id
-      //   );
-      //   if(this.resultObject){
-      //     this.resultObject.addListener((chat,changes)=>{
-      //       // console.log('chat changes',changes,chat);
-      //       this.setState({message: realmToPlainSingleObject(chat)});
-      //     });
-      //   }
-      // }
+    // if(!this.props.isChannel && this.props.message.id){
+    //   this.resultObject = realm.objectForPrimaryKey(
+    //     'chat_conversation_friend',
+    //     this.props.message.id
+    //   );
+    //   if(this.resultObject){
+    //     this.resultObject.addListener((chat,changes)=>{
+    //       // console.log('chat changes',changes,chat);
+    //       this.setState({message: realmToPlainSingleObject(chat)});
+    //     });
+    //   }
+    // }else if(this.props.message.id && this.props.isChannel){
+    //   this.resultObject = realm.objectForPrimaryKey(
+    //     'chat_conversation',
+    //     this.props.message.id
+    //   );
+    //   if(this.resultObject){
+    //     this.resultObject.addListener((chat,changes)=>{
+    //       // console.log('chat changes',changes,chat);
+    //       this.setState({message: realmToPlainSingleObject(chat)});
+    //     });
+    //   }
+    // }
   }
 
   callBlinking = (id) => {
@@ -99,18 +100,18 @@ export default class ChatMessageBox extends Component {
   };
 
   showLoading = () => {
-    this.setState({replyLoading: true});
+    this.setState({ replyLoading: true });
   }
 
   hideLoading = () => {
-    this.setState({replyLoading: false});
+    this.setState({ replyLoading: false });
   }
 
-  _openMenu = () => this.setState({longPressMenu: true});
+  _openMenu = () => this.setState({ longPressMenu: true });
 
   _closeMenu = () => {
     if (this.state.longPressMenu) {
-      this.setState({longPressMenu: false});
+      this.setState({ longPressMenu: false });
     }
   };
 
@@ -156,7 +157,7 @@ export default class ChatMessageBox extends Component {
   };
 
   onAvatarPress = () => {
-    const {isChannel} = this.props;
+    const { isChannel } = this.props;
     if (isChannel) {
       NavigationService.navigate('ChannelInfo');
     } else {
@@ -164,8 +165,28 @@ export default class ChatMessageBox extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      !isEqual(this.props.message, nextProps.message) ||
+      !isEqual(this.props.isUser, nextProps.isUser) ||
+      !isEqual(this.props.time, nextProps.time) ||
+      !isEqual(this.props.isChannel, nextProps.isChannel) ||
+      !isEqual(this.props.audioPlayingId, nextProps.audioPlayingId) ||
+      !isEqual(this.props.perviousPlayingAudioId, nextProps.perviousPlayingAudioId) ||
+      !isEqual(this.props.currentChannel, nextProps.currentChannel) ||
+      !isEqual(this.props.isMultiSelect, nextProps.isMultiSelect) ||
+      !isEqual(this.props.UserDisplayName, nextProps.UserDisplayName) ||
+      !isEqual(this.props.userData, nextProps.userData)
+    ) {
+      return true;
+    } else if (!isEqual(this.state, nextState)) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
-    const {longPressMenu, selectedMessageId, replyLoading} = this.state;
+    const { longPressMenu, selectedMessageId, replyLoading } = this.state;
     const {
       message,
       isUser,
@@ -176,8 +197,6 @@ export default class ChatMessageBox extends Component {
       onDelete,
       onUnSend,
       onMessageTranslate,
-      translatedMessage,
-      translatedMessageId,
       onEditMessage,
       onDownloadMessage,
       audioPlayingId,
@@ -222,10 +241,10 @@ export default class ChatMessageBox extends Component {
                     ? width * 0.6
                     : width * 0.67
                   : message.msg_type === 'image'
-                  ? isMultiSelect
-                    ? width - 90
-                    : width - 50
-                  : width * 0.65,
+                    ? isMultiSelect
+                      ? width - 90
+                      : width - 50
+                    : width * 0.65,
             },
             styles.containerWidth,
           ]}>
@@ -240,48 +259,48 @@ export default class ChatMessageBox extends Component {
                 <TouchableOpacity
                   onPress={this.onAvatarPress}>
                   {isChannel &&
-                  (currentChannel.channel_picture == null ||
-                    currentChannel.channel_picture === '') ? (
-                    message.hyperlink ? null : (
-                      <LinearGradient
-                        start={{x: 0.1, y: 0.7}}
-                        end={{x: 0.5, y: 0.2}}
-                        locations={[0.1, 0.6, 1]}
-                        colors={[
-                          Colors.gradient_1,
-                          Colors.gradient_2,
-                          Colors.gradient_3,
-                        ]}
-                        style={[
-                          styles.squareImage,
-                          styles.linearGradientStyle,
-                        ]}>
-                        <Text
+                    (currentChannel.channel_picture == null ||
+                      currentChannel.channel_picture === '') ? (
+                      message.hyperlink ? null : (
+                        <LinearGradient
+                          start={{ x: 0.1, y: 0.7 }}
+                          end={{ x: 0.5, y: 0.2 }}
+                          locations={[0.1, 0.6, 1]}
+                          colors={[
+                            Colors.gradient_1,
+                            Colors.gradient_2,
+                            Colors.gradient_3,
+                          ]}
                           style={[
-                            globalStyles.normalRegularText15,
-                            styles.channelName,
+                            styles.squareImage,
+                            styles.linearGradientStyle,
                           ]}>
-                          {currentChannel.name &&
-                          currentChannel.name.indexOf(' ') === -1
-                            ? currentChannel.name.charAt(0).toUpperCase()
-                            : currentChannel.name.charAt(0).toUpperCase() +
+                          <Text
+                            style={[
+                              globalStyles.normalRegularText15,
+                              styles.channelName,
+                            ]}>
+                            {currentChannel.name &&
+                              currentChannel.name.indexOf(' ') === -1
+                              ? currentChannel.name.charAt(0).toUpperCase()
+                              : currentChannel.name.charAt(0).toUpperCase() +
                               currentChannel.name
                                 .charAt(currentChannel.name.indexOf(' ') + 1)
                                 .toUpperCase()}
-                          {/* {secondUpperCase} */}
-                        </Text>
-                      </LinearGradient>
-                    )
-                  ) : message.hyperlink ? null : (
-                    <Image
-                      source={
-                        isChannel
-                          ? getAvatar(currentChannel.channel_picture)
-                          : getAvatar(message.from_user.avatar)
-                      }
-                      style={hyperlinkStyle}
-                    />
-                  )}
+                            {/* {secondUpperCase} */}
+                          </Text>
+                        </LinearGradient>
+                      )
+                    ) : message.hyperlink ? null : (
+                      <Image
+                        source={
+                          isChannel
+                            ? getAvatar(currentChannel.channel_picture)
+                            : getAvatar(message.from_user.avatar)
+                        }
+                        style={hyperlinkStyle}
+                      />
+                    )}
                 </TouchableOpacity>
               </View>
               <View style={styles.imageMessageContainer}>
@@ -289,7 +308,7 @@ export default class ChatMessageBox extends Component {
                   style={
                     message.msg_type !== 'image'
                       ? {}
-                      : {maxWidth: width - normalize(80)}
+                      : { maxWidth: width - normalize(80) }
                   }>
                   <ChatMessageBubble
                     message={message}
@@ -304,8 +323,6 @@ export default class ChatMessageBox extends Component {
                     onMessageTranslate={onMessageTranslate}
                     onEditMessage={onEditMessage}
                     onDownloadMessage={onDownloadMessage}
-                    translatedMessage={translatedMessage}
-                    translatedMessageId={translatedMessageId}
                     onDelete={onDelete}
                     onUnSend={onUnSend}
                     audioPlayingId={audioPlayingId}
@@ -318,6 +335,10 @@ export default class ChatMessageBox extends Component {
                     onMediaPlay={this.props.onMediaPlay}
                     UserDisplayName={UserDisplayName}
                     replyLoading={replyLoading}
+                    userData={this.props.userData}
+                    addFriendByReferralCode={this.props.addFriendByReferralCode}
+                    setSpecificPostId={this.props.setSpecificPostId}
+                    setActiveTimelineTab={this.props.setActiveTimelineTab}
                   />
                 </View>
                 <View style={styles.statusContainer}>
@@ -326,7 +347,7 @@ export default class ChatMessageBox extends Component {
                     time.getMinutes() < 10
                       ? '0' + time.getMinutes()
                       : time.getMinutes()
-                  }`}</Text>
+                    }`}</Text>
                 </View>
               </View>
             </View>
@@ -337,86 +358,88 @@ export default class ChatMessageBox extends Component {
         </View>
       </Animated.View>
     ) : (
-      <Animated.View style={animatedStyle}>
-        <View>
-          <View
-            style={[
-              styles.containerSelf,
-              {
-                maxWidth:
-                  message.msg_type === 'text'
-                    ? isMultiSelect
-                      ? width * 0.8
-                      : width * 0.9
-                    : message.msg_type === 'image'
-                    ? isMultiSelect
-                      ? width - 80
-                      : width
-                    : width * 0.75,
-              },
-              message.msg_type === 'image'
-                ? styles.imageMessageTypeContainer
-                : styles.notImageMessageTypeContainer,
-            ]}>
+        <Animated.View style={animatedStyle}>
+          <View>
             <View
               style={[
-                message.msg_type !== 'image' &&
-                  styles.notImageMessageTypeSubContainer,
+                styles.containerSelf,
+                {
+                  maxWidth:
+                    message.msg_type === 'text'
+                      ? isMultiSelect
+                        ? width * 0.8
+                        : width * 0.9
+                      : message.msg_type === 'image'
+                        ? isMultiSelect
+                          ? width - 80
+                          : width
+                        : width * 0.75,
+                },
+                message.msg_type === 'image'
+                  ? styles.imageMessageTypeContainer
+                  : styles.notImageMessageTypeContainer,
               ]}>
-              <View style={styles.row}>
-                {/* {message.msg_type !== 'image' ? ( */}
-                <View style={styles.readContainer}>
-                  {message.is_read && (
-                    <Text style={styles.statusText}>
-                      {translate('pages.xchat.read')}
-                    </Text>
-                  )}
+              <View
+                style={[
+                  message.msg_type !== 'image' &&
+                  styles.notImageMessageTypeSubContainer,
+                ]}>
+                <View style={styles.row}>
+                  {/* {message.msg_type !== 'image' ? ( */}
+                  <View style={styles.readContainer}>
+                    {message.is_read && (
+                      <Text style={styles.statusText}>
+                        {translate('pages.xchat.read')}
+                      </Text>
+                    )}
 
-                  <Text style={styles.statusText}>
-                    {`${time.getHours()}:${
-                      time.getMinutes() < 10
-                        ? '0' + time.getMinutes()
-                        : time.getMinutes()
-                    }`}
-                  </Text>
-                </View>
-                {/* ) : null} */}
-                <View
-                  style={
-                    message.msg_type !== 'image'
-                      ? {}
-                      : {maxWidth: width - normalize(60)}
-                  }>
-                <ChatMessageBubble
-                  message={message}
-                  isUser={isUser}
-                  onMessageReply={onMessageReply}
-                  onMessagePress={this.onMessagePress}
-                  longPressMenu={longPressMenu}
-                  openMenu={this._openMenu}
-                  closeMenu={this._closeMenu}
-                  selectedMessageId={selectedMessageId}
-                  isChannel={isChannel}
-                  onMessageTranslate={onMessageTranslate}
-                  onEditMessage={onEditMessage}
-                  onDownloadMessage={onDownloadMessage}
-                  translatedMessage={translatedMessage}
-                  translatedMessageId={translatedMessageId}
-                  onDelete={onDelete}
-                  onUnSend={onUnSend}
-                  audioPlayingId={audioPlayingId}
-                  perviousPlayingAudioId={perviousPlayingAudioId}
-                  onAudioPlayPress={onAudioPlayPress}
-                  onReplyPress={onReplyPress}
-                  showOpenLoader={showOpenLoader}
-                  isMultiSelect={isMultiSelect}
-                  currentChannel={currentChannel}
-                  onMediaPlay={this.props.onMediaPlay}
-                  UserDisplayName={UserDisplayName}
-                  replyLoading={replyLoading}
-                />
-                </View>
-                {/* {message.msg_type === 'image' ? (
+                    <Text style={styles.statusText}>
+                      {`${time.getHours()}:${
+                        time.getMinutes() < 10
+                          ? '0' + time.getMinutes()
+                          : time.getMinutes()
+                        }`}
+                    </Text>
+                  </View>
+                  {/* ) : null} */}
+                  <View
+                    style={
+                      message.msg_type !== 'image'
+                        ? {}
+                        : { maxWidth: width - normalize(60) }
+                    }>
+                    <ChatMessageBubble
+                      message={message}
+                      isUser={isUser}
+                      onMessageReply={onMessageReply}
+                      onMessagePress={this.onMessagePress}
+                      longPressMenu={longPressMenu}
+                      openMenu={this._openMenu}
+                      closeMenu={this._closeMenu}
+                      selectedMessageId={selectedMessageId}
+                      isChannel={isChannel}
+                      onMessageTranslate={onMessageTranslate}
+                      onEditMessage={onEditMessage}
+                      onDownloadMessage={onDownloadMessage}
+                      onDelete={onDelete}
+                      onUnSend={onUnSend}
+                      audioPlayingId={audioPlayingId}
+                      perviousPlayingAudioId={perviousPlayingAudioId}
+                      onAudioPlayPress={onAudioPlayPress}
+                      onReplyPress={onReplyPress}
+                      showOpenLoader={showOpenLoader}
+                      isMultiSelect={isMultiSelect}
+                      currentChannel={currentChannel}
+                      onMediaPlay={this.props.onMediaPlay}
+                      UserDisplayName={UserDisplayName}
+                      replyLoading={replyLoading}
+                      userData={this.props.userData}
+                      addFriendByReferralCode={this.props.addFriendByReferralCode}
+                      setSpecificPostId={this.props.setSpecificPostId}
+                      setActiveTimelineTab={this.props.setActiveTimelineTab}
+                    />
+                  </View>
+                  {/* {message.msg_type === 'image' ? (
                   <View
                     style={{
                       marginHorizontal: '1.5%',
@@ -440,13 +463,13 @@ export default class ChatMessageBox extends Component {
                     </Text>
                   </View>
                 ) : null} */}
+                </View>
+                {message.translated &&
+                  this.renderTranslatedMessage(message.translated)}
               </View>
-              {message.translated &&
-                this.renderTranslatedMessage(message.translated)}
             </View>
           </View>
-        </View>
-      </Animated.View>
-    );
+        </Animated.View>
+      );
   }
 }

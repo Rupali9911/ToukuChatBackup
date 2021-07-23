@@ -518,6 +518,17 @@ class GroupChats extends Component {
         msgText = uploadFile.uri;
       }
     }
+
+    if (sentMessageType === 'sticker') {
+      msgText = uploadFile.uri;
+      imgThumb = uploadFile.uri;
+    }
+
+    if (sentMessageType === 'gif') {
+      msgText = uploadFile.uri;
+      imgThumb = uploadFile.uri;
+    }
+
     if (sentMessageType === 'audio') {
       let file = uploadFile;
       let files = [file];
@@ -577,7 +588,7 @@ class GroupChats extends Component {
       sender_display_name: userData.display_name,
       sender_picture: userData.avatar,
       message_body: {
-        type: sentMessageType,
+        type: (sentMessageType === 'sticker' || sentMessageType === 'gif') ? 'image' : sentMessageType,
         text: msgText,
       },
       is_edited: false,
@@ -653,9 +664,9 @@ class GroupChats extends Component {
       });
       let Rmsg = getGroupMessageObject(newRObject,this.props.userData);
       this.props.setGroupConversation([Rmsg].concat(this.props.chatGroupConversation));
-        if(onSendFinish){
-          onSendFinish && onSendFinish();
-        }
+        // if(onSendFinish){
+        //   onSendFinish && onSendFinish();
+        // }
       this.props.sendGroupMessage(groupMessage).then((res)=>{
         if(res){}
         else{
@@ -697,9 +708,9 @@ class GroupChats extends Component {
       });
       let msg = getGroupMessageObject(newObject,this.props.userData);
       this.props.setGroupConversation([msg].concat(this.props.chatGroupConversation));
-        if(onSendFinish){
-          onSendFinish && onSendFinish();
-        }
+        // if(onSendFinish){
+        //   onSendFinish && onSendFinish();
+        // }
       this.props.sendGroupMessage(groupMessage).then((res)=>{
         if(res){}
         else{
@@ -726,14 +737,15 @@ class GroupChats extends Component {
       );
     }
     
-    if(onSendFinish){
-      onSendFinish && onSendFinish();
-    }else{
+    // if(onSendFinish){
+    //   onSendFinish && onSendFinish();
+    // }else{
+      this.chatContainer && this.chatContainer.scrollListToRecent();
       // setTimeout(()=>{
       //   this.chatContainer.scrollListToRecent();
       // },1000);
       
-    }
+    // }
     // this.setState({
     //   newMessageText: '',
     //   isReply: false,
@@ -1946,7 +1958,8 @@ class GroupChats extends Component {
     await this.setState(
       {
         uploadFile: source,
-        sentMessageType: 'image',
+        // sentMessageType: 'image',
+        sentMessageType: model.type,
         sendingMedia: true,
       },
       async () => {

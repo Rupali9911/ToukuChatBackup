@@ -38,6 +38,14 @@ export default class InputField extends Component {
     this.textInput.focus();
   }
 
+  toggleFocus = () => {
+    if(this.state.isFocus){
+      this.textInput.blur();
+    }else{
+      this.textInput.focus();
+    }
+  }
+
   onFocus() {
     this.setState({isFocus: true});
   }

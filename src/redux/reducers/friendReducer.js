@@ -47,6 +47,7 @@ export const DELETE_FRIEND = 'DELETE_FRIEND';
 
 const initialState = {
   loading: false,
+  unFriendLoading: false,
   userFriends: [],
   currentFriend: {},
   chatFriendConversation: [],
@@ -157,17 +158,17 @@ export default function (state = initialState, action) {
     case UNFRIEND:
       return {
         ...state,
-        loading: true,
+        unFriendLoading: true,
       };
     case UNFRIEND_SUCCESS:
       return {
         ...state,
-        loading: false,
+        unFriendLoading: false,
       };
     case UNFRIEND_FAIL:
       return {
         ...state,
-        loading: false,
+        unFriendLoading: false,
       };
     case Delete_Message:
       return {
@@ -536,6 +537,7 @@ export const sendPersonalMessage = (message) => (dispatch) =>
 //Mark Friend Messages Read
 export const markFriendMsgsRead = (id) => (dispatch) =>
   new Promise(function (resolve, reject) {
+    console.log(`/xchat/mark-friend-msgs-read/${id}/`);
     client
       .get(`/xchat/mark-friend-msgs-read/${id}/`)
       .then((res) => {

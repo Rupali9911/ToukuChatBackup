@@ -94,6 +94,14 @@ class SignUp extends Component {
     );
   }
 
+  componentWillReceiveProps(nextProps){
+    if(nextProps.selectedLanguageItem !== this.props.selectedLanguageItem){
+      if(Platform.OS === 'android'){
+        this.refs.email_field && this.refs.email_field.toggleFocus();
+      }
+    }
+  }
+
   componentWillUnmount() {
     Orientation.removeOrientationListener(this._orientationDidChange);
   }
@@ -966,9 +974,10 @@ class SignUp extends Component {
             <View style={styles.registrationInputContainer}>
               {showEmail && (
                 <Inputfield
+                  ref={'email_field'}
                   value={this.state.email}
                   placeholder={
-                    translate('common.email') + ' ' + '(example@gmail.com)asdasd ad asdada sdadadad asdasadad'
+                    translate('common.email') + ' ' + '(example@gmail.com)'
                   }
                   placeholderTextColor="#D3D3D3"
                   returnKeyType={'next'}

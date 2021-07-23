@@ -91,6 +91,7 @@
     "react-native-svg": "^12.1.0",
     "react-native-switch": "^1.5.0",
     "react-native-twitter-signin": "^1.1.1",
+    "react-native-ui-lib": "^5.20.4",
     "react-native-uuid": "^1.4.9",
     "react-native-vector-icons": "^6.6.0",
     "react-native-video": "^4.4.5",

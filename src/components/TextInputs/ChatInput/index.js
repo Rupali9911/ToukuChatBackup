@@ -20,6 +20,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MentionsInput from '../../../../LineLibChanges/react-native-mentions-input/index.tsx';
 import {Colors, Icons, Images} from '../../../constants';
 import {isIphoneX, normalize, wait} from '../../../utils';
@@ -34,6 +35,8 @@ import { ListLoader } from '../../Loaders';
 import NormalImage from '../../NormalImage';
 import MediaPickerList from '../../MediaPicker';
 
+import {KeyboardAccessoryView,KeyboardRegistry,KeyboardUtils,KeyboardTrackingView} from 'react-native-ui-lib/keyboard';
+const TrackInteractive = true;
 class ChatInput extends Component {
   constructor(props) {
     super(props);
@@ -61,12 +64,26 @@ class ChatInput extends Component {
       selectedMediaObject: [],
       selectedEmotion: null,
       activeEmotionView: false,
-      value: ''
+      value: '',
+      customKeyboard: {
+        component: undefined,
+        initialProps: undefined
+      },
+      receivedKeyboardData: undefined,
+      useSafeArea: false,
+      keyboardOpenState: false,
+      searchType: 'Gif',
+      searchEmotion: false
     };
     this.newHeight = isIphoneX() ? 70 : 50;
     this.lineHeight = 0;
     this.oldLineHeight = 0;
     this.isExtrasAreaVisible = false;
+
+    KeyboardRegistry.registerKeyboard(
+      'stampView',
+      () => this.StampView
+    );
   }
 
   componentDidMount() {
@@ -93,16 +110,19 @@ class ChatInput extends Component {
       normalHeight: Dimensions.get('window').height,
       shortHeight: Dimensions.get('window').height - e.endCoordinates.height,
     });
-    if(this.state.activeEmotionView){
-      this.showExtraArea(e.endCoordinates.height+105);
-    }else{
-      this.showExtraArea(e.endCoordinates.height);
-    }
+    // if(this.state.activeEmotionView){
+    //   this.showExtraArea(e.endCoordinates.height+105);
+    // }else{
+    //   this.showExtraArea(e.endCoordinates.height);
+    // }
 
   }
 
   _keyboardDidHide = () => {
-
+    this.input_ref && this.input_ref._textInput
+      ? this.input_ref._textInput.blur()
+      : this.input_ref.blur();
+      this.setState({searchEmotion: false});
   }
 
   showPicker = () => {
@@ -350,8 +370,10 @@ class ChatInput extends Component {
 
   showExtraArea = (value) => {
     // this.setState({isExtrasAreaVisible: true});
-    this.isExtrasAreaVisible = true;
-    this.forceUpdate();
+    if(Platform.OS === 'ios'){
+      this.isExtrasAreaVisible = true;
+      this.forceUpdate();
+    }
     // this.setState({extraAreaHeight: new Animated.Value(value), previewHeight: value});
     Animated.timing(this.state.extraAreaHeight, {
       toValue: value,
@@ -431,8 +453,9 @@ class ChatInput extends Component {
     this.input_ref && this.input_ref._textInput
       ? this.input_ref._textInput.blur()
       : this.input_ref.blur();
-    this.setState({input_focus: false, selectedEmotion: null});
+    this.setState({input_focus: false, selectedEmotion: null, searchEmotion: false});
     this.props.onChangeText('');
+    this.dismissKeyboard();
   }
 
   onSubmit = () => {
@@ -461,9 +484,11 @@ class ChatInput extends Component {
   }
 
   showEmotionView = () => {
-    this.setState({activeEmotionView: true});
-    this.showExtraArea(this.state.keyboardHeight);
-    Keyboard.dismiss();
+    this.showKeyboardView('stampView');
+    // this.isExtrasAreaVisible = true;
+    // this.setState({activeEmotionView: true});
+    // this.showExtraArea(this.state.keyboardHeight);
+    // Keyboard.dismiss();
   }
 
   onTextInputContentSizeChange = ({nativeEvent}) => {
@@ -495,7 +520,7 @@ class ChatInput extends Component {
 
   onTextInputFocus = () => {
     // this.showExtraArea(230);
-    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false }, () => {
+    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false, searchEmotion: false }, () => {
       // this.hideExtraArea();
     });
   }
@@ -507,7 +532,7 @@ class ChatInput extends Component {
 
   onMentionTextInputFocus = () => {
     // this.showExtraArea(230);
-    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false }, () => {
+    this.setState({ input_focus: true, selectedEmotion: null, activeEmotionView: false, searchEmotion: false }, () => {
       // this.hideExtraArea();
     });
   }
@@ -566,59 +591,399 @@ class ChatInput extends Component {
     );
   }
 
+  onSearchPress = (activeTab) => {
+    let searchType = 'Gif'
+    if(activeTab == 2){
+      searchType = 'Sticker'
+    }
+    this.setState({
+      searchEmotion: true, searchType
+    });
+  }
+
   onRenderScrollTabBar = ({activeTab, goToPage}) => {
     return (
       <View
         style={{
-          width: Dimensions.get('screen').width / 3,
+          width: Dimensions.get('screen').width,
           height: normalize(35),
           flexDirection: 'row',
+          justifyContent: 'space-evenly'
         }}>
-        <TabBarItem
-          icon={Icons.icon_frequently_used}
-          onPress={() => {
-            goToPage(0);
-            this.setState({ activeEmotionView: true });
-            this.showExtraArea(this.state.keyboardHeight);
-            Keyboard.dismiss();
-          }}
-          activeTab={activeTab}
-          index={0}
-        />
-        <TabBarItem
-          icon={Icons.icon_gif}
-          onPress={() => {
-            goToPage(1);
-            this.setState({ activeEmotionView: true });
-            this.showExtraArea(this.state.keyboardHeight);
-            Keyboard.dismiss();
-          }}
-          activeTab={activeTab}
-          index={1}
-        />
-        <TabBarItem
-          icon={Icons.icon_sticker}
-          onPress={() => {
-            goToPage(2);
-            this.setState({ activeEmotionView: true });
-            this.showExtraArea(this.state.keyboardHeight);
-            Keyboard.dismiss();
-          }}
-          activeTab={activeTab}
-          index={2}
-        />
-        {/*<TabBarItem*/}
+        <View style={styles.searchItemContainer}>
+          {activeTab !== 0 && <FontAwesome5
+            name='search'
+            size={15}
+            color={'gray'}
+            style={{ paddingHorizontal: 10 }}
+            onPress={this.onSearchPress.bind(this,activeTab)}
+          />
+          }
+        </View>
+        <View style={{flex: 2, flexDirection: 'row'}}>
+          <TabBarItem
+            icon={Icons.icon_frequently_used}
+            onPress={() => {
+              goToPage(0);
+              this.setState({ activeEmotionView: true });
+              this.showExtraArea(this.state.keyboardHeight);
+              Keyboard.dismiss();
+            }}
+            activeTab={activeTab}
+            index={0}
+          />
+          <TabBarItem
+            icon={Icons.icon_gif}
+            onPress={() => {
+              goToPage(1);
+              this.setState({ activeEmotionView: true });
+              this.showExtraArea(this.state.keyboardHeight);
+              Keyboard.dismiss();
+            }}
+            activeTab={activeTab}
+            index={1}
+          />
+          <TabBarItem
+            icon={Icons.icon_sticker}
+            onPress={() => {
+              goToPage(2);
+              this.setState({ activeEmotionView: true });
+              this.showExtraArea(this.state.keyboardHeight);
+              Keyboard.dismiss();
+            }}
+            activeTab={activeTab}
+            index={2}
+          />
+          {/*<TabBarItem*/}
           {/*icon={Icons.icon_sticker_pack}*/}
           {/*onPress={() => goToPage(3)}*/}
           {/*activeTab={activeTab}*/}
           {/*index={3}*/}
-        {/*/>*/}
+          {/*/>*/}
+          </View>
+          <View style={{flex:0.5}}></View>
       </View>
     );
   }
 
+  //#region AccessoryView Components
+  StampView = () => {
+    const {
+      emotions,
+    } = this.props;
+    return (
+      <View>
+        <View
+          style={[
+            styles.emotionsContainer,
+            {
+              height: '100%',
+              width: '100%',
+            },
+          ]}>
+          <ScrollableTabView
+            initialPage={1}
+            tabBarPosition={'top'}
+            renderTabBar={this.onRenderScrollTabBar}>
+            {/* <View tabLabel={'Emojis'} style={{height: '100%'}}>
+                <EmojiBoard
+                  showBoard={isExtrasAreaVisible}
+                  numRows={10}
+                  tabBarPosition={'top'}
+                  categoryDefautColor={Colors.dark_gray}
+                  categoryHighlightColor={Colors.orange}
+                  categoryIconSize={18}
+                  tabBarStyle={styles.emojiTabBarStyle}
+                  containerStyle={styles.emojiContainerStyle}
+                  onClick={({code}) => handleInput(code)}
+                  hideBackSpace
+                />
+              </View> */}
+            <View tabLabel={'Recent'}>
+              <FrequentlyUsedList
+                addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+                emotions={emotions}
+                numOfColumns={2}
+                onPress={this.selectEmotion}
+              />
+            </View>
+            <View tabLabel={'GIFs'}>
+              <EmotionList
+                searchTitle={'Search GIFs'}
+                type={this.state.gifs}
+                resizeMode={FastImage.resizeMode.cover}
+                numOfColumns={2}
+                containerStyle={styles.gifsContainerStyle}
+                imageStyle={styles.gifsImageContainerStyle}
+                onChangeText={this.onGifEdit}
+                onPress={this.selectEmotion}
+                addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+                loading={this.state.loading}
+                onFocus={this.onEmotionSearchFocus}
+                onBlur={this.onEmotionSearchBlur}
+              />
+            </View>
+            <View tabLabel={'Stickers'}>
+              <EmotionList
+                searchTitle={'Search Stickers'}
+                type={this.state.stickers}
+                resizeMode={FastImage.resizeMode.contain}
+                numOfColumns={4}
+                containerStyle={styles.stickerContainerStyle}
+                imageStyle={styles.stickerImageStyle}
+                onChangeText={this.onStickerEdit}
+                onPress={this.selectEmotion}
+                addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+                onFocus={this.onEmotionSearchFocus}
+                onBlur={this.onEmotionSearchBlur}
+              />
+            </View>
+            {/*<View tabLabel={'Stickers Pack'}>*/}
+            {/*<StickerPackSection />*/}
+            {/*</View>*/}
+          </ScrollableTabView>
+        </View>
+      </View>
+    );
+  }
+
+  renderKeyboardAccessoryViewContent = () => {
+    const {
+      onAttachmentPress,
+      onCameraPress,
+      onGalleryPress,
+      onChangeText,
+      onSend,
+      placeholder,
+      sendingImage,
+      sendEmotion,
+      addEmotionToFrequentlyUsed,
+      emotions,
+    } = this.props;
+    const {input_focus,isExtraAreaVisible,selected_medias, selectedEmotion, value, searchEmotion, searchType} = this.state;
+
+    function handleInput(text) {
+      onChangeText(text);
+    }
+
+    if (value.length === 0) {
+      this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
+    }
+
+    const container = [
+      {
+        // maxHeight: input_focus ? 200 : isIphoneX() || Platform.isPad ? 70 : 50,
+      },
+      styles.rootContainer,
+    ];
+
+    return <>
+      <View style={container}>
+        <LinearGradient
+          colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
+          // locations={[0.2, 1]}
+          useAngle={true}
+          // angle={270}
+          angleCenter={{ x: 0, y: 1 }}
+          style={[styles.chatInputContainer, styles.inputContainer]}>
+          {input_focus || this.isExtrasAreaVisible ? (
+            <View style={styles.attachmentContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.chatAttachmentButton,
+                ]}
+                onPress={this.resetInput}>
+                <FontAwesome5
+                  name={'angle-right'}
+                  size={30}
+                  style={styles.rightIconStyle}
+                  color={Colors.gradient_3}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : (
+              <View style={styles.chatAttachmentContainer}>
+                <TouchableOpacity
+                  style={styles.chatAttachmentButton}
+                  onPress={onAttachmentPress}>
+                  <Image
+                    source={Icons.plus_icon_select}
+                    style={styles.attachmentImage}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.chatAttachmentButton}
+                  onPress={onCameraPress}>
+                  <Image
+                    source={Icons.icon_camera_grad}
+                    style={styles.attachmentImage}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.chatAttachmentButton}
+                  onPress={this.onGalleryPress}>
+                  <Image
+                    source={Icons.gallery_icon_select}
+                    style={styles.attachmentImage}
+                    resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+          <View
+            style={[
+              styles.textInputContainer,
+              (input_focus || this.isExtrasAreaVisible) && styles.mentionInpiutContainer,
+            ]}>
+            {this.props.useMentionsFunctionality ? (
+              <MentionsInput
+                ref={(input) => {
+                  this.input_ref = input;
+                }}
+                value={value}
+                maxHeight={50}
+                multiline={true}
+                onFocus={this.onMentionTextInputFocus}
+                onBlur={this.onMentionTextInputBlur}
+                onTextChange={this.onMentionTextChange}
+                onMarkdownChange={(markdown) => { }}
+                placeholder={placeholder}
+                placeholderTextColor={'gray'}
+                autoCorrect={false}
+                mentionStyle={styles.mentionStyle}
+                textInputStyle={styles.textInputStyle}
+                users={this.state.suggestionData}
+                suggestedUsersComponent={this.suggestedUsersComponent}
+              />
+            ) : (
+                <TextInput
+                  ref={(input) => {
+                    this.input_ref = input;
+                  }}
+                  multiline={true}
+                  style={styles.textInput}
+                  onChangeText={this.handleInput}
+                  onFocus={this.onTextInputFocus}
+                  onBlur={this.onTextInputBlur}
+                  onContentSizeChange={this.onTextInputContentSizeChange}
+                  defaultValue={value}
+                  placeholder={placeholder}
+                  autoCorrect={false}
+                />
+              )}
+            {(input_focus || this.isExtrasAreaVisible) && <View style={styles.stickerContainer}>
+              <TouchableOpacity
+                style={styles.chatAttachmentButton}
+                onPress={this.showEmotionView}>
+                <Image
+                  source={Icons.icon_sticker_pack}
+                  style={styles.attachmentImage}
+                  resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+            </View>}
+          </View>
+          <TouchableOpacity
+            style={styles.sendButoonContainer}
+            activeOpacity={value || sendingImage.uri ? 0 : 1}
+            onPress={this.onSubmit}>
+            <Image
+              source={Icons.icon_send_button}
+              style={styles.sandButtonImage}
+              resizeMode={'contain'}
+            />
+          </TouchableOpacity>
+        </LinearGradient>
+
+        {searchEmotion && <View style={{}}>
+          <SearchEmotionList
+            searchTitle={'Search Stickers'}
+            type={searchType === 'Gif' ? this.state.gifs : this.state.stickers}
+            resizeMode={FastImage.resizeMode.contain}
+            numOfColumns={4}
+            containerStyle={styles.stickerContainerStyle}
+            imageStyle={styles.searchImageStyle}
+            onChangeText={searchType !== 'Gif' ? this.onStickerEdit : this.onGifEdit}
+            onPress={this.selectEmotion}
+            addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+            onFocus={this.onEmotionSearchFocus}
+            onBlur={this.onEmotionSearchBlur}
+            onClose={this.onCloseSearchBar}
+          />
+          </View>}
+
+    </View> 
+    </>
+  }
+
+  onCloseSearchBar = () => {
+    this.input_ref && this.input_ref._textInput
+      ? this.input_ref._textInput.focus()
+      : this.input_ref.focus();
+    this.setState({
+      searchEmotion: false
+    })
+  }
+
+  onKeyboardItemSelected = (keyboardId, params) => {
+    const receivedKeyboardData = `onItemSelected from "${keyboardId}"\nreceived params: ${JSON.stringify(
+      params
+    )}`;
+    this.setState({receivedKeyboardData});
+  };
+
+  onKeyboardResigned = () => {
+    this.resetKeyboardView();
+  };
+
+  isCustomKeyboardOpen = () => {
+    const {keyboardOpenState, customKeyboard} = this.state;
+    return keyboardOpenState && !_.isEmpty(customKeyboard);
+  };
+
+  resetKeyboardView = () => {
+    this.setState({customKeyboard: {}});
+  };
+
+  dismissKeyboard = () => {
+    KeyboardUtils.dismiss();
+  };
+
+  requestShowKeyboard = () => {
+    KeyboardRegistry.requestShowKeyboard('stampView');
+  };
+
+  onRequestShowKeyboard = (componentID) => {
+    this.setState({
+      customKeyboard: {
+        component: componentID,
+        initialProps: {title: 'Keyboard 1 opened by button'}
+      }
+    });
+  };
+
+  onHeightChanged = (keyboardAccessoryViewHeight) => {
+    if (Platform.OS==='ios') {
+      this.setState({keyboardAccessoryViewHeight});
+    }
+  };
+
+  showKeyboardView(component, title) {
+    this.setState({
+      keyboardOpenState: true,
+      customKeyboard: {
+        component,
+        initialProps: {title}
+      }
+    });
+  }
+  //#endregion
+
   onEmotionSearchFocus = () => {
     // this.showExtraArea(this.state.keyboardHeight + 100);
+    this.input_ref && this.input_ref.focus();
   }
 
   onEmotionSearchBlur = ()=>{
@@ -640,6 +1005,19 @@ class ChatInput extends Component {
     // onGalleryPress();
   }
 
+  hideStickerView = () => {
+    // if (this.isExtrasAreaVisible && !this.suggestion_panel) {
+      this.resetInput()
+    // }
+  }
+
+  getHeight = () => {
+    return Platform.select({
+      ios: -this.state.keyboardHeight,
+      android: 0
+    });
+  }
+
   componentWillReceiveProps(nextProps){
     if(nextProps && nextProps.value){
       this.setState({value: nextProps.value});
@@ -656,12 +1034,12 @@ class ChatInput extends Component {
       !isEqual(this.props.sendingImage, nextProps.sendingImage) ||
         !isEqual(this.props.hideStickerView, nextProps.hideStickerView)
     ) {
-      if (!isEqual(this.props.hideStickerView, nextProps.hideStickerView)) {
-        if (this.isExtrasAreaVisible && !this.suggestion_panel) {
-            this.resetInput()
-        }
-          return false;
-      }
+      // if (!isEqual(this.props.hideStickerView, nextProps.hideStickerView)) {
+      //   if (this.isExtrasAreaVisible && !this.suggestion_panel) {
+      //       this.resetInput()
+      //   }
+      //     return false;
+      // }
       console.log('props re-render');
       return true;
     } else if (!isEqual(this.state, nextState)) {
@@ -691,7 +1069,7 @@ class ChatInput extends Component {
       emotions,
         hideStickerView
     } = this.props;
-    const {input_focus,isExtraAreaVisible,selected_medias, selectedEmotion, value} = this.state;
+    const {customKeyboard,input_focus,isExtraAreaVisible,selected_medias, selectedEmotion, value} = this.state;
 
     if (value.length === 0) {
       this.newHeight = isIphoneX() || Platform.isPad ? 70 : 50;
@@ -705,9 +1083,14 @@ class ChatInput extends Component {
       styles.rootContainer,
     ];
 
+    const previewHeight = Platform.select({
+      ios: this.state.searchEmotion ? this.state.keyboardHeight + 95 + normalize(25) + this.newHeight : this.state.keyboardHeight,
+      android: this.state.searchEmotion ? 160 : this.state.keyboardHeight + this.newHeight
+    });
+    console.log('previewHeight',previewHeight);
     return (
-      <>
-      {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: this.state.previewHeight+this.newHeight}]}>
+      <View style={{position: 'relative'}}>
+      {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: previewHeight, zIndex: 5}]}>
         <TouchableOpacity style={styles.frequentUseItemContainerStyle}
             activeOpacity={0.8}
             onPress={this.onSelectedEmotionPress}>
@@ -735,216 +1118,259 @@ class ChatInput extends Component {
               onPress={this.clearSelection}
             />
         </View>}
-      <View style={container}>
-        <LinearGradient
-          colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
-          // locations={[0.2, 1]}
-          useAngle={true}
-          // angle={270}
-          angleCenter={{x: 0, y: 1}}
-          style={[styles.chatInputContainer, styles.inputContainer]}>
-          {/* <View style={styles.chatInputContainer}> */}
-          {input_focus || this.isExtrasAreaVisible ? (
-            <View style={styles.attachmentContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.chatAttachmentButton,
-                ]}
-                onPress={this.resetInput}>
-                <FontAwesome5
-                  name={'angle-right'}
-                  size={30}
-                  style={styles.rightIconStyle}
-                  color={Colors.gradient_3}
-                />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.chatAttachmentContainer}>
-              <TouchableOpacity
-                style={styles.chatAttachmentButton}
-                onPress={onAttachmentPress}>
-                {/* <FontAwesome5
-                  name={'plus'}
-                  size={height * 0.03}
-                  color={'indigo'}
-                /> */}
-                <Image
-                  source={Icons.plus_icon_select}
-                  style={styles.attachmentImage}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.chatAttachmentButton}
-                onPress={onCameraPress}>
-                <Image
-                  source={Icons.icon_camera_grad}
-                  style={styles.attachmentImage}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.chatAttachmentButton}
-                onPress={this.onGalleryPress}>
-                <Image
-                  source={Icons.gallery_icon_select}
-                  style={styles.attachmentImage}
-                  resizeMode={'contain'}
-                />
-                {/* <FontAwesome5
-                  name={'image'}
-                  size={height * 0.03}
-                  color={'indigo'}
-                /> */}
-              </TouchableOpacity>
-            </View>
-          )}
-          <View
-            style={[
-              styles.textInputContainer,
-              (input_focus || this.isExtrasAreaVisible) && styles.mentionInpiutContainer,
-            ]}>
-            {this.props.useMentionsFunctionality ? (
-                <MentionsInput
-                  ref={(input) => {
-                    this.input_ref = input;
-                  }}
-                  value={value}
-                  maxHeight={50}
-                  multiline={true}
-                  onFocus={this.onMentionTextInputFocus}
-                  onBlur={this.onMentionTextInputBlur}
-                  onTextChange={this.onMentionTextChange}
-                  onMarkdownChange={(markdown) => {}}
-                  placeholder={placeholder}
-                  placeholderTextColor={'gray'}
-                  autoCorrect={false}
-                  mentionStyle={styles.mentionStyle}
-                  textInputStyle={styles.textInputStyle}
-                  users={this.state.suggestionData}
-                  suggestedUsersComponent={this.suggestedUsersComponent}
-                />
-            ) : (
-              <TextInput
-                ref={(input) => {
-                  this.input_ref = input;
-                }}
-                multiline={true}
-                style={styles.textInput}
-                onChangeText={this.handleInput}
-                onFocus={this.onTextInputFocus}
-                onBlur={this.onTextInputBlur}
-                onContentSizeChange={this.onTextInputContentSizeChange}
-                defaultValue={value}
-                placeholder={placeholder}
-                autoCorrect={false}
-              />
-            )}
-             {(input_focus || this.isExtrasAreaVisible) && <View style={styles.stickerContainer}>
-                <TouchableOpacity
-                  style={styles.chatAttachmentButton}
-                  onPress={this.showEmotionView}>
-                  <Image
-                    source={Icons.icon_sticker_pack}
-                    style={styles.attachmentImage}
-                    resizeMode={'contain'}
-                  />
-                </TouchableOpacity>
-              </View>}
-          </View>
-          <TouchableOpacity
-            style={styles.sendButoonContainer}
-            activeOpacity={value || sendingImage.uri ? 0 : 1}
-            onPress={this.onSubmit}>
-            <Image
-              source={Icons.icon_send_button}
-              style={styles.sandButtonImage}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
-          {/* </View> */}
-        </LinearGradient>
-        {this.isExtrasAreaVisible && (
-            <Animated.View
-              style={[
-                styles.emotionsContainer,
-                {
-                  // height: isExtrasAreaVisible ? 340 : 0,
-                  height: this.state.extraAreaHeight,
-                },
-              ]}>
-              <ScrollableTabView
-                initialPage={1}
-                tabBarPosition={'top'}
-                renderTabBar={this.onRenderScrollTabBar}>
-                {/* <View tabLabel={'Emojis'} style={{height: '100%'}}>
-                <EmojiBoard
-                  showBoard={isExtrasAreaVisible}
-                  numRows={10}
-                  tabBarPosition={'top'}
-                  categoryDefautColor={Colors.dark_gray}
-                  categoryHighlightColor={Colors.orange}
-                  categoryIconSize={18}
-                  tabBarStyle={styles.emojiTabBarStyle}
-                  containerStyle={styles.emojiContainerStyle}
-                  onClick={({code}) => handleInput(code)}
-                  hideBackSpace
-                />
-              </View> */}
-                <View tabLabel={'Recent'}>
-                  <FrequentlyUsedList
-                    addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
-                    emotions={emotions}
-                    numOfColumns={2}
-                    onPress={this.selectEmotion}
-                  />
-                </View>
-                <View tabLabel={'GIFs'}>
-                  <EmotionList
-                    searchTitle={'Search GIFs'}
-                    type={this.state.gifs}
-                    resizeMode={FastImage.resizeMode.cover}
-                    numOfColumns={2}
-                    containerStyle={styles.gifsContainerStyle}
-                    imageStyle={styles.gifsImageContainerStyle}
-                    onChangeText={this.onGifEdit}
-                    onPress={this.selectEmotion}
-                    addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
-                    loading={this.state.loading}
-                    onFocus={this.onEmotionSearchFocus}
-                    onBlur={this.onEmotionSearchBlur}
-                  />
-                </View>
-                <View tabLabel={'Stickers'}>
-                  <EmotionList
-                    searchTitle={'Search Stickers'}
-                    type={this.state.stickers}
-                    resizeMode={FastImage.resizeMode.contain}
-                    numOfColumns={4}
-                    containerStyle={styles.stickerContainerStyle}
-                    imageStyle={styles.stickerImageStyle}
-                    onChangeText={this.onStickerEdit}
-                    onPress={this.selectEmotion}
-                    addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
-                    onFocus={this.onEmotionSearchFocus}
-                    onBlur={this.onEmotionSearchBlur}
-                  />
-                </View>
-                {/*<View tabLabel={'Stickers Pack'}>*/}
-                  {/*<StickerPackSection />*/}
-                {/*</View>*/}
-              </ScrollableTabView>
-            </Animated.View>
-        )}
-        {isExtraAreaVisible?
-        <Animated.View style={{ height: this.state.picker_height, width: '100%', paddingBottom: 20, backgroundColor: Colors.light_pink }}>
-          <MediaPickerList onSelect={this.onSelectMedia} selectedMedia={selected_medias}/>
-        </Animated.View>
-        :null}
-
+      <KeyboardAccessoryView
+        renderContent={this.renderKeyboardAccessoryViewContent}
+        onHeightChanged={this.onHeightChanged}
+        trackInteractive={TrackInteractive}
+        kbInputRef={this.input_ref}
+        kbComponent={customKeyboard.component}
+        kbInitialProps={customKeyboard.initialProps}
+        onItemSelected={this.onKeyboardItemSelected}
+        onKeyboardResigned={this.onKeyboardResigned}
+        revealKeyboardInteractive={false}
+        onRequestShowKeyboard={this.onRequestShowKeyboard}
+        useSafeArea={false}
+      />
       </View>
-      </>
+      // <>
+      // {selectedEmotion && <View style={[styles.selectItemContainer,{bottom: this.state.previewHeight+this.newHeight}]}>
+      //   <TouchableOpacity style={styles.frequentUseItemContainerStyle}
+      //       activeOpacity={0.8}
+      //       onPress={this.onSelectedEmotionPress}>
+      //       <FastImage
+      //         resizeMode={
+      //           selectedEmotion.url.includes('&ct=g')
+      //             ? FastImage.resizeMode.cover
+      //             : FastImage.resizeMode.contain
+      //         }
+      //         style={[
+      //              styles.gifsImageContainerStyle,
+      //             {alignSelf: 'center'}
+      //         ]}
+      //         source={{
+      //           uri: selectedEmotion.url,
+      //           priority: FastImage.priority.high,
+      //         }}
+      //       />
+      //     </TouchableOpacity>
+      //     <FontAwesome5
+      //         name={'times'}
+      //         size={30}
+      //         style={styles.closeIconStyle}
+      //         color={Colors.white}
+      //         onPress={this.clearSelection}
+      //       />
+      //   </View>}
+      // <View style={container}>
+      //   <LinearGradient
+      //     colors={['rgba(255, 137, 96, 0.3)', 'rgba(255, 98, 165, 0.3)']}
+      //     // locations={[0.2, 1]}
+      //     useAngle={true}
+      //     // angle={270}
+      //     angleCenter={{x: 0, y: 1}}
+      //     style={[styles.chatInputContainer, styles.inputContainer]}>
+      //     {/* <View style={styles.chatInputContainer}> */}
+      //     {input_focus || this.isExtrasAreaVisible ? (
+      //       <View style={styles.attachmentContainer}>
+      //         <TouchableOpacity
+      //           style={[
+      //             styles.chatAttachmentButton,
+      //           ]}
+      //           onPress={this.resetInput}>
+      //           <FontAwesome5
+      //             name={'angle-right'}
+      //             size={30}
+      //             style={styles.rightIconStyle}
+      //             color={Colors.gradient_3}
+      //           />
+      //         </TouchableOpacity>
+      //       </View>
+      //     ) : (
+      //       <View style={styles.chatAttachmentContainer}>
+      //         <TouchableOpacity
+      //           style={styles.chatAttachmentButton}
+      //           onPress={onAttachmentPress}>
+      //           {/* <FontAwesome5
+      //             name={'plus'}
+      //             size={height * 0.03}
+      //             color={'indigo'}
+      //           /> */}
+      //           <Image
+      //             source={Icons.plus_icon_select}
+      //             style={styles.attachmentImage}
+      //             resizeMode={'contain'}
+      //           />
+      //         </TouchableOpacity>
+      //         <TouchableOpacity
+      //           style={styles.chatAttachmentButton}
+      //           onPress={onCameraPress}>
+      //           <Image
+      //             source={Icons.icon_camera_grad}
+      //             style={styles.attachmentImage}
+      //             resizeMode={'contain'}
+      //           />
+      //         </TouchableOpacity>
+      //         <TouchableOpacity
+      //           style={styles.chatAttachmentButton}
+      //           onPress={this.onGalleryPress}>
+      //           <Image
+      //             source={Icons.gallery_icon_select}
+      //             style={styles.attachmentImage}
+      //             resizeMode={'contain'}
+      //           />
+      //           {/* <FontAwesome5
+      //             name={'image'}
+      //             size={height * 0.03}
+      //             color={'indigo'}
+      //           /> */}
+      //         </TouchableOpacity>
+      //       </View>
+      //     )}
+      //     <View
+      //       style={[
+      //         styles.textInputContainer,
+      //         (input_focus || this.isExtrasAreaVisible) && styles.mentionInpiutContainer,
+      //       ]}>
+      //       {this.props.useMentionsFunctionality ? (
+      //           <MentionsInput
+      //             ref={(input) => {
+      //               this.input_ref = input;
+      //             }}
+      //             value={value}
+      //             maxHeight={50}
+      //             multiline={true}
+      //             onFocus={this.onMentionTextInputFocus}
+      //             onBlur={this.onMentionTextInputBlur}
+      //             onTextChange={this.onMentionTextChange}
+      //             onMarkdownChange={(markdown) => {}}
+      //             placeholder={placeholder}
+      //             placeholderTextColor={'gray'}
+      //             autoCorrect={false}
+      //             mentionStyle={styles.mentionStyle}
+      //             textInputStyle={styles.textInputStyle}
+      //             users={this.state.suggestionData}
+      //             suggestedUsersComponent={this.suggestedUsersComponent}
+      //           />
+      //       ) : (
+      //         <TextInput
+      //           ref={(input) => {
+      //             this.input_ref = input;
+      //           }}
+      //           multiline={true}
+      //           style={styles.textInput}
+      //           onChangeText={this.handleInput}
+      //           onFocus={this.onTextInputFocus}
+      //           onBlur={this.onTextInputBlur}
+      //           onContentSizeChange={this.onTextInputContentSizeChange}
+      //           defaultValue={value}
+      //           placeholder={placeholder}
+      //           autoCorrect={false}
+      //         />
+      //       )}
+      //        {(input_focus || this.isExtrasAreaVisible) && <View style={styles.stickerContainer}>
+      //           <TouchableOpacity
+      //             style={styles.chatAttachmentButton}
+      //             onPress={this.showEmotionView}>
+      //             <Image
+      //               source={Icons.icon_sticker_pack}
+      //               style={styles.attachmentImage}
+      //               resizeMode={'contain'}
+      //             />
+      //           </TouchableOpacity>
+      //         </View>}
+      //     </View>
+      //     <TouchableOpacity
+      //       style={styles.sendButoonContainer}
+      //       activeOpacity={value || sendingImage.uri ? 0 : 1}
+      //       onPress={this.onSubmit}>
+      //       <Image
+      //         source={Icons.icon_send_button}
+      //         style={styles.sandButtonImage}
+      //         resizeMode={'contain'}
+      //       />
+      //     </TouchableOpacity>
+      //     {/* </View> */}
+      //   </LinearGradient>
+      //   {this.isExtrasAreaVisible && (
+      //       <Animated.View
+      //         style={[
+      //           styles.emotionsContainer,
+      //           {
+      //             // height: isExtrasAreaVisible ? 340 : 0,
+      //             height: this.state.extraAreaHeight,
+      //           },
+      //         ]}>
+      //         <ScrollableTabView
+      //           initialPage={1}
+      //           tabBarPosition={'top'}
+      //           renderTabBar={this.onRenderScrollTabBar}>
+      //           {/* <View tabLabel={'Emojis'} style={{height: '100%'}}>
+      //           <EmojiBoard
+      //             showBoard={isExtrasAreaVisible}
+      //             numRows={10}
+      //             tabBarPosition={'top'}
+      //             categoryDefautColor={Colors.dark_gray}
+      //             categoryHighlightColor={Colors.orange}
+      //             categoryIconSize={18}
+      //             tabBarStyle={styles.emojiTabBarStyle}
+      //             containerStyle={styles.emojiContainerStyle}
+      //             onClick={({code}) => handleInput(code)}
+      //             hideBackSpace
+      //           />
+      //         </View> */}
+      //           <View tabLabel={'Recent'}>
+      //             <FrequentlyUsedList
+      //               addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+      //               emotions={emotions}
+      //               numOfColumns={2}
+      //               onPress={this.selectEmotion}
+      //             />
+      //           </View>
+      //           <View tabLabel={'GIFs'}>
+      //             <EmotionList
+      //               searchTitle={'Search GIFs'}
+      //               type={this.state.gifs}
+      //               resizeMode={FastImage.resizeMode.cover}
+      //               numOfColumns={2}
+      //               containerStyle={styles.gifsContainerStyle}
+      //               imageStyle={styles.gifsImageContainerStyle}
+      //               onChangeText={this.onGifEdit}
+      //               onPress={this.selectEmotion}
+      //               addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+      //               loading={this.state.loading}
+      //               onFocus={this.onEmotionSearchFocus}
+      //               onBlur={this.onEmotionSearchBlur}
+      //             />
+      //           </View>
+      //           <View tabLabel={'Stickers'}>
+      //             <EmotionList
+      //               searchTitle={'Search Stickers'}
+      //               type={this.state.stickers}
+      //               resizeMode={FastImage.resizeMode.contain}
+      //               numOfColumns={4}
+      //               containerStyle={styles.stickerContainerStyle}
+      //               imageStyle={styles.stickerImageStyle}
+      //               onChangeText={this.onStickerEdit}
+      //               onPress={this.selectEmotion}
+      //               addEmotionToFrequentlyUsed={this.addEmotionToFrequentlyUsed}
+      //               onFocus={this.onEmotionSearchFocus}
+      //               onBlur={this.onEmotionSearchBlur}
+      //             />
+      //           </View>
+      //           {/*<View tabLabel={'Stickers Pack'}>*/}
+      //             {/*<StickerPackSection />*/}
+      //           {/*</View>*/}
+      //         </ScrollableTabView>
+      //       </Animated.View>
+      //   )}
+      //   {isExtraAreaVisible?
+      //   <Animated.View style={{ height: this.state.picker_height, width: '100%', paddingBottom: 20, backgroundColor: Colors.light_pink }}>
+      //     <MediaPickerList onSelect={this.onSelectMedia} selectedMedia={selected_medias}/>
+      //   </Animated.View>
+      //   :null}
+
+      // </View>
+      // </>
     );
   }
 }
@@ -1154,7 +1580,7 @@ function EmotionList({
 
   return (
     <>
-        <TextInput
+        {/* <TextInput
           placeholder={searchTitle}
           placeholderTextColor={'gray'}
           style={textInputStyle}
@@ -1171,7 +1597,7 @@ function EmotionList({
             onBlur();
             setFocused(false)
           }}
-        />
+        /> */}
 
       {loading ? (
         <View>
@@ -1222,6 +1648,93 @@ function EmotionList({
         />
       )}
     </>
+  );
+}
+
+function SearchEmotionList({
+  searchTitle,
+  type,
+  onChangeText,
+  resizeMode,
+  containerStyle,
+  imageStyle,
+  onPress,
+  loading,
+  onFocus,
+  onBlur,
+  onClose
+}) {
+  const [focused, setFocused] = useState(false);
+
+  const textInputStyle = [
+    styles.emotionInputContainer,
+    {
+      fontWeight: focused ? 'normal' : 'bold',
+    },
+  ];
+
+  return (
+    <View style={{backgroundColor: Colors.light_pink}}>
+      {loading ? (
+        <View>
+          <ActivityIndicator color={'red'} />
+        </View>
+      ) : (
+        <FlatList
+          data={type}
+          horizontal
+          style={styles.searchEmotionListStyle}
+          contentContainerStyle={styles.searchEmotionListContentStyle}
+          keyExtractor={(item) => item.id}
+          maxToRenderPerBatch={5}
+          initialNumToRender={10}
+          keyboardShouldPersistTaps={'handled'}
+          // ItemSeparatorComponent={() => <View style={styles.horizontalDivider} />}
+          ListEmptyComponent={() => <ListLoader />}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                style={containerStyle}
+                activeOpacity={0.8}
+                onPress={() => {
+                  // addEmotionToFrequentlyUsed({
+                  //   url: item.images.original.url,
+                  //   type: item.type,
+                  // });
+                  const model = {
+                    url: item.images.original.url,
+                    type: item.type,
+                    name: item.title,
+                  };
+                  onPress(model);
+                }}>
+                <NormalImage
+                  src={item.images.preview_gif.url}
+                  style={[
+                    imageStyle,
+                  ]}
+                  resizeMode={resizeMode}
+                />
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
+      <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', paddingRight: 10}}>
+        <TextInput
+          placeholder={searchTitle}
+          placeholderTextColor={'gray'}
+          style={textInputStyle}
+          autoCorrect={false}
+          autoFocus={true}
+          textAlign={'left'}
+          onChangeText={onChangeText}
+          inlineImageLeft={'search_icon'}
+          clearButtonMode={'while-editing'}
+        />
+        <Ionicons name={'close'} size={25} onPress={onClose}/>
+      </View>
+    </View>
   );
 }
 
