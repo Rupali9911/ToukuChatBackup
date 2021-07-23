@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Platform} from 'react-native';
 import {Colors, Fonts} from '../../constants';
-import { normalize } from '../../utils';
+import { normalize, isIphoneX } from '../../utils';
 
 export default StyleSheet.create({
   messageAreaContainer: {
@@ -145,7 +145,7 @@ export default StyleSheet.create({
     position: 'absolute',
     margin: 16,
     right: 0,
-    bottom: 0,
+    bottom: isIphoneX() || Platform.isPad ? 70 : 50,
     backgroundColor: Colors.primary
   },
 });
