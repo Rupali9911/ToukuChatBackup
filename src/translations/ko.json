@@ -1710,9 +1710,10 @@
     "NeedToAddPhoneNumber": "보너스를 획득하려면 전화 번호를 입력해야합니다.",
     "AuthenticateNumber": "전화 번호를 인증하기",
     "extraCashWiningText": "게임에서 놀아 용돈 GET",
-    "xpusedForText": "※ XP는 홈 화면의 「XIGOLO (게임) \"에서 사용할 수 있습니다",
+    "xpusedForText": "※ 500TP 이상 ~ 아마존 상품권과 교환이 가능",
     "deleteFromeveyOne": "전체 화면에서 제거",
-    "deleteFromMe": "자신의 화면 만 삭제"
+    "deleteFromMe": "자신의 화면 만 삭제",
+    "tpDisappear": "※ TP는 취득 후 150 일에 소멸합니다"
   },
   "toastr":{
     "pleaseEnterYourPassword":"\ube44\ubc00\ubc88\ud638\ub97c \uc785\ub825\ud574 \uc8fc\uc138\uc694 ",

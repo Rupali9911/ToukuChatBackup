@@ -1,4 +1,4 @@
-import {client} from '../../helpers/api';
+import {client, GET_TOUKU_POINTS} from '../../helpers/api';
 import {
   setChannels,
   getChannels,
@@ -254,7 +254,7 @@ export default function (state = initialState, action) {
       }else{
         return state;
       }
-      
+
     case DELETE_FOLLOWING_CHANNEL:
       let new_list = state.followingChannels.slice();
       return {
@@ -795,7 +795,7 @@ export const checkLoginBonusOfChannel = () => (dispatch) =>
 export const selectLoginJackpotOfChannel = (payload) => (dispatch) =>
   new Promise(function (resolve, reject) {
     client
-      .post(`xigolo_payment/select_login_jackpot/`, payload)
+      .post(`xigolo_payment/touku-select_login_jackpot/`, payload)
       .then((res) => {
         resolve(res);
       })

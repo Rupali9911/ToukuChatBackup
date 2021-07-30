@@ -52,7 +52,7 @@ import {
   getMoreFollowingChannels,
   setCurrentChannel,
 } from '../../redux/reducers/channelReducer';
-import {getUserConfiguration} from '../../redux/reducers/configurationReducer';
+import {getUserConfiguration, getToukuPoints} from '../../redux/reducers/configurationReducer';
 import {
   getFriendRequests,
   getUserFriends,
@@ -134,6 +134,7 @@ class Home extends PureComponent {
       getChannelData: [],
       getFriendData: [],
       assetXPValue: null,
+        toukuPoints: this.props.userData.total_tp,
         from_user_id: null
     };
     this.SingleSocket = SingleSocket.getInstance();
@@ -266,7 +267,8 @@ class Home extends PureComponent {
     this.channelFilter();
     this.groupFilter();
     this.friendFilter();
-    this.getAssetXpValue();
+   // this.getAssetXpValue();
+    this.getTPValue();
 
     this.focusListener = this.props.navigation.addListener(
       'didFocus',
@@ -276,7 +278,8 @@ class Home extends PureComponent {
           this.groupFilter();
           this.friendFilter();
           this.channelFilter();
-          this.getAssetXpValue();
+          //this.getAssetXpValue();
+          this.getTPValue();
         }, 100),
     );
 
@@ -375,6 +378,23 @@ class Home extends PureComponent {
         console.log('err', err);
       });
   };
+
+    // Gets the TP Value
+    getTPValue = () => {
+        this.props
+            .getToukuPoints()
+            .then((res) => {
+                if (res) {
+                    console.log('asset_xp', res);
+                    if (res) {
+                        this.setState({toukuPoints: res.total_tp});
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log('err from getToukuPoints', err);
+            });
+    };
 
   getUniqueUrl = () => {
     this.props
@@ -1280,7 +1300,7 @@ class Home extends PureComponent {
   onOpenGroupChats = (item,mention_press) => {
     NetInfo.fetch().then((state) => {
       console.log('Is connected?', state.isConnected);
-      let msg_id = item.unread_msg_id > 0 ? item.unread_msg_id : item.last_msg_id; 
+      let msg_id = item.unread_msg_id > 0 ? item.unread_msg_id : item.last_msg_id;
 
       if(mention_press && item.is_mentioned > 0){
         msg_id = item.mention_msg_id;
@@ -1691,7 +1711,8 @@ class Home extends PureComponent {
       isFriendReqCollapse,
       searchText,
       getFriendData,
-      assetXPValue
+      assetXPValue,
+        toukuPoints
     } = this.state;
 
     const {
@@ -1871,40 +1892,40 @@ class Home extends PureComponent {
                       </Text>
                       <Text style={styles.pointsText}>(TP)</Text>
                       <Text style={styles.pointsCount}>
-                        {this.props.userData.total_tp &&
+                        { toukuPoints &&
                           parseInt(
-                            this.props.userData.total_tp,
+                              toukuPoints,
                             10,
                           ).toLocaleString()}
                       </Text>
                     </View>
                   </LinearGradient>
-                  <LinearGradient
-                    start={{x: 0.03, y: 0.7}}
-                    end={{x: 0.95, y: 0.8}}
-                    // locations={[0.065, 0.22, 0.92]}
-                    useAngle={true}
-                    angle={0}
-                    colors={[
-                      // Colors.button_gradient_1,
-                      // Colors.button_gradient_2,
-                      '#fff3f5',
-                      '#fff3f5',
-                    ]}
-                    style={[
-                      styles.fill_border_box_style,
-                      styles.xpPointsGradientContainer,
-                    ]}>
-                    <View>
-                      <Text style={styles.pointsText}>
-                        {translate('pages.adWall.gamePoint')}
-                      </Text>
-                      <Text style={styles.pointsText}>(XP)</Text>
-                      <Text style={styles.pointsCount}>
-                        {assetXPValue ? assetXPValue.XP : 0}
-                      </Text>
-                    </View>
-                  </LinearGradient>
+                  {/*<LinearGradient*/}
+                    {/*start={{x: 0.03, y: 0.7}}*/}
+                    {/*end={{x: 0.95, y: 0.8}}*/}
+                    {/*// locations={[0.065, 0.22, 0.92]}*/}
+                    {/*useAngle={true}*/}
+                    {/*angle={0}*/}
+                    {/*colors={[*/}
+                      {/*// Colors.button_gradient_1,*/}
+                      {/*// Colors.button_gradient_2,*/}
+                      {/*'#fff3f5',*/}
+                      {/*'#fff3f5',*/}
+                    {/*]}*/}
+                    {/*style={[*/}
+                      {/*styles.fill_border_box_style,*/}
+                      {/*styles.xpPointsGradientContainer,*/}
+                    {/*]}>*/}
+                    {/*<View>*/}
+                      {/*<Text style={styles.pointsText}>*/}
+                        {/*{translate('pages.adWall.gamePoint')}*/}
+                      {/*</Text>*/}
+                      {/*<Text style={styles.pointsText}>(XP)</Text>*/}
+                      {/*<Text style={styles.pointsCount}>*/}
+                        {/*{assetXPValue ? assetXPValue.XP : 0}*/}
+                      {/*</Text>*/}
+                    {/*</View>*/}
+                  {/*</LinearGradient>*/}
                 </View>
               </View>
 
@@ -2211,6 +2232,7 @@ const mapDispatchToProps = {
   getAdWallUniqueUrl,
   requestLoginForm,
   setActiveTimelineTab,
+    getToukuPoints
 };
 
 export default connect(

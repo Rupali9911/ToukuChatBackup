@@ -1701,9 +1701,10 @@
     "NeedToAddPhoneNumber": "您必须输入电话号码才能获得奖金。",
     "AuthenticateNumber": "验证电话号码",
     "extraCashWiningText": "玩游戏并获得零用钱",
-    "xpusedForText": "* XP可以在主屏幕的“ XIGOLO（游戏）”中使用。",
+    "xpusedForText": "* 500TP 或以上-可兑换亚马逊礼券",
     "deleteFromeveyOne": "已从所有人的屏幕上删除",
-    "deleteFromMe": "仅删除屏幕"
+    "deleteFromMe": "仅删除屏幕",
+    "tpDisappear": "* TP 将在收购后 150 天消失"
   },
   "toastr":{
     "pleaseEnterYourPassword":"请输入您的密码",

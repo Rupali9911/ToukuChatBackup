@@ -269,6 +269,7 @@ export const getToukuPoints = (data) => (dispatch) =>
     client
       .get(GET_TOUKU_POINTS, data)
       .then((res) => {
+          console.log('getToukuPoints', res)
         resolve(res);
       })
       .catch((err) => {

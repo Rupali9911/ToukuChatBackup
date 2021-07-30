@@ -1710,9 +1710,10 @@
     "NeedToAddPhoneNumber": "ボーナスを獲得するには、電話番号を入力する必要があります。",
     "AuthenticateNumber": "電話番号を認証する",
     "extraCashWiningText": "ゲームで遊んでお小遣いGET",
-    "xpusedForText": "※XPはホーム画面のXIGOLO(ゲーム)で利用できます",
+    "xpusedForText": "※500TP以上〜アマゾンギフト券と交換が可能",
     "deleteFromeveyOne": "全員の画面から削除",
-    "deleteFromMe": "自分の画面だけ削除"
+    "deleteFromMe": "自分の画面だけ削除",
+    "tpDisappear": "※TPは取得後から150日で消滅します"
   },
   "toastr": {
     "pleaseEnterYourPassword": "パスワードを入力",

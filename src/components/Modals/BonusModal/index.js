@@ -37,6 +37,7 @@ import {
   unpinChannel,
 } from '../../../redux/reducers/channelReducer';
 import {setCommonChatConversation} from '../../../redux/reducers/commonReducer';
+import {getToukuPoints} from '../../../redux/reducers/configurationReducer';
 import {
   translate,
   translateMessage,
@@ -99,7 +100,7 @@ class BonusModal extends Component {
           this.setState({loadingJackpot: false});
         })
         .catch((err) => {
-          console.log('err', err);
+          console.log('err from selectLoginJackpotOfChannel', err);
           this.setState({loadingJackpot: false});
         });
     }
@@ -108,17 +109,17 @@ class BonusModal extends Component {
   // Gets the XP Value
   getAssetXpValue = () => {
     this.props
-      .assetXPValueOfChannel()
+      .getToukuPoints()
       .then((res) => {
         if (res) {
           console.log('asset_xp', res);
-          if (res && res.data) {
-            this.setState({assetXPValue: res.data});
+          if (res) {
+            this.setState({assetXPValue: res.total_tp});
           }
         }
       })
       .catch((err) => {
-        console.log('err', err);
+        console.log('err from getToukuPoints', err);
       });
   };
 
@@ -143,45 +144,45 @@ class BonusModal extends Component {
       arr = [
         {
           amount: parseInt(jackpotData.picked_amount, 10),
-          type: jackpotData.picked_amount_type || 'XP',
+          type: jackpotData.picked_amount_type || 'TP',
         },
         {
           amount: parseInt(jackpotData.missed1_amount, 10),
-          type: jackpotData.missed1_amount_type || 'XP',
+          type: jackpotData.missed1_amount_type || 'TP',
         },
         {
           amount: parseInt(jackpotData.missed2_amount, 10),
-          type: jackpotData.missed2_amount_type || 'XP',
+          type: jackpotData.missed2_amount_type || 'TP',
         },
       ];
     } else if (jackpotData.picked_option === 2) {
       arr = [
         {
           amount: parseInt(jackpotData.missed1_amount, 10),
-          type: jackpotData.missed1_amount_type || 'XP',
+          type: jackpotData.missed1_amount_type || 'TP',
         },
         {
           amount: parseInt(jackpotData.picked_amount, 10),
-          type: jackpotData.picked_amount_type || 'XP',
+          type: jackpotData.picked_amount_type || 'TP',
         },
         {
           amount: parseInt(jackpotData.missed2_amount, 10),
-          type: jackpotData.missed2_amount_type || 'XP',
+          type: jackpotData.missed2_amount_type || 'TP',
         },
       ];
     } else if (jackpotData.picked_option === 3) {
       arr = [
         {
           amount: parseInt(jackpotData.missed1_amount, 10),
-          type: jackpotData.missed1_amount_type || 'XP',
+          type: jackpotData.missed1_amount_type || 'TP',
         },
         {
           amount: parseInt(jackpotData.missed2_amount, 10),
-          type: jackpotData.missed2_amount_type || 'XP',
+          type: jackpotData.missed2_amount_type || 'TP',
         },
         {
           amount: parseInt(jackpotData.picked_amount, 10),
-          type: jackpotData.picked_amount_type || 'XP',
+          type: jackpotData.picked_amount_type || 'TP',
         },
       ];
     }
@@ -218,7 +219,9 @@ class BonusModal extends Component {
         : translate('pages.xchat.amazonGiftCardText');
     } else {
       return jackpotData
-        ? `${translate('swal.xpusedForText')}`
+        ? `${translate('swal.xpusedForText')}\n${translate(
+              'swal.tpDisappear',
+          )}`
         : `${translate('swal.extraCashWiningText')}\n${translate(
             'swal.xpusedForText',
           )}`;
@@ -227,6 +230,7 @@ class BonusModal extends Component {
 
   // Gets the assets value
   getAssetValue = () => {
+    console.log('this.state.assetXPValue', this.state.assetXPValue)
     if (
       this.state.jackpotData &&
       this.state.jackpotData.picked_amount_type === 'TP'
@@ -235,7 +239,7 @@ class BonusModal extends Component {
         this.props.userData.total_tp + this.state.jackpotData.picked_amount;
       return `${parseInt(amount, 10)}`;
     } else {
-      return `${this.state.assetXPValue.XP}`;
+      return `${this.state.assetXPValue}`;
     }
   };
 
@@ -324,7 +328,7 @@ class BonusModal extends Component {
                   <Text style={styles.chosenAmount}>
                     {this.state.jackpotData.picked_amount_type
                       ? this.state.jackpotData.picked_amount_type
-                      : 'XP'}
+                      : 'TP'}
                   </Text>
                 </Text>
               ) : null}
@@ -538,6 +542,7 @@ const mapDispatchToProps = {
   pinChannel,
   unpinChannel,
   selectRegisterJackpot,
+    getToukuPoints
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BonusModal);

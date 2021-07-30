@@ -1701,9 +1701,10 @@
     "NeedToAddPhoneNumber": "您必須輸入電話號碼才能獲得獎金。",
     "AuthenticateNumber": "驗證電話號碼",
     "extraCashWiningText": "玩遊戲並獲得零用錢",
-    "xpusedForText": "* XP可以在主屏幕的“ XIGOLO（遊戲）”中使用。",
+    "xpusedForText": "* 500TP 或以上-可兌換亞馬遜禮券",
     "deleteFromeveyOne": "已從所有人的屏幕上刪除",
-    "deleteFromMe": "僅刪除屏幕"
+    "deleteFromMe": "僅刪除屏幕",
+    "tpDisappear": "* TP 將在收購後 150 天消失"
   },
   "toastr":{
     "pleaseEnterYourPassword":"請輸入您的密碼",
